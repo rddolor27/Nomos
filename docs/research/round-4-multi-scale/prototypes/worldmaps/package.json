@@ -1,0 +1,22 @@
+{
+  "name": "bench",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "alea": "^1.0.1",
+    "d3-delaunay": "^6.0.4",
+    "delaunator": "^5.1.0",
+    "fast-2d-poisson-disk-sampling": "^1.0.3",
+    "fflate": "^0.8.3",
+    "flatqueue": "^3.1.0",
+    "foswig": "^3.0.1",
+    "simplex-noise": "^4.0.3"
+  }
+}
