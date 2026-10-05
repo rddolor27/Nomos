@@ -1,0 +1,101 @@
+{
+ "engine": "node22.22.0-v8_12.4.254.21-node.33",
+ "timing": {
+  "sin_small/math": {
+   "median_ns_per_call": 24.98,
+   "min": 24.19,
+   "max": 27.86,
+   "sink": 21222.419627987536
+  },
+  "sin_small/stdlib": {
+   "median_ns_per_call": 34.67,
+   "min": 34.33,
+   "max": 36.38,
+   "sink": 21222.41962798758
+  },
+  "sin_mid/math": {
+   "median_ns_per_call": 37.6,
+   "min": 35.59,
+   "max": 42.47,
+   "sink": -19146.85136542659
+  },
+  "sin_mid/stdlib": {
+   "median_ns_per_call": 45.48,
+   "min": 43.05,
+   "max": 50.78,
+   "sink": -19146.85136542658
+  },
+  "cos_mid/math": {
+   "median_ns_per_call": 37.67,
+   "min": 35.85,
+   "max": 45.47,
+   "sink": 9928.90374000332
+  },
+  "cos_mid/stdlib": {
+   "median_ns_per_call": 44.8,
+   "min": 42.39,
+   "max": 59.72,
+   "sink": 9928.903740003312
+  },
+  "exp/math": {
+   "median_ns_per_call": 19.66,
+   "min": 19.41,
+   "max": 21.98,
+   "sink": 4.9259461542600925e+26
+  },
+  "exp/stdlib": {
+   "median_ns_per_call": 36.56,
+   "min": 35.98,
+   "max": 51.33,
+   "sink": 4.9259461542600925e+26
+  },
+  "ln/math": {
+   "median_ns_per_call": 19.03,
+   "min": 18.01,
+   "max": 24.34,
+   "sink": -817844.0073597452
+  },
+  "ln/stdlib": {
+   "median_ns_per_call": 48.28,
+   "min": 46.94,
+   "max": 51.59,
+   "sink": -817844.0073597452
+  },
+  "pow/math": {
+   "median_ns_per_call": 64.16,
+   "min": 63.1,
+   "max": 69.26,
+   "sink": 1.866711508815869e+25
+  },
+  "pow/stdlib": {
+   "median_ns_per_call": 190.8,
+   "min": 176.4,
+   "max": 197.12,
+   "sink": 1.866711508815869e+25
+  },
+  "atan2/math": {
+   "median_ns_per_call": 53.5,
+   "min": 50.96,
+   "max": 57.83,
+   "sink": 23499.39982323198
+  },
+  "atan2/stdlib": {
+   "median_ns_per_call": 56.34,
+   "min": 46.13,
+   "max": 60.2,
+   "sink": 23499.399823231866
+  },
+  "hypot/math": {
+   "median_ns_per_call": 33.94,
+   "min": 32.58,
+   "max": 34.66,
+   "sink": 7337135980.763315
+  },
+  "hypot/stdlib": {
+   "median_ns_per_call": 44.87,
+   "min": 41.68,
+   "max": 50.64,
+   "sink": 7337135980.763315
+  }
+ }
+}

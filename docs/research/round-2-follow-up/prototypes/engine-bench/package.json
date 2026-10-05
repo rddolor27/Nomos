@@ -1,0 +1,28 @@
+{
+  "name": "bench",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@mdn/browser-compat-data": "^8.1.4",
+    "@stdlib/math-base-special-atan2": "^0.3.1",
+    "@stdlib/math-base-special-cos": "^0.3.1",
+    "@stdlib/math-base-special-exp": "^0.2.5",
+    "@stdlib/math-base-special-hypot": "^0.2.4",
+    "@stdlib/math-base-special-ln": "^0.2.5",
+    "@stdlib/math-base-special-pow": "^0.3.1",
+    "@stdlib/math-base-special-sin": "^0.3.1",
+    "comlink": "^4.4.2",
+    "esbuild": "^0.28.2",
+    "lil-gui": "^0.21.0",
+    "pixi.js": "^8.22.0",
+    "tweakpane": "^4.0.5",
+    "uplot": "^1.6.32"
+  }
+}
