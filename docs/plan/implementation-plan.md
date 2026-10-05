@@ -1,0 +1,386 @@
+# Implementation plan
+
+Oct 5, 2026 · @Rd
+
+## How to use this plan
+
+Work top to bottom: each milestone lists what to build and the checks that close it, merged from all three research rounds. Tick a box when it lands; a milestone is done when its exit checks pass in CI, not when the demo looks right.
+
+- **Where items come from:** round 1 is Findings & plan and Full report, round 2 is Follow-up research, round 3 is 2D game look & assets, round 4 is Villages, cities & countries, and round 5 is the Performance budget section below.
+- **Effort:** rough full-time estimates for one developer; round 1 put the whole plan at 12–19 weeks, and an AI coding assistant shortens that.
+- **Something to look at from week one:** every milestone ships at least one of the three visual styles below, so the project is never just a test suite.
+
+## Roadmap
+
+![build order · 10 milestones, 3 after launch](images/roadmap.png)
+
+The drawing is round 1's seven milestones plus round 4's three country milestones, dashed because they come after launch; the sections below add each round's tasks without changing the order.
+
+## Visual styles
+
+Coloured dots, blobs and a pixel-art town are three skins over one renderer and one 12-byte-per-agent snapshot, so changing the look is a setting, not a rewrite. Semantic zoom picks a skin automatically, and viewers can override it with a toolbar toggle or `?skin=dots|blobs|town`.
+
+| Skin | Ground | Agents | Best for | Ships in |
+| --- | --- | --- | --- | --- |
+| A: coloured dots | Minimap colours from the town map; a heatmap when zoomed far out | Role colour plus shape: circle citizen, square merchant, diamond police, a ring for a theft in progress (true view only) | City mode at 10k–100k agents, debugging, the Canvas2D fallback | M0 (heatmap in M6) |
+| B: Primer-style blobs | Flat zone colours from the same map | One shared blob body; jobs as caps and aprons; Primer faces and blinks | Lab cards, teaching, share clips | M1 |
+| C: pixel-art town | Tilemap of CC0 tiles with roofs, signs and light periods | Skin B's blobs by default; human characters only as an opt-in variant | The Pokémon-style look at street and follow-cam zoom | M3 (justice buildings M4, generated cities M6) |
+
+Every skin reads the same per-agent data: x, y and a 32-bit visual word for outfit, action and emote. The mockups for all three are in the 2D game look & assets tab.
+
+## Performance budget
+
+Every tier has a hard tick budget that CI enforces: 5.3 ms for 10k agents, 13.3 ms for 25k and 16 ms for 100k, and 1.5 ms (1k settlements) or 12 ms (10k) per country day. Optimised JavaScript already fits each with at least 20% slack, provided perception uses per-cell aggregates and decisions are event-driven. WebAssembly SIMD and workers are kept for the two loops where they pay.
+
+Budgets are in reference-machine (RM) milliseconds: a 4-vCPU Xeon cloud VM whose Speedometer 3.1 score (9.5) falls between budget and mid-range Android phones. They assume 10 ticks a second at 1× speed on one sim worker, which is an assumption, because the project has not fixed a tick rate. Device times use conservative multipliers built from search-snippet Speedometer scores: ×1.5 for budget Android, ×0.6 for capable phones and ×0.75 for desktops.
+
+| Tier | Budget, RM | On the device | Measured now, optimised JS |
+| --- | --- | --- | --- |
+| 10k agents, any phone | 5.3 ms a tick | ≈ 8 ms (budget Android) | 0.9 ms, before the systems not yet built |
+| 25k agents, capable phone | 13.3 ms a tick | ≈ 8 ms | 2.2 ms, before the systems not yet built |
+| 100k agents, desktop | 16 ms a tick | ≈ 12 ms | 9.1 ms, before the systems not yet built |
+| Country, 1k settlements | 1.5 ms a day | ≈ 2.3 ms (budget Android) | 0.76 ms JS; 0.44 ms WASM |
+| Country, 10k settlements | 12 ms a day | Desktop only | 8.4 ms JS; 4.7 ms WASM |
+
+**Sub-budgets per system (RM ms a tick; these are the CI gate values)**
+
+| System | 10k | 25k | 100k | Measured, optimised JS (10k / 25k / 100k) |
+| --- | --- | --- | --- | --- |
+| Movement | 0.10 | 0.25 | 0.8 | 0.061 / 0.153 / 0.642 |
+| Spatial grid rebuild | 0.30 | 0.70 | 2.8 | 0.203 / 0.471 / 2.48 |
+| Perception: cell aggregates, plus capped and staggered exact queries | 1.0 | 2.5 | 6.0 | ≈ 0.57 / 1.42 / 5.61 (exact every tick: 2.90 / 6.99 / 28.9) |
+| Decisions: timing wheel or at least 1/8 stagger | 0.20 | 0.50 | 0.6 | ≈ 0.03 / 0.082 / 0.40 |
+| Other agent systems (needs, jobs, inventory, social) | 1.2 | 3.0 | 1.4 | Not built yet |
+| Pathfinding and events | 1.0 | 2.8 | 0.8 | Not built yet |
+| Ledger transfers | 0.15 | 0.4 | 0.3 | ≈ 3.7 ns per transfer |
+| Snapshot to the render thread | 0.10 | 0.2 | 0.3 | ≈ 0.1 |
+| Slack for GC, jitter and spikes | 1.25 | 2.95 | 3.0 | — |
+
+**What the measurements settled**
+
+- **Algorithms beat micro-optimisation.** Per-cell aggregates cost 5–9× less than exact radius queries, and 21–35× less in clustered towns, exactly where cities form. A timing wheel cuts decision cost to 6–8% of "every agent every tick", and dense awake lists make sleeping agents nearly free, while a flag check still costs about half a full pass. An optimised 100k tick took 9.1 ms against 36.5 ms naive.
+- **WebAssembly only where it pays.** WASM SIMD runs the exact neighbour query 2.7–3.5× faster than the best JS for floats and 2.8–4.4× for integers, and the settlement model 1.7–2.5×. Utility scoring gains only 1.2–2× over hoisted JS. All 15 test kernels came to 5.8 KB gzip (SIMD build) and compiled in under 2 ms in Chromium.
+- **One preallocated memory, no copies.** JS kernels on typed-array views over WASM memory ran as fast as on JS-owned buffers, while copying state in and out erased the gain for light kernels. Never grow the memory in play, because `grow` detaches existing views.
+- **Workers only above about 20–25k agents.** Each barrier costs 50–130 µs with `Atomics.wait`, so at 10k staggering and aggregates save more. At 100k, four Chromium workers gave 2.1–2.3× under contention, and WASM SIMD with 3–4 workers ran an exact tick in 7.5–8.7 ms in Node and Bun. Results were bit-identical for one to four workers.
+- **Zero allocation in hot loops.** Typed-array code triggered no garbage collection in 200 ticks in Node, and only tiny scavenges in Chromium, while temporary arrays, objects or closures allocated 5–77 MB a tick. That slowed ticks 1.3–4.9× and caused pauses up to 12 ms in Chrome and 67 ms tails in Bun, and per-tick objects kept as history caused 17–21 ms pauses.
+- **Integers for anything replayed.** Integer kernels were bit-identical across JS, WASM scalar, WASM SIMD, V8 and JavaScriptCore. Plain JS f64 and WASM f32 diverged in 107 of 50,000 position words after 200 ticks. `BigInt64Array` was 115× slower than integer-valued `Float64Array` cents in JavaScriptCore.
+- **Sparse flows between settlements.** Dense all-pairs flows at 10k settlements cost 376–564 ms a day in JS and would need 400 MB, so flows use sparse CSR graphs with up to 24 neighbours. WebGPU is not worth it here: the CPU cost is a few milliseconds a day, and only integer kernels are reproducible.
+
+**Memory:** at most 256 bytes per agent plus a 24-byte render snapshot (2.8 MB at 10k, 28 MB at 100k), where the measured systems use 56 bytes. Each settlement gets at most 1 KB including its graph edges. One `WebAssembly.Memory` is reserved at start: 32 MB on phones and 64–128 MB on desktops.
+
+**CI gates**
+
+- [ ] **Budget:** Playwright with headless Chromium, plus Node, runs each system at 10k, 25k and 100k agents and the country at 1k and 10k settlements; fail if the fastest of at least 9 samples exceeds its sub-budget by more than 10%. Medians drifted 10.8% between runs at the 90th percentile on a shared machine, so they would flake (R5).
+- [ ] **Allocation:** zero scavenges over 1,000 ticks per system after warm-up, and heap growth under 64 KB a tick, read from Node's `perf_hooks` GC events (R5).
+- [ ] **Lint:** an ESLint `no-restricted-syntax` profile for hot files bans literals, closures, `new`, spread, `for…of`, array callbacks, `subarray`, `BigInt`, `Math.random`, transcendental `Math` and clocks; in testing it caught every violation (R5).
+- [ ] **Determinism:** golden state hashes for fixed seeds match across Node (V8), Bun (JavaScriptCore, a Safari proxy) and Chromium, and between JS and WASM for integer systems, tested on full-mantissa data (R5).
+- [ ] **Ledger and size:** total cents match exactly every tick, and the WASM core stays under 64 KB gzip (R5).
+
+## M0 Pipeline
+
+Goal: a deterministic core, the worker loop and the renderer contract, drawing Skin A dots. Effort: about 1 week, plus 4–6 days for the visual layer. R1, R2 and R3 mark the round each item comes from.
+
+**Build**
+
+- [ ] Set up the pnpm monorepo: `sim-core` (pure TypeScript, no DOM), `sim-protocol`, `sim-worker`, `render-gl`, `apps/web`, `tools/cli`, `tools/bench` (R1).
+- [ ] Write the `AgentStore` of typed columns and seeded sfc32 streams per subsystem, with every random draw keyed to a stable agent ID and tick (R1, R2).
+- [ ] Write the integer-cent ledger with a MINT account, and run `checkInvariants` every tick in development (R1).
+- [ ] Lint-ban `Math` transcendental functions and `**` in `sim-core`; use @stdlib-built lookup tables in per-agent code and @stdlib calls elsewhere (R2).
+- [ ] Build the worker loop: fixed timestep, MessageChannel yield, pause on `visibilitychange`, checkpoint on `pagehide`, resume without catching up (R1, R2).
+- [ ] Define snapshot v1: float32 x and y plus a 32-bit visual word per agent (12 bytes) in pooled transferable buffers, with the bits documented in `sim-protocol` and no "wanted" bit; choose the eight action states the 3-bit field holds, since sneak and carry must displace two of the rendering research's list (R1, R3).
+- [ ] Build one WebGL2 `WorldRenderer` (`init`, `resize`, `setMap`, `pushSnapshot`, `draw`, `setSkin`, `setLod`, `dispose`) on one context, with context-loss handling, a Canvas2D fallback capped near 5,000 agents, and no PixiJS (R2, R3).
+- [ ] Draw Skin A: shape-coded dots at least 5 px across, in the sprite palette (it replaces round 2's Tol muted set, which vanishes on sand tiles), with dark outlines on light ground and light rims on dark ground (R3).
+- [ ] Load `town.ldtk` in the worker (IntGrid walkability and zone entities, quicktype types) and draw its zone colours as Skin A's minimap (R3).
+- [ ] Build the camera: integer device-pixel zoom, `devicePixelContentBoxSize` with a Safari fallback, texel and pixel snapping, no CSS scaling (R3).
+- [ ] Add the skin switch: `?skin=dots|blobs|town`, a toolbar toggle and an automatic policy; unbuilt skins fall back to dots (R3).
+- [ ] Add uPlot charts and a per-system millisecond HUD (R1).
+- [ ] Set device tiers: phones 10k agents, 25k after a start-up check, 100k desktop only (R2).
+- [ ] Lay out `assets/` by licence family with `assets/LICENSES.md`, a git-ignored slot for paid packs and an atlas build stub (R3).
+- [ ] Cover accessibility basics: Play/Pause first in tab order, start paused under reduced motion, a data table for each chart (R2).
+- [ ] Make every draw a counter-based hash, `draw(seed, entity, tick, stream)`, built from `Math.imul`, xor and shifts, with separate salts for agents and ledgers, so a focus change can never shift another draw (R4).
+- [ ] Reserve ledger account ranges for MINT, a national treasury, per-settlement sector accounts (households, firms, local government, police budget) and a rounding account, keeping the one-line Σ = 0 invariant (R4).
+- [ ] Add a day-boundary phase to the fixed-step loop where aggregate commits and any tier switch that writes canonical state take effect, and record focus changes as tick-stamped inputs (R4).
+- [ ] Add exact apportionment (largest remainder, ties by index, leftover cents along a keyed stride) with a BigInt path once total × weight reaches 2^53 (R4).
+- [ ] Add a plan-then-apply helper for flows between entities, with a metamorphic test that shuffles iteration order, and extend the `Math` lint to world-generation and map code (R4).
+- [ ] Allocate sim state as SoA typed arrays in one `WebAssembly.Memory` reserved at start for the device tier (32 MB on phones, 64–128 MB on desktops) and never grown; JS systems use views created once (R5).
+- [ ] Store replay-relevant positions as Q8 or Q16 fixed-point Int32 with power-of-two grid cells, keep money as integer-valued `Float64Array` cents, and keep `BigInt` out of hot code (R5).
+- [ ] Set up the five performance CI gates from the Performance budget section, recording `/proc/loadavg` beside every timing (R5).
+
+**Exit checks**
+
+- [ ] Seed 42 gives an identical state hash at tick 1,000 across runs, and identical replay hashes in Chromium, Firefox and WebKit (R1, R2).
+- [ ] The ledger sums to zero on every tick (R1).
+- [ ] Skin A draws a 10k-agent replay in at most 1 ms of main-thread time per frame in CI, and golden-frame statistics agree at 1–4× zoom and device pixel ratios 1, 1.5 and 2 in all three engines (R3).
+- [ ] CI passes context-loss recovery, pause on hide, outline contrast of at least 3:1, role colour difference of at least ΔE 20 under three simulated colour-blindness types, a name lint rejecting "pokemon" and "poké", and a library budget of about 45 KB gzip (R2, R3).
+- [ ] The same (seed, entity, tick, stream) gives the same draw in any visiting order, and a 16-bucket χ² test over a million entities passes (R4).
+- [ ] Apportionment sums exactly and matches a BigInt reference over 10,000 random cases, including totals above 2^53 ÷ 4,095; logging a focus change that touches nothing leaves the replay hash unchanged (R4).
+- [ ] The budget, allocation, lint, determinism and size gates run on every pull request, and the M0 pipeline passes all of them (R5).
+
+## M1 Lab mode
+
+Goal: Primer-style lab cards in discrete days, drawn as Skin B blobs, with claims judged by properly powered tests. Effort: 1–2 weeks, plus 6–9 days for the visual layer (about half of it pixel art).
+
+**Build**
+
+- [ ] Write the discrete-day engine with the thief/trader contest, Primer's ±1 market and animated day phases (R1).
+- [ ] Turn rules cards into bet cards that lock in a prediction before Run; hand-pick and label first seeds; use neutral names; unlock city sliders through lab cards (R2).
+- [ ] Tag every claim as an estimate, per-seed property or comparison: comparisons on 50 paired seeds per arm (Holds at p < 0.01 and A ≥ 0.64, Fails only if significantly reversed, otherwise Inconclusive), Wald's sequential test for properties, equivalence bands for estimates, nightly fresh seeds (R2).
+- [ ] Draw the blob sheet on 16×24 cells: south, north and west (east mirrored), idle, walk, sneak and carry frames, sit, sleep, cheer and wince, eight Primer face overlays, the navy police cap with badge, the teal merchant apron and headband, and four neutral citizen items (R3).
+- [ ] Draw the first 16×16 bubbles ("!", "?", coin, "Zz", bread), with Kenney's CC0 emotes as placeholders (R3).
+- [ ] Add the sprite pass: atlas cells from outfit, direction and frame; facing and walk frame from interpolated velocity; depth-test y-sorting; face overlays; staggered blinks (R3).
+- [ ] Add the bubble pass: one bubble per agent, four to six on screen, priority justice > crime > economy > needs > mood, overflow to a ticker and a log line per bubble (R3).
+- [ ] Stage Skin B on the flat zone map: up to 40 agents and at most four protagonists with Primer-style wallet and hunger bars that ride with the sprite; link charts to the animation (R1, R3).
+- [ ] Drive faces from lab rules (angry eyes on a refused price, happy on a purchase, a wince and "?" on a victim) and show takes only as acts: a sneak and the item hopping from victim to taker, with no thief bubble, sack, mask or colour (R3).
+- [ ] Implement reduced motion: no hops, bobs or pans, 150 ms fades, camera cuts and static rings (R3).
+- [ ] Pass the IP gate before going public: original or CC0 art only, `assets/LICENSES.md` complete, "Pokémon" absent from every name and tag (R3).
+- [ ] Ship lab mode publicly once the exit checks pass (R1).
+
+**Exit checks**
+
+- [ ] The contest's median hawk share lands within 0.05 of the paper-computed p\* over 50 seeds, and the ±1 market price converges on the supply-and-demand intersection (R1).
+- [ ] In a recognition test, at least 8 of about 10 novices identify each role and each M1 glyph at 2× and 3×, and playtests with colour-blind players and a demographically diverse panel leave no unresolved readability or fairness issue (R3).
+- [ ] The body layer is byte-identical across roles, a 40-agent card never shows more than six bubbles, and a reduced-motion golden run contains no hops or pans (R3).
+
+## M2 Economy
+
+Goal: Lengnick's household–firm economy, calibrated to measured targets and linked to the street through money glyphs. Effort: 2–3 weeks, plus 1–2 days for the visual layer.
+
+**Build**
+
+- [ ] Implement Lengnick households and firms: posted prices, labour search, Stone–Geary budgets, closed and fiat money, BAM entry and exit, a wholesale call auction (R1).
+- [ ] Add Lengnick's missing parameters, ξ = 0.01 and a separate ψ\_quant = 0.25; write down the integer-cent rounding rules; start prices inside 1.025–1.15 × w/63 (R2).
+- [ ] Measure the burn-in with MSER-5 instead of assuming 1,000 months (R2).
+- [ ] Ship two presets: an exact Lengnick replication, and a city preset with shop markups of 1.36–1.50 over wholesale and 0.8–1.6 months of stock (R2).
+- [ ] Log the share of firm visits that find an acceptable vacancy; raise π toward 0.3–0.6 if job-to-job moves fall short; make workers differ so long unemployment spells occur (R2).
+- [ ] Add a firm credit line as a slider only if cycles prove too mild, and test it against both Mark-0 phase tables (R2).
+- [ ] Choose household cash holdings deliberately and chart money velocity; target the saving rate only when money is issued (R2).
+- [ ] Draw the economy glyphs (coin with "+" for wages, empty purse and closing shutter for bankruptcy, stock pips on stalls) and use one coin glyph for bubbles, price-chart ticks and the legend (R3).
+- [ ] Add a follow-the-money view in the inspector that animates coins between counterparties (R1, R3).
+- [ ] Write `spawnFromLedger(record, seed, time)` and use it as the city's initializer: exact role counts, a keyed shuffle, homes by LDtk capacity, jobs by firm size, cash apportioned exactly with 12-bit lognormal weights, prices drawn around the record's index; write `foldToLedger(state)` to return exact sums by compartment and account (R4).
+- [ ] Log daily flows per district in headless runs (hires, separations, wage bill, consumption, repricing share and size, vacancies, firm entries and exits, taxes), and add a headless design runner over seeds × city sizes (1,000–100,000 agents) × police shares × unemployment shocks that writes columnar logs (R4).
+
+**Exit checks**
+
+- [ ] Over 50 seeds × 20k ticks: no NaN, exact money conservation, and household saving that averages zero under fixed money (R1, R2).
+- [ ] Known-answer tests pass: random exchange gives Gini ≈ 0.5, saving half gives ≈ 0.27, and Godley–Lavoie SIM goes 38.44 → 47.9 (R1).
+- [ ] The economy targets hold: prices change in 9–12% of months, about 2% of job-stayers see a pay cut a year, about 26% of the unemployed find work each month, plus the BAM bands and the Mark-0 phase table (R2).
+- [ ] Every economy event maps to exactly one glyph across bubble, log, chart marker and legend, and price-chart ticks coincide with purchase bubbles in a replay (R3).
+- [ ] Spawn then fold returns the record exactly, in people and cents, for 1,000 random records, and the same (seed, record, time) gives a byte-identical city in Node, Bun and Deno (R4).
+- [ ] 100,000 agents spawn in ≤ 10 ms in Node, excluding LDtk lookups, and a spawned city's MSER-5 burn-in is no longer than the hand-built start's (R4).
+
+## M3 City life
+
+Goal: daily routines in a real town, drawn as the Skin C pixel-art town from one LDtk map. Effort: 2–3 weeks, plus 8–12 days for the visual layer (3–5 of them authoring the town).
+
+**Build**
+
+- [ ] Put homes, jobs and shops on a 128²–256² grid with flow fields, a timing wheel, needs plus utility scoring plus a state machine, and Huff shop choice (R1).
+- [ ] Build the inspector with a click-to-explain panel showing the top three scored actions (R1).
+- [ ] Optional: idle back-off, shop hours shifted by travel time, day plans made at dawn and one global witness pass (R2).
+- [ ] Re-download Ninja Adventure from its canonical page, confirm the CC0 text, drop culturally specific tiles and re-index to a 32-colour master palette (R3).
+- [ ] Set up the LDtk project: IntGrid values for wall, water, road, sidewalk, grass and door; auto-layer rules; a roof and treetop layer; entities for homes, shops, workplaces and the market with capacity, owner and opening hours (R3).
+- [ ] Hand-author the 256×256 default town with apartment blocks, and save house rows, shop rows, a market square and a park as prefab levels (R3).
+- [ ] Add the tile pass (a tile-index texture read with `texelFetch`, animated tiles) and the roof pass drawn over people (R3).
+- [ ] Add the phone path: render at one pixel per texel into a framebuffer and blit at integer scale, retiring the pixel-ratio cap of 2 for the world layer (R3).
+- [ ] Add four light periods that tint only ground and buildings, with lit windows and lamps, fades of at least 2 s and a tint-off toggle (R3).
+- [ ] Turn on automatic skins (dots at city zoom, the town from district zoom inward) with 15% hysteresis and 150 ms cross-fades, keeping the manual override (R3).
+- [ ] Add the follow-cam at 5–6× with a thought panel synced to the inspector (R3).
+- [ ] Draw the civic signals: teal-and-cream shop awnings with a gold coin sign, and home roofs chosen at random, never by wealth (R3).
+- [ ] Optional: a human character sheet for Skin C as an opt-in variant, with appearance redrawn at every birth, never inherited (R3).
+- [ ] Make per-cell aggregates the default perception, with exact radius queries only for agents that need them (collision, conversation, pursuit), staggered to at least 1/4 per tick and capped at 16 neighbours (R5).
+- [ ] Keep sleeping and off-screen agents in dense index lists maintained by swap-remove, never filtered by a flag in every system (R5).
+
+**Exit checks**
+
+- [ ] Rush hours emerge without scripting, and the win counters show no action that never wins or always wins (R1).
+- [ ] One LDtk file drives both walkability and tiles: every walkable cell has a ground tile and every zone entity a building (R3).
+- [ ] 10k agents in the 256² town stay within the tick budget, and rendering at 3× stays in budget in CI and when re-measured on one mid-range Android phone and one iPhone (R1, R3).
+- [ ] Outlines clear 3:1 against every walkable tile by day (the yellow body needs none at night), skin switches drop no frame, and the framebuffer path is pixel-exact at a device pixel ratio of 3 (R3).
+- [ ] At 10k and 25k agents, every system stays within its sub-budget in the CI budget gate (R5).
+
+## M4 Crime and police
+
+Goal: crime as an action any agent can take, calibrated policing, and the true-versus-recorded split drawn without stereotypes. Effort: 2–3 weeks, plus 4–6 days for the visual layer.
+
+**Build**
+
+- [ ] Implement the offend action, the Short hotspot field, respond, pursue, hot-spot and random patrol, lingering deterrence, jail, stigma, recidivism, true versus recorded crime, and guardrails against cascades (R1).
+- [ ] Default police to about 0.25% of the population (0.2–0.5%), or label police dots as patrol units; keep exaggerated shares to labelled lab cards (R2).
+- [ ] Calibrate realised arrests so clearances per true theft land near 3–7% (robbery about 20%), and consider damping Epstein's perceived risk (R2).
+- [ ] Write the Short decay as (1 − ω·δt) with one time step for every rate, never applying ω = 1/15 per hourly update; rescale θ; add the police suppression term (R2).
+- [ ] Add trip lengths, exp(−d/λ) per cell with λ drawn per offender, and displacement, with about 25% of deterred offenders moving nearby (R2).
+- [ ] Set reporting by crime type within a 2.5× band between districts, let legitimacy fall with arbitrary arrests, and give reporting bias and patrol feedback separate switches (R2).
+- [ ] Build the justice buildings from recoloured CC0 tiles: a slate-roofed police station with a plain badge and no flags, a jail with bars, a yard and an occupancy counter, and a records office with a ledger sign (R3).
+- [ ] Choreograph justice events: a witness "!" with a short straight sight line, a victim "?", clipboard reports carried to the records office, a handcuff ring with an escort at walking speed, bars on jailing and an open door on release, with wrongful stops drawn as heavily as arrests (R3).
+- [ ] Keep record states (none, suspected, arrest, incarcerated, parole, discharged) at the records office and in the inspector, never over heads (R2, R3).
+- [ ] Filter true-view cues (the carried item, Skin A's act ring) out of the recorded view, and show true and recorded crime as two synced small panels (R2, R3).
+- [ ] Audit police iconography (cap and badge only, no weapons or heroic poses, the same emotes as citizens), drive patrol schedules from data rather than night-only, and draw patrol and station overlays for Skin A (R3).
+- [ ] Log true and recorded offences, arrests, releases and the top-5% concentration share per district per day, and export and import the hotspot field as a 32×32 Uint16 grid (2 KB), upsampled on revisits (R4).
+- [ ] Make targets per offender grow with density and detection fall with anonymity, log each channel's share of offending, and add a police reaction-delay parameter for the district tier (R4).
+
+**Exit checks**
+
+- [ ] Tripling police from the new default cuts true theft by about 15%, certified on paired seeds, and a tipping test shows the police effect nearly flat near the default and steep at very low staffing (R2).
+- [ ] 50% of crime falls in 2–6% of cells, recorded crime is more concentrated than true crime when patrols follow records, and cumulative re-arrest runs about 43% / 66% / 82% at 1 / 3 / 10 years (R2).
+- [ ] Unit test: mean hotspot attractiveness equals θΓ/ω at steady state (R2).
+- [ ] An appearance audit over 50 seeds finds no rendered attribute, apart from true-view act cues, that differs between agents who stole and agents who did not; accessories depend only on job and on random neutral items (R3).
+- [ ] The recorded view never shows a true-view cue, and every justice event produces a bubble, a log line and a chart glyph (R3).
+- [ ] District logs sum exactly to city totals, recorded never exceeds true on any district-day, and a re-imported field keeps the top-5% share within 0.05 (R4).
+- [ ] In a 1,000–100,000-agent size sweep, loot and detection explain no more than about 45% of the per-capita theft gradient, Glaeser and Sacerdote's bound (R4).
+
+## M5 Society and policy
+
+Goal: the social layer and policy sliders, each with a predicted size of effect, and wealth and fear shown without stereotypes. Effort: about 2 weeks, plus 1–2 days for the visual layer.
+
+**Build**
+
+- [ ] Add the friend network, rumours and fear, contagion and Schelling moves (R1).
+- [ ] Add the treasury, taxes, welfare and police budget, the policy sliders and role transitions (R1).
+- [ ] Give each slider a size, not just a direction: a moderate minimum wage moves employment about ±1%, welfare cuts labour-force participation by 2–4 points, taxes and transfers take the income Gini from about 0.49 to 0.45; flag the default wealth tax (about 3% a year) as aggressive (R2).
+- [ ] Add Morris screening and then Sobol indices via SALib text files beside the slider sweeps; calibrate against patterns with one or two held out (R2).
+- [ ] Add an opt-in wealth lens, fear-of-crime and trust-in-police meters, and rate-limited sweat-drop and heart bubbles (R3).
+- [ ] Show policy changes through places and overlays (station staffing, patrol density, shop shutters), never through how agents look (R3).
+- [ ] Add city size (at least four sizes from 1,000 to 100,000 agents) as a factor in the calibration sweeps and keep every run's daily flow logs, so the same runs train the country emulator (R4).
+
+**Exit checks**
+
+- [ ] Every slider moves its metric in the predicted direction and by roughly the predicted size; the Gini falls steadily as the wealth tax rises (R1, R2).
+- [ ] No role goes extinct across seeds (R1).
+- [ ] The appearance audit, extended to wealth, finds no rendered attribute that correlates with wealth decile outside the opt-in lens (R3).
+- [ ] The emulator fitter reads the sweep logs without conversion (R4).
+
+## M6 Scale and sharing
+
+Goal: 100k agents on desktop, share links that replay in any browser, and a clean, honest launch. Effort: 2–4 weeks, plus 5–8 days for the visual layer.
+
+**Build**
+
+- [ ] Stagger decisions, add per-cell aggregates, and move to SharedArrayBuffer workers behind a `crossOriginIsolated` check (R1).
+- [ ] Finish semantic zoom for 25k and 100k agents: a Skin A heatmap from 128×128 render-side bins with a log ramp, visible-set compaction, and optional 16-bit positions at 8 bytes per agent (R3).
+- [ ] Generate cities of 400² to 1,024² tiles from a seeded road grid stamped with LDtk prefab blocks, with wave function collapse only for decorative filler (R3).
+- [ ] Extend the Canvas2D fallback to all three skins (R3).
+- [ ] Add saves and share URLs that encode seed, config, skin, zoom and camera, and replay identically across browsers (R1, R2, R3).
+- [ ] Prepare the launch kit: playable with no signup, a 1200×600 preview card per scenario drawn in Skin C with blobs and alt text, a share text that carries a bet, translation-ready text files (R2, R3).
+- [ ] Put the "What this toy leaves out" page live at launch, including why every agent looks the same (R2, R3).
+- [ ] Write ODD+D with purpose and patterns first, keep a TRACE notebook and submit to CoMSES (R2).
+- [ ] Ship THIRD\_PARTY\_NOTICES and an in-app credits screen covering every asset, and describe the look as "GBA-era top-down pixel art" in all launch copy (R2, R3).
+- [ ] Optional: LLM narration of a clicked agent, called rarely and asynchronously, with a deterministic fallback and every output logged (R1, R2).
+- [ ] Add country sections to the save format (settlement and route ledgers, regions and markets, per-settlement edit diffs, the notables cache, multi-resolution history, generator versions), gzipped with `CompressionStream` into OPFS or IndexedDB, and extend share URLs with `mode=country`, the world seed, generator versions and the focus log (R4).
+- [ ] Parameterise the city generator by a context record (tier, population, route-entry bearings, river, coast, biome, port, crossroads, walls) and seed it with hash(worldSeed, settlementId, generatorVersion) (R4).
+- [ ] Port the exact neighbour query and the settlement model to Rust compiled to WASM SIMD, with raw pointer exports and no wasm-bindgen, keeping integer JS fallbacks (R5).
+- [ ] Run workers only when `crossOriginIsolated` is true and a phase carries at least 0.5 ms: fixed 1,024-agent chunks, chunk-ordered reductions, a spin of at most 50 µs before `Atomics.wait`, and at most min(hardwareConcurrency − 2, 3) helpers (R5).
+
+**Exit checks**
+
+- [ ] On a desktop, 100k agents keep decisions at 10–20 Hz and rendering at 60 fps, in Skin A at city zoom and Skin C at street zoom (R1, R3).
+- [ ] A share URL restores the same skin and frame and replays identically in Chromium, Firefox and WebKit (R2, R3).
+- [ ] A generated city's map hash is identical across engines for a given seed (R3).
+- [ ] Launch metadata passes the name lint (R3).
+- [ ] A save of 10,000 settlement ledgers stays under about 0.3 MB gzip, and a share URL with a focus log restores the same canonical hash (R4).
+- [ ] The city generator returns byte-identical maps in Node, Bun, Deno and three browsers for 100 random context records (R4).
+- [ ] A 100k-agent tick fits 16 ms on the reference machine, exact queries run only through WASM SIMD or workers, and state hashes match for one to four workers (R5).
+
+## M7 Country of ledgers
+
+Goal: every settlement in a country advances daily as an integer ledger, headless, with rules fitted to the city model and national accounts exact to the cent. Decision: the ledger owns history (shadow-canonical), so agents never write it and one seed yields the same country wherever anyone looks. Effort: 19–28 days (4–6 weeks), 5–8 of them for the emulator; the ledgers and the test generator need only M0, so they could start once M0 lands, while the emulator waits for M2–M5.
+
+**Build**
+
+- [ ] Build the settlement store as typed arrays: people by state (employed, unemployed, merchants and owners, police, jailed), optionally in three age and three wealth bands; integer-cent accounts by sector; price and wage indices, inventory, vacancies and firm counts; true and recorded crime over a 21-day window, arrests, a top-5% concentration share and the police mode (R4).
+- [ ] Draw daily flows as integer stochastic draws: stochastic rounding below a mean of 8, otherwise a 4,096-entry inverse-normal table plus `sqrt`; price revisions as the share of firms repricing (R4).
+- [ ] Fit the emulator from the M2, M4 and M5 logs, each hazard a binned lookup table or a fixed-point GLM, and dock ledger trajectories against agent fold-ups on held-out runs (R4).
+- [ ] Add the national layer on Godley–Lavoie Model REG: one treasury, a central bank as the only issuer, a uniform national tax, services and police paid per settlement, Hamilton apportionment, an optional equalisation grant, local police with an optional national force (R4).
+- [ ] Plan, then apply, the flows between settlements: margin-driven trade per good with losses and stock in transit; monthly migration by expected wage over a gravity or radiation kernel; commuting as cross-settlement wages within about 50–100 km; movers carry their cents (R4).
+- [ ] Add village rules to the ledger: own production outside the cent ledger, a market every 2–10 days by density, seasonal harvests into stores, a rural youth migration hazard; add the region tier for unlisted hamlets (R4).
+- [ ] Add a terrain-free generator for tests: Zipf sizes, hexagonal or Poisson-disc spacing by level, Gibrat growth with a reflecting floor, and a Delaunay → spanning tree → spanner route graph (R4).
+- [ ] Add the country CI suite: daily identities, the integer-cent SIM known answer, the five scaling tests, Zipf and spacing, the trade band and gravity, migration and commuting decay, crime ratios, police staffing and response times (R4).
+- [ ] Keep flows on sparse CSR graphs with at most 24 neighbours per settlement, update settlements round-robin across a day's ticks, and allow dense matrices only between regions (R5).
+
+**Exit checks**
+
+- [ ] 10,000 settlements advance one simulated day within the 12 ms country budget on the reference machine and 1,000 within 1.5 ms (prototypes took 5.1–10.4 ms in JS and 4.7 ms in WASM at 10,000), and every identity holds exactly every day over 20 seeds × 50 simulated years (R4).
+- [ ] Integer-cent model SIM reaches exactly Y = 10,000 = G/θ (R4).
+- [ ] For each logged flow, the ledger's mean, variance and lag-1 autocorrelation fall inside the 5–95% seed band of agent fold-ups on held-out runs (R4).
+- [ ] On ≥ 30 settlements spanning three orders of magnitude, the GDP-like exponent's interval overlaps 1.08–1.15 and rejects 1, while homicide-like and household exponents do not reject 1 (R4).
+- [ ] Zipf's ζ stays within 0.9–1.2 for 50 years; trade distance elasticity is −0.9 ± 0.2; commuting decays at about −2; migration between settlements runs at 3.6–5.5% a year (R4).
+- [ ] Urban-to-rural property victimisation is 3.4 ± 30%; officers per 1,000 peak in towns under 10,000; an export shock to one region is partly offset by its net fiscal inflow within the year (R4).
+
+## M8 Country map
+
+Goal: country mode ships, with a generated, seeded map, Country and Region views, map modes and flows, and a detached fork into City mode as the first and cheapest form of zoom. Effort: 13–20 days (3–4 weeks).
+
+**Build**
+
+- [ ] Build the terrain stage in the worker: jittered-grid or shipped points (no trigonometry), Delaunator, template plus noise elevation with a continental falloff, priority-flood, flow accumulation, two or three stream-power passes and habitability (R4).
+- [ ] Place settlements on the mesh, capitals then towns then villages, with minimum spacing and P₁/k sizes (R4).
+- [ ] Build routes as Delaunay → spanning tree → spanner, routed by A\* with slope, bridge and road-reuse costs and sea lanes where no land path exists; add multi-source Dijkstra regions and market territories (R4).
+- [ ] Add names: a seeded foswig chain on an original corpus, site suffixes, and a CI filter against Pokémon place names (a test fixture only) and a profanity list (R4).
+- [ ] Draw the Country and Region levels: the mesh in a small palette-quantised framebuffer or an 8-px tilemap, settlement icons and routes by tier, label bands by zoom (R4).
+- [ ] Implement map modes as (state, entity) → {base, stripe}: true crime as base and recorded as stripe, plus population, growth, clearance, police, prices, wages, trade and danger (R4).
+- [ ] Draw flows as directed, side-offset bands along routes, aggregated per level, with capped particles for the selected flow only (R4).
+- [ ] Show route ledgers (traffic, bandit pressure, patrols, incidents), with robbery markers in the recorded view only once they are reported (R4).
+- [ ] Add the focus state, the breadcrumb (Country › Region › Settlement › District) and charts re-keyed by focus, with shared colour scales and "estimated" labels on every ledger-driven panel (R4).
+- [ ] Add "Open in City mode": a detached City-mode run seeded from a settlement's ledger and labelled as a what-if (R4).
+- [ ] Keep multi-resolution history (weekly for a year, monthly before that), quantised to Uint16 with delta coding (R4).
+
+**Exit checks**
+
+- [ ] A 1,000-settlement country on 30,000 cells generates in ≤ 1.5 s in desktop Chromium, with identical elevation, roads and names in Chromium, Firefox and WebKit (R4).
+- [ ] The name filter passes 1,000 seeds (R4).
+- [ ] Country and Region views take ≤ 2 ms of main-thread render time per frame in CI's software-GL Chromium, a proposed bar (R4).
+- [ ] A render-filter test checks that the recorded view never shows a true-only cue; a fork's fold at its first tick equals the source ledger; a save with ten years of history stays under about 3 MB gzip, since history alone came to about 1.9 MB on synthetic data (R4).
+
+## M9 Zoom across scales
+
+Goal: zooming from Region to street shows agents spawned from the ledger, aligned to it daily and folded back on exit, and the camera never changes canonical history. Effort: 23–35 days (5–7 weeks), 3–5 of them authoring village kits.
+
+**Build**
+
+- [ ] Turn camera focus into switch requests with hysteresis (enter below z(1 − f), leave above z(1 + f)) and a minimum dwell of one simulated day, logged as inputs (R4).
+- [ ] Spawn on focus with M2's spawner, keyed by (seed, settlement, entry tick, purpose): agents start indoors or at their scheduled places, with notables and the cached field loaded, or a per-map template scaled to the ledger (R4).
+- [ ] Align interior totals daily by sorting, carrying each day's shortfall; execute boundary flows exactly, releasing arrivals and removing departures at entry tiles (R4).
+- [ ] Keep two ledgers: the canonical one, which agents never touch, and an apportioned micro-ledger that changes across the boundary only through mirrored flows, with a reconciliation band between households and firms (R4).
+- [ ] Add a divergence meter: daily z-scores per flow in the developer panel, logged for emulator refits (R4).
+- [ ] Fold on leave: drop the micro-ledger; cache in an LRU the notables (officers, owners, anyone with a record, anyone followed or named), the 2 KB hotspot field and the price list (R4).
+- [ ] Build interiors by tier (LDtk village kits with procedural dressing, BSP towns with prefabs, cities from M6's generator), prefetched on hover and cross-faded in (R4).
+- [ ] Add the district window: above the device cap, agents run only in the districts in view, and the district tier with a 16×16 crime lattice runs elsewhere (R4).
+- [ ] Add village agent rules: one general shop, own-farm work as the default for the unemployed, kin credit that nets to zero, and a market day with itinerant merchants (R4).
+- [ ] Add the route strip view: a seeded strip map 20–40 tiles wide whose caravans, bandits and patrols are aligned to the route's ledger (R4).
+- [ ] Add consequential focus as an opt-in, with an observer-effect notice and the focus log in share URLs (R4).
+- [ ] Optional: pinned live settlements chosen at world creation (one on phones, up to three on desktops), agent-canonical and folded exactly into the national accounts every day (R4).
+
+**Exit checks**
+
+- [ ] Under shadow-canonical, replay hashes match across three different focus logs for one seed; under consequential focus they match for the same log (R4).
+- [ ] Every switch is a spawn-fold identity, both ledgers sum to zero every day, and the micro-ledger total equals the canonical total at every tick (R4).
+- [ ] Zooming from Region to City shows agents with no dropped frame: interior generation (≤ 60 ms; 59 ms warm in Node) and spawning (≤ 10 ms) start on hover and finish under the cross-fade (R4).
+- [ ] On presets, daily |z| < 2 on at least 95% of flow-days (a proposed bar), and a camera oscillating across the threshold causes at most one switch per dwell period (R4).
+- [ ] Notables and followed agents reappear on revisits with consistent records; under consequential focus, the hand-off twin test keeps output, prices, crime and money per head within the ledger's noise; under shadow-canonical it passes by construction, so the divergence meter does that job (R4).
+- [ ] A village preset shows money and transactions per head well below the city's at equal real consumption (R4).
+
+## Ongoing and verify-first
+
+Total effort to launch is roughly 20–30 weeks of one developer's full-time work: round 1's 12–19 weeks, about 6–9 weeks for the visual layer and about 2 weeks of country hooks in M0–M6. Country mode (M7–M9) then adds 55–83 days, about 11–17 weeks. Round 2's calibration and test work comes on top and was not estimated; all of these are unsourced guesses that an AI coding assistant shortens.
+
+**Ongoing**
+
+- [ ] Re-check economySim, SocSim and ndouglas/SugarScape weekly until launch, including ndouglas's announced "underworld" campaign (R2).
+- [ ] Treat GPL, AGPL and unlicensed repositories as study-only; keep `assets/LICENSES.md` current with author, pinned URL, licence, hash and changes for every file (R2, R3).
+- [ ] Keep "Pokémon", "Poké-" and creature names out of the title, repo, packages, domain, tags, store text and code; copy nothing from Nintendo, including the decompilation repos (R3).
+
+**Verify before hard-coding**
+
+| Figure or question | Decides | Milestone |
+| --- | --- | --- |
+| Canonical licence pages for Ninja Adventure, Kenney and LimeZu, and Mana Seed's AI clause | Which packs to commit, buy or drop | M0, M3 |
+| @stdlib bit-identity in Firefox, on ARM64 and with Apple's math library | The cross-browser replay promise | M0 |
+| Tick and frame times on a mid-range Android phone and an iPhone | Device tiers and the phone framebuffer path | M0, M3 |
+| Whether novices read the roles and 16×16 glyphs; palette with colour-blind players; fairness of the blob cast with a diverse panel | The visual vocabulary | M1 |
+| Lengnick's own figures and starting values, the size of price changes, a direct job-to-job rate, headless runs per second | Economy presets and the sensitivity budget | M2 |
+| Short et al.'s A0, time step and grid spacing; NCVS 2024 reporting and FBI 2025 clearance by crime type | Hotspot and capture constants | M4 |
+| Effect sizes behind the stereotype studies | How the "What this toy leaves out" page cites them | M6 |
+| Draw independence across neighbouring seeds once the seed is hashed first (the prototype's seed ^ entity shuffled draws between seeds that differ in low bits) | Whether two worlds are truly different | M0 |
+| FBI tables 16 and 70–74, BJS reporting by location, and Bettencourt 2007 with intervals | Crime, police and scaling bands for country mode | M7 |
+| Alignment nudges with the real emulator, read on the divergence meter | Shadow-canonical as the default, or pinned live cities | M7, M9 |
+| Day-step, spawn and map-generation times in browser workers and on phones | The phone tier for country mode | M8, M9 |
+| A manual search of Reddit, Steam and itch.io | Competitor risk | Ongoing |
