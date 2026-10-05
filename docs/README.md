@@ -16,7 +16,7 @@ This folder holds the research and planning behind Nomos; product code lives out
 | [2 · Follow-up](research/round-2-follow-up/) | Calibration of the economy and crime models, validation statistics, engineering gaps, launch and ethics | `summary.md`, `report.md`, `notes/`, `prototypes/` |
 | [3 · 2D look](research/round-3-2d-look/) | Pokémon-style art direction (style only), CC0 asset packs, renderer benchmarks, legal | `summary.md`, `report.md`, `notes/`, `prototypes/` |
 | [4 · Multi-scale](research/round-4-multi-scale/) | Villages, cities and countries: ledgers, zoom, world maps, regularities between settlements | `summary.md`, `report.md`, `notes/`, `prototypes/`, `images/` |
-| [5 · Performance](research/round-5-performance/) | Tick, memory and CI budgets: JS vs WebAssembly, workers, GC, country scale | `notes/compute.md`, `prototypes/compute/` (load, bundle and memory notes to follow) |
+| [5 · Performance](research/round-5-performance/) | Tick, load, bundle and memory budgets: JS vs WebAssembly, workers, GC, country scale, startup, assets, caching, CI gates | `notes/compute.md`, `notes/load-memory.md`, `prototypes/compute/`, `prototypes/load/` (draft CI configs in `prototypes/load/ci/`) |
 
 What each file type holds:
 
