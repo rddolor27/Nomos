@@ -1,0 +1,108 @@
+
+cc0_asset_previews.png (1608, 682) colors=593 orig=78397
+   oxipng -o max                          54307 B ( 69.3%) enc  10.08s exact=True maxdiff=0
+   oxipng -o max -Z (zopfli)              52755 B ( 67.3%) enc 214.42s exact=True maxdiff=0
+   zopflipng -m                           52749 B ( 67.3%) enc 126.59s exact=True maxdiff=0
+   pngquant 256 + oxipng                  34630 B ( 44.2%) enc   3.88s exact=False maxdiff=7
+   cwebp -lossless -z 9                   27618 B ( 35.2%) enc   3.77s exact=True maxdiff=0
+   AVIF lossless (sharp effort 9)        124291 B (158.5%) enc  32.13s exact=True maxdiff=0
+   AVIF q100 4:4:4 (Pillow)               82432 B (105.1%) enc  68.47s exact=False maxdiff=1
+
+city_zoomed_out.png (960, 540) colors=180 orig=44681
+   oxipng -o max                          20023 B ( 44.8%) enc   2.35s exact=True maxdiff=0
+   oxipng -o max -Z (zopfli)              19819 B ( 44.4%) enc  68.12s exact=True maxdiff=0
+   zopflipng -m                           19985 B ( 44.7%) enc  16.69s exact=True maxdiff=0
+   pngquant 256 + oxipng                  20023 B ( 44.8%) enc   1.77s exact=True maxdiff=0
+   cwebp -lossless -z 9                   18134 B ( 40.6%) enc  11.21s exact=True maxdiff=0
+   AVIF lossless (sharp effort 9)        125186 B (280.2%) enc  35.49s exact=True maxdiff=0
+   AVIF q100 4:4:4 (Pillow)               84460 B (189.0%) enc  49.12s exact=False maxdiff=1
+
+country_map.png (960, 540) colors=78 orig=36285
+   oxipng -o max                          15577 B ( 42.9%) enc   2.69s exact=True maxdiff=0
+   oxipng -o max -Z (zopfli)              15392 B ( 42.4%) enc  63.94s exact=True maxdiff=0
+   zopflipng -m                           15806 B ( 43.6%) enc  17.76s exact=True maxdiff=0
+   pngquant 256 + oxipng                  15595 B ( 43.0%) enc   2.01s exact=True maxdiff=0
+   cwebp -lossless -z 9                   14388 B ( 39.7%) enc   9.14s exact=True maxdiff=0
+   AVIF lossless (sharp effort 9)         84983 B (234.2%) enc  31.88s exact=True maxdiff=0
+   AVIF q100 4:4:4 (Pillow)               58675 B (161.7%) enc  50.98s exact=False maxdiff=1
+
+scale_ladder.png (1440, 400) colors=245 orig=62956
+   oxipng -o max                          27423 B ( 43.6%) enc   3.39s exact=True maxdiff=0
+   oxipng -o max -Z (zopfli)              27224 B ( 43.2%) enc  62.88s exact=True maxdiff=0
+   zopflipng -m                           27195 B ( 43.2%) enc  14.48s exact=True maxdiff=0
+   pngquant 256 + oxipng                  27423 B ( 43.6%) enc   2.18s exact=True maxdiff=0
+   cwebp -lossless -z 9                   24360 B ( 38.7%) enc  11.22s exact=True maxdiff=0
+   AVIF lossless (sharp effort 9)         87503 B (139.0%) enc  22.35s exact=True maxdiff=0
+   AVIF q100 4:4:4 (Pillow)               62586 B ( 99.4%) enc  37.30s exact=False maxdiff=1
+
+town_closeup.png (960, 540) colors=206 orig=28646
+   oxipng -o max                          13707 B ( 47.8%) enc   2.27s exact=True maxdiff=0
+   oxipng -o max -Z (zopfli)              13509 B ( 47.2%) enc  55.13s exact=True maxdiff=0
+   zopflipng -m                           13489 B ( 47.1%) enc  18.78s exact=True maxdiff=0
+   pngquant 256 + oxipng                  13707 B ( 47.8%) enc   1.41s exact=True maxdiff=0
+   cwebp -lossless -z 9                   11022 B ( 38.5%) enc   5.19s exact=True maxdiff=0
+   AVIF lossless (sharp effort 9)         66803 B (233.2%) enc  13.93s exact=True maxdiff=0
+   AVIF q100 4:4:4 (Pillow)               49239 B (171.9%) enc  34.55s exact=False maxdiff=1
+
+town_closeup_blobs.png (960, 540) colors=151 orig=26933
+   oxipng -o max                          12645 B ( 46.9%) enc   1.87s exact=True maxdiff=0
+   oxipng -o max -Z (zopfli)              12494 B ( 46.4%) enc  50.47s exact=True maxdiff=0
+   zopflipng -m                           12483 B ( 46.3%) enc  10.91s exact=True maxdiff=0
+   pngquant 256 + oxipng                  12645 B ( 46.9%) enc   1.12s exact=True maxdiff=0
+   cwebp -lossless -z 9                   10126 B ( 37.6%) enc   3.98s exact=True maxdiff=0
+   AVIF lossless (sharp effort 9)         64207 B (238.4%) enc  23.46s exact=True maxdiff=0
+   AVIF q100 4:4:4 (Pillow)               45415 B (168.6%) enc  30.24s exact=False maxdiff=1
+
+kenney_emotes-pack_pixel_style1.png (80, 96) colors=26 orig=918
+   oxipng -o max                            798 B ( 86.9%) enc   0.10s exact=True maxdiff=0
+   oxipng -o max -Z (zopfli)                799 B ( 87.0%) enc   1.22s exact=True maxdiff=0
+   zopflipng -m                             819 B ( 89.2%) enc   3.62s exact=True maxdiff=0
+   pngquant 256 + oxipng                    798 B ( 86.9%) enc   0.36s exact=True maxdiff=112
+   cwebp -lossless -z 9                     718 B ( 78.2%) enc   0.24s exact=True maxdiff=0
+   AVIF lossless (sharp effort 9)          6051 B (659.2%) enc   2.73s exact=True maxdiff=0
+   AVIF q100 4:4:4 (Pillow)                2514 B (273.9%) enc   1.06s exact=False maxdiff=1
+
+kenney_roguelike-modern-city_spritesheet_transparent.png (628, 475) colors=169 orig=46292
+   oxipng -o max                          23116 B ( 49.9%) enc   2.34s exact=True maxdiff=0
+   oxipng -o max -Z (zopfli)              22870 B ( 49.4%) enc  30.86s exact=True maxdiff=0
+   zopflipng -m                           22931 B ( 49.5%) enc   5.04s exact=True maxdiff=0
+   pngquant 256 + oxipng                  23065 B ( 49.8%) enc   1.41s exact=True maxdiff=0
+   cwebp -lossless -z 9                   21170 B ( 45.7%) enc   4.43s exact=True maxdiff=0
+   AVIF lossless (sharp effort 9)        147464 B (318.6%) enc  14.39s exact=True maxdiff=0
+   AVIF q100 4:4:4 (Pillow)               93651 B (202.3%) enc  34.69s exact=False maxdiff=2
+
+kenney_rpg-urban-pack_tilemap_packed.png (432, 288) colors=112 orig=17300
+   oxipng -o max                          15470 B ( 89.4%) enc   0.59s exact=True maxdiff=0
+   oxipng -o max -Z (zopfli)              15453 B ( 89.3%) enc  10.86s exact=True maxdiff=0
+   zopflipng -m                           15420 B ( 89.1%) enc   4.34s exact=True maxdiff=0
+   pngquant 256 + oxipng                  15470 B ( 89.4%) enc   0.68s exact=True maxdiff=112
+   cwebp -lossless -z 9                   14932 B ( 86.3%) enc  12.46s exact=True maxdiff=0
+   AVIF lossless (sharp effort 9)         89209 B (515.7%) enc  16.72s exact=True maxdiff=0
+   AVIF q100 4:4:4 (Pillow)               65068 B (376.1%) enc  27.63s exact=False maxdiff=1
+
+ninja-adventure_Villager_SpriteSheet.png (64, 112) colors=10 orig=4969
+   oxipng -o max                            970 B ( 19.5%) enc   0.08s exact=True maxdiff=0
+   oxipng -o max -Z (zopfli)                968 B ( 19.5%) enc   1.57s exact=True maxdiff=0
+   zopflipng -m                             951 B ( 19.1%) enc   2.38s exact=True maxdiff=0
+   pngquant 256 + oxipng                    970 B ( 19.5%) enc   0.08s exact=True maxdiff=112
+   cwebp -lossless -z 9                     908 B ( 18.3%) enc   0.44s exact=True maxdiff=0
+   AVIF lossless (sharp effort 9)         13872 B (279.2%) enc   1.13s exact=True maxdiff=0
+   AVIF q100 4:4:4 (Pillow)               15597 B (313.9%) enc   0.76s exact=False maxdiff=1
+
+ninja_tileset.png (448, 640) colors=391 orig=88026
+   oxipng -o max                          46130 B ( 52.4%) enc   3.24s exact=True maxdiff=252
+   oxipng -o max -Z (zopfli)              45653 B ( 51.9%) enc  56.26s exact=True maxdiff=252
+   zopflipng -m                           49086 B ( 55.8%) enc  26.06s exact=True maxdiff=0
+   pngquant 256 + oxipng                  36934 B ( 42.0%) enc   1.72s exact=False maxdiff=184
+   cwebp -lossless -z 9                   35482 B ( 40.3%) enc   3.13s exact=True maxdiff=255
+   AVIF lossless (sharp effort 9)        115629 B (131.4%) enc  21.69s exact=True maxdiff=0
+   AVIF q100 4:4:4 (Pillow)              110055 B (125.0%) enc  51.44s exact=False maxdiff=1
+
+atlas2048_raw.png (2048, 2048) colors=1115 orig=993202
+   oxipng -o max                         472311 B ( 47.6%) enc  36.08s exact=True maxdiff=252
+   oxipng -o max -Z (zopfli)             466627 B ( 47.0%) enc 376.42s exact=True maxdiff=252
+   zopflipng -m                          536819 B ( 54.0%) enc 196.08s exact=True maxdiff=0
+   pngquant 256 + oxipng                 362335 B ( 36.5%) enc   8.01s exact=False maxdiff=184
+   cwebp -lossless -z 9                  291538 B ( 29.4%) enc  11.82s exact=True maxdiff=255
+   AVIF lossless (sharp effort 9)       1372498 B (138.2%) enc 147.47s exact=True maxdiff=0
+   AVIF q100 4:4:4 (Pillow)             1215309 B (122.4%) enc 153.44s exact=False maxdiff=2

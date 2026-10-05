@@ -1,0 +1,130 @@
+[
+ {
+  "q": "?n=10000",
+  "rate": 1,
+  "fps": 29,
+  "mainFrameMed": 0.13,
+  "mainFrameP95": 0.34,
+  "workerStepMed": 1.7,
+  "workerStepP95": 7.18,
+  "stepBenchMed": 0.99,
+  "stepBenchP95": 1.33,
+  "load": [
+   1.35,
+   1.76,
+   2.02
+  ]
+ },
+ {
+  "q": "?n=25000",
+  "rate": 1,
+  "fps": 24.4,
+  "mainFrameMed": 0.17,
+  "mainFrameP95": 0.38,
+  "workerStepMed": 3.57,
+  "workerStepP95": 10.13,
+  "stepBenchMed": 2.42,
+  "stepBenchP95": 4.68,
+  "load": [
+   2.26,
+   3.2,
+   3.27
+  ]
+ },
+ {
+  "q": "?n=100000",
+  "rate": 1,
+  "fps": 13.4,
+  "mainFrameMed": 0.41,
+  "mainFrameP95": 1.2,
+  "workerStepMed": 17.52,
+  "workerStepP95": 30.13,
+  "stepBenchMed": 11.6,
+  "stepBenchP95": 18.77,
+  "load": [
+   3.33,
+   3.58,
+   3.73
+  ]
+ },
+ {
+  "q": "?n=10000",
+  "rate": 4,
+  "fps": 22.6,
+  "mainFrameMed": 0.23,
+  "mainFrameP95": 2.15,
+  "workerStepMed": 9,
+  "workerStepP95": 28.27,
+  "stepBenchMed": 6,
+  "stepBenchP95": 12.45,
+  "load": [
+   3.76,
+   3.94,
+   3.89
+  ]
+ },
+ {
+  "q": "?n=25000",
+  "rate": 4,
+  "fps": 18.2,
+  "mainFrameMed": 0.83,
+  "mainFrameP95": 2.5,
+  "workerStepMed": 16.29,
+  "workerStepP95": 51.65,
+  "stepBenchMed": 12.52,
+  "stepBenchP95": 30.26,
+  "load": [
+   4.06,
+   4.37,
+   4.38
+  ]
+ },
+ {
+  "q": "?n=100000",
+  "rate": 4,
+  "fps": 10.8,
+  "mainFrameMed": 1.7,
+  "mainFrameP95": 4.84,
+  "workerStepMed": 57.67,
+  "workerStepP95": 118.85,
+  "stepBenchMed": 51.16,
+  "stepBenchP95": 102.05,
+  "load": [
+   4.86,
+   5.12,
+   4.94
+  ]
+ },
+ {
+  "q": "?n=10000&skin=town&atlas=webp",
+  "rate": 1,
+  "fps": 5.4,
+  "mainFrameMed": 1.28,
+  "mainFrameP95": 1.71,
+  "workerStepMed": 1.71,
+  "workerStepP95": 3.49,
+  "stepBenchMed": 1.01,
+  "stepBenchP95": 1.89,
+  "load": [
+   4.95,
+   4.7,
+   4.52
+  ]
+ },
+ {
+  "q": "?n=10000&skin=town&atlas=webp",
+  "rate": 4,
+  "fps": 5.4,
+  "mainFrameMed": 6.71,
+  "mainFrameP95": 10.41,
+  "workerStepMed": 7.15,
+  "workerStepP95": 22.52,
+  "stepBenchMed": 5.3,
+  "stepBenchP95": 9.19,
+  "load": [
+   4.88,
+   4.76,
+   4.48
+  ]
+ }
+]

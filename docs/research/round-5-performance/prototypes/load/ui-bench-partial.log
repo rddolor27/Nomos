@@ -1,0 +1,10 @@
+vanilla@1x {"microMedian":0.97,"microMedianMin":0.95,"microMedianMax":0.98,"microP95":1.25,"scriptOnlyMedian":0.09,"scriptOnlyP95":0.15,"taskMs":4.71,"taskMin":4.08,"taskMax":6.43,"scriptMs":0.39,"layoutMs":1.29,"styleMs":0.16,"heapMB":4.56,"nodes":4763,"gate":1.13,"loads":[1.42,1.95,1.72,1.54,1.41],"sig":2170}
+vanilla@4x {"microMedian":6.53,"microMedianMin":5.68,"microMedianMax":6.81,"microP95":10.66,"scriptOnlyMedian":0.84,"scriptOnlyP95":1.67,"taskMs":21.53,"taskMin":20.65,"taskMax":23.83,"scriptMs":1.62,"layoutMs":6.83,"styleMs":0.69,"heapMB":4.56,"nodes":3804,"gate":1.41,"loads":[1.51,1.43,1.84,2.11,2.42],"sig":null}
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+page.evaluate: Target page, context or browser has been closed
+    at /tmp/claude-0/-home-user/35ba81c6-3dea-5b8e-ba6b-ebc48a230ba6/scratchpad/perf-load/bench-ui.mjs:30:26
+
+Node.js v22.22.0

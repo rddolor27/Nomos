@@ -1,0 +1,66 @@
+[
+ {
+  "variant": "pwa-tiny",
+  "mode": "repeat",
+  "ok": 5,
+  "of": 5,
+  "firstFrame": {
+   "med": 379,
+   "min": 329.2,
+   "max": 924.4
+  },
+  "interactive": {
+   "med": 703.4,
+   "min": 666.8,
+   "max": 1270
+  },
+  "netKB": {
+   "med": 0,
+   "min": 0,
+   "max": 0
+  },
+  "sw": {
+   "active": true,
+   "cached": 13
+  },
+  "loads": [
+   2.25,
+   2.15,
+   2.15,
+   2.46,
+   2.46
+  ]
+ },
+ {
+  "variant": "pwa-tiny",
+  "mode": "offline",
+  "ok": 5,
+  "of": 5,
+  "firstFrame": {
+   "med": 836.7,
+   "min": 329.7,
+   "max": 1018.8
+  },
+  "interactive": {
+   "med": 1157.8,
+   "min": 615.7,
+   "max": 1357.3
+  },
+  "netKB": {
+   "med": 0,
+   "min": 0,
+   "max": 0
+  },
+  "sw": {
+   "active": true,
+   "cached": 13
+  },
+  "loads": [
+   2.66,
+   2.85,
+   2.85,
+   2.86,
+   3.12
+  ]
+ }
+]

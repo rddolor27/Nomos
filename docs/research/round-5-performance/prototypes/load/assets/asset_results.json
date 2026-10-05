@@ -1,0 +1,638 @@
+[
+ {
+  "file": "cc0_asset_previews.png",
+  "orig": 78397,
+  "dims": [
+   1608,
+   682
+  ],
+  "colors": 593,
+  "variants": {
+   "oxipng -o max": {
+    "bytes": 54307,
+    "enc_s": 10.08,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "oxipng -o max -Z (zopfli)": {
+    "bytes": 52755,
+    "enc_s": 214.42,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "zopflipng -m": {
+    "bytes": 52749,
+    "enc_s": 126.59,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "pngquant 256 + oxipng": {
+    "bytes": 34630,
+    "enc_s": 3.88,
+    "exact": false,
+    "maxdiff": 7
+   },
+   "cwebp -lossless -z 9": {
+    "bytes": 27618,
+    "enc_s": 3.77,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "AVIF lossless (sharp effort 9)": {
+    "bytes": 124291,
+    "enc_s": 32.13,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "AVIF q100 4:4:4 (Pillow)": {
+    "bytes": 82432,
+    "enc_s": 68.47,
+    "exact": false,
+    "maxdiff": 1
+   }
+  }
+ },
+ {
+  "file": "city_zoomed_out.png",
+  "orig": 44681,
+  "dims": [
+   960,
+   540
+  ],
+  "colors": 180,
+  "variants": {
+   "oxipng -o max": {
+    "bytes": 20023,
+    "enc_s": 2.35,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "oxipng -o max -Z (zopfli)": {
+    "bytes": 19819,
+    "enc_s": 68.12,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "zopflipng -m": {
+    "bytes": 19985,
+    "enc_s": 16.69,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "pngquant 256 + oxipng": {
+    "bytes": 20023,
+    "enc_s": 1.77,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "cwebp -lossless -z 9": {
+    "bytes": 18134,
+    "enc_s": 11.21,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "AVIF lossless (sharp effort 9)": {
+    "bytes": 125186,
+    "enc_s": 35.49,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "AVIF q100 4:4:4 (Pillow)": {
+    "bytes": 84460,
+    "enc_s": 49.12,
+    "exact": false,
+    "maxdiff": 1
+   }
+  }
+ },
+ {
+  "file": "country_map.png",
+  "orig": 36285,
+  "dims": [
+   960,
+   540
+  ],
+  "colors": 78,
+  "variants": {
+   "oxipng -o max": {
+    "bytes": 15577,
+    "enc_s": 2.69,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "oxipng -o max -Z (zopfli)": {
+    "bytes": 15392,
+    "enc_s": 63.94,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "zopflipng -m": {
+    "bytes": 15806,
+    "enc_s": 17.76,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "pngquant 256 + oxipng": {
+    "bytes": 15595,
+    "enc_s": 2.01,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "cwebp -lossless -z 9": {
+    "bytes": 14388,
+    "enc_s": 9.14,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "AVIF lossless (sharp effort 9)": {
+    "bytes": 84983,
+    "enc_s": 31.88,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "AVIF q100 4:4:4 (Pillow)": {
+    "bytes": 58675,
+    "enc_s": 50.98,
+    "exact": false,
+    "maxdiff": 1
+   }
+  }
+ },
+ {
+  "file": "scale_ladder.png",
+  "orig": 62956,
+  "dims": [
+   1440,
+   400
+  ],
+  "colors": 245,
+  "variants": {
+   "oxipng -o max": {
+    "bytes": 27423,
+    "enc_s": 3.39,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "oxipng -o max -Z (zopfli)": {
+    "bytes": 27224,
+    "enc_s": 62.88,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "zopflipng -m": {
+    "bytes": 27195,
+    "enc_s": 14.48,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "pngquant 256 + oxipng": {
+    "bytes": 27423,
+    "enc_s": 2.18,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "cwebp -lossless -z 9": {
+    "bytes": 24360,
+    "enc_s": 11.22,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "AVIF lossless (sharp effort 9)": {
+    "bytes": 87503,
+    "enc_s": 22.35,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "AVIF q100 4:4:4 (Pillow)": {
+    "bytes": 62586,
+    "enc_s": 37.3,
+    "exact": false,
+    "maxdiff": 1
+   }
+  }
+ },
+ {
+  "file": "town_closeup.png",
+  "orig": 28646,
+  "dims": [
+   960,
+   540
+  ],
+  "colors": 206,
+  "variants": {
+   "oxipng -o max": {
+    "bytes": 13707,
+    "enc_s": 2.27,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "oxipng -o max -Z (zopfli)": {
+    "bytes": 13509,
+    "enc_s": 55.13,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "zopflipng -m": {
+    "bytes": 13489,
+    "enc_s": 18.78,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "pngquant 256 + oxipng": {
+    "bytes": 13707,
+    "enc_s": 1.41,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "cwebp -lossless -z 9": {
+    "bytes": 11022,
+    "enc_s": 5.19,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "AVIF lossless (sharp effort 9)": {
+    "bytes": 66803,
+    "enc_s": 13.93,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "AVIF q100 4:4:4 (Pillow)": {
+    "bytes": 49239,
+    "enc_s": 34.55,
+    "exact": false,
+    "maxdiff": 1
+   }
+  }
+ },
+ {
+  "file": "town_closeup_blobs.png",
+  "orig": 26933,
+  "dims": [
+   960,
+   540
+  ],
+  "colors": 151,
+  "variants": {
+   "oxipng -o max": {
+    "bytes": 12645,
+    "enc_s": 1.87,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "oxipng -o max -Z (zopfli)": {
+    "bytes": 12494,
+    "enc_s": 50.47,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "zopflipng -m": {
+    "bytes": 12483,
+    "enc_s": 10.91,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "pngquant 256 + oxipng": {
+    "bytes": 12645,
+    "enc_s": 1.12,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "cwebp -lossless -z 9": {
+    "bytes": 10126,
+    "enc_s": 3.98,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "AVIF lossless (sharp effort 9)": {
+    "bytes": 64207,
+    "enc_s": 23.46,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "AVIF q100 4:4:4 (Pillow)": {
+    "bytes": 45415,
+    "enc_s": 30.24,
+    "exact": false,
+    "maxdiff": 1
+   }
+  }
+ },
+ {
+  "file": "kenney_emotes-pack_pixel_style1.png",
+  "orig": 918,
+  "dims": [
+   80,
+   96
+  ],
+  "colors": 26,
+  "variants": {
+   "oxipng -o max": {
+    "bytes": 798,
+    "enc_s": 0.1,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "oxipng -o max -Z (zopfli)": {
+    "bytes": 799,
+    "enc_s": 1.22,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "zopflipng -m": {
+    "bytes": 819,
+    "enc_s": 3.62,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "pngquant 256 + oxipng": {
+    "bytes": 798,
+    "enc_s": 0.36,
+    "exact": true,
+    "maxdiff": 112
+   },
+   "cwebp -lossless -z 9": {
+    "bytes": 718,
+    "enc_s": 0.24,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "AVIF lossless (sharp effort 9)": {
+    "bytes": 6051,
+    "enc_s": 2.73,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "AVIF q100 4:4:4 (Pillow)": {
+    "bytes": 2514,
+    "enc_s": 1.06,
+    "exact": false,
+    "maxdiff": 1
+   }
+  }
+ },
+ {
+  "file": "kenney_roguelike-modern-city_spritesheet_transparent.png",
+  "orig": 46292,
+  "dims": [
+   628,
+   475
+  ],
+  "colors": 169,
+  "variants": {
+   "oxipng -o max": {
+    "bytes": 23116,
+    "enc_s": 2.34,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "oxipng -o max -Z (zopfli)": {
+    "bytes": 22870,
+    "enc_s": 30.86,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "zopflipng -m": {
+    "bytes": 22931,
+    "enc_s": 5.04,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "pngquant 256 + oxipng": {
+    "bytes": 23065,
+    "enc_s": 1.41,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "cwebp -lossless -z 9": {
+    "bytes": 21170,
+    "enc_s": 4.43,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "AVIF lossless (sharp effort 9)": {
+    "bytes": 147464,
+    "enc_s": 14.39,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "AVIF q100 4:4:4 (Pillow)": {
+    "bytes": 93651,
+    "enc_s": 34.69,
+    "exact": false,
+    "maxdiff": 2
+   }
+  }
+ },
+ {
+  "file": "kenney_rpg-urban-pack_tilemap_packed.png",
+  "orig": 17300,
+  "dims": [
+   432,
+   288
+  ],
+  "colors": 112,
+  "variants": {
+   "oxipng -o max": {
+    "bytes": 15470,
+    "enc_s": 0.59,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "oxipng -o max -Z (zopfli)": {
+    "bytes": 15453,
+    "enc_s": 10.86,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "zopflipng -m": {
+    "bytes": 15420,
+    "enc_s": 4.34,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "pngquant 256 + oxipng": {
+    "bytes": 15470,
+    "enc_s": 0.68,
+    "exact": true,
+    "maxdiff": 112
+   },
+   "cwebp -lossless -z 9": {
+    "bytes": 14932,
+    "enc_s": 12.46,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "AVIF lossless (sharp effort 9)": {
+    "bytes": 89209,
+    "enc_s": 16.72,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "AVIF q100 4:4:4 (Pillow)": {
+    "bytes": 65068,
+    "enc_s": 27.63,
+    "exact": false,
+    "maxdiff": 1
+   }
+  }
+ },
+ {
+  "file": "ninja-adventure_Villager_SpriteSheet.png",
+  "orig": 4969,
+  "dims": [
+   64,
+   112
+  ],
+  "colors": 10,
+  "variants": {
+   "oxipng -o max": {
+    "bytes": 970,
+    "enc_s": 0.08,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "oxipng -o max -Z (zopfli)": {
+    "bytes": 968,
+    "enc_s": 1.57,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "zopflipng -m": {
+    "bytes": 951,
+    "enc_s": 2.38,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "pngquant 256 + oxipng": {
+    "bytes": 970,
+    "enc_s": 0.08,
+    "exact": true,
+    "maxdiff": 112
+   },
+   "cwebp -lossless -z 9": {
+    "bytes": 908,
+    "enc_s": 0.44,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "AVIF lossless (sharp effort 9)": {
+    "bytes": 13872,
+    "enc_s": 1.13,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "AVIF q100 4:4:4 (Pillow)": {
+    "bytes": 15597,
+    "enc_s": 0.76,
+    "exact": false,
+    "maxdiff": 1
+   }
+  }
+ },
+ {
+  "file": "ninja_tileset.png",
+  "orig": 88026,
+  "dims": [
+   448,
+   640
+  ],
+  "colors": 391,
+  "variants": {
+   "oxipng -o max": {
+    "bytes": 46130,
+    "enc_s": 3.24,
+    "exact": true,
+    "maxdiff": 252
+   },
+   "oxipng -o max -Z (zopfli)": {
+    "bytes": 45653,
+    "enc_s": 56.26,
+    "exact": true,
+    "maxdiff": 252
+   },
+   "zopflipng -m": {
+    "bytes": 49086,
+    "enc_s": 26.06,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "pngquant 256 + oxipng": {
+    "bytes": 36934,
+    "enc_s": 1.72,
+    "exact": false,
+    "maxdiff": 184
+   },
+   "cwebp -lossless -z 9": {
+    "bytes": 35482,
+    "enc_s": 3.13,
+    "exact": true,
+    "maxdiff": 255
+   },
+   "AVIF lossless (sharp effort 9)": {
+    "bytes": 115629,
+    "enc_s": 21.69,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "AVIF q100 4:4:4 (Pillow)": {
+    "bytes": 110055,
+    "enc_s": 51.44,
+    "exact": false,
+    "maxdiff": 1
+   }
+  }
+ },
+ {
+  "file": "atlas2048_raw.png",
+  "orig": 993202,
+  "dims": [
+   2048,
+   2048
+  ],
+  "colors": 1115,
+  "variants": {
+   "oxipng -o max": {
+    "bytes": 472311,
+    "enc_s": 36.08,
+    "exact": true,
+    "maxdiff": 252
+   },
+   "oxipng -o max -Z (zopfli)": {
+    "bytes": 466627,
+    "enc_s": 376.42,
+    "exact": true,
+    "maxdiff": 252
+   },
+   "zopflipng -m": {
+    "bytes": 536819,
+    "enc_s": 196.08,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "pngquant 256 + oxipng": {
+    "bytes": 362335,
+    "enc_s": 8.01,
+    "exact": false,
+    "maxdiff": 184
+   },
+   "cwebp -lossless -z 9": {
+    "bytes": 291538,
+    "enc_s": 11.82,
+    "exact": true,
+    "maxdiff": 255
+   },
+   "AVIF lossless (sharp effort 9)": {
+    "bytes": 1372498,
+    "enc_s": 147.47,
+    "exact": true,
+    "maxdiff": 0
+   },
+   "AVIF q100 4:4:4 (Pillow)": {
+    "bytes": 1215309,
+    "enc_s": 153.44,
+    "exact": false,
+    "maxdiff": 2
+   }
+  }
+ }
+]

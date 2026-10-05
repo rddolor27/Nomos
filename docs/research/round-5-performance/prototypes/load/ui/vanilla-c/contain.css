@@ -1,0 +1,3 @@
+.app{grid-template-rows:150px 28px 1fr}
+.panel,.tiles,.legend,.inspector,.log{contain:content}
+.tile{contain:layout paint;height:40px}.log li{contain:layout paint;height:16px}

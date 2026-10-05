@@ -1,0 +1,1 @@
+const p = document.createElement('p'); const t = document.createTextNode('0'); p.append(t); let c = 0; p.onclick = () => (t.data = String(++c)); document.getElementById('app')!.append(p); setInterval(() => (t.data = String(++c)), 100);

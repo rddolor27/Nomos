@@ -1,0 +1,324 @@
+[
+ {
+  "variant": "early-mp",
+  "query": "",
+  "prof": "fast4g-4x",
+  "runs": 7,
+  "gateLoad": 1.49,
+  "summary": {
+   "load": {
+    "med": 1.6,
+    "min": 1.5,
+    "max": 1.9
+   },
+   "htmlEnd": {
+    "med": 671.3,
+    "min": 668.5,
+    "max": 676.9
+   },
+   "entryEnd": {
+    "med": 929.5,
+    "min": 912.1,
+    "max": 950.4
+   },
+   "mainEval": {
+    "med": 946.5,
+    "min": 922.8,
+    "max": 970.1
+   },
+   "workerNew": {
+    "med": 777.9,
+    "min": 755,
+    "max": 816.3
+   },
+   "workerJsEnd": {
+    "med": 953.8,
+    "min": 936.9,
+    "max": 988.3
+   },
+   "wEval": {
+    "med": 1022.6,
+    "min": 962.2,
+    "max": 1050.8
+   },
+   "mapEnd": {
+    "med": 987.5,
+    "min": 970,
+    "max": 1021
+   },
+   "mapFetched": {
+    "med": 1046.9,
+    "min": 997.9,
+    "max": 1080.5
+   },
+   "parseMs": {
+    "med": 2.5,
+    "min": 2.4,
+    "max": 3
+   },
+   "spawnMs": {
+    "med": 37,
+    "min": 26,
+    "max": 70.3
+   },
+   "simReady": {
+    "med": 1098.4,
+    "min": 1040.6,
+    "max": 1161.4
+   },
+   "glReadyMs": {
+    "med": 44.6,
+    "min": 39.2,
+    "max": 68.2
+   },
+   "firstFrame": {
+    "med": 1115.9,
+    "min": 1063.2,
+    "max": 1185.6
+   },
+   "presented": {
+    "med": 1126.4,
+    "min": 1075.8,
+    "max": 1189.2
+   },
+   "hudMounted": {
+    "med": 1133.6,
+    "min": 1081.7,
+    "max": 1190.9
+   },
+   "lazyLoaded": {
+    "med": 1414,
+    "min": 1367.8,
+    "max": 1474.2
+   },
+   "controlsMounted": {
+    "med": 1431.3,
+    "min": 1403.8,
+    "max": 1491.6
+   },
+   "chartMounted": {
+    "med": 1450.1,
+    "min": 1432,
+    "max": 1522.7
+   },
+   "interactive": {
+    "med": 1568.9,
+    "min": 1530.1,
+    "max": 1674
+   },
+   "initialKB": {
+    "med": 69.7,
+    "min": 69.7,
+    "max": 69.7
+   },
+   "totalKB": {
+    "med": 70.6,
+    "min": 70.6,
+    "max": 70.6
+   },
+   "longTaskMs": {
+    "med": 303,
+    "min": 218,
+    "max": 413
+   },
+   "longTasks": {
+    "med": 3,
+    "min": 2,
+    "max": 4
+   },
+   "v8CompileMs": {
+    "med": 0.2,
+    "min": 0.2,
+    "max": 1.1
+   },
+   "scriptMs": {
+    "med": 191.5,
+    "min": 176.7,
+    "max": 215.4
+   },
+   "taskMs": {
+    "med": 644.1,
+    "min": 600.9,
+    "max": 733.6
+   },
+   "heapMB": {
+    "med": 1.8,
+    "min": 1.8,
+    "max": 1.8
+   }
+  },
+  "loaf0": [
+   {
+    "start": 950,
+    "dur": 72,
+    "block": 22,
+    "render": 0,
+    "scripts": [
+     {
+      "inv": "http://127.0.0.1:8100/assets/index-COaumlqS.js",
+      "src": "index-COaumlqS.js",
+      "dur": 69,
+      "comp": 0
+     }
+    ]
+   },
+   {
+    "start": 809,
+    "dur": 54,
+    "block": 0,
+    "render": 1,
+    "scripts": []
+   }
+  ]
+ },
+ {
+  "variant": "early-mp",
+  "query": "",
+  "prof": "desktop",
+  "runs": 7,
+  "gateLoad": 1.48,
+  "summary": {
+   "load": {
+    "med": 1.5,
+    "min": 1.5,
+    "max": 1.5
+   },
+   "htmlEnd": {
+    "med": 5.5,
+    "min": 3.4,
+    "max": 7
+   },
+   "entryEnd": {
+    "med": 55.2,
+    "min": 52.3,
+    "max": 66.5
+   },
+   "mainEval": {
+    "med": 80.5,
+    "min": 64.1,
+    "max": 84.5
+   },
+   "workerNew": {
+    "med": 40.8,
+    "min": 36.5,
+    "max": 47.5
+   },
+   "workerJsEnd": {
+    "med": 65.1,
+    "min": 53.4,
+    "max": 67.4
+   },
+   "wEval": {
+    "med": 80.2,
+    "min": 67.1,
+    "max": 84.4
+   },
+   "mapEnd": {
+    "med": 67.7,
+    "min": 57.4,
+    "max": 70.1
+   },
+   "mapFetched": {
+    "med": 95.5,
+    "min": 91.4,
+    "max": 100.9
+   },
+   "parseMs": {
+    "med": 0.7,
+    "min": 0.6,
+    "max": 1.1
+   },
+   "spawnMs": {
+    "med": 6.6,
+    "min": 6,
+    "max": 11.6
+   },
+   "simReady": {
+    "med": 108,
+    "min": 102.9,
+    "max": 113.5
+   },
+   "glReadyMs": {
+    "med": 13.4,
+    "min": 12.9,
+    "max": 16.9
+   },
+   "firstFrame": {
+    "med": 111.1,
+    "min": 107.3,
+    "max": 117.3
+   },
+   "presented": {
+    "med": 124,
+    "min": 118,
+    "max": 130.4
+   },
+   "hudMounted": {
+    "med": 124.9,
+    "min": 119.2,
+    "max": 131.6
+   },
+   "lazyLoaded": {
+    "med": 162,
+    "min": 154.3,
+    "max": 167.9
+   },
+   "controlsMounted": {
+    "med": 165.2,
+    "min": 157.1,
+    "max": 171
+   },
+   "chartMounted": {
+    "med": 170,
+    "min": 161.8,
+    "max": 175.5
+   },
+   "interactive": {
+    "med": 195,
+    "min": 184.5,
+    "max": 204.3
+   },
+   "initialKB": {
+    "med": 69.7,
+    "min": 69.7,
+    "max": 69.7
+   },
+   "totalKB": {
+    "med": 70.6,
+    "min": 70.6,
+    "max": 70.6
+   },
+   "longTaskMs": {
+    "med": 0,
+    "min": 0,
+    "max": 0
+   },
+   "longTasks": {
+    "med": 0,
+    "min": 0,
+    "max": 0
+   },
+   "v8CompileMs": {
+    "med": 0.1,
+    "min": 0.1,
+    "max": 0.4
+   },
+   "scriptMs": {
+    "med": 48.8,
+    "min": 42.3,
+    "max": 55
+   },
+   "taskMs": {
+    "med": 146.2,
+    "min": 140.2,
+    "max": 157
+   },
+   "heapMB": {
+    "med": 1.8,
+    "min": 1.8,
+    "max": 1.8
+   }
+  },
+  "loaf0": []
+ }
+]

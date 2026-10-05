@@ -1,0 +1,197 @@
+boot
+served
+launched
+  start vanilla 1 0 0.1
+  micro done 0.6
+  load 0 vanilla 1 5.5s la 0.63
+  start vanilla 1 1 5.5
+  micro done 6.2
+  load 1 vanilla 1 11.0s la 0.58
+  start vanilla 1 2 11.1
+  micro done 11.6
+  load 2 vanilla 1 16.4s la 0.56
+  start vanilla 1 3 16.5
+  micro done 17.1
+  load 3 vanilla 1 21.9s la 0.68
+  start vanilla 1 4 22.0
+  micro done 22.5
+  load 4 vanilla 1 27.4s la 0.62
+vanilla@1x {"microMedian":0.96,"microMedianMin":0.95,"microMedianMax":1,"microP95":1.17,"scriptOnlyMedian":0.09,"scriptOnlyP95":0.14,"taskMs":4.16,"taskMin":4.03,"taskMax":4.51,"scriptMs":0.36,"layoutMs":1.28,"styleMs":0.16,"heapMB":4.59,"nodes":4623,"gate":0.68,"loads":[0.63,0.58,0.56,0.68,0.62],"sig":2170}
+  start vanilla 4 0 27.5
+  micro done 30.1
+  load 0 vanilla 4 34.9s la 0.65
+  start vanilla 4 1 35.0
+  micro done 37.8
+  load 1 vanilla 4 42.7s la 0.85
+  start vanilla 4 2 42.7
+  micro done 45.2
+  load 2 vanilla 4 50.0s la 0.95
+  start vanilla 4 3 50.1
+  micro done 52.4
+  load 3 vanilla 4 57.2s la 0.95
+  start vanilla 4 4 57.3
+  micro done 59.9
+  load 4 vanilla 4 64.8s la 0.96
+vanilla@4x {"microMedian":5.77,"microMedianMin":5.1,"microMedianMax":6.33,"microP95":8.61,"scriptOnlyMedian":0.67,"scriptOnlyP95":1.36,"taskMs":19.67,"taskMin":19.47,"taskMax":22.1,"scriptMs":1.66,"layoutMs":6.33,"styleMs":0.64,"heapMB":4.56,"nodes":3664,"gate":0.62,"loads":[0.65,0.85,0.95,0.95,0.96],"sig":null}
+  start lit 1 0 64.8
+  micro done 65.5
+  load 0 lit 1 70.3s la 0.88
+  start lit 1 1 70.4
+  micro done 71.0
+  load 1 lit 1 75.8s la 0.81
+  start lit 1 2 75.9
+  micro done 76.6
+  load 2 lit 1 81.4s la 0.83
+  start lit 1 3 81.5
+  micro done 82.2
+  load 3 lit 1 87.0s la 0.77
+  start lit 1 4 87.1
+  micro done 87.7
+  load 4 lit 1 92.5s la 1.19
+lit@1x {"microMedian":1.17,"microMedianMin":1.07,"microMedianMax":1.17,"microP95":1.76,"scriptOnlyMedian":0.2,"scriptOnlyP95":0.33,"taskMs":2.34,"taskMin":1.73,"taskMax":4.07,"scriptMs":0.06,"layoutMs":1.17,"styleMs":0.23,"heapMB":4.59,"nodes":2145,"gate":0.96,"loads":[0.88,0.81,0.83,0.77,1.19],"sig":2170}
+  start lit 4 0 92.6
+  micro done 95.6
+  load 0 lit 4 100.4s la 1.17
+  start lit 4 1 100.5
+  micro done 103.7
+  load 1 lit 4 108.5s la 1.06
+  start lit 4 2 108.6
+  micro done 111.8
+  load 2 lit 4 116.7s la 1.05
+  start lit 4 3 116.7
+  micro done 120.2
+  load 3 lit 4 125.0s la 1.21
+  start lit 4 4 125.1
+  micro done 128.2
+  load 4 lit 4 133.0s la 1.57
+lit@4x {"microMedian":7.25,"microMedianMin":6.79,"microMedianMax":7.42,"microP95":11.78,"scriptOnlyMedian":1.49,"scriptOnlyP95":2.6,"taskMs":13.5,"taskMin":10.39,"taskMax":22.67,"scriptMs":0.28,"layoutMs":5.99,"styleMs":1.1,"heapMB":4.59,"nodes":2008,"gate":1.19,"loads":[1.17,1.06,1.05,1.21,1.57],"sig":null}
+  start preact 1 0 133.1
+  micro done 133.8
+  load 0 preact 1 138.7s la 1.45
+  start preact 1 1 138.7
+  micro done 139.4
+  load 1 preact 1 144.3s la 1.33
+  start preact 1 2 144.3
+  micro done 145.0
+  load 2 preact 1 149.8s la 1.22
+  start preact 1 3 149.9
+  micro done 150.6
+  load 3 preact 1 155.5s la 1.12
+  start preact 1 4 155.5
+  micro done 156.3
+  load 4 preact 1 161.1s la 1.11
+preact@1x {"microMedian":1.17,"microMedianMin":1.13,"microMedianMax":1.29,"microP95":1.83,"scriptOnlyMedian":0.37,"scriptOnlyP95":0.65,"taskMs":3.88,"taskMin":2.79,"taskMax":4.87,"scriptMs":0.88,"layoutMs":1.08,"styleMs":0.14,"heapMB":6.82,"nodes":1206,"gate":1.57,"loads":[1.45,1.33,1.22,1.12,1.11],"sig":2170}
+  start preact 4 0 161.2
+  micro done 164.9
+  load 0 preact 4 169.8s la 1.1
+  start preact 4 1 169.8
+  micro done 173.6
+  load 1 preact 4 178.5s la 1.08
+  start preact 4 2 178.5
+  micro done 182.7
+  load 2 preact 4 187.5s la 1.54
+  start preact 4 3 187.6
+  micro done 191.3
+  load 3 preact 4 196.2s la 1.5
+  start preact 4 4 196.2
+  micro done 200.6
+  load 4 preact 4 205.4s la 1.5
+preact@4x {"microMedian":8.47,"microMedianMin":7.83,"microMedianMax":9.48,"microP95":13.77,"scriptOnlyMedian":2.79,"scriptOnlyP95":4.98,"taskMs":20.49,"taskMin":17.57,"taskMax":22.69,"scriptMs":4.33,"layoutMs":5.96,"styleMs":0.67,"heapMB":4.89,"nodes":1052,"gate":1.11,"loads":[1.1,1.08,1.54,1.5,1.5],"sig":null}
+  start solid 1 0 205.5
+  micro done 206.2
+  load 0 solid 1 211.1s la 1.38
+  start solid 1 1 211.1
+  micro done 211.7
+  load 1 solid 1 216.6s la 1.32
+  start solid 1 2 216.6
+  micro done 217.3
+  load 2 solid 1 222.1s la 1.29
+  start solid 1 3 222.2
+  micro done 222.8
+  load 3 solid 1 227.7s la 1.59
+  start solid 1 4 227.7
+  micro done 228.4
+  load 4 solid 1 233.2s la 1.46
+solid@1x {"microMedian":1.1,"microMedianMin":1.07,"microMedianMax":1.15,"microP95":1.78,"scriptOnlyMedian":0.21,"scriptOnlyP95":0.36,"taskMs":4.54,"taskMin":1.88,"taskMax":5.57,"scriptMs":0.65,"layoutMs":1.15,"styleMs":0.17,"heapMB":4.69,"nodes":786,"gate":1.5,"loads":[1.38,1.32,1.29,1.59,1.46],"sig":2170}
+  start solid 4 0 233.3
+  micro done 236.9
+  load 0 solid 4 241.8s la 1.71
+  start solid 4 1 241.8
+  micro done 245.1
+  load 1 solid 4 249.9s la 1.65
+  start solid 4 2 250.0
+  micro done 253.5
+  load 2 solid 4 258.4s la 1.79
+  start solid 4 3 258.4
+  micro done 262.3
+  load 3 solid 4 267.2s la 1.67
+  start solid 4 4 267.2
+  micro done 270.5
+  load 4 solid 4 275.3s la 1.62
+solid@4x {"microMedian":7.71,"microMedianMin":7.13,"microMedianMax":8.4,"microP95":12.16,"scriptOnlyMedian":1.76,"scriptOnlyP95":3.04,"taskMs":14.65,"taskMin":11.31,"taskMax":15.23,"scriptMs":2.88,"layoutMs":5.94,"styleMs":0.66,"heapMB":4.72,"nodes":1003,"gate":1.46,"loads":[1.71,1.65,1.79,1.67,1.62],"sig":null}
+  start svelte 1 0 275.4
+  micro done 276.1
+  load 0 svelte 1 280.9s la 1.49
+  start svelte 1 1 281.0
+  micro done 281.6
+  load 1 svelte 1 286.4s la 1.45
+  start svelte 1 2 286.5
+  micro done 287.2
+  load 2 svelte 1 292.0s la 1.62
+  start svelte 1 3 292.1
+  micro done 292.7
+  load 3 svelte 1 297.6s la 1.49
+  start svelte 1 4 297.6
+  micro done 298.3
+  load 4 svelte 1 303.2s la 1.37
+svelte@1x {"microMedian":1.13,"microMedianMin":1.06,"microMedianMax":1.17,"microP95":1.68,"scriptOnlyMedian":0.26,"scriptOnlyP95":0.42,"taskMs":4.72,"taskMin":4.26,"taskMax":5.3,"scriptMs":0.73,"layoutMs":1.16,"styleMs":0.16,"heapMB":5.74,"nodes":959,"gate":1.62,"loads":[1.49,1.45,1.62,1.49,1.37],"sig":2170}
+  start svelte 4 0 303.2
+  micro done 307.0
+  load 0 svelte 4 311.8s la 1.79
+  start svelte 4 1 311.9
+  micro done 315.2
+  load 1 svelte 4 320.0s la 1.72
+  start svelte 4 2 320.1
+  micro done 323.0
+  load 2 svelte 4 327.8s la 1.61
+  start svelte 4 3 327.8
+  micro done 330.9
+  load 3 svelte 4 335.8s la 1.56
+  start svelte 4 4 335.8
+  micro done 339.2
+  load 4 svelte 4 344.1s la 1.79
+svelte@4x {"microMedian":7.25,"microMedianMin":6.08,"microMedianMax":8.14,"microP95":10.46,"scriptOnlyMedian":1.89,"scriptOnlyP95":3.39,"taskMs":13.37,"taskMin":10.03,"taskMax":21.63,"scriptMs":3.32,"layoutMs":5.54,"styleMs":0.67,"heapMB":5.19,"nodes":973,"gate":1.37,"loads":[1.79,1.72,1.61,1.56,1.79],"sig":null}
+  start react 1 0 344.1
+  micro done 345.0
+  load 0 react 1 349.8s la 1.65
+  start react 1 1 349.9
+  micro done 350.7
+  load 1 react 1 355.5s la 1.52
+  start react 1 2 355.6
+  micro done 356.4
+  load 2 react 1 361.3s la 1.39
+  start react 1 3 361.3
+  micro done 362.2
+  load 3 react 1 367.0s la 1.88
+  start react 1 4 367.1
+  micro done 367.8
+  load 4 react 1 372.6s la 1.73
+react@1x {"microMedian":1.34,"microMedianMin":1.25,"microMedianMax":1.45,"microP95":2.21,"scriptOnlyMedian":0.42,"scriptOnlyP95":0.75,"taskMs":3.33,"taskMin":3.03,"taskMax":5.49,"scriptMs":1.17,"layoutMs":1.15,"styleMs":0.16,"heapMB":5.89,"nodes":864,"gate":1.79,"loads":[1.65,1.52,1.39,1.88,1.73],"sig":2170}
+  start react 4 0 372.7
+  micro done 376.6
+  load 0 react 4 381.4s la 2.15
+  start react 4 1 381.5
+  micro done 385.0
+  load 1 react 4 389.9s la 1.89
+  start react 4 2 390.0
+  micro done 393.8
+  load 2 react 4 398.6s la 1.75
+  start react 4 3 398.7
+  micro done 403.0
+  load 3 react 4 407.8s la 1.88
+  start react 4 4 407.9
+  micro done 412.0
+  load 4 react 4 416.8s la 1.74
+react@4x {"microMedian":8.23,"microMedianMin":8.02,"microMedianMax":9.53,"microP95":13.37,"scriptOnlyMedian":2.8,"scriptOnlyP95":4.71,"taskMs":16.23,"taskMin":13.35,"taskMax":25.6,"scriptMs":5.66,"layoutMs":5.91,"styleMs":0.77,"heapMB":5.93,"nodes":864,"gate":1.73,"loads":[2.15,1.89,1.75,1.88,1.74],"sig":null}
+distinct DOM signatures across frameworks: 1
+exit 0

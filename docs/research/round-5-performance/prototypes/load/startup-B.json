@@ -1,0 +1,1608 @@
+[
+ {
+  "variant": "early",
+  "query": "",
+  "prof": "fast4g-4x",
+  "runs": 7,
+  "gateLoad": 1.5,
+  "summary": {
+   "load": {
+    "med": 1.5,
+    "min": 1.5,
+    "max": 1.5
+   },
+   "htmlEnd": {
+    "med": 671.2,
+    "min": 669.8,
+    "max": 678.3
+   },
+   "entryEnd": {
+    "med": 906.1,
+    "min": 896.8,
+    "max": 912.2
+   },
+   "mainEval": {
+    "med": 919,
+    "min": 906.5,
+    "max": 931.9
+   },
+   "workerNew": {
+    "med": 758.6,
+    "min": 752.7,
+    "max": 770.8
+   },
+   "workerJsEnd": {
+    "med": 938.3,
+    "min": 932.4,
+    "max": 948.5
+   },
+   "wEval": {
+    "med": 984.7,
+    "min": 961.7,
+    "max": 1019.1
+   },
+   "mapEnd": {
+    "med": 974.2,
+    "min": 962.9,
+    "max": 979.7
+   },
+   "mapFetched": {
+    "med": 997.7,
+    "min": 988.8,
+    "max": 1038.4
+   },
+   "parseMs": {
+    "med": 2.6,
+    "min": 2.3,
+    "max": 3.4
+   },
+   "spawnMs": {
+    "med": 33.3,
+    "min": 28.6,
+    "max": 44.5
+   },
+   "simReady": {
+    "med": 1041.8,
+    "min": 1034.5,
+    "max": 1087.1
+   },
+   "glReadyMs": {
+    "med": 45.1,
+    "min": 38.1,
+    "max": 61.9
+   },
+   "firstFrame": {
+    "med": 1058.1,
+    "min": 1051.2,
+    "max": 1103.8
+   },
+   "presented": {
+    "med": 1067.5,
+    "min": 1057.5,
+    "max": 1105.7
+   },
+   "interactive": {
+    "med": 1548.5,
+    "min": 1509.1,
+    "max": 1582.5
+   },
+   "initialKB": {
+    "med": 42.7,
+    "min": 42.7,
+    "max": 42.7
+   },
+   "totalKB": {
+    "med": 70.5,
+    "min": 70.5,
+    "max": 70.5
+   },
+   "longTaskMs": {
+    "med": 294,
+    "min": 265,
+    "max": 348
+   },
+   "longTasks": {
+    "med": 3,
+    "min": 2,
+    "max": 3
+   },
+   "v8CompileMs": {
+    "med": 0.2,
+    "min": 0.2,
+    "max": 3.6
+   },
+   "scriptMs": {
+    "med": 200.6,
+    "min": 189.1,
+    "max": 223.3
+   },
+   "taskMs": {
+    "med": 613.1,
+    "min": 556.3,
+    "max": 663.2
+   },
+   "heapMB": {
+    "med": 1.8,
+    "min": 1.8,
+    "max": 2.4
+   }
+  },
+  "loaf0": [
+   {
+    "start": 923,
+    "dur": 73,
+    "block": 23,
+    "render": 0,
+    "scripts": [
+     {
+      "inv": "http://127.0.0.1:8100/assets/index-BxRnZbDl.js",
+      "src": "index-BxRnZbDl.js",
+      "dur": 71,
+      "comp": 0
+     }
+    ]
+   },
+   {
+    "start": 810,
+    "dur": 67,
+    "block": 0,
+    "render": 0,
+    "scripts": []
+   }
+  ]
+ },
+ {
+  "variant": "preload",
+  "query": "",
+  "prof": "fast4g-4x",
+  "runs": 7,
+  "gateLoad": 1.45,
+  "summary": {
+   "load": {
+    "med": 1.6,
+    "min": 1.5,
+    "max": 1.6
+   },
+   "htmlEnd": {
+    "med": 671.5,
+    "min": 668.8,
+    "max": 675.6
+   },
+   "entryEnd": {
+    "med": 900.8,
+    "min": 898,
+    "max": 920.4
+   },
+   "mainEval": {
+    "med": 921.7,
+    "min": 906.4,
+    "max": 939.1
+   },
+   "workerNew": {
+    "med": 923.3,
+    "min": 908.6,
+    "max": 942.2
+   },
+   "workerJsEnd": {
+    "med": 899.2,
+    "min": 893.1,
+    "max": 915.5
+   },
+   "wEval": {
+    "med": 983.6,
+    "min": 968.7,
+    "max": 1027.8
+   },
+   "mapEnd": {
+    "med": 1129.5,
+    "min": 1116.5,
+    "max": 1158.4
+   },
+   "mapFetched": {
+    "med": 1147.4,
+    "min": 1137.1,
+    "max": 1174.8
+   },
+   "parseMs": {
+    "med": 2.5,
+    "min": 2.2,
+    "max": 3.6
+   },
+   "spawnMs": {
+    "med": 39.3,
+    "min": 23.6,
+    "max": 66.2
+   },
+   "simReady": {
+    "med": 1195.4,
+    "min": 1177.1,
+    "max": 1241.3
+   },
+   "glReadyMs": {
+    "med": 46.8,
+    "min": 37.6,
+    "max": 69.7
+   },
+   "firstFrame": {
+    "med": 1209.9,
+    "min": 1193.6,
+    "max": 1262.1
+   },
+   "presented": {
+    "med": 1221.5,
+    "min": 1205.7,
+    "max": 1275.3
+   },
+   "interactive": {
+    "med": 1698.7,
+    "min": 1648.9,
+    "max": 1742.3
+   },
+   "initialKB": {
+    "med": 42.6,
+    "min": 42.6,
+    "max": 42.6
+   },
+   "totalKB": {
+    "med": 70.3,
+    "min": 70.3,
+    "max": 70.3
+   },
+   "longTaskMs": {
+    "med": 317,
+    "min": 280,
+    "max": 374
+   },
+   "longTasks": {
+    "med": 3,
+    "min": 3,
+    "max": 4
+   },
+   "v8CompileMs": {
+    "med": 0,
+    "min": 0,
+    "max": 0
+   },
+   "scriptMs": {
+    "med": 197.8,
+    "min": 188.7,
+    "max": 230.7
+   },
+   "taskMs": {
+    "med": 620.8,
+    "min": 553.1,
+    "max": 672.3
+   },
+   "heapMB": {
+    "med": 1.8,
+    "min": 1.8,
+    "max": 1.8
+   }
+  },
+  "loaf0": [
+   {
+    "start": 734,
+    "dur": 94,
+    "block": 0,
+    "render": 5,
+    "scripts": []
+   },
+   {
+    "start": 903,
+    "dur": 58,
+    "block": 8,
+    "render": 2,
+    "scripts": [
+     {
+      "inv": "http://127.0.0.1:8101/assets/index-BxRnZbDl.js",
+      "src": "index-BxRnZbDl.js",
+      "dur": 51,
+      "comp": 0
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "variant": "eager",
+  "query": "",
+  "prof": "fast4g-4x",
+  "runs": 7,
+  "gateLoad": 1.44,
+  "summary": {
+   "load": {
+    "med": 1.6,
+    "min": 1.4,
+    "max": 2
+   },
+   "htmlEnd": {
+    "med": 670.3,
+    "min": 669.6,
+    "max": 679.8
+   },
+   "entryEnd": {
+    "med": 945.5,
+    "min": 926.9,
+    "max": 956
+   },
+   "mainEval": {
+    "med": 1039.2,
+    "min": 1029,
+    "max": 1075.1
+   },
+   "workerNew": {
+    "med": 1042.6,
+    "min": 1033.5,
+    "max": 1077.6
+   },
+   "workerJsEnd": {
+    "med": 1225,
+    "min": 1204.7,
+    "max": 1261.7
+   },
+   "wEval": {
+    "med": 1234,
+    "min": 1220.5,
+    "max": 1270.9
+   },
+   "mapEnd": {
+    "med": 1272.3,
+    "min": 1264.6,
+    "max": 1314.6
+   },
+   "mapFetched": {
+    "med": 1299.3,
+    "min": 1283.1,
+    "max": 1331.1
+   },
+   "parseMs": {
+    "med": 3.6,
+    "min": 2.7,
+    "max": 4.3
+   },
+   "spawnMs": {
+    "med": 42.5,
+    "min": 22.3,
+    "max": 77.9
+   },
+   "simReady": {
+    "med": 1358.8,
+    "min": 1327.6,
+    "max": 1391.7
+   },
+   "glReadyMs": {
+    "med": 78.1,
+    "min": 55.6,
+    "max": 88.2
+   },
+   "firstFrame": {
+    "med": 1379,
+    "min": 1350.7,
+    "max": 1406.7
+   },
+   "presented": {
+    "med": 1383.3,
+    "min": 1355.8,
+    "max": 1407
+   },
+   "interactive": {
+    "med": 1544,
+    "min": 1525,
+    "max": 1605.7
+   },
+   "initialKB": {
+    "med": 70.1,
+    "min": 70.1,
+    "max": 70.1
+   },
+   "totalKB": {
+    "med": 70.1,
+    "min": 70.1,
+    "max": 70.1
+   },
+   "longTaskMs": {
+    "med": 347,
+    "min": 308,
+    "max": 382
+   },
+   "longTasks": {
+    "med": 2,
+    "min": 2,
+    "max": 2
+   },
+   "v8CompileMs": {
+    "med": 0,
+    "min": 0,
+    "max": 0
+   },
+   "scriptMs": {
+    "med": 199.3,
+    "min": 178.1,
+    "max": 230.2
+   },
+   "taskMs": {
+    "med": 600.3,
+    "min": 567.2,
+    "max": 654.6
+   },
+   "heapMB": {
+    "med": 1.8,
+    "min": 1.8,
+    "max": 2.4
+   }
+  },
+  "loaf0": [
+   {
+    "start": 776,
+    "dur": 160,
+    "block": 0,
+    "render": 7,
+    "scripts": []
+   },
+   {
+    "start": 956,
+    "dur": 155,
+    "block": 105,
+    "render": 0,
+    "scripts": [
+     {
+      "inv": "http://127.0.0.1:8102/assets/index-B_tk5znp.js",
+      "src": "index-B_tk5znp.js",
+      "dur": 152,
+      "comp": 0
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "variant": "split",
+  "query": "?map=json",
+  "prof": "fast4g-4x",
+  "runs": 7,
+  "gateLoad": 1.41,
+  "summary": {
+   "load": {
+    "med": 1.4,
+    "min": 1.4,
+    "max": 1.6
+   },
+   "htmlEnd": {
+    "med": 669.5,
+    "min": 667.8,
+    "max": 672
+   },
+   "entryEnd": {
+    "med": 891.8,
+    "min": 883.4,
+    "max": 899.1
+   },
+   "mainEval": {
+    "med": 903.9,
+    "min": 895.4,
+    "max": 912
+   },
+   "workerNew": {
+    "med": 905.8,
+    "min": 898.9,
+    "max": 915.2
+   },
+   "workerJsEnd": {
+    "med": 1079.9,
+    "min": 1072.9,
+    "max": 1089
+   },
+   "wEval": {
+    "med": 1090.5,
+    "min": 1081.6,
+    "max": 1100.3
+   },
+   "mapEnd": {
+    "med": 1362.9,
+    "min": 1350.9,
+    "max": 1372.6
+   },
+   "mapFetched": {
+    "med": 1491.8,
+    "min": 1477.3,
+    "max": 1519.3
+   },
+   "parseMs": {
+    "med": 366.9,
+    "min": 335.6,
+    "max": 413.4
+   },
+   "spawnMs": {
+    "med": 22.4,
+    "min": 21,
+    "max": 29
+   },
+   "simReady": {
+    "med": 1913.2,
+    "min": 1861.3,
+    "max": 1932.4
+   },
+   "glReadyMs": {
+    "med": 51.7,
+    "min": 43.3,
+    "max": 57.6
+   },
+   "firstFrame": {
+    "med": 1926.5,
+    "min": 1875.4,
+    "max": 1947.8
+   },
+   "presented": {
+    "med": 1932.9,
+    "min": 1879.6,
+    "max": 1956.8
+   },
+   "interactive": {
+    "med": 2380.3,
+    "min": 2329,
+    "max": 2446.1
+   },
+   "initialKB": {
+    "med": 275,
+    "min": 275,
+    "max": 275
+   },
+   "totalKB": {
+    "med": 302.8,
+    "min": 302.8,
+    "max": 302.8
+   },
+   "longTaskMs": {
+    "med": 344,
+    "min": 281,
+    "max": 349
+   },
+   "longTasks": {
+    "med": 3,
+    "min": 3,
+    "max": 4
+   },
+   "v8CompileMs": {
+    "med": 0,
+    "min": 0,
+    "max": 0
+   },
+   "scriptMs": {
+    "med": 195.9,
+    "min": 183.8,
+    "max": 209.9
+   },
+   "taskMs": {
+    "med": 833.5,
+    "min": 788.8,
+    "max": 862.8
+   },
+   "heapMB": {
+    "med": 1.8,
+    "min": 1.8,
+    "max": 1.8
+   }
+  },
+  "loaf0": [
+   {
+    "start": 1368,
+    "dur": 122,
+    "block": 72,
+    "render": 0,
+    "scripts": []
+   },
+   {
+    "start": 734,
+    "dur": 91,
+    "block": 0,
+    "render": 1,
+    "scripts": []
+   },
+   {
+    "start": 899,
+    "dur": 55,
+    "block": 5,
+    "render": 1,
+    "scripts": [
+     {
+      "inv": "http://127.0.0.1:8103/assets/index-BxRnZbDl.js",
+      "src": "index-BxRnZbDl.js",
+      "dur": 50,
+      "comp": 0
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "variant": "split",
+  "query": "?skin=town",
+  "prof": "fast4g-4x",
+  "runs": 7,
+  "gateLoad": 1.42,
+  "summary": {
+   "load": {
+    "med": 2.4,
+    "min": 1.4,
+    "max": 2.6
+   },
+   "htmlEnd": {
+    "med": 669.1,
+    "min": 667.6,
+    "max": 670.9
+   },
+   "entryEnd": {
+    "med": 891.6,
+    "min": 884.2,
+    "max": 897.5
+   },
+   "mainEval": {
+    "med": 901.4,
+    "min": 896,
+    "max": 913.6
+   },
+   "workerNew": {
+    "med": 903.6,
+    "min": 897.9,
+    "max": 916.8
+   },
+   "workerJsEnd": {
+    "med": 1076.5,
+    "min": 1071.4,
+    "max": 1091.1
+   },
+   "wEval": {
+    "med": 1087.4,
+    "min": 1080.8,
+    "max": 1105.6
+   },
+   "mapEnd": {
+    "med": 1111.2,
+    "min": 1106.2,
+    "max": 1125
+   },
+   "mapFetched": {
+    "med": 1129.4,
+    "min": 1121.8,
+    "max": 1149.9
+   },
+   "parseMs": {
+    "med": 2.5,
+    "min": 2.2,
+    "max": 3.1
+   },
+   "spawnMs": {
+    "med": 37.7,
+    "min": 31.3,
+    "max": 43
+   },
+   "simReady": {
+    "med": 1176.6,
+    "min": 1164.6,
+    "max": 1195.9
+   },
+   "glReadyMs": {
+    "med": 47.4,
+    "min": 42.2,
+    "max": 56.9
+   },
+   "atlasFetched": {
+    "med": 1794,
+    "min": 1792.4,
+    "max": 1815
+   },
+   "atlasDecodeMs": {
+    "med": 153.3,
+    "min": 143.3,
+    "max": 166.8
+   },
+   "atlasUploadMs": {
+    "med": 172.1,
+    "min": 163.6,
+    "max": 181.7
+   },
+   "firstFrame": {
+    "med": 2183.1,
+    "min": 2174,
+    "max": 2217.6
+   },
+   "presented": {
+    "med": 2192.6,
+    "min": 2177.6,
+    "max": 2220.4
+   },
+   "interactive": {
+    "med": 2621.2,
+    "min": 2613.7,
+    "max": 2669.8
+   },
+   "initialKB": {
+    "med": 505.5,
+    "min": 505.5,
+    "max": 505.5
+   },
+   "totalKB": {
+    "med": 533.3,
+    "min": 533.3,
+    "max": 533.3
+   },
+   "longTaskMs": {
+    "med": 277,
+    "min": 237,
+    "max": 321
+   },
+   "longTasks": {
+    "med": 3,
+    "min": 3,
+    "max": 3
+   },
+   "v8CompileMs": {
+    "med": 0,
+    "min": 0,
+    "max": 0
+   },
+   "scriptMs": {
+    "med": 192.8,
+    "min": 167.2,
+    "max": 226
+   },
+   "taskMs": {
+    "med": 928.9,
+    "min": 900.8,
+    "max": 998.3
+   },
+   "heapMB": {
+    "med": 1.9,
+    "min": 1.9,
+    "max": 2.1
+   }
+  },
+  "loaf0": [
+   {
+    "start": 1857,
+    "dur": 324,
+    "block": 272,
+    "render": 2,
+    "scripts": [
+     {
+      "inv": "Promise.resolve",
+      "src": "town-CsYUtrnF.js",
+      "dur": 233,
+      "comp": 0
+     }
+    ]
+   },
+   {
+    "start": 731,
+    "dur": 74,
+    "block": 0,
+    "render": 4,
+    "scripts": []
+   },
+   {
+    "start": 893,
+    "dur": 56,
+    "block": 5,
+    "render": 1,
+    "scripts": [
+     {
+      "inv": "http://127.0.0.1:8103/assets/index-BxRnZbDl.js",
+      "src": "index-BxRnZbDl.js",
+      "dur": 52,
+      "comp": 0
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "variant": "split",
+  "query": "?skin=town&atlas=webp",
+  "prof": "fast4g-4x",
+  "runs": 7,
+  "gateLoad": 1.44,
+  "summary": {
+   "load": {
+    "med": 3.2,
+    "min": 1.4,
+    "max": 3.5
+   },
+   "htmlEnd": {
+    "med": 668.5,
+    "min": 668.1,
+    "max": 670.8
+   },
+   "entryEnd": {
+    "med": 889.9,
+    "min": 885.1,
+    "max": 914.6
+   },
+   "mainEval": {
+    "med": 898.5,
+    "min": 892,
+    "max": 931
+   },
+   "workerNew": {
+    "med": 899.8,
+    "min": 894,
+    "max": 935.3
+   },
+   "workerJsEnd": {
+    "med": 1073.5,
+    "min": 1067.3,
+    "max": 1107.6
+   },
+   "wEval": {
+    "med": 1086.9,
+    "min": 1076.8,
+    "max": 1120
+   },
+   "mapEnd": {
+    "med": 1107.3,
+    "min": 1102.5,
+    "max": 1151.6
+   },
+   "mapFetched": {
+    "med": 1130.1,
+    "min": 1118.1,
+    "max": 1169
+   },
+   "parseMs": {
+    "med": 2.8,
+    "min": 2.3,
+    "max": 6.3
+   },
+   "spawnMs": {
+    "med": 29.8,
+    "min": 22.8,
+    "max": 81
+   },
+   "simReady": {
+    "med": 1165.2,
+    "min": 1153.6,
+    "max": 1265.5
+   },
+   "glReadyMs": {
+    "med": 43.5,
+    "min": 39.4,
+    "max": 57.9
+   },
+   "atlasFetched": {
+    "med": 1608,
+    "min": 1592.9,
+    "max": 1655
+   },
+   "atlasDecodeMs": {
+    "med": 144.9,
+    "min": 110.7,
+    "max": 179.1
+   },
+   "atlasUploadMs": {
+    "med": 172.4,
+    "min": 165.9,
+    "max": 190.3
+   },
+   "firstFrame": {
+    "med": 1999.3,
+    "min": 1960.1,
+    "max": 2027.9
+   },
+   "presented": {
+    "med": 2005.9,
+    "min": 1973,
+    "max": 2032
+   },
+   "interactive": {
+    "med": 2448.5,
+    "min": 2402.1,
+    "max": 2531.5
+   },
+   "initialKB": {
+    "med": 329,
+    "min": 329,
+    "max": 329
+   },
+   "totalKB": {
+    "med": 356.8,
+    "min": 356.8,
+    "max": 356.8
+   },
+   "longTaskMs": {
+    "med": 282,
+    "min": 270,
+    "max": 329
+   },
+   "longTasks": {
+    "med": 3,
+    "min": 3,
+    "max": 4
+   },
+   "v8CompileMs": {
+    "med": 0,
+    "min": 0,
+    "max": 0
+   },
+   "scriptMs": {
+    "med": 199.5,
+    "min": 181.4,
+    "max": 230.3
+   },
+   "taskMs": {
+    "med": 945.7,
+    "min": 889.5,
+    "max": 1008.1
+   },
+   "heapMB": {
+    "med": 1.9,
+    "min": 1.9,
+    "max": 1.9
+   }
+  },
+  "loaf0": [
+   {
+    "start": 1708,
+    "dur": 320,
+    "block": 269,
+    "render": 2,
+    "scripts": [
+     {
+      "inv": "Promise.resolve",
+      "src": "town-CsYUtrnF.js",
+      "dur": 229,
+      "comp": 0
+     }
+    ]
+   },
+   {
+    "start": 925,
+    "dur": 69,
+    "block": 19,
+    "render": 0,
+    "scripts": [
+     {
+      "inv": "http://127.0.0.1:8103/assets/index-BxRnZbDl.js",
+      "src": "index-BxRnZbDl.js",
+      "dur": 67,
+      "comp": 0
+     }
+    ]
+   },
+   {
+    "start": 793,
+    "dur": 57,
+    "block": 0,
+    "render": 0,
+    "scripts": []
+   }
+  ]
+ },
+ {
+  "variant": "split",
+  "query": "?n=25000",
+  "prof": "fast4g-4x",
+  "runs": 7,
+  "gateLoad": 1.42,
+  "summary": {
+   "load": {
+    "med": 1.5,
+    "min": 1.4,
+    "max": 1.6
+   },
+   "htmlEnd": {
+    "med": 668.8,
+    "min": 667.8,
+    "max": 670.5
+   },
+   "entryEnd": {
+    "med": 891.6,
+    "min": 883.9,
+    "max": 915.6
+   },
+   "mainEval": {
+    "med": 906.9,
+    "min": 895.5,
+    "max": 924.2
+   },
+   "workerNew": {
+    "med": 909.9,
+    "min": 896.9,
+    "max": 926.5
+   },
+   "workerJsEnd": {
+    "med": 1084.2,
+    "min": 1070.2,
+    "max": 1104.4
+   },
+   "wEval": {
+    "med": 1093.6,
+    "min": 1084,
+    "max": 1112.6
+   },
+   "mapEnd": {
+    "med": 1119.4,
+    "min": 1105.1,
+    "max": 1136.6
+   },
+   "mapFetched": {
+    "med": 1143.6,
+    "min": 1124,
+    "max": 1153.3
+   },
+   "parseMs": {
+    "med": 2.6,
+    "min": 2.3,
+    "max": 3.3
+   },
+   "spawnMs": {
+    "med": 52.7,
+    "min": 40.5,
+    "max": 74.4
+   },
+   "simReady": {
+    "med": 1205.2,
+    "min": 1192.3,
+    "max": 1218.9
+   },
+   "glReadyMs": {
+    "med": 50.9,
+    "min": 42.9,
+    "max": 62.3
+   },
+   "firstFrame": {
+    "med": 1223.4,
+    "min": 1215.5,
+    "max": 1237
+   },
+   "presented": {
+    "med": 1228.5,
+    "min": 1219.2,
+    "max": 1249.1
+   },
+   "interactive": {
+    "med": 1708.7,
+    "min": 1662.5,
+    "max": 1723.4
+   },
+   "initialKB": {
+    "med": 42.5,
+    "min": 42.5,
+    "max": 42.5
+   },
+   "totalKB": {
+    "med": 70.3,
+    "min": 70.3,
+    "max": 70.3
+   },
+   "longTaskMs": {
+    "med": 351,
+    "min": 277,
+    "max": 392
+   },
+   "longTasks": {
+    "med": 4,
+    "min": 3,
+    "max": 4
+   },
+   "v8CompileMs": {
+    "med": 0,
+    "min": 0,
+    "max": 0
+   },
+   "scriptMs": {
+    "med": 196.9,
+    "min": 173.9,
+    "max": 228
+   },
+   "taskMs": {
+    "med": 639.4,
+    "min": 563.9,
+    "max": 677
+   },
+   "heapMB": {
+    "med": 1.8,
+    "min": 1.8,
+    "max": 2.4
+   }
+  },
+  "loaf0": [
+   {
+    "start": 745,
+    "dur": 88,
+    "block": 0,
+    "render": 4,
+    "scripts": []
+   },
+   {
+    "start": 899,
+    "dur": 70,
+    "block": 20,
+    "render": 0,
+    "scripts": [
+     {
+      "inv": "http://127.0.0.1:8103/assets/index-BxRnZbDl.js",
+      "src": "index-BxRnZbDl.js",
+      "dur": 66,
+      "comp": 0
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "variant": "split",
+  "query": "?n=100000",
+  "prof": "fast4g-4x",
+  "runs": 7,
+  "gateLoad": 1.49,
+  "summary": {
+   "load": {
+    "med": 1.5,
+    "min": 1.5,
+    "max": 1.7
+   },
+   "htmlEnd": {
+    "med": 669.1,
+    "min": 667.5,
+    "max": 669.6
+   },
+   "entryEnd": {
+    "med": 890.5,
+    "min": 885.9,
+    "max": 902.6
+   },
+   "mainEval": {
+    "med": 903.6,
+    "min": 895,
+    "max": 910.2
+   },
+   "workerNew": {
+    "med": 905.8,
+    "min": 898,
+    "max": 911.2
+   },
+   "workerJsEnd": {
+    "med": 1080.6,
+    "min": 1070.5,
+    "max": 1086.1
+   },
+   "wEval": {
+    "med": 1087.3,
+    "min": 1080.9,
+    "max": 1095
+   },
+   "mapEnd": {
+    "med": 1114.9,
+    "min": 1106.4,
+    "max": 1120.4
+   },
+   "mapFetched": {
+    "med": 1131.3,
+    "min": 1123.1,
+    "max": 1137.7
+   },
+   "parseMs": {
+    "med": 2.6,
+    "min": 2.3,
+    "max": 5.1
+   },
+   "spawnMs": {
+    "med": 113.7,
+    "min": 101.8,
+    "max": 120
+   },
+   "simReady": {
+    "med": 1249.8,
+    "min": 1240.1,
+    "max": 1270.7
+   },
+   "glReadyMs": {
+    "med": 44.2,
+    "min": 34.8,
+    "max": 48.4
+   },
+   "firstFrame": {
+    "med": 1295.4,
+    "min": 1273.2,
+    "max": 1305.7
+   },
+   "presented": {
+    "med": 1299.6,
+    "min": 1286.5,
+    "max": 1313.7
+   },
+   "interactive": {
+    "med": 1735.5,
+    "min": 1715.2,
+    "max": 1826.9
+   },
+   "initialKB": {
+    "med": 42.5,
+    "min": 42.5,
+    "max": 42.5
+   },
+   "totalKB": {
+    "med": 70.3,
+    "min": 70.3,
+    "max": 70.3
+   },
+   "longTaskMs": {
+    "med": 277,
+    "min": 262,
+    "max": 328
+   },
+   "longTasks": {
+    "med": 3,
+    "min": 2,
+    "max": 4
+   },
+   "v8CompileMs": {
+    "med": 0,
+    "min": 0,
+    "max": 0
+   },
+   "scriptMs": {
+    "med": 186.5,
+    "min": 174.2,
+    "max": 218.3
+   },
+   "taskMs": {
+    "med": 572,
+    "min": 559.2,
+    "max": 648.4
+   },
+   "heapMB": {
+    "med": 1.8,
+    "min": 1.8,
+    "max": 2.4
+   }
+  },
+  "loaf0": [
+   {
+    "start": 757,
+    "dur": 84,
+    "block": 0,
+    "render": 1,
+    "scripts": []
+   },
+   {
+    "start": 1297,
+    "dur": 62,
+    "block": 1,
+    "render": 48,
+    "scripts": [
+     {
+      "inv": "FrameRequestCallback",
+      "src": "index-BxRnZbDl.js",
+      "dur": 18,
+      "comp": 0
+     }
+    ]
+   },
+   {
+    "start": 906,
+    "dur": 53,
+    "block": 2,
+    "render": 1,
+    "scripts": [
+     {
+      "inv": "http://127.0.0.1:8103/assets/index-BxRnZbDl.js",
+      "src": "index-BxRnZbDl.js",
+      "dur": 48,
+      "comp": 0
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "variant": "early",
+  "query": "",
+  "prof": "slow4g-4x",
+  "runs": 7,
+  "gateLoad": 1.46,
+  "summary": {
+   "load": {
+    "med": 1.4,
+    "min": 1.4,
+    "max": 1.6
+   },
+   "htmlEnd": {
+    "med": 2259.5,
+    "min": 2258.8,
+    "max": 2260.5
+   },
+   "entryEnd": {
+    "med": 2914.6,
+    "min": 2909,
+    "max": 2923.8
+   },
+   "mainEval": {
+    "med": 2924.9,
+    "min": 2916.4,
+    "max": 2944.9
+   },
+   "workerNew": {
+    "med": 2337.6,
+    "min": 2331.7,
+    "max": 2348.9
+   },
+   "workerJsEnd": {
+    "med": 2940.7,
+    "min": 2935.9,
+    "max": 2954.8
+   },
+   "wEval": {
+    "med": 2946,
+    "min": 2938.9,
+    "max": 2987.4
+   },
+   "mapEnd": {
+    "med": 3116.1,
+    "min": 3109.3,
+    "max": 3122.7
+   },
+   "mapFetched": {
+    "med": 3134.3,
+    "min": 3128.2,
+    "max": 3145.6
+   },
+   "parseMs": {
+    "med": 2.7,
+    "min": 2.2,
+    "max": 3.2
+   },
+   "spawnMs": {
+    "med": 27.5,
+    "min": 24.8,
+    "max": 50
+   },
+   "simReady": {
+    "med": 3176.8,
+    "min": 3164.9,
+    "max": 3202.1
+   },
+   "glReadyMs": {
+    "med": 38.7,
+    "min": 34.6,
+    "max": 44.9
+   },
+   "firstFrame": {
+    "med": 3192.4,
+    "min": 3181.9,
+    "max": 3221.2
+   },
+   "presented": {
+    "med": 3199.1,
+    "min": 3187,
+    "max": 3232.2
+   },
+   "interactive": {
+    "med": 4193.6,
+    "min": 4135.3,
+    "max": 4231.5
+   },
+   "initialKB": {
+    "med": 42.7,
+    "min": 42.7,
+    "max": 42.7
+   },
+   "totalKB": {
+    "med": 70.5,
+    "min": 70.5,
+    "max": 70.5
+   },
+   "longTaskMs": {
+    "med": 265,
+    "min": 211,
+    "max": 346
+   },
+   "longTasks": {
+    "med": 2,
+    "min": 2,
+    "max": 4
+   },
+   "v8CompileMs": {
+    "med": 0.9,
+    "min": 0.2,
+    "max": 1.2
+   },
+   "scriptMs": {
+    "med": 191.2,
+    "min": 174.2,
+    "max": 247.8
+   },
+   "taskMs": {
+    "med": 609.3,
+    "min": 578,
+    "max": 696.2
+   },
+   "heapMB": {
+    "med": 1.8,
+    "min": 1.8,
+    "max": 2.4
+   }
+  },
+  "loaf0": [
+   {
+    "start": 2332,
+    "dur": 100,
+    "block": 0,
+    "render": 8,
+    "scripts": [
+     {
+      "inv": "http://127.0.0.1:8100/index.html?wslow=4",
+      "src": "index.html?wslow=4",
+      "dur": 5,
+      "comp": 0
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "variant": "early",
+  "query": "",
+  "prof": "fast4g-6x",
+  "runs": 7,
+  "gateLoad": 1.43,
+  "summary": {
+   "load": {
+    "med": 1.5,
+    "min": 1.4,
+    "max": 1.5
+   },
+   "htmlEnd": {
+    "med": 669.7,
+    "min": 668.6,
+    "max": 670.9
+   },
+   "entryEnd": {
+    "med": 908.8,
+    "min": 890,
+    "max": 921.7
+   },
+   "mainEval": {
+    "med": 939.5,
+    "min": 909.1,
+    "max": 1040.2
+   },
+   "workerNew": {
+    "med": 782.1,
+    "min": 759.1,
+    "max": 803.3
+   },
+   "workerJsEnd": {
+    "med": 949.3,
+    "min": 934.5,
+    "max": 981.6
+   },
+   "wEval": {
+    "med": 1015.7,
+    "min": 991.7,
+    "max": 1055.4
+   },
+   "mapEnd": {
+    "med": 984.8,
+    "min": 966.9,
+    "max": 1015.9
+   },
+   "mapFetched": {
+    "med": 1053.3,
+    "min": 1025.1,
+    "max": 1105.7
+   },
+   "parseMs": {
+    "med": 3.8,
+    "min": 3.3,
+    "max": 4.6
+   },
+   "spawnMs": {
+    "med": 42,
+    "min": 35.3,
+    "max": 104.8
+   },
+   "simReady": {
+    "med": 1116,
+    "min": 1084.9,
+    "max": 1159
+   },
+   "glReadyMs": {
+    "med": 54.9,
+    "min": 52.3,
+    "max": 71.6
+   },
+   "firstFrame": {
+    "med": 1143.6,
+    "min": 1112.4,
+    "max": 1181.6
+   },
+   "presented": {
+    "med": 1162.3,
+    "min": 1130.1,
+    "max": 1190
+   },
+   "interactive": {
+    "med": 1765.9,
+    "min": 1668.7,
+    "max": 1813.5
+   },
+   "initialKB": {
+    "med": 42.7,
+    "min": 42.7,
+    "max": 42.7
+   },
+   "totalKB": {
+    "med": 70.5,
+    "min": 70.5,
+    "max": 70.5
+   },
+   "longTaskMs": {
+    "med": 537,
+    "min": 386,
+    "max": 577
+   },
+   "longTasks": {
+    "med": 4,
+    "min": 3,
+    "max": 4
+   },
+   "v8CompileMs": {
+    "med": 1.2,
+    "min": 0.2,
+    "max": 6.3
+   },
+   "scriptMs": {
+    "med": 302.7,
+    "min": 213.6,
+    "max": 335.9
+   },
+   "taskMs": {
+    "med": 926,
+    "min": 792.4,
+    "max": 1004.4
+   },
+   "heapMB": {
+    "med": 1.8,
+    "min": 1.8,
+    "max": 2.4
+   }
+  },
+  "loaf0": [
+   {
+    "start": 929,
+    "dur": 97,
+    "block": 46,
+    "render": 1,
+    "scripts": [
+     {
+      "inv": "http://127.0.0.1:8100/assets/index-BxRnZbDl.js",
+      "src": "index-BxRnZbDl.js",
+      "dur": 81,
+      "comp": 0
+     }
+    ]
+   },
+   {
+    "start": 808,
+    "dur": 93,
+    "block": 0,
+    "render": 2,
+    "scripts": []
+   },
+   {
+    "start": 1170,
+    "dur": 64,
+    "block": 15,
+    "render": 64,
+    "scripts": [
+     {
+      "inv": "FrameRequestCallback",
+      "src": "index-BxRnZbDl.js",
+      "dur": 19,
+      "comp": 0
+     }
+    ]
+   }
+  ]
+ }
+]
