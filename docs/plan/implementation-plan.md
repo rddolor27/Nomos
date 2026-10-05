@@ -76,6 +76,36 @@ Budgets are in reference-machine (RM) milliseconds: a 4-vCPU Xeon cloud VM whose
 - [ ] **Determinism:** golden state hashes for fixed seeds match across Node (V8), Bun (JavaScriptCore, a Safari proxy) and Chromium, and between JS and WASM for integer systems, tested on full-mantissa data (R5).
 - [ ] **Ledger and size:** total cents match exactly every tick, and the WASM core stays under 64 KB gzip (R5).
 
+**Load, download and memory**
+
+A cold first visit should draw its first frame within 1.5 s and be interactive within 2.0 s on a mid-tier phone over Fast 4G. A stand-in build measured 1.06–1.21 s and 1.55–1.66 s. Network round trips took most of that time, and all CPU stages together took under 0.15 s, so this budget is about bytes and request order.
+
+| Budget | Limit | Measured, stand-in build |
+| --- | --- | --- |
+| Bytes before the first frame (HTML, initial JS, map; brotli) | ≤ 100 KB, of which JS ≤ 35 KB | 42.5 KB |
+| First frame, cold Fast 4G with mid-tier phone CPU | ≤ 1.5 s | 1.06–1.21 s |
+| Interactive | ≤ 2.0 s | 1.55–1.66 s |
+| Repeat visit with a service worker, first frame | ≤ 0.6 s | 0.36–0.39 s |
+| Everything, including the town atlas | ≤ 450 KB | ≈ 363 KB |
+| App memory at 10k / 25k / 100k agents | ≤ 64 / 72 / 160 MB, plus any WASM reservation | 12.3 MB at 10k and 17.0 MB at 100k, plus a 16 MiB atlas |
+| Main-thread draw per frame, dots at 10k | median ≤ 1 ms, p95 ≤ 4 ms | 0.17 / 1.99 ms at 4× CPU |
+
+- **Load order:** the first frame needs only the dots skin, the HUD and the sim worker (about 8 KB of JS) plus a 33 KB binary map. An inline `<head>` script should start the worker and the map fetch, which brought the first frame from 1.21 s to 1.06 s. uPlot and lil-gui load after the first frame and the town atlas in idle time; country mode, the inspector and WebGPU load on demand. The atlas or raw LDtk JSON on the critical path each added 0.7–1.0 s.
+- **Maps:** convert LDtk JSON to a compact binary at build time: 33 KB against 271 KB, parsed in 0.4 ms against 58 ms. Serve it with a compressible content type, because Cloudflare does not compress `application/octet-stream`.
+- **Images:** the atlas ships as lossless WebP, 285 KB against 461 KB for the best PNG, with similar decode time. Keep an oxipng PNG fallback, never use lossless AVIF (2.9× larger, 5× slower to decode), and ship pixel art at native resolution so the GPU does the scaling.
+- **UI framework:** at 4–10 updates a second every framework took 1.0–1.3 ms per update, mostly style and layout, so bytes decide. Use Solid (5.9 KB for the test app), or Preact with signals (8.6 KB) for React familiarity, and vanilla TypeScript for the always-visible HUD. Avoid React, whose 59.5 KB is about seven times the initial JS.
+- **Hosting:** static files on Cloudflare Pages or Netlify, with `Cache-Control: public, max-age=31536000, immutable` on hashed `/assets/*` through `_headers`, and COOP/COEP headers so workers can share memory. A hand-written service worker of 0.5 KB made repeat visits start in 0.36–0.39 s and work offline, as well as Workbox did at 5.2 KB.
+- **Memory:** the app's own memory is small; the risks are high-density canvases (about 24 MB at a device pixel ratio of 3), the 16 MiB atlas and the WASM reservation. Keep a whole iOS tab well under about 300 MB.
+
+**Load CI gates**
+
+- [ ] **Bytes:** size-limit with brotli on every chunk, failing on any overrun: initial JS ≤ 12 KB for the stand-in and ≤ 35 KB in production, town map ≤ 40 KB, atlas ≤ 300 KB (R5).
+- [ ] **Startup:** a Playwright benchmark of 7 cold loads on throttled Fast 4G, with the CPU calibrated to a mid-tier phone (Lighthouse BenchmarkIndex ≈ 375). It fails when the median exceeds the budget, or regresses by more than 15% and 20 ms against `main`. Chrome's CPU throttling skips workers, so the worker gets a matching busy-wait (R5).
+- [ ] **Memory and frames:** `measureUserAgentSpecificMemory` in full Chromium against the tier budgets, with growth of at most 2 MB over 60 s, plus frame-time regression checks; there is no absolute frame-rate gate under software WebGL (R5).
+- [ ] **Lighthouse CI (optional):** gate the first-frame and interactive user timings; it cannot throttle the worker (R5).
+
+All of these timings come from a stand-in app in headless Chromium with software WebGL, on a shared 4-vCPU machine with phone CPU emulated. Re-baseline them once the real sim and renderer exist, and check one mid-range Android phone and one 3–4 GB iPhone.
+
 ## M0 Pipeline
 
 Goal: a deterministic core, the worker loop and the renderer contract, drawing Skin A dots. Effort: about 1 week, plus 4–6 days for the visual layer. R1, R2 and R3 mark the round each item comes from.
@@ -104,7 +134,10 @@ Goal: a deterministic core, the worker loop and the renderer contract, drawing S
 - [ ] Add a plan-then-apply helper for flows between entities, with a metamorphic test that shuffles iteration order, and extend the `Math` lint to world-generation and map code (R4).
 - [ ] Allocate sim state as SoA typed arrays in one `WebAssembly.Memory` reserved at start for the device tier (32 MB on phones, 64–128 MB on desktops) and never grown; JS systems use views created once (R5).
 - [ ] Store replay-relevant positions as Q8 or Q16 fixed-point Int32 with power-of-two grid cells, keep money as integer-valued `Float64Array` cents, and keep `BigInt` out of hot code (R5).
-- [ ] Set up the five performance CI gates from the Performance budget section, recording `/proc/loadavg` beside every timing (R5).
+- [ ] Set up the compute and load CI gates from the Performance budget section, recording `/proc/loadavg` beside every timing (R5).
+- [ ] Start the sim worker and the map fetch from an inline `<head>` script, and load uPlot and lil-gui only after the first frame (R5).
+- [ ] Convert `town.ldtk` at build time into a compact binary map, served with a compressible content type (R5).
+- [ ] Build the HUD in vanilla TypeScript and any richer UI (inspector, event log) in Solid, or Preact with signals; never React (R5).
 
 **Exit checks**
 
@@ -114,7 +147,7 @@ Goal: a deterministic core, the worker loop and the renderer contract, drawing S
 - [ ] CI passes context-loss recovery, pause on hide, outline contrast of at least 3:1, role colour difference of at least ΔE 20 under three simulated colour-blindness types, a name lint rejecting "pokemon" and "poké", and a library budget of about 45 KB gzip (R2, R3).
 - [ ] The same (seed, entity, tick, stream) gives the same draw in any visiting order, and a 16-bucket χ² test over a million entities passes (R4).
 - [ ] Apportionment sums exactly and matches a BigInt reference over 10,000 random cases, including totals above 2^53 ÷ 4,095; logging a focus change that touches nothing leaves the replay hash unchanged (R4).
-- [ ] The budget, allocation, lint, determinism and size gates run on every pull request, and the M0 pipeline passes all of them (R5).
+- [ ] The compute gates, size-limit and the startup benchmark run on every pull request, and the M0 pipeline passes all of them (R5).
 
 ## M1 Lab mode
 
@@ -189,6 +222,7 @@ Goal: daily routines in a real town, drawn as the Skin C pixel-art town from one
 - [ ] Optional: a human character sheet for Skin C as an opt-in variant, with appearance redrawn at every birth, never inherited (R3).
 - [ ] Make per-cell aggregates the default perception, with exact radius queries only for agents that need them (collision, conversation, pursuit), staggered to at least 1/4 per tick and capped at 16 neighbours (R5).
 - [ ] Keep sleeping and off-screen agents in dense index lists maintained by swap-remove, never filtered by a flag in every system (R5).
+- [ ] Ship the atlas as lossless WebP at native resolution with an oxipng PNG fallback, loaded in idle time after the first frame (R5).
 
 **Exit checks**
 
@@ -269,6 +303,7 @@ Goal: 100k agents on desktop, share links that replay in any browser, and a clea
 - [ ] Parameterise the city generator by a context record (tier, population, route-entry bearings, river, coast, biome, port, crossroads, walls) and seed it with hash(worldSeed, settlementId, generatorVersion) (R4).
 - [ ] Port the exact neighbour query and the settlement model to Rust compiled to WASM SIMD, with raw pointer exports and no wasm-bindgen, keeping integer JS fallbacks (R5).
 - [ ] Run workers only when `crossOriginIsolated` is true and a phase carries at least 0.5 ms: fixed 1,024-agent chunks, chunk-ordered reductions, a spin of at most 50 µs before `Atomics.wait`, and at most min(hardwareConcurrency − 2, 3) helpers (R5).
+- [ ] Add a hand-written service worker for offline starts, and a `_headers` file with immutable caching for hashed assets plus COOP/COEP (R5).
 
 **Exit checks**
 
