@@ -1,0 +1,4 @@
+WAITLOAD start 05:01:57 load=1.43 1.97 2.41 8/180 32158
+chromium 141.0.7390.37 args  load 1.43 1.97 2.41
+gc trace lines captured: 0 []
+WAITLOAD end 05:01:58 load=1.48 1.97 2.41 2/182 32261

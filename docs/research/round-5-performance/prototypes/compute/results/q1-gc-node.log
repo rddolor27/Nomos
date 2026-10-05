@@ -1,0 +1,8 @@
+WAITLOAD start 04:56:19 load=1.43 2.00 2.55 2/179 30891
+node v22.22.0 V8 12.4.254.21-node.33 --expose-gc
+[1.43 2.00 2.55] A.typed-alloc-free             med 7.36 p95 9.35 p99 10.53 max 10.56 ms | GC n=0 (minor 0, major 0, incr 0) total 0.0 ms, max pause 0.00 ms
+[1.63 2.03 2.56] B.temp-array-per-agent         med 10.47 p95 14.29 p99 15.03 max 17.03 ms | GC n=510 (minor 510, major 0, incr 0) total 81.4 ms, max pause 2.34 ms
+[1.74 2.05 2.56] C.objects-per-neighbour        med 21.07 p95 27.14 p99 37.95 max 40.16 ms | GC n=387 (minor 375, major 6, incr 6) total 1781.8 ms, max pause 9.67 ms
+[1.68 2.03 2.56] D.closures-filter-map-reduce   med 28.80 p95 36.08 p99 40.12 max 42.05 ms | GC n=930 (minor 912, major 9, incr 9) total 387.5 ms, max pause 6.84 ms
+[1.68 2.03 2.56] E.typed+retained-history       med 7.71 p95 9.36 p99 11.15 max 16.82 ms | GC n=6 (minor 0, major 3, incr 3) total 24.5 ms, max pause 17.03 ms
+WAITLOAD end 04:56:37 load=1.68 2.03 2.56 1/171 30979

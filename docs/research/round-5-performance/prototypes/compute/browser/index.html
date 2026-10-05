@@ -1,0 +1,9 @@
+<!doctype html><meta charset="utf-8"><title>sim bench</title>
+<script type="module">
+const q = new URLSearchParams(location.search);
+window.__result = null; window.__error = null;
+const w = new Worker('./bench-worker.mjs', { type: 'module' });
+w.onmessage = (e) => { const m = e.data; if (m.type === 'log') console.log(m.text); else if (m.type === 'result') window.__result = m.result; else if (m.type === 'error') { window.__error = m.error; console.log('ERROR ' + m.error); } };
+w.onerror = (e) => { window.__error = 'worker onerror: ' + e.message; };
+w.postMessage({ suite: q.get('suite'), quick: q.get('quick') === '1' });
+</script>

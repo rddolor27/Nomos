@@ -1,0 +1,4 @@
+WAITLOAD start 05:01:58 load=1.48 1.97 2.41 2/182 32266
+chromium 141.0.7390.37 args --enable-unsafe-webgpu --enable-features=Vulkan --use-vulkan=swiftshader --use-webgpu-adapter=swiftshader --use-angle=swiftshader load 1.48 1.97 2.41
+gc trace lines captured: 0 []
+WAITLOAD end 05:02:00 load=1.48 1.97 2.41 3/182 32373

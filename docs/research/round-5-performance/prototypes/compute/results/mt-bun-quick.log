@@ -1,0 +1,18 @@
+bun 1.3.14
+[load 2.44 3.21 3.41] N=10000 static.spin0.w1        tick 4.586 ms [4.449-4.586] moveUtil 0.972 grid 0.154 nq 3.445
+[load 2.44 3.21 3.41] N=10000 static.spin0.w2        tick 4.015 ms [3.426-4.015] moveUtil 1.064 grid 0.217 nq 2.726
+[load 2.44 3.21 3.41] N=10000 static.spin0.w3        tick 3.257 ms [2.837-3.257] moveUtil 0.844 grid 0.247 nq 2.227
+[load 2.44 3.21 3.41] N=10000 static.spin0.w4        tick 2.827 ms [2.088-2.827] moveUtil 0.837 grid 0.179 nq 1.817
+[load 2.44 3.21 3.41] N=10000 static.spin20000.w2    tick 2.948 ms [2.904-2.948] moveUtil 0.547 grid 0.231 nq 2.264
+[load 2.44 3.21 3.41] N=10000 static.spin20000.w3    tick 2.094 ms [2.049-2.094] moveUtil 0.441 grid 0.237 nq 1.425
+[load 2.44 3.21 3.41] N=10000 static.spin20000.w4    tick 3.388 ms [3.350-3.388] moveUtil 1.275 grid 0.187 nq 2.270
+[load 2.44 3.21 3.41] N=10000 dynamic.spin0.w1       tick 3.878 ms [3.856-3.878] moveUtil 0.551 grid 0.135 nq 3.188
+[load 2.44 3.21 3.41] N=10000 dynamic.spin0.w2       tick 2.692 ms [2.492-2.692] moveUtil 0.433 grid 0.216 nq 2.040
+[load 2.44 3.21 3.41] N=10000 dynamic.spin0.w3       tick 2.082 ms [2.016-2.082] moveUtil 0.368 grid 0.208 nq 1.533
+[load 2.44 3.21 3.41] N=10000 dynamic.spin0.w4       tick 1.558 ms [1.514-1.558] moveUtil 0.358 grid 0.163 nq 1.064
+[load 2.44 3.21 3.41] N=10000 dynamic.spin20000.w2   tick 2.133 ms [2.130-2.133] moveUtil 0.327 grid 0.160 nq 1.648
+[load 2.44 3.21 3.41] N=10000 dynamic.spin20000.w3   tick 1.583 ms [1.582-1.583] moveUtil 0.211 grid 0.170 nq 1.206
+[load 2.44 3.21 3.41] N=10000 dynamic.spin20000.w4   tick 3.252 ms [2.194-3.252] moveUtil 1.118 grid 0.177 nq 1.962
+barrier (us per empty phase): {"w1.spin0":0.40888299999994615,"w2.spin0":88.50839699999995,"w3.spin0":71.89389800000004,"w4.spin0":89.46518700000001,"w2.spin20000":1.503590000000031,"w3.spin20000":2.233056499999975,"w4.spin20000":2.1075630000000274}
+determinism identical across worker counts/modes: true
+exit=0

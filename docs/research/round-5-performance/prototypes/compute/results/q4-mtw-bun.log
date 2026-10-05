@@ -1,0 +1,17 @@
+WAITLOAD start 05:15:03 load=1.12 1.86 2.08 6/179 3029
+[load 1.11 1.84 2.07] WASM-SIMD N=25000 dynamic.spin0.w1   tick 3.842 ms [3.793-3.924] moveUtil 1.055 grid 0.309 nq 2.487
+[load 1.11 1.84 2.07] WASM-SIMD N=25000 dynamic.spin0.w2   tick 2.618 ms [2.450-2.815] moveUtil 0.718 grid 0.365 nq 1.554
+[load 1.11 1.84 2.07] WASM-SIMD N=25000 dynamic.spin0.w3   tick 2.312 ms [2.018-2.425] moveUtil 0.683 grid 0.371 nq 1.270
+[load 1.11 1.84 2.07] WASM-SIMD N=25000 dynamic.spin0.w4   tick 2.435 ms [2.024-2.600] moveUtil 0.792 grid 0.397 nq 1.266
+[load 1.11 1.84 2.07] WASM-SIMD N=25000 dynamic.spin20000.w2 tick 2.823 ms [2.784-3.242] moveUtil 0.886 grid 0.441 nq 1.540
+[load 1.11 1.84 2.07] WASM-SIMD N=25000 dynamic.spin20000.w3 tick 2.102 ms [1.654-2.693] moveUtil 0.500 grid 0.349 nq 1.305
+[load 1.11 1.84 2.07] WASM-SIMD N=25000 dynamic.spin20000.w4 tick 2.698 ms [1.597-4.566] moveUtil 0.962 grid 0.407 nq 1.272
+[load 1.10 1.83 2.07] WASM-SIMD N=100000 dynamic.spin0.w1   tick 16.911 ms [16.439-17.518] moveUtil 4.341 grid 2.198 nq 10.416
+[load 1.18 1.83 2.07] WASM-SIMD N=100000 dynamic.spin0.w2   tick 10.671 ms [10.177-11.807] moveUtil 2.604 grid 2.269 nq 5.868
+[load 1.18 1.83 2.07] WASM-SIMD N=100000 dynamic.spin0.w3   tick 9.853 ms [9.127-10.639] moveUtil 2.458 grid 2.478 nq 4.875
+[load 1.18 1.83 2.07] WASM-SIMD N=100000 dynamic.spin0.w4   tick 8.348 ms [7.925-8.989] moveUtil 1.877 grid 2.338 nq 4.139
+[load 1.32 1.85 2.07] WASM-SIMD N=100000 dynamic.spin20000.w2 tick 10.229 ms [9.801-10.778] moveUtil 2.446 grid 1.979 nq 5.800
+[load 1.32 1.85 2.07] WASM-SIMD N=100000 dynamic.spin20000.w3 tick 8.929 ms [8.704-9.463] moveUtil 2.163 grid 2.312 nq 4.425
+[load 1.54 1.89 2.08] WASM-SIMD N=100000 dynamic.spin20000.w4 tick 7.894 ms [7.371-9.033] moveUtil 1.701 grid 2.033 nq 3.809
+WASM multi-worker determinism identical across worker counts: true
+WAITLOAD end 05:15:25 load=1.54 1.89 2.08 6/177 3066

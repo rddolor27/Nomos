@@ -1,0 +1,47 @@
+WAITLOAD start 05:11:24 load=0.99 1.55 2.01 2/120 2251
+node v22.22.0 V8 12.4.254.21-node.33
+[load 0.99 1.55 2.01] N=10000 static.spin0.w1        tick 3.954 ms [3.945-4.405] moveUtil 0.590 grid 0.180 nq 3.193
+[load 0.99 1.55 2.01] N=10000 static.spin0.w2        tick 2.365 ms [2.327-2.708] moveUtil 0.406 grid 0.186 nq 1.749
+[load 0.99 1.55 2.01] N=10000 static.spin0.w3        tick 2.387 ms [2.046-2.587] moveUtil 0.451 grid 0.192 nq 1.632
+[load 0.99 1.55 2.01] N=10000 static.spin0.w4        tick 1.875 ms [1.717-2.830] moveUtil 0.370 grid 0.203 nq 1.325
+[load 0.99 1.55 2.01] N=10000 static.spin20000.w2    tick 2.245 ms [2.211-2.540] moveUtil 0.382 grid 0.168 nq 1.694
+[load 1.15 1.57 2.01] N=10000 static.spin20000.w3    tick 2.160 ms [1.714-3.632] moveUtil 0.413 grid 0.174 nq 1.640
+[load 1.15 1.57 2.01] N=10000 static.spin20000.w4    tick 2.058 ms [1.622-3.282] moveUtil 0.383 grid 0.206 nq 1.467
+[load 1.15 1.57 2.01] N=10000 dynamic.spin0.w1       tick 4.003 ms [3.924-4.281] moveUtil 0.583 grid 0.155 nq 3.246
+[load 1.15 1.57 2.01] N=10000 dynamic.spin0.w2       tick 2.373 ms [2.279-2.815] moveUtil 0.421 grid 0.158 nq 1.801
+[load 1.15 1.57 2.01] N=10000 dynamic.spin0.w3       tick 2.335 ms [1.930-2.586] moveUtil 0.550 grid 0.198 nq 1.486
+[load 1.15 1.57 2.01] N=10000 dynamic.spin0.w4       tick 1.932 ms [1.500-2.121] moveUtil 0.347 grid 0.162 nq 1.305
+[load 1.15 1.57 2.01] N=10000 dynamic.spin20000.w2   tick 2.318 ms [2.137-2.879] moveUtil 0.336 grid 0.171 nq 1.816
+[load 1.46 1.63 2.03] N=10000 dynamic.spin20000.w3   tick 2.422 ms [1.929-2.989] moveUtil 0.533 grid 0.196 nq 1.913
+[load 1.46 1.63 2.03] N=10000 dynamic.spin20000.w4   tick 1.425 ms [1.381-1.501] moveUtil 0.203 grid 0.170 nq 1.038
+[load 1.46 1.63 2.03] N=25000 static.spin0.w1        tick 11.237 ms [10.318-11.918] moveUtil 1.679 grid 0.641 nq 8.905
+[load 1.98 1.74 2.06] N=25000 static.spin0.w2        tick 7.048 ms [6.474-7.327] moveUtil 1.225 grid 0.559 nq 5.217
+[load 1.98 1.74 2.06] N=25000 static.spin0.w3        tick 5.886 ms [5.475-6.005] moveUtil 1.231 grid 0.603 nq 4.022
+[load 1.98 1.74 2.06] N=25000 static.spin0.w4        tick 5.887 ms [4.959-7.519] moveUtil 1.019 grid 0.702 nq 3.753
+[load 1.99 1.74 2.06] N=25000 static.spin20000.w2    tick 6.433 ms [6.174-7.407] moveUtil 1.026 grid 0.602 nq 4.840
+[load 1.99 1.74 2.06] N=25000 static.spin20000.w3    tick 5.142 ms [4.428-6.610] moveUtil 0.935 grid 0.577 nq 3.603
+[load 1.99 1.74 2.06] N=25000 static.spin20000.w4    tick 4.782 ms [4.504-5.369] moveUtil 0.971 grid 0.531 nq 3.190
+[load 2.31 1.81 2.08] N=25000 dynamic.spin0.w1       tick 10.070 ms [9.895-10.862] moveUtil 1.482 grid 0.521 nq 8.060
+[load 2.31 1.81 2.08] N=25000 dynamic.spin0.w2       tick 6.002 ms [5.688-6.315] moveUtil 0.927 grid 0.615 nq 4.479
+[load 2.31 1.81 2.08] N=25000 dynamic.spin0.w3       tick 4.042 ms [3.952-4.543] moveUtil 0.646 grid 0.546 nq 2.892
+[load 2.31 1.81 2.08] N=25000 dynamic.spin0.w4       tick 3.738 ms [3.398-4.387] moveUtil 0.569 grid 0.595 nq 2.548
+[load 2.31 1.81 2.08] N=25000 dynamic.spin20000.w2   tick 6.033 ms [5.570-6.764] moveUtil 0.831 grid 0.533 nq 4.666
+[load 2.68 1.90 2.11] N=25000 dynamic.spin20000.w3   tick 4.845 ms [4.479-6.002] moveUtil 0.665 grid 0.601 nq 3.532
+[load 2.68 1.90 2.11] N=25000 dynamic.spin20000.w4   tick 4.672 ms [3.937-5.198] moveUtil 0.896 grid 0.583 nq 3.108
+[load 2.50 1.88 2.10] N=100000 static.spin0.w1        tick 42.507 ms [40.565-42.917] moveUtil 6.016 grid 2.842 nq 33.560
+[load 2.54 1.90 2.11] N=100000 static.spin0.w2        tick 23.804 ms [22.204-24.116] moveUtil 3.344 grid 2.801 nq 17.669
+[load 2.58 1.92 2.11] N=100000 static.spin0.w3        tick 17.649 ms [17.391-18.191] moveUtil 2.542 grid 2.860 nq 12.150
+[load 2.69 1.96 2.12] N=100000 static.spin0.w4        tick 14.331 ms [13.698-17.147] moveUtil 2.126 grid 2.485 nq 9.630
+[load 2.64 1.96 2.12] N=100000 static.spin20000.w2    tick 24.694 ms [23.145-25.778] moveUtil 3.423 grid 3.101 nq 18.166
+[load 2.51 1.94 2.11] N=100000 static.spin20000.w3    tick 17.730 ms [16.639-18.142] moveUtil 2.410 grid 2.833 nq 12.419
+[load 2.63 1.98 2.12] N=100000 static.spin20000.w4    tick 15.148 ms [13.720-17.734] moveUtil 2.000 grid 2.898 nq 10.435
+[load 2.52 1.98 2.12] N=100000 dynamic.spin0.w1       tick 43.191 ms [42.560-44.982] moveUtil 6.135 grid 2.973 nq 33.919
+[load 2.56 1.99 2.13] N=100000 dynamic.spin0.w2       tick 23.344 ms [23.147-23.643] moveUtil 3.246 grid 3.015 nq 17.067
+[load 2.68 2.03 2.14] N=100000 dynamic.spin0.w3       tick 22.049 ms [21.296-25.108] moveUtil 3.263 grid 3.470 nq 15.755
+[load 2.86 2.08 2.15] N=100000 dynamic.spin0.w4       tick 18.483 ms [16.498-20.972] moveUtil 2.528 grid 3.187 nq 12.709
+[load 3.36 2.19 2.19] N=100000 dynamic.spin20000.w2   tick 28.494 ms [25.476-34.263] moveUtil 3.984 grid 3.483 nq 21.019
+[load 4.13 2.37 2.25] N=100000 dynamic.spin20000.w3   tick 24.077 ms [23.117-37.180] moveUtil 3.075 grid 3.741 nq 17.503
+[load 4.12 2.40 2.26] N=100000 dynamic.spin20000.w4   tick 16.242 ms [15.849-18.580] moveUtil 2.516 grid 2.925 nq 11.094
+barrier (us per empty phase): {"w1.spin0":0.05713500000001659,"w2.spin0":48.033256000000165,"w3.spin0":85.60860850000017,"w4.spin0":104.7327264999999,"w2.spin20000":0.9169969999998102,"w3.spin20000":1.8901754999997138,"w4.spin20000":131.12281449999955}
+determinism identical across worker counts/modes: true
+WAITLOAD end 05:13:18 load=4.12 2.40 2.26 3/187 2684

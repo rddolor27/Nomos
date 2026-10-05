@@ -1,0 +1,18 @@
+{
+ "coi": true,
+ "sab": true,
+ "hc": 4,
+ "timerStepUs": 4.999998956918716,
+ "wasmSimd": true,
+ "wasmRelaxedSimd": true,
+ "webgpu": true,
+ "adapter": null,
+ "env": {
+  "ua": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/141.0.7390.37 Safari/537.36",
+  "coi": true,
+  "hc": 4,
+  "chromium": "141.0.7390.37",
+  "args": [],
+  "loadEnd": "1.48 1.97 2.41"
+ }
+}

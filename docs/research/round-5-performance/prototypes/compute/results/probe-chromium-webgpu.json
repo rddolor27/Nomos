@@ -1,0 +1,35 @@
+{
+ "coi": true,
+ "sab": true,
+ "hc": 4,
+ "timerStepUs": 4.999998956918716,
+ "wasmSimd": true,
+ "wasmRelaxedSimd": true,
+ "webgpu": true,
+ "adapter": {
+  "vendor": "google",
+  "arch": "swiftshader",
+  "desc": "",
+  "fallback": true
+ },
+ "webgpuU32HashMatchesJS": true,
+ "webgpuRoundTripMs1M": {
+  "med": 41.809999998658895,
+  "min": 37.12999999895692,
+  "max": 77.61999999918044
+ },
+ "env": {
+  "ua": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/141.0.7390.37 Safari/537.36",
+  "coi": true,
+  "hc": 4,
+  "chromium": "141.0.7390.37",
+  "args": [
+   "--enable-unsafe-webgpu",
+   "--enable-features=Vulkan",
+   "--use-vulkan=swiftshader",
+   "--use-webgpu-adapter=swiftshader",
+   "--use-angle=swiftshader"
+  ],
+  "loadEnd": "1.48 1.97 2.41"
+ }
+}

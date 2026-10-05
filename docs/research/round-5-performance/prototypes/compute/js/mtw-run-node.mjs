@@ -1,0 +1,12 @@
+import { Worker } from 'node:worker_threads'; import { readFileSync, writeFileSync } from 'node:fs';
+import { runMTW } from './mtw-core.mjs';
+const isBun = typeof Bun !== 'undefined';
+const loadavg = () => readFileSync('/proc/loadavg', 'utf8').split(' ').slice(0, 3).join(' ');
+const module = await WebAssembly.compile(readFileSync(new URL('../wasm/simd-threads.wasm', import.meta.url)));
+const spawnHelper = (d) => new Promise((resolve) => { const wk = new Worker(new URL('./mtw-helper-node.mjs', import.meta.url), { workerData: d });
+  let doneRes; const done = new Promise((r) => (doneRes = r)); wk.on('message', (m) => { if (m === 'ready') resolve({ wk, done }); if (m === 'exit') { wk.terminate(); doneRes(); } }); wk.on('error', (e) => console.error('worker error', e)); });
+const quick = process.argv.includes('quick');
+const res = await runMTW({ log: console.log, loadavg, module, spawnHelper, sizes: quick ? [25000] : [25000, 100000], ticks: quick ? 10 : 40, runs: quick ? 3 : 6 });
+res.engine = isBun ? `bun ${Bun.version}` : `node ${process.version} V8 ${process.versions.v8}`;
+writeFileSync(new URL(`../results/mtw-${isBun ? 'bun' : 'node'}${quick ? '-quick' : ''}.json`, import.meta.url), JSON.stringify(res, null, 1));
+process.exit(0);

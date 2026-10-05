@@ -1,0 +1,12 @@
+WAITLOAD start 04:56:52 load=1.39 1.95 2.52 6/174 31026
+node v22.22.0 V8 12.4.254.21-node.33 --expose-gc --min-semi-space-size=128 --max-semi-space-size=128
+[1.68 2.00 2.53] A.typed-alloc-free             med 7.29 p95 10.00 p99 11.41 max 12.51 ms | GC n=0 (minor 0, major 0, incr 0) total 0.0 ms, max pause 0.00 ms
+[1.68 2.00 2.53] B.temp-array-per-agent         med 10.12 p95 13.85 p99 15.05 max 16.25 ms | GC n=8 (minor 8, major 0, incr 0) total 17.3 ms, max pause 2.48 ms
+[1.70 2.00 2.53] C.objects-per-neighbour        med 12.05 p95 23.16 p99 26.75 max 44.75 ms | GC n=44 (minor 44, major 0, incr 0) total 410.8 ms, max pause 31.99 ms
+[2.05 2.07 2.55] D.closures-filter-map-reduce   med 29.95 p95 41.72 p99 56.60 max 63.87 ms | GC n=118 (minor 116, major 1, incr 1) total 848.1 ms, max pause 37.06 ms
+[2.29 2.11 2.56] E.typed+retained-history       med 7.76 p95 9.79 p99 13.73 max 24.95 ms | GC n=2 (minor 2, major 0, incr 0) total 35.2 ms, max pause 18.24 ms
+alloc per tick style A: 0.02 MB (1 B/agent)
+alloc per tick style B: 5.25 MB (210 B/agent)
+alloc per tick style C: 29.07 MB (1163 B/agent)
+alloc per tick style D: 77.47 MB (3099 B/agent)
+WAITLOAD end 04:57:09 load=2.29 2.11 2.56 7/173 31083
