@@ -1,0 +1,12 @@
+[
+  { "name": "index.html (incl. inline boot script)", "path": "dist/index.html", "limit": "1.5 kB" },
+  { "name": "Initial JS: entry + shared GL chunk + sim worker", "path": ["dist/assets/index-*.js", "dist/assets/dots-*.js", "dist/assets/worker-*.js"], "limit": "12 kB" },
+  { "name": "Lazy: lab chart (uPlot)", "path": "dist/assets/chart-*.js", "limit": "21 kB" },
+  { "name": "Lazy: controls (lil-gui)", "path": "dist/assets/controls-*.js", "limit": "8 kB" },
+  { "name": "Lazy: town skin", "path": "dist/assets/town-*.js", "limit": "4 kB" },
+  { "name": "Lazy: country mode", "path": "dist/assets/country-*.js", "limit": "10 kB" },
+  { "name": "Lazy: inspector", "path": "dist/assets/inspector-*.js", "limit": "3 kB" },
+  { "name": "Lazy: WebGPU path", "path": "dist/assets/webgpu-*.js", "limit": "8 kB" },
+  { "name": "Town map (binary, brotli on the wire)", "path": "dist/assets/town-*.bin", "limit": "40 kB" },
+  { "name": "Atlas 2048 (WebP lossless, sent as-is)", "path": "dist/assets/atlas2048-*.webp", "brotli": false, "limit": "300 kB" }
+]

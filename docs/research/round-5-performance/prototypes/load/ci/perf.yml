@@ -1,0 +1,63 @@
+# .github/workflows/perf.yml — bundle, startup, memory and frame-time budgets
+name: perf-budgets
+on:
+  pull_request:
+  push:
+    branches: [main]
+concurrency: { group: perf-${{ github.ref }}, cancel-in-progress: true }
+jobs:
+  size:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npm run build                      # vite build -> dist/
+      - run: npx size-limit                     # .size-limit.json; non-zero exit on any overrun
+      - uses: andresz1/size-limit-action@v1     # optional: PR comment with the size diff vs. base
+        if: github.event_name == 'pull_request'
+        with: { github_token: "${{ secrets.GITHUB_TOKEN }}", skip_step: install, build_script: build }
+
+  browser-perf:
+    runs-on: ubuntu-24.04
+    needs: size
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with: { node-version: 22, cache: npm }
+      - run: npm ci && npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Calibrate CPU throttling to a mid-tier phone (Lighthouse BenchmarkIndex ~375)
+        run: node perf/calibrate.mjs | tee -a "$GITHUB_ENV"
+      - name: Restore baseline measured on main
+        uses: actions/cache/restore@v6
+        with: { path: perf-baseline, key: perf-baseline-${{ github.sha }}, restore-keys: perf-baseline- }
+      - name: Startup (7 cold loads, Fast 4G + 3-RTT connection setup, calibrated CPU)
+        run: |
+          RUNS=7 CONFIGS='[["dist","","fast4g-4x"]]' OUT=startup.json node perf/bench-startup.mjs
+          node perf/assert-startup.mjs startup.json perf/budgets.json perf-baseline/startup.json
+      - name: Memory (measureUserAgentSpecificMemory + process PSS per tier)
+        run: node perf/bench-memory.mjs && node perf/assert-memory.mjs memory.json perf/budgets.json
+      - name: Frame time (main-thread upload+draw, worker step) at 10k/25k/100k
+        run: node perf/bench-frames.mjs && node perf/assert-frames.mjs frames.json perf/budgets.json
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with: { name: "perf-${{ github.sha }}", path: "*.json" }
+      - name: Save new baseline (main only)
+        if: github.ref == 'refs/heads/main'
+        run: mkdir -p perf-baseline && cp startup.json memory.json frames.json perf-baseline/
+      - uses: actions/cache/save@v6
+        if: github.ref == 'refs/heads/main'
+        with: { path: perf-baseline, key: perf-baseline-${{ github.sha }} }
+
+  lighthouse:
+    runs-on: ubuntu-24.04
+    needs: size
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with: { node-version: 22, cache: npm }
+      - run: npm ci && npm run build
+      - run: npx @lhci/cli@0.15.1 autorun      # reads lighthouserc.json

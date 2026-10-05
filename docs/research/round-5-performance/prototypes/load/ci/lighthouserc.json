@@ -1,0 +1,26 @@
+{
+  "ci": {
+    "collect": {
+      "staticDistDir": "./dist",
+      "numberOfRuns": 5,
+      "settings": {
+        "formFactor": "mobile",
+        "throttlingMethod": "devtools",
+        "throttling": { "requestLatencyMs": 165, "downloadThroughputKbps": 8100, "uploadThroughputKbps": 1350, "cpuSlowdownMultiplier": 4 },
+        "chromeFlags": "--use-angle=swiftshader --enable-unsafe-swiftshader --ignore-gpu-blocklist"
+      }
+    },
+    "assert": {
+      "assertions": {
+        "user-timings:frame-first": ["error", { "maxNumericValue": 1500, "aggregationMethod": "median" }],
+        "user-timings:app-interactive": ["error", { "maxNumericValue": 2000, "aggregationMethod": "median" }],
+        "first-contentful-paint": ["warn", { "maxNumericValue": 1500, "aggregationMethod": "median" }],
+        "total-blocking-time": ["warn", { "maxNumericValue": 300, "aggregationMethod": "median" }],
+        "resource-summary:script:size": ["error", { "maxNumericValue": 120000 }],
+        "resource-summary:total:size": ["error", { "maxNumericValue": 450000 }],
+        "total-byte-weight": ["error", { "maxNumericValue": 450000 }]
+      }
+    },
+    "upload": { "target": "filesystem", "outputDir": "./lhci" }
+  }
+}

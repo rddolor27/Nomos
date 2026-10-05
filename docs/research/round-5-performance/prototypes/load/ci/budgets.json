@@ -1,0 +1,8 @@
+{
+  "profile": "fast4g-4x",
+  "runs": 7,
+  "aggregate": "median",
+  "maxMs": { "firstFrame": 1500, "interactive": 2000, "glReadyMs": 120, "parseMs": 10, "spawnMs": 80 },
+  "maxKB": { "initialKB": 60, "totalKB": 120 },
+  "maxRegressionVsBaseline": 0.15
+}
