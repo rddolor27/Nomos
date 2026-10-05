@@ -1,0 +1,21 @@
+{
+  "name": "sprites",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@pixi/tilemap": "^5.0.2",
+    "esbuild": "^0.28.2",
+    "json-schema-to-typescript": "^15.0.4",
+    "phaser": "^4.2.1",
+    "pixi-tiledmap": "^2.11.0",
+    "pixi.js": "^8.22.0",
+    "quicktype": "^23.3.25"
+  }
+}

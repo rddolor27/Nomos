@@ -1,0 +1,3 @@
+{"name":"custom-webgl2","mode":"","n":1000,"zoom":3,"setupMs":69.4,"cpuMed":0.1,"cpuP95":0.3,"tickMed":0.1,"gapMed":100.1,"heapMB":1.7,"gpu":"ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)","extra":"","wallS":"14.7","errs":""}
+{"name":"custom-webgl2","mode":"","n":10000,"zoom":3,"setupMs":42,"cpuMed":0.2,"cpuP95":0.8,"tickMed":0.3,"gapMed":383.3,"heapMB":1.1,"gpu":"ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)","extra":"","wallS":"51.7","errs":""}
+{"spec":"custom::25000:3:120","error":"Error: page.waitForFunction: Target page, context or browser has been closed","errs":[]}
