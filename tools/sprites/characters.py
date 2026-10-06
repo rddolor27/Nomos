@@ -1,11 +1,15 @@
-"""Characters: the shared blob body, its face overlays and the job items worn over it.
+"""Characters: the shared blob body, its looks, face overlays and the job items worn over it.
 
 Every frame sits on one 18x22 canvas with the ground on row 20 and the anchor at (9, 20), so a
-character is three layers drawn at the same point: body, then face, then job item. The body
-geometry is that of docs/mockups/generator/blobs.py ('stand', the 'squash' walk frame, 'sit' and
-the crouched 'sneak'). Bodies carry no face; each body frame's manifest entry gives the offset
+character is up to four layers drawn at the same point: body, pattern, face, then job item. The
+body geometry is that of docs/mockups/generator/blobs.py ('stand', the 'squash' walk frame, 'sit'
+and the crouched 'sneak'). Bodies carry no face; each body frame's manifest entry gives the offset
 (`face`) at which to draw the face overlays, which are drawn for the standing pose. The back
 view has no face.
+
+A look is a body hue, an eye shape for the resting faces and an optional pattern of light marks,
+each drawn independently at random at birth (tools/worldgen/looks.py). None is inherited or read by
+the sim, and none may suggest a group, a status or a mood.
 
 Crime is an act, never a costume: the sneak is a pose any agent may take, with no sack, mask or
 mark. Faces show events (a purchase, a refused price, a blink), never income, wealth or a level
@@ -159,16 +163,117 @@ FACES = {
     'sleep': {'down': (["....", "....", "O..O", ".OO."],) * 2,
               'left': (["....", "....", "O..O", ".OO."],) * 2},
 }
+EYES = ('round', 'dot', 'tall', 'wide')
+# Resting faces of the other eye shapes as (row, x, text) stamps, keyed like their sprites; 'round' is
+# FACES' neutral and blink. Faces show events, never mood, so every shape is open and calm: no lids,
+# brows or highlights, and a blink is a line as wide as the eye. Event faces are the same for everyone.
+EYE_FACES = {
+    'neutral-dot': {'down': [(12, 5, 'OO....OO'), (13, 5, 'OO....OO')],
+                    'left': [(12, 3, 'OO....OO'), (13, 3, 'OO....OO')]},
+    'blink-dot': {'down': [(13, 5, 'OO....OO')], 'left': [(13, 3, 'OO....OO')]},
+    'neutral-tall': {'down': [(y, 5, 'OO....OO') for y in range(11, 15)],
+                     'left': [(y, 3, 'OO....OO') for y in range(11, 15)]},
+    'blink-tall': {'down': [(13, 5, 'OO....OO')], 'left': [(13, 3, 'OO....OO')]},
+    # an oval wider than it is tall, pupils mid-eye with white all round (a flat top reads as lidded); turned,
+    # the far pupil stays off the clipped corner, where it would merge with the outline
+    'neutral-wide': {'down': [(11, 3, '.WWW....WWW.'), (12, 3, 'WWOOW..WOOWW'), (13, 3, 'WWOOW..WOOWW'),
+                              (14, 3, '.WWW....WWW.')],
+                     'left': [(11, 1, '.WWW....WWW.'), (12, 1, 'WWOOW..WOOWW'), (13, 1, 'WWOOW..WOOWW'),
+                              (14, 1, '.WWW....WWW.')]},
+    'blink-wide': {'down': [(13, 3, 'OOOOO..OOOOO')], 'left': [(13, 1, 'OOOOO..OOOOO')]},
+}
 
 
 def face(expression, facing):
     """A face for the standing pose, clipped to the body so it never changes the silhouette."""
     view = 'left' if facing == 'right' else facing
-    stamps = []
-    for x, eye in zip(EYE_X[view], FACES[expression][view]):
-        stamps += [(EYE_ROW + i, x, row) for i, row in enumerate(eye)]
+    if expression in EYE_FACES:
+        stamps = EYE_FACES[expression][view]
+    else:
+        stamps = []
+        for x, eye in zip(EYE_X[view], FACES[expression][view]):
+            stamps += [(EYE_ROW + i, x, row) for i, row in enumerate(eye)]
     a = np.array(sk.from_ascii(_stamp(stamps), KEY))
     a[~_mask(body_fill('stand', 'left'))] = 0
+    return _flip(Image.fromarray(a), facing)
+
+
+# ---------------------------------------------------------------------------- patterns
+PATTERNS = ('speckle', 'spots', 'patch')
+# Marks per view as (row, x, rows) on the standing pose; every pose places a mark by where its centre
+# sits within the body's spans, so it keeps its place on the squashed, sitting and crouched body. Marks
+# are the body's own light tone, like a pet's: never dark (dirt, bruises), never stripes or bands (a
+# prisoner, a job item) and never an emblem shape. They stay off the face, where they read as a mask.
+MARKS = {
+    'speckle': {
+        'down': [(8, 9, ['L']), (9, 12, ['L'])],
+        'left': [(8, 9, ['L']), (9, 12, ['L']), (12, 14, ['L']), (15, 13, ['L']), (18, 14, ['L'])],
+        'up': [(8, 9, ['L']), (10, 12, ['L']), (11, 6, ['L']), (12, 10, ['L']), (13, 3, ['L']), (14, 13, ['L']),
+               (15, 7, ['L']), (16, 11, ['L']), (17, 4, ['L']), (18, 9, ['L'])],
+    },
+    'spots': {
+        'down': [(8, 10, ['LL', 'LL'])],
+        'left': [(8, 10, ['LL', 'LL']), (12, 14, ['LL', 'LL']), (16, 13, ['LLL', '.LL'])],
+        'up': [(8, 10, ['LL', 'LL']), (12, 4, ['LL', 'LL']), (13, 12, ['LL', 'LL']), (16, 7, ['LLL', 'LL.'])],
+    },
+    'patch': {
+        'down': [(7, 9, ['LL', '.LLL', '..LLL'])],
+        'left': [(7, 9, ['LL', '.LLL', '.LLLL', '....LL', '.....L', '.....LL', '.....LL'])],
+        'up': [(10, 9, ['..LL', '.LLLLL', 'LLLLLLL', '.LLLLLL', 'LLLLLL', '..LL'])],
+    },
+}
+
+
+def _grow(mask):
+    """The mask and every pixel touching it, diagonals included."""
+    p = np.pad(mask, 1)
+    return np.logical_or.reduce([p[1 + dy:H + 1 + dy, 1 + dx:W + 1 + dx] for dy in (-1, 0, 1) for dx in (-1, 0, 1)])
+
+
+def face_zone(pose, view):
+    """Pixels any face may cover in this pose, the pixels around them and the lower face below them."""
+    dx, dy = POSES[pose][1]
+    faces = np.logical_or.reduce([_mask(_shift(face(e, view), dx, dy)) for e in [*FACES, *EYE_FACES]])
+    zone = _grow(faces)
+    ys, xs = np.nonzero(faces)
+    zone[ys.max() + 1:, xs.min():xs.max() + 1] = True
+    return zone
+
+
+def _relative(x, y):
+    """Where a point of the standing body sits: across its row and down the body, each from 0 to 1."""
+    ys = sorted(SHAPES['stand'])
+    x0, x1 = SHAPES['stand'][y]
+    return (x - x0) / (x1 - x0), (y - ys[0]) / (ys[-1] - ys[0])
+
+
+def _place(spans, u, v):
+    ys = sorted(spans)
+    y = ys[0] + round(v * (ys[-1] - ys[0]))
+    x0, x1 = spans[y]
+    return x0 + round(u * (x1 - x0)), y
+
+
+def body_pattern(pattern, pose, facing):
+    """A pattern's marks on a pose, clipped to the body and kept off its face, highlight and shaded base.
+    Lone speckles also keep off the edge, where one light pixel reads as a nick in the outline."""
+    view = 'left' if facing == 'right' else facing
+    spans, rows = SHAPES[POSES[pose][0]], body_rows(pose)
+    inside = np.array([[ch != '.' for ch in r] for r in rows])
+    free = inside & ~_grow(np.array([[ch == 'L' for ch in r] for r in rows]))
+    free[max(spans) - 1:] = False
+    if view != 'up':
+        free &= ~face_zone(pose, view)
+    if pattern == 'speckle':
+        p = np.pad(inside, 1)
+        free &= p[:-2, 1:-1] & p[2:, 1:-1] & p[1:-1, :-2] & p[1:-1, 2:]
+    stamps = []
+    for y, x, mark in MARKS[pattern][view]:
+        h, w = len(mark), max(map(len, mark))
+        cx, cy = _place(spans, *_relative(x + (w - 1) // 2, y + (h - 1) // 2))
+        stamps += [(cy - (h - 1) // 2 + i, cx - (w - 1) // 2, row) for i, row in enumerate(mark)]
+    a = np.array(sk.from_ascii(_stamp(stamps), KEY))
+    a[~free] = 0
     return _flip(Image.fromarray(a), facing)
 
 
@@ -325,10 +430,14 @@ def job_item(job, pose, facing):
 
 
 # ---------------------------------------------------------------------------- composites
-def character(pose, facing, job=None, expression='neutral', hue='sun'):
-    """Body, face and job item drawn together, as the renderer stacks them."""
+def character(pose, facing, job=None, expression='neutral', hue='sun', eyes='round', pattern='plain'):
+    """Body, pattern, face and job item drawn together, as the renderer stacks them."""
     im = sk.body_hue(body(pose, facing), hue)
+    if pattern != 'plain':
+        im.alpha_composite(sk.body_hue(body_pattern(pattern, pose, facing), hue))
     if facing != 'up' and expression:
+        if expression in ('neutral', 'blink') and eyes != 'round':
+            expression = f'{expression}-{eyes}'
         im.alpha_composite(_shift(face(expression, facing), *face_offset(pose, facing)))
     if job:
         im.alpha_composite(job_item(job, pose, facing))
@@ -344,22 +453,39 @@ def strip(cells):
 
 PREVIEW_POSES = [('stand', 'down', 'neutral'), ('walk_0', 'left', 'happy'), ('walk_1', 'left', 'neutral'),
                  ('sit', 'right', 'sleep'), ('sneak', 'left', 'neutral'), ('stand', 'up', None)]
+# A mixed crowd for review, one strip per row: each hue meets every eye shape and pattern across the rows.
+CROWD = {
+    'down': [('stand', 'down'), ('walk_0', 'down'), ('sit', 'down'), ('walk_1', 'down'), ('stand', 'down'),
+             ('sit', 'down')],
+    'side': [('stand', 'left'), ('walk_0', 'right'), ('sneak', 'left'), ('sit', 'right'), ('walk_1', 'left'),
+             ('stand', 'right')],
+    'up': [('stand', 'up'), ('walk_0', 'up'), ('walk_1', 'up'), ('stand', 'up'), ('walk_1', 'up'), ('walk_0', 'up')],
+    'jobs': [('stand', 'down'), ('walk_0', 'left'), ('stand', 'up'), ('sit', 'down'), ('walk_1', 'right'),
+             ('stand', 'down')],
+}
 
 
 def build():
     sheet = sk.Sheet('characters')
     for stem, pose, facing in frames():
-        meta = {'layer': 'body', 'pose': pose.split('_')[0], 'facing': facing}
+        meta = {'pose': pose.split('_')[0], 'facing': facing}
         if pose.startswith('walk'):
             meta['frame'] = int(pose[-1])
-        if facing != 'up':
-            meta['face'] = face_offset(pose, facing)
+        face_at = {'face': face_offset(pose, facing)} if facing != 'up' else {}
         for hue in sk.BODY_HUES:
-            sheet.add(f'blob_{hue}_{stem}', sk.body_hue(body(pose, facing), hue), anchor=ANCHOR, hue=hue, **meta)
-    for expression in FACES:
+            sheet.add(f'blob_{hue}_{stem}', sk.body_hue(body(pose, facing), hue), anchor=ANCHOR, hue=hue,
+                      layer='body', **meta, **face_at)
+        for pattern in PATTERNS:
+            marks = body_pattern(pattern, pose, facing)
+            for hue in sk.BODY_HUES:
+                sheet.add(f'pattern_{pattern}_{hue}_{stem}', sk.body_hue(marks, hue), anchor=ANCHOR, hue=hue,
+                          layer='pattern', pattern=pattern, **meta)
+    for expression in [*FACES, *EYE_FACES]:
+        resting, _, eyes = expression.partition('-')
+        style = {'eyes': eyes or 'round'} if resting in ('neutral', 'blink') else {}
         for facing in ('down', 'left', 'right'):
             sheet.add(f'face_{expression}_{facing}', face(expression, facing), anchor=ANCHOR,
-                      layer='face', facing=facing)
+                      layer='face', facing=facing, **style)
     for job in JOBS:
         for stem, pose, facing in frames():
             sheet.add(f'job_{job}_{stem}', job_item(job, pose, facing), anchor=ANCHOR,
@@ -373,6 +499,20 @@ def build():
     sheet.add('preview_hues', strip([('stand', 'down', None, 'neutral', h) for h in hues]), review_only=True)
     sheet.add('preview_hues_jobs', strip([('stand', 'down', job, 'neutral', h) for job, h in zip(JOBS, hues[1:])]),
               review_only=True)
+    for view in ('down', 'left'):
+        sheet.add(f'preview_eyes_{view}', strip([('stand', view, None, e, 'sun', eyes) for eyes in EYES
+                                                 for e in ('neutral', 'blink')]), review_only=True)
+    for pattern in PATTERNS:
+        for view in ('down', 'up'):
+            sheet.add(f'preview_patterns_{pattern}_{view}',
+                      strip([('stand', view, None, 'neutral', h, 'round', pattern) for h in hues]), review_only=True)
+    patterns = ('plain', *PATTERNS)
+    for s, (row, places) in enumerate(CROWD.items()):
+        cells = []
+        for i, ((pose, facing), hue) in enumerate(zip(places, hues)):
+            job = JOBS[i] if row == 'jobs' and i < len(JOBS) else None
+            cells.append((pose, facing, job, 'neutral', hue, EYES[(i + s) % 4], patterns[(3 * i + s) % 4]))
+        sheet.add(f'preview_looks_{row}', strip(cells), review_only=True)
     return sheet
 
 

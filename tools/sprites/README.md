@@ -15,7 +15,7 @@ Original pixel art for Nomos, drawn as code. Each module draws one category with
 - Body hues are cosmetic: six abstract colours (`spritekit.BODY_HUES`), never skin tones, assigned at random and never read by any sim rule.
 - Light comes from the top left: highlight the upper left, shade the lower right.
 - Characters, animals, buildings and props get a 1-px `OUTLINE` ring, like the mockup tiles.
-- Every person is the one shared blob body in `characters.py`, with event faces and job items as overlays on the same 18×22 canvas (ground on row 20). Draw body, then face, then job item at one anchor; each body frame's `face` field gives the face offset for that pose.
+- Every person is the one shared blob body in `characters.py`, with patterns, event faces and job items as overlays on the same 18×22 canvas (ground on row 20). Draw body, pattern, face, then job item at one anchor; each body frame's `face` field gives the face offset for that pose.
 
 ## Art direction
 
@@ -23,6 +23,7 @@ Original pixel art for Nomos, drawn as code. Each module draws one category with
 - Wealth never shows in houses. The map picks house styles at random, so no style may read as richer or poorer: no gold trim, no ruined or patched variants, equal care in every style. Size follows household count and density, never wealth.
 - Crime is an act, never a costume: no masks, stripes or other marks of a "criminal".
 - Job items go on the head or in bands across the body. A blob is all face, so a panel under the eyes reads as teeth or a mask. Check every job item on all six hues.
+- Looks are cosmetic: hue, eye shape and pattern are drawn independently at random at birth, never inherited and never read by the sim, so no look marks a group, a status or a mood. Every eye shape is open and calm. Patterns are tone-on-tone marks in the body's light tone, kept off the face and lower face, with no stripes or emblem motifs.
 - Culture shows in things such as emblems, banners, dishes and festival props, never on bodies or clothes. Emblem colours are mid tones, unlike the pastel body hues, and avoid the police navy, the merchant teal and the reds and oranges that round 3 keeps for crime.
 - Police iconography stays neutral: no weapons, flags or heroic poses.
 - No role wears black. `OUTLINE` is for outlines only, never a fill.
@@ -44,7 +45,7 @@ Every frame has `x`, `y`, `w`, `h` and `anchor`. Some carry more:
 | `footprint` | Tiles a building or set piece occupies, `[w, h]` |
 | `door` | Pixel where people enter a house |
 | `joins` | Edges that tile seamlessly with a neighbour: `lr`, `l` or `r` |
-| `layer` | `ground` draws with the terrain, under people (bridges, steps); `night` is a lit overlay; characters use `body`, `face` and `job` |
+| `layer` | `ground` draws with the terrain, under people (bridges, steps); `night` is a lit overlay; characters use `body`, `pattern`, `face` and `job` |
 | `night` | Name of the overlay drawn over this sprite after dark |
 | `overlay` | A map icon that rises into the tile above, so draw it after that row |
 | `corners` | Shore autotile key: land (1) or water (0) at nw, ne, sw, se. A land cell takes `_<side>` from water on that side, `_<corner>-outer` from water on two sides, and `_<corner>-inner` from water on one diagonal |
@@ -53,7 +54,7 @@ Every frame has `x`, `y`, `w`, `h` and `anchor`. Some carry more:
 | `colour` | The culture colour an emblem or banner carries, for the culture lens |
 | `cord_row` | Row where festival strips hang, so any strips join |
 | `hitch` | Point where a cart hitches to its animal |
-| `face`, `hue`, `pose`, `facing`, `frame`, `job` | Character metadata; `face` is the offset for face overlays |
+| `face`, `hue`, `pose`, `facing`, `frame`, `job`, `eyes`, `pattern` | Character metadata; `face` is the offset for face overlays, `eyes` the eye shape of a resting face |
 | `review_only` | Review strips, never drawn in the game |
 
 ## Provenance

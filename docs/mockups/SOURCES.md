@@ -12,6 +12,11 @@ Concept mockups for the browser society simulation, in a GBA/DS-era top-down pix
 | `sprites_showcase.png` | Image 5: one town scene built only from the original sprites in `assets/sprites/`, drawn at 320×180 and scaled 3× by `tools/sprites/showcase.py`; no third-party art |
 | `wonders_showcase.png` | Image 6: a wild landscape of the natural wonders on the shore, meadow and tree scenery, built only from the original sprites in `assets/sprites/`, drawn at 480×270 and scaled 2× by `tools/sprites/showcase_wonders.py`; no third-party art |
 | `landmarks_showcase.png` | Image 7: a coastal town of the built landmarks, made the same way by the same script; no third-party art |
+| `random_world_country.png` | Image 8: a random country from seed `09f02ffe`, an archipelago with seven natural wonders, drawn as the Country view (8-px tiles, scaled 2×) by `tools/worldgen/generate.py` from the original sprites; no third-party art |
+| `random_world_region.png` | Image 9: the same world's Region view around the capital (16-px tiles, scaled 2×), made the same way |
+| `random_world_capital.png` | Image 10: the same world's coastal capital zoomed in, with randomly styled houses and people with random looks (scaled 2×), made the same way |
+| `random_world_dune.png` | Image 11: the same world's dune wonder with an oasis and visitors (scaled 2×), made the same way |
+| `blob_looks.png` | Image 12: the same world's first 48 people, each with a random hue, eye shape and pattern, turned four ways so the patterns show (scaled 3×), made the same way |
 
 ## Captions
 
