@@ -19,6 +19,10 @@ tools/       Planned for M0: cli, bench
 
 Product code goes in `apps/`, `packages/` and `tools/`, as milestone M0 lays out: a pnpm monorepo whose `sim-core` is pure TypeScript with no DOM. Code under `docs/research/*/prototypes/` is throwaway benchmark code from the research rounds. Do not import it.
 
+## Commits
+
+Work on a branch named `type/short-description` and merge it through a squash-merged pull request. Commit messages follow [Conventional Commits](https://www.conventionalcommits.org/): a `type(scope): description` header of at most 72 characters, with types `feat`, `fix`, `chore`, `refactor`, `perf`, `test`, `docs`, `style`, `build`, `ci` and `revert`. Run `git config core.hooksPath .githooks` once per clone so the `commit-msg` hook checks the header.
+
 ## Where to start
 
 1. [Implementation plan](docs/plan/implementation-plan.md): what to build, in order, and the checks that close each milestone.
