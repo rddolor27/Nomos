@@ -10,6 +10,8 @@ Concept mockups for the browser society simulation, in a GBA/DS-era top-down pix
 | `country_map.png` | Image 3: one region of the country, the "region view" |
 | `scale_ladder.png` | Image 4: the zoom from region to city to street, as one strip |
 | `sprites_showcase.png` | Image 5: one town scene built only from the original sprites in `assets/sprites/`, drawn at 320×180 and scaled 3× by `tools/sprites/showcase.py`; no third-party art |
+| `wonders_showcase.png` | Image 6: a wild landscape of the natural wonders on the shore, meadow and tree scenery, built only from the original sprites in `assets/sprites/`, drawn at 480×270 and scaled 2× by `tools/sprites/showcase_wonders.py`; no third-party art |
+| `landmarks_showcase.png` | Image 7: a coastal town of the built landmarks, made the same way by the same script; no third-party art |
 
 ## Captions
 

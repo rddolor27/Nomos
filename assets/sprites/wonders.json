@@ -1,0 +1,518 @@
+{
+  "image": "wonders.png",
+  "size": [
+    256,
+    446
+  ],
+  "tile": 16,
+  "frames": {
+    "map16_wonder_caldera-lake": {
+      "x": 180,
+      "y": 373,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "overlay": true
+    },
+    "map16_wonder_canyon-view": {
+      "x": 197,
+      "y": 373,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "overlay": true
+    },
+    "map16_wonder_crystal-cave": {
+      "x": 214,
+      "y": 373,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "overlay": true
+    },
+    "map16_wonder_dune": {
+      "x": 231,
+      "y": 373,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "overlay": true
+    },
+    "map16_wonder_geyser": {
+      "x": 163,
+      "y": 373,
+      "w": 16,
+      "h": 20,
+      "anchor": [
+        8,
+        19
+      ],
+      "overlay": true
+    },
+    "map16_wonder_giant-tree": {
+      "x": 146,
+      "y": 373,
+      "w": 16,
+      "h": 22,
+      "anchor": [
+        8,
+        21
+      ],
+      "overlay": true
+    },
+    "map16_wonder_glacier": {
+      "x": 0,
+      "y": 430,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "overlay": true
+    },
+    "map16_wonder_hot-springs": {
+      "x": 17,
+      "y": 430,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "overlay": true
+    },
+    "map16_wonder_sea-arch": {
+      "x": 34,
+      "y": 430,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "overlay": true
+    },
+    "map16_wonder_stone-arch": {
+      "x": 51,
+      "y": 430,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "overlay": true
+    },
+    "map16_wonder_waterfall": {
+      "x": 68,
+      "y": 430,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "overlay": true
+    },
+    "map8_wonder_caldera-lake": {
+      "x": 112,
+      "y": 430,
+      "w": 8,
+      "h": 8,
+      "anchor": [
+        4,
+        7
+      ],
+      "overlay": true
+    },
+    "map8_wonder_canyon-view": {
+      "x": 121,
+      "y": 430,
+      "w": 8,
+      "h": 8,
+      "anchor": [
+        4,
+        7
+      ],
+      "overlay": true
+    },
+    "map8_wonder_crystal-cave": {
+      "x": 130,
+      "y": 430,
+      "w": 8,
+      "h": 8,
+      "anchor": [
+        4,
+        7
+      ],
+      "overlay": true
+    },
+    "map8_wonder_dune": {
+      "x": 139,
+      "y": 430,
+      "w": 8,
+      "h": 8,
+      "anchor": [
+        4,
+        7
+      ],
+      "overlay": true
+    },
+    "map8_wonder_geyser": {
+      "x": 85,
+      "y": 430,
+      "w": 8,
+      "h": 10,
+      "anchor": [
+        4,
+        9
+      ],
+      "overlay": true
+    },
+    "map8_wonder_giant-tree": {
+      "x": 94,
+      "y": 430,
+      "w": 8,
+      "h": 10,
+      "anchor": [
+        4,
+        9
+      ],
+      "overlay": true
+    },
+    "map8_wonder_glacier": {
+      "x": 148,
+      "y": 430,
+      "w": 8,
+      "h": 8,
+      "anchor": [
+        4,
+        7
+      ],
+      "overlay": true
+    },
+    "map8_wonder_hot-springs": {
+      "x": 157,
+      "y": 430,
+      "w": 8,
+      "h": 8,
+      "anchor": [
+        4,
+        7
+      ],
+      "overlay": true
+    },
+    "map8_wonder_sea-arch": {
+      "x": 166,
+      "y": 430,
+      "w": 8,
+      "h": 8,
+      "anchor": [
+        4,
+        7
+      ],
+      "overlay": true
+    },
+    "map8_wonder_stone-arch": {
+      "x": 103,
+      "y": 430,
+      "w": 8,
+      "h": 9,
+      "anchor": [
+        4,
+        8
+      ],
+      "overlay": true
+    },
+    "map8_wonder_waterfall": {
+      "x": 175,
+      "y": 430,
+      "w": 8,
+      "h": 8,
+      "anchor": [
+        4,
+        7
+      ],
+      "overlay": true
+    },
+    "wonder_caldera-lake": {
+      "x": 130,
+      "y": 97,
+      "w": 96,
+      "h": 64,
+      "anchor": [
+        48,
+        63
+      ],
+      "footprint": [
+        6,
+        3
+      ]
+    },
+    "wonder_canyon-view": {
+      "x": 0,
+      "y": 178,
+      "w": 112,
+      "h": 64,
+      "anchor": [
+        56,
+        63
+      ],
+      "footprint": [
+        7,
+        4
+      ]
+    },
+    "wonder_crystal-cave_0": {
+      "x": 81,
+      "y": 308,
+      "w": 64,
+      "h": 56,
+      "anchor": [
+        32,
+        55
+      ],
+      "footprint": [
+        4,
+        2
+      ]
+    },
+    "wonder_crystal-cave_1": {
+      "x": 146,
+      "y": 308,
+      "w": 64,
+      "h": 56,
+      "anchor": [
+        32,
+        55
+      ],
+      "footprint": [
+        4,
+        2
+      ]
+    },
+    "wonder_dune": {
+      "x": 65,
+      "y": 373,
+      "w": 80,
+      "h": 48,
+      "anchor": [
+        40,
+        47
+      ],
+      "footprint": [
+        5,
+        2
+      ]
+    },
+    "wonder_geyser_0": {
+      "x": 113,
+      "y": 178,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        1
+      ]
+    },
+    "wonder_geyser_1": {
+      "x": 146,
+      "y": 178,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        1
+      ]
+    },
+    "wonder_geyser_2": {
+      "x": 179,
+      "y": 178,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        1
+      ]
+    },
+    "wonder_geyser_3": {
+      "x": 212,
+      "y": 178,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        1
+      ]
+    },
+    "wonder_giant-tree": {
+      "x": 0,
+      "y": 0,
+      "w": 80,
+      "h": 96,
+      "anchor": [
+        40,
+        95
+      ],
+      "footprint": [
+        5,
+        3
+      ]
+    },
+    "wonder_glacier": {
+      "x": 81,
+      "y": 0,
+      "w": 80,
+      "h": 80,
+      "anchor": [
+        40,
+        79
+      ],
+      "footprint": [
+        5,
+        3
+      ]
+    },
+    "wonder_hot-springs_0": {
+      "x": 0,
+      "y": 243,
+      "w": 80,
+      "h": 64,
+      "anchor": [
+        40,
+        63
+      ],
+      "footprint": [
+        5,
+        3
+      ]
+    },
+    "wonder_hot-springs_1": {
+      "x": 81,
+      "y": 243,
+      "w": 80,
+      "h": 64,
+      "anchor": [
+        40,
+        63
+      ],
+      "footprint": [
+        5,
+        3
+      ]
+    },
+    "wonder_sea-arch_0": {
+      "x": 162,
+      "y": 243,
+      "w": 80,
+      "h": 64,
+      "anchor": [
+        40,
+        63
+      ],
+      "footprint": [
+        5,
+        3
+      ]
+    },
+    "wonder_sea-arch_1": {
+      "x": 0,
+      "y": 308,
+      "w": 80,
+      "h": 64,
+      "anchor": [
+        40,
+        63
+      ],
+      "footprint": [
+        5,
+        3
+      ]
+    },
+    "wonder_stone-arch": {
+      "x": 0,
+      "y": 373,
+      "w": 64,
+      "h": 56,
+      "anchor": [
+        32,
+        55
+      ],
+      "footprint": [
+        4,
+        2
+      ]
+    },
+    "wonder_waterfall_0": {
+      "x": 162,
+      "y": 0,
+      "w": 64,
+      "h": 80,
+      "anchor": [
+        32,
+        79
+      ],
+      "footprint": [
+        4,
+        3
+      ]
+    },
+    "wonder_waterfall_1": {
+      "x": 0,
+      "y": 97,
+      "w": 64,
+      "h": 80,
+      "anchor": [
+        32,
+        79
+      ],
+      "footprint": [
+        4,
+        3
+      ]
+    },
+    "wonder_waterfall_2": {
+      "x": 65,
+      "y": 97,
+      "w": 64,
+      "h": 80,
+      "anchor": [
+        32,
+        79
+      ],
+      "footprint": [
+        4,
+        3
+      ]
+    }
+  }
+}

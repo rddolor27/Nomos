@@ -6,7 +6,7 @@ Original pixel art for Nomos, drawn as code. Each module draws one category with
 - Build everything: `python tools/sprites/build_all.py`
 - Check everything: `python tools/sprites/test_sprites.py`
 - Draw a town scene from every category: `python tools/sprites/showcase.py` writes `docs/mockups/sprites_showcase.png`
-
+- Draw the wonders: `python tools/sprites/showcase_wonders.py` writes `docs/mockups/wonders_showcase.png` (natural wonders) and `docs/mockups/landmarks_showcase.png` (built landmarks)
 ## Style
 
 - GBA-era top-down pixel art in three-quarter view: you see the top and the front of buildings, as in `docs/mockups/town_closeup_blobs.png`.
@@ -34,6 +34,27 @@ Original pixel art for Nomos, drawn as code. Each module draws one category with
 - Directions are `down`, `up`, `left` and `right`; `right` may mirror `left`.
 - Anchors default to the bottom centre, the ground point used for y-sorting. A building anchors at the bottom centre of its footprint.
 - Footprints are whole tiles. Small animals fit 16×16 and large animals 24×24.
+
+## Manifest fields
+
+Every frame has `x`, `y`, `w`, `h` and `anchor`. Some carry more:
+
+| Field | Meaning |
+|---|---|
+| `footprint` | Tiles a building or set piece occupies, `[w, h]` |
+| `door` | Pixel where people enter a house |
+| `joins` | Edges that tile seamlessly with a neighbour: `lr`, `l` or `r` |
+| `layer` | `ground` draws with the terrain, under people (bridges, steps); `night` is a lit overlay; characters use `body`, `face` and `job` |
+| `night` | Name of the overlay drawn over this sprite after dark |
+| `overlay` | A map icon that rises into the tile above, so draw it after that row |
+| `corners` | Shore autotile key: land (1) or water (0) at nw, ne, sw, se. A land cell takes `_<side>` from water on that side, `_<corner>-outer` from water on two sides, and `_<corner>-inner` from water on one diagonal |
+| `target` | The icon a highlight ring belongs to |
+| `view` | `true` for marks shown only in the true view, such as true-crime pins |
+| `colour` | The culture colour an emblem or banner carries, for the culture lens |
+| `cord_row` | Row where festival strips hang, so any strips join |
+| `hitch` | Point where a cart hitches to its animal |
+| `face`, `hue`, `pose`, `facing`, `frame`, `job` | Character metadata; `face` is the offset for face overlays |
+| `review_only` | Review strips, never drawn in the game |
 
 ## Provenance
 

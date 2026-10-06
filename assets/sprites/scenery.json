@@ -1,0 +1,783 @@
+{
+  "image": "scenery.png",
+  "size": [
+    256,
+    112
+  ],
+  "tile": 16,
+  "frames": {
+    "cliff_corner-left": {
+      "x": 133,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "cliff_corner-right": {
+      "x": 150,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "cliff_face_0": {
+      "x": 167,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "cliff_face_1": {
+      "x": 184,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "cliff_foot": {
+      "x": 201,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "cliff_foot-water_0": {
+      "x": 218,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "cliff_foot-water_1": {
+      "x": 235,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "cliff_top": {
+      "x": 0,
+      "y": 33,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "prop_beach-rocks": {
+      "x": 220,
+      "y": 84,
+      "w": 20,
+      "h": 13,
+      "anchor": [
+        10,
+        12
+      ]
+    },
+    "prop_footbridge": {
+      "x": 187,
+      "y": 84,
+      "w": 32,
+      "h": 15,
+      "anchor": [
+        16,
+        14
+      ],
+      "layer": "ground"
+    },
+    "prop_lily-pads_0": {
+      "x": 0,
+      "y": 101,
+      "w": 17,
+      "h": 11,
+      "anchor": [
+        8,
+        10
+      ],
+      "layer": "ground"
+    },
+    "prop_lily-pads_1": {
+      "x": 18,
+      "y": 101,
+      "w": 17,
+      "h": 11,
+      "anchor": [
+        8,
+        10
+      ],
+      "layer": "ground"
+    },
+    "prop_picnic-table": {
+      "x": 17,
+      "y": 33,
+      "w": 24,
+      "h": 16,
+      "anchor": [
+        12,
+        15
+      ]
+    },
+    "prop_reeds": {
+      "x": 42,
+      "y": 33,
+      "w": 13,
+      "h": 16,
+      "anchor": [
+        6,
+        15
+      ]
+    },
+    "prop_stepping-stones": {
+      "x": 36,
+      "y": 101,
+      "w": 25,
+      "h": 7,
+      "anchor": [
+        12,
+        6
+      ],
+      "layer": "ground"
+    },
+    "prop_stone-steps": {
+      "x": 99,
+      "y": 0,
+      "w": 14,
+      "h": 23,
+      "anchor": [
+        7,
+        22
+      ],
+      "layer": "ground"
+    },
+    "prop_viewer": {
+      "x": 114,
+      "y": 0,
+      "w": 18,
+      "h": 19,
+      "anchor": [
+        9,
+        18
+      ]
+    },
+    "prop_viewpoint-rail": {
+      "x": 56,
+      "y": 33,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "shore_grass_e_0": {
+      "x": 73,
+      "y": 33,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "corners": "1010"
+    },
+    "shore_grass_e_1": {
+      "x": 90,
+      "y": 33,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "corners": "1010"
+    },
+    "shore_grass_n_0": {
+      "x": 107,
+      "y": 33,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "corners": "0011"
+    },
+    "shore_grass_n_1": {
+      "x": 124,
+      "y": 33,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "corners": "0011"
+    },
+    "shore_grass_ne-inner_0": {
+      "x": 141,
+      "y": 33,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "corners": "1011"
+    },
+    "shore_grass_ne-inner_1": {
+      "x": 158,
+      "y": 33,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "corners": "1011"
+    },
+    "shore_grass_ne-outer_0": {
+      "x": 175,
+      "y": 33,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "corners": "0010"
+    },
+    "shore_grass_ne-outer_1": {
+      "x": 192,
+      "y": 33,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "corners": "0010"
+    },
+    "shore_grass_nw-inner_0": {
+      "x": 209,
+      "y": 33,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "corners": "0111"
+    },
+    "shore_grass_nw-inner_1": {
+      "x": 226,
+      "y": 33,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "corners": "0111"
+    },
+    "shore_grass_nw-outer_0": {
+      "x": 0,
+      "y": 50,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "corners": "0001"
+    },
+    "shore_grass_nw-outer_1": {
+      "x": 17,
+      "y": 50,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "corners": "0001"
+    },
+    "shore_grass_s_0": {
+      "x": 34,
+      "y": 50,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "corners": "1100"
+    },
+    "shore_grass_s_1": {
+      "x": 51,
+      "y": 50,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "corners": "1100"
+    },
+    "shore_grass_se-inner_0": {
+      "x": 68,
+      "y": 50,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "corners": "1110"
+    },
+    "shore_grass_se-inner_1": {
+      "x": 85,
+      "y": 50,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "corners": "1110"
+    },
+    "shore_grass_se-outer_0": {
+      "x": 102,
+      "y": 50,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "corners": "1000"
+    },
+    "shore_grass_se-outer_1": {
+      "x": 119,
+      "y": 50,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "corners": "1000"
+    },
+    "shore_grass_sw-inner_0": {
+      "x": 136,
+      "y": 50,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "corners": "1101"
+    },
+    "shore_grass_sw-inner_1": {
+      "x": 153,
+      "y": 50,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "corners": "1101"
+    },
+    "shore_grass_sw-outer_0": {
+      "x": 170,
+      "y": 50,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "corners": "0100"
+    },
+    "shore_grass_sw-outer_1": {
+      "x": 187,
+      "y": 50,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "corners": "0100"
+    },
+    "shore_grass_w_0": {
+      "x": 204,
+      "y": 50,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "corners": "0101"
+    },
+    "shore_grass_w_1": {
+      "x": 221,
+      "y": 50,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "corners": "0101"
+    },
+    "shore_sand_e_0": {
+      "x": 238,
+      "y": 50,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "corners": "1010"
+    },
+    "shore_sand_e_1": {
+      "x": 0,
+      "y": 67,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "corners": "1010"
+    },
+    "shore_sand_n_0": {
+      "x": 17,
+      "y": 67,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "corners": "0011"
+    },
+    "shore_sand_n_1": {
+      "x": 34,
+      "y": 67,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "corners": "0011"
+    },
+    "shore_sand_ne-inner_0": {
+      "x": 51,
+      "y": 67,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "corners": "1011"
+    },
+    "shore_sand_ne-inner_1": {
+      "x": 68,
+      "y": 67,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "corners": "1011"
+    },
+    "shore_sand_ne-outer_0": {
+      "x": 85,
+      "y": 67,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "corners": "0010"
+    },
+    "shore_sand_ne-outer_1": {
+      "x": 102,
+      "y": 67,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "corners": "0010"
+    },
+    "shore_sand_nw-inner_0": {
+      "x": 119,
+      "y": 67,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "corners": "0111"
+    },
+    "shore_sand_nw-inner_1": {
+      "x": 136,
+      "y": 67,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "corners": "0111"
+    },
+    "shore_sand_nw-outer_0": {
+      "x": 153,
+      "y": 67,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "corners": "0001"
+    },
+    "shore_sand_nw-outer_1": {
+      "x": 170,
+      "y": 67,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "corners": "0001"
+    },
+    "shore_sand_s_0": {
+      "x": 187,
+      "y": 67,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "corners": "1100"
+    },
+    "shore_sand_s_1": {
+      "x": 204,
+      "y": 67,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "corners": "1100"
+    },
+    "shore_sand_se-inner_0": {
+      "x": 221,
+      "y": 67,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "corners": "1110"
+    },
+    "shore_sand_se-inner_1": {
+      "x": 238,
+      "y": 67,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "corners": "1110"
+    },
+    "shore_sand_se-outer_0": {
+      "x": 0,
+      "y": 84,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "corners": "1000"
+    },
+    "shore_sand_se-outer_1": {
+      "x": 17,
+      "y": 84,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "corners": "1000"
+    },
+    "shore_sand_sw-inner_0": {
+      "x": 34,
+      "y": 84,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "corners": "1101"
+    },
+    "shore_sand_sw-inner_1": {
+      "x": 51,
+      "y": 84,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "corners": "1101"
+    },
+    "shore_sand_sw-outer_0": {
+      "x": 68,
+      "y": 84,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "corners": "0100"
+    },
+    "shore_sand_sw-outer_1": {
+      "x": 85,
+      "y": 84,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "corners": "0100"
+    },
+    "shore_sand_w_0": {
+      "x": 102,
+      "y": 84,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "corners": "0101"
+    },
+    "shore_sand_w_1": {
+      "x": 119,
+      "y": 84,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "corners": "0101"
+    },
+    "terrain_meadow_0": {
+      "x": 136,
+      "y": 84,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "terrain_meadow_1": {
+      "x": 153,
+      "y": 84,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "terrain_meadow_2": {
+      "x": 170,
+      "y": 84,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "tree_autumn": {
+      "x": 0,
+      "y": 0,
+      "w": 32,
+      "h": 32,
+      "anchor": [
+        16,
+        31
+      ]
+    },
+    "tree_blossom": {
+      "x": 33,
+      "y": 0,
+      "w": 32,
+      "h": 32,
+      "anchor": [
+        16,
+        31
+      ]
+    },
+    "tree_palm": {
+      "x": 66,
+      "y": 0,
+      "w": 32,
+      "h": 32,
+      "anchor": [
+        13,
+        31
+      ]
+    }
+  }
+}
