@@ -18,6 +18,7 @@ This folder holds the research and planning behind Nomos; product code lives out
 | [4 · Multi-scale](research/round-4-multi-scale/) | Villages, cities and countries: ledgers, zoom, world maps, regularities between settlements | `summary.md`, `report.md`, `notes/`, `prototypes/`, `images/` |
 | [5 · Performance](research/round-5-performance/) | Tick, load, bundle and memory budgets: JS vs WebAssembly, workers, GC, country scale, startup, assets, caching, CI gates | `notes/compute.md`, `notes/load-memory.md`, `prototypes/compute/`, `prototypes/load/` (draft CI configs in `prototypes/load/ci/`) |
 | [6 · Goods and wellbeing](research/round-6-goods-and-wellbeing/) | Resources and production chains, food quality and spoilage, happiness, wealth, their cost, and Norland as prior art | `summary.md`, `report.md`, `questions.md`, `notes/`, `prototypes/` |
+| [7 · Million agents](research/round-7-million-agents/) | Paused: compute, memory and rendering for up to 1 million agents; prototypes and results only, no notes yet | `questions.md`, `prototypes/` |
 | [8 · Cultures](research/round-8-cultures/) | Fictional, learned cultures: how customs pass on and mix, customs as preferences, prior art and ethics, and the guardrails that keep culture out of crime and wealth | `summary.md`, `report.md`, `questions.md`, `notes/`, `prototypes/` |
 
 What each file type holds:
@@ -25,14 +26,16 @@ What each file type holds:
 - **`summary.md`**: the round's tab from the shared doc, which is the short, edited version.
 - **`report.md`**: the full fact-checked report behind that tab.
 - **`notes/`**: the raw research notes. Each claim is labelled by how it was checked: "opened" means the source was read in full; "search summary" or "snippet only" means it was seen only in search results; "measured here" or "computed" means the research team produced it.
-- **`prototypes/`**: benchmark and analysis code from the research. It is not product code. Some scripts read datasets or cloned repositories that are not included; the notes name the sources. Timings come from a 4-vCPU cloud VM (rounds 2–5) or a Windows desktop (rounds 6 and 8), mostly under Node, and are not phone measurements.
+- **`prototypes/`**: benchmark and analysis code from the research. It is not product code. Some scripts read datasets or cloned repositories that are not included; the notes name the sources. Timings come from a 4-vCPU cloud VM (rounds 2–5) or a Windows desktop (rounds 6–8), mostly under Node, and are not phone measurements.
 
 ## Mockups
 
-[`mockups/`](mockups/) holds the concept images used in rounds 3 and 4:
+[`mockups/`](mockups/) holds concept images and previews:
 - `town_closeup.png`, `town_closeup_blobs.png` and `city_zoomed_out.png`;
 - `country_map.png` and `scale_ladder.png`;
 - `cc0_asset_previews.png`;
-- `generator/`, the Python (Pillow) scripts that drew them;
+- `sprites_showcase.png`, `wonders_showcase.png` and `landmarks_showcase.png`, built from the original sprites by `tools/sprites/`;
+- `random_world_*.png` and `blob_looks.png`, one generated world drawn by `tools/worldgen/`;
+- `generator/`, the Python (Pillow) scripts that drew the concept images;
 - `previews/`, unmodified CC0 images with their licences;
 - [`SOURCES.md`](mockups/SOURCES.md), the provenance of every tile and sprite.
