@@ -48,6 +48,7 @@ class World:
     settlements: list = field(default_factory=list)
     roads: list = field(default_factory=list)
     bridges: list = field(default_factory=list)
+    lanes: list = field(default_factory=list)            # sea lanes between landmasses, port to port
     wonders: list = field(default_factory=list)
     landmarks: list = field(default_factory=list)
 
@@ -67,17 +68,22 @@ def generate(seed, width=96, height=64):
     w.settlements = settle.settle(seed, width, height, score, len(water) - sum(water))
     w.biome = settle.farm(seed, width, w.biome, w.settlements)
     w.roads, w.bridges = roads.build(width, height, w.biome, w.elevation, w.river, w.receiver, w.settlements)
+    w.lanes = roads.lanes(width, height, w.biome, w.settlements)
     land = features.survey(w)
     w.wonders = features.wonders(w, land)
     w.landmarks = features.landmarks(w, land, w.wonders)
     return w
 
 
+def _facing(world, x, y, kind):
+    return sides_text(s for s, cells in FACING.items()
+                      if any(0 <= x + dx < world.width and 0 <= y + dy < world.height
+                             and world.biome[(y + dy) * world.width + x + dx] == kind for dx, dy in cells))
+
+
 def _context(world, x, y, seed, name, **extra):
     i = y * world.width + x
-    sea = sides_text(s for s, cells in FACING.items()
-                     if any(0 <= x + dx < world.width and 0 <= y + dy < world.height
-                            and world.biome[(y + dy) * world.width + x + dx] == climate.OCEAN for dx, dy in cells))
+    sea = _facing(world, x, y, climate.OCEAN)
     river = ''
     if world.river[i]:
         nbrs = neighbours(world.width, world.height)
@@ -94,12 +100,13 @@ def _context(world, x, y, seed, name, **extra):
                         roads += side(path[j] % world.width - x, path[j] // world.width - y, roads + sea)
     return PlaceContext(seed=seed, name=name, biome=BIOMES[world.biome[i]], temperature=world.temperature[i],
                         moisture=world.moisture[i], sea=sea, coast=climate.COASTS[world.coast[i]] if sea else '',
-                        river=sides_text(river), roads=sides_text(roads), **extra)
+                        river=sides_text(river), roads=sides_text(roads),
+                        farmland=_facing(world, x, y, climate.FARMLAND), **extra)
 
 
 def place_contexts(world):
     """One context per settlement, then one per wonder, each with its own keyed seed."""
-    return ([_context(world, s.x, s.y, draw(world.seed, PLACE, 0, s.id), f'{s.tier}-{s.id}', tier=s.tier,
+    return ([_context(world, s.x, s.y, draw(world.seed, PLACE, 0, s.uid), f'{s.tier}-{s.id}', tier=s.tier,
                       population=s.population, landmarks=s.landmarks) for s in world.settlements]
             + [_context(world, p.x, p.y, draw(world.seed, PLACE, 1, WONDERS.index(p.kind)), f'wonder-{p.kind}',
                         wonder=p.kind) for p in world.wonders])
@@ -121,9 +128,10 @@ def fingerprint(world):
     for s in world.settlements:
         feed(s.id, s.x, s.y, TIERS.index(s.tier), s.population, len(s.landmarks),
              *(LANDMARKS.index(k) for k in s.landmarks))
-    feed(len(world.roads))
-    for path in world.roads:
-        feed(len(path), *path)
+    for paths in (world.roads, world.lanes):
+        feed(len(paths))
+        for path in paths:
+            feed(len(path), *path)
     feed(len(world.bridges), *world.bridges)
     feed(len(world.wonders), *(v for p in world.wonders for v in (WONDERS.index(p.kind), p.x, p.y)))
     feed(len(world.landmarks), *(v for p in world.landmarks for v in (LANDMARKS.index(p.kind), p.x, p.y)))
@@ -144,7 +152,7 @@ def summary(world, seconds):
         'settlements: ' + ', '.join(f'{t} {tiers[t]}' for t in TIERS if tiers[t])
         + f'  (capital {world.settlements[0].population:,})',
         f'roads: {len(world.roads)} routes over {len({c for p in world.roads for c in p})} cells, '
-        f'{len(world.bridges)} bridges',
+        f'{len(world.bridges)} bridges, {len(world.lanes)} sea lanes',
         'wonders: ' + (', '.join(f'{p.kind} ({p.x},{p.y})' for p in world.wonders) or 'none'),
         'landmarks in place: ' + (', '.join(f'{k} {inside[k]}' for k in LANDMARKS if inside[k]) or 'none'),
         'landmarks on the map: ' + (', '.join(f'{k} {outside[k]}' for k in LANDMARKS if outside[k]) or 'none')])

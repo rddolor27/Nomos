@@ -1,7 +1,7 @@
 """Roads: a route graph per landmass (Kruskal's minimum spanning tree plus spanner extras where
 the graph detour passes 1.5x), each route then walked cell by cell with A* over slope, height
 and cover. Water stops roads except at river crossings, which become bridges, and reusing a
-road costs half, so routes merge into trunks.
+road costs half, so routes merge into trunks. Sea lanes then join the landmasses, port to port.
 """
 import heapq
 from math import isqrt
@@ -147,3 +147,51 @@ def build(width, height, biome, elevation, river, receiver, settlements):
     homes = set(cells)
     bridges = sorted(c for c in range(width * height) if road[c] and river[c] and c not in homes)
     return roads, bridges
+
+
+def lanes(width, height, biome, settlements):
+    """Sea lanes as cell paths: a spanning tree over landmasses whose links are the closest pair of
+    ports, each sailed over open sea, so every settlement on a landmass with a port reaches the rest."""
+    label = landmasses(width, height, biome)
+    nbrs = neighbours(width, height)
+    ports = [s for s in settlements if any(biome[m] == OCEAN for m in nbrs[s.uid])]
+    pairs = sorted((dist2(a.x, a.y, b.x, b.y), a.uid, b.uid) for a in ports for b in ports
+                   if a.uid < b.uid and label[a.uid] != label[b.uid])
+    root = {}
+
+    def find(m):
+        while root.get(m, m) != m:
+            m = root[m]
+        return m
+
+    out = []
+    for _, a, b in pairs:
+        ra, rb = find(label[a]), find(label[b])
+        if ra != rb:
+            path = _sail(a, b, nbrs, biome)
+            if path:
+                root[ra] = rb
+                out.append(path)
+    return out
+
+
+def _sail(start, goal, nbrs, biome):
+    """The fewest open-sea cells from one port to another, or [] when no sea joins them."""
+    came = {start: -1}
+    frontier = [start]
+    while frontier:
+        nxt = []
+        for c in frontier:
+            for m in nbrs[c]:
+                if m in came:
+                    continue
+                came[m] = c
+                if m == goal:
+                    path = [m]
+                    while came[path[-1]] >= 0:
+                        path.append(came[path[-1]])
+                    return path[::-1]
+                if biome[m] == OCEAN:
+                    nxt.append(m)
+        frontier = nxt
+    return []

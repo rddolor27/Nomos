@@ -21,6 +21,7 @@ from spritekit import PALETTE  # noqa: E402
 SCALE = 2
 VARIANT = 0x200
 RIVER, ROAD, DECK, RAIL = PALETTE['WATER'], PALETTE['WOOD'], PALETTE['WOOD_L'], PALETTE['WOOD_D']
+LANE = PALETTE['WATER_L']
 PEAKS, ICONS, TOWNS = range(3)
 
 
@@ -83,19 +84,20 @@ def _rivers(view, pen, width):
             pen.line([_centre(view, i), _centre(view, r)], fill=RIVER, width=width + (w.river[i] == 3))
 
 
-def _dots(pen, a, b, dash, gap, thick):
+def _dots(pen, a, b, dash, gap, thick, fill):
     (ax, ay), (bx, by) = a, b
     steps = max(abs(bx - ax), abs(by - ay))
     for k in range(steps + 1):
         if k % (dash + gap) < dash:
             x, y = ax + (bx - ax) * k // steps, ay + (by - ay) * k // steps
-            pen.rectangle([x, y, x + thick - 1, y + thick - 1], fill=ROAD)
+            pen.rectangle([x, y, x + thick - 1, y + thick - 1], fill=fill)
 
 
-def _roads(view, pen, dash, gap, thick):
-    for path in view.world.roads:
-        for a, b in zip(path, path[1:]):
-            _dots(pen, _centre(view, a), _centre(view, b), dash, gap, thick)
+def _routes(view, pen, dash, gap, thick):
+    for paths, fill in ((view.world.lanes, LANE), (view.world.roads, ROAD)):
+        for path in paths:
+            for a, b in zip(path, path[1:]):
+                _dots(pen, _centre(view, a), _centre(view, b), dash, gap, thick, fill)
 
 
 def _bridges(view, pen, along, across):
@@ -168,7 +170,7 @@ def country_png(world, path):
     image = _terrain(view, sprite)
     pen = ImageDraw.Draw(image)
     _rivers(view, pen, 1)
-    _roads(view, pen, 1, 1, 1)
+    _routes(view, pen, 1, 1, 1)
     _bridges(view, pen, 4, 3)
     _place(image, sprite, view, _overlays(view))
     _save(image, path)
@@ -183,7 +185,7 @@ def region_png(world, path, centre=None, cols=30, rows=17):
     image = _terrain(view, sprite)
     pen = ImageDraw.Draw(image)
     _rivers(view, pen, 2)
-    _roads(view, pen, 2, 2, 2)
+    _routes(view, pen, 2, 2, 2)
     _bridges(view, pen, 8, 5)
     overlays = _overlays(view)
     taken = {(gx, gy) for gy, layer, gx, _, _ in overlays if layer != PEAKS}

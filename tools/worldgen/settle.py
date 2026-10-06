@@ -29,6 +29,9 @@ class Settlement:
     y: int
     tier: str
     population: int
+    # The settlement's cell. Per-settlement draws key on it, because ids follow population rank
+    # and an edit that adds or removes a place would re-roll every place ranked below it.
+    uid: int = 0
     landmarks: tuple = ()
 
 
@@ -84,10 +87,13 @@ def settle(seed, width, height, score, land):
     for k, (x, y) in enumerate(sites, 1):
         late = max(0, k - HEAD)
         rank = k + late * late // TAIL
-        people.append(top // rank * (750 + below(501, seed, SETTLEMENT, SIZE, k)) // 1000)
+        people.append(top // rank * (750 + below(501, seed, SETTLEMENT, SIZE, y * width + x)) // 1000)
     order = sorted(range(len(sites)), key=lambda k: (-people[k], k))
-    return [Settlement(sid, sites[k][0], sites[k][1], _tier(sid, people[k]), people[k])
-            for sid, k in enumerate(order)]
+    out = []
+    for sid, k in enumerate(order):
+        x, y = sites[k]
+        out.append(Settlement(sid, x, y, _tier(sid, people[k]), people[k], uid=y * width + x))
+    return out
 
 
 def _tier(sid, people):

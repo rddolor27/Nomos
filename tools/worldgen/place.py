@@ -505,19 +505,33 @@ def lay_ponds(site, spare):
 
 
 def tidy_water(site):
-    """Floods land too thin for the shore tiles: water on opposite sides or on opposite corners only."""
-    changed = True
-    while changed:
-        changed = False
-        for x, y in site.cells():
-            if site.kind[y][x] not in OPEN:
-                continue
-            n, e, s, w = (site.water(x + dx, y + dy) for dx, dy in DIRS)
-            ne, se, sw, nw = (site.water(x + dx, y + dy) for dx, dy in CORNERS.values())
-            if (n and s) or (e and w) or (not (n or e or s or w) and ((ne and sw) or (nw and se))):
-                site.kind[y][x] = 'water'
-                site.sea[y][x] = any(site.inside(x + dx, y + dy) and site.sea[y + dy][x + dx] for dx, dy in DIRS)
-                changed = True
+    """Floods land too thin for the shore tiles: water on opposite sides or on opposite corners only.
+
+    Each pass judges every cell on the same grid before flooding any, so the result never depends
+    on the order cells are visited in; an editor that tidies only the cells a stroke touched then
+    gets the same map as a whole-map rebuild.
+    """
+    while True:
+        thin = [(x, y) for x, y in site.cells() if site.kind[y][x] in OPEN and _thin(site, x, y)]
+        if not thin:
+            return
+        for x, y in thin:
+            site.kind[y][x] = 'water'
+        flooded = set(thin)
+        while True:
+            joined = {(x, y) for x, y in flooded
+                      if any(site.inside(x + dx, y + dy) and site.sea[y + dy][x + dx] for dx, dy in DIRS)}
+            if not joined:
+                break
+            for x, y in joined:
+                site.sea[y][x] = True
+            flooded -= joined
+
+
+def _thin(site, x, y):
+    n, e, s, w = (site.water(x + dx, y + dy) for dx, dy in DIRS)
+    ne, se, sw, nw = (site.water(x + dx, y + dy) for dx, dy in CORNERS.values())
+    return (n and s) or (e and w) or (not (n or e or s or w) and ((ne and sw) or (nw and se)))
 
 
 def lay_beach(site, width):
@@ -1057,13 +1071,14 @@ def place_houses(site):
 # ------------------------------------------------------------------------------------ fields, decor
 
 def place_fields(site, count, pasture):
-    """Fenced fields of one crop each, and pastures, on open ground away from the centre."""
+    """Fenced fields of one crop each, and pastures, on open ground away from the centre, drawn
+    to the sides where the country map shows farmland."""
     for i in range(count + (1 if pasture else 0)):
         is_pasture = pasture and i == count
         fw, fh = 3 + site.below(4, FIELD, i, 0), 2 + site.below(2, FIELD, i, 1)
         best = None
-        for ty in range(1, site.h - fh - 1):
-            for tx in range(1, site.w - fw - 1):
+        for ty in range(1, site.h - fh):
+            for tx in range(1, site.w - fw):
                 ring = [(x, y) for y in range(ty - 1, ty + fh + 1) for x in range(tx - 1, tx + fw + 1)]
                 if not all(site.free(x, y) and not site.crown[y][x] for x, y in ring):
                     continue
@@ -1072,7 +1087,9 @@ def place_fields(site, count, pasture):
                     continue
                 roadside = any(site.road[y][x] for x in range(tx - 2, tx + fw + 2) for y in (ty - 2, ty + fh + 1)
                                if site.inside(x, y))
-                cost = gap * 3 - (12 if roadside else 0) + site.below(10, FIELD, i, tx, ty)
+                toward = _toward(tx + fw // 2 - site.cx, ty + fh // 2 - site.cy)
+                cost = (gap * 3 - (12 if roadside else 0) - (30 if toward in site.ctx.farmland else 0)
+                        + site.below(10, FIELD, i, tx, ty))
                 if best is None or cost < best[0]:
                     best = (cost, tx, ty)
         if not best:
@@ -1085,6 +1102,12 @@ def place_fields(site, count, pasture):
                 site.keep[y][x] = True
         fence(site, tx - 1, ty - 1, tx + fw, ty + fh, gate=tx + site.below(fw, FIELD, i, 3))
         (site.pastures if is_pasture else site.fields).append((tx, ty, fw, fh))
+
+
+def _toward(dx, dy):
+    if abs(dx) >= abs(dy):
+        return 'e' if dx > 0 else 'w'
+    return 's' if dy > 0 else 'n'
 
 
 def fence(site, x0, y0, x1, y1, gate):
@@ -1467,8 +1490,8 @@ def build_settlement(site):
     place_landmarks(site)
     place_works(site)
     place_houses(site)
-    if ctx.tier in ('village', 'hamlet') or ctx.biome == 'farmland':
-        fields = {'hamlet': 1, 'village': 3}.get(ctx.tier, 1) + (ctx.biome == 'farmland')
+    if ctx.tier in ('village', 'hamlet') or ctx.biome == 'farmland' or ctx.farmland:
+        fields = {'hamlet': 1, 'village': 3}.get(ctx.tier, len(ctx.farmland) or 1) + (ctx.biome == 'farmland')
         place_fields(site, fields, ctx.biome in ('farmland', 'grassland', 'hills'))
     if 'windmill' in ctx.landmarks:
         place_windmill(site)

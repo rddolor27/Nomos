@@ -221,7 +221,7 @@ def _lighthouse_spot(world, L, s, used):
             i = _at(L, s.x + dx, s.y + dy)
             if i < 0 or L.water[i] or world.coast[i] == 0 or L.town[i] == 0 or i in used or not _framed(L, i):
                 continue
-            key = (_count(L, i, (OCEAN,)) + 2 * (dy >= 0), draw(world.seed, LANDMARK, SPOTS, s.id, i))
+            key = (_count(L, i, (OCEAN,)) + 2 * (dy >= 0), draw(world.seed, LANDMARK, SPOTS, s.uid, i))
             if best is None or key > best[0]:
                 best = (key, i)
     return best[1] if best else -1
@@ -250,8 +250,8 @@ def landmarks(world, L, wonder_spots):
         light = _lighthouse_spot(world, L, s, used) if world.coast[s.y * world.width + s.x] else -1
         kinds = [kind for kind in CHANCES
                  if (kind != 'lighthouse' or light >= 0) and _fits(world, L, s, kind)
-                 and chance(CHANCES[kind][tier], seed, LANDMARK, ODDS, s.id, LANDMARKS.index(kind))]
-        kinds = shuffled(kinds, seed, LANDMARK, ARRANGE, s.id)
+                 and chance(CHANCES[kind][tier], seed, LANDMARK, ODDS, s.uid, LANDMARKS.index(kind))]
+        kinds = shuffled(kinds, seed, LANDMARK, ARRANGE, s.uid)
         if s.tier == 'capital':
             kinds.remove('clock-tower')
             kinds.insert(0, 'clock-tower')

@@ -34,10 +34,12 @@ Random worlds for Nomos, drawn with the sprites in `tools/sprites`. It is the Py
    - Habitability comes from land, water, slope and climate, and picks spaced sites.
    - Populations follow rank-size, giving tiers from capital to hamlet.
    - Farmland surrounds each settlement, wider for bigger ones.
+   - Each settlement's draws key on its cell (`uid`), never on its population rank, so adding or removing a place re-rolls no other.
 6. **Roads** (`roads.py`):
    - A spanning tree per landmass, plus shortcuts where the detour passes 1.5×.
    - Each road is routed by A* over the terrain, and reusing a road costs half, so routes merge into trunks.
    - Bridges go where roads cross rivers.
+   - Sea lanes join the landmasses port to port: a spanning tree whose links are the closest pairs of ports.
 7. **Natural wonders** (`features.py`):
    - 4–8 per world, each kind at most once, tried in a keyed order.
    - Each sits on the best site for its kind: a waterfall where a river drops, a dune deep in desert, a glacier on the coldest peak, a sea arch on a cliff coast, and so on.
@@ -46,7 +48,7 @@ Random worlds for Nomos, drawn with the sprites in `tools/sprites`. It is the Py
 8. **Built landmarks:**
    - By tier and site, with keyed chances: a clock tower in every capital, lighthouses in coastal towns, windmills in farm villages, libraries in cities, terraces on hills.
    - Viaducts over steep river valleys and observatories on high ground near towns get map cells of their own.
-9. **Place records:** each settlement and wonder gets its own seed and a context record (`model.PlaceContext`). The record holds the biome, climate, the sides facing the sea, the coast type, the sides where rivers and roads arrive, its landmarks and its wonder.
+9. **Place records:** each settlement and wonder gets its own seed and a context record (`model.PlaceContext`). The record holds the biome, climate, the sides facing the sea or fields, the coast type, the sides where rivers and roads arrive, its landmarks and its wonder.
 
 ## Places (`place.py`)
 
@@ -61,6 +63,8 @@ Random worlds for Nomos, drawn with the sprites in `tools/sprites`. It is the Py
   - fields and animals;
   - people.
 - House styles are uniform draws, so no style reads as richer or poorer. Size follows density.
+- Fields lean toward the sides that face farmland on the country map.
+- Shore tidying judges every cell before flooding any, so the result never depends on the order cells are visited in. An editor that tidies only a stroke's cells gets the same map as a whole rebuild.
 - `placedraw.render` draws the tiles, then the ground sprites, then everything standing sorted by anchor y.
 
 ## Looks (`looks.py`)

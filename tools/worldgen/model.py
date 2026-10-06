@@ -29,5 +29,6 @@ class PlaceContext:
     coast: str = ''             # 'beach' or 'cliffs' where there is sea
     river: str = ''             # sides a river enters or leaves by
     roads: str = ''             # sides roads arrive from
+    farmland: str = ''          # sides that face fields
     landmarks: tuple = ()
     wonder: str | None = None
