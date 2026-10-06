@@ -18,7 +18,7 @@ This is a lean round, following `/research-round`: four researchers, then a repo
 |---|---|---|---|
 | 1 | How should each map layer be made, from country to street, now that a reference generator exists: procedural, hand-made kits, or generated then edited? | `notes/map-pipeline.md` | Researching |
 | 2 | Does Nomos need a world builder, for whom, and what should it do first? | `notes/builder-scope.md` | Researching |
-| 3 | How do edits live on top of a seeded world: edit logs, locks and regeneration, validation and guardrails, saves and share links? | `notes/edits-and-saves.md` | Researching |
+| 3 | How do edits live on top of a seeded world: edit logs, locks and regeneration, validation and guardrails, saves and share links? | `notes/edits-and-saves.md` | Done, with prototypes in `prototypes/edits/` |
 | 4 | How should the editor be built in the browser within the plan's budgets: renderer reuse, tools, undo, autotiling, performance and interop? | `notes/editor-tech.md` | Researching |
 
 ## Status
