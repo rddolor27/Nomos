@@ -25,11 +25,11 @@ Every round 9 timing ran on one busy Windows desktop (Ryzen 5 3600) under Node 2
 
 ## The answer
 
-**World builder: yes. The owner chose a full player editor.** The research recommended a smaller builder. On 6 October 2026 the owner chose the full one. Every level on a pre-launch milestone ships by launch, and the country-level tools ship with M8:
+**World builder: yes. The owner chose a full player editor.** The research recommended a smaller builder. On 6 October 2026 the owner chose the full one, all before launch, and moved launch after M8 so the country-level tools make it too:
 - **The owner's Build mode, behind a developer flag (M3, 8–12 days),** to hand-edit generated hero towns.
 - **"New town" settings in M6 (2–4 days), and the Build mode opened to players as a street editor (8–12 more days):** paint tiles, place buildings and props, edit zones.
 - **Card remix (3–5 days) and card authoring (6–10 days) once M1 cards and M6 links exist.**
-- **"New country" settings in M8 (5–8 days), plus god tools on the country (14–22 days):** lock and re-roll, terrain brushes, biome paint, drawn rivers and roads. The plan puts launch at M6 and M7–M9 after it, so these two ship before launch only if launch moves.
+- **"New country" settings in M8 (5–8 days), plus god tools on the country (14–22 days):** lock and re-roll, terrain brushes, biome paint, drawn rivers and roads. The plan had put launch after M6. It now waits for M8, so these ship before launch too.
 - **Players never paint cultures.** They choose a culture count. The content rules hold by construction:
   - the palette offers building kinds, never styles;
   - no person, costume, culture or hue tools;
@@ -75,8 +75,16 @@ A check over 6 worlds then built 327 places with no crashes or overlaps (measure
 **Decisions.** On 6 October 2026 the owner made these calls:
 - accepted the recommended defaults (a)–(d) and (f)–(k);
 - chose the full player editor for (e);
+- moved launch after M8, so the country-level builder tools ship before launch, while M9 stays after it;
 - approved the shared-doc update;
 - asked for the four generator fixes now.
+
+**Moving launch adds work before launch** (computed from the plan's effort lines and the builder estimates):
+- M7: 19–28 days;
+- M8: 13–20 days;
+- the builder levels: 46–73 days.
+
+Launch grows from 100–150 days to about 178–271.
 
 | # | Decision | Recommended default | Main reason |
 | --- | --- | --- | --- |
@@ -263,7 +271,7 @@ Port and crossroads are derived. Walls are dropped.
 5. Level 2-lite after M8, only on playtest demand.
 6. Levels 2, 3b and 3c not planned.
 
-**The owner's choice: every level, in this order** (unsourced estimates; the plan puts M8 after launch, so the M8 levels ship with it):
+**The owner's choice: every level, all before launch, in this order** (unsourced estimates; launch now waits for M8):
 
 | Level | Milestone | Effort |
 | --- | --- | --- |
@@ -491,6 +499,11 @@ Sources: [WCAG 2.2 SC 2.5.7](https://github.com/w3c/wcag/blob/23bad5904949904275
 
 The owner approved these for the shared doc's Implementation plan on 6 October 2026. They also carry the plan tasks owed for `tools/worldgen` and the blob looks.
 
+**Roadmap**
+- [ ] Move launch after M8 (R9):
+  - M7 and M8 become pre-launch milestones, and M9 stays after launch;
+  - re-baseline launch at about 178–271 days, from 100–150 (computed).
+
 **M0 Pipeline**
 - [ ] Make worldgen's `draw(seed, stream, ...keys)`, with the seed hashed first, the sim's single keyed draw, with fixed-arity hot-path variants. Lint-ban bare `/` and `%` in generator code outside floor-division helpers (R9).
 - [ ] Define one binary map for generated and hand-made maps: terrain kinds, IntGrid walkability, and entities (homes with capacity, workplaces, shops with hours, civic buildings) (R9).
@@ -554,7 +567,7 @@ The owner approved these for the shared doc's Implementation plan on 6 October 2
   - every landmark icon appears in its place;
   - edge farmland shows as fields.
 
-**Player editor (the owner's choice: every level; the M8 ones ship with M8)**
+**Player editor (the owner's choice: every level, all before launch)**
 
 These levels add effort the plan's milestone budgets don't yet hold (computed from the unsourced estimates):
 - M3: 8–12 days;
@@ -613,6 +626,5 @@ These levels add effort the plan's milestone budgets don't yet hold (computed fr
 | Whether map-scale coast overlays read at 8 px, and where snow starts | The Country and Region look | M8 |
 | Whether teachers want card remix | The builder's second user | After M1 |
 | How many players use a street editor or god tools; no usage figures were found for any surveyed editor | The full player editor costs about 46–73 days | Playtests before M6 and M8 |
-| Whether launch moves after M8, or the M8 levels ship after launch | The owner chose every level before launch, but the plan puts M7–M9 after it. The M8 levels add 19–30 days to M8's 13–20 (computed) | Before M6 |
 
 The full list of 21 conflicts with rounds 3–4 is in [`notes/map-pipeline.md`](notes/map-pipeline.md), Q1.
