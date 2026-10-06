@@ -1,0 +1,208 @@
+{
+ "args": {
+  "S": 1000,
+  "K": 8,
+  "years": 100,
+  "seed": 7,
+  "variant": "acculturate",
+  "mig": 0.045,
+  "longShare": 0.2,
+  "warm": 5,
+  "out": "",
+  "nn": 8
+ },
+ "variant": {
+  "a": 0.3,
+  "sub": 1,
+  "hmix": 0.05,
+  "sw": 0.1,
+  "eta": 0.4
+ },
+ "machine": {
+  "cpu": "AMD Ryzen 5 3600 6-Core Processor",
+  "logicalCpus": 12,
+  "ramGiB": 15.9,
+  "node": "v24.18.0",
+  "v8": "13.6.233.17-node.50",
+  "os": "win32 10.0.19045 x64"
+ },
+ "cpuBusyBefore": 0.09,
+ "cpuBusyAfter": 0.52,
+ "timing": {
+  "warmupYears": 5,
+  "samples": 95,
+  "nsPerSettlementYear": {
+   "median": 1404,
+   "min": 1112,
+   "max": 6462,
+   "n": 95
+  },
+  "nsPerSettlementDayAmortised": {
+   "median": 3.845,
+   "min": 3.047,
+   "max": 17.71,
+   "n": 95
+  }
+ },
+ "bytesPerSettlement": 64,
+ "saveGzipBytes": 11550,
+ "stateHash": "fd81e34d",
+ "trajectory": [
+  {
+   "yr": 0,
+   "encCapital": 1.003,
+   "encTop10": 1.27,
+   "encSmallHalf": 1.427,
+   "gst": 0.7333,
+   "encWithin": 1.356,
+   "encNational": 5.835,
+   "sharePure90": 0.366,
+   "keepsDominant": 1,
+   "mixedShare": 0,
+   "total": 1203849
+  },
+  {
+   "yr": 1,
+   "encCapital": 1.041,
+   "encTop10": 1.295,
+   "encSmallHalf": 1.435,
+   "gst": 0.7206,
+   "encWithin": 1.372,
+   "encNational": 5.835,
+   "sharePure90": 0.362,
+   "keepsDominant": 0.997,
+   "mixedShare": 0.0139,
+   "total": 1203849
+  },
+  {
+   "yr": 10,
+   "encCapital": 1.4,
+   "encTop10": 1.539,
+   "encSmallHalf": 1.448,
+   "gst": 0.6378,
+   "encWithin": 1.495,
+   "encNational": 5.817,
+   "sharePure90": 0.357,
+   "keepsDominant": 0.984,
+   "mixedShare": 0.1218,
+   "total": 1203849
+  },
+  {
+   "yr": 20,
+   "encCapital": 1.732,
+   "encTop10": 1.736,
+   "encSmallHalf": 1.419,
+   "gst": 0.5897,
+   "encWithin": 1.59,
+   "encNational": 5.756,
+   "sharePure90": 0.375,
+   "keepsDominant": 0.978,
+   "mixedShare": 0.2034,
+   "total": 1203849
+  },
+  {
+   "yr": 30,
+   "encCapital": 1.959,
+   "encTop10": 1.821,
+   "encSmallHalf": 1.373,
+   "gst": 0.565,
+   "encWithin": 1.652,
+   "encNational": 5.66,
+   "sharePure90": 0.42,
+   "keepsDominant": 0.977,
+   "mixedShare": 0.2546,
+   "total": 1203849
+  },
+  {
+   "yr": 40,
+   "encCapital": 1.947,
+   "encTop10": 1.904,
+   "encSmallHalf": 1.325,
+   "gst": 0.5518,
+   "encWithin": 1.692,
+   "encNational": 5.539,
+   "sharePure90": 0.486,
+   "keepsDominant": 0.976,
+   "mixedShare": 0.2864,
+   "total": 1203849
+  },
+  {
+   "yr": 50,
+   "encCapital": 2.048,
+   "encTop10": 1.943,
+   "encSmallHalf": 1.265,
+   "gst": 0.5447,
+   "encWithin": 1.715,
+   "encNational": 5.398,
+   "sharePure90": 0.556,
+   "keepsDominant": 0.972,
+   "mixedShare": 0.3058,
+   "total": 1203849
+  },
+  {
+   "yr": 60,
+   "encCapital": 2.099,
+   "encTop10": 2.056,
+   "encSmallHalf": 1.22,
+   "gst": 0.5407,
+   "encWithin": 1.726,
+   "encNational": 5.239,
+   "sharePure90": 0.627,
+   "keepsDominant": 0.968,
+   "mixedShare": 0.3178,
+   "total": 1203849
+  },
+  {
+   "yr": 70,
+   "encCapital": 2.112,
+   "encTop10": 2.033,
+   "encSmallHalf": 1.191,
+   "gst": 0.5391,
+   "encWithin": 1.725,
+   "encNational": 5.06,
+   "sharePure90": 0.687,
+   "keepsDominant": 0.966,
+   "mixedShare": 0.3249,
+   "total": 1203849
+  },
+  {
+   "yr": 80,
+   "encCapital": 2.095,
+   "encTop10": 1.982,
+   "encSmallHalf": 1.172,
+   "gst": 0.5389,
+   "encWithin": 1.715,
+   "encNational": 4.863,
+   "sharePure90": 0.735,
+   "keepsDominant": 0.964,
+   "mixedShare": 0.3289,
+   "total": 1203849
+  },
+  {
+   "yr": 90,
+   "encCapital": 2.056,
+   "encTop10": 1.911,
+   "encSmallHalf": 1.157,
+   "gst": 0.5405,
+   "encWithin": 1.694,
+   "encNational": 4.648,
+   "sharePure90": 0.769,
+   "keepsDominant": 0.96,
+   "mixedShare": 0.3309,
+   "total": 1203849
+  },
+  {
+   "yr": 100,
+   "encCapital": 2,
+   "encTop10": 1.827,
+   "encSmallHalf": 1.134,
+   "gst": 0.5437,
+   "encWithin": 1.666,
+   "encNational": 4.417,
+   "sharePure90": 0.801,
+   "keepsDominant": 0.957,
+   "mixedShare": 0.3316,
+   "total": 1203849
+  }
+ ]
+}

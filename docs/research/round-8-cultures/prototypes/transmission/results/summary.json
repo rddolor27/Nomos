@@ -1,0 +1,274 @@
+{
+ "machine": {
+  "cpu": "AMD Ryzen 5 3600 6-Core Processor",
+  "logicalCpus": 12,
+  "ramGiB": 15.9,
+  "node": "v24.18.0",
+  "v8": "13.6.233.17-node.50",
+  "os": "win32 10.0.19045 x64"
+ },
+ "cpuBusyStart": 0.59,
+ "cpuBusyEnd": 0.11,
+ "runs": [
+  {
+   "script": "town.mjs",
+   "args": [
+    "--N=10000",
+    "--P=1",
+    "--seed=1"
+   ],
+   "wallSeconds": 6.486,
+   "line": "town-baseline-district-N10000-P1-s1.json: busy 0.02/0.05 | horiz 3491 ns/person-yr [3367-3774] (n=95) | yearly 52.4 ns/person-yr [43.26-136] (n=95) | dayPass 94.9 us [90.6-271.2] (n=1140) | vertical 557.1 ns/birth [552.1-575.6] (n=9)"
+  },
+  {
+   "script": "town.mjs",
+   "args": [
+    "--N=10000",
+    "--P=30",
+    "--seed=1"
+   ],
+   "wallSeconds": 3.171,
+   "line": "town-baseline-district-N10000-P30-s1.json: busy 0.58/0.9 | horiz 155.4 ns/person-yr [139.6-224.7] (n=95) | yearly 52.95 ns/person-yr [44.25-185.8] (n=95) | dayPass 4.2 us [3.2-40.4] (n=1140) | vertical 565.8 ns/birth [559.8-599] (n=9)"
+  },
+  {
+   "script": "town.mjs",
+   "args": [
+    "--N=10000",
+    "--P=365",
+    "--seed=1"
+   ],
+   "wallSeconds": 3.092,
+   "line": "town-baseline-district-N10000-P365-s1.json: busy 0.05/0.08 | horiz 47.03 ns/person-yr [35.27-72.39] (n=95) | yearly 52.49 ns/person-yr [43.53-135.6] (n=95) | dayPass 1.4 us [0.4-22.4] (n=1140) | vertical 564.7 ns/birth [562-586.3] (n=9)"
+  },
+  {
+   "script": "town.mjs",
+   "args": [
+    "--N=100000",
+    "--P=1",
+    "--seed=1"
+   ],
+   "wallSeconds": 39.084,
+   "line": "town-baseline-district-N100000-P1-s1.json: busy 0.28/0 | horiz 3513 ns/person-yr [3375-3631] (n=95) | yearly 54.87 ns/person-yr [45.33-122.6] (n=95) | dayPass 954.7 us [913.2-1446] (n=1140) | vertical 510.9 ns/birth [507.2-527.5] (n=9)"
+  },
+  {
+   "script": "town.mjs",
+   "args": [
+    "--N=100000",
+    "--P=30",
+    "--seed=1"
+   ],
+   "wallSeconds": 5.381,
+   "line": "town-baseline-district-N100000-P30-s1.json: busy 0/0.09 | horiz 148.8 ns/person-yr [138-191.9] (n=95) | yearly 53.72 ns/person-yr [42.55-113] (n=95) | dayPass 40.6 us [35-124.3] (n=1140) | vertical 498.7 ns/birth [497.1-514.8] (n=9)"
+  },
+  {
+   "script": "town.mjs",
+   "args": [
+    "--N=100000",
+    "--P=365",
+    "--seed=1"
+   ],
+   "wallSeconds": 4.365,
+   "line": "town-baseline-district-N100000-P365-s1.json: busy 0.03/0.42 | horiz 42.95 ns/person-yr [29.08-54.01] (n=95) | yearly 51.89 ns/person-yr [42.73-122.8] (n=95) | dayPass 11.6 us [6.2-35.7] (n=1140) | vertical 498.4 ns/birth [494.3-517.3] (n=9)"
+  },
+  {
+   "script": "town.mjs",
+   "args": [
+    "--N=10000",
+    "--P=30",
+    "--contact=friends",
+    "--seed=1"
+   ],
+   "wallSeconds": 3.258,
+   "line": "town-baseline-friends-N10000-P30-s1.json: busy 0.12/0.46 | horiz 142.6 ns/person-yr [130.3-177.4] (n=95) | yearly 108.9 ns/person-yr [94.95-226.9] (n=95) | dayPass 4 us [3.2-36] (n=1140) | vertical 573.4 ns/birth [569-587.1] (n=9)"
+  },
+  {
+   "script": "town.mjs",
+   "args": [
+    "--N=100000",
+    "--P=30",
+    "--contact=friends",
+    "--seed=1"
+   ],
+   "wallSeconds": 6.065,
+   "line": "town-baseline-friends-N100000-P30-s1.json: busy 0.23/0.06 | horiz 142.9 ns/person-yr [133.8-208.6] (n=95) | yearly 121.6 ns/person-yr [112.5-184.6] (n=95) | dayPass 39 us [34.1-80.8] (n=1140) | vertical 514.6 ns/birth [507.2-536.5] (n=9)"
+  },
+  {
+   "script": "town.mjs",
+   "args": [
+    "--N=10000",
+    "--P=30",
+    "--seed=2"
+   ],
+   "wallSeconds": 3.2,
+   "line": "town-baseline-district-N10000-P30-s2.json: busy 0.05/0.31 | horiz 155 ns/person-yr [143.6-192.6] (n=95) | yearly 53.41 ns/person-yr [46.03-183.6] (n=95) | dayPass 4.3 us [3.2-164.8] (n=1140) | vertical 569.4 ns/birth [565.6-608.6] (n=9)"
+  },
+  {
+   "script": "town.mjs",
+   "args": [
+    "--N=10000",
+    "--P=30",
+    "--seed=3"
+   ],
+   "wallSeconds": 3.168,
+   "line": "town-baseline-district-N10000-P30-s3.json: busy 0.08/0.49 | horiz 154.9 ns/person-yr [140-221.9] (n=95) | yearly 54.15 ns/person-yr [44.12-124.4] (n=95) | dayPass 4.3 us [3.2-33.5] (n=1140) | vertical 562.2 ns/birth [555.7-577.7] (n=9)"
+  },
+  {
+   "script": "town.mjs",
+   "args": [
+    "--N=100000",
+    "--P=30",
+    "--seed=2"
+   ],
+   "wallSeconds": 5.39,
+   "line": "town-baseline-district-N100000-P30-s2.json: busy 0.02/0.05 | horiz 149.3 ns/person-yr [137.8-165.5] (n=95) | yearly 53.27 ns/person-yr [44.26-67.79] (n=95) | dayPass 40.6 us [34.8-81.8] (n=1140) | vertical 500.3 ns/birth [497.9-523.7] (n=9)"
+  },
+  {
+   "script": "town.mjs",
+   "args": [
+    "--N=100000",
+    "--P=30",
+    "--seed=3"
+   ],
+   "wallSeconds": 5.406,
+   "line": "town-baseline-district-N100000-P30-s3.json: busy 0.02/0.37 | horiz 150.5 ns/person-yr [137.2-226.8] (n=95) | yearly 53.08 ns/person-yr [43.88-134.3] (n=95) | dayPass 40.9 us [34.8-84] (n=1140) | vertical 501.8 ns/birth [498.1-525.4] (n=9)"
+  },
+  {
+   "script": "town.mjs",
+   "args": [
+    "--N=10000",
+    "--P=30",
+    "--variant=neutral",
+    "--seed=1"
+   ],
+   "wallSeconds": 2.522,
+   "line": "town-neutral-district-N10000-P30-s1.json: busy 0.62/0.12 | horiz 131 ns/person-yr [125.9-165.7] (n=95) | yearly 37.47 ns/person-yr [33.08-225.9] (n=95) | dayPass 3.7 us [3.2-51.9] (n=1140) | vertical 150.2 ns/birth [147.8-172.7] (n=9)"
+  },
+  {
+   "script": "town.mjs",
+   "args": [
+    "--N=10000",
+    "--P=30",
+    "--variant=conform",
+    "--seed=1"
+   ],
+   "wallSeconds": 2.675,
+   "line": "town-conform-district-N10000-P30-s1.json: busy 0.01/0.35 | horiz 141.6 ns/person-yr [132.3-174.3] (n=95) | yearly 39.6 ns/person-yr [32.19-245.1] (n=95) | dayPass 3.9 us [3.2-28.2] (n=1140) | vertical 270.7 ns/birth [259-281.9] (n=9)"
+  },
+  {
+   "script": "town.mjs",
+   "args": [
+    "--N=10000",
+    "--P=30",
+    "--variant=consub",
+    "--seed=1"
+   ],
+   "wallSeconds": 2.954,
+   "line": "town-consub-district-N10000-P30-s1.json: busy 0.27/0.14 | horiz 142.6 ns/person-yr [133.6-175.3] (n=95) | yearly 40.36 ns/person-yr [34.24-202.2] (n=95) | dayPass 4 us [3.2-27.4] (n=1140) | vertical 483.5 ns/birth [479.7-508.3] (n=9)"
+  },
+  {
+   "script": "town.mjs",
+   "args": [
+    "--N=10000",
+    "--P=30",
+    "--variant=enclave",
+    "--seed=1"
+   ],
+   "wallSeconds": 3.11,
+   "line": "town-enclave-district-N10000-P30-s1.json: busy 0.19/0.13 | horiz 145.8 ns/person-yr [130.7-215.3] (n=95) | yearly 50.47 ns/person-yr [37.93-172] (n=95) | dayPass 4 us [3.3-323.1] (n=1140) | vertical 522.7 ns/birth [518.2-549.3] (n=9)"
+  },
+  {
+   "script": "town.mjs",
+   "args": [
+    "--N=10000",
+    "--P=30",
+    "--mIn=0.0025",
+    "--mOut=0.0025",
+    "--seed=1",
+    "--tag=m0.0025"
+   ],
+   "wallSeconds": 3.095,
+   "line": "town-baseline-district-N10000-P30-s1-m0.0025.json: busy 1.54/0.26 | horiz 148.2 ns/person-yr [142.1-174.9] (n=95) | yearly 50.06 ns/person-yr [43.22-175.9] (n=95) | dayPass 4.1 us [3.2-30.1] (n=1140) | vertical 517.3 ns/birth [514.4-534.8] (n=9)"
+  },
+  {
+   "script": "town.mjs",
+   "args": [
+    "--N=10000",
+    "--P=30",
+    "--mIn=0.01",
+    "--mOut=0.01",
+    "--seed=1",
+    "--tag=m0.01"
+   ],
+   "wallSeconds": 3.211,
+   "line": "town-baseline-district-N10000-P30-s1-m0.01.json: busy 1.94/0.61 | horiz 159.1 ns/person-yr [141.4-207.6] (n=95) | yearly 56.27 ns/person-yr [44.31-177.7] (n=95) | dayPass 4.4 us [3.2-48.8] (n=1140) | vertical 580.3 ns/birth [578.1-607.6] (n=9)"
+  },
+  {
+   "script": "town.mjs",
+   "args": [
+    "--N=100000",
+    "--P=30",
+    "--variant=conform",
+    "--seed=1"
+   ],
+   "wallSeconds": 4.512,
+   "line": "town-conform-district-N100000-P30-s1.json: busy 0.49/0.47 | horiz 138.1 ns/person-yr [131.4-158.6] (n=95) | yearly 38.58 ns/person-yr [32.93-83.23] (n=95) | dayPass 37.85 us [34.3-118] (n=1140) | vertical 262.2 ns/birth [261.2-289.3] (n=9)"
+  },
+  {
+   "script": "ledger.mjs",
+   "args": [
+    "--S=1000",
+    "--variant=migrationOnly"
+   ],
+   "wallSeconds": 2.345,
+   "line": "ledger-migrationOnly-S1000-mig0.045-long0.2-s7.json: busy 0.42/0.19 | 1476 ns/settlement-yr [1147-9805] (n=95) | gst 0.7333 -> 0.2389 | encWithin 1.356 -> 3.178 | pure90 0.366 -> 0.155 | keepsDominant 0.952 | encCapital 1.003 -> 4.185 | top10 3.652 | smallHalf 1.612 | mixed 0.4867 | hash e0d4c8a7"
+  },
+  {
+   "script": "ledger.mjs",
+   "args": [
+    "--S=1000",
+    "--variant=acculturate"
+   ],
+   "wallSeconds": 2.335,
+   "line": "ledger-acculturate-S1000-mig0.045-long0.2-s7.json: busy 0.47/0.63 | 1431 ns/settlement-yr [1107-4210] (n=95) | gst 0.7333 -> 0.5437 | encWithin 1.356 -> 1.666 | pure90 0.366 -> 0.801 | keepsDominant 0.957 | encCapital 1.003 -> 2 | top10 1.827 | smallHalf 1.134 | mixed 0.3316 | hash fd81e34d"
+  },
+  {
+   "script": "ledger.mjs",
+   "args": [
+    "--S=1000",
+    "--variant=strong"
+   ],
+   "wallSeconds": 2.38,
+   "line": "ledger-strong-S1000-mig0.045-long0.2-s7.json: busy 0.14/0.06 | 1612 ns/settlement-yr [1023-20800] (n=95) | gst 0.7333 -> 0.6673 | encWithin 1.356 -> 1.377 | pure90 0.366 -> 0.862 | keepsDominant 0.948 | encCapital 1.003 -> 1.581 | top10 1.43 | smallHalf 1.112 | mixed 0.2489 | hash 0807483b"
+  },
+  {
+   "script": "ledger.mjs",
+   "args": [
+    "--S=1000",
+    "--variant=migrationOnly",
+    "--longShare=0"
+   ],
+   "wallSeconds": 2.264,
+   "line": "ledger-migrationOnly-S1000-mig0.045-long0-s7.json: busy 0.01/0.47 | 884.9 ns/settlement-yr [800.2-2720] (n=95) | gst 0.7333 -> 0.7713 | encWithin 1.356 -> 1.304 | pure90 0.366 -> 0.446 | keepsDominant 0.954 | encCapital 1.003 -> 1.002 | top10 1.204 | smallHalf 1.403 | mixed 0.1798 | hash 27429073"
+  },
+  {
+   "script": "ledger.mjs",
+   "args": [
+    "--S=1000",
+    "--variant=acculturate",
+    "--longShare=0"
+   ],
+   "wallSeconds": 2.272,
+   "line": "ledger-acculturate-S1000-mig0.045-long0-s7.json: busy 1.16/0.06 | 942.4 ns/settlement-yr [739.5-2387] (n=95) | gst 0.7333 -> 0.9355 | encWithin 1.356 -> 1.078 | pure90 0.366 -> 0.862 | keepsDominant 0.956 | encCapital 1.003 -> 1 | top10 1.019 | smallHalf 1.092 | mixed 0.1151 | hash 656c46a4"
+  },
+  {
+   "script": "ledger.mjs",
+   "args": [
+    "--S=10000",
+    "--variant=acculturate",
+    "--years=30"
+   ],
+   "wallSeconds": 4.468,
+   "line": "ledger-acculturate-S10000-mig0.045-long0.2-s7.json: busy 0.01/1.1 | 1302 ns/settlement-yr [1269-2498] (n=25) | gst 0.694 -> 0.5527 | encWithin 1.408 -> 1.747 | pure90 0.37 -> 0.525 | keepsDominant 0.991 | encCapital 1.268 -> 2.774 | top10 2.232 | smallHalf 1.316 | mixed 0.2607 | hash d5395168"
+  }
+ ]
+}

@@ -1,0 +1,5105 @@
+{
+ "town-baseline-district-N10000-P1-s1.json": {
+  "cost": {
+   "horizontalNsPerPersonYear": {
+    "median": 3491,
+    "min": 3367,
+    "max": 3774,
+    "n": 95
+   },
+   "yearlyNsPerPersonYear": {
+    "median": 52.4,
+    "min": 43.26,
+    "max": 136,
+    "n": 95
+   },
+   "dayPassUs": {
+    "median": 94.9,
+    "min": 90.6,
+    "max": 271.2,
+    "n": 1140
+   },
+   "verticalNsPerBirth": {
+    "median": 557.1,
+    "min": 552.1,
+    "max": 575.6,
+    "n": 9
+   },
+   "cpuBusy": [
+    0.02,
+    0.05
+   ]
+  },
+  "secondHalf": {
+   "exogamy": {
+    "native": 0.179,
+    "g1": 0.312,
+    "g2": 0.393,
+    "g3plus": 0.293,
+    "establishedMinority": 0.285,
+    "n": [
+     2464,
+     916,
+     2082,
+     1429,
+     1149
+    ]
+   },
+   "teenProfiles": {
+    "heritage": 0.053,
+    "host": 0.076,
+    "mixed": 0.585,
+    "other": 0.286,
+    "personYears": 20309
+   },
+   "g2ChildRetention": {
+    "food": 0.492,
+    "all": 0.508,
+    "personYears": 19258
+   },
+   "g3ChildRetention": {
+    "food": 0.121,
+    "all": 0.156,
+    "personYears": 14690
+   }
+  },
+  "rows": [
+   {
+    "yr": 0,
+    "host": 0.5938,
+    "enc": 2.59,
+    "encCustoms": [
+     2.59,
+     2.59,
+     2.59,
+     2.59,
+     2.59
+    ],
+    "hostVariant": [
+     0.5938,
+     0.5938,
+     0.5938,
+     0.5938,
+     0.5938
+    ],
+    "foreign0to4": [
+     1,
+     0,
+     0,
+     0,
+     0
+    ],
+    "mixedNoMusic": 0,
+    "gst": 0.1614,
+    "dissim": 0.4796,
+    "g1FoodByYearsIn": [
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "yr": 25,
+    "host": 0.5353,
+    "enc": 3.053,
+    "encCustoms": [
+     2.857,
+     3.15,
+     2.751,
+     2.858,
+     3.334
+    ],
+    "hostVariant": [
+     0.5595,
+     0.5236,
+     0.5735,
+     0.5585,
+     0.5031
+    ],
+    "foreign0to4": [
+     0.501,
+     0.287,
+     0.144,
+     0.054,
+     0.014
+    ],
+    "mixedNoMusic": 0.4202,
+    "gst": 0.0048,
+    "dissim": 0.1031,
+    "g1FoodByYearsIn": [
+     0.988,
+     0.915,
+     0.789,
+     0.744
+    ]
+   },
+   {
+    "yr": 50,
+    "host": 0.546,
+    "enc": 2.984,
+    "encCustoms": [
+     2.847,
+     3.46,
+     2.808,
+     2.959,
+     4.115
+    ],
+    "hostVariant": [
+     0.5614,
+     0.4916,
+     0.5676,
+     0.5476,
+     0.4289
+    ],
+    "foreign0to4": [
+     0.342,
+     0.314,
+     0.192,
+     0.108,
+     0.044
+    ],
+    "mixedNoMusic": 0.6175,
+    "gst": 0.0027,
+    "dissim": 0.0748,
+    "g1FoodByYearsIn": [
+     0.972,
+     0.893,
+     0.792,
+     0.572
+    ]
+   },
+   {
+    "yr": 75,
+    "host": 0.5538,
+    "enc": 2.918,
+    "encCustoms": [
+     2.964,
+     3.931,
+     2.917,
+     3.076,
+     5.167
+    ],
+    "hostVariant": [
+     0.5466,
+     0.4448,
+     0.5535,
+     0.5334,
+     0.3397
+    ],
+    "foreign0to4": [
+     0.28,
+     0.328,
+     0.21,
+     0.12,
+     0.063
+    ],
+    "mixedNoMusic": 0.7185,
+    "gst": 0.0031,
+    "dissim": 0.0934,
+    "g1FoodByYearsIn": [
+     0.968,
+     0.878,
+     0.797,
+     0.558
+    ]
+   },
+   {
+    "yr": 100,
+    "host": 0.558,
+    "enc": 2.866,
+    "encCustoms": [
+     3.054,
+     4.472,
+     2.899,
+     3.196,
+     5.778
+    ],
+    "hostVariant": [
+     0.5333,
+     0.3916,
+     0.5531,
+     0.5171,
+     0.2788
+    ],
+    "foreign0to4": [
+     0.242,
+     0.33,
+     0.231,
+     0.132,
+     0.066
+    ],
+    "mixedNoMusic": 0.7771,
+    "gst": 0.0022,
+    "dissim": 0.0781,
+    "g1FoodByYearsIn": [
+     0.964,
+     0.891,
+     0.799,
+     0.552
+    ]
+   }
+  ],
+  "hash": "74b5471d"
+ },
+ "town-baseline-district-N10000-P30-s1-m0.0025.json": {
+  "cost": {
+   "horizontalNsPerPersonYear": {
+    "median": 148.2,
+    "min": 142.1,
+    "max": 174.9,
+    "n": 95
+   },
+   "yearlyNsPerPersonYear": {
+    "median": 50.06,
+    "min": 43.22,
+    "max": 175.9,
+    "n": 95
+   },
+   "dayPassUs": {
+    "median": 4.1,
+    "min": 3.2,
+    "max": 30.1,
+    "n": 1140
+   },
+   "verticalNsPerBirth": {
+    "median": 517.3,
+    "min": 514.4,
+    "max": 534.8,
+    "n": 9
+   },
+   "cpuBusy": [
+    1.54,
+    0.26
+   ]
+  },
+  "secondHalf": {
+   "exogamy": {
+    "native": 0.125,
+    "g1": 0.408,
+    "g2": 0.41,
+    "g3plus": 0.216,
+    "establishedMinority": 0.249,
+    "n": [
+     3262,
+     414,
+     1108,
+     1171,
+     1661
+    ]
+   },
+   "teenProfiles": {
+    "heritage": 0.034,
+    "host": 0.179,
+    "mixed": 0.507,
+    "other": 0.28,
+    "personYears": 13959
+   },
+   "g2ChildRetention": {
+    "food": 0.46,
+    "all": 0.484,
+    "personYears": 10357
+   },
+   "g3ChildRetention": {
+    "food": 0.094,
+    "all": 0.13,
+    "personYears": 11486
+   }
+  },
+  "rows": [
+   {
+    "yr": 0,
+    "host": 0.5938,
+    "enc": 2.59,
+    "encCustoms": [
+     2.59,
+     2.59,
+     2.59,
+     2.59,
+     2.59
+    ],
+    "hostVariant": [
+     0.5938,
+     0.5938,
+     0.5938,
+     0.5938,
+     0.5938
+    ],
+    "foreign0to4": [
+     1,
+     0,
+     0,
+     0,
+     0
+    ],
+    "mixedNoMusic": 0,
+    "gst": 0.1614,
+    "dissim": 0.4796,
+    "g1FoodByYearsIn": [
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "yr": 25,
+    "host": 0.5816,
+    "enc": 2.684,
+    "encCustoms": [
+     2.5,
+     2.728,
+     2.423,
+     2.57,
+     2.933
+    ],
+    "hostVariant": [
+     0.6075,
+     0.5755,
+     0.6197,
+     0.5974,
+     0.5488
+    ],
+    "foreign0to4": [
+     0.497,
+     0.292,
+     0.142,
+     0.052,
+     0.017
+    ],
+    "mixedNoMusic": 0.4245,
+    "gst": 0.0043,
+    "dissim": 0.0918,
+    "g1FoodByYearsIn": [
+     0.984,
+     0.919,
+     0.782,
+     0.722
+    ]
+   },
+   {
+    "yr": 50,
+    "host": 0.6499,
+    "enc": 2.244,
+    "encCustoms": [
+     2.205,
+     2.76,
+     2.133,
+     2.303,
+     3.29
+    ],
+    "hostVariant": [
+     0.6563,
+     0.5725,
+     0.6692,
+     0.6402,
+     0.5084
+    ],
+    "foreign0to4": [
+     0.366,
+     0.322,
+     0.184,
+     0.087,
+     0.041
+    ],
+    "mixedNoMusic": 0.6113,
+    "gst": 0.003,
+    "dissim": 0.0897,
+    "g1FoodByYearsIn": [
+     0.976,
+     0.868,
+     0.816,
+     0.595
+    ]
+   },
+   {
+    "yr": 75,
+    "host": 0.7246,
+    "enc": 1.855,
+    "encCustoms": [
+     1.987,
+     2.794,
+     1.883,
+     2.121,
+     3.744
+    ],
+    "hostVariant": [
+     0.6969,
+     0.568,
+     0.7182,
+     0.6721,
+     0.4612
+    ],
+    "foreign0to4": [
+     0.336,
+     0.368,
+     0.169,
+     0.084,
+     0.043
+    ],
+    "mixedNoMusic": 0.6989,
+    "gst": 0.002,
+    "dissim": 0.0896,
+    "g1FoodByYearsIn": [
+     0.952,
+     0.902,
+     0.786,
+     0.514
+    ]
+   },
+   {
+    "yr": 100,
+    "host": 0.7859,
+    "enc": 1.597,
+    "encCustoms": [
+     1.818,
+     2.768,
+     1.719,
+     1.94,
+     4.05
+    ],
+    "hostVariant": [
+     0.7322,
+     0.5706,
+     0.7556,
+     0.7071,
+     0.4305
+    ],
+    "foreign0to4": [
+     0.359,
+     0.392,
+     0.162,
+     0.055,
+     0.031
+    ],
+    "mixedNoMusic": 0.7244,
+    "gst": 0.0018,
+    "dissim": 0.1018,
+    "g1FoodByYearsIn": [
+     0.968,
+     0.878,
+     0.794,
+     0.515
+    ]
+   }
+  ],
+  "hash": "1ff65159"
+ },
+ "town-baseline-district-N10000-P30-s1-m0.01.json": {
+  "cost": {
+   "horizontalNsPerPersonYear": {
+    "median": 159.1,
+    "min": 141.4,
+    "max": 207.6,
+    "n": 95
+   },
+   "yearlyNsPerPersonYear": {
+    "median": 56.27,
+    "min": 44.31,
+    "max": 177.7,
+    "n": 95
+   },
+   "dayPassUs": {
+    "median": 4.4,
+    "min": 3.2,
+    "max": 48.8,
+    "n": 1140
+   },
+   "verticalNsPerBirth": {
+    "median": 580.3,
+    "min": 578.1,
+    "max": 607.6,
+    "n": 9
+   },
+   "cpuBusy": [
+    1.94,
+    0.61
+   ]
+  },
+  "secondHalf": {
+   "exogamy": {
+    "native": 0.307,
+    "g1": 0.31,
+    "g2": 0.399,
+    "g3plus": 0.403,
+    "establishedMinority": 0.35,
+    "n": [
+     1418,
+     2180,
+     3483,
+     1218,
+     531
+    ]
+   },
+   "teenProfiles": {
+    "heritage": 0.071,
+    "host": 0.008,
+    "mixed": 0.7,
+    "other": 0.221,
+    "personYears": 25071
+   },
+   "g2ChildRetention": {
+    "food": 0.536,
+    "all": 0.536,
+    "personYears": 31155
+   },
+   "g3ChildRetention": {
+    "food": 0.187,
+    "all": 0.216,
+    "personYears": 13755
+   }
+  },
+  "rows": [
+   {
+    "yr": 0,
+    "host": 0.5938,
+    "enc": 2.59,
+    "encCustoms": [
+     2.59,
+     2.59,
+     2.59,
+     2.59,
+     2.59
+    ],
+    "hostVariant": [
+     0.5938,
+     0.5938,
+     0.5938,
+     0.5938,
+     0.5938
+    ],
+    "foreign0to4": [
+     1,
+     0,
+     0,
+     0,
+     0
+    ],
+    "mixedNoMusic": 0,
+    "gst": 0.1614,
+    "dissim": 0.4796,
+    "g1FoodByYearsIn": [
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "yr": 25,
+    "host": 0.4561,
+    "enc": 3.794,
+    "encCustoms": [
+     3.587,
+     3.799,
+     3.569,
+     3.594,
+     3.995
+    ],
+    "hostVariant": [
+     0.4763,
+     0.4555,
+     0.4781,
+     0.4756,
+     0.4373
+    ],
+    "foreign0to4": [
+     0.5,
+     0.287,
+     0.147,
+     0.051,
+     0.014
+    ],
+    "mixedNoMusic": 0.4158,
+    "gst": 0.004,
+    "dissim": 0.0792,
+    "g1FoodByYearsIn": [
+     0.971,
+     0.925,
+     0.785,
+     0.684
+    ]
+   },
+   {
+    "yr": 50,
+    "host": 0.3773,
+    "enc": 4.719,
+    "encCustoms": [
+     4.501,
+     5.25,
+     4.577,
+     4.56,
+     5.459
+    ],
+    "hostVariant": [
+     0.3908,
+     0.3352,
+     0.3875,
+     0.3889,
+     0.3182
+    ],
+    "foreign0to4": [
+     0.333,
+     0.294,
+     0.21,
+     0.12,
+     0.044
+    ],
+    "mixedNoMusic": 0.6095,
+    "gst": 0.0022,
+    "dissim": 0.0613,
+    "g1FoodByYearsIn": [
+     0.973,
+     0.9,
+     0.795,
+     0.606
+    ]
+   },
+   {
+    "yr": 75,
+    "host": 0.2836,
+    "enc": 5.784,
+    "encCustoms": [
+     5.624,
+     6.279,
+     5.674,
+     5.689,
+     6.515
+    ],
+    "hostVariant": [
+     0.2903,
+     0.2329,
+     0.2856,
+     0.2865,
+     0.2078
+    ],
+    "foreign0to4": [
+     0.26,
+     0.251,
+     0.23,
+     0.172,
+     0.087
+    ],
+    "mixedNoMusic": 0.6956,
+    "gst": 0.0031,
+    "dissim": 0.0645,
+    "g1FoodByYearsIn": [
+     0.965,
+     0.919,
+     0.763,
+     0.592
+    ]
+   },
+   {
+    "yr": 100,
+    "host": 0.2069,
+    "enc": 6.269,
+    "encCustoms": [
+     5.986,
+     6.436,
+     6.087,
+     6.226,
+     6.641
+    ],
+    "hostVariant": [
+     0.1998,
+     0.159,
+     0.194,
+     0.1926,
+     0.1444
+    ],
+    "foreign0to4": [
+     0.235,
+     0.204,
+     0.227,
+     0.205,
+     0.129
+    ],
+    "mixedNoMusic": 0.7293,
+    "gst": 0.0021,
+    "dissim": 0.0566,
+    "g1FoodByYearsIn": [
+     0.978,
+     0.902,
+     0.804,
+     0.585
+    ]
+   }
+  ],
+  "hash": "1b7f00cb"
+ },
+ "town-baseline-district-N10000-P30-s1.json": {
+  "cost": {
+   "horizontalNsPerPersonYear": {
+    "median": 155.4,
+    "min": 139.6,
+    "max": 224.7,
+    "n": 95
+   },
+   "yearlyNsPerPersonYear": {
+    "median": 52.95,
+    "min": 44.25,
+    "max": 185.8,
+    "n": 95
+   },
+   "dayPassUs": {
+    "median": 4.2,
+    "min": 3.2,
+    "max": 40.4,
+    "n": 1140
+   },
+   "verticalNsPerBirth": {
+    "median": 565.8,
+    "min": 559.8,
+    "max": 599,
+    "n": 9
+   },
+   "cpuBusy": [
+    0.58,
+    0.9
+   ]
+  },
+  "secondHalf": {
+   "exogamy": {
+    "native": 0.196,
+    "g1": 0.34,
+    "g2": 0.411,
+    "g3plus": 0.301,
+    "establishedMinority": 0.298,
+    "n": [
+     2437,
+     904,
+     2080,
+     1446,
+     1135
+    ]
+   },
+   "teenProfiles": {
+    "heritage": 0.052,
+    "host": 0.081,
+    "mixed": 0.583,
+    "other": 0.284,
+    "personYears": 20463
+   },
+   "g2ChildRetention": {
+    "food": 0.48,
+    "all": 0.513,
+    "personYears": 19251
+   },
+   "g3ChildRetention": {
+    "food": 0.13,
+    "all": 0.153,
+    "personYears": 15244
+   }
+  },
+  "rows": [
+   {
+    "yr": 0,
+    "host": 0.5938,
+    "enc": 2.59,
+    "encCustoms": [
+     2.59,
+     2.59,
+     2.59,
+     2.59,
+     2.59
+    ],
+    "hostVariant": [
+     0.5938,
+     0.5938,
+     0.5938,
+     0.5938,
+     0.5938
+    ],
+    "foreign0to4": [
+     1,
+     0,
+     0,
+     0,
+     0
+    ],
+    "mixedNoMusic": 0,
+    "gst": 0.1614,
+    "dissim": 0.4796,
+    "g1FoodByYearsIn": [
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "yr": 25,
+    "host": 0.5335,
+    "enc": 3.069,
+    "encCustoms": [
+     2.843,
+     3.017,
+     2.788,
+     2.889,
+     3.333
+    ],
+    "hostVariant": [
+     0.5611,
+     0.5395,
+     0.5682,
+     0.5551,
+     0.5037
+    ],
+    "foreign0to4": [
+     0.505,
+     0.287,
+     0.143,
+     0.05,
+     0.016
+    ],
+    "mixedNoMusic": 0.4181,
+    "gst": 0.0045,
+    "dissim": 0.1057,
+    "g1FoodByYearsIn": [
+     0.972,
+     0.915,
+     0.808,
+     0.697
+    ]
+   },
+   {
+    "yr": 50,
+    "host": 0.5416,
+    "enc": 3.021,
+    "encCustoms": [
+     2.858,
+     3.447,
+     2.832,
+     3.095,
+     4.084
+    ],
+    "hostVariant": [
+     0.5624,
+     0.4934,
+     0.5642,
+     0.5316,
+     0.4327
+    ],
+    "foreign0to4": [
+     0.343,
+     0.316,
+     0.197,
+     0.103,
+     0.042
+    ],
+    "mixedNoMusic": 0.6208,
+    "gst": 0.0026,
+    "dissim": 0.0741,
+    "g1FoodByYearsIn": [
+     0.988,
+     0.917,
+     0.818,
+     0.561
+    ]
+   },
+   {
+    "yr": 75,
+    "host": 0.5468,
+    "enc": 2.981,
+    "encCustoms": [
+     3.002,
+     3.972,
+     2.948,
+     3.257,
+     5.036
+    ],
+    "hostVariant": [
+     0.5435,
+     0.4422,
+     0.5494,
+     0.5123,
+     0.3518
+    ],
+    "foreign0to4": [
+     0.271,
+     0.323,
+     0.214,
+     0.127,
+     0.064
+    ],
+    "mixedNoMusic": 0.7214,
+    "gst": 0.0026,
+    "dissim": 0.089,
+    "g1FoodByYearsIn": [
+     0.968,
+     0.908,
+     0.788,
+     0.533
+    ]
+   },
+   {
+    "yr": 100,
+    "host": 0.5533,
+    "enc": 2.91,
+    "encCustoms": [
+     2.986,
+     4.358,
+     2.977,
+     3.382,
+     5.622
+    ],
+    "hostVariant": [
+     0.5432,
+     0.4017,
+     0.5432,
+     0.4966,
+     0.2939
+    ],
+    "foreign0to4": [
+     0.238,
+     0.32,
+     0.233,
+     0.137,
+     0.072
+    ],
+    "mixedNoMusic": 0.7757,
+    "gst": 0.002,
+    "dissim": 0.0766,
+    "g1FoodByYearsIn": [
+     0.951,
+     0.866,
+     0.814,
+     0.543
+    ]
+   }
+  ],
+  "hash": "01ec329e"
+ },
+ "town-baseline-district-N10000-P30-s2.json": {
+  "cost": {
+   "horizontalNsPerPersonYear": {
+    "median": 155,
+    "min": 143.6,
+    "max": 192.6,
+    "n": 95
+   },
+   "yearlyNsPerPersonYear": {
+    "median": 53.41,
+    "min": 46.03,
+    "max": 183.6,
+    "n": 95
+   },
+   "dayPassUs": {
+    "median": 4.3,
+    "min": 3.2,
+    "max": 164.8,
+    "n": 1140
+   },
+   "verticalNsPerBirth": {
+    "median": 569.4,
+    "min": 565.6,
+    "max": 608.6,
+    "n": 9
+   },
+   "cpuBusy": [
+    0.05,
+    0.31
+   ]
+  },
+  "secondHalf": {
+   "exogamy": {
+    "native": 0.185,
+    "g1": 0.323,
+    "g2": 0.409,
+    "g3plus": 0.294,
+    "establishedMinority": 0.285,
+    "n": [
+     2373,
+     914,
+     2038,
+     1341,
+     1252
+    ]
+   },
+   "teenProfiles": {
+    "heritage": 0.052,
+    "host": 0.079,
+    "mixed": 0.598,
+    "other": 0.271,
+    "personYears": 19575
+   },
+   "g2ChildRetention": {
+    "food": 0.482,
+    "all": 0.502,
+    "personYears": 18878
+   },
+   "g3ChildRetention": {
+    "food": 0.142,
+    "all": 0.166,
+    "personYears": 14230
+   }
+  },
+  "rows": [
+   {
+    "yr": 0,
+    "host": 0.6053,
+    "enc": 2.508,
+    "encCustoms": [
+     2.508,
+     2.508,
+     2.508,
+     2.508,
+     2.508
+    ],
+    "hostVariant": [
+     0.6053,
+     0.6053,
+     0.6053,
+     0.6053,
+     0.6053
+    ],
+    "foreign0to4": [
+     1,
+     0,
+     0,
+     0,
+     0
+    ],
+    "mixedNoMusic": 0,
+    "gst": 0.1592,
+    "dissim": 0.477,
+    "g1FoodByYearsIn": [
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "yr": 25,
+    "host": 0.5478,
+    "enc": 2.932,
+    "encCustoms": [
+     2.753,
+     3.028,
+     2.682,
+     2.765,
+     3.187
+    ],
+    "hostVariant": [
+     0.5716,
+     0.5366,
+     0.5804,
+     0.569,
+     0.5169
+    ],
+    "foreign0to4": [
+     0.504,
+     0.293,
+     0.139,
+     0.049,
+     0.014
+    ],
+    "mixedNoMusic": 0.413,
+    "gst": 0.004,
+    "dissim": 0.095,
+    "g1FoodByYearsIn": [
+     0.968,
+     0.855,
+     0.777,
+     0.674
+    ]
+   },
+   {
+    "yr": 50,
+    "host": 0.5408,
+    "enc": 3.002,
+    "encCustoms": [
+     2.939,
+     3.581,
+     2.894,
+     2.917,
+     4.083
+    ],
+    "hostVariant": [
+     0.5482,
+     0.4758,
+     0.5526,
+     0.5504,
+     0.4256
+    ],
+    "foreign0to4": [
+     0.339,
+     0.322,
+     0.2,
+     0.099,
+     0.041
+    ],
+    "mixedNoMusic": 0.6187,
+    "gst": 0.0029,
+    "dissim": 0.0882,
+    "g1FoodByYearsIn": [
+     0.976,
+     0.93,
+     0.818,
+     0.602
+    ]
+   },
+   {
+    "yr": 75,
+    "host": 0.5466,
+    "enc": 2.976,
+    "encCustoms": [
+     3.015,
+     4.156,
+     2.874,
+     3.134,
+     5.023
+    ],
+    "hostVariant": [
+     0.5405,
+     0.4233,
+     0.5579,
+     0.5259,
+     0.3475
+    ],
+    "foreign0to4": [
+     0.265,
+     0.326,
+     0.227,
+     0.123,
+     0.06
+    ],
+    "mixedNoMusic": 0.7253,
+    "gst": 0.0022,
+    "dissim": 0.0801,
+    "g1FoodByYearsIn": [
+     0.976,
+     0.86,
+     0.769,
+     0.548
+    ]
+   },
+   {
+    "yr": 100,
+    "host": 0.5554,
+    "enc": 2.901,
+    "encCustoms": [
+     3.02,
+     4.534,
+     2.874,
+     3.248,
+     5.685
+    ],
+    "hostVariant": [
+     0.5392,
+     0.3887,
+     0.5567,
+     0.5132,
+     0.2894
+    ],
+    "foreign0to4": [
+     0.245,
+     0.327,
+     0.233,
+     0.13,
+     0.066
+    ],
+    "mixedNoMusic": 0.7704,
+    "gst": 0.0027,
+    "dissim": 0.0872,
+    "g1FoodByYearsIn": [
+     0.967,
+     0.904,
+     0.801,
+     0.547
+    ]
+   }
+  ],
+  "hash": "ac719214"
+ },
+ "town-baseline-district-N10000-P30-s3.json": {
+  "cost": {
+   "horizontalNsPerPersonYear": {
+    "median": 154.9,
+    "min": 140,
+    "max": 221.9,
+    "n": 95
+   },
+   "yearlyNsPerPersonYear": {
+    "median": 54.15,
+    "min": 44.12,
+    "max": 124.4,
+    "n": 95
+   },
+   "dayPassUs": {
+    "median": 4.3,
+    "min": 3.2,
+    "max": 33.5,
+    "n": 1140
+   },
+   "verticalNsPerBirth": {
+    "median": 562.2,
+    "min": 555.7,
+    "max": 577.7,
+    "n": 9
+   },
+   "cpuBusy": [
+    0.08,
+    0.49
+   ]
+  },
+  "secondHalf": {
+   "exogamy": {
+    "native": 0.194,
+    "g1": 0.336,
+    "g2": 0.403,
+    "g3plus": 0.34,
+    "establishedMinority": 0.298,
+    "n": [
+     2307,
+     910,
+     1999,
+     1482,
+     1260
+    ]
+   },
+   "teenProfiles": {
+    "heritage": 0.049,
+    "host": 0.072,
+    "mixed": 0.585,
+    "other": 0.294,
+    "personYears": 20005
+   },
+   "g2ChildRetention": {
+    "food": 0.485,
+    "all": 0.504,
+    "personYears": 18054
+   },
+   "g3ChildRetention": {
+    "food": 0.131,
+    "all": 0.162,
+    "personYears": 15393
+   }
+  },
+  "rows": [
+   {
+    "yr": 0,
+    "host": 0.6109,
+    "enc": 2.47,
+    "encCustoms": [
+     2.47,
+     2.47,
+     2.47,
+     2.47,
+     2.47
+    ],
+    "hostVariant": [
+     0.6109,
+     0.6109,
+     0.6109,
+     0.6109,
+     0.6109
+    ],
+    "foreign0to4": [
+     1,
+     0,
+     0,
+     0,
+     0
+    ],
+    "mixedNoMusic": 0,
+    "gst": 0.1699,
+    "dissim": 0.4892,
+    "g1FoodByYearsIn": [
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "yr": 25,
+    "host": 0.5444,
+    "enc": 2.959,
+    "encCustoms": [
+     2.785,
+     2.99,
+     2.664,
+     2.806,
+     3.208
+    ],
+    "hostVariant": [
+     0.5657,
+     0.5399,
+     0.5832,
+     0.5642,
+     0.5147
+    ],
+    "foreign0to4": [
+     0.504,
+     0.283,
+     0.147,
+     0.051,
+     0.014
+    ],
+    "mixedNoMusic": 0.418,
+    "gst": 0.0071,
+    "dissim": 0.1086,
+    "g1FoodByYearsIn": [
+     0.972,
+     0.921,
+     0.768,
+     0.646
+    ]
+   },
+   {
+    "yr": 50,
+    "host": 0.5452,
+    "enc": 2.952,
+    "encCustoms": [
+     2.832,
+     3.539,
+     2.745,
+     2.987,
+     4.05
+    ],
+    "hostVariant": [
+     0.56,
+     0.4774,
+     0.5724,
+     0.5413,
+     0.4265
+    ],
+    "foreign0to4": [
+     0.338,
+     0.316,
+     0.2,
+     0.104,
+     0.042
+    ],
+    "mixedNoMusic": 0.6262,
+    "gst": 0.0045,
+    "dissim": 0.0869,
+    "g1FoodByYearsIn": [
+     0.984,
+     0.905,
+     0.802,
+     0.553
+    ]
+   },
+   {
+    "yr": 75,
+    "host": 0.5432,
+    "enc": 2.984,
+    "encCustoms": [
+     2.96,
+     4.141,
+     2.865,
+     3.184,
+     4.874
+    ],
+    "hostVariant": [
+     0.5434,
+     0.4167,
+     0.5578,
+     0.5185,
+     0.3524
+    ],
+    "foreign0to4": [
+     0.268,
+     0.319,
+     0.221,
+     0.129,
+     0.063
+    ],
+    "mixedNoMusic": 0.7264,
+    "gst": 0.0019,
+    "dissim": 0.0784,
+    "g1FoodByYearsIn": [
+     0.968,
+     0.907,
+     0.789,
+     0.526
+    ]
+   },
+   {
+    "yr": 100,
+    "host": 0.5529,
+    "enc": 2.913,
+    "encCustoms": [
+     3.049,
+     4.621,
+     2.884,
+     3.224,
+     5.466
+    ],
+    "hostVariant": [
+     0.5349,
+     0.3749,
+     0.5573,
+     0.5155,
+     0.3029
+    ],
+    "foreign0to4": [
+     0.238,
+     0.318,
+     0.238,
+     0.132,
+     0.073
+    ],
+    "mixedNoMusic": 0.774,
+    "gst": 0.0017,
+    "dissim": 0.0659,
+    "g1FoodByYearsIn": [
+     0.964,
+     0.898,
+     0.791,
+     0.536
+    ]
+   }
+  ],
+  "hash": "0e1d9a93"
+ },
+ "town-baseline-district-N10000-P365-s1.json": {
+  "cost": {
+   "horizontalNsPerPersonYear": {
+    "median": 47.03,
+    "min": 35.27,
+    "max": 72.39,
+    "n": 95
+   },
+   "yearlyNsPerPersonYear": {
+    "median": 52.49,
+    "min": 43.53,
+    "max": 135.6,
+    "n": 95
+   },
+   "dayPassUs": {
+    "median": 1.4,
+    "min": 0.4,
+    "max": 22.4,
+    "n": 1140
+   },
+   "verticalNsPerBirth": {
+    "median": 564.7,
+    "min": 562,
+    "max": 586.3,
+    "n": 9
+   },
+   "cpuBusy": [
+    0.05,
+    0.08
+   ]
+  },
+  "secondHalf": {
+   "exogamy": {
+    "native": 0.174,
+    "g1": 0.339,
+    "g2": 0.415,
+    "g3plus": 0.321,
+    "establishedMinority": 0.288,
+    "n": [
+     2388,
+     921,
+     2098,
+     1425,
+     1144
+    ]
+   },
+   "teenProfiles": {
+    "heritage": 0.042,
+    "host": 0.076,
+    "mixed": 0.603,
+    "other": 0.279,
+    "personYears": 20445
+   },
+   "g2ChildRetention": {
+    "food": 0.478,
+    "all": 0.5,
+    "personYears": 19390
+   },
+   "g3ChildRetention": {
+    "food": 0.122,
+    "all": 0.158,
+    "personYears": 14956
+   }
+  },
+  "rows": [
+   {
+    "yr": 0,
+    "host": 0.5938,
+    "enc": 2.59,
+    "encCustoms": [
+     2.59,
+     2.59,
+     2.59,
+     2.59,
+     2.59
+    ],
+    "hostVariant": [
+     0.5938,
+     0.5938,
+     0.5938,
+     0.5938,
+     0.5938
+    ],
+    "foreign0to4": [
+     1,
+     0,
+     0,
+     0,
+     0
+    ],
+    "mixedNoMusic": 0,
+    "gst": 0.1614,
+    "dissim": 0.4796,
+    "g1FoodByYearsIn": [
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "yr": 25,
+    "host": 0.5351,
+    "enc": 3.055,
+    "encCustoms": [
+     2.833,
+     3.099,
+     2.833,
+     2.891,
+     3.332
+    ],
+    "hostVariant": [
+     0.561,
+     0.5297,
+     0.5621,
+     0.5546,
+     0.5036
+    ],
+    "foreign0to4": [
+     0.498,
+     0.286,
+     0.145,
+     0.057,
+     0.014
+    ],
+    "mixedNoMusic": 0.4232,
+    "gst": 0.0051,
+    "dissim": 0.108,
+    "g1FoodByYearsIn": [
+     0.984,
+     0.911,
+     0.776,
+     0.682
+    ]
+   },
+   {
+    "yr": 50,
+    "host": 0.5545,
+    "enc": 2.913,
+    "encCustoms": [
+     2.83,
+     3.53,
+     2.846,
+     2.911,
+     4.075
+    ],
+    "hostVariant": [
+     0.5633,
+     0.4848,
+     0.5626,
+     0.5532,
+     0.4331
+    ],
+    "foreign0to4": [
+     0.33,
+     0.323,
+     0.2,
+     0.106,
+     0.041
+    ],
+    "mixedNoMusic": 0.6321,
+    "gst": 0.0018,
+    "dissim": 0.0723,
+    "g1FoodByYearsIn": [
+     0.964,
+     0.88,
+     0.777,
+     0.579
+    ]
+   },
+   {
+    "yr": 75,
+    "host": 0.5573,
+    "enc": 2.891,
+    "encCustoms": [
+     3.017,
+     4.163,
+     2.918,
+     3.031,
+     5.023
+    ],
+    "hostVariant": [
+     0.5408,
+     0.424,
+     0.5548,
+     0.5382,
+     0.3518
+    ],
+    "foreign0to4": [
+     0.268,
+     0.327,
+     0.222,
+     0.126,
+     0.057
+    ],
+    "mixedNoMusic": 0.726,
+    "gst": 0.0031,
+    "dissim": 0.0881,
+    "g1FoodByYearsIn": [
+     0.976,
+     0.924,
+     0.786,
+     0.535
+    ]
+   },
+   {
+    "yr": 100,
+    "host": 0.5626,
+    "enc": 2.834,
+    "encCustoms": [
+     3.009,
+     4.535,
+     2.887,
+     3.083,
+     5.629
+    ],
+    "hostVariant": [
+     0.5389,
+     0.385,
+     0.5557,
+     0.5296,
+     0.2916
+    ],
+    "foreign0to4": [
+     0.245,
+     0.32,
+     0.234,
+     0.133,
+     0.068
+    ],
+    "mixedNoMusic": 0.7784,
+    "gst": 0.002,
+    "dissim": 0.0678,
+    "g1FoodByYearsIn": [
+     0.972,
+     0.879,
+     0.806,
+     0.548
+    ]
+   }
+  ],
+  "hash": "46bad6d3"
+ },
+ "town-baseline-district-N100000-P1-s1.json": {
+  "cost": {
+   "horizontalNsPerPersonYear": {
+    "median": 3513,
+    "min": 3375,
+    "max": 3631,
+    "n": 95
+   },
+   "yearlyNsPerPersonYear": {
+    "median": 54.87,
+    "min": 45.33,
+    "max": 122.6,
+    "n": 95
+   },
+   "dayPassUs": {
+    "median": 954.7,
+    "min": 913.2,
+    "max": 1446,
+    "n": 1140
+   },
+   "verticalNsPerBirth": {
+    "median": 510.9,
+    "min": 507.2,
+    "max": 527.5,
+    "n": 9
+   },
+   "cpuBusy": [
+    0.28,
+    0
+   ]
+  },
+  "secondHalf": {
+   "exogamy": {
+    "native": 0.173,
+    "g1": 0.279,
+    "g2": 0.365,
+    "g3plus": 0.275,
+    "establishedMinority": 0.267,
+    "n": [
+     24124,
+     9172,
+     20256,
+     14150,
+     11546
+    ]
+   },
+   "teenProfiles": {
+    "heritage": 0.045,
+    "host": 0.077,
+    "mixed": 0.595,
+    "other": 0.283,
+    "personYears": 199594
+   },
+   "g2ChildRetention": {
+    "food": 0.476,
+    "all": 0.5,
+    "personYears": 188698
+   },
+   "g3ChildRetention": {
+    "food": 0.135,
+    "all": 0.164,
+    "personYears": 144528
+   }
+  },
+  "rows": [
+   {
+    "yr": 0,
+    "host": 0.599,
+    "enc": 2.55,
+    "encCustoms": [
+     2.55,
+     2.55,
+     2.55,
+     2.55,
+     2.55
+    ],
+    "hostVariant": [
+     0.599,
+     0.599,
+     0.599,
+     0.599,
+     0.599
+    ],
+    "foreign0to4": [
+     1,
+     0,
+     0,
+     0,
+     0
+    ],
+    "mixedNoMusic": 0,
+    "gst": 0.1647,
+    "dissim": 0.4811,
+    "g1FoodByYearsIn": [
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "yr": 25,
+    "host": 0.5348,
+    "enc": 3.046,
+    "encCustoms": [
+     2.825,
+     3.126,
+     2.735,
+     2.879,
+     3.292
+    ],
+    "hostVariant": [
+     0.5621,
+     0.5251,
+     0.5743,
+     0.555,
+     0.5065
+    ],
+    "foreign0to4": [
+     0.497,
+     0.29,
+     0.145,
+     0.053,
+     0.015
+    ],
+    "mixedNoMusic": 0.4252,
+    "gst": 0.0025,
+    "dissim": 0.0523,
+    "g1FoodByYearsIn": [
+     0.97,
+     0.904,
+     0.785,
+     0.691
+    ]
+   },
+   {
+    "yr": 50,
+    "host": 0.541,
+    "enc": 3.008,
+    "encCustoms": [
+     2.851,
+     3.579,
+     2.872,
+     3.034,
+     4.126
+    ],
+    "hostVariant": [
+     0.5593,
+     0.4766,
+     0.557,
+     0.5368,
+     0.4247
+    ],
+    "foreign0to4": [
+     0.329,
+     0.321,
+     0.204,
+     0.106,
+     0.041
+    ],
+    "mixedNoMusic": 0.6312,
+    "gst": 0.0004,
+    "dissim": 0.0265,
+    "g1FoodByYearsIn": [
+     0.973,
+     0.905,
+     0.795,
+     0.569
+    ]
+   },
+   {
+    "yr": 75,
+    "host": 0.5518,
+    "enc": 2.929,
+    "encCustoms": [
+     2.937,
+     4.075,
+     2.933,
+     3.186,
+     4.977
+    ],
+    "hostVariant": [
+     0.5494,
+     0.4294,
+     0.5501,
+     0.52,
+     0.3528
+    ],
+    "foreign0to4": [
+     0.264,
+     0.327,
+     0.225,
+     0.124,
+     0.06
+    ],
+    "mixedNoMusic": 0.7262,
+    "gst": 0.0003,
+    "dissim": 0.0287,
+    "g1FoodByYearsIn": [
+     0.968,
+     0.901,
+     0.799,
+     0.546
+    ]
+   },
+   {
+    "yr": 100,
+    "host": 0.5591,
+    "enc": 2.872,
+    "encCustoms": [
+     2.995,
+     4.491,
+     2.941,
+     3.284,
+     5.634
+    ],
+    "hostVariant": [
+     0.5423,
+     0.3911,
+     0.5491,
+     0.5089,
+     0.2946
+    ],
+    "foreign0to4": [
+     0.241,
+     0.323,
+     0.234,
+     0.135,
+     0.068
+    ],
+    "mixedNoMusic": 0.7705,
+    "gst": 0.0002,
+    "dissim": 0.0223,
+    "g1FoodByYearsIn": [
+     0.973,
+     0.91,
+     0.79,
+     0.556
+    ]
+   }
+  ],
+  "hash": "2ee6c317"
+ },
+ "town-baseline-district-N100000-P30-s1.json": {
+  "cost": {
+   "horizontalNsPerPersonYear": {
+    "median": 148.8,
+    "min": 138,
+    "max": 191.9,
+    "n": 95
+   },
+   "yearlyNsPerPersonYear": {
+    "median": 53.72,
+    "min": 42.55,
+    "max": 113,
+    "n": 95
+   },
+   "dayPassUs": {
+    "median": 40.6,
+    "min": 35,
+    "max": 124.3,
+    "n": 1140
+   },
+   "verticalNsPerBirth": {
+    "median": 498.7,
+    "min": 497.1,
+    "max": 514.8,
+    "n": 9
+   },
+   "cpuBusy": [
+    0,
+    0.09
+   ]
+  },
+  "secondHalf": {
+   "exogamy": {
+    "native": 0.177,
+    "g1": 0.272,
+    "g2": 0.365,
+    "g3plus": 0.285,
+    "establishedMinority": 0.271,
+    "n": [
+     24180,
+     9137,
+     20023,
+     14415,
+     11415
+    ]
+   },
+   "teenProfiles": {
+    "heritage": 0.045,
+    "host": 0.078,
+    "mixed": 0.597,
+    "other": 0.28,
+    "personYears": 200668
+   },
+   "g2ChildRetention": {
+    "food": 0.482,
+    "all": 0.499,
+    "personYears": 186928
+   },
+   "g3ChildRetention": {
+    "food": 0.139,
+    "all": 0.164,
+    "personYears": 147325
+   }
+  },
+  "rows": [
+   {
+    "yr": 0,
+    "host": 0.599,
+    "enc": 2.55,
+    "encCustoms": [
+     2.55,
+     2.55,
+     2.55,
+     2.55,
+     2.55
+    ],
+    "hostVariant": [
+     0.599,
+     0.599,
+     0.599,
+     0.599,
+     0.599
+    ],
+    "foreign0to4": [
+     1,
+     0,
+     0,
+     0,
+     0
+    ],
+    "mixedNoMusic": 0,
+    "gst": 0.1647,
+    "dissim": 0.4811,
+    "g1FoodByYearsIn": [
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "yr": 25,
+    "host": 0.5346,
+    "enc": 3.047,
+    "encCustoms": [
+     2.836,
+     3.103,
+     2.752,
+     2.882,
+     3.286
+    ],
+    "hostVariant": [
+     0.5606,
+     0.5279,
+     0.5717,
+     0.5549,
+     0.5071
+    ],
+    "foreign0to4": [
+     0.499,
+     0.289,
+     0.146,
+     0.052,
+     0.014
+    ],
+    "mixedNoMusic": 0.4248,
+    "gst": 0.0028,
+    "dissim": 0.053,
+    "g1FoodByYearsIn": [
+     0.972,
+     0.905,
+     0.794,
+     0.686
+    ]
+   },
+   {
+    "yr": 50,
+    "host": 0.5386,
+    "enc": 3.028,
+    "encCustoms": [
+     2.882,
+     3.588,
+     2.884,
+     3.01,
+     4.115
+    ],
+    "hostVariant": [
+     0.5556,
+     0.4759,
+     0.5557,
+     0.5399,
+     0.4255
+    ],
+    "foreign0to4": [
+     0.33,
+     0.318,
+     0.202,
+     0.107,
+     0.043
+    ],
+    "mixedNoMusic": 0.629,
+    "gst": 0.0003,
+    "dissim": 0.0248,
+    "g1FoodByYearsIn": [
+     0.974,
+     0.901,
+     0.792,
+     0.573
+    ]
+   },
+   {
+    "yr": 75,
+    "host": 0.5522,
+    "enc": 2.928,
+    "encCustoms": [
+     2.961,
+     4.082,
+     2.915,
+     3.137,
+     4.971
+    ],
+    "hostVariant": [
+     0.5462,
+     0.429,
+     0.5524,
+     0.5257,
+     0.3527
+    ],
+    "foreign0to4": [
+     0.266,
+     0.326,
+     0.222,
+     0.125,
+     0.062
+    ],
+    "mixedNoMusic": 0.7256,
+    "gst": 0.0002,
+    "dissim": 0.0258,
+    "g1FoodByYearsIn": [
+     0.972,
+     0.905,
+     0.793,
+     0.54
+    ]
+   },
+   {
+    "yr": 100,
+    "host": 0.5586,
+    "enc": 2.875,
+    "encCustoms": [
+     3.012,
+     4.471,
+     2.938,
+     3.246,
+     5.632
+    ],
+    "hostVariant": [
+     0.5396,
+     0.3932,
+     0.549,
+     0.5133,
+     0.2937
+    ],
+    "foreign0to4": [
+     0.238,
+     0.323,
+     0.237,
+     0.133,
+     0.069
+    ],
+    "mixedNoMusic": 0.7757,
+    "gst": 0.0002,
+    "dissim": 0.0239,
+    "g1FoodByYearsIn": [
+     0.97,
+     0.902,
+     0.789,
+     0.546
+    ]
+   }
+  ],
+  "hash": "9aa1e024"
+ },
+ "town-baseline-district-N100000-P30-s2.json": {
+  "cost": {
+   "horizontalNsPerPersonYear": {
+    "median": 149.3,
+    "min": 137.8,
+    "max": 165.5,
+    "n": 95
+   },
+   "yearlyNsPerPersonYear": {
+    "median": 53.27,
+    "min": 44.26,
+    "max": 67.79,
+    "n": 95
+   },
+   "dayPassUs": {
+    "median": 40.6,
+    "min": 34.8,
+    "max": 81.8,
+    "n": 1140
+   },
+   "verticalNsPerBirth": {
+    "median": 500.3,
+    "min": 497.9,
+    "max": 523.7,
+    "n": 9
+   },
+   "cpuBusy": [
+    0.02,
+    0.05
+   ]
+  },
+  "secondHalf": {
+   "exogamy": {
+    "native": 0.174,
+    "g1": 0.273,
+    "g2": 0.35,
+    "g3plus": 0.273,
+    "establishedMinority": 0.271,
+    "n": [
+     24627,
+     9051,
+     19898,
+     14220,
+     11516
+    ]
+   },
+   "teenProfiles": {
+    "heritage": 0.045,
+    "host": 0.078,
+    "mixed": 0.603,
+    "other": 0.274,
+    "personYears": 197660
+   },
+   "g2ChildRetention": {
+    "food": 0.476,
+    "all": 0.502,
+    "personYears": 185079
+   },
+   "g3ChildRetention": {
+    "food": 0.132,
+    "all": 0.165,
+    "personYears": 143959
+   }
+  },
+  "rows": [
+   {
+    "yr": 0,
+    "host": 0.601,
+    "enc": 2.536,
+    "encCustoms": [
+     2.536,
+     2.536,
+     2.536,
+     2.536,
+     2.536
+    ],
+    "hostVariant": [
+     0.601,
+     0.601,
+     0.601,
+     0.601,
+     0.601
+    ],
+    "foreign0to4": [
+     1,
+     0,
+     0,
+     0,
+     0
+    ],
+    "mixedNoMusic": 0,
+    "gst": 0.1603,
+    "dissim": 0.4771,
+    "g1FoodByYearsIn": [
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "yr": 25,
+    "host": 0.5377,
+    "enc": 3.018,
+    "encCustoms": [
+     2.822,
+     3.079,
+     2.73,
+     2.877,
+     3.265
+    ],
+    "hostVariant": [
+     0.562,
+     0.5302,
+     0.5744,
+     0.5549,
+     0.5088
+    ],
+    "foreign0to4": [
+     0.5,
+     0.29,
+     0.144,
+     0.051,
+     0.015
+    ],
+    "mixedNoMusic": 0.4219,
+    "gst": 0.0024,
+    "dissim": 0.0554,
+    "g1FoodByYearsIn": [
+     0.969,
+     0.888,
+     0.8,
+     0.688
+    ]
+   },
+   {
+    "yr": 50,
+    "host": 0.5431,
+    "enc": 2.988,
+    "encCustoms": [
+     2.887,
+     3.521,
+     2.846,
+     2.992,
+     4.08
+    ],
+    "hostVariant": [
+     0.5546,
+     0.4822,
+     0.5604,
+     0.5412,
+     0.4283
+    ],
+    "foreign0to4": [
+     0.332,
+     0.32,
+     0.203,
+     0.105,
+     0.041
+    ],
+    "mixedNoMusic": 0.6271,
+    "gst": 0.0002,
+    "dissim": 0.0236,
+    "g1FoodByYearsIn": [
+     0.967,
+     0.908,
+     0.804,
+     0.574
+    ]
+   },
+   {
+    "yr": 75,
+    "host": 0.5538,
+    "enc": 2.91,
+    "encCustoms": [
+     2.942,
+     4.027,
+     2.935,
+     3.129,
+     4.909
+    ],
+    "hostVariant": [
+     0.5488,
+     0.4338,
+     0.5495,
+     0.5256,
+     0.357
+    ],
+    "foreign0to4": [
+     0.268,
+     0.325,
+     0.221,
+     0.128,
+     0.058
+    ],
+    "mixedNoMusic": 0.7235,
+    "gst": 0.0002,
+    "dissim": 0.0226,
+    "g1FoodByYearsIn": [
+     0.97,
+     0.896,
+     0.801,
+     0.543
+    ]
+   },
+   {
+    "yr": 100,
+    "host": 0.5603,
+    "enc": 2.862,
+    "encCustoms": [
+     2.98,
+     4.437,
+     2.976,
+     3.232,
+     5.594
+    ],
+    "hostVariant": [
+     0.5444,
+     0.3967,
+     0.5444,
+     0.514,
+     0.2988
+    ],
+    "foreign0to4": [
+     0.241,
+     0.325,
+     0.234,
+     0.133,
+     0.067
+    ],
+    "mixedNoMusic": 0.7711,
+    "gst": 0.0003,
+    "dissim": 0.0274,
+    "g1FoodByYearsIn": [
+     0.978,
+     0.897,
+     0.79,
+     0.539
+    ]
+   }
+  ],
+  "hash": "fa04bffa"
+ },
+ "town-baseline-district-N100000-P30-s3.json": {
+  "cost": {
+   "horizontalNsPerPersonYear": {
+    "median": 150.5,
+    "min": 137.2,
+    "max": 226.8,
+    "n": 95
+   },
+   "yearlyNsPerPersonYear": {
+    "median": 53.08,
+    "min": 43.88,
+    "max": 134.3,
+    "n": 95
+   },
+   "dayPassUs": {
+    "median": 40.9,
+    "min": 34.8,
+    "max": 84,
+    "n": 1140
+   },
+   "verticalNsPerBirth": {
+    "median": 501.8,
+    "min": 498.1,
+    "max": 525.4,
+    "n": 9
+   },
+   "cpuBusy": [
+    0.02,
+    0.37
+   ]
+  },
+  "secondHalf": {
+   "exogamy": {
+    "native": 0.176,
+    "g1": 0.279,
+    "g2": 0.363,
+    "g3plus": 0.288,
+    "establishedMinority": 0.268,
+    "n": [
+     23592,
+     8994,
+     20026,
+     15237,
+     11723
+    ]
+   },
+   "teenProfiles": {
+    "heritage": 0.045,
+    "host": 0.077,
+    "mixed": 0.595,
+    "other": 0.282,
+    "personYears": 203147
+   },
+   "g2ChildRetention": {
+    "food": 0.487,
+    "all": 0.508,
+    "personYears": 185725
+   },
+   "g3ChildRetention": {
+    "food": 0.139,
+    "all": 0.167,
+    "personYears": 148969
+   }
+  },
+  "rows": [
+   {
+    "yr": 0,
+    "host": 0.5993,
+    "enc": 2.548,
+    "encCustoms": [
+     2.548,
+     2.548,
+     2.548,
+     2.548,
+     2.548
+    ],
+    "hostVariant": [
+     0.5993,
+     0.5993,
+     0.5993,
+     0.5993,
+     0.5993
+    ],
+    "foreign0to4": [
+     1,
+     0,
+     0,
+     0,
+     0
+    ],
+    "mixedNoMusic": 0,
+    "gst": 0.1669,
+    "dissim": 0.4858,
+    "g1FoodByYearsIn": [
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "yr": 25,
+    "host": 0.5304,
+    "enc": 3.082,
+    "encCustoms": [
+     2.853,
+     3.132,
+     2.752,
+     2.912,
+     3.322
+    ],
+    "hostVariant": [
+     0.5583,
+     0.5242,
+     0.5717,
+     0.5508,
+     0.5027
+    ],
+    "foreign0to4": [
+     0.498,
+     0.289,
+     0.146,
+     0.052,
+     0.015
+    ],
+    "mixedNoMusic": 0.425,
+    "gst": 0.0029,
+    "dissim": 0.0535,
+    "g1FoodByYearsIn": [
+     0.971,
+     0.915,
+     0.788,
+     0.691
+    ]
+   },
+   {
+    "yr": 50,
+    "host": 0.5341,
+    "enc": 3.065,
+    "encCustoms": [
+     2.916,
+     3.618,
+     2.878,
+     3.074,
+     4.195
+    ],
+    "hostVariant": [
+     0.551,
+     0.4727,
+     0.5565,
+     0.532,
+     0.4176
+    ],
+    "foreign0to4": [
+     0.329,
+     0.315,
+     0.205,
+     0.108,
+     0.043
+    ],
+    "mixedNoMusic": 0.6332,
+    "gst": 0.0003,
+    "dissim": 0.0271,
+    "g1FoodByYearsIn": [
+     0.969,
+     0.91,
+     0.798,
+     0.575
+    ]
+   },
+   {
+    "yr": 75,
+    "host": 0.5461,
+    "enc": 2.977,
+    "encCustoms": [
+     2.985,
+     4.1,
+     2.959,
+     3.24,
+     5.093
+    ],
+    "hostVariant": [
+     0.5434,
+     0.4269,
+     0.5466,
+     0.5139,
+     0.3421
+    ],
+    "foreign0to4": [
+     0.263,
+     0.324,
+     0.224,
+     0.127,
+     0.062
+    ],
+    "mixedNoMusic": 0.7295,
+    "gst": 0.0002,
+    "dissim": 0.0212,
+    "g1FoodByYearsIn": [
+     0.968,
+     0.894,
+     0.801,
+     0.545
+    ]
+   },
+   {
+    "yr": 100,
+    "host": 0.5537,
+    "enc": 2.92,
+    "encCustoms": [
+     3.03,
+     4.534,
+     2.98,
+     3.308,
+     5.743
+    ],
+    "hostVariant": [
+     0.5383,
+     0.3891,
+     0.5443,
+     0.5065,
+     0.2872
+    ],
+    "foreign0to4": [
+     0.238,
+     0.318,
+     0.235,
+     0.137,
+     0.071
+    ],
+    "mixedNoMusic": 0.775,
+    "gst": 0.0002,
+    "dissim": 0.0252,
+    "g1FoodByYearsIn": [
+     0.969,
+     0.905,
+     0.805,
+     0.545
+    ]
+   }
+  ],
+  "hash": "8feadce7"
+ },
+ "town-baseline-district-N100000-P365-s1.json": {
+  "cost": {
+   "horizontalNsPerPersonYear": {
+    "median": 42.95,
+    "min": 29.08,
+    "max": 54.01,
+    "n": 95
+   },
+   "yearlyNsPerPersonYear": {
+    "median": 51.89,
+    "min": 42.73,
+    "max": 122.8,
+    "n": 95
+   },
+   "dayPassUs": {
+    "median": 11.6,
+    "min": 6.2,
+    "max": 35.7,
+    "n": 1140
+   },
+   "verticalNsPerBirth": {
+    "median": 498.4,
+    "min": 494.3,
+    "max": 517.3,
+    "n": 9
+   },
+   "cpuBusy": [
+    0.03,
+    0.42
+   ]
+  },
+  "secondHalf": {
+   "exogamy": {
+    "native": 0.18,
+    "g1": 0.282,
+    "g2": 0.365,
+    "g3plus": 0.284,
+    "establishedMinority": 0.261,
+    "n": [
+     23995,
+     9163,
+     19930,
+     14707,
+     11363
+    ]
+   },
+   "teenProfiles": {
+    "heritage": 0.046,
+    "host": 0.08,
+    "mixed": 0.595,
+    "other": 0.279,
+    "personYears": 201498
+   },
+   "g2ChildRetention": {
+    "food": 0.482,
+    "all": 0.502,
+    "personYears": 185955
+   },
+   "g3ChildRetention": {
+    "food": 0.129,
+    "all": 0.16,
+    "personYears": 148581
+   }
+  },
+  "rows": [
+   {
+    "yr": 0,
+    "host": 0.599,
+    "enc": 2.55,
+    "encCustoms": [
+     2.55,
+     2.55,
+     2.55,
+     2.55,
+     2.55
+    ],
+    "hostVariant": [
+     0.599,
+     0.599,
+     0.599,
+     0.599,
+     0.599
+    ],
+    "foreign0to4": [
+     1,
+     0,
+     0,
+     0,
+     0
+    ],
+    "mixedNoMusic": 0,
+    "gst": 0.1647,
+    "dissim": 0.4811,
+    "g1FoodByYearsIn": [
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "yr": 25,
+    "host": 0.5346,
+    "enc": 3.046,
+    "encCustoms": [
+     2.823,
+     3.095,
+     2.741,
+     2.916,
+     3.291
+    ],
+    "hostVariant": [
+     0.5624,
+     0.5287,
+     0.5734,
+     0.5505,
+     0.5064
+    ],
+    "foreign0to4": [
+     0.493,
+     0.293,
+     0.146,
+     0.054,
+     0.015
+    ],
+    "mixedNoMusic": 0.4294,
+    "gst": 0.0027,
+    "dissim": 0.0518,
+    "g1FoodByYearsIn": [
+     0.965,
+     0.899,
+     0.79,
+     0.697
+    ]
+   },
+   {
+    "yr": 50,
+    "host": 0.5408,
+    "enc": 3.009,
+    "encCustoms": [
+     2.852,
+     3.548,
+     2.838,
+     3.043,
+     4.12
+    ],
+    "hostVariant": [
+     0.5591,
+     0.4801,
+     0.5613,
+     0.5359,
+     0.4247
+    ],
+    "foreign0to4": [
+     0.329,
+     0.318,
+     0.202,
+     0.108,
+     0.043
+    ],
+    "mixedNoMusic": 0.6329,
+    "gst": 0.0003,
+    "dissim": 0.0265,
+    "g1FoodByYearsIn": [
+     0.971,
+     0.886,
+     0.789,
+     0.563
+    ]
+   },
+   {
+    "yr": 75,
+    "host": 0.5545,
+    "enc": 2.909,
+    "encCustoms": [
+     2.939,
+     4.049,
+     2.887,
+     3.165,
+     4.972
+    ],
+    "hostVariant": [
+     0.549,
+     0.4321,
+     0.5553,
+     0.5223,
+     0.3523
+    ],
+    "foreign0to4": [
+     0.265,
+     0.326,
+     0.221,
+     0.127,
+     0.06
+    ],
+    "mixedNoMusic": 0.7286,
+    "gst": 0.0003,
+    "dissim": 0.0259,
+    "g1FoodByYearsIn": [
+     0.979,
+     0.897,
+     0.794,
+     0.538
+    ]
+   },
+   {
+    "yr": 100,
+    "host": 0.5618,
+    "enc": 2.847,
+    "encCustoms": [
+     2.967,
+     4.422,
+     2.934,
+     3.282,
+     5.608
+    ],
+    "hostVariant": [
+     0.5454,
+     0.3981,
+     0.5495,
+     0.5092,
+     0.2955
+    ],
+    "foreign0to4": [
+     0.24,
+     0.325,
+     0.234,
+     0.134,
+     0.067
+    ],
+    "mixedNoMusic": 0.7753,
+    "gst": 0.0002,
+    "dissim": 0.0216,
+    "g1FoodByYearsIn": [
+     0.974,
+     0.901,
+     0.791,
+     0.544
+    ]
+   }
+  ],
+  "hash": "080adb98"
+ },
+ "town-baseline-friends-N10000-P30-s1.json": {
+  "cost": {
+   "horizontalNsPerPersonYear": {
+    "median": 142.6,
+    "min": 130.3,
+    "max": 177.4,
+    "n": 95
+   },
+   "yearlyNsPerPersonYear": {
+    "median": 108.9,
+    "min": 94.95,
+    "max": 226.9,
+    "n": 95
+   },
+   "dayPassUs": {
+    "median": 4,
+    "min": 3.2,
+    "max": 36,
+    "n": 1140
+   },
+   "verticalNsPerBirth": {
+    "median": 573.4,
+    "min": 569,
+    "max": 587.1,
+    "n": 9
+   },
+   "cpuBusy": [
+    0.12,
+    0.46
+   ]
+  },
+  "secondHalf": {
+   "exogamy": {
+    "native": 0.205,
+    "g1": 0.31,
+    "g2": 0.389,
+    "g3plus": 0.333,
+    "establishedMinority": 0.317,
+    "n": [
+     2463,
+     913,
+     2110,
+     1417,
+     1125
+    ]
+   },
+   "teenProfiles": {
+    "heritage": 0.067,
+    "host": 0.061,
+    "mixed": 0.635,
+    "other": 0.237,
+    "personYears": 20413
+   },
+   "g2ChildRetention": {
+    "food": 0.519,
+    "all": 0.549,
+    "personYears": 19237
+   },
+   "g3ChildRetention": {
+    "food": 0.16,
+    "all": 0.208,
+    "personYears": 14917
+   }
+  },
+  "rows": [
+   {
+    "yr": 0,
+    "host": 0.5938,
+    "enc": 2.59,
+    "encCustoms": [
+     2.59,
+     2.59,
+     2.59,
+     2.59,
+     2.59
+    ],
+    "hostVariant": [
+     0.5938,
+     0.5938,
+     0.5938,
+     0.5938,
+     0.5938
+    ],
+    "foreign0to4": [
+     1,
+     0,
+     0,
+     0,
+     0
+    ],
+    "mixedNoMusic": 0,
+    "gst": 0.1614,
+    "dissim": 0.4796,
+    "g1FoodByYearsIn": [
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "yr": 25,
+    "host": 0.5243,
+    "enc": 3.145,
+    "encCustoms": [
+     3.012,
+     3.134,
+     2.977,
+     3.002,
+     3.324
+    ],
+    "hostVariant": [
+     0.5397,
+     0.5256,
+     0.5441,
+     0.5405,
+     0.5043
+    ],
+    "foreign0to4": [
+     0.587,
+     0.258,
+     0.112,
+     0.035,
+     0.007
+    ],
+    "mixedNoMusic": 0.345,
+    "gst": 0.0047,
+    "dissim": 0.102,
+    "g1FoodByYearsIn": [
+     0.98,
+     0.935,
+     0.83,
+     0.754
+    ]
+   },
+   {
+    "yr": 50,
+    "host": 0.5036,
+    "enc": 3.353,
+    "encCustoms": [
+     3.128,
+     3.612,
+     3.14,
+     3.2,
+     4.085
+    ],
+    "hostVariant": [
+     0.5283,
+     0.4764,
+     0.5276,
+     0.5199,
+     0.4324
+    ],
+    "foreign0to4": [
+     0.399,
+     0.305,
+     0.183,
+     0.084,
+     0.03
+    ],
+    "mixedNoMusic": 0.5565,
+    "gst": 0.0024,
+    "dissim": 0.0779,
+    "g1FoodByYearsIn": [
+     0.984,
+     0.921,
+     0.833,
+     0.636
+    ]
+   },
+   {
+    "yr": 75,
+    "host": 0.5007,
+    "enc": 3.378,
+    "encCustoms": [
+     3.209,
+     4.297,
+     3.25,
+     3.37,
+     5.044
+    ],
+    "hostVariant": [
+     0.519,
+     0.4108,
+     0.5155,
+     0.5008,
+     0.3508
+    ],
+    "foreign0to4": [
+     0.291,
+     0.323,
+     0.217,
+     0.116,
+     0.054
+    ],
+    "mixedNoMusic": 0.6908,
+    "gst": 0.0032,
+    "dissim": 0.087,
+    "g1FoodByYearsIn": [
+     0.964,
+     0.912,
+     0.808,
+     0.595
+    ]
+   },
+   {
+    "yr": 100,
+    "host": 0.5031,
+    "enc": 3.328,
+    "encCustoms": [
+     3.147,
+     4.793,
+     3.276,
+     3.439,
+     5.619
+    ],
+    "hostVariant": [
+     0.5247,
+     0.3621,
+     0.5094,
+     0.4909,
+     0.293
+    ],
+    "foreign0to4": [
+     0.245,
+     0.324,
+     0.237,
+     0.135,
+     0.059
+    ],
+    "mixedNoMusic": 0.7502,
+    "gst": 0.0021,
+    "dissim": 0.0748,
+    "g1FoodByYearsIn": [
+     0.955,
+     0.866,
+     0.83,
+     0.581
+    ]
+   }
+  ],
+  "hash": "1ea8db3f"
+ },
+ "town-baseline-friends-N100000-P30-s1.json": {
+  "cost": {
+   "horizontalNsPerPersonYear": {
+    "median": 142.9,
+    "min": 133.8,
+    "max": 208.6,
+    "n": 95
+   },
+   "yearlyNsPerPersonYear": {
+    "median": 121.6,
+    "min": 112.5,
+    "max": 184.6,
+    "n": 95
+   },
+   "dayPassUs": {
+    "median": 39,
+    "min": 34.1,
+    "max": 80.8,
+    "n": 1140
+   },
+   "verticalNsPerBirth": {
+    "median": 514.6,
+    "min": 507.2,
+    "max": 536.5,
+    "n": 9
+   },
+   "cpuBusy": [
+    0.23,
+    0.06
+   ]
+  },
+  "secondHalf": {
+   "exogamy": {
+    "native": 0.189,
+    "g1": 0.267,
+    "g2": 0.353,
+    "g3plus": 0.314,
+    "establishedMinority": 0.281,
+    "n": [
+     24298,
+     9151,
+     20268,
+     14213,
+     11236
+    ]
+   },
+   "teenProfiles": {
+    "heritage": 0.062,
+    "host": 0.057,
+    "mixed": 0.645,
+    "other": 0.236,
+    "personYears": 200580
+   },
+   "g2ChildRetention": {
+    "food": 0.524,
+    "all": 0.54,
+    "personYears": 188707
+   },
+   "g3ChildRetention": {
+    "food": 0.187,
+    "all": 0.215,
+    "personYears": 146478
+   }
+  },
+  "rows": [
+   {
+    "yr": 0,
+    "host": 0.599,
+    "enc": 2.55,
+    "encCustoms": [
+     2.55,
+     2.55,
+     2.55,
+     2.55,
+     2.55
+    ],
+    "hostVariant": [
+     0.599,
+     0.599,
+     0.599,
+     0.599,
+     0.599
+    ],
+    "foreign0to4": [
+     1,
+     0,
+     0,
+     0,
+     0
+    ],
+    "mixedNoMusic": 0,
+    "gst": 0.1647,
+    "dissim": 0.4811,
+    "g1FoodByYearsIn": [
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "yr": 25,
+    "host": 0.5238,
+    "enc": 3.138,
+    "encCustoms": [
+     2.985,
+     3.169,
+     2.891,
+     3.029,
+     3.295
+    ],
+    "hostVariant": [
+     0.5416,
+     0.5201,
+     0.5536,
+     0.5363,
+     0.5061
+    ],
+    "foreign0to4": [
+     0.579,
+     0.264,
+     0.113,
+     0.034,
+     0.009
+    ],
+    "mixedNoMusic": 0.3519,
+    "gst": 0.0026,
+    "dissim": 0.0514,
+    "g1FoodByYearsIn": [
+     0.978,
+     0.916,
+     0.829,
+     0.745
+    ]
+   },
+   {
+    "yr": 50,
+    "host": 0.496,
+    "enc": 3.397,
+    "encCustoms": [
+     3.141,
+     3.729,
+     3.139,
+     3.259,
+     4.142
+    ],
+    "hostVariant": [
+     0.5236,
+     0.4611,
+     0.5246,
+     0.5103,
+     0.4231
+    ],
+    "foreign0to4": [
+     0.391,
+     0.311,
+     0.187,
+     0.083,
+     0.028
+    ],
+    "mixedNoMusic": 0.5642,
+    "gst": 0.0003,
+    "dissim": 0.0245,
+    "g1FoodByYearsIn": [
+     0.978,
+     0.916,
+     0.821,
+     0.641
+    ]
+   },
+   {
+    "yr": 75,
+    "host": 0.4948,
+    "enc": 3.421,
+    "encCustoms": [
+     3.202,
+     4.244,
+     3.239,
+     3.424,
+     4.995
+    ],
+    "hostVariant": [
+     0.5178,
+     0.4141,
+     0.514,
+     0.4932,
+     0.351
+    ],
+    "foreign0to4": [
+     0.287,
+     0.32,
+     0.222,
+     0.121,
+     0.05
+    ],
+    "mixedNoMusic": 0.6941,
+    "gst": 0.0003,
+    "dissim": 0.024,
+    "g1FoodByYearsIn": [
+     0.977,
+     0.92,
+     0.819,
+     0.594
+    ]
+   },
+   {
+    "yr": 100,
+    "host": 0.5024,
+    "enc": 3.352,
+    "encCustoms": [
+     3.243,
+     4.676,
+     3.281,
+     3.512,
+     5.639
+    ],
+    "hostVariant": [
+     0.5135,
+     0.3766,
+     0.5097,
+     0.4839,
+     0.2946
+    ],
+    "foreign0to4": [
+     0.249,
+     0.315,
+     0.237,
+     0.137,
+     0.062
+    ],
+    "mixedNoMusic": 0.7536,
+    "gst": 0.0002,
+    "dissim": 0.0202,
+    "g1FoodByYearsIn": [
+     0.975,
+     0.912,
+     0.814,
+     0.591
+    ]
+   }
+  ],
+  "hash": "bb9d1d1d"
+ },
+ "town-conform-district-N10000-P30-s1-200y.json": {
+  "cost": {
+   "horizontalNsPerPersonYear": {
+    "median": 133.7,
+    "min": 125.4,
+    "max": 165.3,
+    "n": 195
+   },
+   "yearlyNsPerPersonYear": {
+    "median": 33.12,
+    "min": 28.07,
+    "max": 174.6,
+    "n": 195
+   },
+   "dayPassUs": {
+    "median": 3.7,
+    "min": 3.1,
+    "max": 20.5,
+    "n": 2340
+   },
+   "verticalNsPerBirth": {
+    "median": 174.8,
+    "min": 172.5,
+    "max": 193.5,
+    "n": 9
+   },
+   "cpuBusy": [
+    0.07,
+    0.42
+   ]
+  },
+  "secondHalf": {
+   "exogamy": {
+    "native": 0.004,
+    "g1": null,
+    "g2": null,
+    "g3plus": null,
+    "establishedMinority": 0.006,
+    "n": [
+     8502,
+     0,
+     0,
+     0,
+     4814
+    ]
+   },
+   "teenProfiles": {
+    "heritage": null,
+    "host": null,
+    "mixed": null,
+    "other": null,
+    "personYears": 0
+   },
+   "g2ChildRetention": {
+    "food": null,
+    "all": null,
+    "personYears": 0
+   },
+   "g3ChildRetention": {
+    "food": null,
+    "all": null,
+    "personYears": 0
+   }
+  },
+  "rows": [
+   {
+    "yr": 0,
+    "host": 0.5938,
+    "enc": 2.59,
+    "encCustoms": [
+     2.59,
+     2.59,
+     2.59,
+     2.59,
+     2.59
+    ],
+    "hostVariant": [
+     0.5938,
+     0.5938,
+     0.5938,
+     0.5938,
+     0.5938
+    ],
+    "foreign0to4": [
+     1,
+     0,
+     0,
+     0,
+     0
+    ],
+    "mixedNoMusic": 0,
+    "gst": 0.1614,
+    "dissim": 0.4796,
+    "g1FoodByYearsIn": [
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "yr": 25,
+    "host": 0.6272,
+    "enc": 2.372,
+    "encCustoms": [
+     2.162,
+     2.315,
+     2.099,
+     2.184,
+     2.51
+    ],
+    "hostVariant": [
+     0.6624,
+     0.6363,
+     0.6738,
+     0.6591,
+     0.6059
+    ],
+    "foreign0to4": [
+     0.535,
+     0.277,
+     0.125,
+     0.048,
+     0.015
+    ],
+    "mixedNoMusic": 0.3698,
+    "gst": 0.0044,
+    "dissim": 0.1183,
+    "g1FoodByYearsIn": [
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "yr": 50,
+    "host": 0.7651,
+    "enc": 1.676,
+    "encCustoms": [
+     1.577,
+     1.961,
+     1.603,
+     1.668,
+     2.342
+    ],
+    "hostVariant": [
+     0.7904,
+     0.7008,
+     0.7833,
+     0.7669,
+     0.6319
+    ],
+    "foreign0to4": [
+     0.454,
+     0.309,
+     0.132,
+     0.068,
+     0.037
+    ],
+    "mixedNoMusic": 0.5113,
+    "gst": 0.0033,
+    "dissim": 0.0998,
+    "g1FoodByYearsIn": [
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "yr": 75,
+    "host": 0.9116,
+    "enc": 1.201,
+    "encCustoms": [
+     1.257,
+     1.644,
+     1.297,
+     1.347,
+     2.15
+    ],
+    "hostVariant": [
+     0.8904,
+     0.7724,
+     0.8762,
+     0.8591,
+     0.6639
+    ],
+    "foreign0to4": [
+     0.54,
+     0.329,
+     0.074,
+     0.033,
+     0.025
+    ],
+    "mixedNoMusic": 0.5092,
+    "gst": 0.0018,
+    "dissim": 0.1395,
+    "g1FoodByYearsIn": [
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "yr": 100,
+    "host": 0.9798,
+    "enc": 1.042,
+    "encCustoms": [
+     1.127,
+     1.423,
+     1.136,
+     1.175,
+     1.933
+    ],
+    "hostVariant": [
+     0.9414,
+     0.8344,
+     0.9379,
+     0.9218,
+     0.706
+    ],
+    "foreign0to4": [
+     0.681,
+     0.268,
+     0.035,
+     0.007,
+     0.009
+    ],
+    "mixedNoMusic": 0.4455,
+    "gst": 0.0016,
+    "dissim": 0.2173,
+    "g1FoodByYearsIn": [
+     null,
+     null,
+     null,
+     null
+    ]
+   }
+  ],
+  "hash": "1685bc19"
+ },
+ "town-conform-district-N10000-P30-s1.json": {
+  "cost": {
+   "horizontalNsPerPersonYear": {
+    "median": 141.6,
+    "min": 132.3,
+    "max": 174.3,
+    "n": 95
+   },
+   "yearlyNsPerPersonYear": {
+    "median": 39.6,
+    "min": 32.19,
+    "max": 245.1,
+    "n": 95
+   },
+   "dayPassUs": {
+    "median": 3.9,
+    "min": 3.2,
+    "max": 28.2,
+    "n": 1140
+   },
+   "verticalNsPerBirth": {
+    "median": 270.7,
+    "min": 259,
+    "max": 281.9,
+    "n": 9
+   },
+   "cpuBusy": [
+    0.01,
+    0.35
+   ]
+  },
+  "secondHalf": {
+   "exogamy": {
+    "native": 0.064,
+    "g1": null,
+    "g2": null,
+    "g3plus": null,
+    "establishedMinority": 0.187,
+    "n": [
+     4387,
+     0,
+     0,
+     0,
+     2709
+    ]
+   },
+   "teenProfiles": {
+    "heritage": null,
+    "host": null,
+    "mixed": null,
+    "other": null,
+    "personYears": 0
+   },
+   "g2ChildRetention": {
+    "food": null,
+    "all": null,
+    "personYears": 0
+   },
+   "g3ChildRetention": {
+    "food": null,
+    "all": null,
+    "personYears": 0
+   }
+  },
+  "rows": [
+   {
+    "yr": 0,
+    "host": 0.5938,
+    "enc": 2.59,
+    "encCustoms": [
+     2.59,
+     2.59,
+     2.59,
+     2.59,
+     2.59
+    ],
+    "hostVariant": [
+     0.5938,
+     0.5938,
+     0.5938,
+     0.5938,
+     0.5938
+    ],
+    "foreign0to4": [
+     1,
+     0,
+     0,
+     0,
+     0
+    ],
+    "mixedNoMusic": 0,
+    "gst": 0.1614,
+    "dissim": 0.4796,
+    "g1FoodByYearsIn": [
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "yr": 25,
+    "host": 0.6272,
+    "enc": 2.372,
+    "encCustoms": [
+     2.162,
+     2.315,
+     2.099,
+     2.184,
+     2.51
+    ],
+    "hostVariant": [
+     0.6624,
+     0.6363,
+     0.6738,
+     0.6591,
+     0.6059
+    ],
+    "foreign0to4": [
+     0.535,
+     0.277,
+     0.125,
+     0.048,
+     0.015
+    ],
+    "mixedNoMusic": 0.3698,
+    "gst": 0.0044,
+    "dissim": 0.1183,
+    "g1FoodByYearsIn": [
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "yr": 50,
+    "host": 0.7651,
+    "enc": 1.676,
+    "encCustoms": [
+     1.577,
+     1.961,
+     1.603,
+     1.668,
+     2.342
+    ],
+    "hostVariant": [
+     0.7904,
+     0.7008,
+     0.7833,
+     0.7669,
+     0.6319
+    ],
+    "foreign0to4": [
+     0.454,
+     0.309,
+     0.132,
+     0.068,
+     0.037
+    ],
+    "mixedNoMusic": 0.5113,
+    "gst": 0.0033,
+    "dissim": 0.0998,
+    "g1FoodByYearsIn": [
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "yr": 75,
+    "host": 0.9116,
+    "enc": 1.201,
+    "encCustoms": [
+     1.257,
+     1.644,
+     1.297,
+     1.347,
+     2.15
+    ],
+    "hostVariant": [
+     0.8904,
+     0.7724,
+     0.8762,
+     0.8591,
+     0.6639
+    ],
+    "foreign0to4": [
+     0.54,
+     0.329,
+     0.074,
+     0.033,
+     0.025
+    ],
+    "mixedNoMusic": 0.5092,
+    "gst": 0.0018,
+    "dissim": 0.1395,
+    "g1FoodByYearsIn": [
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "yr": 100,
+    "host": 0.9798,
+    "enc": 1.042,
+    "encCustoms": [
+     1.127,
+     1.423,
+     1.136,
+     1.175,
+     1.933
+    ],
+    "hostVariant": [
+     0.9414,
+     0.8344,
+     0.9379,
+     0.9218,
+     0.706
+    ],
+    "foreign0to4": [
+     0.681,
+     0.268,
+     0.035,
+     0.007,
+     0.009
+    ],
+    "mixedNoMusic": 0.4455,
+    "gst": 0.0016,
+    "dissim": 0.2173,
+    "g1FoodByYearsIn": [
+     null,
+     null,
+     null,
+     null
+    ]
+   }
+  ],
+  "hash": "32d237ea"
+ },
+ "town-conform-district-N100000-P30-s1.json": {
+  "cost": {
+   "horizontalNsPerPersonYear": {
+    "median": 138.1,
+    "min": 131.4,
+    "max": 158.6,
+    "n": 95
+   },
+   "yearlyNsPerPersonYear": {
+    "median": 38.58,
+    "min": 32.93,
+    "max": 83.23,
+    "n": 95
+   },
+   "dayPassUs": {
+    "median": 37.85,
+    "min": 34.3,
+    "max": 118,
+    "n": 1140
+   },
+   "verticalNsPerBirth": {
+    "median": 262.2,
+    "min": 261.2,
+    "max": 289.3,
+    "n": 9
+   },
+   "cpuBusy": [
+    0.49,
+    0.47
+   ]
+  },
+  "secondHalf": {
+   "exogamy": {
+    "native": 0.054,
+    "g1": null,
+    "g2": null,
+    "g3plus": null,
+    "establishedMinority": 0.148,
+    "n": [
+     42168,
+     0,
+     0,
+     0,
+     26994
+    ]
+   },
+   "teenProfiles": {
+    "heritage": null,
+    "host": null,
+    "mixed": null,
+    "other": null,
+    "personYears": 0
+   },
+   "g2ChildRetention": {
+    "food": null,
+    "all": null,
+    "personYears": 0
+   },
+   "g3ChildRetention": {
+    "food": null,
+    "all": null,
+    "personYears": 0
+   }
+  },
+  "rows": [
+   {
+    "yr": 0,
+    "host": 0.599,
+    "enc": 2.55,
+    "encCustoms": [
+     2.55,
+     2.55,
+     2.55,
+     2.55,
+     2.55
+    ],
+    "hostVariant": [
+     0.599,
+     0.599,
+     0.599,
+     0.599,
+     0.599
+    ],
+    "foreign0to4": [
+     1,
+     0,
+     0,
+     0,
+     0
+    ],
+    "mixedNoMusic": 0,
+    "gst": 0.1647,
+    "dissim": 0.4811,
+    "g1FoodByYearsIn": [
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "yr": 25,
+    "host": 0.6301,
+    "enc": 2.348,
+    "encCustoms": [
+     2.137,
+     2.339,
+     2.07,
+     2.183,
+     2.488
+    ],
+    "hostVariant": [
+     0.6662,
+     0.6316,
+     0.6789,
+     0.6581,
+     0.6081
+    ],
+    "foreign0to4": [
+     0.535,
+     0.274,
+     0.129,
+     0.047,
+     0.015
+    ],
+    "mixedNoMusic": 0.3736,
+    "gst": 0.0038,
+    "dissim": 0.0644,
+    "g1FoodByYearsIn": [
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "yr": 50,
+    "host": 0.7651,
+    "enc": 1.674,
+    "encCustoms": [
+     1.6,
+     1.987,
+     1.592,
+     1.674,
+     2.376
+    ],
+    "hostVariant": [
+     0.7837,
+     0.6952,
+     0.786,
+     0.7649,
+     0.6255
+    ],
+    "foreign0to4": [
+     0.447,
+     0.314,
+     0.137,
+     0.07,
+     0.033
+    ],
+    "mixedNoMusic": 0.523,
+    "gst": 0.0002,
+    "dissim": 0.0303,
+    "g1FoodByYearsIn": [
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "yr": 75,
+    "host": 0.9123,
+    "enc": 1.199,
+    "encCustoms": [
+     1.275,
+     1.651,
+     1.276,
+     1.337,
+     2.192
+    ],
+    "hostVariant": [
+     0.8839,
+     0.7708,
+     0.8835,
+     0.8624,
+     0.6565
+    ],
+    "foreign0to4": [
+     0.543,
+     0.324,
+     0.078,
+     0.033,
+     0.023
+    ],
+    "mixedNoMusic": 0.5215,
+    "gst": 0.0003,
+    "dissim": 0.0477,
+    "g1FoodByYearsIn": [
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "yr": 100,
+    "host": 0.9795,
+    "enc": 1.042,
+    "encCustoms": [
+     1.133,
+     1.428,
+     1.119,
+     1.171,
+     1.986
+    ],
+    "hostVariant": [
+     0.9392,
+     0.8333,
+     0.9451,
+     0.9235,
+     0.6952
+    ],
+    "foreign0to4": [
+     0.685,
+     0.265,
+     0.035,
+     0.008,
+     0.007
+    ],
+    "mixedNoMusic": 0.4593,
+    "gst": 0.0002,
+    "dissim": 0.0808,
+    "g1FoodByYearsIn": [
+     null,
+     null,
+     null,
+     null
+    ]
+   }
+  ],
+  "hash": "79e9e2bc"
+ },
+ "town-consub-district-N10000-P30-s1-200y.json": {
+  "cost": {
+   "horizontalNsPerPersonYear": {
+    "median": 137.9,
+    "min": 126.8,
+    "max": 187.2,
+    "n": 195
+   },
+   "yearlyNsPerPersonYear": {
+    "median": 36.95,
+    "min": 31,
+    "max": 154.6,
+    "n": 195
+   },
+   "dayPassUs": {
+    "median": 3.8,
+    "min": 3.1,
+    "max": 43.5,
+    "n": 2340
+   },
+   "verticalNsPerBirth": {
+    "median": 432,
+    "min": 430.2,
+    "max": 450.6,
+    "n": 9
+   },
+   "cpuBusy": [
+    0.52,
+    0.08
+   ]
+  },
+  "secondHalf": {
+   "exogamy": {
+    "native": 0.003,
+    "g1": null,
+    "g2": null,
+    "g3plus": null,
+    "establishedMinority": 0.006,
+    "n": [
+     8581,
+     0,
+     0,
+     0,
+     4727
+    ]
+   },
+   "teenProfiles": {
+    "heritage": null,
+    "host": null,
+    "mixed": null,
+    "other": null,
+    "personYears": 0
+   },
+   "g2ChildRetention": {
+    "food": null,
+    "all": null,
+    "personYears": 0
+   },
+   "g3ChildRetention": {
+    "food": null,
+    "all": null,
+    "personYears": 0
+   }
+  },
+  "rows": [
+   {
+    "yr": 0,
+    "host": 0.5938,
+    "enc": 2.59,
+    "encCustoms": [
+     2.59,
+     2.59,
+     2.59,
+     2.59,
+     2.59
+    ],
+    "hostVariant": [
+     0.5938,
+     0.5938,
+     0.5938,
+     0.5938,
+     0.5938
+    ],
+    "foreign0to4": [
+     1,
+     0,
+     0,
+     0,
+     0
+    ],
+    "mixedNoMusic": 0,
+    "gst": 0.1614,
+    "dissim": 0.4796,
+    "g1FoodByYearsIn": [
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "yr": 25,
+    "host": 0.6294,
+    "enc": 2.359,
+    "encCustoms": [
+     2.219,
+     2.371,
+     2.089,
+     2.249,
+     2.598
+    ],
+    "hostVariant": [
+     0.6523,
+     0.6274,
+     0.6756,
+     0.6475,
+     0.5929
+    ],
+    "foreign0to4": [
+     0.505,
+     0.288,
+     0.136,
+     0.054,
+     0.016
+    ],
+    "mixedNoMusic": 0.4194,
+    "gst": 0.0041,
+    "dissim": 0.1133,
+    "g1FoodByYearsIn": [
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "yr": 50,
+    "host": 0.7697,
+    "enc": 1.657,
+    "encCustoms": [
+     1.693,
+     2.101,
+     1.591,
+     1.757,
+     2.562
+    ],
+    "hostVariant": [
+     0.7606,
+     0.6741,
+     0.7863,
+     0.7453,
+     0.5983
+    ],
+    "foreign0to4": [
+     0.404,
+     0.337,
+     0.15,
+     0.073,
+     0.036
+    ],
+    "mixedNoMusic": 0.5943,
+    "gst": 0.0041,
+    "dissim": 0.1023,
+    "g1FoodByYearsIn": [
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "yr": 75,
+    "host": 0.9167,
+    "enc": 1.188,
+    "encCustoms": [
+     1.354,
+     1.827,
+     1.285,
+     1.421,
+     2.489
+    ],
+    "hostVariant": [
+     0.8566,
+     0.729,
+     0.8804,
+     0.8354,
+     0.6082
+    ],
+    "foreign0to4": [
+     0.476,
+     0.369,
+     0.095,
+     0.037,
+     0.023
+    ],
+    "mixedNoMusic": 0.6187,
+    "gst": 0.0015,
+    "dissim": 0.13,
+    "g1FoodByYearsIn": [
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "yr": 100,
+    "host": 0.9833,
+    "enc": 1.034,
+    "encCustoms": [
+     1.189,
+     1.621,
+     1.127,
+     1.251,
+     2.352
+    ],
+    "hostVariant": [
+     0.9163,
+     0.7784,
+     0.9416,
+     0.8927,
+     0.6297
+    ],
+    "foreign0to4": [
+     0.598,
+     0.334,
+     0.055,
+     0.007,
+     0.007
+    ],
+    "mixedNoMusic": 0.5829,
+    "gst": 0.0017,
+    "dissim": 0.16,
+    "g1FoodByYearsIn": [
+     null,
+     null,
+     null,
+     null
+    ]
+   }
+  ],
+  "hash": "407e261b"
+ },
+ "town-consub-district-N10000-P30-s1.json": {
+  "cost": {
+   "horizontalNsPerPersonYear": {
+    "median": 142.6,
+    "min": 133.6,
+    "max": 175.3,
+    "n": 95
+   },
+   "yearlyNsPerPersonYear": {
+    "median": 40.36,
+    "min": 34.24,
+    "max": 202.2,
+    "n": 95
+   },
+   "dayPassUs": {
+    "median": 4,
+    "min": 3.2,
+    "max": 27.4,
+    "n": 1140
+   },
+   "verticalNsPerBirth": {
+    "median": 483.5,
+    "min": 479.7,
+    "max": 508.3,
+    "n": 9
+   },
+   "cpuBusy": [
+    0.27,
+    0.14
+   ]
+  },
+  "secondHalf": {
+   "exogamy": {
+    "native": 0.063,
+    "g1": null,
+    "g2": null,
+    "g3plus": null,
+    "establishedMinority": 0.174,
+    "n": [
+     4385,
+     0,
+     0,
+     0,
+     2719
+    ]
+   },
+   "teenProfiles": {
+    "heritage": null,
+    "host": null,
+    "mixed": null,
+    "other": null,
+    "personYears": 0
+   },
+   "g2ChildRetention": {
+    "food": null,
+    "all": null,
+    "personYears": 0
+   },
+   "g3ChildRetention": {
+    "food": null,
+    "all": null,
+    "personYears": 0
+   }
+  },
+  "rows": [
+   {
+    "yr": 0,
+    "host": 0.5938,
+    "enc": 2.59,
+    "encCustoms": [
+     2.59,
+     2.59,
+     2.59,
+     2.59,
+     2.59
+    ],
+    "hostVariant": [
+     0.5938,
+     0.5938,
+     0.5938,
+     0.5938,
+     0.5938
+    ],
+    "foreign0to4": [
+     1,
+     0,
+     0,
+     0,
+     0
+    ],
+    "mixedNoMusic": 0,
+    "gst": 0.1614,
+    "dissim": 0.4796,
+    "g1FoodByYearsIn": [
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "yr": 25,
+    "host": 0.6294,
+    "enc": 2.359,
+    "encCustoms": [
+     2.219,
+     2.371,
+     2.089,
+     2.249,
+     2.598
+    ],
+    "hostVariant": [
+     0.6523,
+     0.6274,
+     0.6756,
+     0.6475,
+     0.5929
+    ],
+    "foreign0to4": [
+     0.505,
+     0.288,
+     0.136,
+     0.054,
+     0.016
+    ],
+    "mixedNoMusic": 0.4194,
+    "gst": 0.0041,
+    "dissim": 0.1133,
+    "g1FoodByYearsIn": [
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "yr": 50,
+    "host": 0.7697,
+    "enc": 1.657,
+    "encCustoms": [
+     1.693,
+     2.101,
+     1.591,
+     1.757,
+     2.562
+    ],
+    "hostVariant": [
+     0.7606,
+     0.6741,
+     0.7863,
+     0.7453,
+     0.5983
+    ],
+    "foreign0to4": [
+     0.404,
+     0.337,
+     0.15,
+     0.073,
+     0.036
+    ],
+    "mixedNoMusic": 0.5943,
+    "gst": 0.0041,
+    "dissim": 0.1023,
+    "g1FoodByYearsIn": [
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "yr": 75,
+    "host": 0.9167,
+    "enc": 1.188,
+    "encCustoms": [
+     1.354,
+     1.827,
+     1.285,
+     1.421,
+     2.489
+    ],
+    "hostVariant": [
+     0.8566,
+     0.729,
+     0.8804,
+     0.8354,
+     0.6082
+    ],
+    "foreign0to4": [
+     0.476,
+     0.369,
+     0.095,
+     0.037,
+     0.023
+    ],
+    "mixedNoMusic": 0.6187,
+    "gst": 0.0015,
+    "dissim": 0.13,
+    "g1FoodByYearsIn": [
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "yr": 100,
+    "host": 0.9833,
+    "enc": 1.034,
+    "encCustoms": [
+     1.189,
+     1.621,
+     1.127,
+     1.251,
+     2.352
+    ],
+    "hostVariant": [
+     0.9163,
+     0.7784,
+     0.9416,
+     0.8927,
+     0.6297
+    ],
+    "foreign0to4": [
+     0.598,
+     0.334,
+     0.055,
+     0.007,
+     0.007
+    ],
+    "mixedNoMusic": 0.5829,
+    "gst": 0.0017,
+    "dissim": 0.16,
+    "g1FoodByYearsIn": [
+     null,
+     null,
+     null,
+     null
+    ]
+   }
+  ],
+  "hash": "afcabe47"
+ },
+ "town-enclave-district-N10000-P30-s1.json": {
+  "cost": {
+   "horizontalNsPerPersonYear": {
+    "median": 145.8,
+    "min": 130.7,
+    "max": 215.3,
+    "n": 95
+   },
+   "yearlyNsPerPersonYear": {
+    "median": 50.47,
+    "min": 37.93,
+    "max": 172,
+    "n": 95
+   },
+   "dayPassUs": {
+    "median": 4,
+    "min": 3.3,
+    "max": 323.1,
+    "n": 1140
+   },
+   "verticalNsPerBirth": {
+    "median": 522.7,
+    "min": 518.2,
+    "max": 549.3,
+    "n": 9
+   },
+   "cpuBusy": [
+    0.19,
+    0.13
+   ]
+  },
+  "secondHalf": {
+   "exogamy": {
+    "native": 0.001,
+    "g1": 0.001,
+    "g2": 0.005,
+    "g3plus": 0.004,
+    "establishedMinority": 0.002,
+    "n": [
+     2681,
+     906,
+     2056,
+     1210,
+     1139
+    ]
+   },
+   "teenProfiles": {
+    "heritage": 0.17,
+    "host": 0.012,
+    "mixed": 0.739,
+    "other": 0.079,
+    "personYears": 18932
+   },
+   "g2ChildRetention": {
+    "food": 0.707,
+    "all": 0.691,
+    "personYears": 19091
+   },
+   "g3ChildRetention": {
+    "food": 0.443,
+    "all": 0.458,
+    "personYears": 13097
+   }
+  },
+  "rows": [
+   {
+    "yr": 0,
+    "host": 0.5938,
+    "enc": 2.59,
+    "encCustoms": [
+     2.59,
+     2.59,
+     2.59,
+     2.59,
+     2.59
+    ],
+    "hostVariant": [
+     0.5938,
+     0.5938,
+     0.5938,
+     0.5938,
+     0.5938
+    ],
+    "foreign0to4": [
+     1,
+     0,
+     0,
+     0,
+     0
+    ],
+    "mixedNoMusic": 0,
+    "gst": 0.4482,
+    "dissim": 0.8646,
+    "g1FoodByYearsIn": [
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "yr": 25,
+    "host": 0.508,
+    "enc": 3.286,
+    "encCustoms": [
+     3.287,
+     3.261,
+     3.223,
+     3.251,
+     3.327
+    ],
+    "hostVariant": [
+     0.5076,
+     0.5112,
+     0.5146,
+     0.5116,
+     0.5041
+    ],
+    "foreign0to4": [
+     0.735,
+     0.202,
+     0.053,
+     0.01,
+     0
+    ],
+    "mixedNoMusic": 0.2082,
+    "gst": 0.1951,
+    "dissim": 0.4749,
+    "g1FoodByYearsIn": [
+     0.984,
+     0.959,
+     0.929,
+     0.891
+    ]
+   },
+   {
+    "yr": 50,
+    "host": 0.444,
+    "enc": 3.934,
+    "encCustoms": [
+     3.924,
+     3.97,
+     3.736,
+     3.872,
+     4.141
+    ],
+    "hostVariant": [
+     0.4454,
+     0.4426,
+     0.4623,
+     0.4497,
+     0.4269
+    ],
+    "foreign0to4": [
+     0.537,
+     0.283,
+     0.137,
+     0.04,
+     0.004
+    ],
+    "mixedNoMusic": 0.398,
+    "gst": 0.0946,
+    "dissim": 0.2884,
+    "g1FoodByYearsIn": [
+     0.996,
+     0.963,
+     0.936,
+     0.84
+    ]
+   },
+   {
+    "yr": 75,
+    "host": 0.3786,
+    "enc": 4.643,
+    "encCustoms": [
+     4.685,
+     4.886,
+     4.385,
+     4.583,
+     5.176
+    ],
+    "hostVariant": [
+     0.3743,
+     0.361,
+     0.3996,
+     0.3842,
+     0.3397
+    ],
+    "foreign0to4": [
+     0.378,
+     0.307,
+     0.208,
+     0.089,
+     0.019
+    ],
+    "mixedNoMusic": 0.564,
+    "gst": 0.0552,
+    "dissim": 0.2111,
+    "g1FoodByYearsIn": [
+     0.98,
+     0.962,
+     0.934,
+     0.825
+    ]
+   },
+   {
+    "yr": 100,
+    "host": 0.3376,
+    "enc": 5.012,
+    "encCustoms": [
+     5.051,
+     5.519,
+     4.635,
+     5.15,
+     5.84
+    ],
+    "hostVariant": [
+     0.3313,
+     0.2958,
+     0.3686,
+     0.3258,
+     0.2748
+    ],
+    "foreign0to4": [
+     0.286,
+     0.299,
+     0.242,
+     0.134,
+     0.039
+    ],
+    "mixedNoMusic": 0.6617,
+    "gst": 0.0333,
+    "dissim": 0.1653,
+    "g1FoodByYearsIn": [
+     0.976,
+     0.937,
+     0.934,
+     0.82
+    ]
+   }
+  ],
+  "hash": "d1b692f7"
+ },
+ "town-neutral-district-N10000-P30-s1.json": {
+  "cost": {
+   "horizontalNsPerPersonYear": {
+    "median": 131,
+    "min": 125.9,
+    "max": 165.7,
+    "n": 95
+   },
+   "yearlyNsPerPersonYear": {
+    "median": 37.47,
+    "min": 33.08,
+    "max": 225.9,
+    "n": 95
+   },
+   "dayPassUs": {
+    "median": 3.7,
+    "min": 3.2,
+    "max": 51.9,
+    "n": 1140
+   },
+   "verticalNsPerBirth": {
+    "median": 150.2,
+    "min": 147.8,
+    "max": 172.7,
+    "n": 9
+   },
+   "cpuBusy": [
+    0.62,
+    0.12
+   ]
+  },
+  "secondHalf": {
+   "exogamy": {
+    "native": 0.1,
+    "g1": null,
+    "g2": null,
+    "g3plus": null,
+    "establishedMinority": 0.249,
+    "n": [
+     4365,
+     0,
+     0,
+     0,
+     2717
+    ]
+   },
+   "teenProfiles": {
+    "heritage": null,
+    "host": null,
+    "mixed": null,
+    "other": null,
+    "personYears": 0
+   },
+   "g2ChildRetention": {
+    "food": null,
+    "all": null,
+    "personYears": 0
+   },
+   "g3ChildRetention": {
+    "food": null,
+    "all": null,
+    "personYears": 0
+   }
+  },
+  "rows": [
+   {
+    "yr": 0,
+    "host": 0.5938,
+    "enc": 2.59,
+    "encCustoms": [
+     2.59,
+     2.59,
+     2.59,
+     2.59,
+     2.59
+    ],
+    "hostVariant": [
+     0.5938,
+     0.5938,
+     0.5938,
+     0.5938,
+     0.5938
+    ],
+    "foreign0to4": [
+     1,
+     0,
+     0,
+     0,
+     0
+    ],
+    "mixedNoMusic": 0,
+    "gst": 0.1614,
+    "dissim": 0.4796,
+    "g1FoodByYearsIn": [
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "yr": 25,
+    "host": 0.6187,
+    "enc": 2.427,
+    "encCustoms": [
+     2.388,
+     2.429,
+     2.4,
+     2.347,
+     2.534
+    ],
+    "hostVariant": [
+     0.6246,
+     0.6181,
+     0.6227,
+     0.6318,
+     0.6023
+    ],
+    "foreign0to4": [
+     0.487,
+     0.301,
+     0.142,
+     0.055,
+     0.015
+    ],
+    "mixedNoMusic": 0.4052,
+    "gst": 0.0046,
+    "dissim": 0.1202,
+    "g1FoodByYearsIn": [
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "yr": 50,
+    "host": 0.7288,
+    "enc": 1.83,
+    "encCustoms": [
+     1.918,
+     2.16,
+     2.099,
+     1.975,
+     2.399
+    ],
+    "hostVariant": [
+     0.7095,
+     0.6629,
+     0.6747,
+     0.6979,
+     0.6231
+    ],
+    "foreign0to4": [
+     0.344,
+     0.332,
+     0.184,
+     0.092,
+     0.047
+    ],
+    "mixedNoMusic": 0.5828,
+    "gst": 0.0031,
+    "dissim": 0.0881,
+    "g1FoodByYearsIn": [
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "yr": 75,
+    "host": 0.861,
+    "enc": 1.341,
+    "encCustoms": [
+     1.541,
+     1.881,
+     1.721,
+     1.635,
+     2.247
+    ],
+    "hostVariant": [
+     0.8002,
+     0.7171,
+     0.7546,
+     0.7752,
+     0.6474
+    ],
+    "foreign0to4": [
+     0.371,
+     0.364,
+     0.153,
+     0.068,
+     0.044
+    ],
+    "mixedNoMusic": 0.6168,
+    "gst": 0.0017,
+    "dissim": 0.1123,
+    "g1FoodByYearsIn": [
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "yr": 100,
+    "host": 0.9481,
+    "enc": 1.112,
+    "encCustoms": [
+     1.299,
+     1.64,
+     1.424,
+     1.41,
+     2.093
+    ],
+    "hostVariant": [
+     0.8756,
+     0.7735,
+     0.8348,
+     0.839,
+     0.6753
+    ],
+    "foreign0to4": [
+     0.478,
+     0.372,
+     0.102,
+     0.025,
+     0.023
+    ],
+    "mixedNoMusic": 0.5733,
+    "gst": 0.0015,
+    "dissim": 0.1425,
+    "g1FoodByYearsIn": [
+     null,
+     null,
+     null,
+     null
+    ]
+   }
+  ],
+  "hash": "aeabac2d"
+ }
+}

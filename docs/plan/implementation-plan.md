@@ -1,12 +1,12 @@
 # Implementation plan
 
-Oct 5, 2026 · @Rd
+Oct 6, 2026 · @Rd
 
 ## How to use this plan
 
-Work top to bottom: each milestone lists what to build and the checks that close it, merged from all three research rounds. Tick a box when it lands; a milestone is done when its exit checks pass in CI, not when the demo looks right.
+Work top to bottom: each milestone lists what to build and the checks that close it, merged from every research round. Tick a box when it lands; a milestone is done when its exit checks pass in CI, not when the demo looks right.
 
-- **Where items come from:** round 1 is Findings & plan and Full report, round 2 is Follow-up research, round 3 is 2D game look & assets, round 4 is Villages, cities & countries, and round 5 is the Performance budget section below.
+- **Where items come from:** round 1 is Findings & plan and Full report, round 2 is Follow-up research, round 3 is 2D game look & assets, round 4 is Villages, cities & countries, round 5 is the Performance budget section below, round 6 is Goods & wellbeing, and round 8 is Cultures.
 - **Effort:** rough full-time estimates for one developer; round 1 put the whole plan at 12–19 weeks, and an AI coding assistant shortens that.
 - **Something to look at from week one:** every milestone ships at least one of the three visual styles below, so the project is never just a test suite.
 
@@ -146,6 +146,15 @@ Goal: a deterministic core, the worker loop and the renderer contract, drawing S
 - [ ] Ban `TypedArray.prototype.sort` on views of shared memory in hot and day-boundary code, add it to the lint profile, and take top shares from a 16-bins-per-octave histogram (R6).
 - [ ] Run day work as fixed 1,024-entity slices from the boundary, on the same schedule for every device and worker count, committing the settlement record when the last slice ends, once the owner settles how late spoilage may land (R6).
 - [ ] Warm the day-boundary code at worker start on a 1,024-agent dummy world (about 20–30 ms), so the first in-game day does not run cold (R6).
+- [ ] Add culture columns to `AgentStore`: `culture` and `birthCulture` (Uint8), `customs` (Uint16, four 4-bit culture-of-origin nibbles for food, festival, music and naming) and `homeRegion` (Uint16), at most 8 cultures per world, drawn on their own keyed stream; document the layout in `sim-protocol` (R8).
+- [ ] Put culture code in its own package, `sim-culture`: preference rows, festival calendar, naming rules, region ids, and the splits by culture of migration flows and spawned households, which act on totals from culture-blind code. Add a dependency-cruiser `reachable` rule and an ESLint profile so crime, police, labour, wage, wealth, ability, housing and migration code can neither import it nor read culture columns by property, destructuring or brackets (R8).
+- [ ] Add a `hue` column (Uint8): one of six abstract body hues (sun, lilac, rose, ice, mint, silver), drawn uniformly at birth on its own keyed stream. Only the renderer reads it, as a palette swap; no sim rule ever does (content rule 1) (R8).
+- [ ] Key culture-level draws, such as festival scheduling, by a stable culture uid, never its index. Never key a guarded decision's draw on culture, never let culture set a loop order that matters, and never index anything but custom tables by culture (R8).
+- [ ] Add the relabel test to every pull request: permuting culture ids together with their custom rows leaves every non-culture state hash identical (R8).
+- [ ] Add a stride scheduler for staggered checks: agent i is due on day d when i ≡ d − offset (mod P), with the offset re-keyed yearly. It reads a day-boundary snapshot, applies an ordered change list, and gives identical hashes in reversed visiting order (R8).
+- [ ] Give the keyed draw a murmur3-style finaliser after every input, and extend the χ² test to cross-stream pairs (R8).
+- [ ] Split every flow of people by culture with keyed stochastic rounding, never flooring or plain largest remainder (R8).
+- [ ] Extend the name lint with a real-world fixture of countries, demonyms, languages, ethnonyms and religions, and add text lints that reject bare-plural generic sentences and hierarchy words in culture strings (R8).
 
 **Exit checks**
 
@@ -158,6 +167,8 @@ Goal: a deterministic core, the worker loop and the renderer contract, drawing S
 - [ ] The compute gates, size-limit and the startup benchmark run on every pull request, and the M0 pipeline passes all of them (R5).
 - [ ] The CI budget gate gains a day-slice row: worst slice ≤ 0.35 ms RM at every tier, with the zero-scavenge window covering a full day of slices (R6).
 - [ ] The claims and cash identities hold exactly every day, and no revaluation changes the MINT balance (R6).
+- [ ] The lint profile and dependency-cruiser catch planted direct, property, destructuring, bracket and transitive violations, and pass the consumption package (R8).
+- [ ] The relabel test gives identical hashes for 3 seeds × 1 simulated year (R8).
 
 ## M1 Lab mode
 
@@ -181,6 +192,7 @@ Goal: Primer-style lab cards in discrete days, drawn as Skin B blobs, with claim
 - [ ] Add a bet card, "Jobs or prices?": one point of unemployment against one point of inflation, about 4 : 1 in this model (R6).
 - [ ] Keep wallet bars to lab cards, labelled lab-only, and never draw them in city or town skins outside the wealth lens (R6).
 - [ ] Allow scripted event timing only as logged inputs on lab and scenario cards, never as a state-driven director in the sim core (R6).
+- [ ] Add a bet card, "Evening events: are people out at night stopped more?", on paired seeds, framed by place and hour, never by culture. In the toy, evening festivals raised victimisation 8.7% and stops 1.3% against daytime ones, while the rate per outdoor hour stayed the same (R8).
 
 **Exit checks**
 
@@ -217,6 +229,12 @@ Goal: Lengnick's household–firm economy, calibrated to measured targets and li
 - [ ] Define happiness income as household disposable income per adult; feed it into each agent's Q16 log2 income habit, and publish each settlement's median log income from a histogram at the day boundary (R6).
 - [ ] Extend `spawnFromLedger` to wealth: keyed rank, a per-preset quantile table, income–wealth rank correlation near 0.6, exact apportionment to group totals, a portfolio split by group, and homes by rank plus noise (R6).
 - [ ] Spawn agents household by household, so members stay adjacent in agent index (R6).
+- [ ] Let culture change only the Stone–Geary marginal shares (β) of the six food categories and one wares-against-services split. Shifts sum to zero, stay within ±25% of the neutral share (±40% on lab cards), and keep every category at 0.6× its neutral share or more (R8).
+- [ ] Keep subsistence γ (in portions, bought cheapest-first), saving, labour supply, total consumption, the food total share and grade culture-blind (R8).
+- [ ] Make customs cost-neutral: favoured categories start at equal base prices, favourite foods swap within the budget, and festivals draw one equal per-person budget for every culture, asserted exactly in a unit test. Publish a "basket cost by culture" line per settlement in headless reports, expected within ±2.5% of food spending (R8).
+- [ ] Set a household's shift to the mean of its adults' shifts, rounded by largest remainder to sum to zero, and recompute it only when the household or a culture changes (R8).
+- [ ] Extend `spawnFromLedger` to culture: apportion settlement culture counts exactly, household by household; give "mixed" people one or two local-plurality customs by keyed draw; keep culture independent of wealth rank, home, job and body hue; fold returns exact counts (R8).
+- [ ] Let shops stock anticipated festival demand from the public calendar, and log festival-week sales, markdowns, spoilage and price moves per category (R8).
 
 **Exit checks**
 
@@ -229,6 +247,8 @@ Goal: Lengnick's household–firm economy, calibrated to measured targets and li
 - [ ] In portions, every day and exactly: produced + imported = eaten + spoiled + exported + pre-retail loss + Δstock + Δin-transit; city-preset shops spoil 0.5–3% of throughput (R6).
 - [ ] Known answers: an earnings-only economy settles within 0.1 of the earnings Gini; the Yard-Sale model without redistribution drifts toward Gini 1; cash and loan identities hold over 50 seeds × 400 simulated years (R6).
 - [ ] Swapping the lot layout (packed against field arrays) leaves state hashes identical (R6).
+- [ ] Engel's law holds for every culture alike: the food share falls about 7.8 points per doubling of income (R8).
+- [ ] Unmet food need and the food-insecurity tally do not differ by culture at equal income on paired seeds, and Cramér's V between culture and wealth decile, home district and job stays below 0.05 at spawn over 50 seeds (R8).
 
 ## M3 City life
 
@@ -268,6 +288,18 @@ Goal: daily routines in a real town, drawn as the Skin C pixel-art town from one
 - [ ] Keep freshness to the inspector, stall stock pips and waste charts; keep grade and stale food out of bubbles outside the wealth lens; draw carried goods by category; fire no bubble from the LS level (R6).
 - [ ] Make housing a fixed stock of LDtk homes with owners or renters, rent paid to the owner, mortgages at LTV ≤ 80% and payments ≤ 35% of income above subsistence, a forced sale at a 10% discount on default, and a monthly district price index from recent sales (R6).
 - [ ] Draw every home from the map; no tile, roof, size or decoration may depend on the occupant's wealth or the home's price (R6).
+- [ ] Transmit customs at birth from both parents: keep shared customs with fidelity rising from 0.5 to f₁ (0.9 food and naming, 0.95 festival, 0.5 music) as they become locally rare; when parents differ, succeed vertically with probability 0.6 and follow a lead parent 75% of the time; otherwise learn from five district adults with conformity 0.3 (R8).
+- [ ] Run adult adoption on a 30-day stride from day-boundary per-district custom counts, at yearly rates of food 3%, festival 1%, naming 2.5% and music 1% (15% at ages 10–24), halved for people holding all four of their own customs, raised 1.5× for two and doubled for one or none (R8).
+- [ ] Show the inherited label (`birthCulture`) in the inspector and the culture lens, while `culture` tracks practice by the switching rule. Switching is gradual, caused by contact and symmetric, with no default or target culture; the person keeps their name, and the inspector's Customs tab shows their history (R8).
+- [ ] Assign each culture's favoured food categories by keyed draw within the ±25% band; M8 switches this to what each hearth region produces in abundance (R8).
+- [ ] Give each culture 4–6 festivals totalling 8–12 days a year, the same total and the same daytime and evening mix for every culture, spread across the year and open to all, in a global table of about 8 B per festival. Hold festivals only on rest days or evenings (R8).
+- [ ] Count festival attendance as social contact that resets the isolation counter. Cap festival days per person per year at the culture total, with no wellbeing bonus by default (a knob, default 0) (R8).
+- [ ] Raise demand for a festival's favoured categories 2–4× on festival days (an unsourced estimate), funded from the festival budget within the month's discretionary spending, keeping the monthly food total within +5%, never from subsistence (R8).
+- [ ] Model music as an abstract preference (tempo, loudness, structure) with invented style names. Hold music events at the park or square, buying services; any services worker may perform any style (R8).
+- [ ] Generate personal names in the UI from (seed, id, birth culture), from one shared invented sound set, with naming customs setting the structure: no gendered forms, no diacritics, site words kept separate. Show names only in the inspector and follow-cam (R8).
+- [ ] Add a name filter for people, places and festivals: distinctive Pokémon town and city names and species names (edit distance 1 up to 5 letters, 2 above), the "poke" and "-mon" bans, LDNOOBW Latin-script lists (exact for 3-letter entries, substring for 4+), real festival names and the real-world fixture (R8).
+- [ ] Screen the shared sound set at authoring time by trigram similarity to real name bases (below 0.26 pass, 0.26–0.40 review, above 0.40 fail) (R8).
+- [ ] Use one shared set of festival decorations, never in national-flag colours or the six body hues, and the culture emblems drafted in `assets/sprites/culture.png` on the unmerged `feat/pixel-sprites` branch. Banner and lens colours also avoid the job colours and the reds and oranges kept for crime (R8).
 
 **Exit checks**
 
@@ -280,6 +312,10 @@ Goal: daily routines in a real town, drawn as the Skin C pixel-art town from one
 - [ ] In the default town, 5–15% of households score ≥ 4 on the tally (R6).
 - [ ] Within a town, LS rises 0.30–0.45 per doubling of income and the employed–unemployed gap is 0.6–1.0 (R6).
 - [ ] At 10k and 25k agents, needs, meals, the LS pass and day slices stay within their sub-budgets with zero GC (R6).
+- [ ] Second-generation children keep 40–85% and third-generation children 8–30% of heritage customs, and exogamy rises from the first generation to the second (R8).
+- [ ] Culture costs at most 0.1 ms RM a day at 10k agents, with zero scavenges across a year of day passes (R8).
+- [ ] With equal festival days and timing, mean contact and wellbeing do not differ by culture on paired seeds (R8).
+- [ ] The name filter passes 1,000 seeds per culture at ≤ 5% rejection, and the shared sound set passes the screen (R8).
 
 ## M4 Crime and police
 
@@ -305,6 +341,10 @@ Goal: crime as an action any agent can take, calibrated policing, and the true-v
 - [ ] Give victims and 1–3 close contacts a "case unresolved" flag until the records office clears the case; log its prevalence, and keep any LS effect as an unsourced knob, default 0 (R6).
 - [ ] Let wrongful stops lower trust in police for the person stopped and 3–5 acquaintances (a Norland design number, to calibrate), charted beside arrests (R6).
 - [ ] Extend the appearance audit and content lint to forbid punishment spectacles, shame marks, scars from punishment and mood rewards for watching punishment (R6).
+- [ ] Write every guarded decision as an integer threshold followed by one keyed draw. Add the flip test: shuffle culture, re-derive culture-package outputs, hold behaviour fixed, and require identical thresholds, utilities and draw keys across offending, targeting, patrols, stops, arrests, sentencing, reporting, hiring, wages, productivity and spawn wealth rank (R8).
+- [ ] Never show culture or names in justice bubbles, log lines, record states, the records office or the true and recorded panels; show case numbers and roles. Add no offence or report type tied to customs (noise, gathering, street vending), and never let patrols read culture, the festival calendar or crowds (R8).
+- [ ] Add the outcome and exposure audit in headless CI over 50 paired seeds × 20 simulated years, using agent-level units: raw per-culture rates of true offending, victimisation, stops, wrongful stops, arrests, records and wealth decile within 0.9–1.1 of the population rate, and Mantel–Haenszel ratios on place × time × visible-cue strata within |ln ratio| ≤ 0.05, overall and by period. Log reporting and trust by culture too (R8).
+- [ ] Run the audit against a single-culture world, a culture-blind twin with preference shifts set to zero, and customs counterfactuals on the same seeds (R8).
 
 **Exit checks**
 
@@ -317,6 +357,8 @@ Goal: crime as an action any agent can take, calibrated policing, and the true-v
 - [ ] In a 1,000–100,000-agent size sweep, loot and detection explain no more than about 45% of the per-capita theft gradient, Glaeser and Sacerdote's bound (R4).
 - [ ] A violent-crime victim's LS averages 0.3–0.45 below baseline in the year of the crime and under 0.1 the year after (R6).
 - [ ] At full employment, true theft stays above zero on paired seeds (R6).
+- [ ] The flip test changes zero thresholds and draw keys over one seed-year of ticks, and catches planted id, custom, keyed-draw and hiring leaks (R8).
+- [ ] The audit passes both bands, or each exception is explained by a named place-time mechanism (R8).
 
 ## M5 Society and policy
 
@@ -344,6 +386,14 @@ Goal: the social layer and policy sliders, each with a predicted size of effect,
 - [ ] If a wealth term is enabled, measure liquid wealth in years of settlement median income (+50 per year, capped at +150), never by fixed coin thresholds (R6).
 - [ ] Add harvest shocks as logged scenario inputs, announced as forecasts with uncertainty (R6).
 - [ ] Extend the appearance audit: no body pixel varies with LS, faces stay event-driven, bubbles are capped per agent per day, and every rendered attribute has |Spearman| < 0.05 with wealth decile outside the lens over 50 seeds (R6).
+- [ ] Keep housing and Schelling moves culture-blind. Any kin placement is a labelled knob, off by default, shown with the dissimilarity index and the place-driven disparity monitor. Keep round 1's Schelling known-answer test on neutral colours, and flag culture dissimilarity above 0.2 (R8).
+- [ ] Weight partner candidates by how many customs they share, calibrated to the prototype's exogamy bands (the prototype used own-culture preference of 0.2 plus 0.1 per own custom kept); never by hue (R8).
+- [ ] Offer M5's friend network as an optional source for adoption, keeping district counts as the default. Keep festival contact transient, building no lasting ties, unless an employment-by-culture audit also runs (R8).
+- [ ] Add the opt-in culture lens: off by default and never in share cards or default replays; customs only (district shares as small multiples and the festival calendar; M8 adds the home-regions map mode); justice cues hidden while it is on; separate Customs and Records inspector tabs; a palette apart from body hues and crime colours, with icons or patterns (R8).
+- [ ] Add a culture panel inside the lens (shares, effective number of cultures, customs from other cultures 0–4, generational retention) and City mode's boundary inflow of culturally different arrivals, defaulting to 0.5% a year (R8).
+- [ ] Add a place-and-hour Exposure lens: night outdoor hours, and victimisation and police contacts per 1,000 outdoor hours, by district and hour, never by culture. Remedies act only on places and times (R8).
+- [ ] Extend the appearance audit with a culture row (|Cramér's V| < 0.05 for every rendered attribute outside the lens over 50 seeds), add a hue × culture independence test over 10⁶ births, and let no policy slider read culture (R8).
+- [ ] Run the diverse playtest panel on customs and names: which real people does each culture resemble, and which commits more crime? A proposed bar: at least 8 in 10 name none and see no difference (R8).
 
 **Exit checks**
 
@@ -376,6 +426,9 @@ Goal: 100k agents on desktop, share links that replay in any browser, and a clea
 - [ ] Run workers only when `crossOriginIsolated` is true and a phase carries at least 0.5 ms: fixed 1,024-agent chunks, chunk-ordered reductions, a spin of at most 50 µs before `Atomics.wait`, and at most min(hardwareConcurrency − 2, 3) helpers (R5).
 - [ ] Add a hand-written service worker for offline starts, and a `_headers` file with immutable caching for hashed assets plus COOP/COEP (R5).
 - [ ] Name the class colours, culture conflict and punishment spectacles that games like Norland use, and Nomos excludes, on the "What this toy leaves out" page (R6).
+- [ ] On the "What this toy leaves out" page, say that cultures are fictional, learned, preference-only and never drawn; that real cultures are far richer; that housing ignores culture; that festival and taste spending never crowds out food (Atkin; Banerjee and Duflo); and what Nomos leaves out on purpose (real cultures, discrimination by law as in Victoria 3, xenophobia and culture conflict as in Norland). Publish the outcome-audit result in words, and link the illusory-correlation and generic-language studies (R8).
+- [ ] Review the custom catalogue and a sample of generated names with sensitivity readers or the diverse panel before launch (R8).
+- [ ] Add the settlement culture block to the save format as top-3 sparse counts with dense counts where needed; budget 50–118 KB gzip at 10,000 settlements, and measure before the format freezes (R8).
 
 **Exit checks**
 
@@ -417,6 +470,10 @@ Goal: every settlement in a country advances daily as an integer ledger, headles
 - [ ] Fit wealth group-transition hazards from the M5 sweep logs; spawn and fold reproduce group totals exactly in cents (R6).
 - [ ] Use one keyed draw per settlement-day plus one hash round per rounding decision, or deterministic remainders, for aggregate band shifts; never a full keyed draw per cell (R6).
 - [ ] Budget the goods-and-wellbeing extension at ≤ 0.7 µs RM per settlement-day at 1,000 settlements, and port it to WASM with the settlement model before the 10,000-settlement tier (R6).
+- [ ] Add the settlement culture block: counts by primary culture plus mixed counts (2K Int32, 64 B at 8 cultures) and a region id, stepped yearly on each settlement's stride day: births by homogamy and conformist learning, then mixing and switching hazards (R8).
+- [ ] Split every migration flow by culture exactly, outflow by culture first and then by destination, with about 20% long-distance movers weighted by pop^1.5, spread over the month with sparse loops. Migration never reads culture (R8).
+- [ ] Derive settlement demand shifts as Σ share × Δβ, recomputed only when counts change (R8).
+- [ ] Fit the culture hazards from M3–M5 agent runs and dock them on held-out runs, as round 4 does for other flows (R8).
 
 **Exit checks**
 
@@ -430,6 +487,9 @@ Goal: every settlement in a country advances daily as an integer ledger, headles
 - [ ] The fishery catch at u = r/2 lands within 0.1% of rK/4, and the ledger ring's waste stays within 1 point of an exact per-day ring on presets (R6).
 - [ ] Seasonal price gaps run 17–33% in isolated villages and 2.5–3 times lower in integrated markets; grain's price doubles at about 290 km by road (R6).
 - [ ] Total migration stays at 3.6–5.5% a year with the LS push on, and 10,000 settlements meet the 12 ms budget with every block in (R6).
+- [ ] People by culture sum exactly to population every day, spawn and fold are exact per culture, and minority move rates stay within 5% of their population share over 30 years (R8).
+- [ ] Over 100 years, regional G\_ST stays at 0.3 or more with acculturation, at least 90% of settlements keep their dominant culture, and the capital's effective number of cultures exceeds the village median (R8).
+- [ ] Culture is independent of settlement wealth bands within the audit's bands (R8).
 
 ## M8 Country map
 
@@ -449,6 +509,9 @@ Goal: country mode ships, with a generated, seeded map, Country and Region views
 - [ ] Add "Open in City mode": a detached City-mode run seeded from a settlement's ledger and labelled as a what-if (R4).
 - [ ] Keep multi-resolution history (weekly for a year, monthly before that), quantised to Uint16 with delta coding (R4).
 - [ ] Add goods map modes: main product per settlement (eight classes, icon plus colour), the price of a chosen good, days of stock, and resource health (fish B/K, forest V/K, ore left) (R6).
+- [ ] Place 4–8 culture hearths by keyed Poisson-disc, grow regions by multi-source Dijkstra on the travel-cost mesh with terrain costs (no `Math.random`), mix a border band, reject layouts whose cultures differ in mean land quality or development beyond a set tolerance, flag development regions that hold only one culture, and spin the ledger up 50–100 years before play. Give cultures similar country-wide shares, and derive each culture's favoured foods from its hearth region's abundance (R8).
+- [ ] Name places, regions and festivals with theme words in the UI language and the shared sound set, keeping descriptive words such as "Ford" and "Port" separate, and run them through the name filter for 1,000 seeds (R8).
+- [ ] Add the home-regions map mode to the culture lens: dominant culture with hatching for diversity, and labels. It never uses the six body-hue colours or the police, merchant and crime colours, and it is never the default view (R8).
 
 **Exit checks**
 
@@ -456,6 +519,7 @@ Goal: country mode ships, with a generated, seeded map, Country and Region views
 - [ ] The name filter passes 1,000 seeds (R4).
 - [ ] Country and Region views take ≤ 2 ms of main-thread render time per frame in CI's software-GL Chromium, a proposed bar (R4).
 - [ ] A render-filter test checks that the recorded view never shows a true-only cue; a fork's fold at its first tick equals the source ledger; a save with ten years of history stays under about 3 MB gzip, since history alone came to about 1.9 MB on synthetic data (R4).
+- [ ] After spin-up, cultures' mean development stays within the set tolerance, and the share of development regions holding only one culture is reported (R8).
 
 ## M9 Zoom across scales
 
@@ -478,6 +542,7 @@ Goal: zooming from Region to street shows agents spawned from the ledger, aligne
 - [ ] Fold pantry and shop lots into the ring and cohorts exactly in portions; spawn lots by largest remainder, with keyed expiry offsets inside wide slots and the category mix drawn from demand shares (R6).
 - [ ] Make spawn draw set points so spawned LS bands match the ledger, and make fold return exact band counts and summed LS (R6).
 - [ ] Add each notable's balance sheet (home ID, shares, debts) to the notables cache, so a revisited owner still owns the same home and firm (R6).
+- [ ] Spawn and fold customs exactly from the culture block, and keep notables' customs across visits (R8).
 
 **Exit checks**
 
@@ -515,4 +580,9 @@ Total effort to launch is roughly 20–30 weeks of one developer's full-time wor
 | FBI tables 16 and 70–74, BJS reporting by location, and Bettencourt 2007 with intervals | Crime, police and scaling bands for country mode | M7 |
 | Alignment nudges with the real emulator, read on the divergence meter | Shadow-canonical as the default, or pinned live cities | M7, M9 |
 | Day-step, spawn and map-generation times in browser workers and on phones | The phone tier for country mode | M8, M9 |
+| Whether a stream of animated crime events builds illusory correlation as static sentence lists do (round 8) | How strict the culture lens and justice-view rules must be | M4, M5 |
+| The culture audit's outcome band (0.9–1.1), equivalence margin (0.05) and power over 50 paired seeds | Whether the audit detects culture leaks | M4 |
+| Round 8's transmission bands re-run with similar culture shares, not one 60% culture | CI retention bands and the 0.5% inflow default | M3, M5 |
+| Festival demand spikes (2–4×), attendance targets, and festival and music transmission rates | Festival markets, crowds and custom rates | M3 |
+| Culture lens and emblem colours against body-hue shade tones (CIEDE2000 6.0–9.1) | Whether a lens colour reads as a body colour | M5, M8 |
 | A manual search of Reddit, Steam and itch.io | Competitor risk | Ongoing |

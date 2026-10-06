@@ -1,0 +1,207 @@
+{
+ "args": {
+  "S": 1000,
+  "K": 8,
+  "years": 100,
+  "seed": 7,
+  "variant": "acculturate",
+  "mig": 0.045,
+  "longShare": 0,
+  "warm": 5,
+  "out": "",
+  "nn": 8
+ },
+ "variant": {
+  "a": 0.3,
+  "sub": 1,
+  "hmix": 0.05,
+  "sw": 0.1,
+  "eta": 0.4
+ },
+ "machine": {
+  "cpu": "AMD Ryzen 5 3600 6-Core Processor",
+  "logicalCpus": 12,
+  "ramGiB": 15.9,
+  "node": "v24.18.0",
+  "v8": "13.6.233.17-node.50",
+  "os": "win32 10.0.19045 x64"
+ },
+ "cpuBusyBefore": 1.16,
+ "cpuBusyAfter": 0.06,
+ "timing": {
+  "warmupYears": 5,
+  "samples": 95,
+  "nsPerSettlementYear": {
+   "median": 942.4,
+   "min": 739.5,
+   "max": 2387,
+   "n": 95
+  },
+  "nsPerSettlementDayAmortised": {
+   "median": 2.582,
+   "min": 2.026,
+   "max": 6.54,
+   "n": 95
+  }
+ },
+ "bytesPerSettlement": 64,
+ "stateHash": "656c46a4",
+ "trajectory": [
+  {
+   "yr": 0,
+   "encCapital": 1.003,
+   "encTop10": 1.27,
+   "encSmallHalf": 1.427,
+   "gst": 0.7333,
+   "encWithin": 1.356,
+   "encNational": 5.835,
+   "sharePure90": 0.366,
+   "keepsDominant": 1,
+   "mixedShare": 0,
+   "total": 1203849
+  },
+  {
+   "yr": 1,
+   "encCapital": 1.003,
+   "encTop10": 1.27,
+   "encSmallHalf": 1.435,
+   "gst": 0.7328,
+   "encWithin": 1.357,
+   "encNational": 5.835,
+   "sharePure90": 0.368,
+   "keepsDominant": 0.998,
+   "mixedShare": 0.0133,
+   "total": 1203849
+  },
+  {
+   "yr": 10,
+   "encCapital": 1.002,
+   "encTop10": 1.268,
+   "encSmallHalf": 1.429,
+   "gst": 0.7432,
+   "encWithin": 1.343,
+   "encNational": 5.831,
+   "sharePure90": 0.39,
+   "keepsDominant": 0.979,
+   "mixedShare": 0.0992,
+   "total": 1203849
+  },
+  {
+   "yr": 20,
+   "encCapital": 1.002,
+   "encTop10": 1.219,
+   "encSmallHalf": 1.377,
+   "gst": 0.7683,
+   "encWithin": 1.304,
+   "encNational": 5.825,
+   "sharePure90": 0.45,
+   "keepsDominant": 0.979,
+   "mixedShare": 0.1453,
+   "total": 1203849
+  },
+  {
+   "yr": 30,
+   "encCapital": 1.002,
+   "encTop10": 1.15,
+   "encSmallHalf": 1.317,
+   "gst": 0.7976,
+   "encWithin": 1.26,
+   "encNational": 5.821,
+   "sharePure90": 0.537,
+   "keepsDominant": 0.974,
+   "mixedShare": 0.1638,
+   "total": 1203849
+  },
+  {
+   "yr": 40,
+   "encCapital": 1.001,
+   "encTop10": 1.116,
+   "encSmallHalf": 1.261,
+   "gst": 0.8261,
+   "encWithin": 1.219,
+   "encNational": 5.818,
+   "sharePure90": 0.608,
+   "keepsDominant": 0.973,
+   "mixedShare": 0.1681,
+   "total": 1203849
+  },
+  {
+   "yr": 50,
+   "encCapital": 1.001,
+   "encTop10": 1.112,
+   "encSmallHalf": 1.207,
+   "gst": 0.8521,
+   "encWithin": 1.184,
+   "encNational": 5.816,
+   "sharePure90": 0.686,
+   "keepsDominant": 0.972,
+   "mixedShare": 0.1647,
+   "total": 1203849
+  },
+  {
+   "yr": 60,
+   "encCapital": 1.001,
+   "encTop10": 1.083,
+   "encSmallHalf": 1.163,
+   "gst": 0.875,
+   "encWithin": 1.154,
+   "encNational": 5.814,
+   "sharePure90": 0.746,
+   "keepsDominant": 0.97,
+   "mixedShare": 0.1573,
+   "total": 1203849
+  },
+  {
+   "yr": 70,
+   "encCapital": 1,
+   "encTop10": 1.065,
+   "encSmallHalf": 1.139,
+   "gst": 0.8943,
+   "encWithin": 1.13,
+   "encNational": 5.811,
+   "sharePure90": 0.786,
+   "keepsDominant": 0.966,
+   "mixedShare": 0.1476,
+   "total": 1203849
+  },
+  {
+   "yr": 80,
+   "encCapital": 1,
+   "encTop10": 1.04,
+   "encSmallHalf": 1.12,
+   "gst": 0.9106,
+   "encWithin": 1.109,
+   "encNational": 5.809,
+   "sharePure90": 0.815,
+   "keepsDominant": 0.963,
+   "mixedShare": 0.137,
+   "total": 1203849
+  },
+  {
+   "yr": 90,
+   "encCapital": 1,
+   "encTop10": 1.029,
+   "encSmallHalf": 1.107,
+   "gst": 0.9241,
+   "encWithin": 1.093,
+   "encNational": 5.806,
+   "sharePure90": 0.833,
+   "keepsDominant": 0.961,
+   "mixedShare": 0.1259,
+   "total": 1203849
+  },
+  {
+   "yr": 100,
+   "encCapital": 1,
+   "encTop10": 1.019,
+   "encSmallHalf": 1.092,
+   "gst": 0.9355,
+   "encWithin": 1.078,
+   "encNational": 5.804,
+   "sharePure90": 0.862,
+   "keepsDominant": 0.956,
+   "mixedShare": 0.1151,
+   "total": 1203849
+  }
+ ]
+}

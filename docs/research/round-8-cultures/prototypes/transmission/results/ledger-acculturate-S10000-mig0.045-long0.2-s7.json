@@ -1,0 +1,117 @@
+{
+ "args": {
+  "S": 10000,
+  "K": 8,
+  "years": 30,
+  "seed": 7,
+  "variant": "acculturate",
+  "mig": 0.045,
+  "longShare": 0.2,
+  "warm": 5,
+  "out": "",
+  "nn": 8
+ },
+ "variant": {
+  "a": 0.3,
+  "sub": 1,
+  "hmix": 0.05,
+  "sw": 0.1,
+  "eta": 0.4
+ },
+ "machine": {
+  "cpu": "AMD Ryzen 5 3600 6-Core Processor",
+  "logicalCpus": 12,
+  "ramGiB": 15.9,
+  "node": "v24.18.0",
+  "v8": "13.6.233.17-node.50",
+  "os": "win32 10.0.19045 x64"
+ },
+ "cpuBusyBefore": 0.11,
+ "cpuBusyAfter": 0.23,
+ "timing": {
+  "warmupYears": 5,
+  "samples": 25,
+  "nsPerSettlementYear": {
+   "median": 1312,
+   "min": 1256,
+   "max": 2597,
+   "n": 25
+  },
+  "nsPerSettlementDayAmortised": {
+   "median": 3.595,
+   "min": 3.44,
+   "max": 7.116,
+   "n": 25
+  }
+ },
+ "bytesPerSettlement": 64,
+ "saveGzipBytes": 117730,
+ "stateHash": "d5395168",
+ "trajectory": [
+  {
+   "yr": 0,
+   "encCapital": 1.268,
+   "encTop10": 1.32,
+   "encSmallHalf": 1.428,
+   "gst": 0.694,
+   "encWithin": 1.408,
+   "encNational": 5.844,
+   "sharePure90": 0.37,
+   "keepsDominant": 0.999,
+   "mixedShare": 0,
+   "total": 12170975
+  },
+  {
+   "yr": 1,
+   "encCapital": 1.331,
+   "encTop10": 1.352,
+   "encSmallHalf": 1.427,
+   "gst": 0.6827,
+   "encWithin": 1.424,
+   "encNational": 5.844,
+   "sharePure90": 0.366,
+   "keepsDominant": 0.997,
+   "mixedShare": 0.0159,
+   "total": 12170975
+  },
+  {
+   "yr": 10,
+   "encCapital": 1.926,
+   "encTop10": 1.638,
+   "encSmallHalf": 1.414,
+   "gst": 0.6117,
+   "encWithin": 1.554,
+   "encNational": 5.799,
+   "sharePure90": 0.386,
+   "keepsDominant": 0.993,
+   "mixedShare": 0.1331,
+   "total": 12170975
+  },
+  {
+   "yr": 20,
+   "encCapital": 2.449,
+   "encTop10": 1.963,
+   "encSmallHalf": 1.372,
+   "gst": 0.5725,
+   "encWithin": 1.665,
+   "encNational": 5.703,
+   "sharePure90": 0.439,
+   "keepsDominant": 0.992,
+   "mixedShare": 0.2141,
+   "total": 12170975
+  },
+  {
+   "yr": 30,
+   "encCapital": 2.774,
+   "encTop10": 2.232,
+   "encSmallHalf": 1.316,
+   "gst": 0.5527,
+   "encWithin": 1.747,
+   "encNational": 5.587,
+   "sharePure90": 0.525,
+   "keepsDominant": 0.991,
+   "mixedShare": 0.2607,
+   "total": 12170975
+  }
+ ]
+}

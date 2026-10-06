@@ -1,0 +1,1692 @@
+{
+ "args": {
+  "N": 100000,
+  "years": 100,
+  "seed": 2,
+  "K": 8,
+  "D": 16,
+  "P": 30,
+  "contact": "district",
+  "variant": "baseline",
+  "warm": 5,
+  "tag": "",
+  "out": "",
+  "reverse": 0,
+  "bench": 1
+ },
+ "variant": {
+  "sub": 1,
+  "a": 0.3,
+  "r": 0,
+  "mIn": 0.005,
+  "mOut": 0.005,
+  "hom": 0.2,
+  "homX": 0.4,
+  "chainW": 0,
+  "move": 0.08,
+  "initClust": 0.5,
+  "lead": 0.75,
+  "consist": 1
+ },
+ "machine": {
+  "cpu": "AMD Ryzen 5 3600 6-Core Processor",
+  "logicalCpus": 12,
+  "ramGiB": 15.9,
+  "node": "v24.18.0",
+  "v8": "13.6.233.17-node.50",
+  "os": "win32 10.0.19045 x64"
+ },
+ "cpuBusyBefore": 0.02,
+ "cpuBusyAfter": 0.05,
+ "timing": {
+  "warmupYears": 5,
+  "samples": 95,
+  "horizontalMsPerYear": {
+   "median": 14.93,
+   "min": 13.78,
+   "max": 16.55,
+   "n": 95
+  },
+  "yearlyPhaseMsPerYear": {
+   "median": 5.327,
+   "min": 4.426,
+   "max": 6.779,
+   "n": 95
+  },
+  "horizontalNsPerPersonYear": {
+   "median": 149.3,
+   "min": 137.8,
+   "max": 165.5,
+   "n": 95
+  },
+  "yearlyNsPerPersonYear": {
+   "median": 53.27,
+   "min": 44.26,
+   "max": 67.79,
+   "n": 95
+  },
+  "dayPassUs": {
+   "median": 40.6,
+   "min": 34.8,
+   "max": 81.8,
+   "n": 1140
+  },
+  "verticalBench": {
+   "nsPerBirth": {
+    "median": 500.3,
+    "min": 497.9,
+    "max": 523.7,
+    "n": 9
+   },
+   "warmupReps": 3,
+   "callsPerSample": 100000,
+   "sink": 468756
+  }
+ },
+ "bytesPerPerson": {
+  "prim": 1,
+  "customs": 4,
+  "friends": 0,
+  "metricsOnly": "gen 1, heri 1, yrsIn 1"
+ },
+ "stateHash": "fa04bffa",
+ "secondHalf": {
+  "exogamy": {
+   "native": 0.174,
+   "g1": 0.273,
+   "g2": 0.35,
+   "g3plus": 0.273,
+   "establishedMinority": 0.271,
+   "n": [
+    24627,
+    9051,
+    19898,
+    14220,
+    11516
+   ]
+  },
+  "teenProfiles": {
+   "heritage": 0.045,
+   "host": 0.078,
+   "mixed": 0.603,
+   "other": 0.274,
+   "personYears": 197660
+  },
+  "g2ChildRetention": {
+   "food": 0.476,
+   "all": 0.502,
+   "personYears": 185079
+  },
+  "g3ChildRetention": {
+   "food": 0.132,
+   "all": 0.165,
+   "personYears": 143959
+  }
+ },
+ "trajectory": [
+  {
+   "yr": 0,
+   "alive": 100000,
+   "hostShare": 0.601,
+   "enc": 2.536,
+   "encCustoms": [
+    2.536,
+    2.536,
+    2.536,
+    2.536,
+    2.536
+   ],
+   "mixedShare": 0,
+   "mixedNoMusic": 0,
+   "foreignCustoms0to4": [
+    1,
+    0,
+    0,
+    0,
+    0
+   ],
+   "hostVariantShare": [
+    0.601,
+    0.601,
+    0.601,
+    0.601,
+    0.601
+   ],
+   "gst": 0.1603,
+   "dissim": 0.4771,
+   "g1FoodBy5_10_20": [
+    null,
+    null,
+    null,
+    null
+   ],
+   "g2Child": null,
+   "g3Child": null,
+   "exogamy": {
+    "native": 0.063,
+    "g1": null,
+    "g2": null,
+    "g3plus": null,
+    "establishedMinority": 0.14,
+    "nG1": 0,
+    "nG2": 0
+   },
+   "teenProfiles": null,
+   "switches": 0,
+   "primShares": [
+    0.601,
+    0.1203,
+    0.1006,
+    0.0678,
+    0.0508,
+    0.0299,
+    0.0199,
+    0.0098
+   ]
+  },
+  {
+   "yr": 1,
+   "alive": 100000,
+   "hostShare": 0.5999,
+   "enc": 2.542,
+   "encCustoms": [
+    2.549,
+    2.559,
+    2.531,
+    2.555,
+    2.559
+   ],
+   "mixedShare": 0.0774,
+   "mixedNoMusic": 0.0556,
+   "foreignCustoms0to4": [
+    0.927,
+    0.055,
+    0.012,
+    0.004,
+    0.001
+   ],
+   "hostVariantShare": [
+    0.5989,
+    0.5974,
+    0.6016,
+    0.5981,
+    0.5976
+   ],
+   "gst": 0.1385,
+   "dissim": 0.4377,
+   "g1FoodBy5_10_20": [
+    1,
+    null,
+    null,
+    null
+   ],
+   "g2Child": null,
+   "g3Child": null,
+   "exogamy": {
+    "native": 0.067,
+    "g1": 0.157,
+    "g2": null,
+    "g3plus": null,
+    "establishedMinority": 0.149,
+    "nG1": 51,
+    "nG2": 0
+   },
+   "teenProfiles": null,
+   "switches": 0,
+   "primShares": [
+    0.5999,
+    0.1212,
+    0.1016,
+    0.0679,
+    0.0498,
+    0.0299,
+    0.0198,
+    0.0099
+   ]
+  },
+  {
+   "yr": 5,
+   "alive": 100000,
+   "hostShare": 0.5879,
+   "enc": 2.626,
+   "encCustoms": [
+    2.613,
+    2.638,
+    2.578,
+    2.619,
+    2.651
+   ],
+   "mixedShare": 0.1745,
+   "mixedNoMusic": 0.1243,
+   "foreignCustoms0to4": [
+    0.832,
+    0.135,
+    0.025,
+    0.006,
+    0.002
+   ],
+   "hostVariantShare": [
+    0.5899,
+    0.5862,
+    0.5948,
+    0.5891,
+    0.5845
+   ],
+   "gst": 0.0703,
+   "dissim": 0.2963,
+   "g1FoodBy5_10_20": [
+    0.972,
+    null,
+    null,
+    null
+   ],
+   "g2Child": null,
+   "g3Child": null,
+   "exogamy": {
+    "native": 0.094,
+    "g1": 0.202,
+    "g2": null,
+    "g3plus": null,
+    "establishedMinority": 0.189,
+    "nG1": 104,
+    "nG2": 0
+   },
+   "teenProfiles": null,
+   "switches": 8,
+   "primShares": [
+    0.5879,
+    0.1243,
+    0.1037,
+    0.0697,
+    0.0504,
+    0.0312,
+    0.0213,
+    0.0115
+   ]
+  },
+  {
+   "yr": 10,
+   "alive": 100000,
+   "hostShare": 0.5716,
+   "enc": 2.745,
+   "encCustoms": [
+    2.684,
+    2.746,
+    2.628,
+    2.697,
+    2.785
+   ],
+   "mixedShare": 0.2829,
+   "mixedNoMusic": 0.2102,
+   "foreignCustoms0to4": [
+    0.725,
+    0.203,
+    0.055,
+    0.013,
+    0.003
+   ],
+   "hostVariantShare": [
+    0.58,
+    0.5716,
+    0.5878,
+    0.5782,
+    0.5664
+   ],
+   "gst": 0.029,
+   "dissim": 0.1817,
+   "g1FoodBy5_10_20": [
+    0.97,
+    0.901,
+    null,
+    null
+   ],
+   "g2Child": {
+    "food": 0.69,
+    "all": 0.702,
+    "n": 84
+   },
+   "g3Child": null,
+   "exogamy": {
+    "native": 0.094,
+    "g1": 0.252,
+    "g2": null,
+    "g3plus": null,
+    "establishedMinority": 0.229,
+    "nG1": 139,
+    "nG2": 0
+   },
+   "teenProfiles": null,
+   "switches": 41,
+   "primShares": [
+    0.5716,
+    0.1292,
+    0.1056,
+    0.0722,
+    0.0515,
+    0.033,
+    0.023,
+    0.0139
+   ]
+  },
+  {
+   "yr": 15,
+   "alive": 100000,
+   "hostShare": 0.5562,
+   "enc": 2.864,
+   "encCustoms": [
+    2.746,
+    2.855,
+    2.653,
+    2.766,
+    2.932
+   ],
+   "mixedShare": 0.376,
+   "mixedNoMusic": 0.2884,
+   "foreignCustoms0to4": [
+    0.633,
+    0.246,
+    0.088,
+    0.025,
+    0.007
+   ],
+   "hostVariantShare": [
+    0.5716,
+    0.5574,
+    0.5844,
+    0.5691,
+    0.5477
+   ],
+   "gst": 0.012,
+   "dissim": 0.1144,
+   "g1FoodBy5_10_20": [
+    0.968,
+    0.903,
+    0.829,
+    null
+   ],
+   "g2Child": {
+    "food": 0.7,
+    "all": 0.665,
+    "n": 496
+   },
+   "g3Child": null,
+   "exogamy": {
+    "native": 0.109,
+    "g1": 0.201,
+    "g2": null,
+    "g3plus": null,
+    "establishedMinority": 0.259,
+    "nG1": 144,
+    "nG2": 0
+   },
+   "teenProfiles": {
+    "heritage": 0.071,
+    "host": 0,
+    "mixed": 0.857,
+    "other": 0.071,
+    "n": 14
+   },
+   "switches": 69,
+   "primShares": [
+    0.5562,
+    0.1336,
+    0.1072,
+    0.0754,
+    0.0521,
+    0.0343,
+    0.0248,
+    0.0164
+   ]
+  },
+  {
+   "yr": 20,
+   "alive": 100000,
+   "hostShare": 0.5449,
+   "enc": 2.957,
+   "encCustoms": [
+    2.797,
+    2.971,
+    2.688,
+    2.837,
+    3.101
+   ],
+   "mixedShare": 0.451,
+   "mixedNoMusic": 0.3588,
+   "foreignCustoms0to4": [
+    0.56,
+    0.273,
+    0.119,
+    0.038,
+    0.01
+   ],
+   "hostVariantShare": [
+    0.5652,
+    0.5432,
+    0.5802,
+    0.5599,
+    0.5276
+   ],
+   "gst": 0.0049,
+   "dissim": 0.0739,
+   "g1FoodBy5_10_20": [
+    0.966,
+    0.906,
+    0.799,
+    null
+   ],
+   "g2Child": {
+    "food": 0.642,
+    "all": 0.624,
+    "n": 1200
+   },
+   "g3Child": null,
+   "exogamy": {
+    "native": 0.113,
+    "g1": 0.239,
+    "g2": 0,
+    "g3plus": null,
+    "establishedMinority": 0.309,
+    "nG1": 159,
+    "nG2": 6
+   },
+   "teenProfiles": {
+    "heritage": 0.152,
+    "host": 0.011,
+    "mixed": 0.779,
+    "other": 0.057,
+    "n": 263
+   },
+   "switches": 214,
+   "primShares": [
+    0.5449,
+    0.1365,
+    0.1074,
+    0.0773,
+    0.052,
+    0.0356,
+    0.0266,
+    0.0197
+   ]
+  },
+  {
+   "yr": 25,
+   "alive": 100000,
+   "hostShare": 0.5377,
+   "enc": 3.018,
+   "encCustoms": [
+    2.822,
+    3.079,
+    2.73,
+    2.877,
+    3.265
+   ],
+   "mixedShare": 0.5134,
+   "mixedNoMusic": 0.4219,
+   "foreignCustoms0to4": [
+    0.5,
+    0.29,
+    0.144,
+    0.051,
+    0.015
+   ],
+   "hostVariantShare": [
+    0.562,
+    0.5302,
+    0.5744,
+    0.5549,
+    0.5088
+   ],
+   "gst": 0.0024,
+   "dissim": 0.0554,
+   "g1FoodBy5_10_20": [
+    0.969,
+    0.888,
+    0.8,
+    0.688
+   ],
+   "g2Child": {
+    "food": 0.616,
+    "all": 0.602,
+    "n": 1920
+   },
+   "g3Child": null,
+   "exogamy": {
+    "native": 0.148,
+    "g1": 0.228,
+    "g2": 0.375,
+    "g3plus": null,
+    "establishedMinority": 0.303,
+    "nG1": 197,
+    "nG2": 56
+   },
+   "teenProfiles": {
+    "heritage": 0.128,
+    "host": 0.017,
+    "mixed": 0.782,
+    "other": 0.074,
+    "n": 720
+   },
+   "switches": 234,
+   "primShares": [
+    0.5377,
+    0.1392,
+    0.107,
+    0.0781,
+    0.0523,
+    0.0365,
+    0.028,
+    0.0214
+   ]
+  },
+  {
+   "yr": 30,
+   "alive": 100000,
+   "hostShare": 0.5334,
+   "enc": 3.057,
+   "encCustoms": [
+    2.841,
+    3.185,
+    2.766,
+    2.921,
+    3.44
+   ],
+   "mixedShare": 0.5658,
+   "mixedNoMusic": 0.4779,
+   "foreignCustoms0to4": [
+    0.45,
+    0.301,
+    0.163,
+    0.066,
+    0.02
+   ],
+   "hostVariantShare": [
+    0.5595,
+    0.5181,
+    0.5699,
+    0.5495,
+    0.4901
+   ],
+   "gst": 0.001,
+   "dissim": 0.0414,
+   "g1FoodBy5_10_20": [
+    0.968,
+    0.899,
+    0.786,
+    0.663
+   ],
+   "g2Child": {
+    "food": 0.569,
+    "all": 0.576,
+    "n": 2253
+   },
+   "g3Child": {
+    "food": 0,
+    "all": 0.167,
+    "n": 3
+   },
+   "exogamy": {
+    "native": 0.17,
+    "g1": 0.216,
+    "g2": 0.396,
+    "g3plus": null,
+    "establishedMinority": 0.305,
+    "nG1": 167,
+    "nG2": 134
+   },
+   "teenProfiles": {
+    "heritage": 0.125,
+    "host": 0.017,
+    "mixed": 0.777,
+    "other": 0.08,
+    "n": 1132
+   },
+   "switches": 288,
+   "primShares": [
+    0.5334,
+    0.1403,
+    0.106,
+    0.0791,
+    0.0511,
+    0.0376,
+    0.0289,
+    0.0234
+   ]
+  },
+  {
+   "yr": 35,
+   "alive": 100000,
+   "hostShare": 0.5339,
+   "enc": 3.057,
+   "encCustoms": [
+    2.861,
+    3.27,
+    2.795,
+    2.945,
+    3.6
+   ],
+   "mixedShare": 0.6082,
+   "mixedNoMusic": 0.5247,
+   "foreignCustoms0to4": [
+    0.411,
+    0.308,
+    0.178,
+    0.078,
+    0.026
+   ],
+   "hostVariantShare": [
+    0.5573,
+    0.5088,
+    0.5664,
+    0.5468,
+    0.4738
+   ],
+   "gst": 0.0005,
+   "dissim": 0.033,
+   "g1FoodBy5_10_20": [
+    0.973,
+    0.899,
+    0.781,
+    0.637
+   ],
+   "g2Child": {
+    "food": 0.541,
+    "all": 0.551,
+    "n": 2334
+   },
+   "g3Child": {
+    "food": 0.258,
+    "all": 0.25,
+    "n": 62
+   },
+   "exogamy": {
+    "native": 0.186,
+    "g1": 0.32,
+    "g2": 0.356,
+    "g3plus": null,
+    "establishedMinority": 0.313,
+    "nG1": 181,
+    "nG2": 202
+   },
+   "teenProfiles": {
+    "heritage": 0.117,
+    "host": 0.027,
+    "mixed": 0.785,
+    "other": 0.071,
+    "n": 1347
+   },
+   "switches": 339,
+   "primShares": [
+    0.5339,
+    0.1402,
+    0.104,
+    0.0787,
+    0.0503,
+    0.038,
+    0.0298,
+    0.0252
+   ]
+  },
+  {
+   "yr": 40,
+   "alive": 100000,
+   "hostShare": 0.5361,
+   "enc": 3.04,
+   "encCustoms": [
+    2.864,
+    3.346,
+    2.803,
+    2.964,
+    3.75
+   ],
+   "mixedShare": 0.6435,
+   "mixedNoMusic": 0.5639,
+   "foreignCustoms0to4": [
+    0.379,
+    0.311,
+    0.19,
+    0.089,
+    0.031
+   ],
+   "hostVariantShare": [
+    0.5573,
+    0.5004,
+    0.5655,
+    0.5445,
+    0.459
+   ],
+   "gst": 0.0003,
+   "dissim": 0.0291,
+   "g1FoodBy5_10_20": [
+    0.978,
+    0.898,
+    0.786,
+    0.615
+   ],
+   "g2Child": {
+    "food": 0.529,
+    "all": 0.536,
+    "n": 2482
+   },
+   "g3Child": {
+    "food": 0.218,
+    "all": 0.222,
+    "n": 211
+   },
+   "exogamy": {
+    "native": 0.168,
+    "g1": 0.283,
+    "g2": 0.323,
+    "g3plus": null,
+    "establishedMinority": 0.325,
+    "nG1": 191,
+    "nG2": 217
+   },
+   "teenProfiles": {
+    "heritage": 0.1,
+    "host": 0.03,
+    "mixed": 0.773,
+    "other": 0.097,
+    "n": 1365
+   },
+   "switches": 367,
+   "primShares": [
+    0.5361,
+    0.1398,
+    0.1016,
+    0.0789,
+    0.0491,
+    0.0378,
+    0.0303,
+    0.0265
+   ]
+  },
+  {
+   "yr": 45,
+   "alive": 100000,
+   "hostShare": 0.5406,
+   "enc": 3.006,
+   "encCustoms": [
+    2.874,
+    3.428,
+    2.828,
+    2.982,
+    3.907
+   ],
+   "mixedShare": 0.674,
+   "mixedNoMusic": 0.5979,
+   "foreignCustoms0to4": [
+    0.353,
+    0.316,
+    0.197,
+    0.098,
+    0.036
+   ],
+   "hostVariantShare": [
+    0.5561,
+    0.4917,
+    0.5624,
+    0.5422,
+    0.4441
+   ],
+   "gst": 0.0003,
+   "dissim": 0.0263,
+   "g1FoodBy5_10_20": [
+    0.973,
+    0.904,
+    0.793,
+    0.591
+   ],
+   "g2Child": {
+    "food": 0.52,
+    "all": 0.528,
+    "n": 2596
+   },
+   "g3Child": {
+    "food": 0.219,
+    "all": 0.231,
+    "n": 483
+   },
+   "exogamy": {
+    "native": 0.184,
+    "g1": 0.287,
+    "g2": 0.345,
+    "g3plus": 0.333,
+    "establishedMinority": 0.318,
+    "nG1": 160,
+    "nG2": 238
+   },
+   "teenProfiles": {
+    "heritage": 0.078,
+    "host": 0.026,
+    "mixed": 0.772,
+    "other": 0.123,
+    "n": 1542
+   },
+   "switches": 388,
+   "primShares": [
+    0.5406,
+    0.1381,
+    0.0992,
+    0.0782,
+    0.0476,
+    0.0377,
+    0.0311,
+    0.0277
+   ]
+  },
+  {
+   "yr": 50,
+   "alive": 100000,
+   "hostShare": 0.5431,
+   "enc": 2.988,
+   "encCustoms": [
+    2.887,
+    3.521,
+    2.846,
+    2.992,
+    4.08
+   ],
+   "mixedShare": 0.6992,
+   "mixedNoMusic": 0.6271,
+   "foreignCustoms0to4": [
+    0.332,
+    0.32,
+    0.203,
+    0.105,
+    0.041
+   ],
+   "hostVariantShare": [
+    0.5546,
+    0.4822,
+    0.5604,
+    0.5412,
+    0.4283
+   ],
+   "gst": 0.0002,
+   "dissim": 0.0236,
+   "g1FoodBy5_10_20": [
+    0.967,
+    0.908,
+    0.804,
+    0.574
+   ],
+   "g2Child": {
+    "food": 0.488,
+    "all": 0.514,
+    "n": 2699
+   },
+   "g3Child": {
+    "food": 0.196,
+    "all": 0.225,
+    "n": 849
+   },
+   "exogamy": {
+    "native": 0.17,
+    "g1": 0.237,
+    "g2": 0.375,
+    "g3plus": 0.353,
+    "establishedMinority": 0.344,
+    "nG1": 186,
+    "nG2": 240
+   },
+   "teenProfiles": {
+    "heritage": 0.068,
+    "host": 0.05,
+    "mixed": 0.73,
+    "other": 0.151,
+    "n": 1785
+   },
+   "switches": 391,
+   "primShares": [
+    0.5431,
+    0.137,
+    0.0973,
+    0.0783,
+    0.0465,
+    0.0373,
+    0.0316,
+    0.0289
+   ]
+  },
+  {
+   "yr": 55,
+   "alive": 100000,
+   "hostShare": 0.5458,
+   "enc": 2.968,
+   "encCustoms": [
+    2.894,
+    3.615,
+    2.872,
+    3.029,
+    4.245
+   ],
+   "mixedShare": 0.7209,
+   "mixedNoMusic": 0.6527,
+   "foreignCustoms0to4": [
+    0.315,
+    0.321,
+    0.208,
+    0.112,
+    0.045
+   ],
+   "hostVariantShare": [
+    0.5542,
+    0.4727,
+    0.5572,
+    0.5368,
+    0.4138
+   ],
+   "gst": 0.0002,
+   "dissim": 0.0253,
+   "g1FoodBy5_10_20": [
+    0.969,
+    0.9,
+    0.797,
+    0.564
+   ],
+   "g2Child": {
+    "food": 0.481,
+    "all": 0.509,
+    "n": 3055
+   },
+   "g3Child": {
+    "food": 0.161,
+    "all": 0.199,
+    "n": 1284
+   },
+   "exogamy": {
+    "native": 0.156,
+    "g1": 0.193,
+    "g2": 0.327,
+    "g3plus": 0.37,
+    "establishedMinority": 0.302,
+    "nG1": 202,
+    "nG2": 312
+   },
+   "teenProfiles": {
+    "heritage": 0.07,
+    "host": 0.05,
+    "mixed": 0.718,
+    "other": 0.162,
+    "n": 2082
+   },
+   "switches": 376,
+   "primShares": [
+    0.5458,
+    0.1352,
+    0.0963,
+    0.0777,
+    0.0454,
+    0.0371,
+    0.0322,
+    0.0303
+   ]
+  },
+  {
+   "yr": 60,
+   "alive": 100000,
+   "hostShare": 0.5474,
+   "enc": 2.956,
+   "encCustoms": [
+    2.912,
+    3.723,
+    2.894,
+    3.054,
+    4.416
+   ],
+   "mixedShare": 0.7403,
+   "mixedNoMusic": 0.6748,
+   "foreignCustoms0to4": [
+    0.3,
+    0.322,
+    0.213,
+    0.116,
+    0.05
+   ],
+   "hostVariantShare": [
+    0.552,
+    0.462,
+    0.5545,
+    0.5336,
+    0.3983
+   ],
+   "gst": 0.0003,
+   "dissim": 0.0243,
+   "g1FoodBy5_10_20": [
+    0.976,
+    0.897,
+    0.799,
+    0.561
+   ],
+   "g2Child": {
+    "food": 0.471,
+    "all": 0.499,
+    "n": 3515
+   },
+   "g3Child": {
+    "food": 0.152,
+    "all": 0.188,
+    "n": 1913
+   },
+   "exogamy": {
+    "native": 0.179,
+    "g1": 0.283,
+    "g2": 0.392,
+    "g3plus": 0.229,
+    "establishedMinority": 0.33,
+    "nG1": 198,
+    "nG2": 311
+   },
+   "teenProfiles": {
+    "heritage": 0.052,
+    "host": 0.057,
+    "mixed": 0.696,
+    "other": 0.195,
+    "n": 2491
+   },
+   "switches": 385,
+   "primShares": [
+    0.5474,
+    0.1346,
+    0.0946,
+    0.0785,
+    0.0443,
+    0.0367,
+    0.0325,
+    0.0313
+   ]
+  },
+  {
+   "yr": 65,
+   "alive": 100000,
+   "hostShare": 0.5487,
+   "enc": 2.949,
+   "encCustoms": [
+    2.916,
+    3.827,
+    2.923,
+    3.082,
+    4.598
+   ],
+   "mixedShare": 0.7566,
+   "mixedNoMusic": 0.6933,
+   "foreignCustoms0to4": [
+    0.287,
+    0.322,
+    0.217,
+    0.121,
+    0.054
+   ],
+   "hostVariantShare": [
+    0.5516,
+    0.4523,
+    0.5508,
+    0.5307,
+    0.383
+   ],
+   "gst": 0.0002,
+   "dissim": 0.0229,
+   "g1FoodBy5_10_20": [
+    0.973,
+    0.906,
+    0.791,
+    0.554
+   ],
+   "g2Child": {
+    "food": 0.477,
+    "all": 0.497,
+    "n": 3856
+   },
+   "g3Child": {
+    "food": 0.141,
+    "all": 0.174,
+    "n": 2500
+   },
+   "exogamy": {
+    "native": 0.175,
+    "g1": 0.283,
+    "g2": 0.338,
+    "g3plus": 0.345,
+    "establishedMinority": 0.285,
+    "nG1": 187,
+    "nG2": 352
+   },
+   "teenProfiles": {
+    "heritage": 0.057,
+    "host": 0.063,
+    "mixed": 0.653,
+    "other": 0.226,
+    "n": 3261
+   },
+   "switches": 417,
+   "primShares": [
+    0.5487,
+    0.1337,
+    0.0924,
+    0.0788,
+    0.0434,
+    0.0374,
+    0.0335,
+    0.0322
+   ]
+  },
+  {
+   "yr": 70,
+   "alive": 100000,
+   "hostShare": 0.5513,
+   "enc": 2.928,
+   "encCustoms": [
+    2.929,
+    3.928,
+    2.935,
+    3.103,
+    4.757
+   ],
+   "mixedShare": 0.7711,
+   "mixedNoMusic": 0.7103,
+   "foreignCustoms0to4": [
+    0.277,
+    0.324,
+    0.22,
+    0.124,
+    0.056
+   ],
+   "hostVariantShare": [
+    0.55,
+    0.4429,
+    0.5494,
+    0.5283,
+    0.3696
+   ],
+   "gst": 0.0002,
+   "dissim": 0.0226,
+   "g1FoodBy5_10_20": [
+    0.971,
+    0.905,
+    0.791,
+    0.555
+   ],
+   "g2Child": {
+    "food": 0.477,
+    "all": 0.504,
+    "n": 4157
+   },
+   "g3Child": {
+    "food": 0.14,
+    "all": 0.171,
+    "n": 2922
+   },
+   "exogamy": {
+    "native": 0.165,
+    "g1": 0.283,
+    "g2": 0.287,
+    "g3plus": 0.295,
+    "establishedMinority": 0.26,
+    "nG1": 159,
+    "nG2": 397
+   },
+   "teenProfiles": {
+    "heritage": 0.041,
+    "host": 0.073,
+    "mixed": 0.644,
+    "other": 0.242,
+    "n": 3794
+   },
+   "switches": 424,
+   "primShares": [
+    0.5513,
+    0.1331,
+    0.0908,
+    0.0786,
+    0.0421,
+    0.0371,
+    0.0344,
+    0.0325
+   ]
+  },
+  {
+   "yr": 75,
+   "alive": 100000,
+   "hostShare": 0.5538,
+   "enc": 2.91,
+   "encCustoms": [
+    2.942,
+    4.027,
+    2.935,
+    3.129,
+    4.909
+   ],
+   "mixedShare": 0.7824,
+   "mixedNoMusic": 0.7235,
+   "foreignCustoms0to4": [
+    0.268,
+    0.325,
+    0.221,
+    0.128,
+    0.058
+   ],
+   "hostVariantShare": [
+    0.5488,
+    0.4338,
+    0.5495,
+    0.5256,
+    0.357
+   ],
+   "gst": 0.0002,
+   "dissim": 0.0226,
+   "g1FoodBy5_10_20": [
+    0.97,
+    0.896,
+    0.801,
+    0.543
+   ],
+   "g2Child": {
+    "food": 0.473,
+    "all": 0.501,
+    "n": 4155
+   },
+   "g3Child": {
+    "food": 0.129,
+    "all": 0.168,
+    "n": 3155
+   },
+   "exogamy": {
+    "native": 0.221,
+    "g1": 0.275,
+    "g2": 0.408,
+    "g3plus": 0.295,
+    "establishedMinority": 0.295,
+    "nG1": 189,
+    "nG2": 444
+   },
+   "teenProfiles": {
+    "heritage": 0.047,
+    "host": 0.071,
+    "mixed": 0.625,
+    "other": 0.257,
+    "n": 4339
+   },
+   "switches": 412,
+   "primShares": [
+    0.5538,
+    0.1319,
+    0.0887,
+    0.0786,
+    0.0416,
+    0.0375,
+    0.0349,
+    0.0329
+   ]
+  },
+  {
+   "yr": 80,
+   "alive": 100000,
+   "hostShare": 0.5562,
+   "enc": 2.892,
+   "encCustoms": [
+    2.954,
+    4.108,
+    2.952,
+    3.165,
+    5.057
+   ],
+   "mixedShare": 0.7919,
+   "mixedNoMusic": 0.736,
+   "foreignCustoms0to4": [
+    0.261,
+    0.325,
+    0.225,
+    0.128,
+    0.061
+   ],
+   "hostVariantShare": [
+    0.5474,
+    0.4261,
+    0.5475,
+    0.5211,
+    0.3444
+   ],
+   "gst": 0.0003,
+   "dissim": 0.0276,
+   "g1FoodBy5_10_20": [
+    0.973,
+    0.901,
+    0.789,
+    0.548
+   ],
+   "g2Child": {
+    "food": 0.479,
+    "all": 0.504,
+    "n": 3920
+   },
+   "g3Child": {
+    "food": 0.128,
+    "all": 0.163,
+    "n": 3312
+   },
+   "exogamy": {
+    "native": 0.184,
+    "g1": 0.288,
+    "g2": 0.311,
+    "g3plus": 0.253,
+    "establishedMinority": 0.291,
+    "nG1": 184,
+    "nG2": 495
+   },
+   "teenProfiles": {
+    "heritage": 0.045,
+    "host": 0.076,
+    "mixed": 0.603,
+    "other": 0.276,
+    "n": 4524
+   },
+   "switches": 440,
+   "primShares": [
+    0.5562,
+    0.1313,
+    0.0871,
+    0.0787,
+    0.0411,
+    0.0367,
+    0.0352,
+    0.0337
+   ]
+  },
+  {
+   "yr": 85,
+   "alive": 100000,
+   "hostShare": 0.5568,
+   "enc": 2.887,
+   "encCustoms": [
+    2.967,
+    4.197,
+    2.95,
+    3.194,
+    5.203
+   ],
+   "mixedShare": 0.8,
+   "mixedNoMusic": 0.7468,
+   "foreignCustoms0to4": [
+    0.255,
+    0.324,
+    0.229,
+    0.13,
+    0.063
+   ],
+   "hostVariantShare": [
+    0.5455,
+    0.4177,
+    0.5475,
+    0.5177,
+    0.3318
+   ],
+   "gst": 0.0003,
+   "dissim": 0.0271,
+   "g1FoodBy5_10_20": [
+    0.98,
+    0.891,
+    0.791,
+    0.547
+   ],
+   "g2Child": {
+    "food": 0.47,
+    "all": 0.503,
+    "n": 3786
+   },
+   "g3Child": {
+    "food": 0.128,
+    "all": 0.157,
+    "n": 3474
+   },
+   "exogamy": {
+    "native": 0.159,
+    "g1": 0.276,
+    "g2": 0.392,
+    "g3plus": 0.278,
+    "establishedMinority": 0.236,
+    "nG1": 170,
+    "nG2": 480
+   },
+   "teenProfiles": {
+    "heritage": 0.043,
+    "host": 0.083,
+    "mixed": 0.576,
+    "other": 0.299,
+    "n": 4667
+   },
+   "switches": 392,
+   "primShares": [
+    0.5568,
+    0.1316,
+    0.0871,
+    0.0783,
+    0.0398,
+    0.0364,
+    0.0357,
+    0.0343
+   ]
+  },
+  {
+   "yr": 90,
+   "alive": 100000,
+   "hostShare": 0.5574,
+   "enc": 2.883,
+   "encCustoms": [
+    2.974,
+    4.303,
+    2.965,
+    3.206,
+    5.345
+   ],
+   "mixedShare": 0.8074,
+   "mixedNoMusic": 0.7558,
+   "foreignCustoms0to4": [
+    0.249,
+    0.325,
+    0.23,
+    0.131,
+    0.064
+   ],
+   "hostVariantShare": [
+    0.5448,
+    0.4084,
+    0.5458,
+    0.5164,
+    0.3198
+   ],
+   "gst": 0.0002,
+   "dissim": 0.0244,
+   "g1FoodBy5_10_20": [
+    0.977,
+    0.91,
+    0.789,
+    0.544
+   ],
+   "g2Child": {
+    "food": 0.48,
+    "all": 0.501,
+    "n": 3734
+   },
+   "g3Child": {
+    "food": 0.119,
+    "all": 0.155,
+    "n": 3650
+   },
+   "exogamy": {
+    "native": 0.155,
+    "g1": 0.301,
+    "g2": 0.344,
+    "g3plus": 0.285,
+    "establishedMinority": 0.242,
+    "nG1": 186,
+    "nG2": 433
+   },
+   "teenProfiles": {
+    "heritage": 0.044,
+    "host": 0.093,
+    "mixed": 0.546,
+    "other": 0.317,
+    "n": 4974
+   },
+   "switches": 425,
+   "primShares": [
+    0.5574,
+    0.1307,
+    0.0863,
+    0.0786,
+    0.0398,
+    0.0367,
+    0.0362,
+    0.0342
+   ]
+  },
+  {
+   "yr": 95,
+   "alive": 100000,
+   "hostShare": 0.558,
+   "enc": 2.88,
+   "encCustoms": [
+    2.986,
+    4.383,
+    2.976,
+    3.221,
+    5.494
+   ],
+   "mixedShare": 0.8131,
+   "mixedNoMusic": 0.7635,
+   "foreignCustoms0to4": [
+    0.245,
+    0.325,
+    0.231,
+    0.133,
+    0.066
+   ],
+   "hostVariantShare": [
+    0.5436,
+    0.4015,
+    0.5444,
+    0.515,
+    0.3075
+   ],
+   "gst": 0.0003,
+   "dissim": 0.0256,
+   "g1FoodBy5_10_20": [
+    0.977,
+    0.899,
+    0.795,
+    0.541
+   ],
+   "g2Child": {
+    "food": 0.475,
+    "all": 0.498,
+    "n": 3648
+   },
+   "g3Child": {
+    "food": 0.115,
+    "all": 0.15,
+    "n": 3841
+   },
+   "exogamy": {
+    "native": 0.203,
+    "g1": 0.291,
+    "g2": 0.375,
+    "g3plus": 0.307,
+    "establishedMinority": 0.197,
+    "nG1": 182,
+    "nG2": 453
+   },
+   "teenProfiles": {
+    "heritage": 0.036,
+    "host": 0.099,
+    "mixed": 0.53,
+    "other": 0.335,
+    "n": 5326
+   },
+   "switches": 414,
+   "primShares": [
+    0.558,
+    0.1301,
+    0.0848,
+    0.0793,
+    0.0394,
+    0.0374,
+    0.0367,
+    0.0343
+   ]
+  },
+  {
+   "yr": 100,
+   "alive": 100000,
+   "hostShare": 0.5603,
+   "enc": 2.862,
+   "encCustoms": [
+    2.98,
+    4.437,
+    2.976,
+    3.232,
+    5.594
+   ],
+   "mixedShare": 0.8185,
+   "mixedNoMusic": 0.7711,
+   "foreignCustoms0to4": [
+    0.241,
+    0.325,
+    0.234,
+    0.133,
+    0.067
+   ],
+   "hostVariantShare": [
+    0.5444,
+    0.3967,
+    0.5444,
+    0.514,
+    0.2988
+   ],
+   "gst": 0.0003,
+   "dissim": 0.0274,
+   "g1FoodBy5_10_20": [
+    0.978,
+    0.897,
+    0.79,
+    0.539
+   ],
+   "g2Child": {
+    "food": 0.481,
+    "all": 0.506,
+    "n": 3508
+   },
+   "g3Child": {
+    "food": 0.123,
+    "all": 0.149,
+    "n": 3934
+   },
+   "exogamy": {
+    "native": 0.17,
+    "g1": 0.258,
+    "g2": 0.344,
+    "g3plus": 0.242,
+    "establishedMinority": 0.193,
+    "nG1": 194,
+    "nG2": 445
+   },
+   "teenProfiles": {
+    "heritage": 0.032,
+    "host": 0.099,
+    "mixed": 0.52,
+    "other": 0.349,
+    "n": 5592
+   },
+   "switches": 429,
+   "primShares": [
+    0.5603,
+    0.1293,
+    0.0837,
+    0.0792,
+    0.0386,
+    0.0377,
+    0.0367,
+    0.0346
+   ]
+  }
+ ]
+}
