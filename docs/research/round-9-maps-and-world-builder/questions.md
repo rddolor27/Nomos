@@ -23,4 +23,12 @@ This is a lean round, following `/research-round`: four researchers, then a repo
 
 ## Status
 
-The four researchers started on 6 October 2026. Each writes its notes as it goes, so findings survive an interruption.
+All four questions are answered. `report.md` is written and fact-checked, and `summary.md` is drafted.
+
+On 6 October 2026 the owner made four calls:
+- accepted the recommended defaults (a)–(d) and (f)–(k);
+- chose a full player editor for (e);
+- approved the shared-doc update;
+- asked for the four generator fixes, which are now in `tools/worldgen`.
+
+Still to do: add `summary.md` as a tab in the shared doc, add the (R9) tasks to its Implementation plan tab, then export with `/sync-plan-doc`. The doc belongs to the account used earlier, so it needs sharing with the current one first. Also open: whether launch moves after M8, or the M8 builder levels ship after launch.
