@@ -31,4 +31,4 @@ On 6 October 2026 the owner made four calls:
 - approved the shared-doc update;
 - asked for the four generator fixes, which are now in `tools/worldgen`.
 
-Still to do: add `summary.md` as a tab in the shared doc, add the (R9) tasks to its Implementation plan tab, then export with `/sync-plan-doc`. The doc belongs to the account used earlier, so it needs sharing with the current one first. Also open: whether launch moves after M8, or the M8 builder levels ship after launch.
+Still to do: add `summary.md` as a tab in the shared doc, add the (R9) tasks to its Implementation plan tab, then export with `/sync-plan-doc`. The doc belongs to the account used earlier, so it needs sharing with the current one first. The same day the owner moved launch after M8, so every builder level ships before launch.
