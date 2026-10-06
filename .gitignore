@@ -15,6 +15,7 @@ Thumbs.db
 # Claude Code: kept on each machine, never committed
 CLAUDE.md
 .claude/
+.mcp.json
 .superpowers/
 
 # graphify: the knowledge graph and its git hooks are rebuilt locally
