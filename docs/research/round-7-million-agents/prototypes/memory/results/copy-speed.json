@@ -1,0 +1,270 @@
+{
+  "machine": {
+    "cpu": "AMD Ryzen 5 3600 6-Core Processor",
+    "logicalCpus": 12,
+    "ramGiB": 15.93,
+    "freeGiB": 2.62,
+    "node": "v24.18.0",
+    "v8": "13.6.233.17-node.50",
+    "os": "win32 10.0.19045 x64"
+  },
+  "bytes": 12582912,
+  "warm": 3,
+  "samples": 9,
+  "busyBefore": 1.11,
+  "rows": [
+    {
+      "backing": "ab",
+      "type": "Uint8Array",
+      "fillGBps": {
+        "median": 67.5774,
+        "min": 38.0378,
+        "max": 70.1389,
+        "n": 9
+      },
+      "setFromPlainGBps": {
+        "median": 18.7441,
+        "min": 8.7037,
+        "max": 19.0362,
+        "n": 9
+      },
+      "setIntoPlainGBps": {
+        "median": 18.6607,
+        "min": 17.6577,
+        "max": 19.0304,
+        "n": 9
+      },
+      "loopCopyIntoPlainGBps": {
+        "median": 1.3626,
+        "min": 1.1836,
+        "max": 1.3745,
+        "n": 9
+      }
+    },
+    {
+      "backing": "ab",
+      "type": "Int32Array",
+      "fillGBps": {
+        "median": 57.6141,
+        "min": 55.9241,
+        "max": 58.3352,
+        "n": 9
+      },
+      "setFromPlainGBps": {
+        "median": 18.622,
+        "min": 5.9309,
+        "max": 19.0592,
+        "n": 9
+      },
+      "setIntoPlainGBps": {
+        "median": 18.8734,
+        "min": 17.3318,
+        "max": 19.1462,
+        "n": 9
+      },
+      "loopCopyIntoPlainGBps": {
+        "median": 1.6105,
+        "min": 1.2415,
+        "max": 1.636,
+        "n": 9
+      }
+    },
+    {
+      "backing": "ab",
+      "type": "Float64Array",
+      "fillGBps": {
+        "median": 57.4825,
+        "min": 55.3338,
+        "max": 57.9324,
+        "n": 9
+      },
+      "setFromPlainGBps": {
+        "median": 18.694,
+        "min": 16.746,
+        "max": 19.1521,
+        "n": 9
+      },
+      "setIntoPlainGBps": {
+        "median": 18.6165,
+        "min": 16.4526,
+        "max": 19.1521,
+        "n": 9
+      },
+      "loopCopyIntoPlainGBps": {
+        "median": 2.5863,
+        "min": 1.6404,
+        "max": 2.6541,
+        "n": 9
+      }
+    },
+    {
+      "backing": "sab",
+      "type": "Uint8Array",
+      "fillGBps": {
+        "median": 3.9563,
+        "min": 3.8319,
+        "max": 4.1559,
+        "n": 9
+      },
+      "setFromPlainGBps": {
+        "median": 7.4407,
+        "min": 5.6949,
+        "max": 7.7196,
+        "n": 9
+      },
+      "setIntoPlainGBps": {
+        "median": 4.8928,
+        "min": 3.9325,
+        "max": 5.5497,
+        "n": 9
+      },
+      "loopCopyIntoPlainGBps": {
+        "median": 0.5084,
+        "min": 0.4379,
+        "max": 0.5139,
+        "n": 9
+      }
+    },
+    {
+      "backing": "sab",
+      "type": "Int32Array",
+      "fillGBps": {
+        "median": 14.9476,
+        "min": 2.7327,
+        "max": 16.5347,
+        "n": 9
+      },
+      "setFromPlainGBps": {
+        "median": 6.9016,
+        "min": 4.8069,
+        "max": 7.5888,
+        "n": 9
+      },
+      "setIntoPlainGBps": {
+        "median": 7.6034,
+        "min": 4.8459,
+        "max": 7.8063,
+        "n": 9
+      },
+      "loopCopyIntoPlainGBps": {
+        "median": 1.5297,
+        "min": 1.1676,
+        "max": 1.5611,
+        "n": 9
+      }
+    },
+    {
+      "backing": "sab",
+      "type": "Float64Array",
+      "fillGBps": {
+        "median": 32.4888,
+        "min": 29.9451,
+        "max": 32.9309,
+        "n": 9
+      },
+      "setFromPlainGBps": {
+        "median": 7.4979,
+        "min": 4.831,
+        "max": 7.6325,
+        "n": 9
+      },
+      "setIntoPlainGBps": {
+        "median": 7.3528,
+        "min": 3.117,
+        "max": 7.7139,
+        "n": 9
+      },
+      "loopCopyIntoPlainGBps": {
+        "median": 2.5981,
+        "min": 1.7851,
+        "max": 2.6538,
+        "n": 9
+      }
+    },
+    {
+      "backing": "wasmShared",
+      "type": "Uint8Array",
+      "fillGBps": {
+        "median": 4.0948,
+        "min": 3.7444,
+        "max": 4.1528,
+        "n": 9
+      },
+      "setFromPlainGBps": {
+        "median": 6.9415,
+        "min": 4.3942,
+        "max": 7.4561,
+        "n": 9
+      },
+      "setIntoPlainGBps": {
+        "median": 7.3473,
+        "min": 5.7871,
+        "max": 7.6399,
+        "n": 9
+      },
+      "loopCopyIntoPlainGBps": {
+        "median": 0.5097,
+        "min": 0.4382,
+        "max": 0.5142,
+        "n": 9
+      }
+    },
+    {
+      "backing": "wasmShared",
+      "type": "Int32Array",
+      "fillGBps": {
+        "median": 16.4461,
+        "min": 8.0233,
+        "max": 16.5391,
+        "n": 9
+      },
+      "setFromPlainGBps": {
+        "median": 7.3208,
+        "min": 3.6186,
+        "max": 7.6218,
+        "n": 9
+      },
+      "setIntoPlainGBps": {
+        "median": 7.4363,
+        "min": 5.6194,
+        "max": 10.0143,
+        "n": 9
+      },
+      "loopCopyIntoPlainGBps": {
+        "median": 1.5078,
+        "min": 1.1687,
+        "max": 1.5526,
+        "n": 9
+      }
+    },
+    {
+      "backing": "wasmShared",
+      "type": "Float64Array",
+      "fillGBps": {
+        "median": 32.6829,
+        "min": 29.4544,
+        "max": 33.0607,
+        "n": 9
+      },
+      "setFromPlainGBps": {
+        "median": 7.6269,
+        "min": 4.4078,
+        "max": 9.1719,
+        "n": 9
+      },
+      "setIntoPlainGBps": {
+        "median": 7.4402,
+        "min": 5.1273,
+        "max": 7.6487,
+        "n": 9
+      },
+      "loopCopyIntoPlainGBps": {
+        "median": 2.5941,
+        "min": 2.4337,
+        "max": 2.6285,
+        "n": 9
+      }
+    }
+  ],
+  "busyAfter": 0.69
+}

@@ -1,0 +1,61 @@
+{
+ "n": 100000,
+ "node": "v24.18.0",
+ "cpu": "AMD Ryzen 5 3600 6-Core Processor",
+ "threads": 12,
+ "warmup": 5,
+ "samples": 15,
+ "visibleDistrict": 3972,
+ "visibleViaCells": 4043,
+ "packFull12_AB": {
+  "med": 0.276,
+  "min": 0.273,
+  "max": 0.359
+ },
+ "packFull12_SAB": {
+  "med": 0.269,
+  "min": 0.266,
+  "max": 0.299
+ },
+ "packU16_8_AB": {
+  "med": 0.251,
+  "min": 0.248,
+  "max": 0.369
+ },
+ "packU16_8_SAB": {
+  "med": 0.249,
+  "min": 0.248,
+  "max": 0.256
+ },
+ "packVisibleScan20_SAB": {
+  "med": 0.265,
+  "min": 0.262,
+  "max": 0.35
+ },
+ "packVisibleCells20_SAB": {
+  "med": 0.066,
+  "min": 0.062,
+  "max": 0.098
+ },
+ "bin256": {
+  "med": 0.166,
+  "min": 0.165,
+  "max": 0.176
+ },
+ "copyCellCounts192sq": {
+  "med": 0.001,
+  "min": 0.001,
+  "max": 0.006
+ },
+ "memcpy12_AB_to_AB": {
+  "med": 0.025,
+  "min": 0.023,
+  "max": 0.039
+ },
+ "memcpy12_AB_to_SAB": {
+  "med": 0.038,
+  "min": 0.038,
+  "max": 0.041
+ },
+ "busyPctAllCores": 46.3
+}

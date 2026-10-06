@@ -1,0 +1,68 @@
+{
+  "machine": {
+    "cpu": "AMD Ryzen 5 3600 6-Core Processor",
+    "logicalCpus": 12,
+    "ramGiB": 15.93,
+    "freeGiB": 2.48,
+    "node": "v24.18.0",
+    "v8": "13.6.233.17-node.50",
+    "os": "win32 10.0.19045 x64"
+  },
+  "execArgv": [
+    "--wasm-max-mem-pages=2048"
+  ],
+  "bytesPerAgent": 312,
+  "fixedMiB": 48,
+  "tiers": [
+    {
+      "name": "1M",
+      "agents": 1000000,
+      "reservationMiB": 419.9375
+    },
+    {
+      "name": "250k",
+      "agents": 250000,
+      "reservationMiB": 141
+    },
+    {
+      "name": "100k",
+      "agents": 100000,
+      "reservationMiB": 85.25
+    },
+    {
+      "name": "25k",
+      "agents": 25000,
+      "reservationMiB": 57.3125
+    },
+    {
+      "name": "10k",
+      "agents": 10000,
+      "reservationMiB": 51.75
+    }
+  ],
+  "chosen": "100k",
+  "attempts": [
+    {
+      "tier": "1M",
+      "mib": 419.9375,
+      "ok": false,
+      "ms": 0.092,
+      "error": "RangeError: WebAssembly.Memory(): could not allocate memory"
+    },
+    {
+      "tier": "250k",
+      "mib": 141,
+      "ok": false,
+      "ms": 0.012,
+      "error": "RangeError: WebAssembly.Memory(): could not allocate memory"
+    },
+    {
+      "tier": "100k",
+      "mib": 85.25,
+      "ok": true,
+      "ms": 0.171
+    }
+  ],
+  "commitDeltaMiB": 85.4,
+  "workingSetDeltaMiB": 0.5
+}

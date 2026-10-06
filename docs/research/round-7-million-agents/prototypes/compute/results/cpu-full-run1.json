@@ -1,0 +1,2305 @@
+{
+ "env": {
+  "node": "v24.18.0",
+  "v8": "13.6.233.17-node.50",
+  "platform": "win32 10.0.19045",
+  "cpu": "AMD Ryzen 5 3600 6-Core Processor",
+  "logicalCpus": 12,
+  "totalMemGiB": 15.93,
+  "freeMemGiB": 2.15,
+  "loadavg": [
+   0,
+   0,
+   0
+  ]
+ },
+ "seed": 20261005,
+ "mode": "full",
+ "rebuildK": null,
+ "burn": 1440,
+ "warm": 40,
+ "samples": 9,
+ "startedAt": "2026-10-05T14:52:15.525Z",
+ "barrier": {
+  "w2.spin0": 4.96,
+  "w4.spin0": 21.46,
+  "w6.spin0": 28.08,
+  "w8.spin0": 33.66,
+  "w2.spin20000": 1.13,
+  "w4.spin20000": 0.85,
+  "w6.spin20000": 1.47,
+  "w8.spin20000": 1.51
+ },
+ "runs": [
+  {
+   "N": 100000,
+   "nw": 1,
+   "spin": 0,
+   "pass": 0,
+   "idleBusyCpus": 0.68,
+   "duringBusyCpus": 1.8,
+   "warmMs": 115.4,
+   "lastTick": 1624,
+   "tickMs": {
+    "med": 2.8578,
+    "min": 2.6996,
+    "max": 3.1415
+   },
+   "singleTickMs": {
+    "med": 2.6888,
+    "p95": 4.1485,
+    "max": 6.7732
+   },
+   "phasesMs": {
+    "move": 1.6737,
+    "cellsAndOffsets": 0.0707,
+    "scatter": 0.2795,
+    "decide": 0.487,
+    "snapshot": 0.366,
+    "reduce": 0.0017
+   },
+   "nsPerAgentTick": 28.58,
+   "decisionsPerTick": 2648,
+   "mealsPerTick": 193,
+   "movingShare": 0.832,
+   "hash": "3eea6237",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 100000,
+   "nw": 2,
+   "spin": 0,
+   "pass": 0,
+   "idleBusyCpus": 0.51,
+   "duringBusyCpus": 2.93,
+   "warmMs": 90.9,
+   "lastTick": 1624,
+   "tickMs": {
+    "med": 1.993,
+    "min": 1.9045,
+    "max": 2.1617
+   },
+   "singleTickMs": {
+    "med": 1.9207,
+    "p95": 2.2621,
+    "max": 5.1124
+   },
+   "phasesMs": {
+    "move": 1.0551,
+    "cellsAndOffsets": 0.1237,
+    "scatter": 0.1825,
+    "decide": 0.3799,
+    "snapshot": 0.2547,
+    "reduce": 0.0018
+   },
+   "nsPerAgentTick": 19.93,
+   "decisionsPerTick": 2648,
+   "mealsPerTick": 193,
+   "movingShare": 0.832,
+   "hash": "3eea6237",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 100000,
+   "nw": 4,
+   "spin": 0,
+   "pass": 0,
+   "idleBusyCpus": 0.73,
+   "duringBusyCpus": 4.93,
+   "warmMs": 68.5,
+   "lastTick": 1624,
+   "tickMs": {
+    "med": 1.1613,
+    "min": 1.092,
+    "max": 1.415
+   },
+   "singleTickMs": {
+    "med": 1.0843,
+    "p95": 1.801,
+    "max": 4.2093
+   },
+   "phasesMs": {
+    "move": 0.6149,
+    "cellsAndOffsets": 0.1208,
+    "scatter": 0.1346,
+    "decide": 0.1867,
+    "snapshot": 0.1445,
+    "reduce": 0.0019
+   },
+   "nsPerAgentTick": 11.61,
+   "decisionsPerTick": 2648,
+   "mealsPerTick": 193,
+   "movingShare": 0.832,
+   "hash": "3eea6237",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 100000,
+   "nw": 6,
+   "spin": 0,
+   "pass": 0,
+   "idleBusyCpus": 0.82,
+   "duringBusyCpus": 6.6,
+   "warmMs": 81.2,
+   "lastTick": 1624,
+   "tickMs": {
+    "med": 1.2581,
+    "min": 1.1125,
+    "max": 1.6771
+   },
+   "singleTickMs": {
+    "med": 1.2178,
+    "p95": 1.829,
+    "max": 7.8986
+   },
+   "phasesMs": {
+    "move": 0.6058,
+    "cellsAndOffsets": 0.163,
+    "scatter": 0.1764,
+    "decide": 0.2142,
+    "snapshot": 0.1424,
+    "reduce": 0.0022
+   },
+   "nsPerAgentTick": 12.58,
+   "decisionsPerTick": 2648,
+   "mealsPerTick": 193,
+   "movingShare": 0.832,
+   "hash": "3eea6237",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 100000,
+   "nw": 8,
+   "spin": 0,
+   "pass": 0,
+   "idleBusyCpus": 1.2,
+   "duringBusyCpus": 8.01,
+   "warmMs": 79,
+   "lastTick": 1624,
+   "tickMs": {
+    "med": 1.1215,
+    "min": 1.067,
+    "max": 1.5955
+   },
+   "singleTickMs": {
+    "med": 1.1072,
+    "p95": 1.7702,
+    "max": 3.706
+   },
+   "phasesMs": {
+    "move": 0.564,
+    "cellsAndOffsets": 0.1778,
+    "scatter": 0.1559,
+    "decide": 0.1902,
+    "snapshot": 0.1364,
+    "reduce": 0.0023
+   },
+   "nsPerAgentTick": 11.21,
+   "decisionsPerTick": 2648,
+   "mealsPerTick": 193,
+   "movingShare": 0.832,
+   "hash": "3eea6237",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 100000,
+   "nw": 8,
+   "spin": 0,
+   "pass": 1,
+   "idleBusyCpus": 0.84,
+   "duringBusyCpus": 6.75,
+   "warmMs": 79.5,
+   "lastTick": 1624,
+   "tickMs": {
+    "med": 1.2976,
+    "min": 1.0952,
+    "max": 1.7169
+   },
+   "singleTickMs": {
+    "med": 1.1268,
+    "p95": 2.0895,
+    "max": 7.0357
+   },
+   "phasesMs": {
+    "move": 0.6184,
+    "cellsAndOffsets": 0.1882,
+    "scatter": 0.1549,
+    "decide": 0.2236,
+    "snapshot": 0.1559,
+    "reduce": 0.0025
+   },
+   "nsPerAgentTick": 12.98,
+   "decisionsPerTick": 2648,
+   "mealsPerTick": 193,
+   "movingShare": 0.832,
+   "hash": "3eea6237",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 100000,
+   "nw": 6,
+   "spin": 0,
+   "pass": 1,
+   "idleBusyCpus": 0.72,
+   "duringBusyCpus": 5.04,
+   "warmMs": 69.8,
+   "lastTick": 1624,
+   "tickMs": {
+    "med": 1.0944,
+    "min": 0.9952,
+    "max": 1.3815
+   },
+   "singleTickMs": {
+    "med": 1.0141,
+    "p95": 1.5895,
+    "max": 3.4682
+   },
+   "phasesMs": {
+    "move": 0.5264,
+    "cellsAndOffsets": 0.141,
+    "scatter": 0.1436,
+    "decide": 0.1702,
+    "snapshot": 0.1534,
+    "reduce": 0.0021
+   },
+   "nsPerAgentTick": 10.94,
+   "decisionsPerTick": 2648,
+   "mealsPerTick": 193,
+   "movingShare": 0.832,
+   "hash": "3eea6237",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 100000,
+   "nw": 4,
+   "spin": 0,
+   "pass": 1,
+   "idleBusyCpus": 0.65,
+   "duringBusyCpus": 4.73,
+   "warmMs": 69.2,
+   "lastTick": 1624,
+   "tickMs": {
+    "med": 1.1264,
+    "min": 1.0812,
+    "max": 1.3286
+   },
+   "singleTickMs": {
+    "med": 1.0762,
+    "p95": 1.4154,
+    "max": 4.2512
+   },
+   "phasesMs": {
+    "move": 0.5655,
+    "cellsAndOffsets": 0.1318,
+    "scatter": 0.1323,
+    "decide": 0.1841,
+    "snapshot": 0.1364,
+    "reduce": 0.0016
+   },
+   "nsPerAgentTick": 11.26,
+   "decisionsPerTick": 2648,
+   "mealsPerTick": 193,
+   "movingShare": 0.832,
+   "hash": "3eea6237",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 100000,
+   "nw": 2,
+   "spin": 0,
+   "pass": 1,
+   "idleBusyCpus": 1.24,
+   "duringBusyCpus": 2.58,
+   "warmMs": 86.9,
+   "lastTick": 1624,
+   "tickMs": {
+    "med": 1.9147,
+    "min": 1.8886,
+    "max": 2.2439
+   },
+   "singleTickMs": {
+    "med": 1.909,
+    "p95": 2.2275,
+    "max": 5.8605
+   },
+   "phasesMs": {
+    "move": 1.0331,
+    "cellsAndOffsets": 0.1262,
+    "scatter": 0.1797,
+    "decide": 0.378,
+    "snapshot": 0.2603,
+    "reduce": 0.0016
+   },
+   "nsPerAgentTick": 19.15,
+   "decisionsPerTick": 2648,
+   "mealsPerTick": 193,
+   "movingShare": 0.832,
+   "hash": "3eea6237",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 100000,
+   "nw": 1,
+   "spin": 0,
+   "pass": 1,
+   "idleBusyCpus": 1.15,
+   "duringBusyCpus": 1.97,
+   "warmMs": 115.7,
+   "lastTick": 1624,
+   "tickMs": {
+    "med": 2.9442,
+    "min": 2.8312,
+    "max": 3.2545
+   },
+   "singleTickMs": {
+    "med": 2.7814,
+    "p95": 4.0395,
+    "max": 4.6148
+   },
+   "phasesMs": {
+    "move": 1.7268,
+    "cellsAndOffsets": 0.0719,
+    "scatter": 0.2703,
+    "decide": 0.5058,
+    "snapshot": 0.3796,
+    "reduce": 0.0013
+   },
+   "nsPerAgentTick": 29.44,
+   "decisionsPerTick": 2648,
+   "mealsPerTick": 193,
+   "movingShare": 0.832,
+   "hash": "3eea6237",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 100000,
+   "nw": 1,
+   "spin": 20000,
+   "pass": 0,
+   "idleBusyCpus": 0.83,
+   "duringBusyCpus": 1.57,
+   "warmMs": 113.9,
+   "lastTick": 1624,
+   "tickMs": {
+    "med": 2.8613,
+    "min": 2.7345,
+    "max": 2.9752
+   },
+   "singleTickMs": {
+    "med": 2.7174,
+    "p95": 3.3219,
+    "max": 5.0707
+   },
+   "phasesMs": {
+    "move": 1.6731,
+    "cellsAndOffsets": 0.0698,
+    "scatter": 0.2731,
+    "decide": 0.4549,
+    "snapshot": 0.3722,
+    "reduce": 0.0012
+   },
+   "nsPerAgentTick": 28.61,
+   "decisionsPerTick": 2648,
+   "mealsPerTick": 193,
+   "movingShare": 0.832,
+   "hash": "3eea6237",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 100000,
+   "nw": 2,
+   "spin": 20000,
+   "pass": 0,
+   "idleBusyCpus": 0.75,
+   "duringBusyCpus": 5.2,
+   "warmMs": 89.2,
+   "lastTick": 1624,
+   "tickMs": {
+    "med": 2.2908,
+    "min": 1.4579,
+    "max": 2.5838
+   },
+   "singleTickMs": {
+    "med": 1.9954,
+    "p95": 3.0579,
+    "max": 7.0411
+   },
+   "phasesMs": {
+    "move": 1.1395,
+    "cellsAndOffsets": 0.0888,
+    "scatter": 0.1882,
+    "decide": 0.4518,
+    "snapshot": 0.2442,
+    "reduce": 0.0016
+   },
+   "nsPerAgentTick": 22.91,
+   "decisionsPerTick": 2648,
+   "mealsPerTick": 193,
+   "movingShare": 0.832,
+   "hash": "3eea6237",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 100000,
+   "nw": 4,
+   "spin": 20000,
+   "pass": 0,
+   "idleBusyCpus": 1.33,
+   "duringBusyCpus": 6.01,
+   "warmMs": 86,
+   "lastTick": 1624,
+   "tickMs": {
+    "med": 1.3885,
+    "min": 1.1723,
+    "max": 1.9825
+   },
+   "singleTickMs": {
+    "med": 1.3938,
+    "p95": 2.1144,
+    "max": 10.5405
+   },
+   "phasesMs": {
+    "move": 0.7911,
+    "cellsAndOffsets": 0.1491,
+    "scatter": 0.1502,
+    "decide": 0.2592,
+    "snapshot": 0.1492,
+    "reduce": 0.0018
+   },
+   "nsPerAgentTick": 13.89,
+   "decisionsPerTick": 2648,
+   "mealsPerTick": 193,
+   "movingShare": 0.832,
+   "hash": "3eea6237",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 100000,
+   "nw": 6,
+   "spin": 20000,
+   "pass": 0,
+   "idleBusyCpus": 0.68,
+   "duringBusyCpus": 8.5,
+   "warmMs": 72.1,
+   "lastTick": 1624,
+   "tickMs": {
+    "med": 1.0675,
+    "min": 0.9789,
+    "max": 1.2019
+   },
+   "singleTickMs": {
+    "med": 1.0664,
+    "p95": 1.2975,
+    "max": 2.7476
+   },
+   "phasesMs": {
+    "move": 0.5818,
+    "cellsAndOffsets": 0.0976,
+    "scatter": 0.1231,
+    "decide": 0.165,
+    "snapshot": 0.1197,
+    "reduce": 0.0019
+   },
+   "nsPerAgentTick": 10.67,
+   "decisionsPerTick": 2648,
+   "mealsPerTick": 193,
+   "movingShare": 0.832,
+   "hash": "3eea6237",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 100000,
+   "nw": 8,
+   "spin": 20000,
+   "pass": 0,
+   "idleBusyCpus": 0.59,
+   "duringBusyCpus": 9.71,
+   "warmMs": 80,
+   "lastTick": 1624,
+   "tickMs": {
+    "med": 0.9656,
+    "min": 0.9117,
+    "max": 1.4037
+   },
+   "singleTickMs": {
+    "med": 0.9398,
+    "p95": 1.8542,
+    "max": 4.1748
+   },
+   "phasesMs": {
+    "move": 0.5234,
+    "cellsAndOffsets": 0.1344,
+    "scatter": 0.1195,
+    "decide": 0.1594,
+    "snapshot": 0.1181,
+    "reduce": 0.0023
+   },
+   "nsPerAgentTick": 9.66,
+   "decisionsPerTick": 2648,
+   "mealsPerTick": 193,
+   "movingShare": 0.832,
+   "hash": "3eea6237",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 100000,
+   "nw": 8,
+   "spin": 20000,
+   "pass": 1,
+   "idleBusyCpus": 3.09,
+   "duringBusyCpus": 9.99,
+   "warmMs": 87.3,
+   "lastTick": 1624,
+   "tickMs": {
+    "med": 0.9793,
+    "min": 0.8906,
+    "max": 1.1612
+   },
+   "singleTickMs": {
+    "med": 0.9118,
+    "p95": 1.3572,
+    "max": 4.5172
+   },
+   "phasesMs": {
+    "move": 0.5123,
+    "cellsAndOffsets": 0.1294,
+    "scatter": 0.1349,
+    "decide": 0.1361,
+    "snapshot": 0.1046,
+    "reduce": 0.0022
+   },
+   "nsPerAgentTick": 9.79,
+   "decisionsPerTick": 2648,
+   "mealsPerTick": 193,
+   "movingShare": 0.832,
+   "hash": "3eea6237",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 100000,
+   "nw": 6,
+   "spin": 20000,
+   "pass": 1,
+   "idleBusyCpus": 1.42,
+   "duringBusyCpus": 7.3,
+   "warmMs": 76.3,
+   "lastTick": 1624,
+   "tickMs": {
+    "med": 1.1158,
+    "min": 1.0327,
+    "max": 1.1742
+   },
+   "singleTickMs": {
+    "med": 1.0596,
+    "p95": 1.33,
+    "max": 2.9874
+   },
+   "phasesMs": {
+    "move": 0.5898,
+    "cellsAndOffsets": 0.1007,
+    "scatter": 0.1225,
+    "decide": 0.1672,
+    "snapshot": 0.1174,
+    "reduce": 0.002
+   },
+   "nsPerAgentTick": 11.16,
+   "decisionsPerTick": 2648,
+   "mealsPerTick": 193,
+   "movingShare": 0.832,
+   "hash": "3eea6237",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 100000,
+   "nw": 4,
+   "spin": 20000,
+   "pass": 1,
+   "idleBusyCpus": 1.48,
+   "duringBusyCpus": 4.41,
+   "warmMs": 67.4,
+   "lastTick": 1624,
+   "tickMs": {
+    "med": 1.3043,
+    "min": 1.0839,
+    "max": 1.5665
+   },
+   "singleTickMs": {
+    "med": 1.3437,
+    "p95": 1.5353,
+    "max": 3.9489
+   },
+   "phasesMs": {
+    "move": 0.7036,
+    "cellsAndOffsets": 0.114,
+    "scatter": 0.1435,
+    "decide": 0.21,
+    "snapshot": 0.1483,
+    "reduce": 0.0017
+   },
+   "nsPerAgentTick": 13.04,
+   "decisionsPerTick": 2648,
+   "mealsPerTick": 193,
+   "movingShare": 0.832,
+   "hash": "3eea6237",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 100000,
+   "nw": 2,
+   "spin": 20000,
+   "pass": 1,
+   "idleBusyCpus": 0.88,
+   "duringBusyCpus": 2.65,
+   "warmMs": 84,
+   "lastTick": 1624,
+   "tickMs": {
+    "med": 1.8372,
+    "min": 1.5415,
+    "max": 2.0634
+   },
+   "singleTickMs": {
+    "med": 1.8381,
+    "p95": 2.3057,
+    "max": 3.8463
+   },
+   "phasesMs": {
+    "move": 0.9993,
+    "cellsAndOffsets": 0.0815,
+    "scatter": 0.1618,
+    "decide": 0.3124,
+    "snapshot": 0.2424,
+    "reduce": 0.0014
+   },
+   "nsPerAgentTick": 18.37,
+   "decisionsPerTick": 2648,
+   "mealsPerTick": 193,
+   "movingShare": 0.832,
+   "hash": "3eea6237",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 100000,
+   "nw": 1,
+   "spin": 20000,
+   "pass": 1,
+   "idleBusyCpus": 0.42,
+   "duringBusyCpus": 1.44,
+   "warmMs": 116.5,
+   "lastTick": 1624,
+   "tickMs": {
+    "med": 2.8191,
+    "min": 2.7569,
+    "max": 2.9969
+   },
+   "singleTickMs": {
+    "med": 2.7229,
+    "p95": 3.3109,
+    "max": 4.9093
+   },
+   "phasesMs": {
+    "move": 1.6699,
+    "cellsAndOffsets": 0.0691,
+    "scatter": 0.2707,
+    "decide": 0.4408,
+    "snapshot": 0.3751,
+    "reduce": 0.0012
+   },
+   "nsPerAgentTick": 28.19,
+   "decisionsPerTick": 2648,
+   "mealsPerTick": 193,
+   "movingShare": 0.832,
+   "hash": "3eea6237",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 250000,
+   "nw": 1,
+   "spin": 0,
+   "pass": 0,
+   "idleBusyCpus": 0.74,
+   "duringBusyCpus": 3.62,
+   "warmMs": 373.3,
+   "lastTick": 1552,
+   "tickMs": {
+    "med": 10.4869,
+    "min": 9.2261,
+    "max": 11.4087
+   },
+   "singleTickMs": {
+    "med": 10.3239,
+    "p95": 12.963,
+    "max": 14.8547
+   },
+   "phasesMs": {
+    "move": 5.3816,
+    "cellsAndOffsets": 0.1865,
+    "scatter": 0.8424,
+    "decide": 3.0131,
+    "snapshot": 0.9837,
+    "reduce": 0.0034
+   },
+   "nsPerAgentTick": 41.95,
+   "decisionsPerTick": 6631,
+   "mealsPerTick": 484,
+   "movingShare": 0.834,
+   "hash": "d50ab688",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 250000,
+   "nw": 2,
+   "spin": 0,
+   "pass": 0,
+   "idleBusyCpus": 1.02,
+   "duringBusyCpus": 3.04,
+   "warmMs": 231.6,
+   "lastTick": 1552,
+   "tickMs": {
+    "med": 5.5318,
+    "min": 5.2262,
+    "max": 5.95
+   },
+   "singleTickMs": {
+    "med": 5.3299,
+    "p95": 7.2003,
+    "max": 7.8028
+   },
+   "phasesMs": {
+    "move": 2.8697,
+    "cellsAndOffsets": 0.2575,
+    "scatter": 0.4644,
+    "decide": 1.2906,
+    "snapshot": 0.6338,
+    "reduce": 0.0033
+   },
+   "nsPerAgentTick": 22.13,
+   "decisionsPerTick": 6631,
+   "mealsPerTick": 484,
+   "movingShare": 0.834,
+   "hash": "d50ab688",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 250000,
+   "nw": 4,
+   "spin": 0,
+   "pass": 0,
+   "idleBusyCpus": 4.69,
+   "duringBusyCpus": 5.52,
+   "warmMs": 177,
+   "lastTick": 1552,
+   "tickMs": {
+    "med": 3.8336,
+    "min": 3.4757,
+    "max": 6.4869
+   },
+   "singleTickMs": {
+    "med": 3.9597,
+    "p95": 6.2309,
+    "max": 13.6596
+   },
+   "phasesMs": {
+    "move": 2.08,
+    "cellsAndOffsets": 0.2888,
+    "scatter": 0.4906,
+    "decide": 0.9792,
+    "snapshot": 0.4276,
+    "reduce": 0.0039
+   },
+   "nsPerAgentTick": 15.33,
+   "decisionsPerTick": 6631,
+   "mealsPerTick": 484,
+   "movingShare": 0.834,
+   "hash": "d50ab688",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 250000,
+   "nw": 6,
+   "spin": 0,
+   "pass": 0,
+   "idleBusyCpus": 1.26,
+   "duringBusyCpus": 7.19,
+   "warmMs": 165.9,
+   "lastTick": 1552,
+   "tickMs": {
+    "med": 3.2558,
+    "min": 2.8993,
+    "max": 3.6756
+   },
+   "singleTickMs": {
+    "med": 3.1367,
+    "p95": 5.0382,
+    "max": 6.4797
+   },
+   "phasesMs": {
+    "move": 1.6208,
+    "cellsAndOffsets": 0.2904,
+    "scatter": 0.354,
+    "decide": 0.6591,
+    "snapshot": 0.3426,
+    "reduce": 0.0038
+   },
+   "nsPerAgentTick": 13.02,
+   "decisionsPerTick": 6631,
+   "mealsPerTick": 484,
+   "movingShare": 0.834,
+   "hash": "d50ab688",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 250000,
+   "nw": 8,
+   "spin": 0,
+   "pass": 0,
+   "idleBusyCpus": 2.44,
+   "duringBusyCpus": 5.72,
+   "warmMs": 152.1,
+   "lastTick": 1552,
+   "tickMs": {
+    "med": 2.8382,
+    "min": 2.6174,
+    "max": 3.2126
+   },
+   "singleTickMs": {
+    "med": 2.6131,
+    "p95": 4.091,
+    "max": 7.1866
+   },
+   "phasesMs": {
+    "move": 1.4388,
+    "cellsAndOffsets": 0.3368,
+    "scatter": 0.3091,
+    "decide": 0.5058,
+    "snapshot": 0.2971,
+    "reduce": 0.0036
+   },
+   "nsPerAgentTick": 11.35,
+   "decisionsPerTick": 6631,
+   "mealsPerTick": 484,
+   "movingShare": 0.834,
+   "hash": "d50ab688",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 250000,
+   "nw": 8,
+   "spin": 0,
+   "pass": 1,
+   "idleBusyCpus": 0.77,
+   "duringBusyCpus": 7.23,
+   "warmMs": 153.7,
+   "lastTick": 1552,
+   "tickMs": {
+    "med": 2.7761,
+    "min": 2.5726,
+    "max": 3.2934
+   },
+   "singleTickMs": {
+    "med": 2.5402,
+    "p95": 3.8282,
+    "max": 8.6912
+   },
+   "phasesMs": {
+    "move": 1.3467,
+    "cellsAndOffsets": 0.3244,
+    "scatter": 0.3589,
+    "decide": 0.5376,
+    "snapshot": 0.3024,
+    "reduce": 0.0036
+   },
+   "nsPerAgentTick": 11.1,
+   "decisionsPerTick": 6631,
+   "mealsPerTick": 484,
+   "movingShare": 0.834,
+   "hash": "d50ab688",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 250000,
+   "nw": 6,
+   "spin": 0,
+   "pass": 1,
+   "idleBusyCpus": 0.81,
+   "duringBusyCpus": 7.33,
+   "warmMs": 170,
+   "lastTick": 1552,
+   "tickMs": {
+    "med": 3.2649,
+    "min": 2.7424,
+    "max": 4.0548
+   },
+   "singleTickMs": {
+    "med": 3.0382,
+    "p95": 6.1005,
+    "max": 7.9911
+   },
+   "phasesMs": {
+    "move": 1.6351,
+    "cellsAndOffsets": 0.2872,
+    "scatter": 0.3682,
+    "decide": 0.6673,
+    "snapshot": 0.3415,
+    "reduce": 0.0035
+   },
+   "nsPerAgentTick": 13.06,
+   "decisionsPerTick": 6631,
+   "mealsPerTick": 484,
+   "movingShare": 0.834,
+   "hash": "d50ab688",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 250000,
+   "nw": 4,
+   "spin": 0,
+   "pass": 1,
+   "idleBusyCpus": 0.54,
+   "duringBusyCpus": 5.61,
+   "warmMs": 161.7,
+   "lastTick": 1552,
+   "tickMs": {
+    "med": 3.1935,
+    "min": 2.8978,
+    "max": 3.9906
+   },
+   "singleTickMs": {
+    "med": 2.9944,
+    "p95": 5.2589,
+    "max": 6.4677
+   },
+   "phasesMs": {
+    "move": 1.6471,
+    "cellsAndOffsets": 0.2488,
+    "scatter": 0.3365,
+    "decide": 0.7067,
+    "snapshot": 0.3653,
+    "reduce": 0.0034
+   },
+   "nsPerAgentTick": 12.77,
+   "decisionsPerTick": 6631,
+   "mealsPerTick": 484,
+   "movingShare": 0.834,
+   "hash": "d50ab688",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 250000,
+   "nw": 2,
+   "spin": 0,
+   "pass": 1,
+   "idleBusyCpus": 1.16,
+   "duringBusyCpus": 3.51,
+   "warmMs": 248.6,
+   "lastTick": 1552,
+   "tickMs": {
+    "med": 5.765,
+    "min": 5.4084,
+    "max": 6.8
+   },
+   "singleTickMs": {
+    "med": 5.5807,
+    "p95": 8.1401,
+    "max": 8.9911
+   },
+   "phasesMs": {
+    "move": 2.9974,
+    "cellsAndOffsets": 0.2825,
+    "scatter": 0.4983,
+    "decide": 1.4237,
+    "snapshot": 0.6298,
+    "reduce": 0.0033
+   },
+   "nsPerAgentTick": 23.06,
+   "decisionsPerTick": 6631,
+   "mealsPerTick": 484,
+   "movingShare": 0.834,
+   "hash": "d50ab688",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 250000,
+   "nw": 1,
+   "spin": 0,
+   "pass": 1,
+   "idleBusyCpus": 1.08,
+   "duringBusyCpus": 2.06,
+   "warmMs": 393.4,
+   "lastTick": 1552,
+   "tickMs": {
+    "med": 9.7186,
+    "min": 9.4007,
+    "max": 10.3803
+   },
+   "singleTickMs": {
+    "med": 9.5704,
+    "p95": 12.2885,
+    "max": 13.8275
+   },
+   "phasesMs": {
+    "move": 5.2699,
+    "cellsAndOffsets": 0.1859,
+    "scatter": 0.826,
+    "decide": 2.5661,
+    "snapshot": 0.9471,
+    "reduce": 0.0032
+   },
+   "nsPerAgentTick": 38.87,
+   "decisionsPerTick": 6631,
+   "mealsPerTick": 484,
+   "movingShare": 0.834,
+   "hash": "d50ab688",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 250000,
+   "nw": 1,
+   "spin": 20000,
+   "pass": 0,
+   "idleBusyCpus": 2.05,
+   "duringBusyCpus": 2.06,
+   "warmMs": 383.2,
+   "lastTick": 1552,
+   "tickMs": {
+    "med": 9.5613,
+    "min": 9.291,
+    "max": 10.4747
+   },
+   "singleTickMs": {
+    "med": 9.4774,
+    "p95": 11.8239,
+    "max": 14.4445
+   },
+   "phasesMs": {
+    "move": 5.058,
+    "cellsAndOffsets": 0.1797,
+    "scatter": 0.8262,
+    "decide": 2.6673,
+    "snapshot": 0.9802,
+    "reduce": 0.0033
+   },
+   "nsPerAgentTick": 38.25,
+   "decisionsPerTick": 6631,
+   "mealsPerTick": 484,
+   "movingShare": 0.834,
+   "hash": "d50ab688",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 250000,
+   "nw": 2,
+   "spin": 20000,
+   "pass": 0,
+   "idleBusyCpus": 1.3,
+   "duringBusyCpus": 3.35,
+   "warmMs": 222.5,
+   "lastTick": 1552,
+   "tickMs": {
+    "med": 5.5837,
+    "min": 5.1412,
+    "max": 5.8971
+   },
+   "singleTickMs": {
+    "med": 5.4416,
+    "p95": 7.3678,
+    "max": 8.538
+   },
+   "phasesMs": {
+    "move": 2.8583,
+    "cellsAndOffsets": 0.2058,
+    "scatter": 0.4925,
+    "decide": 1.3925,
+    "snapshot": 0.6103,
+    "reduce": 0.0033
+   },
+   "nsPerAgentTick": 22.33,
+   "decisionsPerTick": 6631,
+   "mealsPerTick": 484,
+   "movingShare": 0.834,
+   "hash": "d50ab688",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 250000,
+   "nw": 4,
+   "spin": 20000,
+   "pass": 0,
+   "idleBusyCpus": 0.92,
+   "duringBusyCpus": 4.57,
+   "warmMs": 156.4,
+   "lastTick": 1552,
+   "tickMs": {
+    "med": 3.2042,
+    "min": 2.8435,
+    "max": 4.0497
+   },
+   "singleTickMs": {
+    "med": 3.1494,
+    "p95": 4.2722,
+    "max": 7.356
+   },
+   "phasesMs": {
+    "move": 1.7597,
+    "cellsAndOffsets": 0.2024,
+    "scatter": 0.335,
+    "decide": 0.6916,
+    "snapshot": 0.3375,
+    "reduce": 0.0036
+   },
+   "nsPerAgentTick": 12.82,
+   "decisionsPerTick": 6631,
+   "mealsPerTick": 484,
+   "movingShare": 0.834,
+   "hash": "d50ab688",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 250000,
+   "nw": 6,
+   "spin": 20000,
+   "pass": 0,
+   "idleBusyCpus": 0.59,
+   "duringBusyCpus": 7.44,
+   "warmMs": 147.5,
+   "lastTick": 1552,
+   "tickMs": {
+    "med": 3.1426,
+    "min": 2.7096,
+    "max": 3.5015
+   },
+   "singleTickMs": {
+    "med": 3.0003,
+    "p95": 4.4489,
+    "max": 5.8199
+   },
+   "phasesMs": {
+    "move": 1.6192,
+    "cellsAndOffsets": 0.2649,
+    "scatter": 0.3224,
+    "decide": 0.6191,
+    "snapshot": 0.302,
+    "reduce": 0.0043
+   },
+   "nsPerAgentTick": 12.57,
+   "decisionsPerTick": 6631,
+   "mealsPerTick": 484,
+   "movingShare": 0.834,
+   "hash": "d50ab688",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 250000,
+   "nw": 8,
+   "spin": 20000,
+   "pass": 0,
+   "idleBusyCpus": 1.94,
+   "duringBusyCpus": 7.64,
+   "warmMs": 143,
+   "lastTick": 1552,
+   "tickMs": {
+    "med": 2.3541,
+    "min": 2.1911,
+    "max": 2.6979
+   },
+   "singleTickMs": {
+    "med": 2.3171,
+    "p95": 3.0832,
+    "max": 3.696
+   },
+   "phasesMs": {
+    "move": 1.2415,
+    "cellsAndOffsets": 0.2287,
+    "scatter": 0.2496,
+    "decide": 0.4091,
+    "snapshot": 0.2583,
+    "reduce": 0.005
+   },
+   "nsPerAgentTick": 9.42,
+   "decisionsPerTick": 6631,
+   "mealsPerTick": 484,
+   "movingShare": 0.834,
+   "hash": "d50ab688",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 250000,
+   "nw": 8,
+   "spin": 20000,
+   "pass": 1,
+   "idleBusyCpus": 0.06,
+   "duringBusyCpus": 8.64,
+   "warmMs": 140.5,
+   "lastTick": 1552,
+   "tickMs": {
+    "med": 2.4301,
+    "min": 2.2868,
+    "max": 2.6319
+   },
+   "singleTickMs": {
+    "med": 2.3339,
+    "p95": 2.9488,
+    "max": 3.1587
+   },
+   "phasesMs": {
+    "move": 1.276,
+    "cellsAndOffsets": 0.2368,
+    "scatter": 0.2578,
+    "decide": 0.4091,
+    "snapshot": 0.2559,
+    "reduce": 0.0051
+   },
+   "nsPerAgentTick": 9.72,
+   "decisionsPerTick": 6631,
+   "mealsPerTick": 484,
+   "movingShare": 0.834,
+   "hash": "d50ab688",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 250000,
+   "nw": 6,
+   "spin": 20000,
+   "pass": 1,
+   "idleBusyCpus": 0.22,
+   "duringBusyCpus": 5.92,
+   "warmMs": 140.5,
+   "lastTick": 1552,
+   "tickMs": {
+    "med": 2.7062,
+    "min": 2.4038,
+    "max": 2.9888
+   },
+   "singleTickMs": {
+    "med": 2.6956,
+    "p95": 3.5952,
+    "max": 4.2312
+   },
+   "phasesMs": {
+    "move": 1.4533,
+    "cellsAndOffsets": 0.2262,
+    "scatter": 0.2719,
+    "decide": 0.5006,
+    "snapshot": 0.2784,
+    "reduce": 0.0042
+   },
+   "nsPerAgentTick": 10.82,
+   "decisionsPerTick": 6631,
+   "mealsPerTick": 484,
+   "movingShare": 0.834,
+   "hash": "d50ab688",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 250000,
+   "nw": 4,
+   "spin": 20000,
+   "pass": 1,
+   "idleBusyCpus": 0.85,
+   "duringBusyCpus": 4.44,
+   "warmMs": 146.8,
+   "lastTick": 1552,
+   "tickMs": {
+    "med": 3.2613,
+    "min": 2.8064,
+    "max": 3.624
+   },
+   "singleTickMs": {
+    "med": 3.0745,
+    "p95": 4.0009,
+    "max": 4.9002
+   },
+   "phasesMs": {
+    "move": 1.7562,
+    "cellsAndOffsets": 0.2036,
+    "scatter": 0.3142,
+    "decide": 0.6284,
+    "snapshot": 0.333,
+    "reduce": 0.0035
+   },
+   "nsPerAgentTick": 13.05,
+   "decisionsPerTick": 6631,
+   "mealsPerTick": 484,
+   "movingShare": 0.834,
+   "hash": "d50ab688",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 250000,
+   "nw": 2,
+   "spin": 20000,
+   "pass": 1,
+   "idleBusyCpus": 1.02,
+   "duringBusyCpus": 2.76,
+   "warmMs": 230.8,
+   "lastTick": 1552,
+   "tickMs": {
+    "med": 5.5171,
+    "min": 5.1109,
+    "max": 5.9139
+   },
+   "singleTickMs": {
+    "med": 5.3395,
+    "p95": 6.6349,
+    "max": 8.0437
+   },
+   "phasesMs": {
+    "move": 2.8848,
+    "cellsAndOffsets": 0.2385,
+    "scatter": 0.477,
+    "decide": 1.2605,
+    "snapshot": 0.6245,
+    "reduce": 0.0032
+   },
+   "nsPerAgentTick": 22.07,
+   "decisionsPerTick": 6631,
+   "mealsPerTick": 484,
+   "movingShare": 0.834,
+   "hash": "d50ab688",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 250000,
+   "nw": 1,
+   "spin": 20000,
+   "pass": 1,
+   "idleBusyCpus": 0.69,
+   "duringBusyCpus": 1.35,
+   "warmMs": 366.1,
+   "lastTick": 1552,
+   "tickMs": {
+    "med": 9.1456,
+    "min": 8.8753,
+    "max": 9.8488
+   },
+   "singleTickMs": {
+    "med": 9.0445,
+    "p95": 10.4249,
+    "max": 12.5819
+   },
+   "phasesMs": {
+    "move": 4.9194,
+    "cellsAndOffsets": 0.1791,
+    "scatter": 0.7944,
+    "decide": 2.3875,
+    "snapshot": 0.9319,
+    "reduce": 0.0032
+   },
+   "nsPerAgentTick": 36.58,
+   "decisionsPerTick": 6631,
+   "mealsPerTick": 484,
+   "movingShare": 0.834,
+   "hash": "d50ab688",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 1000000,
+   "nw": 1,
+   "spin": 0,
+   "pass": 0,
+   "idleBusyCpus": 0.4,
+   "duringBusyCpus": 2.29,
+   "warmMs": 1859.9,
+   "lastTick": 1516,
+   "tickMs": {
+    "med": 47.7826,
+    "min": 46.408,
+    "max": 48.4174
+   },
+   "singleTickMs": {
+    "med": 47.1905,
+    "p95": 51.0404,
+    "max": 51.2531
+   },
+   "phasesMs": {
+    "move": 25.4748,
+    "cellsAndOffsets": 0.7225,
+    "scatter": 4.2755,
+    "decide": 13.1937,
+    "snapshot": 3.8235,
+    "reduce": 0.0122
+   },
+   "nsPerAgentTick": 47.78,
+   "decisionsPerTick": 26489,
+   "mealsPerTick": 1927,
+   "movingShare": 0.832,
+   "hash": "5c6862ca",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 1000000,
+   "nw": 2,
+   "spin": 0,
+   "pass": 0,
+   "idleBusyCpus": 0.72,
+   "duringBusyCpus": 2.78,
+   "warmMs": 1040.7,
+   "lastTick": 1516,
+   "tickMs": {
+    "med": 26.2562,
+    "min": 25.2112,
+    "max": 27.7033
+   },
+   "singleTickMs": {
+    "med": 25.7492,
+    "p95": 29.6855,
+    "max": 30.5872
+   },
+   "phasesMs": {
+    "move": 13.6223,
+    "cellsAndOffsets": 0.5893,
+    "scatter": 2.1492,
+    "decide": 7.1363,
+    "snapshot": 2.6401,
+    "reduce": 0.0137
+   },
+   "nsPerAgentTick": 26.26,
+   "decisionsPerTick": 26489,
+   "mealsPerTick": 1927,
+   "movingShare": 0.832,
+   "hash": "5c6862ca",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 1000000,
+   "nw": 4,
+   "spin": 0,
+   "pass": 0,
+   "idleBusyCpus": 0.53,
+   "duringBusyCpus": 4.85,
+   "warmMs": 642.9,
+   "lastTick": 1516,
+   "tickMs": {
+    "med": 15.5954,
+    "min": 14.1785,
+    "max": 17.5174
+   },
+   "singleTickMs": {
+    "med": 15.0802,
+    "p95": 20.2869,
+    "max": 23.7819
+   },
+   "phasesMs": {
+    "move": 8.1264,
+    "cellsAndOffsets": 0.6025,
+    "scatter": 1.3971,
+    "decide": 4.0211,
+    "snapshot": 1.5703,
+    "reduce": 0.0135
+   },
+   "nsPerAgentTick": 15.6,
+   "decisionsPerTick": 26489,
+   "mealsPerTick": 1927,
+   "movingShare": 0.832,
+   "hash": "5c6862ca",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 1000000,
+   "nw": 6,
+   "spin": 0,
+   "pass": 0,
+   "idleBusyCpus": 1,
+   "duringBusyCpus": 7.5,
+   "warmMs": 561,
+   "lastTick": 1516,
+   "tickMs": {
+    "med": 14.6541,
+    "min": 13.1062,
+    "max": 16.1747
+   },
+   "singleTickMs": {
+    "med": 14.3409,
+    "p95": 17.9046,
+    "max": 18.0324
+   },
+   "phasesMs": {
+    "move": 7.1717,
+    "cellsAndOffsets": 0.8397,
+    "scatter": 1.4986,
+    "decide": 3.4421,
+    "snapshot": 1.6453,
+    "reduce": 0.0154
+   },
+   "nsPerAgentTick": 14.65,
+   "decisionsPerTick": 26489,
+   "mealsPerTick": 1927,
+   "movingShare": 0.832,
+   "hash": "5c6862ca",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 1000000,
+   "nw": 8,
+   "spin": 0,
+   "pass": 0,
+   "idleBusyCpus": 1.43,
+   "duringBusyCpus": 8.02,
+   "warmMs": 535.1,
+   "lastTick": 1516,
+   "tickMs": {
+    "med": 12.2214,
+    "min": 12.0111,
+    "max": 13.7761
+   },
+   "singleTickMs": {
+    "med": 12.1947,
+    "p95": 14.7688,
+    "max": 18.429
+   },
+   "phasesMs": {
+    "move": 5.9041,
+    "cellsAndOffsets": 1.0558,
+    "scatter": 1.3776,
+    "decide": 2.785,
+    "snapshot": 1.368,
+    "reduce": 0.0144
+   },
+   "nsPerAgentTick": 12.22,
+   "decisionsPerTick": 26489,
+   "mealsPerTick": 1927,
+   "movingShare": 0.832,
+   "hash": "5c6862ca",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 1000000,
+   "nw": 8,
+   "spin": 0,
+   "pass": 1,
+   "idleBusyCpus": 3.18,
+   "duringBusyCpus": 8.85,
+   "warmMs": 556.9,
+   "lastTick": 1516,
+   "tickMs": {
+    "med": 13.5567,
+    "min": 12.3576,
+    "max": 15.1983
+   },
+   "singleTickMs": {
+    "med": 13.0961,
+    "p95": 17.4911,
+    "max": 19.9626
+   },
+   "phasesMs": {
+    "move": 6.8199,
+    "cellsAndOffsets": 1.1443,
+    "scatter": 1.2383,
+    "decide": 2.9006,
+    "snapshot": 1.5278,
+    "reduce": 0.0175
+   },
+   "nsPerAgentTick": 13.56,
+   "decisionsPerTick": 26489,
+   "mealsPerTick": 1927,
+   "movingShare": 0.832,
+   "hash": "5c6862ca",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 1000000,
+   "nw": 6,
+   "spin": 0,
+   "pass": 1,
+   "idleBusyCpus": 1.41,
+   "duringBusyCpus": 5.97,
+   "warmMs": 581.6,
+   "lastTick": 1516,
+   "tickMs": {
+    "med": 13.2045,
+    "min": 12.2483,
+    "max": 13.6974
+   },
+   "singleTickMs": {
+    "med": 13.1672,
+    "p95": 15.6327,
+    "max": 16.4962
+   },
+   "phasesMs": {
+    "move": 6.5931,
+    "cellsAndOffsets": 0.7912,
+    "scatter": 1.2504,
+    "decide": 3.0144,
+    "snapshot": 1.3939,
+    "reduce": 0.0145
+   },
+   "nsPerAgentTick": 13.2,
+   "decisionsPerTick": 26489,
+   "mealsPerTick": 1927,
+   "movingShare": 0.832,
+   "hash": "5c6862ca",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 1000000,
+   "nw": 4,
+   "spin": 0,
+   "pass": 1,
+   "idleBusyCpus": 0.92,
+   "duringBusyCpus": 5.18,
+   "warmMs": 619.3,
+   "lastTick": 1516,
+   "tickMs": {
+    "med": 14.805,
+    "min": 14.0151,
+    "max": 16.7425
+   },
+   "singleTickMs": {
+    "med": 14.4296,
+    "p95": 17.7411,
+    "max": 22.6412
+   },
+   "phasesMs": {
+    "move": 7.4493,
+    "cellsAndOffsets": 0.5455,
+    "scatter": 1.371,
+    "decide": 3.954,
+    "snapshot": 1.5511,
+    "reduce": 0.0125
+   },
+   "nsPerAgentTick": 14.81,
+   "decisionsPerTick": 26489,
+   "mealsPerTick": 1927,
+   "movingShare": 0.832,
+   "hash": "5c6862ca",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 1000000,
+   "nw": 2,
+   "spin": 0,
+   "pass": 1,
+   "idleBusyCpus": 0.47,
+   "duringBusyCpus": 2.5,
+   "warmMs": 1103.6,
+   "lastTick": 1516,
+   "tickMs": {
+    "med": 25.7198,
+    "min": 24.9419,
+    "max": 27.9865
+   },
+   "singleTickMs": {
+    "med": 25.5003,
+    "p95": 29.0779,
+    "max": 30.7475
+   },
+   "phasesMs": {
+    "move": 13.7368,
+    "cellsAndOffsets": 0.626,
+    "scatter": 2.0811,
+    "decide": 7.0176,
+    "snapshot": 2.4651,
+    "reduce": 0.0121
+   },
+   "nsPerAgentTick": 25.72,
+   "decisionsPerTick": 26489,
+   "mealsPerTick": 1927,
+   "movingShare": 0.832,
+   "hash": "5c6862ca",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 1000000,
+   "nw": 1,
+   "spin": 0,
+   "pass": 1,
+   "idleBusyCpus": 0.94,
+   "duringBusyCpus": 2.86,
+   "warmMs": 1869.4,
+   "lastTick": 1516,
+   "tickMs": {
+    "med": 47.2389,
+    "min": 45.6671,
+    "max": 52.4035
+   },
+   "singleTickMs": {
+    "med": 46.7885,
+    "p95": 54.5968,
+    "max": 55.5844
+   },
+   "phasesMs": {
+    "move": 25.3972,
+    "cellsAndOffsets": 0.729,
+    "scatter": 4.2488,
+    "decide": 13.3342,
+    "snapshot": 3.9227,
+    "reduce": 0.0136
+   },
+   "nsPerAgentTick": 47.24,
+   "decisionsPerTick": 26489,
+   "mealsPerTick": 1927,
+   "movingShare": 0.832,
+   "hash": "5c6862ca",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 1000000,
+   "nw": 1,
+   "spin": 20000,
+   "pass": 0,
+   "idleBusyCpus": 1.14,
+   "duringBusyCpus": 2.85,
+   "warmMs": 2046.2,
+   "lastTick": 1516,
+   "tickMs": {
+    "med": 47.5801,
+    "min": 47.0142,
+    "max": 69.6111
+   },
+   "singleTickMs": {
+    "med": 47.5992,
+    "p95": 71.5616,
+    "max": 77.8374
+   },
+   "phasesMs": {
+    "move": 26.9823,
+    "cellsAndOffsets": 0.7307,
+    "scatter": 4.2899,
+    "decide": 14.5343,
+    "snapshot": 4.0495,
+    "reduce": 0.0133
+   },
+   "nsPerAgentTick": 47.58,
+   "decisionsPerTick": 26489,
+   "mealsPerTick": 1927,
+   "movingShare": 0.832,
+   "hash": "5c6862ca",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 1000000,
+   "nw": 2,
+   "spin": 20000,
+   "pass": 0,
+   "idleBusyCpus": 1.58,
+   "duringBusyCpus": 3.46,
+   "warmMs": 1243.4,
+   "lastTick": 1516,
+   "tickMs": {
+    "med": 27.8103,
+    "min": 26.2129,
+    "max": 29.6833
+   },
+   "singleTickMs": {
+    "med": 27.0461,
+    "p95": 32.7166,
+    "max": 35.6156
+   },
+   "phasesMs": {
+    "move": 15.4042,
+    "cellsAndOffsets": 0.5639,
+    "scatter": 2.2002,
+    "decide": 7.2859,
+    "snapshot": 2.4899,
+    "reduce": 0.0122
+   },
+   "nsPerAgentTick": 27.81,
+   "decisionsPerTick": 26489,
+   "mealsPerTick": 1927,
+   "movingShare": 0.832,
+   "hash": "5c6862ca",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 1000000,
+   "nw": 4,
+   "spin": 20000,
+   "pass": 0,
+   "idleBusyCpus": 2.04,
+   "duringBusyCpus": 4.35,
+   "warmMs": 668,
+   "lastTick": 1516,
+   "tickMs": {
+    "med": 15.6018,
+    "min": 14.4051,
+    "max": 17.1067
+   },
+   "singleTickMs": {
+    "med": 15.1996,
+    "p95": 18.2802,
+    "max": 20.5899
+   },
+   "phasesMs": {
+    "move": 8.2189,
+    "cellsAndOffsets": 0.54,
+    "scatter": 1.4447,
+    "decide": 3.8667,
+    "snapshot": 1.5299,
+    "reduce": 0.0136
+   },
+   "nsPerAgentTick": 15.6,
+   "decisionsPerTick": 26489,
+   "mealsPerTick": 1927,
+   "movingShare": 0.832,
+   "hash": "5c6862ca",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 1000000,
+   "nw": 6,
+   "spin": 20000,
+   "pass": 0,
+   "idleBusyCpus": 0.37,
+   "duringBusyCpus": 6.58,
+   "warmMs": 558.8,
+   "lastTick": 1516,
+   "tickMs": {
+    "med": 13.358,
+    "min": 12.4793,
+    "max": 14.6722
+   },
+   "singleTickMs": {
+    "med": 13.4464,
+    "p95": 15.68,
+    "max": 17.7532
+   },
+   "phasesMs": {
+    "move": 6.7926,
+    "cellsAndOffsets": 0.8285,
+    "scatter": 1.319,
+    "decide": 3.0566,
+    "snapshot": 1.3895,
+    "reduce": 0.0155
+   },
+   "nsPerAgentTick": 13.36,
+   "decisionsPerTick": 26489,
+   "mealsPerTick": 1927,
+   "movingShare": 0.832,
+   "hash": "5c6862ca",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 1000000,
+   "nw": 8,
+   "spin": 20000,
+   "pass": 0,
+   "idleBusyCpus": 0.62,
+   "duringBusyCpus": 8.74,
+   "warmMs": 536.4,
+   "lastTick": 1516,
+   "tickMs": {
+    "med": 12.4422,
+    "min": 11.7281,
+    "max": 14.3433
+   },
+   "singleTickMs": {
+    "med": 11.9709,
+    "p95": 16.1235,
+    "max": 19.7421
+   },
+   "phasesMs": {
+    "move": 6.2633,
+    "cellsAndOffsets": 1.0545,
+    "scatter": 1.2322,
+    "decide": 2.637,
+    "snapshot": 1.3234,
+    "reduce": 0.0187
+   },
+   "nsPerAgentTick": 12.44,
+   "decisionsPerTick": 26489,
+   "mealsPerTick": 1927,
+   "movingShare": 0.832,
+   "hash": "5c6862ca",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 1000000,
+   "nw": 8,
+   "spin": 20000,
+   "pass": 1,
+   "idleBusyCpus": 0.57,
+   "duringBusyCpus": 8.27,
+   "warmMs": 558.7,
+   "lastTick": 1516,
+   "tickMs": {
+    "med": 12.9684,
+    "min": 12.0841,
+    "max": 14.1338
+   },
+   "singleTickMs": {
+    "med": 12.461,
+    "p95": 15.5312,
+    "max": 17.4891
+   },
+   "phasesMs": {
+    "move": 6.4001,
+    "cellsAndOffsets": 1.0022,
+    "scatter": 1.3085,
+    "decide": 2.7948,
+    "snapshot": 1.4398,
+    "reduce": 0.0187
+   },
+   "nsPerAgentTick": 12.97,
+   "decisionsPerTick": 26489,
+   "mealsPerTick": 1927,
+   "movingShare": 0.832,
+   "hash": "5c6862ca",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 1000000,
+   "nw": 6,
+   "spin": 20000,
+   "pass": 1,
+   "idleBusyCpus": 0.64,
+   "duringBusyCpus": 6.96,
+   "warmMs": 562.6,
+   "lastTick": 1516,
+   "tickMs": {
+    "med": 13.5145,
+    "min": 12.4241,
+    "max": 15.8195
+   },
+   "singleTickMs": {
+    "med": 13.4721,
+    "p95": 17.1065,
+    "max": 18.4655
+   },
+   "phasesMs": {
+    "move": 7.0738,
+    "cellsAndOffsets": 0.7584,
+    "scatter": 1.336,
+    "decide": 3.1449,
+    "snapshot": 1.3822,
+    "reduce": 0.0162
+   },
+   "nsPerAgentTick": 13.51,
+   "decisionsPerTick": 26489,
+   "mealsPerTick": 1927,
+   "movingShare": 0.832,
+   "hash": "5c6862ca",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 1000000,
+   "nw": 4,
+   "spin": 20000,
+   "pass": 1,
+   "idleBusyCpus": 0.95,
+   "duringBusyCpus": 4.31,
+   "warmMs": 661.8,
+   "lastTick": 1516,
+   "tickMs": {
+    "med": 15.6824,
+    "min": 14.9752,
+    "max": 16.9971
+   },
+   "singleTickMs": {
+    "med": 15.4237,
+    "p95": 18.7288,
+    "max": 19.1526
+   },
+   "phasesMs": {
+    "move": 8.4593,
+    "cellsAndOffsets": 0.5273,
+    "scatter": 1.343,
+    "decide": 3.9618,
+    "snapshot": 1.5369,
+    "reduce": 0.0147
+   },
+   "nsPerAgentTick": 15.68,
+   "decisionsPerTick": 26489,
+   "mealsPerTick": 1927,
+   "movingShare": 0.832,
+   "hash": "5c6862ca",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 1000000,
+   "nw": 2,
+   "spin": 20000,
+   "pass": 1,
+   "idleBusyCpus": 0.54,
+   "duringBusyCpus": 2.92,
+   "warmMs": 1067.2,
+   "lastTick": 1516,
+   "tickMs": {
+    "med": 25.8791,
+    "min": 25.0136,
+    "max": 28.241
+   },
+   "singleTickMs": {
+    "med": 26.0391,
+    "p95": 29.3081,
+    "max": 31.0374
+   },
+   "phasesMs": {
+    "move": 13.793,
+    "cellsAndOffsets": 0.5775,
+    "scatter": 2.1241,
+    "decide": 7.1477,
+    "snapshot": 2.5438,
+    "reduce": 0.0126
+   },
+   "nsPerAgentTick": 25.88,
+   "decisionsPerTick": 26489,
+   "mealsPerTick": 1927,
+   "movingShare": 0.832,
+   "hash": "5c6862ca",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  },
+  {
+   "N": 1000000,
+   "nw": 1,
+   "spin": 20000,
+   "pass": 1,
+   "idleBusyCpus": 0.92,
+   "duringBusyCpus": 2,
+   "warmMs": 1854.5,
+   "lastTick": 1516,
+   "tickMs": {
+    "med": 46.2327,
+    "min": 45.5728,
+    "max": 49.4385
+   },
+   "singleTickMs": {
+    "med": 45.9111,
+    "p95": 50.5311,
+    "max": 58.4163
+   },
+   "phasesMs": {
+    "move": 25.1221,
+    "cellsAndOffsets": 0.6962,
+    "scatter": 3.7496,
+    "decide": 13.2077,
+    "snapshot": 3.793,
+    "reduce": 0.0123
+   },
+   "nsPerAgentTick": 46.23,
+   "decisionsPerTick": 26489,
+   "mealsPerTick": 1927,
+   "movingShare": 0.832,
+   "hash": "5c6862ca",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0
+  }
+ ],
+ "world": {
+  "100000": {
+   "W": 320,
+   "cells": 6400,
+   "chunks": 98,
+   "households": 33205,
+   "arenaMiB": 12.6,
+   "buildMs": 159,
+   "movingAfterBurn": 0.815
+  },
+  "250000": {
+   "W": 504,
+   "cells": 15876,
+   "chunks": 245,
+   "households": 83194,
+   "arenaMiB": 31.5,
+   "buildMs": 340,
+   "movingAfterBurn": 0.816
+  },
+  "1000000": {
+   "W": 1000,
+   "cells": 62500,
+   "chunks": 977,
+   "households": 333332,
+   "arenaMiB": 125.2,
+   "buildMs": 1299,
+   "movingAfterBurn": 0.816
+  }
+ },
+ "determinism": {
+  "100000": {
+   "distinctHashes": 1,
+   "hashes": [
+    "3eea6237"
+   ]
+  },
+  "250000": {
+   "distinctHashes": 1,
+   "hashes": [
+    "d50ab688"
+   ]
+  },
+  "1000000": {
+   "distinctHashes": 1,
+   "hashes": [
+    "5c6862ca"
+   ]
+  }
+ },
+ "finishedAt": "2026-10-05T14:54:44.751Z"
+}

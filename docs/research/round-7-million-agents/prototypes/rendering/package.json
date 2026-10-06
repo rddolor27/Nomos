@@ -1,0 +1,13 @@
+{
+  "name": "nomos-r7-rendering-prototype",
+  "private": true,
+  "type": "module",
+  "description": "Throwaway research prototype: 1M-agent drawing and snapshot transport. Never import it.",
+  "scripts": {
+    "serve": "node serve.mjs",
+    "bench": "node bench.mjs"
+  },
+  "devDependencies": {
+    "playwright": "1.63.0"
+  }
+}

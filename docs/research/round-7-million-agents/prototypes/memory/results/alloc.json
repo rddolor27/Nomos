@@ -1,0 +1,4144 @@
+{
+  "machine": {
+    "cpu": "AMD Ryzen 5 3600 6-Core Processor",
+    "logicalCpus": 12,
+    "ramGiB": 15.93,
+    "freeGiB": 2.24,
+    "node": "v24.18.0",
+    "v8": "13.6.233.17-node.50",
+    "os": "win32 10.0.19045 x64"
+  },
+  "samples": 5,
+  "configs": [
+    {
+      "summary": {
+        "group": "alloc",
+        "kind": "ab",
+        "bytes": 1073741824,
+        "touch": 0,
+        "busyBefore": 1.9,
+        "errors": [],
+        "skipped": 0,
+        "allocMs": {
+          "median": 0.2757,
+          "min": 0.2542,
+          "max": 0.4469,
+          "n": 5
+        },
+        "commitDeltaMiB": {
+          "median": 1026.2,
+          "min": 1026,
+          "max": 1026.3,
+          "n": 5
+        },
+        "virtualDeltaMiB": {
+          "median": 1024,
+          "min": 1024,
+          "max": 1024.1,
+          "n": 5
+        },
+        "wsDeltaAfterAllocMiB": {
+          "median": 0.7,
+          "min": 0.7,
+          "max": 0.8,
+          "n": 5
+        },
+        "busyAfter": 0.96
+      },
+      "rows": [
+        {
+          "kind": "ab",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 0,
+          "byteLength": 1073741824,
+          "allocMs": 0.2757000000000289,
+          "viewMs": 0.0036999999999807187,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 37781504,
+            "commit": 22532096,
+            "virtual": 5555884032
+          },
+          "m1": {
+            "workingSet": 38572032,
+            "commit": 1098387456,
+            "virtual": 6629666816
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "ab",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 0,
+          "byteLength": 1073741824,
+          "allocMs": 0.446899999999971,
+          "viewMs": 0.003199999999992542,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 37756928,
+            "commit": 22122496,
+            "virtual": 5555937280
+          },
+          "m1": {
+            "workingSet": 38490112,
+            "commit": 1098158080,
+            "virtual": 6629720064
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "ab",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 0,
+          "byteLength": 1073741824,
+          "allocMs": 0.2674000000000092,
+          "viewMs": 0.002599999999915781,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 37822464,
+            "commit": 22175744,
+            "virtual": 5555916800
+          },
+          "m1": {
+            "workingSet": 38567936,
+            "commit": 1098186752,
+            "virtual": 6629675008
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "ab",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 0,
+          "byteLength": 1073741824,
+          "allocMs": 0.2541999999999689,
+          "viewMs": 0.0028000000000929504,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 37949440,
+            "commit": 22134784,
+            "virtual": 5555920896
+          },
+          "m1": {
+            "workingSet": 38690816,
+            "commit": 1097990144,
+            "virtual": 6629715968
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "ab",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 0,
+          "byteLength": 1073741824,
+          "allocMs": 0.2891999999999939,
+          "viewMs": 0.0029000000000678483,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 37982208,
+            "commit": 21655552,
+            "virtual": 5555679232
+          },
+          "m1": {
+            "workingSet": 38813696,
+            "commit": 1097834496,
+            "virtual": 6629466112
+          },
+          "m2": null,
+          "check": 0
+        }
+      ]
+    },
+    {
+      "summary": {
+        "group": "alloc",
+        "kind": "ab",
+        "bytes": 2147483648,
+        "touch": 0,
+        "busyBefore": 0.7,
+        "errors": [],
+        "skipped": 0,
+        "allocMs": {
+          "median": 3.0528,
+          "min": 2.8572,
+          "max": 3.8645,
+          "n": 5
+        },
+        "commitDeltaMiB": {
+          "median": 2052.2,
+          "min": 2051.9,
+          "max": 2052.3,
+          "n": 5
+        },
+        "virtualDeltaMiB": {
+          "median": 2047.5,
+          "min": 2047.5,
+          "max": 2047.6,
+          "n": 5
+        },
+        "wsDeltaAfterAllocMiB": {
+          "median": 0.6,
+          "min": 0.5,
+          "max": 0.6,
+          "n": 5
+        },
+        "busyAfter": 1.08
+      },
+      "rows": [
+        {
+          "kind": "ab",
+          "bytes": 2147483648,
+          "maxBytes": 2147483648,
+          "touch": 0,
+          "byteLength": 2147483648,
+          "allocMs": 3.0527999999999906,
+          "viewMs": 0.002200000000016189,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38084608,
+            "commit": 22106112,
+            "virtual": 5555892224
+          },
+          "m1": {
+            "workingSet": 38686720,
+            "commit": 2174074880,
+            "virtual": 7702913024
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "ab",
+          "bytes": 2147483648,
+          "maxBytes": 2147483648,
+          "touch": 0,
+          "byteLength": 2147483648,
+          "allocMs": 2.8736999999999853,
+          "viewMs": 0.0027000000000043656,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38072320,
+            "commit": 22171648,
+            "virtual": 5555920896
+          },
+          "m1": {
+            "workingSet": 38649856,
+            "commit": 2173747200,
+            "virtual": 7702925312
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "ab",
+          "bytes": 2147483648,
+          "maxBytes": 2147483648,
+          "touch": 0,
+          "byteLength": 2147483648,
+          "allocMs": 3.069999999999993,
+          "viewMs": 0.0026000000000294676,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38166528,
+            "commit": 22364160,
+            "virtual": 5555924992
+          },
+          "m1": {
+            "workingSet": 38653952,
+            "commit": 2174124032,
+            "virtual": 7702933504
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "ab",
+          "bytes": 2147483648,
+          "maxBytes": 2147483648,
+          "touch": 0,
+          "byteLength": 2147483648,
+          "allocMs": 2.8572000000000344,
+          "viewMs": 0.0027000000000043656,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38100992,
+            "commit": 22089728,
+            "virtual": 5555908608
+          },
+          "m1": {
+            "workingSet": 38715392,
+            "commit": 2174087168,
+            "virtual": 7702913024
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "ab",
+          "bytes": 2147483648,
+          "maxBytes": 2147483648,
+          "touch": 0,
+          "byteLength": 2147483648,
+          "allocMs": 3.864499999999964,
+          "viewMs": 0.0025000000000545697,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38035456,
+            "commit": 22134784,
+            "virtual": 5555908608
+          },
+          "m1": {
+            "workingSet": 38555648,
+            "commit": 2174033920,
+            "virtual": 7702892544
+          },
+          "m2": null,
+          "check": 0
+        }
+      ]
+    },
+    {
+      "summary": {
+        "group": "alloc",
+        "kind": "ab",
+        "bytes": 3221225472,
+        "touch": 0,
+        "busyBefore": 0.72,
+        "errors": [],
+        "skipped": 0,
+        "allocMs": {
+          "median": 3.2567,
+          "min": 3.2478,
+          "max": 4.5981,
+          "n": 5
+        },
+        "commitDeltaMiB": {
+          "median": 3078.4,
+          "min": 3077.8,
+          "max": 3078.4,
+          "n": 5
+        },
+        "virtualDeltaMiB": {
+          "median": 3071.5,
+          "min": 3071.5,
+          "max": 3071.6,
+          "n": 5
+        },
+        "wsDeltaAfterAllocMiB": {
+          "median": 0.5,
+          "min": 0.5,
+          "max": 0.6,
+          "n": 5
+        },
+        "busyAfter": 0.55
+      },
+      "rows": [
+        {
+          "kind": "ab",
+          "bytes": 3221225472,
+          "maxBytes": 3221225472,
+          "touch": 0,
+          "byteLength": 3221225472,
+          "allocMs": 4.598099999999988,
+          "viewMs": 0.0024000000000796717,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38092800,
+            "commit": 22134784,
+            "virtual": 5555884032
+          },
+          "m1": {
+            "workingSet": 38711296,
+            "commit": 3250028544,
+            "virtual": 8776642560
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "ab",
+          "bytes": 3221225472,
+          "maxBytes": 3221225472,
+          "touch": 0,
+          "byteLength": 3221225472,
+          "allocMs": 3.247799999999984,
+          "viewMs": 0.0027000000000043656,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38162432,
+            "commit": 22163456,
+            "virtual": 5555945472
+          },
+          "m1": {
+            "workingSet": 38707200,
+            "commit": 3250061312,
+            "virtual": 8776708096
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "ab",
+          "bytes": 3221225472,
+          "maxBytes": 3221225472,
+          "touch": 0,
+          "byteLength": 3221225472,
+          "allocMs": 3.2492999999999483,
+          "viewMs": 0.002399999999965985,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38211584,
+            "commit": 22401024,
+            "virtual": 5555912704
+          },
+          "m1": {
+            "workingSet": 38690816,
+            "commit": 3249676288,
+            "virtual": 8776630272
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "ab",
+          "bytes": 3221225472,
+          "maxBytes": 3221225472,
+          "touch": 0,
+          "byteLength": 3221225472,
+          "allocMs": 3.2567000000000235,
+          "viewMs": 0.01089999999999236,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38215680,
+            "commit": 22532096,
+            "virtual": 5555929088
+          },
+          "m1": {
+            "workingSet": 38723584,
+            "commit": 3250339840,
+            "virtual": 8776642560
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "ab",
+          "bytes": 3221225472,
+          "maxBytes": 3221225472,
+          "touch": 0,
+          "byteLength": 3221225472,
+          "allocMs": 3.9201999999999657,
+          "viewMs": 0.002299999999991087,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38109184,
+            "commit": 22151168,
+            "virtual": 5555924992
+          },
+          "m1": {
+            "workingSet": 38686720,
+            "commit": 3250049024,
+            "virtual": 8776675328
+          },
+          "m2": null,
+          "check": 0
+        }
+      ]
+    },
+    {
+      "summary": {
+        "group": "alloc",
+        "kind": "ab",
+        "bytes": 4294967296,
+        "touch": 0,
+        "busyBefore": 1.05,
+        "errors": [],
+        "skipped": 0,
+        "allocMs": {
+          "median": 3.429,
+          "min": 3.2036,
+          "max": 15.1774,
+          "n": 5
+        },
+        "commitDeltaMiB": {
+          "median": 4104.3,
+          "min": 4104.1,
+          "max": 4104.4,
+          "n": 5
+        },
+        "virtualDeltaMiB": {
+          "median": 4095.6,
+          "min": 4095.5,
+          "max": 4095.8,
+          "n": 5
+        },
+        "wsDeltaAfterAllocMiB": {
+          "median": 0.6,
+          "min": 0.4,
+          "max": 0.6,
+          "n": 5
+        },
+        "busyAfter": 1.05
+      },
+      "rows": [
+        {
+          "kind": "ab",
+          "bytes": 4294967296,
+          "maxBytes": 4294967296,
+          "touch": 0,
+          "byteLength": 4294967296,
+          "allocMs": 3.2035999999999945,
+          "viewMs": 0.0027999999999792635,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38285312,
+            "commit": 22511616,
+            "virtual": 5555896320
+          },
+          "m1": {
+            "workingSet": 38821888,
+            "commit": 4326232064,
+            "virtual": 9850396672
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "ab",
+          "bytes": 4294967296,
+          "maxBytes": 4294967296,
+          "touch": 0,
+          "byteLength": 4294967296,
+          "allocMs": 3.4289999999999736,
+          "viewMs": 0.0026000000000294676,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38117376,
+            "commit": 22179840,
+            "virtual": 5555941376
+          },
+          "m1": {
+            "workingSet": 38723584,
+            "commit": 4325900288,
+            "virtual": 9850421248
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "ab",
+          "bytes": 4294967296,
+          "maxBytes": 4294967296,
+          "touch": 0,
+          "byteLength": 4294967296,
+          "allocMs": 3.3840999999999894,
+          "viewMs": 0.0027000000000043656,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38105088,
+            "commit": 22081536,
+            "virtual": 5555945472
+          },
+          "m1": {
+            "workingSet": 38682624,
+            "commit": 4325883904,
+            "virtual": 9850445824
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "ab",
+          "bytes": 4294967296,
+          "maxBytes": 4294967296,
+          "touch": 0,
+          "byteLength": 4294967296,
+          "allocMs": 15.177400000000034,
+          "viewMs": 0.0027000000000043656,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38223872,
+            "commit": 21803008,
+            "virtual": 5555630080
+          },
+          "m1": {
+            "workingSet": 38612992,
+            "commit": 4325478400,
+            "virtual": 9850396672
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "ab",
+          "bytes": 4294967296,
+          "maxBytes": 4294967296,
+          "touch": 0,
+          "byteLength": 4294967296,
+          "allocMs": 11.646599999999978,
+          "viewMs": 0.002599999999915781,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38174720,
+            "commit": 22310912,
+            "virtual": 5555888128
+          },
+          "m1": {
+            "workingSet": 38764544,
+            "commit": 4325728256,
+            "virtual": 9850363904
+          },
+          "m2": null,
+          "check": 0
+        }
+      ]
+    },
+    {
+      "summary": {
+        "group": "alloc",
+        "kind": "sab",
+        "bytes": 1073741824,
+        "touch": 0,
+        "busyBefore": 1.28,
+        "errors": [],
+        "skipped": 0,
+        "allocMs": {
+          "median": 0.0295,
+          "min": 0.0277,
+          "max": 0.0924,
+          "n": 5
+        },
+        "commitDeltaMiB": {
+          "median": 1026,
+          "min": 1026,
+          "max": 1026.3,
+          "n": 5
+        },
+        "virtualDeltaMiB": {
+          "median": 1024.1,
+          "min": 1024,
+          "max": 1024.1,
+          "n": 5
+        },
+        "wsDeltaAfterAllocMiB": {
+          "median": 0.4,
+          "min": 0.4,
+          "max": 0.5,
+          "n": 5
+        },
+        "busyAfter": 0.95
+      },
+      "rows": [
+        {
+          "kind": "sab",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 0,
+          "byteLength": 1073741824,
+          "allocMs": 0.027699999999981628,
+          "viewMs": 0.002399999999965985,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38486016,
+            "commit": 22110208,
+            "virtual": 5555892224
+          },
+          "m1": {
+            "workingSet": 38961152,
+            "commit": 1098235904,
+            "virtual": 6629699584
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "sab",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 0,
+          "byteLength": 1073741824,
+          "allocMs": 0.030099999999947613,
+          "viewMs": 0.002399999999965985,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38494208,
+            "commit": 22122496,
+            "virtual": 5555937280
+          },
+          "m1": {
+            "workingSet": 38969344,
+            "commit": 1098215424,
+            "virtual": 6629740544
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "sab",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 0,
+          "byteLength": 1073741824,
+          "allocMs": 0.09239999999999782,
+          "viewMs": 0.0027000000000043656,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38739968,
+            "commit": 22528000,
+            "virtual": 5555908608
+          },
+          "m1": {
+            "workingSet": 39170048,
+            "commit": 1098379264,
+            "virtual": 6629703680
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "sab",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 0,
+          "byteLength": 1073741824,
+          "allocMs": 0.02949999999998454,
+          "viewMs": 0.0036999999999807187,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38481920,
+            "commit": 22134784,
+            "virtual": 5555884032
+          },
+          "m1": {
+            "workingSet": 38944768,
+            "commit": 1097986048,
+            "virtual": 6629687296
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "sab",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 0,
+          "byteLength": 1073741824,
+          "allocMs": 0.02800000000002001,
+          "viewMs": 0.003400000000056025,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38453248,
+            "commit": 22118400,
+            "virtual": 5555912704
+          },
+          "m1": {
+            "workingSet": 38895616,
+            "commit": 1097965568,
+            "virtual": 6629699584
+          },
+          "m2": null,
+          "check": 0
+        }
+      ]
+    },
+    {
+      "summary": {
+        "group": "alloc",
+        "kind": "sab",
+        "bytes": 2147483648,
+        "touch": 0,
+        "busyBefore": 0.42,
+        "errors": [],
+        "skipped": 0,
+        "allocMs": {
+          "median": 0.0285,
+          "min": 0.0285,
+          "max": 0.0312,
+          "n": 5
+        },
+        "commitDeltaMiB": {
+          "median": 2052,
+          "min": 2052,
+          "max": 2052,
+          "n": 5
+        },
+        "virtualDeltaMiB": {
+          "median": 2048,
+          "min": 2048,
+          "max": 2048.1,
+          "n": 5
+        },
+        "wsDeltaAfterAllocMiB": {
+          "median": 0.4,
+          "min": 0.4,
+          "max": 0.5,
+          "n": 5
+        },
+        "busyAfter": 1.63
+      },
+      "rows": [
+        {
+          "kind": "sab",
+          "bytes": 2147483648,
+          "maxBytes": 2147483648,
+          "touch": 0,
+          "byteLength": 2147483648,
+          "allocMs": 0.030900000000031014,
+          "viewMs": 0.003100000000017644,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38526976,
+            "commit": 22364160,
+            "virtual": 5555892224
+          },
+          "m1": {
+            "workingSet": 39002112,
+            "commit": 2174062592,
+            "virtual": 7703437312
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "sab",
+          "bytes": 2147483648,
+          "maxBytes": 2147483648,
+          "touch": 0,
+          "byteLength": 2147483648,
+          "allocMs": 0.028500000000008185,
+          "viewMs": 0.0038000000000693035,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38486016,
+            "commit": 22315008,
+            "virtual": 5555933184
+          },
+          "m1": {
+            "workingSet": 38977536,
+            "commit": 2174013440,
+            "virtual": 7703425024
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "sab",
+          "bytes": 2147483648,
+          "maxBytes": 2147483648,
+          "touch": 0,
+          "byteLength": 2147483648,
+          "allocMs": 0.028500000000008185,
+          "viewMs": 0.0026000000000294676,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38559744,
+            "commit": 22319104,
+            "virtual": 5555892224
+          },
+          "m1": {
+            "workingSet": 38981632,
+            "commit": 2174017536,
+            "virtual": 7703384064
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "sab",
+          "bytes": 2147483648,
+          "maxBytes": 2147483648,
+          "touch": 0,
+          "byteLength": 2147483648,
+          "allocMs": 0.03120000000001255,
+          "viewMs": 0.002499999999940883,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38592512,
+            "commit": 22200320,
+            "virtual": 5555892224
+          },
+          "m1": {
+            "workingSet": 39038976,
+            "commit": 2173898752,
+            "virtual": 7703445504
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "sab",
+          "bytes": 2147483648,
+          "maxBytes": 2147483648,
+          "touch": 0,
+          "byteLength": 2147483648,
+          "allocMs": 0.028500000000008185,
+          "viewMs": 0.0027000000000043656,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38408192,
+            "commit": 21790720,
+            "virtual": 5555621888
+          },
+          "m1": {
+            "workingSet": 38838272,
+            "commit": 2173489152,
+            "virtual": 7703146496
+          },
+          "m2": null,
+          "check": 0
+        }
+      ]
+    },
+    {
+      "summary": {
+        "group": "alloc",
+        "kind": "sab",
+        "bytes": 3221225472,
+        "touch": 0,
+        "busyBefore": 0.98,
+        "errors": [],
+        "skipped": 0,
+        "allocMs": {
+          "median": 0.0329,
+          "min": 0.0321,
+          "max": 0.0338,
+          "n": 5
+        },
+        "commitDeltaMiB": {
+          "median": 3078,
+          "min": 3078,
+          "max": 3078,
+          "n": 5
+        },
+        "virtualDeltaMiB": {
+          "median": 3072,
+          "min": 3072,
+          "max": 3072,
+          "n": 5
+        },
+        "wsDeltaAfterAllocMiB": {
+          "median": 0.4,
+          "min": 0.4,
+          "max": 0.5,
+          "n": 5
+        },
+        "busyAfter": 0.88
+      },
+      "rows": [
+        {
+          "kind": "sab",
+          "bytes": 3221225472,
+          "maxBytes": 3221225472,
+          "touch": 0,
+          "byteLength": 3221225472,
+          "allocMs": 0.032100000000014006,
+          "viewMs": 0.003199999999992542,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38604800,
+            "commit": 22343680,
+            "virtual": 5555924992
+          },
+          "m1": {
+            "workingSet": 39079936,
+            "commit": 3249885184,
+            "virtual": 8777191424
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "sab",
+          "bytes": 3221225472,
+          "maxBytes": 3221225472,
+          "touch": 0,
+          "byteLength": 3221225472,
+          "allocMs": 0.033799999999985175,
+          "viewMs": 0.003100000000017644,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38502400,
+            "commit": 22310912,
+            "virtual": 5555929088
+          },
+          "m1": {
+            "workingSet": 38969344,
+            "commit": 3249852416,
+            "virtual": 8777191424
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "sab",
+          "bytes": 3221225472,
+          "maxBytes": 3221225472,
+          "touch": 0,
+          "byteLength": 3221225472,
+          "allocMs": 0.03289999999998372,
+          "viewMs": 0.00329999999996744,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38502400,
+            "commit": 22204416,
+            "virtual": 5555933184
+          },
+          "m1": {
+            "workingSet": 38965248,
+            "commit": 3249745920,
+            "virtual": 8777170944
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "sab",
+          "bytes": 3221225472,
+          "maxBytes": 3221225472,
+          "touch": 0,
+          "byteLength": 3221225472,
+          "allocMs": 0.03260000000000218,
+          "viewMs": 0.0036000000000058208,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38502400,
+            "commit": 22204416,
+            "virtual": 5555900416
+          },
+          "m1": {
+            "workingSet": 38920192,
+            "commit": 3249745920,
+            "virtual": 8777138176
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "sab",
+          "bytes": 3221225472,
+          "maxBytes": 3221225472,
+          "touch": 0,
+          "byteLength": 3221225472,
+          "allocMs": 0.033699999999953434,
+          "viewMs": 0.0025000000000545697,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38547456,
+            "commit": 22302720,
+            "virtual": 5555888128
+          },
+          "m1": {
+            "workingSet": 39010304,
+            "commit": 3249844224,
+            "virtual": 8777154560
+          },
+          "m2": null,
+          "check": 0
+        }
+      ]
+    },
+    {
+      "summary": {
+        "group": "alloc",
+        "kind": "sab",
+        "bytes": 4294967296,
+        "touch": 0,
+        "busyBefore": 1.05,
+        "errors": [],
+        "skipped": 0,
+        "allocMs": {
+          "median": 0.0374,
+          "min": 0.0331,
+          "max": 0.0457,
+          "n": 5
+        },
+        "commitDeltaMiB": {
+          "median": 4104,
+          "min": 4104,
+          "max": 4104,
+          "n": 5
+        },
+        "virtualDeltaMiB": {
+          "median": 4096,
+          "min": 4096,
+          "max": 4096.1,
+          "n": 5
+        },
+        "wsDeltaAfterAllocMiB": {
+          "median": 0.4,
+          "min": 0.4,
+          "max": 0.5,
+          "n": 5
+        },
+        "busyAfter": 0.79
+      },
+      "rows": [
+        {
+          "kind": "sab",
+          "bytes": 4294967296,
+          "maxBytes": 4294967296,
+          "touch": 0,
+          "byteLength": 4294967296,
+          "allocMs": 0.03690000000000282,
+          "viewMs": 0.003199999999992542,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38481920,
+            "commit": 22130688,
+            "virtual": 5555888128
+          },
+          "m1": {
+            "workingSet": 38936576,
+            "commit": 4325519360,
+            "virtual": 9850925056
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "sab",
+          "bytes": 4294967296,
+          "maxBytes": 4294967296,
+          "touch": 0,
+          "byteLength": 4294967296,
+          "allocMs": 0.03740000000004784,
+          "viewMs": 0.003199999999992542,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38600704,
+            "commit": 21860352,
+            "virtual": 5555683328
+          },
+          "m1": {
+            "workingSet": 39092224,
+            "commit": 4325249024,
+            "virtual": 9850687488
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "sab",
+          "bytes": 4294967296,
+          "maxBytes": 4294967296,
+          "touch": 0,
+          "byteLength": 4294967296,
+          "allocMs": 0.03309999999999036,
+          "viewMs": 0.0028999999999541615,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38539264,
+            "commit": 22384640,
+            "virtual": 5555888128
+          },
+          "m1": {
+            "workingSet": 39006208,
+            "commit": 4325773312,
+            "virtual": 9850871808
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "sab",
+          "bytes": 4294967296,
+          "maxBytes": 4294967296,
+          "touch": 0,
+          "byteLength": 4294967296,
+          "allocMs": 0.04570000000001073,
+          "viewMs": 0.003399999999942338,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38473728,
+            "commit": 22315008,
+            "virtual": 5555884032
+          },
+          "m1": {
+            "workingSet": 38952960,
+            "commit": 4325703680,
+            "virtual": 9850896384
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "sab",
+          "bytes": 4294967296,
+          "maxBytes": 4294967296,
+          "touch": 0,
+          "byteLength": 4294967296,
+          "allocMs": 0.03999999999996362,
+          "viewMs": 0.0029999999999290594,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38518784,
+            "commit": 22339584,
+            "virtual": 5555904512
+          },
+          "m1": {
+            "workingSet": 38957056,
+            "commit": 4325728256,
+            "virtual": 9850888192
+          },
+          "m2": null,
+          "check": 0
+        }
+      ]
+    },
+    {
+      "summary": {
+        "group": "alloc",
+        "kind": "wasm",
+        "bytes": 1073741824,
+        "touch": 0,
+        "busyBefore": 0.89,
+        "errors": [],
+        "skipped": 0,
+        "allocMs": {
+          "median": 1.8983,
+          "min": 1.862,
+          "max": 1.9963,
+          "n": 5
+        },
+        "commitDeltaMiB": {
+          "median": 1026.3,
+          "min": 1026,
+          "max": 1026.4,
+          "n": 5
+        },
+        "virtualDeltaMiB": {
+          "median": 8192,
+          "min": 8192,
+          "max": 8192,
+          "n": 5
+        },
+        "wsDeltaAfterAllocMiB": {
+          "median": 0.6,
+          "min": 0.5,
+          "max": 0.6,
+          "n": 5
+        },
+        "busyAfter": 0.69
+      },
+      "rows": [
+        {
+          "kind": "wasm",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 0,
+          "byteLength": 1073741824,
+          "allocMs": 1.8619999999999663,
+          "viewMs": 0.003300000000081127,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38461440,
+            "commit": 21757952,
+            "virtual": 14144499712
+          },
+          "m1": {
+            "workingSet": 39030784,
+            "commit": 1097940992,
+            "virtual": 22734434304
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "wasm",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 0,
+          "byteLength": 1073741824,
+          "allocMs": 1.893699999999967,
+          "viewMs": 0.0028000000000929504,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38711296,
+            "commit": 22667264,
+            "virtual": 14144761856
+          },
+          "m1": {
+            "workingSet": 39354368,
+            "commit": 1098543104,
+            "virtual": 22734696448
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "wasm",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 0,
+          "byteLength": 1073741824,
+          "allocMs": 1.953800000000001,
+          "viewMs": 0.0029000000000678483,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38531072,
+            "commit": 22179840,
+            "virtual": 14144761856
+          },
+          "m1": {
+            "workingSet": 39137280,
+            "commit": 1098338304,
+            "virtual": 22734696448
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "wasm",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 0,
+          "byteLength": 1073741824,
+          "allocMs": 1.9962999999999624,
+          "viewMs": 0.0025000000000545697,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38592512,
+            "commit": 22233088,
+            "virtual": 14144761856
+          },
+          "m1": {
+            "workingSet": 39174144,
+            "commit": 1098452992,
+            "virtual": 22734696448
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "wasm",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 0,
+          "byteLength": 1073741824,
+          "allocMs": 1.898300000000006,
+          "viewMs": 0.0029999999999290594,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38518784,
+            "commit": 22110208,
+            "virtual": 14144761856
+          },
+          "m1": {
+            "workingSet": 39133184,
+            "commit": 1098248192,
+            "virtual": 22734696448
+          },
+          "m2": null,
+          "check": 0
+        }
+      ]
+    },
+    {
+      "summary": {
+        "group": "alloc",
+        "kind": "wasm",
+        "bytes": 2147483648,
+        "touch": 0,
+        "busyBefore": 0.59,
+        "errors": [],
+        "skipped": 0,
+        "allocMs": {
+          "median": 6.3767,
+          "min": 6.1452,
+          "max": 6.9318,
+          "n": 5
+        },
+        "commitDeltaMiB": {
+          "median": 2052,
+          "min": 2052,
+          "max": 2052.6,
+          "n": 5
+        },
+        "virtualDeltaMiB": {
+          "median": 8191.5,
+          "min": 8191.5,
+          "max": 8191.5,
+          "n": 5
+        },
+        "wsDeltaAfterAllocMiB": {
+          "median": 0.2,
+          "min": 0.1,
+          "max": 0.3,
+          "n": 5
+        },
+        "busyAfter": 1.22
+      },
+      "rows": [
+        {
+          "kind": "wasm",
+          "bytes": 2147483648,
+          "maxBytes": 2147483648,
+          "touch": 0,
+          "byteLength": 2147483648,
+          "allocMs": 6.1451999999999884,
+          "viewMs": 0.0027000000000043656,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38641664,
+            "commit": 22515712,
+            "virtual": 14144761856
+          },
+          "m1": {
+            "workingSet": 38760448,
+            "commit": 2174230528,
+            "virtual": 22734172160
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "wasm",
+          "bytes": 2147483648,
+          "maxBytes": 2147483648,
+          "touch": 0,
+          "byteLength": 2147483648,
+          "allocMs": 6.338199999999972,
+          "viewMs": 0.003500000000030923,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38522880,
+            "commit": 22396928,
+            "virtual": 14144761856
+          },
+          "m1": {
+            "workingSet": 38752256,
+            "commit": 2174111744,
+            "virtual": 22734172160
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "wasm",
+          "bytes": 2147483648,
+          "maxBytes": 2147483648,
+          "touch": 0,
+          "byteLength": 2147483648,
+          "allocMs": 6.5569000000000415,
+          "viewMs": 0.003100000000017644,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38494208,
+            "commit": 22286336,
+            "virtual": 14144761856
+          },
+          "m1": {
+            "workingSet": 38789120,
+            "commit": 2174558208,
+            "virtual": 22734172160
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "wasm",
+          "bytes": 2147483648,
+          "maxBytes": 2147483648,
+          "touch": 0,
+          "byteLength": 2147483648,
+          "allocMs": 6.376700000000028,
+          "viewMs": 0.0027999999999792635,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38731776,
+            "commit": 22372352,
+            "virtual": 14144761856
+          },
+          "m1": {
+            "workingSet": 38961152,
+            "commit": 2174091264,
+            "virtual": 22734172160
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "wasm",
+          "bytes": 2147483648,
+          "maxBytes": 2147483648,
+          "touch": 0,
+          "byteLength": 2147483648,
+          "allocMs": 6.93180000000001,
+          "viewMs": 0.0025000000000545697,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38825984,
+            "commit": 22208512,
+            "virtual": 14144761856
+          },
+          "m1": {
+            "workingSet": 39071744,
+            "commit": 2174504960,
+            "virtual": 22734172160
+          },
+          "m2": null,
+          "check": 0
+        }
+      ]
+    },
+    {
+      "summary": {
+        "group": "alloc",
+        "kind": "wasm",
+        "bytes": 3221225472,
+        "touch": 0,
+        "busyBefore": 0.53,
+        "errors": [],
+        "skipped": 0,
+        "allocMs": {
+          "median": 8.911,
+          "min": 8.1953,
+          "max": 11.0457,
+          "n": 5
+        },
+        "commitDeltaMiB": {
+          "median": 3078.3,
+          "min": 3078.1,
+          "max": 3078.6,
+          "n": 5
+        },
+        "virtualDeltaMiB": {
+          "median": 8191.5,
+          "min": 8191.5,
+          "max": 8191.5,
+          "n": 5
+        },
+        "wsDeltaAfterAllocMiB": {
+          "median": 0.2,
+          "min": 0.1,
+          "max": 0.3,
+          "n": 5
+        },
+        "busyAfter": 1.01
+      },
+      "rows": [
+        {
+          "kind": "wasm",
+          "bytes": 3221225472,
+          "maxBytes": 3221225472,
+          "touch": 0,
+          "byteLength": 3221225472,
+          "allocMs": 11.04570000000001,
+          "viewMs": 0.0028000000000929504,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38871040,
+            "commit": 22257664,
+            "virtual": 14144761856
+          },
+          "m1": {
+            "workingSet": 38957056,
+            "commit": 3249836032,
+            "virtual": 22734172160
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "wasm",
+          "bytes": 3221225472,
+          "maxBytes": 3221225472,
+          "touch": 0,
+          "byteLength": 3221225472,
+          "allocMs": 8.911000000000001,
+          "viewMs": 0.003500000000030923,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38838272,
+            "commit": 22253568,
+            "virtual": 14144761856
+          },
+          "m1": {
+            "workingSet": 38944768,
+            "commit": 3250102272,
+            "virtual": 22734172160
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "wasm",
+          "bytes": 3221225472,
+          "maxBytes": 3221225472,
+          "touch": 0,
+          "byteLength": 3221225472,
+          "allocMs": 9.414799999999957,
+          "viewMs": 0.00329999999996744,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38764544,
+            "commit": 22368256,
+            "virtual": 14144761856
+          },
+          "m1": {
+            "workingSet": 38977536,
+            "commit": 3250188288,
+            "virtual": 22734172160
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "wasm",
+          "bytes": 3221225472,
+          "maxBytes": 3221225472,
+          "touch": 0,
+          "byteLength": 3221225472,
+          "allocMs": 8.685900000000004,
+          "viewMs": 0.0027000000000043656,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38789120,
+            "commit": 22122496,
+            "virtual": 14144761856
+          },
+          "m1": {
+            "workingSet": 38998016,
+            "commit": 3250233344,
+            "virtual": 22734172160
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "wasm",
+          "bytes": 3221225472,
+          "maxBytes": 3221225472,
+          "touch": 0,
+          "byteLength": 3221225472,
+          "allocMs": 8.195300000000032,
+          "viewMs": 0.0028999999999541615,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38809600,
+            "commit": 22188032,
+            "virtual": 14144761856
+          },
+          "m1": {
+            "workingSet": 39084032,
+            "commit": 3250032640,
+            "virtual": 22734172160
+          },
+          "m2": null,
+          "check": 0
+        }
+      ]
+    },
+    {
+      "summary": {
+        "group": "alloc",
+        "kind": "wasm",
+        "bytes": 4294967296,
+        "touch": 0,
+        "busyBefore": 1.24,
+        "errors": [],
+        "skipped": 0,
+        "allocMs": {
+          "median": 9.9227,
+          "min": 9.3756,
+          "max": 13.4589,
+          "n": 5
+        },
+        "commitDeltaMiB": {
+          "median": 4104.1,
+          "min": 4104,
+          "max": 4104.5,
+          "n": 5
+        },
+        "virtualDeltaMiB": {
+          "median": 8191.5,
+          "min": 8191.5,
+          "max": 8191.5,
+          "n": 5
+        },
+        "wsDeltaAfterAllocMiB": {
+          "median": 0.1,
+          "min": 0.1,
+          "max": 0.3,
+          "n": 5
+        },
+        "busyAfter": 0.92
+      },
+      "rows": [
+        {
+          "kind": "wasm",
+          "bytes": 4294967296,
+          "maxBytes": 4294967296,
+          "touch": 0,
+          "byteLength": 4294967296,
+          "allocMs": 13.458899999999971,
+          "viewMs": 0.0029000000000678483,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38801408,
+            "commit": 22163456,
+            "virtual": 14144761856
+          },
+          "m1": {
+            "workingSet": 38903808,
+            "commit": 4325515264,
+            "virtual": 22734172160
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "wasm",
+          "bytes": 4294967296,
+          "maxBytes": 4294967296,
+          "touch": 0,
+          "byteLength": 4294967296,
+          "allocMs": 10.371399999999994,
+          "viewMs": 0.0029000000000678483,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38825984,
+            "commit": 22355968,
+            "virtual": 14144761856
+          },
+          "m1": {
+            "workingSet": 39051264,
+            "commit": 4325765120,
+            "virtual": 22734172160
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "wasm",
+          "bytes": 4294967296,
+          "maxBytes": 4294967296,
+          "touch": 0,
+          "byteLength": 4294967296,
+          "allocMs": 9.375599999999963,
+          "viewMs": 0.0025000000000545697,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38846464,
+            "commit": 22401024,
+            "virtual": 14144761856
+          },
+          "m1": {
+            "workingSet": 38928384,
+            "commit": 4325797888,
+            "virtual": 22734172160
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "wasm",
+          "bytes": 4294967296,
+          "maxBytes": 4294967296,
+          "touch": 0,
+          "byteLength": 4294967296,
+          "allocMs": 9.92270000000002,
+          "viewMs": 0.0027000000000043656,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38801408,
+            "commit": 22155264,
+            "virtual": 14144761856
+          },
+          "m1": {
+            "workingSet": 39092224,
+            "commit": 4326014976,
+            "virtual": 22734172160
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "wasm",
+          "bytes": 4294967296,
+          "maxBytes": 4294967296,
+          "touch": 0,
+          "byteLength": 4294967296,
+          "allocMs": 9.6293,
+          "viewMs": 0.0037000000000944056,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38772736,
+            "commit": 21954560,
+            "virtual": 14144761856
+          },
+          "m1": {
+            "workingSet": 38891520,
+            "commit": 4325568512,
+            "virtual": 22734172160
+          },
+          "m2": null,
+          "check": 0
+        }
+      ]
+    },
+    {
+      "summary": {
+        "group": "alloc",
+        "kind": "wasmShared",
+        "bytes": 1073741824,
+        "touch": 0,
+        "busyBefore": 0.45,
+        "errors": [],
+        "skipped": 0,
+        "allocMs": {
+          "median": 1.64,
+          "min": 1.6284,
+          "max": 1.8737,
+          "n": 5
+        },
+        "commitDeltaMiB": {
+          "median": 1026,
+          "min": 1026,
+          "max": 1026.3,
+          "n": 5
+        },
+        "virtualDeltaMiB": {
+          "median": 8192,
+          "min": 8192,
+          "max": 8192,
+          "n": 5
+        },
+        "wsDeltaAfterAllocMiB": {
+          "median": 0.4,
+          "min": 0.4,
+          "max": 0.5,
+          "n": 5
+        },
+        "busyAfter": 0.84
+      },
+      "rows": [
+        {
+          "kind": "wasmShared",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 0,
+          "byteLength": 1073741824,
+          "allocMs": 1.629700000000014,
+          "viewMs": 0.0028999999999541615,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38797312,
+            "commit": 22138880,
+            "virtual": 14144761856
+          },
+          "m1": {
+            "workingSet": 39260160,
+            "commit": 1098268672,
+            "virtual": 22734696448
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "wasmShared",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 0,
+          "byteLength": 1073741824,
+          "allocMs": 1.8736999999999853,
+          "viewMs": 0.0027000000000043656,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38797312,
+            "commit": 21843968,
+            "virtual": 14144761856
+          },
+          "m1": {
+            "workingSet": 39227392,
+            "commit": 1097711616,
+            "virtual": 22734696448
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "wasmShared",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 0,
+          "byteLength": 1073741824,
+          "allocMs": 1.6818999999999846,
+          "viewMs": 0.004599999999982174,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38780928,
+            "commit": 22106112,
+            "virtual": 14144761856
+          },
+          "m1": {
+            "workingSet": 39272448,
+            "commit": 1098264576,
+            "virtual": 22734696448
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "wasmShared",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 0,
+          "byteLength": 1073741824,
+          "allocMs": 1.6400000000000432,
+          "viewMs": 0.00329999999996744,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38707200,
+            "commit": 22319104,
+            "virtual": 14144761856
+          },
+          "m1": {
+            "workingSet": 39145472,
+            "commit": 1098186752,
+            "virtual": 22734696448
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "wasmShared",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 0,
+          "byteLength": 1073741824,
+          "allocMs": 1.6283999999999992,
+          "viewMs": 0.002299999999991087,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38957056,
+            "commit": 22159360,
+            "virtual": 14144761856
+          },
+          "m1": {
+            "workingSet": 39428096,
+            "commit": 1098027008,
+            "virtual": 22734696448
+          },
+          "m2": null,
+          "check": 0
+        }
+      ]
+    },
+    {
+      "summary": {
+        "group": "alloc",
+        "kind": "wasmShared",
+        "bytes": 2147483648,
+        "touch": 0,
+        "busyBefore": 0.59,
+        "errors": [],
+        "skipped": 0,
+        "allocMs": {
+          "median": 3.204,
+          "min": 3.1191,
+          "max": 3.4027,
+          "n": 5
+        },
+        "commitDeltaMiB": {
+          "median": 2052,
+          "min": 2052,
+          "max": 2052,
+          "n": 5
+        },
+        "virtualDeltaMiB": {
+          "median": 8192,
+          "min": 8192,
+          "max": 8192,
+          "n": 5
+        },
+        "wsDeltaAfterAllocMiB": {
+          "median": 0.4,
+          "min": 0.4,
+          "max": 0.5,
+          "n": 5
+        },
+        "busyAfter": 1.37
+      },
+      "rows": [
+        {
+          "kind": "wasmShared",
+          "bytes": 2147483648,
+          "maxBytes": 2147483648,
+          "touch": 0,
+          "byteLength": 2147483648,
+          "allocMs": 3.2040000000000077,
+          "viewMs": 0.0028999999999541615,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38842368,
+            "commit": 22355968,
+            "virtual": 14144761856
+          },
+          "m1": {
+            "workingSet": 39325696,
+            "commit": 2174066688,
+            "virtual": 22734696448
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "wasmShared",
+          "bytes": 2147483648,
+          "maxBytes": 2147483648,
+          "touch": 0,
+          "byteLength": 2147483648,
+          "allocMs": 3.4026999999999816,
+          "viewMs": 0.003100000000017644,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38821888,
+            "commit": 22245376,
+            "virtual": 14144761856
+          },
+          "m1": {
+            "workingSet": 39247872,
+            "commit": 2173956096,
+            "virtual": 22734696448
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "wasmShared",
+          "bytes": 2147483648,
+          "maxBytes": 2147483648,
+          "touch": 0,
+          "byteLength": 2147483648,
+          "allocMs": 3.18100000000004,
+          "viewMs": 0.004599999999982174,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38793216,
+            "commit": 22106112,
+            "virtual": 14144761856
+          },
+          "m1": {
+            "workingSet": 39227392,
+            "commit": 2173816832,
+            "virtual": 22734696448
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "wasmShared",
+          "bytes": 2147483648,
+          "maxBytes": 2147483648,
+          "touch": 0,
+          "byteLength": 2147483648,
+          "allocMs": 3.2280999999999835,
+          "viewMs": 0.0024000000000796717,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38907904,
+            "commit": 22331392,
+            "virtual": 14144761856
+          },
+          "m1": {
+            "workingSet": 39370752,
+            "commit": 2174050304,
+            "virtual": 22734696448
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "wasmShared",
+          "bytes": 2147483648,
+          "maxBytes": 2147483648,
+          "touch": 0,
+          "byteLength": 2147483648,
+          "allocMs": 3.119100000000003,
+          "viewMs": 0.0029000000000678483,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38797312,
+            "commit": 22196224,
+            "virtual": 14144761856
+          },
+          "m1": {
+            "workingSet": 39235584,
+            "commit": 2173906944,
+            "virtual": 22734696448
+          },
+          "m2": null,
+          "check": 0
+        }
+      ]
+    },
+    {
+      "summary": {
+        "group": "alloc",
+        "kind": "wasmShared",
+        "bytes": 3221225472,
+        "touch": 0,
+        "busyBefore": 0.75,
+        "errors": [],
+        "skipped": 0,
+        "allocMs": {
+          "median": 4.9112,
+          "min": 4.8226,
+          "max": 4.9946,
+          "n": 5
+        },
+        "commitDeltaMiB": {
+          "median": 3078,
+          "min": 3078,
+          "max": 3078,
+          "n": 5
+        },
+        "virtualDeltaMiB": {
+          "median": 8192,
+          "min": 8192,
+          "max": 8192,
+          "n": 5
+        },
+        "wsDeltaAfterAllocMiB": {
+          "median": 0.4,
+          "min": 0.4,
+          "max": 0.4,
+          "n": 5
+        },
+        "busyAfter": 1.54
+      },
+      "rows": [
+        {
+          "kind": "wasmShared",
+          "bytes": 3221225472,
+          "maxBytes": 3221225472,
+          "touch": 0,
+          "byteLength": 3221225472,
+          "allocMs": 4.822599999999966,
+          "viewMs": 0.0026000000000294676,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38887424,
+            "commit": 22523904,
+            "virtual": 14144761856
+          },
+          "m1": {
+            "workingSet": 39358464,
+            "commit": 3250081792,
+            "virtual": 22734696448
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "wasmShared",
+          "bytes": 3221225472,
+          "maxBytes": 3221225472,
+          "touch": 0,
+          "byteLength": 3221225472,
+          "allocMs": 4.994599999999991,
+          "viewMs": 0.0029000000000678483,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38793216,
+            "commit": 22269952,
+            "virtual": 14144761856
+          },
+          "m1": {
+            "workingSet": 39260160,
+            "commit": 3249823744,
+            "virtual": 22734696448
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "wasmShared",
+          "bytes": 3221225472,
+          "maxBytes": 3221225472,
+          "touch": 0,
+          "byteLength": 3221225472,
+          "allocMs": 4.858599999999967,
+          "viewMs": 0.0027000000000043656,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38744064,
+            "commit": 22347776,
+            "virtual": 14144761856
+          },
+          "m1": {
+            "workingSet": 39174144,
+            "commit": 3249901568,
+            "virtual": 22734696448
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "wasmShared",
+          "bytes": 3221225472,
+          "maxBytes": 3221225472,
+          "touch": 0,
+          "byteLength": 3221225472,
+          "allocMs": 4.9599999999999795,
+          "viewMs": 0.002499999999940883,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38772736,
+            "commit": 22360064,
+            "virtual": 14144761856
+          },
+          "m1": {
+            "workingSet": 39211008,
+            "commit": 3249917952,
+            "virtual": 22734696448
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "wasmShared",
+          "bytes": 3221225472,
+          "maxBytes": 3221225472,
+          "touch": 0,
+          "byteLength": 3221225472,
+          "allocMs": 4.911200000000008,
+          "viewMs": 0.003399999999942338,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38768640,
+            "commit": 22192128,
+            "virtual": 14144761856
+          },
+          "m1": {
+            "workingSet": 39223296,
+            "commit": 3249745920,
+            "virtual": 22734696448
+          },
+          "m2": null,
+          "check": 0
+        }
+      ]
+    },
+    {
+      "summary": {
+        "group": "alloc",
+        "kind": "wasmShared",
+        "bytes": 4294967296,
+        "touch": 0,
+        "busyBefore": 0.78,
+        "errors": [],
+        "skipped": 0,
+        "allocMs": {
+          "median": 6.7733,
+          "min": 6.219,
+          "max": 7.0538,
+          "n": 5
+        },
+        "commitDeltaMiB": {
+          "median": 4104,
+          "min": 4104,
+          "max": 4104.4,
+          "n": 5
+        },
+        "virtualDeltaMiB": {
+          "median": 8192,
+          "min": 8192,
+          "max": 8192,
+          "n": 5
+        },
+        "wsDeltaAfterAllocMiB": {
+          "median": 0.4,
+          "min": 0.4,
+          "max": 0.5,
+          "n": 5
+        },
+        "busyAfter": 0.97
+      },
+      "rows": [
+        {
+          "kind": "wasmShared",
+          "bytes": 4294967296,
+          "maxBytes": 4294967296,
+          "touch": 0,
+          "byteLength": 4294967296,
+          "allocMs": 6.4846,
+          "viewMs": 0.003199999999992542,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38838272,
+            "commit": 22220800,
+            "virtual": 14144761856
+          },
+          "m1": {
+            "workingSet": 39284736,
+            "commit": 4325617664,
+            "virtual": 22734696448
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "wasmShared",
+          "bytes": 4294967296,
+          "maxBytes": 4294967296,
+          "touch": 0,
+          "byteLength": 4294967296,
+          "allocMs": 6.773300000000006,
+          "viewMs": 0.002499999999940883,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38834176,
+            "commit": 22118400,
+            "virtual": 14144761856
+          },
+          "m1": {
+            "workingSet": 39325696,
+            "commit": 4325863424,
+            "virtual": 22734696448
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "wasmShared",
+          "bytes": 4294967296,
+          "maxBytes": 4294967296,
+          "touch": 0,
+          "byteLength": 4294967296,
+          "allocMs": 7.053800000000024,
+          "viewMs": 0.004800000000045657,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38961152,
+            "commit": 22515712,
+            "virtual": 14144761856
+          },
+          "m1": {
+            "workingSet": 39456768,
+            "commit": 4325916672,
+            "virtual": 22734696448
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "wasmShared",
+          "bytes": 4294967296,
+          "maxBytes": 4294967296,
+          "touch": 0,
+          "byteLength": 4294967296,
+          "allocMs": 6.8870000000000005,
+          "viewMs": 0.0026999999998906787,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38821888,
+            "commit": 22159360,
+            "virtual": 14144761856
+          },
+          "m1": {
+            "workingSet": 39251968,
+            "commit": 4325556224,
+            "virtual": 22734696448
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "wasmShared",
+          "bytes": 4294967296,
+          "maxBytes": 4294967296,
+          "touch": 0,
+          "byteLength": 4294967296,
+          "allocMs": 6.218999999999994,
+          "viewMs": 0.0025000000000545697,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38854656,
+            "commit": 22446080,
+            "virtual": 14144761856
+          },
+          "m1": {
+            "workingSet": 39305216,
+            "commit": 4325842944,
+            "virtual": 22734696448
+          },
+          "m2": null,
+          "check": 0
+        }
+      ]
+    },
+    {
+      "summary": {
+        "group": "touch",
+        "kind": "ab",
+        "bytes": 1073741824,
+        "touch": 268435456,
+        "busyBefore": 0.8,
+        "errors": [],
+        "skipped": 0,
+        "allocMs": {
+          "median": 0.2511,
+          "min": 0.2399,
+          "max": 0.2647,
+          "n": 5
+        },
+        "commitDeltaMiB": {
+          "median": 1026.1,
+          "min": 1026,
+          "max": 1026.3,
+          "n": 5
+        },
+        "virtualDeltaMiB": {
+          "median": 1024,
+          "min": 1024,
+          "max": 1024.1,
+          "n": 5
+        },
+        "wsDeltaAfterAllocMiB": {
+          "median": 0.6,
+          "min": 0.5,
+          "max": 0.6,
+          "n": 5
+        },
+        "touchedMiB": {
+          "median": 256,
+          "min": 256,
+          "max": 256,
+          "n": 5
+        },
+        "firstTouchNsPerPage": {
+          "median": 697.6257,
+          "min": 405.9006,
+          "max": 770.2942,
+          "n": 5
+        },
+        "firstTouchMsPerGiB": {
+          "median": 182.8784,
+          "min": 106.4044,
+          "max": 201.928,
+          "n": 5
+        },
+        "secondTouchMsPerGiB": {
+          "median": 3.2908,
+          "min": 2.9752,
+          "max": 3.5988,
+          "n": 5
+        },
+        "fillGBps": {
+          "median": 17.5248,
+          "min": 17.2215,
+          "max": 18.698,
+          "n": 5
+        },
+        "wsDeltaAfterTouchMiB": {
+          "median": 260.2,
+          "min": 260,
+          "max": 260.4,
+          "n": 5
+        },
+        "busyAfter": 1.23
+      },
+      "rows": [
+        {
+          "kind": "ab",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 268435456,
+          "byteLength": 1073741824,
+          "allocMs": 0.2511000000000081,
+          "viewMs": 0.004099999999993997,
+          "firstTouchMs": 45.719600000000014,
+          "secondTouchMs": 0.7437999999999647,
+          "fillMs": 14.713799999999992,
+          "m0": {
+            "workingSet": 38912000,
+            "commit": 22343680,
+            "virtual": 5555908608
+          },
+          "m1": {
+            "workingSet": 39473152,
+            "commit": 1098260480,
+            "virtual": 6629711872
+          },
+          "m2": {
+            "workingSet": 311820288,
+            "commit": 1099780096,
+            "virtual": 6630498304
+          },
+          "check": 512
+        },
+        {
+          "kind": "ab",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 268435456,
+          "byteLength": 1073741824,
+          "allocMs": 0.2647000000000048,
+          "viewMs": 0.0030000000000427463,
+          "firstTouchMs": 26.601099999999974,
+          "secondTouchMs": 0.7497999999999365,
+          "fillMs": 15.513399999999933,
+          "m0": {
+            "workingSet": 38834176,
+            "commit": 22310912,
+            "virtual": 5555912704
+          },
+          "m1": {
+            "workingSet": 39469056,
+            "commit": 1098305536,
+            "virtual": 6629683200
+          },
+          "m2": {
+            "workingSet": 311705600,
+            "commit": 1099325440,
+            "virtual": 6630207488
+          },
+          "check": 512
+        },
+        {
+          "kind": "ab",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 268435456,
+          "byteLength": 1073741824,
+          "allocMs": 0.24619999999998754,
+          "viewMs": 0.003400000000056025,
+          "firstTouchMs": 31.90930000000003,
+          "secondTouchMs": 0.8251999999999953,
+          "fillMs": 14.356400000000008,
+          "m0": {
+            "workingSet": 38838272,
+            "commit": 22360064,
+            "virtual": 5555896320
+          },
+          "m1": {
+            "workingSet": 39419904,
+            "commit": 1098211328,
+            "virtual": 6629658624
+          },
+          "m2": {
+            "workingSet": 311422976,
+            "commit": 1099251712,
+            "virtual": 6630445056
+          },
+          "check": 512
+        },
+        {
+          "kind": "ab",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 268435456,
+          "byteLength": 1073741824,
+          "allocMs": 0.23989999999997735,
+          "viewMs": 0.003499999999917236,
+          "firstTouchMs": 49.51229999999998,
+          "secondTouchMs": 0.8227000000000544,
+          "fillMs": 15.317499999999995,
+          "m0": {
+            "workingSet": 38731776,
+            "commit": 22114304,
+            "virtual": 5555916800
+          },
+          "m1": {
+            "workingSet": 39358464,
+            "commit": 1098248192,
+            "virtual": 6629679104
+          },
+          "m2": {
+            "workingSet": 311771136,
+            "commit": 1099542528,
+            "virtual": 6630203392
+          },
+          "check": 512
+        },
+        {
+          "kind": "ab",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 268435456,
+          "byteLength": 1073741824,
+          "allocMs": 0.2574000000000183,
+          "viewMs": 0.00479999999993197,
+          "firstTouchMs": 50.48199999999997,
+          "secondTouchMs": 0.8996999999999389,
+          "fillMs": 15.587200000000053,
+          "m0": {
+            "workingSet": 38821888,
+            "commit": 22134784,
+            "virtual": 5555941376
+          },
+          "m1": {
+            "workingSet": 39403520,
+            "commit": 1098264576,
+            "virtual": 6629740544
+          },
+          "m2": {
+            "workingSet": 311689216,
+            "commit": 1099628544,
+            "virtual": 6630526976
+          },
+          "check": 512
+        }
+      ]
+    },
+    {
+      "summary": {
+        "group": "touch",
+        "kind": "ab",
+        "bytes": 1073741824,
+        "touch": 1073741824,
+        "busyBefore": 1.06,
+        "errors": [],
+        "skipped": 0,
+        "allocMs": {
+          "median": 0.2808,
+          "min": 0.2388,
+          "max": 0.361,
+          "n": 5
+        },
+        "commitDeltaMiB": {
+          "median": 1026.3,
+          "min": 1026,
+          "max": 1026.3,
+          "n": 5
+        },
+        "virtualDeltaMiB": {
+          "median": 1024.1,
+          "min": 1024,
+          "max": 1024.1,
+          "n": 5
+        },
+        "wsDeltaAfterAllocMiB": {
+          "median": 0.5,
+          "min": 0.5,
+          "max": 0.6,
+          "n": 5
+        },
+        "touchedMiB": {
+          "median": 1024,
+          "min": 1024,
+          "max": 1024,
+          "n": 5
+        },
+        "firstTouchNsPerPage": {
+          "median": 350.4257,
+          "min": 341.6584,
+          "max": 655.4497,
+          "n": 5
+        },
+        "firstTouchMsPerGiB": {
+          "median": 91.862,
+          "min": 89.5637,
+          "max": 171.8222,
+          "n": 5
+        },
+        "secondTouchMsPerGiB": {
+          "median": 4.3567,
+          "min": 3.556,
+          "max": 6.8391,
+          "n": 5
+        },
+        "fillGBps": {
+          "median": 17.3589,
+          "min": 16.9806,
+          "max": 17.8262,
+          "n": 5
+        },
+        "wsDeltaAfterTouchMiB": {
+          "median": 1028.1,
+          "min": 1028,
+          "max": 1028.2,
+          "n": 5
+        },
+        "busyAfter": 1.05
+      },
+      "rows": [
+        {
+          "kind": "ab",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 1073741824,
+          "byteLength": 1073741824,
+          "allocMs": 0.2388000000000261,
+          "viewMs": 0.0028999999999541615,
+          "firstTouchMs": 171.82220000000007,
+          "secondTouchMs": 6.83910000000003,
+          "fillMs": 61.617399999999975,
+          "m0": {
+            "workingSet": 38850560,
+            "commit": 21929984,
+            "virtual": 5555937280
+          },
+          "m1": {
+            "workingSet": 39497728,
+            "commit": 1098043392,
+            "virtual": 6629732352
+          },
+          "m2": {
+            "workingSet": 1116987392,
+            "commit": 1099710464,
+            "virtual": 6630780928
+          },
+          "check": 2048
+        },
+        {
+          "kind": "ab",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 1073741824,
+          "byteLength": 1073741824,
+          "allocMs": 0.36099999999999,
+          "viewMs": 0.003100000000017644,
+          "firstTouchMs": 91.86199999999997,
+          "secondTouchMs": 3.850999999999999,
+          "fillMs": 62.91999999999996,
+          "m0": {
+            "workingSet": 38838272,
+            "commit": 22159360,
+            "virtual": 5555892224
+          },
+          "m1": {
+            "workingSet": 39403520,
+            "commit": 1098362880,
+            "virtual": 6629691392
+          },
+          "m2": {
+            "workingSet": 1116790784,
+            "commit": 1099640832,
+            "virtual": 6630739968
+          },
+          "check": 2048
+        },
+        {
+          "kind": "ab",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 1073741824,
+          "byteLength": 1073741824,
+          "allocMs": 0.28609999999997626,
+          "viewMs": 0.0029000000000678483,
+          "firstTouchMs": 89.56370000000004,
+          "secondTouchMs": 3.55600000000004,
+          "fillMs": 60.233799999999974,
+          "m0": {
+            "workingSet": 38768640,
+            "commit": 22310912,
+            "virtual": 5555933184
+          },
+          "m1": {
+            "workingSet": 39342080,
+            "commit": 1098166272,
+            "virtual": 6629720064
+          },
+          "m2": {
+            "workingSet": 1116758016,
+            "commit": 1099603968,
+            "virtual": 6630768640
+          },
+          "check": 2048
+        },
+        {
+          "kind": "ab",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 1073741824,
+          "byteLength": 1073741824,
+          "allocMs": 0.2807999999999993,
+          "viewMs": 0.0025000000000545697,
+          "firstTouchMs": 94.96969999999999,
+          "secondTouchMs": 5.709099999999921,
+          "fillMs": 61.85530000000006,
+          "m0": {
+            "workingSet": 38744064,
+            "commit": 22126592,
+            "virtual": 5555920896
+          },
+          "m1": {
+            "workingSet": 39280640,
+            "commit": 1098248192,
+            "virtual": 6629728256
+          },
+          "m2": {
+            "workingSet": 1116819456,
+            "commit": 1099485184,
+            "virtual": 6630514688
+          },
+          "check": 2048
+        },
+        {
+          "kind": "ab",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 1073741824,
+          "byteLength": 1073741824,
+          "allocMs": 0.241800000000012,
+          "viewMs": 0.002599999999915781,
+          "firstTouchMs": 90.69719999999995,
+          "secondTouchMs": 4.3566999999999325,
+          "fillMs": 63.233499999999935,
+          "m0": {
+            "workingSet": 38920192,
+            "commit": 22421504,
+            "virtual": 5555908608
+          },
+          "m1": {
+            "workingSet": 39493632,
+            "commit": 1098313728,
+            "virtual": 6629687296
+          },
+          "m2": {
+            "workingSet": 1117036544,
+            "commit": 1099681792,
+            "virtual": 6630473728
+          },
+          "check": 2048
+        }
+      ]
+    },
+    {
+      "summary": {
+        "group": "touch",
+        "kind": "sab",
+        "bytes": 1073741824,
+        "touch": 268435456,
+        "busyBefore": 1.87,
+        "errors": [],
+        "skipped": 0,
+        "allocMs": {
+          "median": 0.0272,
+          "min": 0.0267,
+          "max": 0.0394,
+          "n": 5
+        },
+        "commitDeltaMiB": {
+          "median": 1026,
+          "min": 1026,
+          "max": 1026.1,
+          "n": 5
+        },
+        "virtualDeltaMiB": {
+          "median": 1024,
+          "min": 1024,
+          "max": 1024.1,
+          "n": 5
+        },
+        "wsDeltaAfterAllocMiB": {
+          "median": 0.4,
+          "min": 0.4,
+          "max": 0.4,
+          "n": 5
+        },
+        "touchedMiB": {
+          "median": 256,
+          "min": 256,
+          "max": 256,
+          "n": 5
+        },
+        "firstTouchNsPerPage": {
+          "median": 360.8688,
+          "min": 343.2877,
+          "max": 388.472,
+          "n": 5
+        },
+        "firstTouchMsPerGiB": {
+          "median": 94.5996,
+          "min": 89.9908,
+          "max": 101.8356,
+          "n": 5
+        },
+        "secondTouchMsPerGiB": {
+          "median": 3.5672,
+          "min": 3.102,
+          "max": 3.7856,
+          "n": 5
+        },
+        "fillGBps": {
+          "median": 3.4818,
+          "min": 3.3436,
+          "max": 3.7087,
+          "n": 5
+        },
+        "wsDeltaAfterTouchMiB": {
+          "median": 259.3,
+          "min": 259.3,
+          "max": 259.3,
+          "n": 5
+        },
+        "busyAfter": 1.33
+      },
+      "rows": [
+        {
+          "kind": "sab",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 268435456,
+          "byteLength": 1073741824,
+          "allocMs": 0.039400000000000546,
+          "viewMs": 0.0029999999999290594,
+          "firstTouchMs": 25.127000000000066,
+          "secondTouchMs": 0.891800000000103,
+          "fillMs": 77.45389999999998,
+          "m0": {
+            "workingSet": 38772736,
+            "commit": 22097920,
+            "virtual": 5555916800
+          },
+          "m1": {
+            "workingSet": 39219200,
+            "commit": 1097949184,
+            "virtual": 6629675008
+          },
+          "m2": {
+            "workingSet": 310714368,
+            "commit": 1098485760,
+            "virtual": 6629937152
+          },
+          "check": 512
+        },
+        {
+          "kind": "sab",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 268435456,
+          "byteLength": 1073741824,
+          "allocMs": 0.02719999999999345,
+          "viewMs": 0.003100000000017644,
+          "firstTouchMs": 22.923200000000065,
+          "secondTouchMs": 0.8612000000000535,
+          "fillMs": 77.09770000000003,
+          "m0": {
+            "workingSet": 38789120,
+            "commit": 21635072,
+            "virtual": 5555621888
+          },
+          "m1": {
+            "workingSet": 39260160,
+            "commit": 1097580544,
+            "virtual": 6629429248
+          },
+          "m2": {
+            "workingSet": 310636544,
+            "commit": 1097584640,
+            "virtual": 6629429248
+          },
+          "check": 512
+        },
+        {
+          "kind": "sab",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 268435456,
+          "byteLength": 1073741824,
+          "allocMs": 0.026700000000005275,
+          "viewMs": 0.0030000000000427463,
+          "firstTouchMs": 25.45889999999997,
+          "secondTouchMs": 0.9464000000000397,
+          "fillMs": 72.38079999999991,
+          "m0": {
+            "workingSet": 38858752,
+            "commit": 21938176,
+            "virtual": 5555642368
+          },
+          "m1": {
+            "workingSet": 39297024,
+            "commit": 1097789440,
+            "virtual": 6629449728
+          },
+          "m2": {
+            "workingSet": 310800384,
+            "commit": 1097666560,
+            "virtual": 6629449728
+          },
+          "check": 512
+        },
+        {
+          "kind": "sab",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 268435456,
+          "byteLength": 1073741824,
+          "allocMs": 0.026999999999986812,
+          "viewMs": 0.004599999999982174,
+          "firstTouchMs": 22.49770000000001,
+          "secondTouchMs": 0.8935000000000173,
+          "fillMs": 80.28370000000007,
+          "m0": {
+            "workingSet": 38780928,
+            "commit": 21696512,
+            "virtual": 5555683328
+          },
+          "m1": {
+            "workingSet": 39223296,
+            "commit": 1097547776,
+            "virtual": 6629437440
+          },
+          "m2": {
+            "workingSet": 310718464,
+            "commit": 1097822208,
+            "virtual": 6629699584
+          },
+          "check": 512
+        },
+        {
+          "kind": "sab",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 268435456,
+          "byteLength": 1073741824,
+          "allocMs": 0.027200000000050295,
+          "viewMs": 0.00329999999996744,
+          "firstTouchMs": 23.649900000000002,
+          "secondTouchMs": 0.7754999999999654,
+          "fillMs": 75.76350000000002,
+          "m0": {
+            "workingSet": 38813696,
+            "commit": 22519808,
+            "virtual": 5555892224
+          },
+          "m1": {
+            "workingSet": 39235584,
+            "commit": 1098371072,
+            "virtual": 6629675008
+          },
+          "m2": {
+            "workingSet": 310697984,
+            "commit": 1098055680,
+            "virtual": 6629675008
+          },
+          "check": 512
+        }
+      ]
+    },
+    {
+      "summary": {
+        "group": "touch",
+        "kind": "sab",
+        "bytes": 1073741824,
+        "touch": 1073741824,
+        "busyBefore": 2.13,
+        "errors": [],
+        "skipped": 0,
+        "allocMs": {
+          "median": 0.0326,
+          "min": 0.0312,
+          "max": 0.0384,
+          "n": 5
+        },
+        "commitDeltaMiB": {
+          "median": 1026,
+          "min": 1026,
+          "max": 1026.3,
+          "n": 5
+        },
+        "virtualDeltaMiB": {
+          "median": 1024,
+          "min": 1024,
+          "max": 1024.1,
+          "n": 5
+        },
+        "wsDeltaAfterAllocMiB": {
+          "median": 0.4,
+          "min": 0.4,
+          "max": 0.5,
+          "n": 5
+        },
+        "touchedMiB": {
+          "median": 1024,
+          "min": 1024,
+          "max": 1024,
+          "n": 5
+        },
+        "firstTouchNsPerPage": {
+          "median": 421.8235,
+          "min": 344.3954,
+          "max": 675.4116,
+          "n": 5
+        },
+        "firstTouchMsPerGiB": {
+          "median": 110.5785,
+          "min": 90.2812,
+          "max": 177.0551,
+          "n": 5
+        },
+        "secondTouchMsPerGiB": {
+          "median": 3.6509,
+          "min": 3.4074,
+          "max": 5.2353,
+          "n": 5
+        },
+        "fillGBps": {
+          "median": 3.5907,
+          "min": 3.5368,
+          "max": 3.6134,
+          "n": 5
+        },
+        "wsDeltaAfterTouchMiB": {
+          "median": 1027.3,
+          "min": 1027.3,
+          "max": 1027.3,
+          "n": 5
+        },
+        "busyAfter": 1.33
+      },
+      "rows": [
+        {
+          "kind": "sab",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 1073741824,
+          "byteLength": 1073741824,
+          "allocMs": 0.03120000000001255,
+          "viewMs": 0.0036000000000058208,
+          "firstTouchMs": 90.87279999999998,
+          "secondTouchMs": 5.235300000000052,
+          "fillMs": 299.03549999999996,
+          "m0": {
+            "workingSet": 38825984,
+            "commit": 21884928,
+            "virtual": 5555924992
+          },
+          "m1": {
+            "workingSet": 39235584,
+            "commit": 1097732096,
+            "virtual": 6629707776
+          },
+          "m2": {
+            "workingSet": 1115975680,
+            "commit": 1097732096,
+            "virtual": 6629707776
+          },
+          "check": 2048
+        },
+        {
+          "kind": "sab",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 1073741824,
+          "byteLength": 1073741824,
+          "allocMs": 0.035599999999988086,
+          "viewMs": 0.0027000000000043656,
+          "firstTouchMs": 177.05510000000004,
+          "secondTouchMs": 3.4074000000000524,
+          "fillMs": 302.24570000000006,
+          "m0": {
+            "workingSet": 38789120,
+            "commit": 22179840,
+            "virtual": 5555937280
+          },
+          "m1": {
+            "workingSet": 39231488,
+            "commit": 1098031104,
+            "virtual": 6629695488
+          },
+          "m2": {
+            "workingSet": 1115947008,
+            "commit": 1098031104,
+            "virtual": 6629695488
+          },
+          "check": 2048
+        },
+        {
+          "kind": "sab",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 1073741824,
+          "byteLength": 1073741824,
+          "allocMs": 0.03240000000005239,
+          "viewMs": 0.0028000000000929504,
+          "firstTouchMs": 110.57849999999996,
+          "secondTouchMs": 3.716699999999946,
+          "fillMs": 297.1549,
+          "m0": {
+            "workingSet": 38801408,
+            "commit": 22343680,
+            "virtual": 5555912704
+          },
+          "m1": {
+            "workingSet": 39260160,
+            "commit": 1098194944,
+            "virtual": 6629711872
+          },
+          "m2": {
+            "workingSet": 1115987968,
+            "commit": 1098194944,
+            "virtual": 6629711872
+          },
+          "check": 2048
+        },
+        {
+          "kind": "sab",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 1073741824,
+          "byteLength": 1073741824,
+          "allocMs": 0.03260000000000218,
+          "viewMs": 0.0025000000000545697,
+          "firstTouchMs": 90.28120000000001,
+          "secondTouchMs": 3.530499999999961,
+          "fillMs": 298.9144,
+          "m0": {
+            "workingSet": 38793216,
+            "commit": 22130688,
+            "virtual": 5555908608
+          },
+          "m1": {
+            "workingSet": 39202816,
+            "commit": 1097981952,
+            "virtual": 6629720064
+          },
+          "m2": {
+            "workingSet": 1115975680,
+            "commit": 1098514432,
+            "virtual": 6629982208
+          },
+          "check": 2048
+        },
+        {
+          "kind": "sab",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 1073741824,
+          "byteLength": 1073741824,
+          "allocMs": 0.03839999999996735,
+          "viewMs": 0.0030000000000427463,
+          "firstTouchMs": 165.7237,
+          "secondTouchMs": 3.6508999999999787,
+          "fillMs": 303.5938,
+          "m0": {
+            "workingSet": 38785024,
+            "commit": 22089728,
+            "virtual": 5555924992
+          },
+          "m1": {
+            "workingSet": 39260160,
+            "commit": 1098199040,
+            "virtual": 6629703680
+          },
+          "m2": {
+            "workingSet": 1115938816,
+            "commit": 1098199040,
+            "virtual": 6629703680
+          },
+          "check": 2048
+        }
+      ]
+    },
+    {
+      "summary": {
+        "group": "touch",
+        "kind": "wasmShared",
+        "bytes": 1073741824,
+        "touch": 268435456,
+        "busyBefore": 0.6,
+        "errors": [],
+        "skipped": 0,
+        "allocMs": {
+          "median": 1.6319,
+          "min": 1.6041,
+          "max": 1.6933,
+          "n": 5
+        },
+        "commitDeltaMiB": {
+          "median": 1026,
+          "min": 1026,
+          "max": 1026.4,
+          "n": 5
+        },
+        "virtualDeltaMiB": {
+          "median": 8192,
+          "min": 8192,
+          "max": 8192,
+          "n": 5
+        },
+        "wsDeltaAfterAllocMiB": {
+          "median": 0.4,
+          "min": 0.4,
+          "max": 0.5,
+          "n": 5
+        },
+        "touchedMiB": {
+          "median": 256,
+          "min": 256,
+          "max": 256,
+          "n": 5
+        },
+        "firstTouchNsPerPage": {
+          "median": 835.0357,
+          "min": 809.1263,
+          "max": 854.657,
+          "n": 5
+        },
+        "firstTouchMsPerGiB": {
+          "median": 218.8996,
+          "min": 212.1076,
+          "max": 224.0432,
+          "n": 5
+        },
+        "secondTouchMsPerGiB": {
+          "median": 3.7804,
+          "min": 3.606,
+          "max": 5.9132,
+          "n": 5
+        },
+        "fillGBps": {
+          "median": 3.7215,
+          "min": 3.6119,
+          "max": 3.7406,
+          "n": 5
+        },
+        "wsDeltaAfterTouchMiB": {
+          "median": 259.3,
+          "min": 259.3,
+          "max": 259.4,
+          "n": 5
+        },
+        "busyAfter": 1.19
+      },
+      "rows": [
+        {
+          "kind": "wasmShared",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 268435456,
+          "byteLength": 1073741824,
+          "allocMs": 1.60409999999996,
+          "viewMs": 0.0027999999999792635,
+          "firstTouchMs": 53.02690000000007,
+          "secondTouchMs": 0.9451000000000249,
+          "fillMs": 74.31920000000002,
+          "m0": {
+            "workingSet": 38789120,
+            "commit": 22126592,
+            "virtual": 14144761856
+          },
+          "m1": {
+            "workingSet": 39272448,
+            "commit": 1098002432,
+            "virtual": 22734696448
+          },
+          "m2": {
+            "workingSet": 310693888,
+            "commit": 1098350592,
+            "virtual": 22734696448
+          },
+          "check": 512
+        },
+        {
+          "kind": "wasmShared",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 268435456,
+          "byteLength": 1073741824,
+          "allocMs": 1.63190000000003,
+          "viewMs": 0.0030000000000427463,
+          "firstTouchMs": 54.525600000000054,
+          "secondTouchMs": 0.9966999999999189,
+          "fillMs": 71.80050000000006,
+          "m0": {
+            "workingSet": 38854656,
+            "commit": 22151168,
+            "virtual": 14144761856
+          },
+          "m1": {
+            "workingSet": 39333888,
+            "commit": 1098362880,
+            "virtual": 22734696448
+          },
+          "m2": {
+            "workingSet": 310726656,
+            "commit": 1098371072,
+            "virtual": 22734696448
+          },
+          "check": 512
+        },
+        {
+          "kind": "wasmShared",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 268435456,
+          "byteLength": 1073741824,
+          "allocMs": 1.6932999999999652,
+          "viewMs": 0.0026000000000294676,
+          "firstTouchMs": 56.01080000000002,
+          "secondTouchMs": 0.9051999999999225,
+          "fillMs": 72.13020000000006,
+          "m0": {
+            "workingSet": 38850560,
+            "commit": 22167552,
+            "virtual": 14144761856
+          },
+          "m1": {
+            "workingSet": 39292928,
+            "commit": 1098035200,
+            "virtual": 22734696448
+          },
+          "m2": {
+            "workingSet": 310759424,
+            "commit": 1098383360,
+            "virtual": 22734696448
+          },
+          "check": 512
+        },
+        {
+          "kind": "wasmShared",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 268435456,
+          "byteLength": 1073741824,
+          "allocMs": 1.651299999999992,
+          "viewMs": 0.0027000000000043656,
+          "firstTouchMs": 54.72490000000005,
+          "secondTouchMs": 0.9015000000000555,
+          "fillMs": 71.7630999999999,
+          "m0": {
+            "workingSet": 38797312,
+            "commit": 22196224,
+            "virtual": 14144761856
+          },
+          "m1": {
+            "workingSet": 39264256,
+            "commit": 1098063872,
+            "virtual": 22734696448
+          },
+          "m2": {
+            "workingSet": 310779904,
+            "commit": 1098657792,
+            "virtual": 22734958592
+          },
+          "check": 512
+        },
+        {
+          "kind": "wasmShared",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 268435456,
+          "byteLength": 1073741824,
+          "allocMs": 1.6188999999999965,
+          "viewMs": 0.003199999999992542,
+          "firstTouchMs": 55.686199999999985,
+          "secondTouchMs": 1.4782999999999902,
+          "fillMs": 73.94060000000002,
+          "m0": {
+            "workingSet": 38858752,
+            "commit": 22175744,
+            "virtual": 14144761856
+          },
+          "m1": {
+            "workingSet": 39284736,
+            "commit": 1098051584,
+            "virtual": 22734696448
+          },
+          "m2": {
+            "workingSet": 310755328,
+            "commit": 1098366976,
+            "virtual": 22734696448
+          },
+          "check": 512
+        }
+      ]
+    },
+    {
+      "summary": {
+        "group": "touch",
+        "kind": "wasmShared",
+        "bytes": 1073741824,
+        "touch": 1073741824,
+        "busyBefore": 1.09,
+        "errors": [],
+        "skipped": 0,
+        "allocMs": {
+          "median": 1.8048,
+          "min": 1.5748,
+          "max": 2.1974,
+          "n": 5
+        },
+        "commitDeltaMiB": {
+          "median": 1026,
+          "min": 1026,
+          "max": 1026,
+          "n": 5
+        },
+        "virtualDeltaMiB": {
+          "median": 8192,
+          "min": 8192,
+          "max": 8192,
+          "n": 5
+        },
+        "wsDeltaAfterAllocMiB": {
+          "median": 0.5,
+          "min": 0.4,
+          "max": 0.5,
+          "n": 5
+        },
+        "touchedMiB": {
+          "median": 1024,
+          "min": 1024,
+          "max": 1024,
+          "n": 5
+        },
+        "firstTouchNsPerPage": {
+          "median": 832.3864,
+          "min": 814.2372,
+          "max": 1142.3851,
+          "n": 5
+        },
+        "firstTouchMsPerGiB": {
+          "median": 218.2051,
+          "min": 213.4474,
+          "max": 299.4694,
+          "n": 5
+        },
+        "secondTouchMsPerGiB": {
+          "median": 3.6944,
+          "min": 3.417,
+          "max": 4.8319,
+          "n": 5
+        },
+        "fillGBps": {
+          "median": 3.6002,
+          "min": 3.5733,
+          "max": 3.6412,
+          "n": 5
+        },
+        "wsDeltaAfterTouchMiB": {
+          "median": 1027.3,
+          "min": 1027.3,
+          "max": 1027.3,
+          "n": 5
+        },
+        "busyAfter": 1.11
+      },
+      "rows": [
+        {
+          "kind": "wasmShared",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 1073741824,
+          "byteLength": 1073741824,
+          "allocMs": 2.197400000000016,
+          "viewMs": 0.003400000000056025,
+          "firstTouchMs": 218.20510000000002,
+          "secondTouchMs": 4.831900000000019,
+          "fillMs": 294.8892000000001,
+          "m0": {
+            "workingSet": 39059456,
+            "commit": 22138880,
+            "virtual": 14144761856
+          },
+          "m1": {
+            "workingSet": 39538688,
+            "commit": 1098006528,
+            "virtual": 22734696448
+          },
+          "m2": {
+            "workingSet": 1116266496,
+            "commit": 1098313728,
+            "virtual": 22734696448
+          },
+          "check": 2048
+        },
+        {
+          "kind": "wasmShared",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 1073741824,
+          "byteLength": 1073741824,
+          "allocMs": 1.6639000000000124,
+          "viewMs": 0.004000000000019099,
+          "firstTouchMs": 213.44740000000002,
+          "secondTouchMs": 4.349800000000073,
+          "fillMs": 298.2454999999999,
+          "m0": {
+            "workingSet": 38789120,
+            "commit": 22253568,
+            "virtual": 14144761856
+          },
+          "m1": {
+            "workingSet": 39264256,
+            "commit": 1098121216,
+            "virtual": 22734696448
+          },
+          "m2": {
+            "workingSet": 1115983872,
+            "commit": 1098121216,
+            "virtual": 22734696448
+          },
+          "check": 2048
+        },
+        {
+          "kind": "wasmShared",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 1073741824,
+          "byteLength": 1073741824,
+          "allocMs": 1.574799999999982,
+          "viewMs": 0.0029999999999290594,
+          "firstTouchMs": 299.46940000000006,
+          "secondTouchMs": 3.4169999999999163,
+          "fillMs": 299.875,
+          "m0": {
+            "workingSet": 38842368,
+            "commit": 22343680,
+            "virtual": 14144761856
+          },
+          "m1": {
+            "workingSet": 39321600,
+            "commit": 1098211328,
+            "virtual": 22734696448
+          },
+          "m2": {
+            "workingSet": 1116053504,
+            "commit": 1098211328,
+            "virtual": 22734696448
+          },
+          "check": 2048
+        },
+        {
+          "kind": "wasmShared",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 1073741824,
+          "byteLength": 1073741824,
+          "allocMs": 1.8048000000000002,
+          "viewMs": 0.0030000000000427463,
+          "firstTouchMs": 215.8655,
+          "secondTouchMs": 3.52030000000002,
+          "fillMs": 300.48890000000006,
+          "m0": {
+            "workingSet": 38797312,
+            "commit": 21811200,
+            "virtual": 14144499712
+          },
+          "m1": {
+            "workingSet": 39256064,
+            "commit": 1097678848,
+            "virtual": 22734434304
+          },
+          "m2": {
+            "workingSet": 1116045312,
+            "commit": 1097682944,
+            "virtual": 22734434304
+          },
+          "check": 2048
+        },
+        {
+          "kind": "wasmShared",
+          "bytes": 1073741824,
+          "maxBytes": 1073741824,
+          "touch": 1073741824,
+          "byteLength": 1073741824,
+          "allocMs": 1.8102999999999838,
+          "viewMs": 0.003599999999892134,
+          "firstTouchMs": 222.3997999999999,
+          "secondTouchMs": 3.6943999999999733,
+          "fillMs": 297.69759999999997,
+          "m0": {
+            "workingSet": 38797312,
+            "commit": 22102016,
+            "virtual": 14144761856
+          },
+          "m1": {
+            "workingSet": 39231488,
+            "commit": 1097969664,
+            "virtual": 22734696448
+          },
+          "m2": {
+            "workingSet": 1115992064,
+            "commit": 1098313728,
+            "virtual": 22734696448
+          },
+          "check": 2048
+        }
+      ]
+    },
+    {
+      "summary": {
+        "group": "growable",
+        "kind": "sabGrowable",
+        "bytes": 16777216,
+        "max": 1073741824,
+        "touch": 0,
+        "busyBefore": 1.62,
+        "errors": [],
+        "skipped": 0,
+        "allocMs": {
+          "median": 0.0463,
+          "min": 0.0454,
+          "max": 0.0517,
+          "n": 5
+        },
+        "commitDeltaMiB": {
+          "median": 16,
+          "min": 16,
+          "max": 16.3,
+          "n": 5
+        },
+        "virtualDeltaMiB": {
+          "median": 1024,
+          "min": 1024,
+          "max": 1024,
+          "n": 5
+        },
+        "wsDeltaAfterAllocMiB": {
+          "median": 0.4,
+          "min": 0.4,
+          "max": 0.4,
+          "n": 5
+        },
+        "busyAfter": 0.79
+      },
+      "rows": [
+        {
+          "kind": "sabGrowable",
+          "bytes": 16777216,
+          "maxBytes": 1073741824,
+          "touch": 0,
+          "byteLength": 16777216,
+          "allocMs": 0.050900000000012824,
+          "viewMs": 0.0036999999999807187,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38735872,
+            "commit": 22097920,
+            "virtual": 5571604480
+          },
+          "m1": {
+            "workingSet": 39141376,
+            "commit": 38916096,
+            "virtual": 6645346304
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "sabGrowable",
+          "bytes": 16777216,
+          "maxBytes": 1073741824,
+          "touch": 0,
+          "byteLength": 16777216,
+          "allocMs": 0.04539999999997235,
+          "viewMs": 0.003499999999917236,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38830080,
+            "commit": 21872640,
+            "virtual": 5571342336
+          },
+          "m1": {
+            "workingSet": 39239680,
+            "commit": 38690816,
+            "virtual": 6645084160
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "sabGrowable",
+          "bytes": 16777216,
+          "maxBytes": 1073741824,
+          "touch": 0,
+          "byteLength": 16777216,
+          "allocMs": 0.04580000000004247,
+          "viewMs": 0.004199999999968895,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38735872,
+            "commit": 22331392,
+            "virtual": 5571604480
+          },
+          "m1": {
+            "workingSet": 39174144,
+            "commit": 39149568,
+            "virtual": 6645346304
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "sabGrowable",
+          "bytes": 16777216,
+          "maxBytes": 1073741824,
+          "touch": 0,
+          "byteLength": 16777216,
+          "allocMs": 0.05170000000003938,
+          "viewMs": 0.003499999999917236,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38772736,
+            "commit": 22106112,
+            "virtual": 5571604480
+          },
+          "m1": {
+            "workingSet": 39178240,
+            "commit": 38916096,
+            "virtual": 6645346304
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "sabGrowable",
+          "bytes": 16777216,
+          "maxBytes": 1073741824,
+          "touch": 0,
+          "byteLength": 16777216,
+          "allocMs": 0.04630000000003065,
+          "viewMs": 0.004299999999943793,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38797312,
+            "commit": 22114304,
+            "virtual": 5571604480
+          },
+          "m1": {
+            "workingSet": 39223296,
+            "commit": 39186432,
+            "virtual": 6645346304
+          },
+          "m2": null,
+          "check": 0
+        }
+      ]
+    },
+    {
+      "summary": {
+        "group": "growable",
+        "kind": "sabGrowable",
+        "bytes": 16777216,
+        "max": 4294967296,
+        "touch": 0,
+        "busyBefore": 1,
+        "errors": [],
+        "skipped": 0,
+        "allocMs": {
+          "median": 0.0508,
+          "min": 0.048,
+          "max": 0.0548,
+          "n": 5
+        },
+        "commitDeltaMiB": {
+          "median": 16,
+          "min": 16,
+          "max": 16,
+          "n": 5
+        },
+        "virtualDeltaMiB": {
+          "median": 4096,
+          "min": 4096,
+          "max": 4096,
+          "n": 5
+        },
+        "wsDeltaAfterAllocMiB": {
+          "median": 0.4,
+          "min": 0.4,
+          "max": 0.4,
+          "n": 5
+        },
+        "busyAfter": 1.72
+      },
+      "rows": [
+        {
+          "kind": "sabGrowable",
+          "bytes": 16777216,
+          "maxBytes": 4294967296,
+          "touch": 0,
+          "byteLength": 16777216,
+          "allocMs": 0.05480000000000018,
+          "viewMs": 0.004199999999968895,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38952960,
+            "commit": 22597632,
+            "virtual": 5571604480
+          },
+          "m1": {
+            "workingSet": 39419904,
+            "commit": 39419904,
+            "virtual": 9866571776
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "sabGrowable",
+          "bytes": 16777216,
+          "maxBytes": 4294967296,
+          "touch": 0,
+          "byteLength": 16777216,
+          "allocMs": 0.05079999999998108,
+          "viewMs": 0.0037000000000944056,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38780928,
+            "commit": 22290432,
+            "virtual": 5571604480
+          },
+          "m1": {
+            "workingSet": 39251968,
+            "commit": 39112704,
+            "virtual": 9866571776
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "sabGrowable",
+          "bytes": 16777216,
+          "maxBytes": 4294967296,
+          "touch": 0,
+          "byteLength": 16777216,
+          "allocMs": 0.054300000000012005,
+          "viewMs": 0.003400000000056025,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38977536,
+            "commit": 22491136,
+            "virtual": 5571604480
+          },
+          "m1": {
+            "workingSet": 39424000,
+            "commit": 39313408,
+            "virtual": 9866571776
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "sabGrowable",
+          "bytes": 16777216,
+          "maxBytes": 4294967296,
+          "touch": 0,
+          "byteLength": 16777216,
+          "allocMs": 0.05010000000004311,
+          "viewMs": 0.004099999999993997,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38744064,
+            "commit": 22196224,
+            "virtual": 5571604480
+          },
+          "m1": {
+            "workingSet": 39161856,
+            "commit": 39018496,
+            "virtual": 9866571776
+          },
+          "m2": null,
+          "check": 0
+        },
+        {
+          "kind": "sabGrowable",
+          "bytes": 16777216,
+          "maxBytes": 4294967296,
+          "touch": 0,
+          "byteLength": 16777216,
+          "allocMs": 0.04800000000000182,
+          "viewMs": 0.0036999999999807187,
+          "firstTouchMs": 0,
+          "secondTouchMs": 0,
+          "fillMs": 0,
+          "m0": {
+            "workingSet": 38854656,
+            "commit": 22192128,
+            "virtual": 5571604480
+          },
+          "m1": {
+            "workingSet": 39260160,
+            "commit": 39014400,
+            "virtual": 9866571776
+          },
+          "m2": null,
+          "check": 0
+        }
+      ]
+    }
+  ]
+}

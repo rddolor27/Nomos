@@ -1,0 +1,193 @@
+{
+  "machine": {
+    "cpu": "AMD Ryzen 5 3600 6-Core Processor",
+    "logicalCpus": 12,
+    "ramGiB": 15.93,
+    "freeGiB": 2.19,
+    "node": "v24.18.0",
+    "v8": "13.6.233.17-node.50",
+    "os": "win32 10.0.19045 x64"
+  },
+  "mode": "default",
+  "execArgv": [],
+  "support": {
+    "i64.numberSizes": {
+      "ok": false,
+      "error": "TypeError: Cannot convert 1 to a BigInt"
+    },
+    "i64.bigintSizes": {
+      "ok": true,
+      "bytes": 65536
+    },
+    "i64.legacyIndexField": {
+      "ok": false,
+      "error": "TypeError: Cannot convert a BigInt value to a number"
+    },
+    "i64.max262144pages(16GiB)": {
+      "ok": true,
+      "bytes": 65536
+    },
+    "i64.max262145pages": {
+      "ok": false,
+      "error": "RangeError: WebAssembly.Memory(): Property 'maximum': value 262145 is above the upper bound 262144"
+    },
+    "i64.shared": {
+      "ok": true,
+      "bytes": 65536
+    }
+  },
+  "kernels": [
+    {
+      "label": "mem32",
+      "is64": false,
+      "shared": false,
+      "baseGiB": 0,
+      "sum": {
+        "median": 0.4287,
+        "min": 0.3953,
+        "max": 0.52,
+        "n": 9
+      },
+      "hist": {
+        "median": 1.2887,
+        "min": 1.214,
+        "max": 1.6392,
+        "n": 9
+      },
+      "gather": {
+        "median": 1.0431,
+        "min": 0.9884,
+        "max": 2.0764,
+        "n": 9
+      },
+      "move": {
+        "median": 0.6574,
+        "min": 0.6168,
+        "max": 0.7726,
+        "n": 9
+      }
+    },
+    {
+      "label": "mem32 shared",
+      "is64": false,
+      "shared": true,
+      "baseGiB": 0,
+      "sum": {
+        "median": 0.4137,
+        "min": 0.379,
+        "max": 0.7367,
+        "n": 9
+      },
+      "hist": {
+        "median": 1.2839,
+        "min": 1.2171,
+        "max": 2.251,
+        "n": 9
+      },
+      "gather": {
+        "median": 1.0079,
+        "min": 0.9833,
+        "max": 1.1944,
+        "n": 9
+      },
+      "move": {
+        "median": 0.631,
+        "min": 0.6103,
+        "max": 0.811,
+        "n": 9
+      }
+    },
+    {
+      "label": "mem64",
+      "is64": true,
+      "shared": false,
+      "baseGiB": 0,
+      "sum": {
+        "median": 0.4459,
+        "min": 0.41,
+        "max": 0.5128,
+        "n": 9
+      },
+      "hist": {
+        "median": 1.4175,
+        "min": 1.3736,
+        "max": 2.2794,
+        "n": 9
+      },
+      "gather": {
+        "median": 1.2455,
+        "min": 1.1958,
+        "max": 1.4792,
+        "n": 9
+      },
+      "move": {
+        "median": 0.7948,
+        "min": 0.7215,
+        "max": 1.6605,
+        "n": 9
+      }
+    },
+    {
+      "label": "mem64 shared",
+      "is64": true,
+      "shared": true,
+      "baseGiB": 0,
+      "sum": {
+        "median": 0.4629,
+        "min": 0.4013,
+        "max": 0.5583,
+        "n": 9
+      },
+      "hist": {
+        "median": 1.4151,
+        "min": 1.3818,
+        "max": 2.1869,
+        "n": 9
+      },
+      "gather": {
+        "median": 1.2363,
+        "min": 1.2126,
+        "max": 2.6777,
+        "n": 9
+      },
+      "move": {
+        "median": 0.7715,
+        "min": 0.7235,
+        "max": 0.9716,
+        "n": 9
+      }
+    },
+    {
+      "label": "mem64 data at 4.5 GiB",
+      "is64": true,
+      "shared": false,
+      "baseGiB": 4.5,
+      "sum": {
+        "median": 0.4786,
+        "min": 0.4243,
+        "max": 0.5135,
+        "n": 9
+      },
+      "hist": {
+        "median": 1.5463,
+        "min": 1.3879,
+        "max": 2.5784,
+        "n": 9
+      },
+      "gather": {
+        "median": 1.2432,
+        "min": 1.188,
+        "max": 1.3762,
+        "n": 9
+      },
+      "move": {
+        "median": 0.756,
+        "min": 0.7028,
+        "max": 0.9553,
+        "n": 9
+      }
+    }
+  ],
+  "busyBefore": 1.08,
+  "busyAfter": 0.86
+}

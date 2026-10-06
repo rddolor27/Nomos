@@ -1,0 +1,312 @@
+{
+  "machine": {
+    "cpu": "AMD Ryzen 5 3600 6-Core Processor",
+    "logicalCpus": 12,
+    "ramGiB": 15.93,
+    "freeGiB": 2.44,
+    "node": "v24.18.0",
+    "v8": "13.6.233.17-node.50",
+    "os": "win32 10.0.19045 x64"
+  },
+  "reps": 21,
+  "busyBefore": 1.14,
+  "busyAfter": 0.68,
+  "cold": {
+    "nsPerAgentSmall": {
+      "median": 14.9805,
+      "min": 14.3419,
+      "max": 15.1172,
+      "n": 21
+    },
+    "nsPerAgentBig": {
+      "median": 19.3668,
+      "min": 19.0699,
+      "max": 21.4499,
+      "n": 21
+    },
+    "totalMs": {
+      "median": 130.508,
+      "min": 119.0208,
+      "max": 148.7645,
+      "n": 21
+    },
+    "cvBigPct": 3.9
+  },
+  "warm": {
+    "nsPerAgentSmall": {
+      "median": 14.2846,
+      "min": 13.3292,
+      "max": 15.082,
+      "n": 21
+    },
+    "nsPerAgentBig": {
+      "median": 19.2276,
+      "min": 19.1059,
+      "max": 20.0491,
+      "n": 21
+    },
+    "totalMs": {
+      "median": 115.6959,
+      "min": 110.1488,
+      "max": 126.9955,
+      "n": 21
+    },
+    "cvBigPct": 1.3
+  },
+  "coldRows": [
+    {
+      "nsPerAgentSmall": 14.882080078125002,
+      "nsPerAgentBig": 20.93162536621093,
+      "setupMs": 5.515400000000003,
+      "totalMs": 148.7645
+    },
+    {
+      "nsPerAgentSmall": 15.1171875,
+      "nsPerAgentBig": 19.64607238769529,
+      "setupMs": 5.200400000000002,
+      "totalMs": 131.84459999999999
+    },
+    {
+      "nsPerAgentSmall": 14.932373046875007,
+      "nsPerAgentBig": 19.356536865234393,
+      "setupMs": 5.629599999999996,
+      "totalMs": 130.508
+    },
+    {
+      "nsPerAgentSmall": 15.023925781249993,
+      "nsPerAgentBig": 19.240570068359393,
+      "setupMs": 5.655100000000001,
+      "totalMs": 135.417
+    },
+    {
+      "nsPerAgentSmall": 14.980468750000007,
+      "nsPerAgentBig": 19.367599487304666,
+      "setupMs": 5.3535,
+      "totalMs": 130.0368
+    },
+    {
+      "nsPerAgentSmall": 14.341853215144216,
+      "nsPerAgentBig": 19.22435760498046,
+      "setupMs": 5.286000000000001,
+      "totalMs": 121.7383
+    },
+    {
+      "nsPerAgentSmall": 14.971679687499993,
+      "nsPerAgentBig": 20.269393920898455,
+      "setupMs": 5.310500000000001,
+      "totalMs": 143.3494
+    },
+    {
+      "nsPerAgentSmall": 14.78515625000001,
+      "nsPerAgentBig": 21.25473022460936,
+      "setupMs": 5.703299999999999,
+      "totalMs": 124.42100000000002
+    },
+    {
+      "nsPerAgentSmall": 15.041503906250002,
+      "nsPerAgentBig": 19.255447387695337,
+      "setupMs": 5.6645999999999965,
+      "totalMs": 137.6174
+    },
+    {
+      "nsPerAgentSmall": 14.829101562499995,
+      "nsPerAgentBig": 19.36683654785157,
+      "setupMs": 5.34,
+      "totalMs": 119.02080000000001
+    },
+    {
+      "nsPerAgentSmall": 15.011718749999986,
+      "nsPerAgentBig": 19.147872924804716,
+      "setupMs": 5.375400000000003,
+      "totalMs": 125.3934
+    },
+    {
+      "nsPerAgentSmall": 15.035400390625009,
+      "nsPerAgentBig": 21.449851989746104,
+      "setupMs": 5.5905999999999985,
+      "totalMs": 141.1034
+    },
+    {
+      "nsPerAgentSmall": 14.919189453125002,
+      "nsPerAgentBig": 19.073104858398423,
+      "setupMs": 5.407899999999998,
+      "totalMs": 130.3492
+    },
+    {
+      "nsPerAgentSmall": 15.01806640624999,
+      "nsPerAgentBig": 19.18849945068362,
+      "setupMs": 5.3748000000000005,
+      "totalMs": 121.7557
+    },
+    {
+      "nsPerAgentSmall": 14.986572265625002,
+      "nsPerAgentBig": 19.261741638183608,
+      "setupMs": 5.4465,
+      "totalMs": 130.8665
+    },
+    {
+      "nsPerAgentSmall": 14.835937499999998,
+      "nsPerAgentBig": 19.47841644287112,
+      "setupMs": 5.348200000000002,
+      "totalMs": 127.9283
+    },
+    {
+      "nsPerAgentSmall": 14.916259765625009,
+      "nsPerAgentBig": 19.15798187255858,
+      "setupMs": 5.384300000000003,
+      "totalMs": 126.1364
+    },
+    {
+      "nsPerAgentSmall": 15.026123046875014,
+      "nsPerAgentBig": 19.558715820312507,
+      "setupMs": 6.584999999999997,
+      "totalMs": 124.9664
+    },
+    {
+      "nsPerAgentSmall": 15.019531249999984,
+      "nsPerAgentBig": 19.06986236572267,
+      "setupMs": 5.428899999999999,
+      "totalMs": 132.3142
+    },
+    {
+      "nsPerAgentSmall": 14.586932842548093,
+      "nsPerAgentBig": 20.3729629516602,
+      "setupMs": 5.545800000000003,
+      "totalMs": 131.6895
+    },
+    {
+      "nsPerAgentSmall": 15.079589843750018,
+      "nsPerAgentBig": 21.07810974121097,
+      "setupMs": 5.433699999999998,
+      "totalMs": 143.153
+    }
+  ],
+  "warmRows": [
+    {
+      "nsPerAgentSmall": 15.082031249999961,
+      "nsPerAgentBig": 19.256591796875874,
+      "setupMs": 5.680500000000393,
+      "totalMs": 126.99549999999999
+    },
+    {
+      "nsPerAgentSmall": 14.10428560697166,
+      "nsPerAgentBig": 19.65980529785097,
+      "setupMs": 4.068499999999403,
+      "totalMs": 125.21270000000004
+    },
+    {
+      "nsPerAgentSmall": 14.164147010216237,
+      "nsPerAgentBig": 20.04909515380786,
+      "setupMs": 4.3770999999997,
+      "totalMs": 124.78769999999986
+    },
+    {
+      "nsPerAgentSmall": 14.292320838340022,
+      "nsPerAgentBig": 19.20948028564379,
+      "setupMs": 4.082300000000032,
+      "totalMs": 121.27720000000045
+    },
+    {
+      "nsPerAgentSmall": 13.54173932756529,
+      "nsPerAgentBig": 19.219207763671726,
+      "setupMs": 4.099099999999453,
+      "totalMs": 115.69300000000021
+    },
+    {
+      "nsPerAgentSmall": 14.217904897836279,
+      "nsPerAgentBig": 19.310760498046296,
+      "setupMs": 4.469500000000153,
+      "totalMs": 113.57530000000042
+    },
+    {
+      "nsPerAgentSmall": 13.32920619419507,
+      "nsPerAgentBig": 19.19498443603458,
+      "setupMs": 4.110800000000381,
+      "totalMs": 112.19320000000062
+    },
+    {
+      "nsPerAgentSmall": 14.293259840745765,
+      "nsPerAgentBig": 19.16408538818297,
+      "setupMs": 4.367000000000189,
+      "totalMs": 113.15740000000005
+    },
+    {
+      "nsPerAgentSmall": 14.336688701923958,
+      "nsPerAgentBig": 19.919967651367205,
+      "setupMs": 4.114599999999882,
+      "totalMs": 119.10959999999977
+    },
+    {
+      "nsPerAgentSmall": 14.221895658054292,
+      "nsPerAgentBig": 19.180488586425376,
+      "setupMs": 4.305599999999686,
+      "totalMs": 114.92680000000018
+    },
+    {
+      "nsPerAgentSmall": 14.419086162859458,
+      "nsPerAgentBig": 19.667625427245707,
+      "setupMs": 4.34900000000016,
+      "totalMs": 122.42990000000009
+    },
+    {
+      "nsPerAgentSmall": 14.347252478967246,
+      "nsPerAgentBig": 19.10591125488248,
+      "setupMs": 4.343000000000757,
+      "totalMs": 115.67420000000038
+    },
+    {
+      "nsPerAgentSmall": 14.404531625600292,
+      "nsPerAgentBig": 19.22855377197233,
+      "setupMs": 4.067700000000514,
+      "totalMs": 117.68209999999999
+    },
+    {
+      "nsPerAgentSmall": 13.464573451451738,
+      "nsPerAgentBig": 19.227600097655728,
+      "setupMs": 4.107100000000173,
+      "totalMs": 116.15089999999964
+    },
+    {
+      "nsPerAgentSmall": 14.34396597055354,
+      "nsPerAgentBig": 19.3994522094728,
+      "setupMs": 4.270499999999629,
+      "totalMs": 115.63100000000031
+    },
+    {
+      "nsPerAgentSmall": 13.685212311921036,
+      "nsPerAgentBig": 19.213867187499456,
+      "setupMs": 4.358799999999974,
+      "totalMs": 123.39930000000004
+    },
+    {
+      "nsPerAgentSmall": 14.2845740685097,
+      "nsPerAgentBig": 19.13318634033309,
+      "setupMs": 4.532400000000052,
+      "totalMs": 114.77549999999974
+    },
+    {
+      "nsPerAgentSmall": 14.3404447115384,
+      "nsPerAgentBig": 19.173431396483572,
+      "setupMs": 4.078300000000127,
+      "totalMs": 119.91859999999997
+    },
+    {
+      "nsPerAgentSmall": 13.56653284143542,
+      "nsPerAgentBig": 19.182586669922244,
+      "setupMs": 6.680400000000191,
+      "totalMs": 115.69590000000062
+    },
+    {
+      "nsPerAgentSmall": 13.457815987722284,
+      "nsPerAgentBig": 19.254112243653406,
+      "setupMs": 4.085399999999936,
+      "totalMs": 112.45079999999962
+    },
+    {
+      "nsPerAgentSmall": 14.285043569712572,
+      "nsPerAgentBig": 19.372940063476854,
+      "setupMs": 4.5034999999998035,
+      "totalMs": 110.14879999999994
+    }
+  ]
+}

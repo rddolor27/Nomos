@@ -1,0 +1,122 @@
+{
+ "env": {
+  "node": "v24.18.0",
+  "v8": "13.6.233.17-node.50",
+  "platform": "win32 10.0.19045",
+  "cpu": "AMD Ryzen 5 3600 6-Core Processor",
+  "logicalCpus": 12,
+  "totalMemGiB": 15.93,
+  "freeMemGiB": 2.2,
+  "loadavg": [
+   0,
+   0,
+   0
+  ]
+ },
+ "seed": 20261005,
+ "warm": 40,
+ "samples": 9,
+ "startedAt": "2026-10-05T14:38:29.337Z",
+ "barrier": {
+  "w8.spin0": 32.39
+ },
+ "runs": [
+  {
+   "N": 1000000,
+   "nw": 1,
+   "spin": 0,
+   "pass": 0,
+   "idleBusyCpus": 1.14,
+   "duringBusyCpus": 1.98,
+   "warmMs": 1731.6,
+   "ticks": 76,
+   "tickMs": {
+    "med": 53.182,
+    "min": 49.8265,
+    "max": 56.1169
+   },
+   "singleTickMs": {
+    "med": 53.7672,
+    "p95": 56.8625,
+    "max": 58.0313
+   },
+   "phasesMs": {
+    "move": 33.865,
+    "cellsAndOffsets": 1.0012,
+    "scatter": 2.6507,
+    "decideAndSnapshot": 15.7863,
+    "reduce": 0.0146
+   },
+   "nsPerAgentTick": 53.18,
+   "hash": "da9911c2",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0,
+   "totals": [
+    146060,
+    1807264,
+    374404,
+    0
+   ]
+  },
+  {
+   "N": 1000000,
+   "nw": 8,
+   "spin": 0,
+   "pass": 0,
+   "idleBusyCpus": 3.51,
+   "duringBusyCpus": 9.77,
+   "warmMs": 558,
+   "ticks": 76,
+   "tickMs": {
+    "med": 14.5372,
+    "min": 12.5902,
+    "max": 15.3642
+   },
+   "singleTickMs": {
+    "med": 13.987,
+    "p95": 20.3769,
+    "max": 20.434
+   },
+   "phasesMs": {
+    "move": 7.7067,
+    "cellsAndOffsets": 1.3776,
+    "scatter": 0.7806,
+    "decideAndSnapshot": 4.4743,
+    "reduce": 0.0222
+   },
+   "nsPerAgentTick": 14.54,
+   "hash": "da9911c2",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0,
+   "totals": [
+    146060,
+    1807264,
+    374404,
+    0
+   ]
+  }
+ ],
+ "world": {
+  "1000000": {
+   "W": 1000,
+   "cells": 62500,
+   "chunks": 977,
+   "households": 333332,
+   "arenaMiB": 108.1,
+   "buildMs": 1082
+  }
+ },
+ "determinism": {
+  "1000000": {
+   "distinctHashes": 1,
+   "hashes": [
+    "da9911c2"
+   ]
+  }
+ },
+ "finishedAt": "2026-10-05T14:38:37.752Z"
+}

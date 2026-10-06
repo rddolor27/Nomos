@@ -1,0 +1,94 @@
+{
+  "machine": {
+    "cpu": "AMD Ryzen 5 3600 6-Core Processor",
+    "logicalCpus": 12,
+    "ramGiB": 15.93,
+    "freeGiB": 2.56,
+    "node": "v24.18.0",
+    "v8": "13.6.233.17-node.50",
+    "os": "win32 10.0.19045 x64"
+  },
+  "mode": "default",
+  "tests": {
+    "nonShared.grow(256)": {
+      "oldByteLength": 0,
+      "viewLength": 0,
+      "sameBufferObject": false,
+      "newByteLength": 33554432
+    },
+    "nonShared.grow(0)": {
+      "oldByteLength": 0,
+      "viewLength": 0,
+      "sameBufferObject": false,
+      "newByteLength": 33554432
+    },
+    "shared.bufferIdentityStableWithoutGrow": true,
+    "shared.grow(256)": {
+      "oldByteLength": 16777216,
+      "viewLength": 4194304,
+      "v0": 42,
+      "sameBufferObject": false,
+      "newByteLength": 33554432,
+      "writeThroughOldViewVisibleInNew": true,
+      "writeThroughNewViewVisibleInOld": true,
+      "newViewLength": 8388608
+    },
+    "shared.grow(0)": {
+      "sameBufferObject": false,
+      "oldByteLength": 33554432,
+      "newByteLength": 33554432
+    },
+    "shared.growSeenByWorker": {
+      "before": {
+        "byteLength": 16777216,
+        "v0": 42
+      },
+      "after": {
+        "oldViewLength": 4194304,
+        "oldViewV0": 42,
+        "memBufferByteLength": 33554432
+      },
+      "mainSeesWorkerWriteInGrownRegion": true
+    },
+    "growableSab.grow": {
+      "growable": true,
+      "maxByteLength": 1073741824,
+      "byteLength": 33554432,
+      "trackingLength": 8388608,
+      "fixedLength": 1024,
+      "v0": 42
+    },
+    "growableSab.seenByWorker": {
+      "before": 8388608,
+      "after": 16777216,
+      "byteLength": 67108864
+    },
+    "growTimingsMs": {
+      "sharedTo1GiB": {
+        "median": 1.6791,
+        "min": 1.5463,
+        "max": 3.2435,
+        "n": 5
+      },
+      "nonSharedTo1GiB": {
+        "median": 2.4721,
+        "min": 1.7542,
+        "max": 3.0963,
+        "n": 5
+      },
+      "growableSabTo1GiB": {
+        "median": 1.7633,
+        "min": 1.5789,
+        "max": 2.3194,
+        "n": 5
+      },
+      "sharedSteps16MiB": {
+        "median": 1.6414,
+        "min": 1.5953,
+        "max": 1.6494,
+        "n": 5
+      }
+    },
+    "rab.toResizableBufferAvailable": false
+  }
+}

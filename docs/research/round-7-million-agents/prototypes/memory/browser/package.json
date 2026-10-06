@@ -1,0 +1,9 @@
+{
+  "name": "nomos-r7-memory-browser",
+  "private": true,
+  "type": "module",
+  "description": "Round 7 research: browser memory limits and hardware detection probes (throwaway)",
+  "dependencies": {
+    "playwright": "1.63.0"
+  }
+}

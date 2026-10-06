@@ -1,0 +1,216 @@
+{
+  "machine": {
+    "cpu": "AMD Ryzen 5 3600 6-Core Processor",
+    "logicalCpus": 12,
+    "ramGiB": 15.93,
+    "freeGiB": 1.97,
+    "node": "v24.18.0",
+    "v8": "13.6.233.17-node.50",
+    "os": "win32 10.0.19045 x64"
+  },
+  "engine": "webkit",
+  "version": "26.6",
+  "busyBefore": 1.66,
+  "groups": {
+    "growcost": {
+      "shared": {
+        "stepMiB": 64,
+        "medianMs": 24.91999999999996,
+        "minMs": 20.95999999999998,
+        "maxMs": 27.30000000000001,
+        "totalMs": 371.82
+      },
+      "nonShared": {
+        "stepMiB": 64,
+        "medianMs": 410.6999999999998,
+        "minMs": 12.700000000000045,
+        "maxMs": 1732.1999999999998,
+        "totalMs": 7170.32
+      }
+    },
+    "gpu": {
+      "webgl2": {
+        "MAX_TEXTURE_SIZE": 16384,
+        "MAX_3D_TEXTURE_SIZE": 2048,
+        "MAX_ARRAY_TEXTURE_LAYERS": 2048,
+        "MAX_RENDERBUFFER_SIZE": 16384,
+        "MAX_VIEWPORT_DIMS": [
+          32767,
+          32767
+        ],
+        "MAX_VERTEX_ATTRIBS": 16,
+        "MAX_UNIFORM_BLOCK_SIZE": 65536,
+        "MAX_SAMPLES": 8,
+        "MAX_DRAW_BUFFERS": 8,
+        "MAX_COLOR_ATTACHMENTS": 8,
+        "MAX_TEXTURE_IMAGE_UNITS": 16,
+        "MAX_COMBINED_TEXTURE_IMAGE_UNITS": 32,
+        "MAX_ELEMENTS_VERTICES": 2147483647,
+        "MAX_ELEMENT_INDEX": 4294967294,
+        "RENDERER": "WebKit WebGL",
+        "VENDOR": "WebKit",
+        "VERSION": "WebGL 2.0",
+        "UNMASKED_VENDOR": "Apple Inc.",
+        "UNMASKED_RENDERER": "Apple GPU"
+      }
+    },
+    "allocAb": [
+      {
+        "kind": "ab",
+        "bytes": 1073741824,
+        "max": 1073741824,
+        "touch": 0,
+        "ms": 0.03999999999999204,
+        "byteLength": 1073741824,
+        "lastPageOk": true
+      },
+      {
+        "kind": "ab",
+        "bytes": 2147418112,
+        "max": 2147418112,
+        "touch": 0,
+        "ms": 0.03999999999999204,
+        "byteLength": 2147418112,
+        "lastPageOk": true
+      },
+      {
+        "kind": "ab",
+        "bytes": 2147483648,
+        "max": 2147483648,
+        "touch": 0,
+        "ms": 0.060000000000002274,
+        "byteLength": 2147483648,
+        "lastPageOk": true
+      },
+      {
+        "kind": "ab",
+        "bytes": 3221225472,
+        "max": 3221225472,
+        "touch": 0,
+        "ms": 0.0800000000000125,
+        "byteLength": 3221225472,
+        "lastPageOk": true
+      },
+      {
+        "kind": "ab",
+        "bytes": 4294901760,
+        "max": 4294901760,
+        "touch": 0,
+        "ms": 0.060000000000002274,
+        "byteLength": 4294901760,
+        "lastPageOk": true
+      },
+      {
+        "kind": "sab",
+        "bytes": 2147483648,
+        "max": 2147483648,
+        "touch": 0,
+        "ms": 0.060000000000002274,
+        "byteLength": 2147483648,
+        "lastPageOk": true
+      },
+      {
+        "kind": "sab",
+        "bytes": 3221225472,
+        "max": 3221225472,
+        "touch": 0,
+        "ms": 0.060000000000002274,
+        "byteLength": 3221225472,
+        "lastPageOk": true
+      }
+    ],
+    "allocMax": [
+      {
+        "kind": "wasmShared",
+        "bytes": 16777216,
+        "max": 67108864,
+        "touch": 0,
+        "ms": 1.920000000000016,
+        "byteLength": 16777216,
+        "lastPageOk": true
+      },
+      {
+        "kind": "wasmShared",
+        "bytes": 16777216,
+        "max": 268435456,
+        "touch": 0,
+        "ms": 4.4199999999999875,
+        "byteLength": 16777216,
+        "lastPageOk": true
+      },
+      {
+        "kind": "wasmShared",
+        "bytes": 16777216,
+        "max": 1073741824,
+        "touch": 0,
+        "ms": 18.17999999999998,
+        "byteLength": 16777216,
+        "lastPageOk": true
+      },
+      {
+        "kind": "wasmShared",
+        "bytes": 16777216,
+        "max": 2147483648,
+        "touch": 0,
+        "ms": 35.69999999999999,
+        "byteLength": 16777216,
+        "lastPageOk": true
+      },
+      {
+        "kind": "wasmShared",
+        "bytes": 16777216,
+        "max": 4294967296,
+        "touch": 0,
+        "ms": 71.72,
+        "byteLength": 16777216,
+        "lastPageOk": true
+      },
+      {
+        "kind": "wasm",
+        "bytes": 16777216,
+        "max": 4294967296,
+        "touch": 0,
+        "ms": 0.2400000000000091,
+        "byteLength": 16777216,
+        "lastPageOk": true
+      },
+      {
+        "kind": "sabGrowable",
+        "bytes": 16777216,
+        "max": 268435456,
+        "touch": 0,
+        "ms": 4.539999999999992,
+        "byteLength": 16777216,
+        "lastPageOk": true
+      },
+      {
+        "kind": "sabGrowable",
+        "bytes": 16777216,
+        "max": 4294967296,
+        "touch": 0,
+        "ms": 70.83999999999997,
+        "byteLength": 16777216,
+        "lastPageOk": true
+      },
+      {
+        "kind": "wasm64Shared",
+        "bytes": 16777216,
+        "max": 4294967296,
+        "touch": 0,
+        "ms": 95.72,
+        "byteLength": 16777216,
+        "lastPageOk": true
+      },
+      {
+        "kind": "wasm64Shared",
+        "bytes": 16777216,
+        "max": 8589934592,
+        "touch": 0,
+        "ms": 142.36,
+        "byteLength": 16777216,
+        "lastPageOk": true
+      }
+    ]
+  },
+  "busyAfter": 0.72
+}

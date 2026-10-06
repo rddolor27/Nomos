@@ -1,0 +1,101 @@
+{
+ "env": {
+  "node": "v24.18.0",
+  "v8": "13.6.233.17-node.50",
+  "platform": "win32 10.0.19045",
+  "cpu": "AMD Ryzen 5 3600 6-Core Processor",
+  "logicalCpus": 12,
+  "totalMemGiB": 15.93,
+  "freeMemGiB": 2.31,
+  "loadavg": [
+   0,
+   0,
+   0
+  ]
+ },
+ "webgpuNpm": "0.6.2",
+ "adapter": {
+  "vendor": "nvidia",
+  "architecture": "pascal",
+  "device": "nvidia-geforce-gtx-1050-ti",
+  "description": "D3D12 driver version 32.0.15.6094",
+  "isFallbackAdapter": false
+ },
+ "timestampQuery": true,
+ "sizes": {
+  "100000": {
+   "N": 100000,
+   "H": 33205,
+   "cells": 6400,
+   "ticks": 60,
+   "parity": {
+    "px": {
+     "gpu": "5995d7f6",
+     "cpu": "2fdab574",
+     "equal": false
+    },
+    "py": {
+     "gpu": "de5f23ab",
+     "cpu": "039c0837",
+     "equal": false
+    },
+    "dirC": {
+     "gpu": "0d12654d",
+     "cpu": "59d8270d",
+     "equal": false
+    },
+    "cell": {
+     "gpu": "f1a1b645",
+     "cpu": "dbe539b0",
+     "equal": false
+    },
+    "agg": {
+     "gpu": "8a04edc5",
+     "cpu": "226348b1",
+     "equal": false
+    },
+    "cellStart": {
+     "gpu": "3f91d91f",
+     "cpu": "5762313e",
+     "equal": false
+    },
+    "sorted": {
+     "gpu": "f1a1b645",
+     "cpu": "3d8d82bb",
+     "equal": false
+    },
+    "needZ": {
+     "gpu": "fe7865a6",
+     "cpu": "ff681a36",
+     "equal": false
+    },
+    "food": {
+     "gpu": "16bd1d7b",
+     "cpu": "63569000",
+     "equal": false
+    }
+   },
+   "allEqual": false,
+   "gpuParityMs": 6.4,
+   "cpuParityMs": 166.9,
+   "errors": [],
+   "lost": null
+  }
+ },
+ "hashKernel": {
+  "n": 1048576,
+  "mismatches": 0,
+  "msPerDispatch": {
+   "med": 0.0882,
+   "min": 0.0852,
+   "max": 0.1688,
+   "n": 9
+  }
+ },
+ "transfers": null,
+ "deviceLostAfterDestroy": {
+  "reason": "destroyed",
+  "message": "device was destroyed"
+ },
+ "uncapturedErrors": []
+}

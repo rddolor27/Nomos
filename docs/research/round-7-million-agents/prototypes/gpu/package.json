@@ -1,0 +1,9 @@
+{
+  "name": "nomos-r7-gpu-prototype",
+  "private": true,
+  "type": "module",
+  "description": "Round 7 throwaway WebGPU compute prototype (Dawn's Node bindings). node_modules is git-ignored.",
+  "dependencies": {
+    "webgpu": "0.6.2"
+  }
+}

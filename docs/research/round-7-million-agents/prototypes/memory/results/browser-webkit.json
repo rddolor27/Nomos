@@ -1,0 +1,411 @@
+{
+  "machine": {
+    "cpu": "AMD Ryzen 5 3600 6-Core Processor",
+    "logicalCpus": 12,
+    "ramGiB": 15.93,
+    "freeGiB": 1.98,
+    "node": "v24.18.0",
+    "v8": "13.6.233.17-node.50",
+    "os": "win32 10.0.19045 x64"
+  },
+  "engine": "webkit",
+  "version": "26.6",
+  "busyBefore": 1.04,
+  "groups": {
+    "env": {
+      "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.6 Safari/605.1.15",
+      "crossOriginIsolated": true,
+      "isSecureContext": true,
+      "deviceMemory": null,
+      "hardwareConcurrency": 8,
+      "uaData": null,
+      "perfMemory": null,
+      "pressureObserver": null,
+      "battery": null,
+      "hasGpu": false,
+      "hasUASM": false,
+      "storage": {
+        "quota": 1048576000,
+        "usage": 0
+      },
+      "screen": {
+        "w": 1280,
+        "h": 720,
+        "dpr": 1,
+        "coarse": false
+      },
+      "features": {
+        "sab": true,
+        "growableSab": true,
+        "resizableAb": true,
+        "toResizableBuffer": true,
+        "atomicsWaitAsync": true,
+        "memory64": true
+      },
+      "worker": {
+        "deviceMemory": null,
+        "hardwareConcurrency": 8,
+        "crossOriginIsolated": true,
+        "gpu": false
+      }
+    },
+    "grow": {
+      "nonShared": {
+        "oldByteLength": 0,
+        "viewLength": 0
+      },
+      "shared": {
+        "oldByteLength": 16777216,
+        "viewLength": 4194304,
+        "v0": 42,
+        "newByteLength": 33554432,
+        "sameObject": false,
+        "oldWriteVisibleInNew": true
+      },
+      "sharedGrow0SameObject": true,
+      "worker": {
+        "oldViewLength": 4194304,
+        "oldV0": 42,
+        "newByteLength": 33554432,
+        "mainSeesWorkerWrite": true
+      },
+      "growableSab": {
+        "growable": true,
+        "trackingLength": 8388608,
+        "byteLength": 33554432
+      },
+      "rabShared": {
+        "isSAB": true,
+        "growable": true,
+        "maxByteLength": 268435456,
+        "before": 4194304,
+        "after": 8388608,
+        "sameObject": true
+      },
+      "rabNonShared": {
+        "resizable": true,
+        "detached": false,
+        "after": 8388608
+      },
+      "sharedGrowTo1GiBMs": 337.78000000000003
+    },
+    "mem64": {
+      "rows": [
+        {
+          "label": "mem32",
+          "sum": {
+            "median": 0.5627,
+            "min": 0.5436,
+            "max": 0.7439,
+            "n": 9
+          },
+          "hist": {
+            "median": 1.7262,
+            "min": 1.7166,
+            "max": 2.1791,
+            "n": 9
+          },
+          "gather": {
+            "median": 1.2875,
+            "min": 1.2541,
+            "max": 2.0504,
+            "n": 9
+          },
+          "move": {
+            "median": 1.0109,
+            "min": 0.9441,
+            "max": 1.2684,
+            "n": 9
+          }
+        },
+        {
+          "label": "mem32 shared",
+          "sum": {
+            "median": 0.6247,
+            "min": 0.5054,
+            "max": 1.1396,
+            "n": 9
+          },
+          "hist": {
+            "median": 2.017,
+            "min": 1.9073,
+            "max": 2.8324,
+            "n": 9
+          },
+          "gather": {
+            "median": 1.3685,
+            "min": 1.2541,
+            "max": 1.5879,
+            "n": 9
+          },
+          "move": {
+            "median": 1.0014,
+            "min": 0.9489,
+            "max": 1.3638,
+            "n": 9
+          }
+        },
+        {
+          "label": "mem64",
+          "sum": {
+            "median": 0.5865,
+            "min": 0.5293,
+            "max": 0.6247,
+            "n": 9
+          },
+          "hist": {
+            "median": 2.2364,
+            "min": 2.0123,
+            "max": 3.0231,
+            "n": 9
+          },
+          "gather": {
+            "median": 1.44,
+            "min": 1.421,
+            "max": 1.564,
+            "n": 9
+          },
+          "move": {
+            "median": 1.1063,
+            "min": 1.0538,
+            "max": 1.5593,
+            "n": 9
+          }
+        },
+        {
+          "label": "mem64 shared",
+          "sum": {
+            "median": 0.8106,
+            "min": 0.7677,
+            "max": 1.3399,
+            "n": 9
+          },
+          "hist": {
+            "median": 2.079,
+            "min": 2.0075,
+            "max": 2.4939,
+            "n": 9
+          },
+          "gather": {
+            "median": 1.6212,
+            "min": 1.44,
+            "max": 2.2697,
+            "n": 9
+          },
+          "move": {
+            "median": 1.1539,
+            "min": 1.0681,
+            "max": 1.2684,
+            "n": 9
+          }
+        }
+      ]
+    },
+    "gpu": {
+      "webgl2": {
+        "MAX_TEXTURE_SIZE": 16384,
+        "MAX_3D_TEXTURE_SIZE": 2048,
+        "MAX_ARRAY_TEXTURE_LAYERS": 2048,
+        "MAX_RENDERBUFFER_SIZE": 16384,
+        "MAX_VIEWPORT_DIMS": [
+          32767,
+          32767
+        ],
+        "MAX_VERTEX_ATTRIBS": 16,
+        "MAX_UNIFORM_BLOCK_SIZE": 65536,
+        "MAX_SAMPLES": 8,
+        "MAX_DRAW_BUFFERS": 8,
+        "MAX_COLOR_ATTACHMENTS": 8,
+        "MAX_TEXTURE_IMAGE_UNITS": 16,
+        "MAX_COMBINED_TEXTURE_IMAGE_UNITS": 32,
+        "MAX_ELEMENTS_VERTICES": 2147483647,
+        "MAX_ELEMENT_INDEX": 4294967294,
+        "RENDERER": "WebKit WebGL",
+        "VENDOR": "WebKit",
+        "VERSION": "WebGL 2.0",
+        "UNMASKED_VENDOR": "Apple Inc.",
+        "UNMASKED_RENDERER": "Apple GPU"
+      }
+    },
+    "uasm": {
+      "unavailable": true,
+      "crossOriginIsolated": true
+    },
+    "probe": {
+      "rows": [
+        {
+          "nsPerAgentSmall": 10.637555803571418,
+          "nsPerAgentBig": 14.673868815104173,
+          "setupMs": 6.380000000000003,
+          "totalMs": 121.80000000000001
+        },
+        {
+          "nsPerAgentSmall": 9.368896484374979,
+          "nsPerAgentBig": 14.266967773437536,
+          "setupMs": 3.059999999999974,
+          "totalMs": 115.82
+        },
+        {
+          "nsPerAgentSmall": 9.390024038461538,
+          "nsPerAgentBig": 14.394124348958323,
+          "setupMs": 4,
+          "totalMs": 120.77999999999997
+        },
+        {
+          "nsPerAgentSmall": 9.368896484374979,
+          "nsPerAgentBig": 14.317830403645821,
+          "setupMs": 3.6000000000000227,
+          "totalMs": 120.48000000000002
+        },
+        {
+          "nsPerAgentSmall": 9.390024038461538,
+          "nsPerAgentBig": 14.266967773437536,
+          "setupMs": 5.300000000000011,
+          "totalMs": 121.00000000000006
+        },
+        {
+          "nsPerAgentSmall": 9.307861328125034,
+          "nsPerAgentBig": 14.41955566406254,
+          "setupMs": 3.3199999999999363,
+          "totalMs": 123.9799999999999
+        },
+        {
+          "nsPerAgentSmall": 9.515224358974246,
+          "nsPerAgentBig": 14.216105143229102,
+          "setupMs": 4.099999999999909,
+          "totalMs": 115.89999999999998
+        }
+      ]
+    },
+    "alloc": [
+      {
+        "kind": "wasm",
+        "bytes": 4294967296,
+        "max": 4294967296,
+        "touch": 0,
+        "ms": 32.880000000000024,
+        "byteLength": 4294967296,
+        "lastPageOk": true
+      },
+      {
+        "kind": "wasmNoMax",
+        "bytes": 4294967296,
+        "max": 4294967296,
+        "touch": 0,
+        "ms": 40.48000000000002,
+        "byteLength": 4294967296,
+        "lastPageOk": true
+      },
+      {
+        "kind": "wasmShared",
+        "bytes": 4294967296,
+        "max": 4294967296,
+        "touch": 0,
+        "ms": 33.860000000000014,
+        "byteLength": 4294967296,
+        "lastPageOk": true
+      },
+      {
+        "kind": "wasmShared",
+        "bytes": 1073741824,
+        "max": 4294967296,
+        "touch": 268435456,
+        "ms": 62.34,
+        "byteLength": 1073741824,
+        "firstTouchMs": 53.44,
+        "secondTouchMs": 1.240000000000009,
+        "lastPageOk": true
+      },
+      {
+        "kind": "wasmShared",
+        "bytes": 16777216,
+        "max": 4294967296,
+        "touch": 0,
+        "ms": 71.04000000000002,
+        "byteLength": 16777216,
+        "lastPageOk": true
+      },
+      {
+        "kind": "wasmShared",
+        "bytes": 67108864,
+        "max": 4295032832,
+        "touch": 0,
+        "error": "RangeError: WebAssembly.Memory 'maximum' page count is too large",
+        "ms": 0.1599999999999966
+      },
+      {
+        "kind": "ab",
+        "bytes": 4294967296,
+        "max": 4294967296,
+        "touch": 0,
+        "ms": 0.07999999999998408,
+        "byteLength": 4294967296,
+        "lastPageOk": true
+      },
+      {
+        "kind": "sab",
+        "bytes": 4294967296,
+        "max": 4294967296,
+        "touch": 0,
+        "ms": 0.060000000000002274,
+        "byteLength": 4294967296,
+        "lastPageOk": true
+      },
+      {
+        "kind": "ab",
+        "bytes": 8589934592,
+        "max": 8589934592,
+        "touch": 0,
+        "ms": 0.07999999999998408,
+        "byteLength": 8589934592,
+        "lastPageOk": true
+      },
+      {
+        "kind": "sabGrowable",
+        "bytes": 16777216,
+        "max": 4294967296,
+        "touch": 0,
+        "ms": 77.62,
+        "byteLength": 16777216,
+        "lastPageOk": true
+      },
+      {
+        "kind": "wasm64",
+        "bytes": 16777216,
+        "max": 17179869184,
+        "touch": 0,
+        "ms": 0.23999999999998067,
+        "byteLength": 16777216,
+        "lastPageOk": true
+      },
+      {
+        "kind": "wasm64",
+        "bytes": 5368709120,
+        "max": 17179869184,
+        "touch": 0,
+        "ms": 41.139999999999986,
+        "byteLength": 5368709120,
+        "lastPageOk": true
+      },
+      {
+        "kind": "wasm64",
+        "bytes": 16777216,
+        "max": 17179934720,
+        "touch": 0,
+        "ms": 0.2400000000000091,
+        "byteLength": 16777216,
+        "lastPageOk": true
+      },
+      {
+        "kind": "wasm64Shared",
+        "bytes": 16777216,
+        "max": 17179869184,
+        "touch": 0,
+        "ms": 564.9399999999999,
+        "byteLength": 16777216,
+        "lastPageOk": true
+      }
+    ]
+  },
+  "busyAfter": 2.3
+}

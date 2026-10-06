@@ -1,0 +1,76 @@
+{
+ "env": {
+  "node": "v24.18.0",
+  "v8": "13.6.233.17-node.50",
+  "platform": "win32 10.0.19045",
+  "cpu": "AMD Ryzen 5 3600 6-Core Processor",
+  "logicalCpus": 12,
+  "totalMemGiB": 15.93,
+  "freeMemGiB": 2.06,
+  "loadavg": [
+   0,
+   0,
+   0
+  ]
+ },
+ "N": 1000000,
+ "warmTicks": 60,
+ "idleBusyCpus": 1.15,
+ "variants": {
+  "A_full_as_benchmarked": {
+   "med": 32.047,
+   "min": 30.457,
+   "max": 33.801,
+   "reps": 1
+  },
+  "B_no_flow_no_move": {
+   "med": 6.43,
+   "min": 6.284,
+   "max": 6.797,
+   "reps": 4
+  },
+  "C_move_only": {
+   "med": 23.453,
+   "min": 22.725,
+   "max": 24.536,
+   "reps": 2
+  },
+  "D_interleaved_aggregates": {
+   "med": 31.041,
+   "min": 30.028,
+   "max": 31.818,
+   "reps": 1
+  },
+  "E_D_plus_cached_direction": {
+   "med": 27.489,
+   "min": 27.293,
+   "max": 27.811,
+   "reps": 1
+  },
+  "F_E_without_hunger_test": {
+   "med": 23.84,
+   "min": 23.252,
+   "max": 24.104,
+   "reps": 2
+  },
+  "G_stream_cells_only": {
+   "med": 1.501,
+   "min": 1.477,
+   "max": 1.516,
+   "reps": 17
+  },
+  "H_branchfree_flow_each_tick": {
+   "med": 26.984,
+   "min": 26.667,
+   "max": 28.081,
+   "reps": 1
+  },
+  "I_branchfree_cached_direction": {
+   "med": 22.582,
+   "min": 22.156,
+   "max": 22.97,
+   "reps": 2
+  }
+ },
+ "afterBusyCpus": 0.75
+}

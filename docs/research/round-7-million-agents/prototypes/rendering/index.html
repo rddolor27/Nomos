@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nomos R7 · 1M-agent rendering prototype</title>
+<!--
+  Throwaway research prototype (round 7). No dependencies.
+  Run:  node serve.mjs   then open http://localhost:8787/
+  serve.mjs sends COOP/COEP, which SharedArrayBuffer and the worker paths need.
+  Opening index.html from file:// will not work (module workers need http).
+-->
+<style>
+  body { font: 14px/1.4 system-ui, sans-serif; margin: 16px; background: #101418; color: #e8e8e8; }
+  label { display: inline-block; margin: 4px 12px 4px 0; }
+  select, input { background: #1c232b; color: #e8e8e8; border: 1px solid #3a4652; }
+  button { padding: 6px 14px; margin-right: 8px; }
+  #results div { font-family: ui-monospace, monospace; font-size: 12px; white-space: pre-wrap; }
+  textarea { width: 100%; height: 160px; background: #0b0e11; color: #9fb; font: 11px ui-monospace, monospace; }
+  #view, #hud { display: none; }
+  body.live { margin: 0; overflow: hidden; }
+  body.live #home { display: none; }
+  body.live #view { display: block; width: 100vw; height: 56.25vw; max-height: 100vh; max-width: 177.78vh; image-rendering: pixelated; }
+  body.live #hud { display: block; position: fixed; left: 8px; top: 8px; background: #000a; padding: 8px; font: 12px ui-monospace, monospace; white-space: pre; }
+</style>
+</head>
+<body>
+<div id="home">
+  <h1>1M-agent rendering prototype</h1>
+  <p id="env"></p>
+  <form method="get">
+    <input type="hidden" name="live" value="1">
+    <label>Agents <select name="n"><option>100000</option><option>250000</option><option>1000000</option><option>2000000</option></select></label>
+    <label>API <select name="api"><option>webgl2</option><option>webgpu</option></select></label>
+    <label>Primitive <select name="prim"><option>points</option><option>quads</option></select></label>
+    <label>Dot size px <select name="size"><option>1</option><option>2</option><option>3</option><option>5</option></select></label>
+    <label>Start view <select name="view"><option>city</option><option>district</option><option>street</option></select></label>
+    <label>LOD <select name="lod"><option>auto</option><option>dots</option><option>heat</option></select></label>
+    <label>Interpolate <select name="interp"><option value="1">on</option><option value="0">off</option></select></label>
+    <label>Transport <select name="transport"><option>sab</option><option>transfer</option></select></label>
+    <label>Render thread <select name="render"><option>main</option><option>worker</option></select></label>
+    <label>Upload <select name="upload"><option>full</option><option>visible</option></select></label>
+    <label>Sim Hz <input name="hz" type="number" min="1" max="60" value="10" style="width:4em"></label>
+    <p><button type="submit">Open live view</button> <button type="button" id="quick">Run quick suite (about 2 minutes)</button></p>
+  </form>
+  <p>Live view numbers to read: frame interval and fps, render CPU per frame, upload per tick, GPU ms, sim pack ms.
+     WebGPU live supports the SAB transport, full upload and the main thread only. The canvas is always 1920×1080.</p>
+  <div id="results"></div>
+  <p>Results as JSON (paste into the notes):</p>
+  <textarea id="json" readonly></textarea>
+</div>
+<canvas id="view"></canvas>
+<div id="hud"></div>
+<script type="module" src="./app.js"></script>
+</body>
+</html>

@@ -1,0 +1,439 @@
+{
+  "machine": {
+    "cpu": "AMD Ryzen 5 3600 6-Core Processor",
+    "logicalCpus": 12,
+    "ramGiB": 15.93,
+    "freeGiB": 1.95,
+    "node": "v24.18.0",
+    "v8": "13.6.233.17-node.50",
+    "os": "win32 10.0.19045 x64"
+  },
+  "engine": "chromium",
+  "version": "153.0.8010.12",
+  "busyBefore": 1.87,
+  "groups": {
+    "growcost": {
+      "shared": {
+        "stepMiB": 64,
+        "medianMs": 1.7750000953674316,
+        "minMs": 0.39499998092651367,
+        "maxMs": 3.065000057220459,
+        "totalMs": 28.990000009536743
+      },
+      "nonShared": {
+        "stepMiB": 64,
+        "medianMs": 1.7100000381469727,
+        "minMs": 0.16000008583068848,
+        "maxMs": 10.569999933242798,
+        "totalMs": 35.015000104904175
+      }
+    },
+    "gpu": {
+      "default": {
+        "info": {
+          "vendor": "nvidia",
+          "architecture": "pascal",
+          "device": "",
+          "description": "",
+          "isFallbackAdapter": false,
+          "subgroupMinSize": 32,
+          "subgroupMaxSize": 32
+        },
+        "features": [
+          "bgra8unorm-storage",
+          "chromium-experimental-multi-draw-indirect",
+          "chromium-experimental-sampling-resource-table",
+          "chromium-experimental-timestamp-query-inside-passes",
+          "clip-distances",
+          "core-features-and-limits",
+          "depth-clip-control",
+          "depth32float-stencil8",
+          "dual-source-blending",
+          "float32-blendable",
+          "float32-filterable",
+          "indirect-first-instance",
+          "primitive-index",
+          "rg11b10ufloat-renderable",
+          "subgroups",
+          "texture-component-swizzle",
+          "texture-compression-bc",
+          "texture-compression-bc-sliced-3d",
+          "texture-formats-tier1",
+          "texture-formats-tier2",
+          "timestamp-query"
+        ],
+        "limits": {
+          "maxTextureDimension1D": 16384,
+          "maxTextureDimension2D": 16384,
+          "maxTextureDimension3D": 2048,
+          "maxTextureArrayLayers": 2048,
+          "maxBindGroups": 4,
+          "maxBindGroupsPlusVertexBuffers": 24,
+          "maxBindingsPerBindGroup": 1000,
+          "maxDynamicUniformBuffersPerPipelineLayout": 10,
+          "maxDynamicStorageBuffersPerPipelineLayout": 8,
+          "maxSampledTexturesPerShaderStage": 48,
+          "maxSamplersPerShaderStage": 16,
+          "maxStorageBuffersPerShaderStage": 16,
+          "maxStorageTexturesPerShaderStage": 8,
+          "maxUniformBuffersPerShaderStage": 12,
+          "maxUniformBufferBindingSize": 65536,
+          "maxStorageBufferBindingSize": 2147483644,
+          "minUniformBufferOffsetAlignment": 256,
+          "minStorageBufferOffsetAlignment": 256,
+          "maxVertexBuffers": 8,
+          "maxBufferSize": 2147483648,
+          "maxVertexAttributes": 30,
+          "maxVertexBufferArrayStride": 2048,
+          "maxInterStageShaderVariables": 28,
+          "maxColorAttachments": 8,
+          "maxColorAttachmentBytesPerSample": 128,
+          "maxComputeWorkgroupStorageSize": 32768,
+          "maxComputeInvocationsPerWorkgroup": 1024,
+          "maxComputeWorkgroupSizeX": 1024,
+          "maxComputeWorkgroupSizeY": 1024,
+          "maxComputeWorkgroupSizeZ": 64,
+          "maxComputeWorkgroupsPerDimension": 65535,
+          "maxImmediateSize": 64,
+          "maxStorageBuffersInFragmentStage": 16,
+          "maxStorageTexturesInFragmentStage": 8,
+          "maxStorageBuffersInVertexStage": 16,
+          "maxStorageTexturesInVertexStage": 8
+        }
+      },
+      "high-performance": {
+        "info": {
+          "vendor": "nvidia",
+          "architecture": "pascal",
+          "device": "",
+          "description": "",
+          "isFallbackAdapter": false,
+          "subgroupMinSize": 32,
+          "subgroupMaxSize": 32
+        },
+        "features": [
+          "bgra8unorm-storage",
+          "chromium-experimental-multi-draw-indirect",
+          "chromium-experimental-sampling-resource-table",
+          "chromium-experimental-timestamp-query-inside-passes",
+          "clip-distances",
+          "core-features-and-limits",
+          "depth-clip-control",
+          "depth32float-stencil8",
+          "dual-source-blending",
+          "float32-blendable",
+          "float32-filterable",
+          "indirect-first-instance",
+          "primitive-index",
+          "rg11b10ufloat-renderable",
+          "subgroups",
+          "texture-component-swizzle",
+          "texture-compression-bc",
+          "texture-compression-bc-sliced-3d",
+          "texture-formats-tier1",
+          "texture-formats-tier2",
+          "timestamp-query"
+        ],
+        "limits": {
+          "maxTextureDimension1D": 16384,
+          "maxTextureDimension2D": 16384,
+          "maxTextureDimension3D": 2048,
+          "maxTextureArrayLayers": 2048,
+          "maxBindGroups": 4,
+          "maxBindGroupsPlusVertexBuffers": 24,
+          "maxBindingsPerBindGroup": 1000,
+          "maxDynamicUniformBuffersPerPipelineLayout": 10,
+          "maxDynamicStorageBuffersPerPipelineLayout": 8,
+          "maxSampledTexturesPerShaderStage": 48,
+          "maxSamplersPerShaderStage": 16,
+          "maxStorageBuffersPerShaderStage": 16,
+          "maxStorageTexturesPerShaderStage": 8,
+          "maxUniformBuffersPerShaderStage": 12,
+          "maxUniformBufferBindingSize": 65536,
+          "maxStorageBufferBindingSize": 2147483644,
+          "minUniformBufferOffsetAlignment": 256,
+          "minStorageBufferOffsetAlignment": 256,
+          "maxVertexBuffers": 8,
+          "maxBufferSize": 2147483648,
+          "maxVertexAttributes": 30,
+          "maxVertexBufferArrayStride": 2048,
+          "maxInterStageShaderVariables": 28,
+          "maxColorAttachments": 8,
+          "maxColorAttachmentBytesPerSample": 128,
+          "maxComputeWorkgroupStorageSize": 32768,
+          "maxComputeInvocationsPerWorkgroup": 1024,
+          "maxComputeWorkgroupSizeX": 1024,
+          "maxComputeWorkgroupSizeY": 1024,
+          "maxComputeWorkgroupSizeZ": 64,
+          "maxComputeWorkgroupsPerDimension": 65535,
+          "maxImmediateSize": 64,
+          "maxStorageBuffersInFragmentStage": 16,
+          "maxStorageTexturesInFragmentStage": 8,
+          "maxStorageBuffersInVertexStage": 16,
+          "maxStorageTexturesInVertexStage": 8
+        }
+      },
+      "low-power": {
+        "info": {
+          "vendor": "nvidia",
+          "architecture": "pascal",
+          "device": "",
+          "description": "",
+          "isFallbackAdapter": false,
+          "subgroupMinSize": 32,
+          "subgroupMaxSize": 32
+        },
+        "features": [
+          "bgra8unorm-storage",
+          "chromium-experimental-multi-draw-indirect",
+          "chromium-experimental-sampling-resource-table",
+          "chromium-experimental-timestamp-query-inside-passes",
+          "clip-distances",
+          "core-features-and-limits",
+          "depth-clip-control",
+          "depth32float-stencil8",
+          "dual-source-blending",
+          "float32-blendable",
+          "float32-filterable",
+          "indirect-first-instance",
+          "primitive-index",
+          "rg11b10ufloat-renderable",
+          "subgroups",
+          "texture-component-swizzle",
+          "texture-compression-bc",
+          "texture-compression-bc-sliced-3d",
+          "texture-formats-tier1",
+          "texture-formats-tier2",
+          "timestamp-query"
+        ],
+        "limits": {
+          "maxTextureDimension1D": 16384,
+          "maxTextureDimension2D": 16384,
+          "maxTextureDimension3D": 2048,
+          "maxTextureArrayLayers": 2048,
+          "maxBindGroups": 4,
+          "maxBindGroupsPlusVertexBuffers": 24,
+          "maxBindingsPerBindGroup": 1000,
+          "maxDynamicUniformBuffersPerPipelineLayout": 10,
+          "maxDynamicStorageBuffersPerPipelineLayout": 8,
+          "maxSampledTexturesPerShaderStage": 48,
+          "maxSamplersPerShaderStage": 16,
+          "maxStorageBuffersPerShaderStage": 16,
+          "maxStorageTexturesPerShaderStage": 8,
+          "maxUniformBuffersPerShaderStage": 12,
+          "maxUniformBufferBindingSize": 65536,
+          "maxStorageBufferBindingSize": 2147483644,
+          "minUniformBufferOffsetAlignment": 256,
+          "minStorageBufferOffsetAlignment": 256,
+          "maxVertexBuffers": 8,
+          "maxBufferSize": 2147483648,
+          "maxVertexAttributes": 30,
+          "maxVertexBufferArrayStride": 2048,
+          "maxInterStageShaderVariables": 28,
+          "maxColorAttachments": 8,
+          "maxColorAttachmentBytesPerSample": 128,
+          "maxComputeWorkgroupStorageSize": 32768,
+          "maxComputeInvocationsPerWorkgroup": 1024,
+          "maxComputeWorkgroupSizeX": 1024,
+          "maxComputeWorkgroupSizeY": 1024,
+          "maxComputeWorkgroupSizeZ": 64,
+          "maxComputeWorkgroupsPerDimension": 65535,
+          "maxImmediateSize": 64,
+          "maxStorageBuffersInFragmentStage": 16,
+          "maxStorageTexturesInFragmentStage": 8,
+          "maxStorageBuffersInVertexStage": 16,
+          "maxStorageTexturesInVertexStage": 8
+        }
+      },
+      "deviceDefault": {
+        "maxBufferSize": 268435456,
+        "maxStorageBufferBindingSize": 134217728
+      },
+      "deviceMax": {
+        "maxBufferSize": 2147483648,
+        "maxStorageBufferBindingSize": 2147483644
+      },
+      "buffer256MiB": {
+        "validation": null,
+        "oom": null
+      },
+      "lostReasonAfterDestroy": "destroyed",
+      "webgl2": {
+        "MAX_TEXTURE_SIZE": 16384,
+        "MAX_3D_TEXTURE_SIZE": 2048,
+        "MAX_ARRAY_TEXTURE_LAYERS": 2048,
+        "MAX_RENDERBUFFER_SIZE": 16384,
+        "MAX_VIEWPORT_DIMS": [
+          32767,
+          32767
+        ],
+        "MAX_VERTEX_ATTRIBS": 16,
+        "MAX_UNIFORM_BLOCK_SIZE": 65536,
+        "MAX_SAMPLES": 8,
+        "MAX_DRAW_BUFFERS": 8,
+        "MAX_COLOR_ATTACHMENTS": 8,
+        "MAX_TEXTURE_IMAGE_UNITS": 16,
+        "MAX_COMBINED_TEXTURE_IMAGE_UNITS": 32,
+        "MAX_ELEMENTS_VERTICES": 2147483647,
+        "MAX_ELEMENT_INDEX": 4294967294,
+        "RENDERER": "WebKit WebGL",
+        "VENDOR": "WebKit",
+        "VERSION": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+        "UNMASKED_VENDOR": "Google Inc. (NVIDIA)",
+        "UNMASKED_RENDERER": "ANGLE (NVIDIA, NVIDIA GeForce GTX 1050 Ti (0x00001C82) Direct3D11 vs_5_0 ps_5_0, D3D11)"
+      }
+    },
+    "allocAb": [
+      {
+        "kind": "ab",
+        "bytes": 1073741824,
+        "max": 1073741824,
+        "touch": 0,
+        "ms": 2.6499998569488525,
+        "byteLength": 1073741824,
+        "lastPageOk": true
+      },
+      {
+        "kind": "ab",
+        "bytes": 2147418112,
+        "max": 2147418112,
+        "touch": 0,
+        "error": "RangeError: Array buffer allocation failed",
+        "ms": 7.119999885559082
+      },
+      {
+        "kind": "ab",
+        "bytes": 2147483648,
+        "max": 2147483648,
+        "touch": 0,
+        "error": "RangeError: Array buffer allocation failed",
+        "ms": 6.515000104904175
+      },
+      {
+        "kind": "ab",
+        "bytes": 3221225472,
+        "max": 3221225472,
+        "touch": 0,
+        "error": "RangeError: Array buffer allocation failed",
+        "ms": 6.305000066757202
+      },
+      {
+        "kind": "ab",
+        "bytes": 4294901760,
+        "max": 4294901760,
+        "touch": 0,
+        "error": "RangeError: Array buffer allocation failed",
+        "ms": 6.234999895095825
+      },
+      {
+        "kind": "sab",
+        "bytes": 2147483648,
+        "max": 2147483648,
+        "touch": 0,
+        "error": "RangeError: Array buffer allocation failed",
+        "ms": 6.579999923706055
+      },
+      {
+        "kind": "sab",
+        "bytes": 3221225472,
+        "max": 3221225472,
+        "touch": 0,
+        "error": "RangeError: Array buffer allocation failed",
+        "ms": 6.694999933242798
+      }
+    ],
+    "allocMax": [
+      {
+        "kind": "wasmShared",
+        "bytes": 16777216,
+        "max": 67108864,
+        "touch": 0,
+        "ms": 0.1400001049041748,
+        "byteLength": 16777216,
+        "lastPageOk": true
+      },
+      {
+        "kind": "wasmShared",
+        "bytes": 16777216,
+        "max": 268435456,
+        "touch": 0,
+        "ms": 0.12999987602233887,
+        "byteLength": 16777216,
+        "lastPageOk": true
+      },
+      {
+        "kind": "wasmShared",
+        "bytes": 16777216,
+        "max": 1073741824,
+        "touch": 0,
+        "ms": 0.1099998950958252,
+        "byteLength": 16777216,
+        "lastPageOk": true
+      },
+      {
+        "kind": "wasmShared",
+        "bytes": 16777216,
+        "max": 2147483648,
+        "touch": 0,
+        "ms": 0.11500000953674316,
+        "byteLength": 16777216,
+        "lastPageOk": true
+      },
+      {
+        "kind": "wasmShared",
+        "bytes": 16777216,
+        "max": 4294967296,
+        "touch": 0,
+        "ms": 0.12000012397766113,
+        "byteLength": 16777216,
+        "lastPageOk": true
+      },
+      {
+        "kind": "wasm",
+        "bytes": 16777216,
+        "max": 4294967296,
+        "touch": 0,
+        "ms": 0.1099998950958252,
+        "byteLength": 16777216,
+        "lastPageOk": true
+      },
+      {
+        "kind": "sabGrowable",
+        "bytes": 16777216,
+        "max": 268435456,
+        "touch": 0,
+        "ms": 0.09500002861022949,
+        "byteLength": 16777216,
+        "lastPageOk": true
+      },
+      {
+        "kind": "sabGrowable",
+        "bytes": 16777216,
+        "max": 4294967296,
+        "touch": 0,
+        "ms": 0.07500004768371582,
+        "byteLength": 16777216,
+        "lastPageOk": true
+      },
+      {
+        "kind": "wasm64Shared",
+        "bytes": 16777216,
+        "max": 4294967296,
+        "touch": 0,
+        "ms": 0.18000006675720215,
+        "byteLength": 16777216,
+        "lastPageOk": true
+      },
+      {
+        "kind": "wasm64Shared",
+        "bytes": 16777216,
+        "max": 8589934592,
+        "touch": 0,
+        "ms": 0.1399998664855957,
+        "byteLength": 16777216,
+        "lastPageOk": true
+      }
+    ]
+  },
+  "busyAfter": 2.33
+}

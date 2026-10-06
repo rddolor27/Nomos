@@ -1,0 +1,165 @@
+{
+ "env": {
+  "node": "v24.18.0",
+  "v8": "13.6.233.17-node.50",
+  "platform": "win32 10.0.19045",
+  "cpu": "AMD Ryzen 5 3600 6-Core Processor",
+  "logicalCpus": 12,
+  "totalMemGiB": 15.93,
+  "freeMemGiB": 2.1,
+  "loadavg": [
+   0,
+   0,
+   0
+  ]
+ },
+ "seed": 20261005,
+ "warm": 40,
+ "samples": 9,
+ "startedAt": "2026-10-05T14:43:49.535Z",
+ "barrier": {
+  "w4.spin0": 20.01,
+  "w8.spin0": 32.36
+ },
+ "runs": [
+  {
+   "N": 1000000,
+   "nw": 1,
+   "spin": 0,
+   "pass": 0,
+   "idleBusyCpus": 0.46,
+   "duringBusyCpus": 2.06,
+   "warmMs": 1513,
+   "ticks": 76,
+   "tickMs": {
+    "med": 44.5508,
+    "min": 42.2529,
+    "max": 47.6607
+   },
+   "singleTickMs": {
+    "med": 44.8213,
+    "p95": 50.4054,
+    "max": 50.8178
+   },
+   "phasesMs": {
+    "move": 24.0625,
+    "cellsAndOffsets": 0.7863,
+    "scatter": 2.4902,
+    "decide": 13.6626,
+    "snapshot": 3.916,
+    "reduce": 0.015
+   },
+   "nsPerAgentTick": 44.55,
+   "hash": "c87d953c",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0,
+   "totals": [
+    146060,
+    1807264,
+    374404,
+    0
+   ]
+  },
+  {
+   "N": 1000000,
+   "nw": 4,
+   "spin": 0,
+   "pass": 0,
+   "idleBusyCpus": 1.13,
+   "duringBusyCpus": 4.91,
+   "warmMs": 569,
+   "ticks": 76,
+   "tickMs": {
+    "med": 14.4648,
+    "min": 14.0827,
+    "max": 15.7082
+   },
+   "singleTickMs": {
+    "med": 14.4311,
+    "p95": 17.3656,
+    "max": 19.3313
+   },
+   "phasesMs": {
+    "move": 7.3548,
+    "cellsAndOffsets": 0.571,
+    "scatter": 0.78,
+    "decide": 4.361,
+    "snapshot": 1.5748,
+    "reduce": 0.0173
+   },
+   "nsPerAgentTick": 14.46,
+   "hash": "c87d953c",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0,
+   "totals": [
+    146060,
+    1807264,
+    374404,
+    0
+   ]
+  },
+  {
+   "N": 1000000,
+   "nw": 8,
+   "spin": 0,
+   "pass": 0,
+   "idleBusyCpus": 0.98,
+   "duringBusyCpus": 8.47,
+   "warmMs": 521.1,
+   "ticks": 76,
+   "tickMs": {
+    "med": 12.0721,
+    "min": 11.0746,
+    "max": 13.1352
+   },
+   "singleTickMs": {
+    "med": 11.7277,
+    "p95": 15.1613,
+    "max": 15.194
+   },
+   "phasesMs": {
+    "move": 5.9393,
+    "cellsAndOffsets": 1.0745,
+    "scatter": 0.6346,
+    "decide": 3.0727,
+    "snapshot": 1.3179,
+    "reduce": 0.017
+   },
+   "nsPerAgentTick": 12.07,
+   "hash": "c87d953c",
+   "moneyExact": true,
+   "gcMain": 0,
+   "gcHelpers": 0,
+   "gcHelpersMs": 0,
+   "totals": [
+    146060,
+    1807264,
+    374404,
+    0
+   ]
+  }
+ ],
+ "world": {
+  "1000000": {
+   "W": 1000,
+   "cells": 62500,
+   "chunks": 977,
+   "households": 333332,
+   "arenaMiB": 109,
+   "buildMs": 1131
+  }
+ },
+ "determinism": {
+  "1000000": {
+   "distinctHashes": 1,
+   "hashes": [
+    "c87d953c"
+   ]
+  }
+ },
+ "finishedAt": "2026-10-05T14:43:59.751Z"
+}

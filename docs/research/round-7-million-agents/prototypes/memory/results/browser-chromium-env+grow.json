@@ -1,0 +1,137 @@
+{
+  "machine": {
+    "cpu": "AMD Ryzen 5 3600 6-Core Processor",
+    "logicalCpus": 12,
+    "ramGiB": 15.93,
+    "freeGiB": 1.94,
+    "node": "v24.18.0",
+    "v8": "13.6.233.17-node.50",
+    "os": "win32 10.0.19045 x64"
+  },
+  "engine": "chromium",
+  "version": "153.0.8010.12",
+  "busyBefore": 1.73,
+  "groups": {
+    "env": {
+      "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.0.0 Safari/537.36",
+      "crossOriginIsolated": true,
+      "isSecureContext": true,
+      "deviceMemory": 16,
+      "hardwareConcurrency": 12,
+      "uaData": {
+        "mobile": false,
+        "platform": "Windows",
+        "brands": [
+          "Chromium 153",
+          "Not_A Brand 8"
+        ]
+      },
+      "uaHigh": {
+        "architecture": "x86",
+        "bitness": "64",
+        "brands": [
+          {
+            "brand": "Chromium",
+            "version": "153"
+          },
+          {
+            "brand": "Not_A Brand",
+            "version": "8"
+          }
+        ],
+        "formFactors": [
+          "Desktop"
+        ],
+        "mobile": false,
+        "model": "",
+        "platform": "Windows",
+        "platformVersion": "10.0.0",
+        "wow64": false
+      },
+      "perfMemory": {
+        "jsHeapSizeLimit": 4395630592,
+        "totalJSHeapSize": 1853243,
+        "usedJSHeapSize": 771599
+      },
+      "pressureObserver": {
+        "knownSources": [
+          "cpu"
+        ]
+      },
+      "battery": {
+        "charging": true,
+        "level": 1,
+        "chargingTime": 0,
+        "dischargingTime": null
+      },
+      "hasGpu": true,
+      "hasUASM": true,
+      "storage": {
+        "quota": 3221225472,
+        "usage": 0,
+        "usageDetails": {}
+      },
+      "screen": {
+        "w": 1280,
+        "h": 720,
+        "dpr": 1,
+        "coarse": false
+      },
+      "features": {
+        "sab": true,
+        "growableSab": true,
+        "resizableAb": true,
+        "toResizableBuffer": true,
+        "atomicsWaitAsync": true,
+        "memory64": true
+      },
+      "worker": {
+        "deviceMemory": 16,
+        "hardwareConcurrency": 12,
+        "crossOriginIsolated": true,
+        "gpu": true
+      }
+    },
+    "grow": {
+      "nonShared": {
+        "oldByteLength": 0,
+        "viewLength": 0
+      },
+      "shared": {
+        "oldByteLength": 16777216,
+        "viewLength": 4194304,
+        "v0": 42,
+        "newByteLength": 33554432,
+        "sameObject": false,
+        "oldWriteVisibleInNew": true
+      },
+      "sharedGrow0SameObject": true,
+      "worker": {
+        "oldViewLength": 4194304,
+        "oldV0": 42,
+        "newByteLength": 33554432,
+        "mainSeesWorkerWrite": true
+      },
+      "growableSab": {
+        "growable": true,
+        "trackingLength": 8388608,
+        "byteLength": 33554432
+      },
+      "rabShared": {
+        "isSAB": true,
+        "growable": true,
+        "maxByteLength": 268435456,
+        "before": 4194304,
+        "after": 8388608,
+        "sameObject": true
+      },
+      "rabNonShared": {
+        "resizable": true,
+        "detached": false,
+        "after": 8388608
+      },
+      "sharedGrowTo1GiBMs": 3.120000123977661
+    }
+  },
+  "busyAfter": 0.81
+}

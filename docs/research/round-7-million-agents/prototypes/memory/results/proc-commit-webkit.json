@@ -1,0 +1,40 @@
+{
+  "machine": {
+    "cpu": "AMD Ryzen 5 3600 6-Core Processor",
+    "logicalCpus": 12,
+    "ramGiB": 15.93,
+    "freeGiB": 2.29,
+    "node": "v24.18.0",
+    "v8": "13.6.233.17-node.50",
+    "os": "win32 10.0.19045 x64"
+  },
+  "engine": "webkit",
+  "version": "26.6",
+  "steps": [
+    {
+      "label": "shared 16 MiB, max 4 GiB",
+      "wsMiB": 0.1,
+      "commitMiB": 4102.2
+    },
+    {
+      "label": "shared 1 GiB, max 1 GiB, untouched",
+      "wsMiB": 0,
+      "commitMiB": 1026
+    },
+    {
+      "label": "touch 256 MiB of it",
+      "wsMiB": 258.1,
+      "commitMiB": 0.3
+    },
+    {
+      "label": "non-shared 1 GiB, max 4 GiB, untouched",
+      "wsMiB": 0,
+      "commitMiB": 1026.1
+    }
+  ],
+  "baseline": {
+    "wsMiB": 114.9,
+    "commitMiB": 809.1,
+    "n": 3
+  }
+}

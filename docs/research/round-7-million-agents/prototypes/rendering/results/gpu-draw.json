@@ -1,0 +1,4030 @@
+{
+ "mode": "gpu",
+ "suite": "draw",
+ "machine": {
+  "cpu": "AMD Ryzen 5 3600 6-Core Processor              ",
+  "logicalCores": 12,
+  "ramGB": 15.9,
+  "node": "v24.18.0",
+  "os": "Windows_NT 10.0.19045",
+  "gpu": "NVIDIA GeForce GTX 1050 Ti, 560.94, 3, 16",
+  "loadavg": [
+   0,
+   0,
+   0
+  ],
+  "loadavgNote": "os.loadavg() is always 0 on Windows; busyPct per test is the CPU-busy figure (all logical cores, from os.cpus() deltas)"
+ },
+ "idleBusyPctBefore": 7.9,
+ "date": "2026-10-05T14:56:51.229Z",
+ "runs": [
+  {
+   "run": 1,
+   "chromium": "153.0.8010.12",
+   "env": {
+    "renderer": "ANGLE (NVIDIA, NVIDIA GeForce GTX 1050 Ti (0x00001C82) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "timer": true,
+    "floatBlend": true,
+    "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.0.0 Safari/537.36",
+    "cores": 12,
+    "deviceMemory": 16,
+    "isolated": true,
+    "webgpu": true
+   },
+   "results": [
+    {
+     "test": "glDraw",
+     "n": 100000,
+     "prim": "points",
+     "size": 1,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 100000,
+     "gpu": {
+      "med": 0.211968,
+      "min": 0.210944,
+      "max": 0.238592,
+      "p95": 0.23552,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.07500004768371582,
+      "p95": 0.029999971389770508,
+      "k": 60
+     },
+     "busyPct": 11,
+     "gpuBefore": "2, 1290, 3504, 1433",
+     "gpuAfter": "11, 1290, 3504, 1446",
+     "wallS": 0.17
+    },
+    {
+     "test": "glDraw",
+     "n": 250000,
+     "prim": "points",
+     "size": 1,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 250000,
+     "gpu": {
+      "med": 0.528384,
+      "min": 0.52736,
+      "max": 0.892928,
+      "p95": 0.533248,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.04500007629394531,
+      "p95": 0.03500008583068848,
+      "k": 60
+     },
+     "busyPct": 16.2,
+     "gpuBefore": "11, 1290, 3504, 1446",
+     "gpuAfter": "24, 1290, 3504, 1445",
+     "wallS": 0.264
+    },
+    {
+     "test": "glDraw",
+     "n": 1000000,
+     "prim": "points",
+     "size": 1,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 1000000,
+     "gpu": {
+      "med": 2.11456,
+      "min": 1.734656,
+      "max": 2.822144,
+      "p95": 2.709504,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.04999995231628418,
+      "p95": 0.03500008583068848,
+      "k": 60
+     },
+     "busyPct": 23.1,
+     "gpuBefore": "24, 1290, 3504, 1445",
+     "gpuAfter": "75, 1620, 3504, 1459",
+     "wallS": 0.686
+    },
+    {
+     "test": "glDraw",
+     "n": 2000000,
+     "prim": "points",
+     "size": 1,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 2000000,
+     "gpu": {
+      "med": 3.447808,
+      "min": 3.26144,
+      "max": 13.016064,
+      "p95": 11.053056,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.07000017166137695,
+      "p95": 0.05500006675720215,
+      "k": 60
+     },
+     "busyPct": 24.1,
+     "gpuBefore": "75, 1620, 3504, 1459",
+     "gpuAfter": "93, 1721, 3504, 1631",
+     "wallS": 1.282
+    },
+    {
+     "test": "glDraw",
+     "n": 4000000,
+     "prim": "points",
+     "size": 1,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 4000000,
+     "gpu": {
+      "med": 6.632448,
+      "min": 6.627328,
+      "max": 7.725056,
+      "p95": 7.354368,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.05500006675720215,
+      "p95": 0.039999961853027344,
+      "k": 60
+     },
+     "busyPct": 19.3,
+     "gpuBefore": "93, 1721, 3504, 1631",
+     "gpuAfter": "1, 1721, 3504, 1518",
+     "wallS": 2.208
+    },
+    {
+     "test": "glDraw",
+     "n": 100000,
+     "prim": "points",
+     "size": 2,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 100000,
+     "gpu": {
+      "med": 0.165888,
+      "min": 0.164864,
+      "max": 0.190464,
+      "p95": 0.172032,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.005000114440917969,
+      "min": 0,
+      "max": 0.06000018119812012,
+      "p95": 0.039999961853027344,
+      "k": 60
+     },
+     "busyPct": 70.8,
+     "gpuBefore": "1, 1721, 3504, 1518",
+     "gpuAfter": "9, 1721, 3504, 1516",
+     "wallS": 0.139
+    },
+    {
+     "test": "glDraw",
+     "n": 250000,
+     "prim": "points",
+     "size": 2,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 250000,
+     "gpu": {
+      "med": 0.413696,
+      "min": 0.413696,
+      "max": 0.830464,
+      "p95": 0.441344,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.03500008583068848,
+      "p95": 0.029999971389770508,
+      "k": 60
+     },
+     "busyPct": 3.6,
+     "gpuBefore": "9, 1721, 3504, 1516",
+     "gpuAfter": "13, 1721, 3504, 1516",
+     "wallS": 0.141
+    },
+    {
+     "test": "glDraw",
+     "n": 1000000,
+     "prim": "points",
+     "size": 2,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 1000000,
+     "gpu": {
+      "med": 1.677312,
+      "min": 1.676288,
+      "max": 2.231296,
+      "p95": 2.085888,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.039999961853027344,
+      "p95": 0.03500008583068848,
+      "k": 60
+     },
+     "busyPct": 17.1,
+     "gpuBefore": "13, 1721, 3504, 1516",
+     "gpuAfter": "70, 1721, 3504, 1516",
+     "wallS": 0.267
+    },
+    {
+     "test": "glDraw",
+     "n": 100000,
+     "prim": "points",
+     "size": 3,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 100000,
+     "gpu": {
+      "med": 0.166912,
+      "min": 0.166912,
+      "max": 0.192512,
+      "p95": 0.172032,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.06999993324279785,
+      "p95": 0.029999971389770508,
+      "k": 60
+     },
+     "busyPct": 26,
+     "gpuBefore": "70, 1721, 3504, 1516",
+     "gpuAfter": "8, 1721, 3504, 1516",
+     "wallS": 0.125
+    },
+    {
+     "test": "glDraw",
+     "n": 250000,
+     "prim": "points",
+     "size": 3,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 250000,
+     "gpu": {
+      "med": 0.41984,
+      "min": 0.418816,
+      "max": 0.858112,
+      "p95": 0.44032,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.03500008583068848,
+      "p95": 0.019999980926513672,
+      "k": 60
+     },
+     "busyPct": 5.1,
+     "gpuBefore": "8, 1721, 3504, 1516",
+     "gpuAfter": "10, 1721, 3504, 1516",
+     "wallS": 0.154
+    },
+    {
+     "test": "glDraw",
+     "n": 1000000,
+     "prim": "points",
+     "size": 3,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 1000000,
+     "gpu": {
+      "med": 1.705984,
+      "min": 1.70496,
+      "max": 2.306048,
+      "p95": 2.19136,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.029999971389770508,
+      "p95": 0.02500009536743164,
+      "k": 60
+     },
+     "busyPct": 38.8,
+     "gpuBefore": "14, 1721, 3504, 1516",
+     "gpuAfter": "54, 1721, 3504, 1516",
+     "wallS": 0.264
+    },
+    {
+     "test": "glDraw",
+     "n": 100000,
+     "prim": "points",
+     "size": 5,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 100000,
+     "gpu": {
+      "med": 0.198656,
+      "min": 0.196608,
+      "max": 0.222208,
+      "p95": 0.204544,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.039999961853027344,
+      "p95": 0.019999980926513672,
+      "k": 60
+     },
+     "busyPct": 4.5,
+     "gpuBefore": "23, 1721, 3504, 1516",
+     "gpuAfter": "23, 1721, 3504, 1516",
+     "wallS": 0.126
+    },
+    {
+     "test": "glDraw",
+     "n": 250000,
+     "prim": "points",
+     "size": 5,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 250000,
+     "gpu": {
+      "med": 0.497664,
+      "min": 0.49664,
+      "max": 0.83968,
+      "p95": 0.52224,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.029999971389770508,
+      "p95": 0.015000104904174805,
+      "k": 60
+     },
+     "busyPct": 16.3,
+     "gpuBefore": "10, 1721, 3504, 1516",
+     "gpuAfter": "10, 1721, 3504, 1516",
+     "wallS": 0.141
+    },
+    {
+     "test": "glDraw",
+     "n": 1000000,
+     "prim": "points",
+     "size": 5,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 1000000,
+     "gpu": {
+      "med": 2.151424,
+      "min": 2.111488,
+      "max": 2.978816,
+      "p95": 2.721792,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.034999847412109375,
+      "p95": 0.019999980926513672,
+      "k": 60
+     },
+     "busyPct": 7.3,
+     "gpuBefore": "23, 1721, 3504, 1516",
+     "gpuAfter": "54, 1695, 3504, 1516",
+     "wallS": 0.307
+    },
+    {
+     "test": "glDraw",
+     "n": 100000,
+     "prim": "quads",
+     "size": 1,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 100000,
+     "gpu": {
+      "med": 0.448512,
+      "min": 0.447488,
+      "max": 2.146304,
+      "p95": 0.6144,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.005000114440917969,
+      "min": 0,
+      "max": 0.04499983787536621,
+      "p95": 0.03500008583068848,
+      "k": 60
+     },
+     "busyPct": 4.5,
+     "gpuBefore": "40, 1695, 3504, 1516",
+     "gpuAfter": "20, 1695, 3504, 1516",
+     "wallS": 0.154
+    },
+    {
+     "test": "glDraw",
+     "n": 250000,
+     "prim": "quads",
+     "size": 1,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 250000,
+     "gpu": {
+      "med": 1.122304,
+      "min": 1.120256,
+      "max": 1.599488,
+      "p95": 1.47968,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.005000114440917969,
+      "min": 0,
+      "max": 0.06500005722045898,
+      "p95": 0.05499982833862305,
+      "k": 60
+     },
+     "busyPct": 25,
+     "gpuBefore": "20, 1695, 3504, 1516",
+     "gpuAfter": "22, 1695, 3504, 1516",
+     "wallS": 0.233
+    },
+    {
+     "test": "glDraw",
+     "n": 1000000,
+     "prim": "quads",
+     "size": 1,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 1000000,
+     "gpu": {
+      "med": 4.482048,
+      "min": 4.409344,
+      "max": 15.284224,
+      "p95": 5.051392,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.04999995231628418,
+      "p95": 0.03500008583068848,
+      "k": 60
+     },
+     "busyPct": 15.2,
+     "gpuBefore": "29, 1695, 3504, 1516",
+     "gpuAfter": "62, 1721, 3504, 1512",
+     "wallS": 0.549
+    },
+    {
+     "test": "glDraw",
+     "n": 100000,
+     "prim": "quads",
+     "size": 3,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 100000,
+     "gpu": {
+      "med": 0.441344,
+      "min": 0.44032,
+      "max": 1.876992,
+      "p95": 0.467968,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.059999942779541016,
+      "p95": 0.034999847412109375,
+      "k": 60
+     },
+     "busyPct": 12.9,
+     "gpuBefore": "62, 1721, 3504, 1512",
+     "gpuAfter": "21, 1721, 3504, 1512",
+     "wallS": 0.156
+    },
+    {
+     "test": "glDraw",
+     "n": 250000,
+     "prim": "quads",
+     "size": 3,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 250000,
+     "gpu": {
+      "med": 1.10592,
+      "min": 1.101824,
+      "max": 1.80224,
+      "p95": 1.525408,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.05500006675720215,
+      "p95": 0.03500008583068848,
+      "k": 60
+     },
+     "busyPct": 21.3,
+     "gpuBefore": "20, 1721, 3504, 1512",
+     "gpuAfter": "43, 1721, 3504, 1657",
+     "wallS": 0.216
+    },
+    {
+     "test": "glDraw",
+     "n": 1000000,
+     "prim": "quads",
+     "size": 3,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 1000000,
+     "gpu": {
+      "med": 4.415488,
+      "min": 4.4032,
+      "max": 19.823616,
+      "p95": 12.690432,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.005000114440917969,
+      "min": 0,
+      "max": 0.05500006675720215,
+      "p95": 0.03500008583068848,
+      "k": 60
+     },
+     "busyPct": 21.1,
+     "gpuBefore": "43, 1721, 3504, 1677",
+     "gpuAfter": "86, 1721, 3504, 1677",
+     "wallS": 0.608
+    },
+    {
+     "test": "glDraw",
+     "n": 100000,
+     "prim": "quads",
+     "size": 5,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 100000,
+     "gpu": {
+      "med": 0.441344,
+      "min": 0.44032,
+      "max": 0.587776,
+      "p95": 0.4608,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.04500007629394531,
+      "p95": 0.029999971389770508,
+      "k": 60
+     },
+     "busyPct": 10.5,
+     "gpuBefore": "86, 1721, 3504, 1677",
+     "gpuAfter": "45, 1721, 3504, 1677",
+     "wallS": 0.156
+    },
+    {
+     "test": "glDraw",
+     "n": 250000,
+     "prim": "quads",
+     "size": 5,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 250000,
+     "gpu": {
+      "med": 1.10592,
+      "min": 1.104896,
+      "max": 1.655808,
+      "p95": 1.160192,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.06999993324279785,
+      "p95": 0.034999847412109375,
+      "k": 60
+     },
+     "busyPct": 11,
+     "gpuBefore": "45, 1721, 3504, 1677",
+     "gpuAfter": "48, 1721, 3504, 1678",
+     "wallS": 0.204
+    },
+    {
+     "test": "glDraw",
+     "n": 1000000,
+     "prim": "quads",
+     "size": 5,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 1000000,
+     "gpu": {
+      "med": 4.425728,
+      "min": 4.414464,
+      "max": 20.555776,
+      "p95": 5.73952,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.06499981880187988,
+      "p95": 0.034999847412109375,
+      "k": 60
+     },
+     "busyPct": 17.6,
+     "gpuBefore": "48, 1721, 3504, 1679",
+     "gpuAfter": "67, 1721, 3504, 1641",
+     "wallS": 0.559
+    },
+    {
+     "test": "glDraw",
+     "n": 1000000,
+     "prim": "points",
+     "size": 5,
+     "interp": false,
+     "view": "district",
+     "tex": false,
+     "order": "cell",
+     "visible": 38067,
+     "gpu": {
+      "med": 1.627136,
+      "min": 1.626112,
+      "max": 2.2272,
+      "p95": 2.06336,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.04999995231628418,
+      "p95": 0.034999847412109375,
+      "k": 60
+     },
+     "busyPct": 3.8,
+     "gpuBefore": "34, 1721, 3504, 1633",
+     "gpuAfter": "54, 1721, 3504, 1633",
+     "wallS": 0.248
+    },
+    {
+     "test": "glDraw",
+     "n": 1000000,
+     "prim": "points",
+     "size": 5,
+     "interp": false,
+     "view": "street",
+     "tex": false,
+     "order": "cell",
+     "visible": 15095,
+     "gpu": {
+      "med": 1.625088,
+      "min": 1.624064,
+      "max": 2.172928,
+      "p95": 2.137088,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.040000200271606445,
+      "p95": 0.029999971389770508,
+      "k": 60
+     },
+     "busyPct": 4.8,
+     "gpuBefore": "54, 1721, 3504, 1633",
+     "gpuAfter": "68, 1721, 3504, 1644",
+     "wallS": 0.249
+    },
+    {
+     "test": "glDraw",
+     "n": 1000000,
+     "prim": "points",
+     "size": 1,
+     "interp": true,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 1000000,
+     "gpu": {
+      "med": 1.626112,
+      "min": 1.625088,
+      "max": 2.238464,
+      "p95": 2.065408,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.05500006675720215,
+      "p95": 0.04500007629394531,
+      "k": 60
+     },
+     "busyPct": 9.3,
+     "gpuBefore": "68, 1721, 3504, 1644",
+     "gpuAfter": "65, 1721, 3504, 1648",
+     "wallS": 0.282
+    },
+    {
+     "test": "glDraw",
+     "n": 1000000,
+     "prim": "quads",
+     "size": 5,
+     "interp": true,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 1000000,
+     "gpu": {
+      "med": 4.819968,
+      "min": 4.726784,
+      "max": 21.490688,
+      "p95": 16.649216,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.005000114440917969,
+      "min": 0,
+      "max": 0.04999995231628418,
+      "p95": 0.03500008583068848,
+      "k": 60
+     },
+     "busyPct": 11.1,
+     "gpuBefore": "65, 1721, 3504, 1620",
+     "gpuAfter": "62, 1721, 3504, 1424",
+     "wallS": 0.684
+    },
+    {
+     "test": "glDraw",
+     "n": 1000000,
+     "prim": "points",
+     "size": 1,
+     "interp": false,
+     "view": "city",
+     "tex": true,
+     "order": "cell",
+     "visible": 1000000,
+     "gpu": {
+      "med": 1.626112,
+      "min": 1.625088,
+      "max": 1.99168,
+      "p95": 1.96096,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.04499983787536621,
+      "p95": 0.029999971389770508,
+      "k": 60
+     },
+     "busyPct": 5.4,
+     "gpuBefore": "62, 1721, 3504, 1424",
+     "gpuAfter": "58, 1721, 3504, 1456",
+     "wallS": 0.28
+    },
+    {
+     "test": "glDraw",
+     "n": 1000000,
+     "prim": "points",
+     "size": 5,
+     "interp": false,
+     "view": "city",
+     "tex": true,
+     "order": "cell",
+     "visible": 1000000,
+     "gpu": {
+      "med": 2.113536,
+      "min": 2.111488,
+      "max": 3.243008,
+      "p95": 2.79552,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.005000114440917969,
+      "min": 0,
+      "max": 0.09000015258789062,
+      "p95": 0.06499981880187988,
+      "k": 60
+     },
+     "busyPct": 42.4,
+     "gpuBefore": "58, 1721, 3504, 1451",
+     "gpuAfter": "71, 1721, 3504, 1467",
+     "wallS": 0.314
+    },
+    {
+     "test": "glDraw",
+     "n": 1000000,
+     "prim": "quads",
+     "size": 5,
+     "interp": false,
+     "view": "city",
+     "tex": true,
+     "order": "cell",
+     "visible": 1000000,
+     "gpu": {
+      "med": 4.4544,
+      "min": 4.411392,
+      "max": 5.00224,
+      "p95": 4.984832,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.05499982833862305,
+      "p95": 0.039999961853027344,
+      "k": 60
+     },
+     "busyPct": 12,
+     "gpuBefore": "28, 1721, 3504, 1467",
+     "gpuAfter": "81, 1721, 3504, 1467",
+     "wallS": 0.466
+    },
+    {
+     "test": "glDraw",
+     "n": 1000000,
+     "prim": "points",
+     "size": 1,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "random",
+     "visible": 1000000,
+     "gpu": {
+      "med": 1.632256,
+      "min": 1.631232,
+      "max": 2.202624,
+      "p95": 2.173952,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.04999995231628418,
+      "p95": 0.034999847412109375,
+      "k": 60
+     },
+     "busyPct": 15.2,
+     "gpuBefore": "43, 1721, 3504, 1467",
+     "gpuAfter": "65, 1721, 3504, 1479",
+     "wallS": 0.539
+    },
+    {
+     "test": "glDraw",
+     "n": 1000000,
+     "prim": "points",
+     "size": 5,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "random",
+     "visible": 1000000,
+     "gpu": {
+      "med": 3.168256,
+      "min": 3.121152,
+      "max": 3.70688,
+      "p95": 3.697664,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.039999961853027344,
+      "p95": 0.029999971389770508,
+      "k": 60
+     },
+     "busyPct": 33.7,
+     "gpuBefore": "65, 1721, 3504, 1479",
+     "gpuAfter": "50, 1708, 3504, 1495",
+     "wallS": 0.387
+    },
+    {
+     "test": "gpuDraw",
+     "n": 100000,
+     "prim": "quads",
+     "size": 1,
+     "interp": false,
+     "view": "city",
+     "visible": 100000,
+     "gpu": {
+      "med": 0.152576,
+      "min": 0.151552,
+      "max": 0.1536,
+      "p95": 0.152576,
+      "k": 30
+     },
+     "wallPerPass": {
+      "med": 0.39099998474121095,
+      "min": 0.23199999332427979,
+      "max": 0.4054999828338623,
+      "p95": 0.4054999828338623,
+      "k": 10
+     },
+     "timestamps": true,
+     "busyPct": 15.9,
+     "gpuBefore": "50, 1708, 3504, 1495",
+     "gpuAfter": "5, 1708, 3504, 1516",
+     "wallS": 0.388
+    },
+    {
+     "test": "gpuDraw",
+     "n": 250000,
+     "prim": "quads",
+     "size": 1,
+     "interp": false,
+     "view": "city",
+     "visible": 250000,
+     "gpu": {
+      "med": 0.376832,
+      "min": 0.376832,
+      "max": 0.377856,
+      "p95": 0.377856,
+      "k": 30
+     },
+     "wallPerPass": {
+      "med": 0.5045000076293945,
+      "min": 0.4950000047683716,
+      "max": 0.6575000047683716,
+      "p95": 0.6575000047683716,
+      "k": 10
+     },
+     "timestamps": true,
+     "busyPct": 21,
+     "gpuBefore": "5, 1708, 3504, 1516",
+     "gpuAfter": "32, 1708, 3504, 1520",
+     "wallS": 0.219
+    },
+    {
+     "test": "gpuDraw",
+     "n": 1000000,
+     "prim": "quads",
+     "size": 1,
+     "interp": false,
+     "view": "city",
+     "visible": 1000000,
+     "gpu": {
+      "med": 1.591296,
+      "min": 1.50016,
+      "max": 2.688,
+      "p95": 2.673664,
+      "k": 30
+     },
+     "wallPerPass": {
+      "med": 2.4004999876022337,
+      "min": 2.192999982833862,
+      "max": 2.4985000133514403,
+      "p95": 2.4985000133514403,
+      "k": 10
+     },
+     "timestamps": true,
+     "busyPct": 45.4,
+     "gpuBefore": "32, 1708, 3504, 1521",
+     "gpuAfter": "91, 1721, 3504, 1693",
+     "wallS": 0.453
+    },
+    {
+     "test": "gpuDraw",
+     "n": 100000,
+     "prim": "quads",
+     "size": 3,
+     "interp": false,
+     "view": "city",
+     "visible": 100000,
+     "gpu": {
+      "med": 0.152576,
+      "min": 0.151552,
+      "max": 0.152576,
+      "p95": 0.152576,
+      "k": 30
+     },
+     "wallPerPass": {
+      "med": 0.4,
+      "min": 0.2990000009536743,
+      "max": 0.5959999799728394,
+      "p95": 0.5959999799728394,
+      "k": 10
+     },
+     "timestamps": true,
+     "busyPct": 8.4,
+     "gpuBefore": "91, 1721, 3504, 1693",
+     "gpuAfter": "30, 1721, 3504, 1682",
+     "wallS": 0.205
+    },
+    {
+     "test": "gpuDraw",
+     "n": 250000,
+     "prim": "quads",
+     "size": 3,
+     "interp": false,
+     "view": "city",
+     "visible": 250000,
+     "gpu": {
+      "med": 0.375808,
+      "min": 0.374784,
+      "max": 0.376832,
+      "p95": 0.376832,
+      "k": 30
+     },
+     "wallPerPass": {
+      "med": 0.597000002861023,
+      "min": 0.44649999141693114,
+      "max": 0.8980000019073486,
+      "p95": 0.8980000019073486,
+      "k": 10
+     },
+     "timestamps": true,
+     "busyPct": 6.4,
+     "gpuBefore": "39, 1721, 3504, 1682",
+     "gpuAfter": "45, 1721, 3504, 1682",
+     "wallS": 0.218
+    },
+    {
+     "test": "gpuDraw",
+     "n": 1000000,
+     "prim": "quads",
+     "size": 3,
+     "interp": false,
+     "view": "city",
+     "visible": 1000000,
+     "gpu": {
+      "med": 1.49504,
+      "min": 1.494016,
+      "max": 1.840128,
+      "p95": 1.677312,
+      "k": 30
+     },
+     "wallPerPass": {
+      "med": 1.700499987602234,
+      "min": 1.5665000200271606,
+      "max": 1.8984999895095824,
+      "p95": 1.8984999895095824,
+      "k": 10
+     },
+     "timestamps": true,
+     "busyPct": 10.6,
+     "gpuBefore": "45, 1721, 3504, 1682",
+     "gpuAfter": "72, 1721, 3504, 1673",
+     "wallS": 0.364
+    },
+    {
+     "test": "gpuDraw",
+     "n": 100000,
+     "prim": "quads",
+     "size": 5,
+     "interp": false,
+     "view": "city",
+     "visible": 100000,
+     "gpu": {
+      "med": 0.208896,
+      "min": 0.207872,
+      "max": 0.208896,
+      "p95": 0.208896,
+      "k": 30
+     },
+     "wallPerPass": {
+      "med": 0.3010000228881836,
+      "min": 0.27100000381469724,
+      "max": 0.553499984741211,
+      "p95": 0.553499984741211,
+      "k": 10
+     },
+     "timestamps": true,
+     "busyPct": 52.3,
+     "gpuBefore": "42, 1721, 3504, 1673",
+     "gpuAfter": "5, 1721, 3504, 1662",
+     "wallS": 0.199
+    },
+    {
+     "test": "gpuDraw",
+     "n": 250000,
+     "prim": "quads",
+     "size": 5,
+     "interp": false,
+     "view": "city",
+     "visible": 250000,
+     "gpu": {
+      "med": 0.507904,
+      "min": 0.50688,
+      "max": 0.507904,
+      "p95": 0.507904,
+      "k": 30
+     },
+     "wallPerPass": {
+      "med": 0.7049999952316284,
+      "min": 0.593999981880188,
+      "max": 0.8049999952316285,
+      "p95": 0.8049999952316285,
+      "k": 10
+     },
+     "timestamps": true,
+     "busyPct": 4,
+     "gpuBefore": "5, 1721, 3504, 1662",
+     "gpuAfter": "40, 1721, 3504, 1662",
+     "wallS": 0.219
+    },
+    {
+     "test": "gpuDraw",
+     "n": 1000000,
+     "prim": "quads",
+     "size": 5,
+     "interp": false,
+     "view": "city",
+     "visible": 1000000,
+     "gpu": {
+      "med": 2.011136,
+      "min": 2.00704,
+      "max": 2.19648,
+      "p95": 2.195456,
+      "k": 30
+     },
+     "wallPerPass": {
+      "med": 2.4009999990463258,
+      "min": 2.197000002861023,
+      "max": 2.499000000953674,
+      "p95": 2.499000000953674,
+      "k": 10
+     },
+     "timestamps": true,
+     "busyPct": 11,
+     "gpuBefore": "40, 1721, 3504, 1662",
+     "gpuAfter": "80, 1632, 3504, 1539",
+     "wallS": 0.423
+    },
+    {
+     "test": "gpuDraw",
+     "n": 100000,
+     "prim": "points",
+     "size": 1,
+     "interp": false,
+     "view": "city",
+     "visible": 100000,
+     "gpu": {
+      "med": 0.079872,
+      "min": 0.078848,
+      "max": 0.079872,
+      "p95": 0.079872,
+      "k": 30
+     },
+     "wallPerPass": {
+      "med": 0.30250000953674316,
+      "min": 0.29300000667572024,
+      "max": 0.3125,
+      "p95": 0.3125,
+      "k": 10
+     },
+     "timestamps": true,
+     "busyPct": 12.5,
+     "gpuBefore": "80, 1632, 3504, 1539",
+     "gpuAfter": "3, 1632, 3504, 1524",
+     "wallS": 0.192
+    },
+    {
+     "test": "gpuDraw",
+     "n": 250000,
+     "prim": "points",
+     "size": 1,
+     "interp": false,
+     "view": "city",
+     "visible": 250000,
+     "gpu": {
+      "med": 0.19456,
+      "min": 0.193536,
+      "max": 0.195584,
+      "p95": 0.19456,
+      "k": 30
+     },
+     "wallPerPass": {
+      "med": 0.3005000114440918,
+      "min": 0.28600001335144043,
+      "max": 0.40249998569488527,
+      "p95": 0.40249998569488527,
+      "k": 10
+     },
+     "timestamps": true,
+     "busyPct": 41.7,
+     "gpuBefore": "7, 1632, 3504, 1524",
+     "gpuAfter": "12, 1632, 3504, 1522",
+     "wallS": 0.2
+    },
+    {
+     "test": "gpuDraw",
+     "n": 1000000,
+     "prim": "points",
+     "size": 1,
+     "interp": false,
+     "view": "city",
+     "visible": 1000000,
+     "gpu": {
+      "med": 0.769024,
+      "min": 0.768,
+      "max": 0.775168,
+      "p95": 0.774144,
+      "k": 30
+     },
+     "wallPerPass": {
+      "med": 0.9900000095367432,
+      "min": 0.8,
+      "max": 1.0740000009536743,
+      "p95": 1.0740000009536743,
+      "k": 10
+     },
+     "timestamps": true,
+     "busyPct": 10.1,
+     "gpuBefore": "12, 1632, 3504, 1526",
+     "gpuAfter": "50, 1632, 3504, 1539",
+     "wallS": 0.275
+    },
+    {
+     "test": "gpuDraw",
+     "n": 1000000,
+     "prim": "quads",
+     "size": 5,
+     "interp": true,
+     "view": "city",
+     "visible": 1000000,
+     "gpu": {
+      "med": 2.139136,
+      "min": 2.132992,
+      "max": 2.681856,
+      "p95": 2.487296,
+      "k": 30
+     },
+     "wallPerPass": {
+      "med": 2.400500011444092,
+      "min": 2.2980000019073485,
+      "max": 2.5200000047683715,
+      "p95": 2.5200000047683715,
+      "k": 10
+     },
+     "timestamps": true,
+     "busyPct": 4.9,
+     "gpuBefore": "50, 1632, 3504, 1539",
+     "gpuAfter": "93, 1569, 3504, 1544",
+     "wallS": 0.435
+    },
+    {
+     "test": "gpuDraw",
+     "n": 1000000,
+     "prim": "points",
+     "size": 1,
+     "interp": true,
+     "view": "city",
+     "visible": 1000000,
+     "gpu": {
+      "med": 0.797696,
+      "min": 0.796672,
+      "max": 0.79872,
+      "p95": 0.79872,
+      "k": 30
+     },
+     "wallPerPass": {
+      "med": 0.9974999904632569,
+      "min": 0.8990000009536743,
+      "max": 1.1019999980926514,
+      "p95": 1.1019999980926514,
+      "k": 10
+     },
+     "timestamps": true,
+     "busyPct": 40.8,
+     "gpuBefore": "93, 1569, 3504, 1544",
+     "gpuAfter": "58, 1569, 3504, 1540",
+     "wallS": 0.284
+    }
+   ]
+  },
+  {
+   "run": 2,
+   "chromium": "153.0.8010.12",
+   "env": {
+    "renderer": "ANGLE (NVIDIA, NVIDIA GeForce GTX 1050 Ti (0x00001C82) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "timer": true,
+    "floatBlend": true,
+    "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.0.0 Safari/537.36",
+    "cores": 12,
+    "deviceMemory": 16,
+    "isolated": true,
+    "webgpu": true
+   },
+   "results": [
+    {
+     "test": "glDraw",
+     "n": 100000,
+     "prim": "points",
+     "size": 1,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 100000,
+     "gpu": {
+      "med": 0.178176,
+      "min": 0.177152,
+      "max": 0.20992,
+      "p95": 0.203776,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.07999992370605469,
+      "p95": 0.040000200271606445,
+      "k": 60
+     },
+     "busyPct": 42.5,
+     "gpuBefore": "3, 1569, 3504, 1423",
+     "gpuAfter": "2, 1569, 3504, 1441",
+     "wallS": 0.169
+    },
+    {
+     "test": "glDraw",
+     "n": 250000,
+     "prim": "points",
+     "size": 1,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 250000,
+     "gpu": {
+      "med": 0.444416,
+      "min": 0.443392,
+      "max": 0.828416,
+      "p95": 0.464896,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.13000011444091797,
+      "p95": 0.029999971389770508,
+      "k": 60
+     },
+     "busyPct": 15.1,
+     "gpuBefore": "10, 1569, 3504, 1441",
+     "gpuAfter": "14, 1569, 3504, 1444",
+     "wallS": 0.247
+    },
+    {
+     "test": "glDraw",
+     "n": 1000000,
+     "prim": "points",
+     "size": 1,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 1000000,
+     "gpu": {
+      "med": 1.777664,
+      "min": 1.77664,
+      "max": 2.343808,
+      "p95": 2.17088,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.005000114440917969,
+      "min": 0,
+      "max": 0.04999995231628418,
+      "p95": 0.03500008583068848,
+      "k": 60
+     },
+     "busyPct": 13.7,
+     "gpuBefore": "14, 1569, 3504, 1444",
+     "gpuAfter": "35, 1569, 3504, 1448",
+     "wallS": 0.677
+    },
+    {
+     "test": "glDraw",
+     "n": 2000000,
+     "prim": "points",
+     "size": 1,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 2000000,
+     "gpu": {
+      "med": 3.57376,
+      "min": 3.267584,
+      "max": 13.401088,
+      "p95": 8.563712,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.059999942779541016,
+      "p95": 0.03500008583068848,
+      "k": 60
+     },
+     "busyPct": 18,
+     "gpuBefore": "44, 1569, 3504, 1448",
+     "gpuAfter": "74, 1721, 3504, 1632",
+     "wallS": 0.976
+    },
+    {
+     "test": "glDraw",
+     "n": 4000000,
+     "prim": "points",
+     "size": 1,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 4000000,
+     "gpu": {
+      "med": 6.635456,
+      "min": 6.629376,
+      "max": 7.675904,
+      "p95": 7.349248,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.005000114440917969,
+      "min": 0,
+      "max": 0.059999942779541016,
+      "p95": 0.04499983787536621,
+      "k": 60
+     },
+     "busyPct": 58.7,
+     "gpuBefore": "74, 1721, 3504, 1632",
+     "gpuAfter": "82, 1721, 3504, 1526",
+     "wallS": 2.161
+    },
+    {
+     "test": "glDraw",
+     "n": 100000,
+     "prim": "points",
+     "size": 2,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 100000,
+     "gpu": {
+      "med": 0.165888,
+      "min": 0.164864,
+      "max": 0.195584,
+      "p95": 0.19152,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.005000114440917969,
+      "min": 0,
+      "max": 0.06000018119812012,
+      "p95": 0.04999995231628418,
+      "k": 60
+     },
+     "busyPct": 73.1,
+     "gpuBefore": "82, 1721, 3504, 1526",
+     "gpuAfter": "4, 1721, 3504, 1526",
+     "wallS": 0.14
+    },
+    {
+     "test": "glDraw",
+     "n": 250000,
+     "prim": "points",
+     "size": 2,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 250000,
+     "gpu": {
+      "med": 0.41472,
+      "min": 0.413696,
+      "max": 0.772096,
+      "p95": 0.437248,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.005000114440917969,
+      "min": 0,
+      "max": 0.06500005722045898,
+      "p95": 0.04999995231628418,
+      "k": 60
+     },
+     "busyPct": 63.6,
+     "gpuBefore": "7, 1721, 3504, 1526",
+     "gpuAfter": "19, 1721, 3504, 1526",
+     "wallS": 0.168
+    },
+    {
+     "test": "glDraw",
+     "n": 1000000,
+     "prim": "points",
+     "size": 2,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 1000000,
+     "gpu": {
+      "med": 1.678336,
+      "min": 1.676288,
+      "max": 2.542592,
+      "p95": 2.251776,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.005000114440917969,
+      "min": 0,
+      "max": 0.07000017166137695,
+      "p95": 0.04500007629394531,
+      "k": 60
+     },
+     "busyPct": 77,
+     "gpuBefore": "19, 1721, 3504, 1526",
+     "gpuAfter": "54, 1721, 3504, 1524",
+     "wallS": 0.295
+    },
+    {
+     "test": "glDraw",
+     "n": 100000,
+     "prim": "points",
+     "size": 3,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 100000,
+     "gpu": {
+      "med": 0.167936,
+      "min": 0.165888,
+      "max": 0.350208,
+      "p95": 0.197632,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.005000114440917969,
+      "min": 0,
+      "max": 0.09000015258789062,
+      "p95": 0.04500007629394531,
+      "k": 60
+     },
+     "busyPct": 53.2,
+     "gpuBefore": "54, 1721, 3504, 1524",
+     "gpuAfter": "9, 1721, 3504, 1524",
+     "wallS": 0.141
+    },
+    {
+     "test": "glDraw",
+     "n": 250000,
+     "prim": "points",
+     "size": 3,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 250000,
+     "gpu": {
+      "med": 0.420864,
+      "min": 0.418816,
+      "max": 1.047552,
+      "p95": 0.452608,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.05500006675720215,
+      "p95": 0.039999961853027344,
+      "k": 60
+     },
+     "busyPct": 94,
+     "gpuBefore": "9, 1721, 3504, 1524",
+     "gpuAfter": "7, 1721, 3504, 1525",
+     "wallS": 0.186
+    },
+    {
+     "test": "glDraw",
+     "n": 1000000,
+     "prim": "points",
+     "size": 3,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 1000000,
+     "gpu": {
+      "med": 1.707008,
+      "min": 1.705984,
+      "max": 2.371584,
+      "p95": 2.179072,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.04999995231628418,
+      "p95": 0.034999847412109375,
+      "k": 60
+     },
+     "busyPct": 73,
+     "gpuBefore": "15, 1721, 3504, 1525",
+     "gpuAfter": "48, 1721, 3504, 1520",
+     "wallS": 0.293
+    },
+    {
+     "test": "glDraw",
+     "n": 100000,
+     "prim": "points",
+     "size": 5,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 100000,
+     "gpu": {
+      "med": 0.198656,
+      "min": 0.196608,
+      "max": 0.287744,
+      "p95": 0.229376,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.04999995231628418,
+      "p95": 0.03500008583068848,
+      "k": 60
+     },
+     "busyPct": 69,
+     "gpuBefore": "48, 1721, 3504, 1520",
+     "gpuAfter": "10, 1721, 3504, 1520",
+     "wallS": 0.137
+    },
+    {
+     "test": "glDraw",
+     "n": 250000,
+     "prim": "points",
+     "size": 5,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 250000,
+     "gpu": {
+      "med": 0.497664,
+      "min": 0.49664,
+      "max": 0.877568,
+      "p95": 0.518336,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0,
+      "min": 0,
+      "max": 0.03500008583068848,
+      "p95": 0.02500009536743164,
+      "k": 60
+     },
+     "busyPct": 25.3,
+     "gpuBefore": "10, 1721, 3504, 1520",
+     "gpuAfter": "12, 1721, 3504, 1520",
+     "wallS": 0.156
+    },
+    {
+     "test": "glDraw",
+     "n": 1000000,
+     "prim": "points",
+     "size": 5,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 1000000,
+     "gpu": {
+      "med": 2.113536,
+      "min": 2.111488,
+      "max": 3.049472,
+      "p95": 2.646016,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.08500003814697266,
+      "p95": 0.03500008583068848,
+      "k": 60
+     },
+     "busyPct": 42.3,
+     "gpuBefore": "12, 1721, 3504, 1520",
+     "gpuAfter": "62, 1721, 3504, 1516",
+     "wallS": 0.295
+    },
+    {
+     "test": "glDraw",
+     "n": 100000,
+     "prim": "quads",
+     "size": 1,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 100000,
+     "gpu": {
+      "med": 0.441344,
+      "min": 0.44032,
+      "max": 2.020352,
+      "p95": 0.464896,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.03500008583068848,
+      "p95": 0.029999971389770508,
+      "k": 60
+     },
+     "busyPct": 5.6,
+     "gpuBefore": "33, 1721, 3504, 1516",
+     "gpuAfter": "20, 1721, 3504, 1516",
+     "wallS": 0.155
+    },
+    {
+     "test": "glDraw",
+     "n": 250000,
+     "prim": "quads",
+     "size": 1,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 250000,
+     "gpu": {
+      "med": 1.104896,
+      "min": 1.102848,
+      "max": 4.443136,
+      "p95": 1.4848,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.04999995231628418,
+      "p95": 0.02500009536743164,
+      "k": 60
+     },
+     "busyPct": 10.7,
+     "gpuBefore": "20, 1721, 3504, 1516",
+     "gpuAfter": "28, 1721, 3504, 1509",
+     "wallS": 0.213
+    },
+    {
+     "test": "glDraw",
+     "n": 1000000,
+     "prim": "quads",
+     "size": 1,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 1000000,
+     "gpu": {
+      "med": 4.440064,
+      "min": 4.409344,
+      "max": 18.002944,
+      "p95": 9.174016,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.08500003814697266,
+      "p95": 0.03500008583068848,
+      "k": 60
+     },
+     "busyPct": 22,
+     "gpuBefore": "22, 1721, 3504, 1509",
+     "gpuAfter": "63, 1721, 3504, 1675",
+     "wallS": 0.573
+    },
+    {
+     "test": "glDraw",
+     "n": 100000,
+     "prim": "quads",
+     "size": 3,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 100000,
+     "gpu": {
+      "med": 0.441344,
+      "min": 0.44032,
+      "max": 2.01728,
+      "p95": 0.949248,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.039999961853027344,
+      "p95": 0.03500008583068848,
+      "k": 60
+     },
+     "busyPct": 17.5,
+     "gpuBefore": "63, 1721, 3504, 1675",
+     "gpuAfter": "47, 1721, 3504, 1675",
+     "wallS": 0.156
+    },
+    {
+     "test": "glDraw",
+     "n": 250000,
+     "prim": "quads",
+     "size": 3,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 250000,
+     "gpu": {
+      "med": 1.104896,
+      "min": 1.102848,
+      "max": 2.149376,
+      "p95": 1.68224,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.005000114440917969,
+      "min": 0,
+      "max": 0.04500007629394531,
+      "p95": 0.034999847412109375,
+      "k": 60
+     },
+     "busyPct": 13.7,
+     "gpuBefore": "39, 1721, 3504, 1675",
+     "gpuAfter": "69, 1721, 3504, 1675",
+     "wallS": 0.219
+    },
+    {
+     "test": "glDraw",
+     "n": 1000000,
+     "prim": "quads",
+     "size": 3,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 1000000,
+     "gpu": {
+      "med": 4.419584,
+      "min": 4.410368,
+      "max": 15.940608,
+      "p95": 8.20736,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.005000114440917969,
+      "min": 0,
+      "max": 0.059999942779541016,
+      "p95": 0.029999971389770508,
+      "k": 60
+     },
+     "busyPct": 16.7,
+     "gpuBefore": "69, 1721, 3504, 1675",
+     "gpuAfter": "55, 1721, 3504, 1675",
+     "wallS": 0.559
+    },
+    {
+     "test": "glDraw",
+     "n": 100000,
+     "prim": "quads",
+     "size": 5,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 100000,
+     "gpu": {
+      "med": 0.442368,
+      "min": 0.441344,
+      "max": 1.987584,
+      "p95": 0.632832,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.04500007629394531,
+      "p95": 0.029999971389770508,
+      "k": 60
+     },
+     "busyPct": 19.3,
+     "gpuBefore": "55, 1721, 3504, 1673",
+     "gpuAfter": "15, 1721, 3504, 1673",
+     "wallS": 0.157
+    },
+    {
+     "test": "glDraw",
+     "n": 250000,
+     "prim": "quads",
+     "size": 5,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 250000,
+     "gpu": {
+      "med": 1.106944,
+      "min": 1.10592,
+      "max": 1.577984,
+      "p95": 1.148928,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.04499983787536621,
+      "p95": 0.03500008583068848,
+      "k": 60
+     },
+     "busyPct": 15.5,
+     "gpuBefore": "15, 1721, 3504, 1673",
+     "gpuAfter": "36, 1721, 3504, 1673",
+     "wallS": 0.218
+    },
+    {
+     "test": "glDraw",
+     "n": 1000000,
+     "prim": "quads",
+     "size": 5,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 1000000,
+     "gpu": {
+      "med": 4.425728,
+      "min": 4.419584,
+      "max": 11.122688,
+      "p95": 5.310464,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.03500008583068848,
+      "p95": 0.029999971389770508,
+      "k": 60
+     },
+     "busyPct": 11.7,
+     "gpuBefore": "36, 1721, 3504, 1673",
+     "gpuAfter": "62, 1721, 3504, 1523",
+     "wallS": 0.533
+    },
+    {
+     "test": "glDraw",
+     "n": 1000000,
+     "prim": "points",
+     "size": 5,
+     "interp": false,
+     "view": "district",
+     "tex": false,
+     "order": "cell",
+     "visible": 38067,
+     "gpu": {
+      "med": 1.627136,
+      "min": 1.626112,
+      "max": 2.113536,
+      "p95": 2.021376,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.04999995231628418,
+      "p95": 0.039999961853027344,
+      "k": 60
+     },
+     "busyPct": 31.6,
+     "gpuBefore": "62, 1721, 3504, 1523",
+     "gpuAfter": "64, 1721, 3504, 1523",
+     "wallS": 0.269
+    },
+    {
+     "test": "glDraw",
+     "n": 1000000,
+     "prim": "points",
+     "size": 5,
+     "interp": false,
+     "view": "street",
+     "tex": false,
+     "order": "cell",
+     "visible": 15095,
+     "gpu": {
+      "med": 1.625088,
+      "min": 1.624064,
+      "max": 2.368512,
+      "p95": 2.120704,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.04999995231628418,
+      "p95": 0.03500008583068848,
+      "k": 60
+     },
+     "busyPct": 8.3,
+     "gpuBefore": "64, 1721, 3504, 1523",
+     "gpuAfter": "68, 1721, 3504, 1535",
+     "wallS": 0.248
+    },
+    {
+     "test": "glDraw",
+     "n": 1000000,
+     "prim": "points",
+     "size": 1,
+     "interp": true,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 1000000,
+     "gpu": {
+      "med": 1.627136,
+      "min": 1.626112,
+      "max": 2.173952,
+      "p95": 2.008064,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.05500006675720215,
+      "p95": 0.03500008583068848,
+      "k": 60
+     },
+     "busyPct": 12.9,
+     "gpuBefore": "68, 1721, 3504, 1535",
+     "gpuAfter": "64, 1721, 3504, 1546",
+     "wallS": 0.28
+    },
+    {
+     "test": "glDraw",
+     "n": 1000000,
+     "prim": "quads",
+     "size": 5,
+     "interp": true,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 1000000,
+     "gpu": {
+      "med": 5.168128,
+      "min": 4.749312,
+      "max": 29.63968,
+      "p95": 20.43904,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.005000114440917969,
+      "min": 0,
+      "max": 0.08500003814697266,
+      "p95": 0.05499982833862305,
+      "k": 60
+     },
+     "busyPct": 45.5,
+     "gpuBefore": "64, 1721, 3504, 1546",
+     "gpuAfter": "53, 1721, 3504, 1425",
+     "wallS": 0.822
+    },
+    {
+     "test": "glDraw",
+     "n": 1000000,
+     "prim": "points",
+     "size": 1,
+     "interp": false,
+     "view": "city",
+     "tex": true,
+     "order": "cell",
+     "visible": 1000000,
+     "gpu": {
+      "med": 1.627136,
+      "min": 1.626112,
+      "max": 2.075648,
+      "p95": 2.00704,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.04500007629394531,
+      "p95": 0.039999961853027344,
+      "k": 60
+     },
+     "busyPct": 16.2,
+     "gpuBefore": "53, 1721, 3504, 1425",
+     "gpuAfter": "63, 1721, 3504, 1453",
+     "wallS": 0.294
+    },
+    {
+     "test": "glDraw",
+     "n": 1000000,
+     "prim": "points",
+     "size": 5,
+     "interp": false,
+     "view": "city",
+     "tex": true,
+     "order": "cell",
+     "visible": 1000000,
+     "gpu": {
+      "med": 2.115584,
+      "min": 2.112512,
+      "max": 2.743296,
+      "p95": 2.651136,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.005000114440917969,
+      "min": 0,
+      "max": 0.10500001907348633,
+      "p95": 0.08000016212463379,
+      "k": 60
+     },
+     "busyPct": 12,
+     "gpuBefore": "63, 1721, 3504, 1453",
+     "gpuAfter": "74, 1721, 3504, 1469",
+     "wallS": 0.296
+    },
+    {
+     "test": "glDraw",
+     "n": 1000000,
+     "prim": "quads",
+     "size": 5,
+     "interp": false,
+     "view": "city",
+     "tex": true,
+     "order": "cell",
+     "visible": 1000000,
+     "gpu": {
+      "med": 4.487168,
+      "min": 4.417536,
+      "max": 5.740544,
+      "p95": 5.0688,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.08000016212463379,
+      "p95": 0.04999995231628418,
+      "k": 60
+     },
+     "busyPct": 36.6,
+     "gpuBefore": "74, 1721, 3504, 1469",
+     "gpuAfter": "82, 1721, 3504, 1465",
+     "wallS": 0.493
+    },
+    {
+     "test": "glDraw",
+     "n": 1000000,
+     "prim": "points",
+     "size": 1,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "random",
+     "visible": 1000000,
+     "gpu": {
+      "med": 1.63328,
+      "min": 1.632256,
+      "max": 2.39616,
+      "p95": 2.20672,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.04500007629394531,
+      "p95": 0.03500008583068848,
+      "k": 60
+     },
+     "busyPct": 13.1,
+     "gpuBefore": "30, 1721, 3504, 1465",
+     "gpuAfter": "34, 1721, 3504, 1470",
+     "wallS": 0.463
+    },
+    {
+     "test": "glDraw",
+     "n": 1000000,
+     "prim": "points",
+     "size": 5,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "random",
+     "visible": 1000000,
+     "gpu": {
+      "med": 3.173376,
+      "min": 3.122176,
+      "max": 3.79392,
+      "p95": 3.71712,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.08500003814697266,
+      "p95": 0.03500008583068848,
+      "k": 60
+     },
+     "busyPct": 12.9,
+     "gpuBefore": "40, 1721, 3504, 1462",
+     "gpuAfter": "77, 1721, 3504, 1474",
+     "wallS": 0.359
+    },
+    {
+     "test": "gpuDraw",
+     "n": 100000,
+     "prim": "quads",
+     "size": 1,
+     "interp": false,
+     "view": "city",
+     "visible": 100000,
+     "gpu": {
+      "med": 0.151552,
+      "min": 0.151552,
+      "max": 0.152576,
+      "p95": 0.152576,
+      "k": 30
+     },
+     "wallPerPass": {
+      "med": 0.41100001335144043,
+      "min": 0.29100000858306885,
+      "max": 0.5840000152587891,
+      "p95": 0.5840000152587891,
+      "k": 10
+     },
+     "timestamps": true,
+     "busyPct": 72.1,
+     "gpuBefore": "77, 1721, 3504, 1474",
+     "gpuAfter": "41, 1721, 3504, 1628",
+     "wallS": 0.544
+    },
+    {
+     "test": "gpuDraw",
+     "n": 250000,
+     "prim": "quads",
+     "size": 1,
+     "interp": false,
+     "view": "city",
+     "visible": 250000,
+     "gpu": {
+      "med": 0.375808,
+      "min": 0.374784,
+      "max": 0.375808,
+      "p95": 0.375808,
+      "k": 30
+     },
+     "wallPerPass": {
+      "med": 0.7015000104904174,
+      "min": 0.4994999885559082,
+      "max": 0.8950000047683716,
+      "p95": 0.8950000047683716,
+      "k": 10
+     },
+     "timestamps": true,
+     "busyPct": 16.5,
+     "gpuBefore": "41, 1721, 3504, 1628",
+     "gpuAfter": "35, 1721, 3504, 1632",
+     "wallS": 0.249
+    },
+    {
+     "test": "gpuDraw",
+     "n": 1000000,
+     "prim": "quads",
+     "size": 1,
+     "interp": false,
+     "view": "city",
+     "visible": 1000000,
+     "gpu": {
+      "med": 1.494016,
+      "min": 1.492992,
+      "max": 2.650112,
+      "p95": 2.281472,
+      "k": 30
+     },
+     "wallPerPass": {
+      "med": 1.6839999914169312,
+      "min": 1.6035000085830688,
+      "max": 1.7045000076293946,
+      "p95": 1.7045000076293946,
+      "k": 10
+     },
+     "timestamps": true,
+     "busyPct": 2.2,
+     "gpuBefore": "53, 1721, 3504, 1632",
+     "gpuAfter": "89, 1721, 3504, 1643",
+     "wallS": 0.36
+    },
+    {
+     "test": "gpuDraw",
+     "n": 100000,
+     "prim": "quads",
+     "size": 3,
+     "interp": false,
+     "view": "city",
+     "visible": 100000,
+     "gpu": {
+      "med": 0.151552,
+      "min": 0.151552,
+      "max": 0.152576,
+      "p95": 0.152576,
+      "k": 30
+     },
+     "wallPerPass": {
+      "med": 0.3995000123977661,
+      "min": 0.29600000381469727,
+      "max": 0.42300000190734866,
+      "p95": 0.42300000190734866,
+      "k": 10
+     },
+     "timestamps": true,
+     "busyPct": 2.8,
+     "gpuBefore": "89, 1721, 3504, 1643",
+     "gpuAfter": "10, 1721, 3504, 1632",
+     "wallS": 0.203
+    },
+    {
+     "test": "gpuDraw",
+     "n": 250000,
+     "prim": "quads",
+     "size": 3,
+     "interp": false,
+     "view": "city",
+     "visible": 250000,
+     "gpu": {
+      "med": 0.375808,
+      "min": 0.374784,
+      "max": 0.375808,
+      "p95": 0.375808,
+      "k": 30
+     },
+     "wallPerPass": {
+      "med": 0.5865000009536743,
+      "min": 0.5014999866485595,
+      "max": 0.6100000143051147,
+      "p95": 0.6100000143051147,
+      "k": 10
+     },
+     "timestamps": true,
+     "busyPct": 37.5,
+     "gpuBefore": "13, 1721, 3504, 1632",
+     "gpuAfter": "9, 1721, 3504, 1632",
+     "wallS": 0.217
+    },
+    {
+     "test": "gpuDraw",
+     "n": 1000000,
+     "prim": "quads",
+     "size": 3,
+     "interp": false,
+     "view": "city",
+     "visible": 1000000,
+     "gpu": {
+      "med": 1.494944,
+      "min": 1.494016,
+      "max": 1.83808,
+      "p95": 1.58208,
+      "k": 30
+     },
+     "wallPerPass": {
+      "med": 1.6055000066757201,
+      "min": 1.5514999866485595,
+      "max": 1.7809999942779542,
+      "p95": 1.7809999942779542,
+      "k": 10
+     },
+     "timestamps": true,
+     "busyPct": 11,
+     "gpuBefore": "9, 1721, 3504, 1632",
+     "gpuAfter": "64, 1721, 3504, 1578",
+     "wallS": 0.345
+    },
+    {
+     "test": "gpuDraw",
+     "n": 100000,
+     "prim": "quads",
+     "size": 5,
+     "interp": false,
+     "view": "city",
+     "visible": 100000,
+     "gpu": {
+      "med": 0.208896,
+      "min": 0.207872,
+      "max": 0.208896,
+      "p95": 0.208896,
+      "k": 30
+     },
+     "wallPerPass": {
+      "med": 0.3019999980926514,
+      "min": 0.26949999332427976,
+      "max": 0.5549999952316285,
+      "p95": 0.5549999952316285,
+      "k": 10
+     },
+     "timestamps": true,
+     "busyPct": 11.7,
+     "gpuBefore": "64, 1721, 3504, 1494",
+     "gpuAfter": "7, 1721, 3504, 1483",
+     "wallS": 0.185
+    },
+    {
+     "test": "gpuDraw",
+     "n": 250000,
+     "prim": "quads",
+     "size": 5,
+     "interp": false,
+     "view": "city",
+     "visible": 250000,
+     "gpu": {
+      "med": 0.50688,
+      "min": 0.50688,
+      "max": 0.507904,
+      "p95": 0.507904,
+      "k": 30
+     },
+     "wallPerPass": {
+      "med": 0.6075000047683716,
+      "min": 0.5529999971389771,
+      "max": 0.8025000095367432,
+      "p95": 0.8025000095367432,
+      "k": 10
+     },
+     "timestamps": true,
+     "busyPct": 7.7,
+     "gpuBefore": "7, 1721, 3504, 1479",
+     "gpuAfter": "39, 1721, 3504, 1477",
+     "wallS": 0.231
+    },
+    {
+     "test": "gpuDraw",
+     "n": 1000000,
+     "prim": "quads",
+     "size": 5,
+     "interp": false,
+     "view": "city",
+     "visible": 1000000,
+     "gpu": {
+      "med": 2.01216,
+      "min": 2.008064,
+      "max": 2.151424,
+      "p95": 2.11456,
+      "k": 30
+     },
+     "wallPerPass": {
+      "med": 2.4899999856948853,
+      "min": 2.1710000038146973,
+      "max": 2.5640000104904175,
+      "p95": 2.5640000104904175,
+      "k": 10
+     },
+     "timestamps": true,
+     "busyPct": 37.6,
+     "gpuBefore": "39, 1721, 3504, 1477",
+     "gpuAfter": "85, 1582, 3504, 1487",
+     "wallS": 0.419
+    },
+    {
+     "test": "gpuDraw",
+     "n": 100000,
+     "prim": "points",
+     "size": 1,
+     "interp": false,
+     "view": "city",
+     "visible": 100000,
+     "gpu": {
+      "med": 0.078848,
+      "min": 0.077824,
+      "max": 0.079872,
+      "p95": 0.079872,
+      "k": 30
+     },
+     "wallPerPass": {
+      "med": 0.3029999971389771,
+      "min": 0.29149999618530276,
+      "max": 0.40450000762939453,
+      "p95": 0.40450000762939453,
+      "k": 10
+     },
+     "timestamps": true,
+     "busyPct": 45.1,
+     "gpuBefore": "61, 1645, 3504, 1487",
+     "gpuAfter": "7, 1645, 3504, 1471",
+     "wallS": 0.204
+    },
+    {
+     "test": "gpuDraw",
+     "n": 250000,
+     "prim": "points",
+     "size": 1,
+     "interp": false,
+     "view": "city",
+     "visible": 250000,
+     "gpu": {
+      "med": 0.192512,
+      "min": 0.191488,
+      "max": 0.193536,
+      "p95": 0.192512,
+      "k": 30
+     },
+     "wallPerPass": {
+      "med": 0.3495000123977661,
+      "min": 0.24849998950958252,
+      "max": 0.40950000286102295,
+      "p95": 0.40950000286102295,
+      "k": 10
+     },
+     "timestamps": true,
+     "busyPct": 27.6,
+     "gpuBefore": "7, 1645, 3504, 1471",
+     "gpuAfter": "6, 1645, 3504, 1471",
+     "wallS": 0.2
+    },
+    {
+     "test": "gpuDraw",
+     "n": 1000000,
+     "prim": "points",
+     "size": 1,
+     "interp": false,
+     "view": "city",
+     "visible": 1000000,
+     "gpu": {
+      "med": 0.76288,
+      "min": 0.759808,
+      "max": 0.763904,
+      "p95": 0.763904,
+      "k": 30
+     },
+     "wallPerPass": {
+      "med": 0.9880000114440918,
+      "min": 0.8495000123977661,
+      "max": 1.1059999942779541,
+      "p95": 1.1059999942779541,
+      "k": 10
+     },
+     "timestamps": true,
+     "busyPct": 19.7,
+     "gpuBefore": "16, 1645, 3504, 1471",
+     "gpuAfter": "49, 1645, 3504, 1487",
+     "wallS": 0.278
+    },
+    {
+     "test": "gpuDraw",
+     "n": 1000000,
+     "prim": "quads",
+     "size": 5,
+     "interp": true,
+     "view": "city",
+     "visible": 1000000,
+     "gpu": {
+      "med": 2.116608,
+      "min": 2.112512,
+      "max": 2.480128,
+      "p95": 2.47296,
+      "k": 30
+     },
+     "wallPerPass": {
+      "med": 2.4540000200271606,
+      "min": 2.23199999332428,
+      "max": 2.5995000123977663,
+      "p95": 2.5995000123977663,
+      "k": 10
+     },
+     "timestamps": true,
+     "busyPct": 57.7,
+     "gpuBefore": "49, 1645, 3504, 1487",
+     "gpuAfter": "68, 1708, 3504, 1501",
+     "wallS": 0.551
+    },
+    {
+     "test": "gpuDraw",
+     "n": 1000000,
+     "prim": "points",
+     "size": 1,
+     "interp": true,
+     "view": "city",
+     "visible": 1000000,
+     "gpu": {
+      "med": 0.734208,
+      "min": 0.733184,
+      "max": 0.735232,
+      "p95": 0.735232,
+      "k": 30
+     },
+     "wallPerPass": {
+      "med": 0.9990000009536744,
+      "min": 0.840500020980835,
+      "max": 1.0990000009536742,
+      "p95": 1.0990000009536742,
+      "k": 10
+     },
+     "timestamps": true,
+     "busyPct": 36.5,
+     "gpuBefore": "3, 1708, 3504, 1501",
+     "gpuAfter": "19, 1708, 3504, 1497",
+     "wallS": 0.278
+    }
+   ]
+  },
+  {
+   "run": 3,
+   "chromium": "153.0.8010.12",
+   "env": {
+    "renderer": "ANGLE (NVIDIA, NVIDIA GeForce GTX 1050 Ti (0x00001C82) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "timer": true,
+    "floatBlend": true,
+    "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.0.0 Safari/537.36",
+    "cores": 12,
+    "deviceMemory": 16,
+    "isolated": true,
+    "webgpu": true
+   },
+   "results": [
+    {
+     "test": "glDraw",
+     "n": 100000,
+     "prim": "points",
+     "size": 1,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 100000,
+     "gpu": {
+      "med": 0.16384,
+      "min": 0.162816,
+      "max": 0.18944,
+      "p95": 0.186368,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.07500004768371582,
+      "p95": 0.039999961853027344,
+      "k": 60
+     },
+     "busyPct": 39.1,
+     "gpuBefore": "3, 1708, 3504, 1419",
+     "gpuAfter": "2, 1708, 3504, 1426",
+     "wallS": 0.17
+    },
+    {
+     "test": "glDraw",
+     "n": 250000,
+     "prim": "points",
+     "size": 1,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 250000,
+     "gpu": {
+      "med": 0.408576,
+      "min": 0.407552,
+      "max": 0.428032,
+      "p95": 0.412672,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.04500007629394531,
+      "p95": 0.015000104904174805,
+      "k": 60
+     },
+     "busyPct": 19.6,
+     "gpuBefore": "10, 1708, 3504, 1426",
+     "gpuAfter": "2, 1708, 3504, 1429",
+     "wallS": 0.246
+    },
+    {
+     "test": "glDraw",
+     "n": 1000000,
+     "prim": "points",
+     "size": 1,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 1000000,
+     "gpu": {
+      "med": 1.635328,
+      "min": 1.63328,
+      "max": 6.70208,
+      "p95": 6.175744,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.059999942779541016,
+      "p95": 0.04500007629394531,
+      "k": 60
+     },
+     "busyPct": 18.4,
+     "gpuBefore": "19, 1708, 3504, 1429",
+     "gpuAfter": "83, 1721, 3504, 1601",
+     "wallS": 0.577
+    },
+    {
+     "test": "glDraw",
+     "n": 2000000,
+     "prim": "points",
+     "size": 1,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 2000000,
+     "gpu": {
+      "med": 3.268608,
+      "min": 3.26656,
+      "max": 3.831808,
+      "p95": 3.795968,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.06000018119812012,
+      "p95": 0.029999971389770508,
+      "k": 60
+     },
+     "busyPct": 19.2,
+     "gpuBefore": "83, 1721, 3504, 1601",
+     "gpuAfter": "79, 1721, 3504, 1624",
+     "wallS": 0.95
+    },
+    {
+     "test": "glDraw",
+     "n": 4000000,
+     "prim": "points",
+     "size": 1,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 4000000,
+     "gpu": {
+      "med": 6.633472,
+      "min": 6.631424,
+      "max": 7.215104,
+      "p95": 7.175168,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.005000114440917969,
+      "min": 0,
+      "max": 0.05500006675720215,
+      "p95": 0.04999995231628418,
+      "k": 60
+     },
+     "busyPct": 20,
+     "gpuBefore": "79, 1721, 3504, 1624",
+     "gpuAfter": "1, 1721, 3504, 1457",
+     "wallS": 2.412
+    },
+    {
+     "test": "glDraw",
+     "n": 100000,
+     "prim": "points",
+     "size": 2,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 100000,
+     "gpu": {
+      "med": 0.165888,
+      "min": 0.164864,
+      "max": 0.187392,
+      "p95": 0.169984,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.04499983787536621,
+      "p95": 0.019999980926513672,
+      "k": 60
+     },
+     "busyPct": 8.4,
+     "gpuBefore": "1, 1721, 3504, 1457",
+     "gpuAfter": "8, 1721, 3504, 1458",
+     "wallS": 0.124
+    },
+    {
+     "test": "glDraw",
+     "n": 250000,
+     "prim": "points",
+     "size": 2,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 250000,
+     "gpu": {
+      "med": 0.413696,
+      "min": 0.413696,
+      "max": 0.589824,
+      "p95": 0.432128,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.08000016212463379,
+      "p95": 0.04500007629394531,
+      "k": 60
+     },
+     "busyPct": 11.4,
+     "gpuBefore": "8, 1721, 3504, 1458",
+     "gpuAfter": "2, 1721, 3504, 1461",
+     "wallS": 0.185
+    },
+    {
+     "test": "glDraw",
+     "n": 1000000,
+     "prim": "points",
+     "size": 2,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 1000000,
+     "gpu": {
+      "med": 1.678336,
+      "min": 1.677312,
+      "max": 2.267136,
+      "p95": 2.106368,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.039999961853027344,
+      "p95": 0.029999971389770508,
+      "k": 60
+     },
+     "busyPct": 10,
+     "gpuBefore": "19, 1721, 3504, 1461",
+     "gpuAfter": "43, 1721, 3504, 1473",
+     "wallS": 0.266
+    },
+    {
+     "test": "glDraw",
+     "n": 100000,
+     "prim": "points",
+     "size": 3,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 100000,
+     "gpu": {
+      "med": 0.166912,
+      "min": 0.166912,
+      "max": 0.197632,
+      "p95": 0.19456,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.005000114440917969,
+      "min": 0,
+      "max": 0.03500008583068848,
+      "p95": 0.029999971389770508,
+      "k": 60
+     },
+     "busyPct": 6,
+     "gpuBefore": "33, 1721, 3504, 1472",
+     "gpuAfter": "33, 1721, 3504, 1472",
+     "wallS": 0.127
+    },
+    {
+     "test": "glDraw",
+     "n": 250000,
+     "prim": "points",
+     "size": 3,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 250000,
+     "gpu": {
+      "med": 0.420864,
+      "min": 0.418816,
+      "max": 0.88064,
+      "p95": 0.425984,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.07500004768371582,
+      "p95": 0.039999961853027344,
+      "k": 60
+     },
+     "busyPct": 85.9,
+     "gpuBefore": "9, 1721, 3504, 1472",
+     "gpuAfter": "20, 1721, 3504, 1467",
+     "wallS": 0.193
+    },
+    {
+     "test": "glDraw",
+     "n": 1000000,
+     "prim": "points",
+     "size": 3,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 1000000,
+     "gpu": {
+      "med": 1.707008,
+      "min": 1.705984,
+      "max": 2.248704,
+      "p95": 2.221056,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.039999961853027344,
+      "p95": 0.02500009536743164,
+      "k": 60
+     },
+     "busyPct": 36.9,
+     "gpuBefore": "20, 1721, 3504, 1467",
+     "gpuAfter": "68, 1721, 3504, 1467",
+     "wallS": 0.278
+    },
+    {
+     "test": "glDraw",
+     "n": 100000,
+     "prim": "points",
+     "size": 5,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 100000,
+     "gpu": {
+      "med": 0.198656,
+      "min": 0.197632,
+      "max": 0.228352,
+      "p95": 0.2048,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.040000200271606445,
+      "p95": 0.015000104904174805,
+      "k": 60
+     },
+     "busyPct": 10.2,
+     "gpuBefore": "68, 1721, 3504, 1467",
+     "gpuAfter": "12, 1721, 3504, 1467",
+     "wallS": 0.124
+    },
+    {
+     "test": "glDraw",
+     "n": 250000,
+     "prim": "points",
+     "size": 5,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 250000,
+     "gpu": {
+      "med": 0.497664,
+      "min": 0.49664,
+      "max": 0.92672,
+      "p95": 0.528384,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.029999971389770508,
+      "p95": 0.019999980926513672,
+      "k": 60
+     },
+     "busyPct": 9.1,
+     "gpuBefore": "12, 1721, 3504, 1467",
+     "gpuAfter": "13, 1721, 3504, 1467",
+     "wallS": 0.158
+    },
+    {
+     "test": "glDraw",
+     "n": 1000000,
+     "prim": "points",
+     "size": 5,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 1000000,
+     "gpu": {
+      "med": 2.11456,
+      "min": 2.111488,
+      "max": 3.045376,
+      "p95": 2.545664,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0,
+      "min": 0,
+      "max": 0.034999847412109375,
+      "p95": 0.019999980926513672,
+      "k": 60
+     },
+     "busyPct": 10.7,
+     "gpuBefore": "17, 1721, 3504, 1462",
+     "gpuAfter": "55, 1708, 3504, 1462",
+     "wallS": 0.296
+    },
+    {
+     "test": "glDraw",
+     "n": 100000,
+     "prim": "quads",
+     "size": 1,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 100000,
+     "gpu": {
+      "med": 0.451584,
+      "min": 0.442368,
+      "max": 2.528256,
+      "p95": 1.005568,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.05500006675720215,
+      "p95": 0.05500006675720215,
+      "k": 60
+     },
+     "busyPct": 72.8,
+     "gpuBefore": "40, 1708, 3504, 1462",
+     "gpuAfter": "21, 1708, 3504, 1462",
+     "wallS": 0.188
+    },
+    {
+     "test": "glDraw",
+     "n": 250000,
+     "prim": "quads",
+     "size": 1,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 250000,
+     "gpu": {
+      "med": 1.113088,
+      "min": 1.107968,
+      "max": 2.484224,
+      "p95": 1.692672,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.05499982833862305,
+      "p95": 0.039999961853027344,
+      "k": 60
+     },
+     "busyPct": 23.9,
+     "gpuBefore": "21, 1708, 3504, 1579",
+     "gpuAfter": "67, 1721, 3504, 1629",
+     "wallS": 0.216
+    },
+    {
+     "test": "glDraw",
+     "n": 1000000,
+     "prim": "quads",
+     "size": 1,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 1000000,
+     "gpu": {
+      "med": 4.420608,
+      "min": 4.409344,
+      "max": 21.43744,
+      "p95": 9.997312,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.005000114440917969,
+      "min": 0,
+      "max": 0.09000015258789062,
+      "p95": 0.05500006675720215,
+      "k": 60
+     },
+     "busyPct": 15,
+     "gpuBefore": "67, 1721, 3504, 1629",
+     "gpuAfter": "76, 1721, 3504, 1636",
+     "wallS": 0.652
+    },
+    {
+     "test": "glDraw",
+     "n": 100000,
+     "prim": "quads",
+     "size": 3,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 100000,
+     "gpu": {
+      "med": 0.441344,
+      "min": 0.44032,
+      "max": 0.642048,
+      "p95": 0.463872,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.005000114440917969,
+      "min": 0,
+      "max": 0.07999992370605469,
+      "p95": 0.059999942779541016,
+      "k": 60
+     },
+     "busyPct": 13.3,
+     "gpuBefore": "76, 1721, 3504, 1636",
+     "gpuAfter": "15, 1721, 3504, 1636",
+     "wallS": 0.186
+    },
+    {
+     "test": "glDraw",
+     "n": 250000,
+     "prim": "quads",
+     "size": 3,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 250000,
+     "gpu": {
+      "med": 1.10592,
+      "min": 1.102848,
+      "max": 4.221952,
+      "p95": 1.660928,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.09500002861022949,
+      "p95": 0.039999961853027344,
+      "k": 60
+     },
+     "busyPct": 44.8,
+     "gpuBefore": "7, 1721, 3504, 1636",
+     "gpuAfter": "42, 1721, 3504, 1636",
+     "wallS": 0.228
+    },
+    {
+     "test": "glDraw",
+     "n": 1000000,
+     "prim": "quads",
+     "size": 3,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 1000000,
+     "gpu": {
+      "med": 4.415488,
+      "min": 4.409344,
+      "max": 5.131264,
+      "p95": 5.047296,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.05500006675720215,
+      "p95": 0.04999995231628418,
+      "k": 60
+     },
+     "busyPct": 10.2,
+     "gpuBefore": "42, 1721, 3504, 1636",
+     "gpuAfter": "50, 1721, 3504, 1587",
+     "wallS": 0.542
+    },
+    {
+     "test": "glDraw",
+     "n": 100000,
+     "prim": "quads",
+     "size": 5,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 100000,
+     "gpu": {
+      "med": 0.442368,
+      "min": 0.441344,
+      "max": 1.805312,
+      "p95": 0.806912,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.10500001907348633,
+      "p95": 0.04999995231628418,
+      "k": 60
+     },
+     "busyPct": 21.9,
+     "gpuBefore": "50, 1721, 3504, 1587",
+     "gpuAfter": "20, 1721, 3504, 1587",
+     "wallS": 0.155
+    },
+    {
+     "test": "glDraw",
+     "n": 250000,
+     "prim": "quads",
+     "size": 5,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 250000,
+     "gpu": {
+      "med": 1.110016,
+      "min": 1.10592,
+      "max": 1.577984,
+      "p95": 1.173504,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.06000018119812012,
+      "p95": 0.04999995231628418,
+      "k": 60
+     },
+     "busyPct": 39.1,
+     "gpuBefore": "20, 1721, 3504, 1587",
+     "gpuAfter": "26, 1721, 3504, 1586",
+     "wallS": 0.223
+    },
+    {
+     "test": "glDraw",
+     "n": 1000000,
+     "prim": "quads",
+     "size": 5,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 1000000,
+     "gpu": {
+      "med": 4.488192,
+      "min": 4.420608,
+      "max": 5.794816,
+      "p95": 5.56544,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.059999942779541016,
+      "p95": 0.04500007629394531,
+      "k": 60
+     },
+     "busyPct": 35.6,
+     "gpuBefore": "23, 1721, 3504, 1583",
+     "gpuAfter": "55, 1721, 3504, 1482",
+     "wallS": 0.572
+    },
+    {
+     "test": "glDraw",
+     "n": 1000000,
+     "prim": "points",
+     "size": 5,
+     "interp": false,
+     "view": "district",
+     "tex": false,
+     "order": "cell",
+     "visible": 38067,
+     "gpu": {
+      "med": 1.627136,
+      "min": 1.626112,
+      "max": 2.210816,
+      "p95": 2.013184,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.07500004768371582,
+      "p95": 0.029999971389770508,
+      "k": 60
+     },
+     "busyPct": 13.9,
+     "gpuBefore": "28, 1721, 3504, 1482",
+     "gpuAfter": "59, 1721, 3504, 1482",
+     "wallS": 0.245
+    },
+    {
+     "test": "glDraw",
+     "n": 1000000,
+     "prim": "points",
+     "size": 5,
+     "interp": false,
+     "view": "street",
+     "tex": false,
+     "order": "cell",
+     "visible": 15095,
+     "gpu": {
+      "med": 1.625088,
+      "min": 1.62304,
+      "max": 2.922496,
+      "p95": 2.06336,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.039999961853027344,
+      "p95": 0.03000020980834961,
+      "k": 60
+     },
+     "busyPct": 4.7,
+     "gpuBefore": "59, 1721, 3504, 1478",
+     "gpuAfter": "65, 1721, 3504, 1490",
+     "wallS": 0.265
+    },
+    {
+     "test": "glDraw",
+     "n": 1000000,
+     "prim": "points",
+     "size": 1,
+     "interp": true,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 1000000,
+     "gpu": {
+      "med": 1.627136,
+      "min": 1.626112,
+      "max": 2.282496,
+      "p95": 2.080768,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.06500005722045898,
+      "p95": 0.039999961853027344,
+      "k": 60
+     },
+     "busyPct": 29.7,
+     "gpuBefore": "65, 1721, 3504, 1490",
+     "gpuAfter": "68, 1721, 3504, 1501",
+     "wallS": 0.291
+    },
+    {
+     "test": "glDraw",
+     "n": 1000000,
+     "prim": "quads",
+     "size": 5,
+     "interp": true,
+     "view": "city",
+     "tex": false,
+     "order": "cell",
+     "visible": 1000000,
+     "gpu": {
+      "med": 5.098496,
+      "min": 4.726784,
+      "max": 8.977408,
+      "p95": 6.9632,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.06000018119812012,
+      "p95": 0.039999961853027344,
+      "k": 60
+     },
+     "busyPct": 25.1,
+     "gpuBefore": "68, 1721, 3504, 1501",
+     "gpuAfter": "34, 1721, 3504, 1500",
+     "wallS": 0.716
+    },
+    {
+     "test": "glDraw",
+     "n": 1000000,
+     "prim": "points",
+     "size": 1,
+     "interp": false,
+     "view": "city",
+     "tex": true,
+     "order": "cell",
+     "visible": 1000000,
+     "gpu": {
+      "med": 1.626112,
+      "min": 1.626112,
+      "max": 2.226176,
+      "p95": 2.076672,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.005000114440917969,
+      "min": 0,
+      "max": 0.07000017166137695,
+      "p95": 0.05500006675720215,
+      "k": 60
+     },
+     "busyPct": 31.2,
+     "gpuBefore": "34, 1721, 3504, 1500",
+     "gpuAfter": "73, 1721, 3504, 1528",
+     "wallS": 0.336
+    },
+    {
+     "test": "glDraw",
+     "n": 1000000,
+     "prim": "points",
+     "size": 5,
+     "interp": false,
+     "view": "city",
+     "tex": true,
+     "order": "cell",
+     "visible": 1000000,
+     "gpu": {
+      "med": 2.143232,
+      "min": 2.113536,
+      "max": 2.653184,
+      "p95": 2.577408,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.005000114440917969,
+      "min": 0,
+      "max": 0.09000015258789062,
+      "p95": 0.03500008583068848,
+      "k": 60
+     },
+     "busyPct": 19.3,
+     "gpuBefore": "73, 1721, 3504, 1528",
+     "gpuAfter": "74, 1721, 3504, 1549",
+     "wallS": 0.308
+    },
+    {
+     "test": "glDraw",
+     "n": 1000000,
+     "prim": "quads",
+     "size": 5,
+     "interp": false,
+     "view": "city",
+     "tex": true,
+     "order": "cell",
+     "visible": 1000000,
+     "gpu": {
+      "med": 4.461568,
+      "min": 4.417536,
+      "max": 5.545984,
+      "p95": 4.993024,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.06499981880187988,
+      "p95": 0.03500008583068848,
+      "k": 60
+     },
+     "busyPct": 11.1,
+     "gpuBefore": "74, 1721, 3504, 1549",
+     "gpuAfter": "85, 1721, 3504, 1534",
+     "wallS": 0.468
+    },
+    {
+     "test": "glDraw",
+     "n": 1000000,
+     "prim": "points",
+     "size": 1,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "random",
+     "visible": 1000000,
+     "gpu": {
+      "med": 1.634304,
+      "min": 1.63328,
+      "max": 7.297024,
+      "p95": 6.109184,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.04999995231628418,
+      "p95": 0.039999961853027344,
+      "k": 60
+     },
+     "busyPct": 19.1,
+     "gpuBefore": "31, 1721, 3504, 1534",
+     "gpuAfter": "62, 1721, 3504, 1695",
+     "wallS": 0.482
+    },
+    {
+     "test": "glDraw",
+     "n": 1000000,
+     "prim": "points",
+     "size": 5,
+     "interp": false,
+     "view": "city",
+     "tex": false,
+     "order": "random",
+     "visible": 1000000,
+     "gpu": {
+      "med": 3.183616,
+      "min": 3.146752,
+      "max": 10.524672,
+      "p95": 8.564736,
+      "k": 60
+     },
+     "cpu": {
+      "med": 0.004999876022338867,
+      "min": 0,
+      "max": 0.04999995231628418,
+      "p95": 0.039999961853027344,
+      "k": 60
+     },
+     "busyPct": 23.8,
+     "gpuBefore": "58, 1721, 3504, 1695",
+     "gpuAfter": "92, 1657, 3504, 1694",
+     "wallS": 0.419
+    },
+    {
+     "test": "gpuDraw",
+     "n": 100000,
+     "prim": "quads",
+     "size": 1,
+     "interp": false,
+     "view": "city",
+     "visible": 100000,
+     "gpu": {
+      "med": 0.157696,
+      "min": 0.156672,
+      "max": 0.15872,
+      "p95": 0.157696,
+      "k": 30
+     },
+     "wallPerPass": {
+      "med": 0.3950000047683716,
+      "min": 0.2909999847412109,
+      "max": 0.41500000953674315,
+      "p95": 0.41500000953674315,
+      "k": 10
+     },
+     "timestamps": true,
+     "busyPct": 17.3,
+     "gpuBefore": "56, 1657, 3504, 1694",
+     "gpuAfter": "8, 1657, 3504, 1723",
+     "wallS": 0.404
+    },
+    {
+     "test": "gpuDraw",
+     "n": 250000,
+     "prim": "quads",
+     "size": 1,
+     "interp": false,
+     "view": "city",
+     "visible": 250000,
+     "gpu": {
+      "med": 0.38912,
+      "min": 0.38912,
+      "max": 0.390144,
+      "p95": 0.390144,
+      "k": 30
+     },
+     "wallPerPass": {
+      "med": 0.5085000038146973,
+      "min": 0.4444999933242798,
+      "max": 0.602999997138977,
+      "p95": 0.602999997138977,
+      "k": 10
+     },
+     "timestamps": true,
+     "busyPct": 13,
+     "gpuBefore": "8, 1657, 3504, 1723",
+     "gpuAfter": "32, 1657, 3504, 1707",
+     "wallS": 0.218
+    },
+    {
+     "test": "gpuDraw",
+     "n": 1000000,
+     "prim": "quads",
+     "size": 1,
+     "interp": false,
+     "view": "city",
+     "visible": 1000000,
+     "gpu": {
+      "med": 1.549312,
+      "min": 1.548288,
+      "max": 1.896448,
+      "p95": 1.752064,
+      "k": 30
+     },
+     "wallPerPass": {
+      "med": 1.734500002861023,
+      "min": 1.6005000114440917,
+      "max": 1.9059999942779542,
+      "p95": 1.9059999942779542,
+      "k": 10
+     },
+     "timestamps": true,
+     "busyPct": 28.2,
+     "gpuBefore": "32, 1657, 3504, 1707",
+     "gpuAfter": "72, 1721, 3504, 1575",
+     "wallS": 0.375
+    },
+    {
+     "test": "gpuDraw",
+     "n": 100000,
+     "prim": "quads",
+     "size": 3,
+     "interp": false,
+     "view": "city",
+     "visible": 100000,
+     "gpu": {
+      "med": 0.151552,
+      "min": 0.151552,
+      "max": 0.152576,
+      "p95": 0.152576,
+      "k": 30
+     },
+     "wallPerPass": {
+      "med": 0.2984999895095825,
+      "min": 0.28450000286102295,
+      "max": 0.4125,
+      "p95": 0.4125,
+      "k": 10
+     },
+     "timestamps": true,
+     "busyPct": 89.5,
+     "gpuBefore": "43, 1721, 3504, 1575",
+     "gpuAfter": "6, 1721, 3504, 1563",
+     "wallS": 0.246
+    },
+    {
+     "test": "gpuDraw",
+     "n": 250000,
+     "prim": "quads",
+     "size": 3,
+     "interp": false,
+     "view": "city",
+     "visible": 250000,
+     "gpu": {
+      "med": 0.375808,
+      "min": 0.374784,
+      "max": 0.375808,
+      "p95": 0.375808,
+      "k": 30
+     },
+     "wallPerPass": {
+      "med": 0.6,
+      "min": 0.5005000114440918,
+      "max": 0.7650000095367432,
+      "p95": 0.7650000095367432,
+      "k": 10
+     },
+     "timestamps": true,
+     "busyPct": 84.9,
+     "gpuBefore": "10, 1721, 3504, 1563",
+     "gpuAfter": "28, 1721, 3504, 1557",
+     "wallS": 0.254
+    },
+    {
+     "test": "gpuDraw",
+     "n": 1000000,
+     "prim": "quads",
+     "size": 3,
+     "interp": false,
+     "view": "city",
+     "visible": 1000000,
+     "gpu": {
+      "med": 1.49504,
+      "min": 1.494016,
+      "max": 1.8432,
+      "p95": 1.49504,
+      "k": 30
+     },
+     "wallPerPass": {
+      "med": 1.7549999952316284,
+      "min": 1.6019999980926514,
+      "max": 1.805999994277954,
+      "p95": 1.805999994277954,
+      "k": 10
+     },
+     "timestamps": true,
+     "busyPct": 83.7,
+     "gpuBefore": "28, 1721, 3504, 1557",
+     "gpuAfter": "71, 1721, 3504, 1569",
+     "wallS": 0.389
+    },
+    {
+     "test": "gpuDraw",
+     "n": 100000,
+     "prim": "quads",
+     "size": 5,
+     "interp": false,
+     "view": "city",
+     "visible": 100000,
+     "gpu": {
+      "med": 0.208896,
+      "min": 0.207872,
+      "max": 0.20992,
+      "p95": 0.20992,
+      "k": 30
+     },
+     "wallPerPass": {
+      "med": 0.3819999933242798,
+      "min": 0.2919999837875366,
+      "max": 0.5035000085830689,
+      "p95": 0.5035000085830689,
+      "k": 10
+     },
+     "timestamps": true,
+     "busyPct": 79.8,
+     "gpuBefore": "37, 1721, 3504, 1569",
+     "gpuAfter": "7, 1721, 3504, 1553",
+     "wallS": 0.235
+    },
+    {
+     "test": "gpuDraw",
+     "n": 250000,
+     "prim": "quads",
+     "size": 5,
+     "interp": false,
+     "view": "city",
+     "visible": 250000,
+     "gpu": {
+      "med": 0.50688,
+      "min": 0.50688,
+      "max": 0.507904,
+      "p95": 0.507904,
+      "k": 30
+     },
+     "wallPerPass": {
+      "med": 0.7065000057220459,
+      "min": 0.6494999885559082,
+      "max": 0.9265000104904175,
+      "p95": 0.9265000104904175,
+      "k": 10
+     },
+     "timestamps": true,
+     "busyPct": 81.4,
+     "gpuBefore": "14, 1721, 3504, 1553",
+     "gpuAfter": "19, 1721, 3504, 1553",
+     "wallS": 0.268
+    },
+    {
+     "test": "gpuDraw",
+     "n": 1000000,
+     "prim": "quads",
+     "size": 5,
+     "interp": false,
+     "view": "city",
+     "visible": 1000000,
+     "gpu": {
+      "med": 2.01216,
+      "min": 2.009088,
+      "max": 2.015232,
+      "p95": 2.015232,
+      "k": 30
+     },
+     "wallPerPass": {
+      "med": 2.497000002861023,
+      "min": 2.2,
+      "max": 2.6045000076293947,
+      "p95": 2.6045000076293947,
+      "k": 10
+     },
+     "timestamps": true,
+     "busyPct": 91.1,
+     "gpuBefore": "26, 1721, 3504, 1551",
+     "gpuAfter": "74, 1670, 3504, 1567",
+     "wallS": 0.483
+    },
+    {
+     "test": "gpuDraw",
+     "n": 100000,
+     "prim": "points",
+     "size": 1,
+     "interp": false,
+     "view": "city",
+     "visible": 100000,
+     "gpu": {
+      "med": 0.077824,
+      "min": 0.0768,
+      "max": 0.078848,
+      "p95": 0.078848,
+      "k": 30
+     },
+     "wallPerPass": {
+      "med": 0.42450001239776614,
+      "min": 0.29800000190734866,
+      "max": 0.5,
+      "p95": 0.5,
+      "k": 10
+     },
+     "timestamps": true,
+     "busyPct": 92.8,
+     "gpuBefore": "74, 1670, 3504, 1567",
+     "gpuAfter": "8, 1670, 3504, 1558",
+     "wallS": 0.244
+    },
+    {
+     "test": "gpuDraw",
+     "n": 250000,
+     "prim": "points",
+     "size": 1,
+     "interp": false,
+     "view": "city",
+     "visible": 250000,
+     "gpu": {
+      "med": 0.18944,
+      "min": 0.18944,
+      "max": 0.190464,
+      "p95": 0.190464,
+      "k": 30
+     },
+     "wallPerPass": {
+      "med": 0.3059999942779541,
+      "min": 0.29100000858306885,
+      "max": 0.4065000057220459,
+      "p95": 0.4065000057220459,
+      "k": 10
+     },
+     "timestamps": true,
+     "busyPct": 72.4,
+     "gpuBefore": "8, 1670, 3504, 1558",
+     "gpuAfter": "16, 1670, 3504, 1554",
+     "wallS": 0.232
+    },
+    {
+     "test": "gpuDraw",
+     "n": 1000000,
+     "prim": "points",
+     "size": 1,
+     "interp": false,
+     "view": "city",
+     "visible": 1000000,
+     "gpu": {
+      "med": 0.750592,
+      "min": 0.750592,
+      "max": 0.751616,
+      "p95": 0.750592,
+      "k": 30
+     },
+     "wallPerPass": {
+      "med": 1.0029999971389771,
+      "min": 0.9039999961853027,
+      "max": 1.1964999914169312,
+      "p95": 1.1964999914169312,
+      "k": 10
+     },
+     "timestamps": true,
+     "busyPct": 77.9,
+     "gpuBefore": "16, 1670, 3504, 1558",
+     "gpuAfter": "55, 1670, 3504, 1570",
+     "wallS": 0.308
+    },
+    {
+     "test": "gpuDraw",
+     "n": 1000000,
+     "prim": "quads",
+     "size": 5,
+     "interp": true,
+     "view": "city",
+     "visible": 1000000,
+     "gpu": {
+      "med": 2.08896,
+      "min": 2.084864,
+      "max": 2.185216,
+      "p95": 2.176,
+      "k": 30
+     },
+     "wallPerPass": {
+      "med": 2.3924999952316286,
+      "min": 2.206500005722046,
+      "max": 8.202499985694885,
+      "p95": 8.202499985694885,
+      "k": 10
+     },
+     "timestamps": true,
+     "busyPct": 67.2,
+     "gpuBefore": "55, 1670, 3504, 1570",
+     "gpuAfter": "65, 1620, 3504, 1467",
+     "wallS": 0.577
+    },
+    {
+     "test": "gpuDraw",
+     "n": 1000000,
+     "prim": "points",
+     "size": 1,
+     "interp": true,
+     "view": "city",
+     "visible": 1000000,
+     "gpu": {
+      "med": 0.772096,
+      "min": 0.771072,
+      "max": 0.774144,
+      "p95": 0.774144,
+      "k": 30
+     },
+     "wallPerPass": {
+      "med": 1.0015000104904175,
+      "min": 0.9,
+      "max": 1.294000005722046,
+      "p95": 1.294000005722046,
+      "k": 10
+     },
+     "timestamps": true,
+     "busyPct": 75.4,
+     "gpuBefore": "65, 1620, 3504, 1467",
+     "gpuAfter": "41, 1620, 3504, 1467",
+     "wallS": 0.343
+    }
+   ]
+  }
+ ]
+}

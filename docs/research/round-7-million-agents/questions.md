@@ -10,7 +10,7 @@ This is a lean round, as the owner chose: three researchers, then a report, a fa
 | 2 | How much memory does 1 million need, what will browsers allow, and how should Nomos detect the hardware and pick a tier? | `notes/memory-tiers.md` | Stopped before notes; prototypes, including a browser harness, in `prototypes/memory/` |
 | 3 | How should 1 million agents and a country of millions be drawn and zoomed? | `notes/rendering-lod.md` | Stopped before notes; a static WebGL2/WebGPU prototype in `prototypes/rendering/` |
 
-On 2026-10-06 the three researchers were stopped mid-task by a usage limit and an interrupt, before writing their notes. Their prototypes and results are uncommitted in the working tree; the WebGPU test package in `prototypes/gpu/node_modules/` is ignored. Resuming the round means a new researcher per question writing the notes from these prototypes, which the owner has to approve first.
+On 2026-10-06 the three researchers were stopped mid-task by a usage limit and an interrupt, before writing their notes. Their prototypes and results are committed in `prototypes/`; the npm packages in each `node_modules/` are ignored. Resuming the round means a new researcher per question writing the notes from these prototypes, which the owner has to approve first.
 
 ## Still to do
 

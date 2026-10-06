@@ -1,0 +1,45 @@
+{
+  "machine": {
+    "cpu": "AMD Ryzen 5 3600 6-Core Processor",
+    "logicalCpus": 12,
+    "ramGiB": 15.93,
+    "freeGiB": 2.57,
+    "node": "v24.18.0",
+    "v8": "13.6.233.17-node.50",
+    "os": "win32 10.0.19045 x64"
+  },
+  "busyBefore": 0.49,
+  "viewUsAb": {
+    "median": 0.0637,
+    "min": 0.0602,
+    "max": 0.143,
+    "n": 9
+  },
+  "viewUsSab": {
+    "median": 0.1189,
+    "min": 0.0714,
+    "max": 0.1355,
+    "n": 9
+  },
+  "viewUsWasmShared": {
+    "median": 0.0675,
+    "min": 0.0634,
+    "max": 0.1272,
+    "n": 9
+  },
+  "wasmShared4GiB.byteLength": 4294967296,
+  "u8.lengthOver4GiBBuffer": 4294967296,
+  "f64.viewAtOffset3GiB": {
+    "length": 1024,
+    "last": 1.5
+  },
+  "i32.viewEndingAt4GiB": {
+    "byteOffset": 4294963200,
+    "last": 7
+  },
+  "wasm.maximumOver65536Pages": "RangeError: WebAssembly.Memory(): Property 'maximum': value 65537 is above the upper bound 65536",
+  "wasm.initialOver65536Pages": "RangeError: WebAssembly.Memory(): Property 'initial': value 65537 is above the upper bound 65536",
+  "sab.over4GiB": 4295032832,
+  "typedArray.maxLengthHint": 4294967304,
+  "busyAfter": 0.38
+}

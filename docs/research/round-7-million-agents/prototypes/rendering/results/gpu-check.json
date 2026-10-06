@@ -1,0 +1,272 @@
+{
+ "mode": "gpu",
+ "suite": "check",
+ "machine": {
+  "cpu": "AMD Ryzen 5 3600 6-Core Processor              ",
+  "logicalCores": 12,
+  "ramGB": 15.9,
+  "node": "v24.18.0",
+  "os": "Windows_NT 10.0.19045",
+  "gpu": "NVIDIA GeForce GTX 1050 Ti, 560.94, 3, 16",
+  "loadavg": [
+   0,
+   0,
+   0
+  ],
+  "loadavgNote": "os.loadavg() is always 0 on Windows; busyPct per test is the CPU-busy figure (all logical cores, from os.cpus() deltas)"
+ },
+ "idleBusyPctBefore": 7.3,
+ "date": "2026-10-05T14:55:20.269Z",
+ "runs": [
+  {
+   "run": 1,
+   "chromium": "153.0.8010.12",
+   "env": {
+    "renderer": "ANGLE (NVIDIA, NVIDIA GeForce GTX 1050 Ti (0x00001C82) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "timer": true,
+    "floatBlend": true,
+    "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.0.0 Safari/537.36",
+    "cores": 12,
+    "deviceMemory": 16,
+    "isolated": true,
+    "webgpu": true
+   },
+   "results": [
+    {
+     "test": "transition",
+     "n": 1000000,
+     "fresh": true,
+     "mb": 12,
+     "sabAllocMs": 0.12000012397766113,
+     "glAllocTwoBuffersMs": 0.14999985694885254,
+     "allocE2e": 18.18499994277954,
+     "firstUploadCpu": 6.25,
+     "firstUploadE2e": 11.360000133514404,
+     "firstDrawE2e": 37.78500008583069,
+     "secondBufferUploadE2e": 5.115000009536743,
+     "secondBufferFirstDrawE2e": 26.19000005722046,
+     "firstFrameE2e": 49.14500021934509,
+     "warmFrameE2e": {
+      "med": 3.0899999141693115,
+      "min": 2.450000047683716,
+      "max": 9.520000219345093,
+      "p95": 9.520000219345093,
+      "k": 10
+     },
+     "slices": 16,
+     "sliceMb": 0.75,
+     "sliceCpu": {
+      "med": 0.10500001907348633,
+      "min": 0.07999992370605469,
+      "max": 0.28999996185302734,
+      "p95": 0.26999998092651367,
+      "k": 48
+     },
+     "busyPct": 72,
+     "gpuBefore": "31, 1290, 3504, 1601",
+     "gpuAfter": "56, 1290, 3504, 1629",
+     "wallS": 0.465
+    },
+    {
+     "test": "transition",
+     "n": 1000000,
+     "fresh": false,
+     "mb": 12,
+     "sabAllocMs": 0.07500004768371582,
+     "glAllocTwoBuffersMs": 0.04499983787536621,
+     "allocE2e": 8.575000047683716,
+     "firstUploadCpu": 4.245000123977661,
+     "firstUploadE2e": 9.795000076293945,
+     "firstDrawE2e": 9.509999990463257,
+     "secondBufferUploadE2e": 2.7699999809265137,
+     "secondBufferFirstDrawE2e": 5.809999942779541,
+     "firstFrameE2e": 19.305000066757202,
+     "warmFrameE2e": {
+      "med": 3.244999885559082,
+      "min": 2.4200000762939453,
+      "max": 8.894999980926514,
+      "p95": 8.894999980926514,
+      "k": 10
+     },
+     "slices": 16,
+     "sliceMb": 0.75,
+     "sliceCpu": {
+      "med": 0.09500002861022949,
+      "min": 0.07500004768371582,
+      "max": 0.3599998950958252,
+      "p95": 0.2799999713897705,
+      "k": 48
+     },
+     "busyPct": 28,
+     "gpuBefore": "56, 1290, 3504, 1629",
+     "gpuAfter": "40, 1290, 3504, 1649",
+     "wallS": 0.186
+    },
+    {
+     "test": "transition",
+     "n": 1000000,
+     "fresh": true,
+     "mb": 12,
+     "sabAllocMs": 0.09000015258789062,
+     "glAllocTwoBuffersMs": 0.02500009536743164,
+     "allocE2e": 9.275000095367432,
+     "firstUploadCpu": 3.984999895095825,
+     "firstUploadE2e": 7.9049999713897705,
+     "firstDrawE2e": 5.264999866485596,
+     "secondBufferUploadE2e": 2.3550000190734863,
+     "secondBufferFirstDrawE2e": 5.25,
+     "firstFrameE2e": 13.169999837875366,
+     "warmFrameE2e": {
+      "med": 2.484999895095825,
+      "min": 2.309999942779541,
+      "max": 5.065000057220459,
+      "p95": 5.065000057220459,
+      "k": 10
+     },
+     "slices": 16,
+     "sliceMb": 0.75,
+     "sliceCpu": {
+      "med": 0.09500002861022949,
+      "min": 0.07500004768371582,
+      "max": 0.315000057220459,
+      "p95": 0.2999999523162842,
+      "k": 48
+     },
+     "busyPct": 31,
+     "gpuBefore": "22, 1290, 3504, 1649",
+     "gpuAfter": "21, 1290, 3504, 1649",
+     "wallS": 0.169
+    },
+    {
+     "test": "pipeline",
+     "n": 1000000,
+     "transport": "sab",
+     "render": {
+      "frames": 84,
+      "cpu": {
+       "med": 0.10000014305114746,
+       "p95": 2.2049999237060547,
+       "min": 0.034999847412109375,
+       "max": 10.875,
+       "k": 84
+      },
+      "upload": {
+       "med": 1.75,
+       "p95": 10.615000009536743,
+       "min": 1.2950000762939453,
+       "max": 10.615000009536743,
+       "k": 16
+      },
+      "interval": {
+       "med": 16.670000000000073,
+       "p95": 16.730000000000018,
+       "min": 16.574999999999818,
+       "max": 83.24000000000001,
+       "k": 83
+      },
+      "gpu": {
+       "med": 2.127872,
+       "p95": 3.052544,
+       "min": 2.122752,
+       "max": 3.425248,
+       "k": 42
+      },
+      "longFrames": 2,
+      "count": 1000000,
+      "visible": 1000000,
+      "lod": "dots",
+      "occupancy": 0.48225308641975306
+     },
+     "upload": "full",
+     "warm": 0,
+     "seconds": 1.5,
+     "sim": {
+      "ticks": 10,
+      "stepMed": 7.590000152587891,
+      "packMed": 4.924999952316284,
+      "countMed": 1000000,
+      "packMin": 4.870000123977661,
+      "packMax": 5.204999923706055
+     },
+     "main": null,
+     "busyPct": 12.1,
+     "gpuBefore": "21, 1290, 3504, 1649",
+     "gpuAfter": "16, 1290, 3504, 1520",
+     "wallS": 2.03
+    },
+    {
+     "test": "pipeline",
+     "n": 1000000,
+     "transport": "sab",
+     "render": {
+      "frames": 121,
+      "cpu": {
+       "med": 0.08500003814697266,
+       "p95": 1.7799999713897705,
+       "min": 0.029999971389770508,
+       "max": 2.625,
+       "k": 121
+      },
+      "upload": {
+       "med": 1.6050000190734863,
+       "p95": 2.505000114440918,
+       "min": 1.2150001525878906,
+       "max": 2.505000114440918,
+       "k": 20
+      },
+      "interval": {
+       "med": 16.664999999999964,
+       "p95": 16.705000000000382,
+       "min": 16.589999999999918,
+       "max": 16.745000000000346,
+       "k": 121
+      },
+      "gpu": {
+       "med": 2.417664,
+       "p95": 3.05152,
+       "min": 2.121728,
+       "max": 3.07712,
+       "k": 61
+      },
+      "longFrames": 0,
+      "count": 1000000,
+      "visible": 1000000,
+      "lod": "dots",
+      "occupancy": 0.48225308641975306
+     },
+     "upload": "full",
+     "warm": 1,
+     "seconds": 2,
+     "sim": {
+      "ticks": 20,
+      "stepMed": 7.805000066757202,
+      "packMed": 4.925000190734863,
+      "countMed": 1000000,
+      "packMin": 4.869999885559082,
+      "packMax": 7.434999942779541
+     },
+     "main": {
+      "interval": {
+       "med": 16.664999999999964,
+       "p95": 16.715000000000146,
+       "min": 16.585000000000036,
+       "max": 16.74499999999989,
+       "k": 121
+      },
+      "busy": {
+       "med": 0.005000114440917969,
+       "p95": 0.009999990463256836,
+       "min": 0,
+       "max": 0.015000104904174805,
+       "k": 121
+      }
+     },
+     "busyPct": 15.1,
+     "gpuBefore": "16, 1290, 3504, 1520",
+     "gpuAfter": "47, 1290, 3504, 1645",
+     "wallS": 3.527
+    }
+   ]
+  }
+ ]
+}

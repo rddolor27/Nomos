@@ -1,0 +1,40 @@
+{
+  "machine": {
+    "cpu": "AMD Ryzen 5 3600 6-Core Processor",
+    "logicalCpus": 12,
+    "ramGiB": 15.93,
+    "freeGiB": 2.56,
+    "node": "v24.18.0",
+    "v8": "13.6.233.17-node.50",
+    "os": "win32 10.0.19045 x64"
+  },
+  "mode": "rab",
+  "tests": {
+    "rab.toResizableBufferAvailable": true,
+    "rab.shared": {
+      "isSAB": true,
+      "growable": true,
+      "maxByteLength": 268435456,
+      "trackingBefore": 4194304,
+      "trackingAfterMemGrow": 8388608,
+      "sameObjectAfterGrow": true,
+      "v0": 42
+    },
+    "rab.shared.bufferGrowGrowsMemory": {
+      "memBytes": 50331648,
+      "tracking": 12582912
+    },
+    "rab.nonShared": {
+      "resizable": true,
+      "detached": false,
+      "trackingAfterGrow": 8388608,
+      "v0": 7,
+      "sameObject": true,
+      "afterToFixed": {
+        "oldDetached": true,
+        "fixedResizable": false,
+        "trackingLength": 0
+      }
+    }
+  }
+}
