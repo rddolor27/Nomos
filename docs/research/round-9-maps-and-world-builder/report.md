@@ -21,22 +21,22 @@ Labels follow the docs rules:
 - "inference";
 - "unsourced estimate".
 
-Every timing ran on one busy Windows desktop (Ryzen 5 3600) under Node 24.18, Chromium 153 or CPython 3.14. None is a phone timing.
+Every round 9 timing ran on one busy Windows desktop (Ryzen 5 3600) under Node 24.18, Chromium 153 or CPython 3.14. Round 4's timings, marked "measured there", were not re-run here. None is a phone timing.
 
 ## The answer
 
-**World builder: yes. The owner chose a full player editor before launch.** The research recommended a smaller builder. On 6 October 2026 the owner chose the full one, so every level ships before launch:
+**World builder: yes. The owner chose a full player editor.** The research recommended a smaller builder. On 6 October 2026 the owner chose the full one. Every level on a pre-launch milestone ships by launch, and the country-level tools ship with M8:
 - **The owner's Build mode, behind a developer flag (M3, 8–12 days),** to hand-edit generated hero towns.
 - **"New town" settings in M6 (2–4 days), and the Build mode opened to players as a street editor (8–12 more days):** paint tiles, place buildings and props, edit zones.
 - **Card remix (3–5 days) and card authoring (6–10 days) once M1 cards and M6 links exist.**
-- **"New country" settings in M8 (5–8 days), plus god tools on the country (14–22 days):** lock and re-roll, terrain brushes, biome paint, drawn rivers and roads.
+- **"New country" settings in M8 (5–8 days), plus god tools on the country (14–22 days):** lock and re-roll, terrain brushes, biome paint, drawn rivers and roads. The plan puts launch at M6 and M7–M9 after it, so these two ship before launch only if launch moves.
 - **Players never paint cultures.** They choose a culture count. The content rules hold by construction:
   - the palette offers building kinds, never styles;
   - no person, costume, culture or hue tools;
   - no asset import;
   - no free text in links.
-- **Builder edits must keep entity ids stable.** In a toy, re-keyed ids made paired arms as noisy as unpaired seeds, costing 7–8× the seeds (measured here).
-- **Cost:** about 46–73 full-time days in all. That is computed by summing the levels' unsourced estimates, against 12–29 days for the recommended smaller builder.
+- **Builder edits must keep entity ids stable.** In a toy, re-keyed ids made paired arms as noisy as unpaired seeds, costing 7–8× the seeds (measured here; the seed cost is computed).
+- **Cost:** about 46–73 full-time days for the builder levels, not counting the generator ports. That is computed by summing the levels' unsourced estimates, against 12–29 days for the recommended smaller builder.
 
 
 **Maps: every layer comes from the seed, on one square grid.**
@@ -48,26 +48,29 @@ Every timing ran on one busy Windows desktop (Ryzen 5 3600) under Node 24.18, Ch
 - Routes become strip maps built by the same place code.
 - This replaces LDtk village kits, LDtk prefab towns and wave function collapse (WFC) filler as the source of towns.
 
-**The port is proven exact.**
+**The ported parts match Python exactly.**
 - A JavaScript port of the keyed draw and noise matched Python on 1,132,769 cases, and the terrain stage matched on 300 of 300 seeds, in Node and Chromium (measured here).
-- The JS terrain stage runs 90–100× faster than Python, so a whole country should take tens of milliseconds (inference).
+- The later stages and most of `place.py` are not ported yet.
+- The JS terrain stage runs about 90–100× faster than Python (measured here), so a whole country should take tens of milliseconds (inference).
 
 **Edits sit on the seed as inputs to the generator's stages, never as patches on its output.**
 - A world is a seed, pinned generator versions and per-stage edit layers.
 - Hand-placed things are pins that the generator flows around.
-- Every per-settlement draw keys on a stable id, never on population rank. That one change cuts the towns rebuilt by "add a village" from 35 to 2 (measured here).
+- Every per-settlement draw keys on a stable id, never on population rank. With locks, that change cuts the towns rebuilt by "add a village" from a median of 35 to 2 (measured here).
 - About 980 edits fit in a 2,000-character share link, carried in the URL fragment that servers never see (measured here).
 
 **The editor is a lazily loaded Build mode inside the app.**
 - It reuses `WorldRenderer` plus one chunk-patch method.
-- Brushes cost under 0.07 ms per event on a 1,024² map (measured here, desktop).
+- Brush events cost ≤ 0.07 ms at p99 on a 1,024² map (measured here, desktop Node).
 - A first usable builder takes 16–24 full-time days; a minimal one 8–12 (unsourced estimates).
 
-**Fix the reference generator before its outputs are frozen as goldens.** Four changes:
-- key place seeds, landmark draws and names on a stable settlement id (its cell);
+**Fix the reference generator before its outputs are frozen as goldens.** Four changes, made on 6 October 2026 after this round's measurements, so the notes' "today" figures describe the generator before them:
+- key place seeds, landmark draws and population jitter on a stable settlement id (its cell);
 - make shore tidying order-free (plan, then apply);
-- pass neighbour biomes to places, so towns beside farmland draw fields;
+- pass the sides that face farmland to places, so towns beside farmland draw fields;
 - add sea lanes, so island settlements connect.
+
+A check over 6 worlds then built 327 places with no crashes or overlaps (measured here).
 
 **Decisions.** On 6 October 2026 the owner made these calls:
 - accepted the recommended defaults (a)–(d) and (f)–(k);
@@ -77,17 +80,17 @@ Every timing ran on one busy Windows desktop (Ryzen 5 3600) under Node 24.18, Ch
 
 | # | Decision | Recommended default | Main reason |
 | --- | --- | --- | --- |
-| (a) | Country representation | The square grid; drop round 4's Voronoi mesh | The art is square, the grid is proven deterministic, and its terrain stage takes about 8 ms in JS |
+| (a) | Country representation | The square grid; drop round 4's Voronoi mesh | The art is square; the grid's terrain stage matched Python on 300 of 300 seeds and takes about 8 ms in JS |
 | (b) | Where towns come from | Generated from the place record; drop LDtk village kits, LDtk prefab towns and WFC filler | The generator already draws GBA-style towns from the sprite set |
-| (c) | M3's default town | A fixed seed, generated and then hand-edited in the developer Build mode; LDtk only as a fallback if the port slips | One pipeline, and the Build mode becomes the seed of every later builder |
+| (c) | M3's default town | A fixed seed, generated and then hand-edited in the developer Build mode; LDtk only as a fallback if the port slips | One pipeline, and the Build mode becomes the seed of the player street editor |
 | (d) | Building interiors | Abstract building cards; no walk-in interiors | No interior art exists, and the sim needs only "indoors" |
-| (e) | Who the builder is for | The owner first; players get settings and presets; teachers get card remix; no player map editor before launch. **Owner's choice: a full player editor before launch, at every level** | Settings are universal and cheap; editing a living world is where builders struggle |
-| (f) | Culture in the builder | A culture count (4–8) plus a single-culture switch; no culture painting | 0 of 723 user-placed layouts met the fairness bars |
+| (e) | Who the builder is for | The owner first; players get settings and presets; teachers get card remix; no player map editor before launch. **Owner's choice: a full player editor before launch, at every level** | Settings are common and cheap; editing a living world is where builders struggle |
+| (f) | Culture in the builder | A culture count (4–8) plus a single-culture switch; no culture painting | 0 of 723 random "user-placed" hearth layouts met the fairness bars |
 | (g) | When edits apply | Before day 0 only; mid-run edits later as timed day-boundary inputs | Keeps replays, ledgers and the culture balance exact |
 | (h) | Share links | `#w1.` in the URL fragment with a CRC32; no free text; a `.nomos` file above 8,000 characters | About 980 edits fit 2,000 characters, and the server never sees them |
-| (i) | Settlement identity | A stable uid (the cell) for place seeds, landmark draws and names | Cuts "add a village" from 35 rebuilt towns to 2 |
+| (i) | Settlement identity | A stable uid (the cell) for place seeds, landmark draws and names | With locks, cuts "add a village" from 35 rebuilt towns to 2 (medians) |
 | (j) | World sizes | Standard 96×64 and large 192×128; M7 and M8 re-baselined to listed places plus a region tier | 96×64 lists 40–61 places, not 1,000 |
-| (k) | Art | Draw about 55–81 tiles (coasts, snow, cliffs, rock, sand, shore saddles), and add a snow biome | Every layer and the wonder views need them |
+| (k) | Art | Draw about 55–81 tiles (coasts, snow, cliffs, rock, sand) plus the shore saddles, and add a snow biome | They unblock every layer, and wonder views need them most |
 
 ## 1. How each map layer gets made
 
@@ -100,11 +103,11 @@ Every timing ran on one busy Windows desktop (Ryzen 5 3600) under Node 24.18, Ch
   - towns from BSP blocks and prefabs;
   - cities, with prefab variants "keyed to district wealth and crime" ([round 3 report](../round-3-2d-look/report.md); [round 4 world-maps notes](../round-4-multi-scale/notes/world-maps.md), opened).
 
-**`tools/worldgen` now builds GBA-style villages and towns in code from a small context record.** That makes three planned methods unnecessary as the source of towns: LDtk village kits, LDtk prefab towns and WFC filler. The wealth-keyed prefabs are banned outright by content rule 5.
+**`tools/worldgen` now builds GBA-style villages and towns in code from a small context record.** That makes three planned methods unnecessary as the source of towns: LDtk village kits, LDtk prefab towns and WFC filler. The wealth-keyed prefabs are banned by content rule 5.
 
 **Other games split layers the same way.**
 - Dwarf Fortress generates every layer, region tiles only "as you scroll around" ([DFHack docs](https://github.com/DFHack/dfhack/blob/develop/docs/plugins/export-world-map.rst), opened).
-- Cataclysm: DDA knows where buildings are but picks their layouts lazily from hand-authored 24×24 pieces ([OVERMAP.md](https://github.com/CleverRaven/Cataclysm-DDA/blob/master/doc/JSON/OVERMAP.md), opened).
+- Cataclysm: DDA knows where buildings are but picks their layouts lazily from hand-authored 24×24 pieces ([OVERMAP.md](https://github.com/CleverRaven/Cataclysm-DDA/blob/master/doc/JSON/OVERMAP.md); [MAPGEN.md](https://github.com/CleverRaven/Cataclysm-DDA/blob/master/doc/JSON/MAPGEN.md); both opened).
 - Caves of Qud keeps five static villages and generates the rest per biome ([Qud wiki](https://wiki.cavesofqud.com/wiki/Village), opened).
 - Azgaar's FMG passes each town a seed plus a small context record ([burgs-generator.ts](https://github.com/Azgaar/Fantasy-Map-Generator/blob/master/src/generators/burgs-generator.ts), opened).
 
@@ -122,8 +125,8 @@ Every timing ran on one busy Windows desktop (Ryzen 5 3600) under Node 24.18, Ch
 **The place code must be restructured before M3.**
 - Today a place is one 32×20 to 48×28 view. It takes 0.1–1.6 s in Python, ignores population, and exports no walkability or entities (measured here).
 - M3 needs a 256² town, and M6 needs cities of 400²–1,024².
-- Lot placement scans every footprint position, so its cost grows with cells × lots (computed). Block-local frontage packing and lazy districts fix that.
-- Round 4's BSP prototype packed a 256² city in 59 ms.
+- Lot placement scans every footprint position, so its cost grows with cells × lots (computed). Block-local frontage packing and lazy districts should fix that (inference; not prototyped).
+- Round 4's BSP prototype packed a 256² city in 59 ms (round 4, measured there).
 
 **One binary map serves both generated and hand-made maps.** It carries terrain kinds, an IntGrid for walkability, and entities: homes with capacity, workplaces, shops with hours and civic buildings. The spawner reads only this map.
 
@@ -146,15 +149,16 @@ Every timing ran on one busy Windows desktop (Ryzen 5 3600) under Node 24.18, Ch
 - The 56–63% of people in unlisted places fold into M7's region tier (computed).
 - M8's exit check becomes:
   - a standard world in ≤ 100 ms and a large one in ≤ 400 ms, in desktop Chromium;
-  - per-stage fingerprints that match the goldens in every engine.
+  - per-stage fingerprints that match the goldens in Node, Bun, Chromium, Firefox and WebKit.
 
 ### A place stays identical across visits, growth and versions
 
 **Places already match the country map.**
 - On 5 worlds, places showed every promised road side (650/650) and river side (125/125), and 97.1% of landmarks (measured here).
-- They miss fields: 94.9% of settlements sit beside farmland, but towns never draw fields, because the place record lacks neighbour biomes (measured here).
+- They miss fields: 94.9% of settlements sit beside farmland, but towns and cities never draw fields, because the place record lacks neighbour biomes (measured here).
 
 **Place record version 2** keeps today's `PlaceContext` and adds:
+- a stable id, kind and cell;
 - per-side edge biomes;
 - elevation and relief;
 - river size and road rank;
@@ -172,9 +176,9 @@ Port and crossroads are derived. Walls are dropped.
 - Mixing the version in would reshuffle places no code change touched.
 - The version selects which code runs, and goldens freeze each released version.
 
-**Hash the world seed first.** Seeds 2s and 2s+1 then share none of 4,096 draws, against all 4,096 with the plan's old `seed ^ entity` form (measured here). This closes a verify-first item.
+**Hash the world seed first.** Seeds 2s and 2s+1 then share none of 4,096 draws, against all 4,096 with the earlier prototype's unhashed `seed ^ entity` form (measured here). This closes a verify-first item.
 
-### The port is proven, with four traps to avoid
+### The port matches so far, with four traps to avoid
 
 **Results.**
 - The JS port of `draw`, `below`, `fade`, `value` and `fbm` matched Python on all 1,132,769 cases in Node 24.18 and Chromium 153.
@@ -185,7 +189,7 @@ Port and crossroads are derived. Walls are dropped.
 - a signed draw before `%`;
 - `>> 16` instead of `>>> 16`;
 - truncating instead of floor division;
-- truncated `//` in the terrain terms.
+- truncated `//` in the terrain and moisture terms.
 
 **Port in pipeline order.**
 - Lint-ban bare `/` and `%` outside floor-division helpers.
@@ -213,7 +217,7 @@ Port and crossroads are derived. Walls are dropped.
 
 ## 2. Does Nomos need a world builder?
 
-### Prior art: settings are universal; editing a living world is where builders struggle
+### Prior art: settings are common; editing a living world is where builders struggle
 
 **Settings before generation are common and cheap.**
 - RimWorld offers 6 world settings plus factions, Dwarf Fortress 7 basic ones, and Factorio 9 presets with a live preview. All were opened ([RimWorld wiki](https://rimworldwiki.com/wiki/World_generation); [DF wiki](https://dwarffortresswiki.org/index.php/World_generation); [Factorio wiki](https://wiki.factorio.com/Map_generator)).
@@ -223,7 +227,7 @@ Port and crossroads are derived. Walls are dropped.
 - SimCity 4 disables "most terraforming tools … after the city is named and founded" ([Wikipedia](https://en.wikipedia.org/wiki/SimCity_4), opened).
 - Azgaar's heightmap editor needs three modes, Erase, Keep and Risk, and Risk "can potentially cause some errors" ([wiki](https://github.com/Azgaar/Fantasy-Map-Generator/wiki/Heightmap-customization), opened).
 
-**Full editors serve modders and developers; player builders are settings or constrained toys.**
+**Full editors serve modders and developers; player builders are mostly settings or constrained toys.**
 - The editors in this group are the Cities: Skylines asset editor, LDtk, Tiled, RPG Maker and Porymap.
 - Townscaper lets players place only coloured blocks, and its algorithm makes every click valid. 95% of 10,619 Steam reviews are positive ([Steam](https://store.steampowered.com/app/1291340/Townscaper/), opened).
 
@@ -259,7 +263,7 @@ Port and crossroads are derived. Walls are dropped.
 5. Level 2-lite after M8, only on playtest demand.
 6. Levels 2, 3b and 3c not planned.
 
-**The owner's choice: every level before launch, in this order** (unsourced estimates):
+**The owner's choice: every level, in this order** (unsourced estimates; the plan puts M8 after launch, so the M8 levels ship with it):
 
 | Level | Milestone | Effort |
 | --- | --- | --- |
@@ -284,9 +288,9 @@ The guardrails decide whether the extra levels are safe:
 
 ### Fit with teaching, sharing and the content rules
 
-**Teaching uses paired arms on one world, not two hand-built towns.** In a toy, moving a police post one cell gave paired differences with an SD of 22.7 offences (arm correlation 0.92). Unpaired seeds gave 61.4. An edit that re-keyed agents' draws raised it to 63.4, which costs 7–8× the seeds (measured here). So builder edits must keep entity ids stable, and "a no-op edit leaves the replay hash unchanged" joins the CI tests.
+**Teaching uses paired arms on one world, not two hand-built towns.** In a toy, moving a police post one cell gave paired differences with an SD of 22.7 offences (arm correlation 0.92). Unpaired seeds gave 61.4. An edit that re-keyed agents' draws raised it to 63.4 (measured here). That costs 7–8× the seeds, since seeds scale with SD² (computed). So builder edits must keep entity ids stable, and "a no-op edit leaves the replay hash unchanged" joins the CI tests.
 
-**Settings add about 14 URL characters to a link** (computed). Edits apply before day 0, never mid-run.
+**Settings add about 14 URL characters to a link** (computed). In v1, edits apply before day 0, never mid-run.
 
 **The content rules forbid whole classes of tools.**
 - No house-style or district-wealth paint.
@@ -315,7 +319,7 @@ The guardrails decide whether the extra levels are safe:
 
 **Edits encode far smaller than the whole world.**
 - 1,000 mixed edits take 2,047 URL characters [1,862–2,225] as columnar varints, deflate-raw and base64url (measured here).
-- The materialised 96×64 world takes 26,466 characters, about 13× more. That fits a file, never a link.
+- The materialised 96×64 world takes 26,466 characters, about 13× more. That fits a file, never a 2,000- or 8,000-character link.
 
 **Other games do one of two things.**
 - No Man's Sky and Valheim keep edits beside the seed. Valheim's format is from a search summary.
@@ -330,7 +334,7 @@ The guardrails decide whether the extra levels are safe:
 - biome paint reruns from settlements onward;
 - a settlement edit reruns farmland, roads, wonders and landmarks.
 
-**Without locks, small edits rebuild many towns.** Over 30 seeds, adding one village changed 35 place layouts [14–50] (measured here).
+**Without locks, small edits rebuild many towns.** Over 30 seeds, adding one village changed a median of 35 place layouts [14–50] (measured here).
 
 | Edit | Layouts changed today | With locks | With locks and stable-id keys |
 | --- | --- | --- | --- |
@@ -356,7 +360,7 @@ The guardrails decide whether the extra levels are safe:
 
 **Place edits go in as reservations the generator flows around.** Patching them on afterwards fails: one extra river side would make 80.8% of pinned houses collide (measured here).
 
-**Each place's edit layer stores** its place uid, the place generator version and a hash of its record. Ops that no longer fit go dormant and are listed, as FMG's override anchors do ([graph-override.ts](https://github.com/Azgaar/Fantasy-Map-Generator/blob/354eeaa7a6aa6e0e57abb8e2f5af5e62cef8aab4/src/generators/graph-override.ts), opened).
+**Each place's edit layer stores** its place uid, the place generator version and a hash of its record. Each op is anchored to its original value, as FMG's overrides are ([graph-override.ts](https://github.com/Azgaar/Fantasy-Map-Generator/blob/354eeaa7a6aa6e0e57abb8e2f5af5e62cef8aab4/src/generators/graph-override.ts), opened). Ops that no longer fit go dormant and are listed, where FMG skips them silently.
 
 **Quantise climate in the record.** Rounding temperature and moisture to the bands the place generator actually uses stops small climate shifts from rebuilding towns (inference).
 
@@ -364,9 +368,9 @@ The guardrails decide whether the extra levels are safe:
 
 | Check | Rule | Evidence |
 | --- | --- | --- |
-| Reachability | Every settlement joins the capital by road or sea lane | 9.9% of generated settlements have no land route (measured here) |
+| Reachability | Every settlement joins the capital by road or sea lane | 9.9% of generated settlements have no land route to the capital (measured here) |
 | Food | Checked per country, not per town | 10% of generated villages and 17% of hamlets have no farmland (measured here) |
-| Culture hearths | Placed by the generator after every edit; users can't place them in v1 | Random layouts left a 39.8% land-quality gap; 1 of 769 met both bars (measured here) |
+| Culture hearths | Placed by the generator after every edit; users can't place them in v1 | Random layouts left a median 39.8% people-weighted land-quality gap; 1 of 769 met both bars (measured here) |
 | Names | ASCII only, 2–24 characters, round 8's filter on a normalised form, on save and again on open | Round 8 filter; [UTS #39](https://www.unicode.org/reports/tr39/) (opened) |
 | Links | No free text, no URLs, no people's names | Content-in-URL sites draw abuse ([itty.bitty](https://github.com/arfct/itty-bitty/blob/25aa3cd78b53d80b6625774d61ef98d1e1ba9e3b/README.md), opened; the abuse reports are a search summary) |
 
@@ -377,11 +381,11 @@ The guardrails decide whether the extra levels are safe:
 - A "hide custom names" switch swaps in generated ones.
 - A report button emails the owner.
 - Reported link hashes can ship as a static blocklist.
-- No legal source covers moderation of backend-free share links. That is the owner's call, and this is not legal advice.
+- No legal source on moderating backend-free share links was found. That is the owner's call, and this is not legal advice.
 
 ### Share links, saves and versions
 
-**A link is `#w1.` plus deflate-raw columns, base64url and a CRC32.** It rides in the URL fragment, which "is not sent in requests" ([RFC 9110](https://www.rfc-editor.org/rfc/rfc9110#section-17.11), opened).
+**A link is `#w1.` plus deflate-raw columns, base64url and a CRC32.** It rides in the URL fragment: "Fragment identifiers used within URI references are not sent in requests" ([RFC 9110](https://www.rfc-editor.org/rfc/rfc9110#section-17.11), opened).
 
 | Link length | Mixed edits that fit (measured here) |
 | --- | --- |
@@ -390,7 +394,7 @@ The guardrails decide whether the extra levels are safe:
 | Larger | a `.nomos` file with the same bytes |
 
 **Encoding is cheap and safe.**
-- Encoding plus decoding takes under 0.6 ms at 1,000 edits (measured here).
+- Encoding plus decoding takes under 0.6 ms at 1,000 edits with Node's zlib, and about 0.9 ms through `CompressionStream` (measured here).
 - The CRC32 cut silently wrong decodes of corrupted links from 372 of 9,859 to 0, for about 7 characters.
 - Caps of 32 KiB of link, 1 MiB inflated and 20,000 ops stop a decompression bomb in about 1 ms.
 
@@ -433,20 +437,20 @@ Sources: [Tiled manual](https://github.com/mapeditor/tiled/blob/221be2066c4b0ed4
 - Tidying on every pointer event gave a different map from a whole-map rebuild in 1–4 of 10 strokes. Tidying once at pointer-up gave 0 of 150.
 - Switching the reference to plan-then-apply changes 446 of 12,262 flooded cells. So do it before saves exist.
 
-**A 1-tile land brush over water loses 22 of 24 cells to tidying.** Set the minimum land brush to 3 tiles, or draw the 2 missing "saddle" shore tiles.
+**A 1-tile land brush over water loses 22 of 24 cells to tidying.** Set the minimum land brush to 3 tiles, or draw the 2 missing "saddle" corner keys for both shores (4 frames).
 
-**Undo is a stack of per-edit commands holding cell diffs, as in Tiled.** 100 strokes hold 0.27 MB, and an undo takes ≤ 0.07 ms (measured here).
+**Undo is a stack of per-edit commands holding cell diffs, as in Tiled.** 100 strokes hold 0.27 MB, and a brush undo takes ≤ 0.07 ms, against 1.8 ms for the map-wide replace (measured here).
 
 ### Performance on a 1,024² map (desktop)
 
-| Edit | Time, median [min–max] |
+| Edit | Time (medians unless noted) |
 | --- | --- |
 | A brush pointer event | ≤ 0.07 ms at p99 |
 | A whole stroke, 1- to 33-tile brush | 0.06–3.0 ms |
 | 128×128 rectangle | 2.1–2.5 ms |
 | Filling a 32,351-cell lake | 5.0 ms |
 | Replacing 215,653 cells | 37 ms (move to the worker) |
-| GL chunk patch per frame | ≤ 0.02 ms at p99 |
+| GL chunk patch per brush frame | ≤ 0.02 ms at p99 |
 
 All measured here. Chromium ran within 2–22% of Node, on software WebGL.
 
@@ -458,7 +462,7 @@ All measured here. Chromium ran within 2–22% of Node, on software WebGL.
 - Import the IntGrid kinds and the entities named after manifest frames.
 - Nomos's own rule draws the tiles, because LDtk's auto-layer rules "are completely resolved internally by the editor" ([LDtk JSON docs](https://github.com/deepnight/ldtk/blob/2b7b5512f2f88fa281cb6492debbb26ead7838d4/docs/JSON_DOC.md), opened).
 
-**The sprite manifest becomes the shared vocabulary.** The generator, builder and renderer all use its fields: `footprint`, `anchor`, `layer`, `overlay`, `door`, `joins` and `corners`. Publish it as a versioned JSON Schema with generated types.
+**The sprite manifest becomes the shared vocabulary.** It already defines `footprint`, `anchor`, `layer`, `overlay`, `door`, `joins` and `corners`, and the generator, builder and renderer should all use them. Publish it as a versioned JSON Schema with generated types.
 
 **Two kinds of file.**
 - Kits stay as diffable JSON in the repo.
@@ -473,10 +477,10 @@ All measured here. Chromium ran within 2–22% of Node, on software WebGL.
 
 **Accessibility.**
 - A click alternative for every drag, as WCAG 2.2 SC 2.5.7 requires.
-- Targets of at least 24×24 px.
+- Targets of at least 24×24 CSS px, as SC 2.5.8 asks.
 - Pointer Events on tablets.
 
-Source: [WCAG 2.2](https://github.com/w3c/wcag/blob/23bad5904949904275a08f1c6e395b78a02aa6f3/understanding/22/dragging-movements.html), opened.
+Sources: [WCAG 2.2 SC 2.5.7](https://github.com/w3c/wcag/blob/23bad5904949904275a08f1c6e395b78a02aa6f3/understanding/22/dragging-movements.html), opened; [SC 2.5.8](https://github.com/w3c/wcag/blob/23bad5904949904275a08f1c6e395b78a02aa6f3/understanding/22/target-size-minimum.html), relevant lines opened.
 
 **Effort (unsourced estimates):**
 - A first usable builder: 16–24 full-time days with an AI assistant.
@@ -485,7 +489,7 @@ Source: [WCAG 2.2](https://github.com/w3c/wcag/blob/23bad5904949904275a08f1c6e39
 
 ## Plan changes, proposed (R9)
 
-These go into the shared doc's Implementation plan once the owner approves. They also carry the plan tasks owed for `tools/worldgen` and the blob looks.
+The owner approved these for the shared doc's Implementation plan on 6 October 2026. They also carry the plan tasks owed for `tools/worldgen` and the blob looks.
 
 **M0 Pipeline**
 - [ ] Make worldgen's `draw(seed, stream, ...keys)`, with the seed hashed first, the sim's single keyed draw, with fixed-arity hot-path variants. Lint-ban bare `/` and `%` in generator code outside floor-division helpers (R9).
@@ -496,14 +500,14 @@ These go into the shared doc's Implementation plan once the owner approves. They
 **M3 City life**
 - [ ] Port `place.py` to TypeScript, with plan-then-apply shore tidying, 64×64 districts, frontage lot packing and entity export (R9).
 - [ ] Make the default town a fixed seed of the place generator, hand-edited in a developer-flag Build mode. LDtk is the fallback if the port slips (R9).
-- [ ] Build the developer-flag Build mode as a lazy chunk:
+- [ ] Build the minimal developer-flag Build mode as a lazy chunk, in 8–12 days (R9):
   - `WorldRenderer.patchTiles` over 32×32 chunks;
-  - brush, rectangle, fill, eraser, eyedropper and line tools, with a 3-tile minimum land brush;
+  - terrain brush, rectangle and fill, with a 3-tile minimum land brush;
+  - prefab stamps;
   - cell-diff undo;
-  - prefab stamps and zones;
   - save and load in a versioned container;
-  - a Play hand-off to the worker (R9).
-- [ ] Draw the two shore saddle tiles, so the corner set is complete and tidying can drop its diagonal clause (R9).
+  - a Play hand-off to the worker.
+- [ ] Draw the two shore saddle keys (`1001`, `0110`) for both shores: 4 frames, or 8 with variants. Then the corner set is complete and tidying can drop its diagonal clause (R9).
 
 **M6 Scale and sharing**
 - [ ] Generate cities with the district generator at 400²–1,024², building districts lazily. Drop WFC and LDtk prefab blocks (R9).
@@ -534,13 +538,13 @@ These go into the shared doc's Implementation plan once the owner approves. They
   - no pin in water;
   - names through round 8's filter in ASCII;
   - payload caps.
-- [ ] Exit check: in desktop Chromium, a standard 96×64 world generates in ≤ 100 ms and a large 192×128 world in ≤ 400 ms. Per-stage fingerprints match the goldens in every engine (R9).
+- [ ] Exit check: in desktop Chromium, a standard 96×64 world generates in ≤ 100 ms and a large 192×128 world in ≤ 400 ms. Per-stage fingerprints match the goldens in Node, Bun, Chromium, Firefox and WebKit (R9).
 - [ ] Re-baseline M7's and M8's settlement counts to listed places plus a region tier, and fit Zipf on true ranks (R9).
 
 **M9 Zoom across scales**
 - [ ] Replace "interiors by tier" with the district generator for every tier. Building interiors stay abstract, as building cards (R9).
 - [ ] Adopt place record version 2 (R9):
-  - edge biomes per side, relief, river size, road rank, region, founding tier and versions;
+  - a stable id and cell, edge biomes per side, elevation and relief, river size, road rank, region, founding tier and versions;
   - temperature and moisture quantised to the place generator's bands.
 - [ ] Lock each place's plan type at its founding tier, and build keyed lots by population, so growth never moves a street (R9).
 - [ ] Build route strips from route cells with the place code, and wonder views with vista props (R9).
@@ -550,9 +554,16 @@ These go into the shared doc's Implementation plan once the owner approves. They
   - every landmark icon appears in its place;
   - edge farmland shows as fields.
 
-**Player editor (the owner's choice: every level before launch)**
+**Player editor (the owner's choice: every level; the M8 ones ship with M8)**
+
+These levels add effort the plan's milestone budgets don't yet hold (computed from the unsourced estimates):
+- M3: 8–12 days;
+- M6: 10–16 days;
+- the card levels: 9–15 days;
+- M8: 19–30 days, on top of its 13–20.
+
 - [ ] M6: open the Build mode to players as a street editor (R9).
-  - Tools: paint terrain, place buildings and props, edit home, shop and workplace zones.
+  - Tools: everything in M3's Build mode, plus an eraser, an eyedropper and a line tool; place buildings and props; edit home, shop and workplace zones.
   - The palette offers building kinds, never styles. Style is a keyed uniform draw with a "restyle" button.
   - It has no person, costume, culture or hue tools, and no asset import.
   - Edits apply before day 0. They pass hard validation (doors on roads, capacity, reachability) and are shared as links or `.nomos` files.
@@ -598,9 +609,10 @@ These go into the shared doc's Implementation plan once the owner approves. They
 | Round 8's culture fairness tolerance, and the gaps after spin-up | Culture count and re-placement depend on it | M8 |
 | How growth-stable lot ordering looks as towns grow | Streets must not move | M3, M6 |
 | Hosting duties for backend-free share links with user names | No legal source was found, and this is not legal advice | Before Share ships (M6) |
-| Safari's URL limit and chat apps' link handling (search summaries only) | The link tiers | M6 |
+| Safari's URL limit and Discord's cap (search summaries only), and how chat apps handle 2–8 KB links (untested) | The link tiers | M6 |
 | Whether map-scale coast overlays read at 8 px, and where snow starts | The Country and Region look | M8 |
 | Whether teachers want card remix | The builder's second user | After M1 |
 | How many players use a street editor or god tools; no usage figures were found for any surveyed editor | The full player editor costs about 46–73 days | Playtests before M6 and M8 |
+| Whether launch moves after M8, or the M8 levels ship after launch | The owner chose every level before launch, but the plan puts M7–M9 after it. The M8 levels add 19–30 days to M8's 13–20 (computed) | Before M6 |
 
 The full list of 21 conflicts with rounds 3–4 is in [`notes/map-pipeline.md`](notes/map-pipeline.md), Q1.
