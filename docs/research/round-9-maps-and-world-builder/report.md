@@ -25,16 +25,18 @@ Every timing ran on one busy Windows desktop (Ryzen 5 3600) under Node 24.18, Ch
 
 ## The answer
 
-**World builder: yes, but small, and the owner is its first user.**
-- **Players get settings and presets before launch, not a map editor:** a "New town" panel in M6 (2–4 days) and a "New country" panel in M8 (5–8 days).
-- **The owner gets a Build mode behind a developer flag (8–12 days)** to hand-edit generated hero towns. If the default town stays hand-made, LDtk plus validators (2–4 days) does instead.
-- **Teachers get a "card remix" (3–5 days):** they pick which knobs students see and a pre-validated treatment, then share a link.
-- **Later, only on demand:**
-  - lock-and-re-roll after M8, if playtests ask (6–9 days);
-  - full god tools (14–22 days) and a player street editor with card authoring (22–34 days) stay out of the plan.
-- **Players never paint cultures.** They choose a culture count.
+**World builder: yes. The owner chose a full player editor before launch.** The research recommended a smaller builder. On 6 October 2026 the owner chose the full one, so every level ships before launch:
+- **The owner's Build mode, behind a developer flag (M3, 8–12 days),** to hand-edit generated hero towns.
+- **"New town" settings in M6 (2–4 days), and the Build mode opened to players as a street editor (8–12 more days):** paint tiles, place buildings and props, edit zones.
+- **Card remix (3–5 days) and card authoring (6–10 days) once M1 cards and M6 links exist.**
+- **"New country" settings in M8 (5–8 days), plus god tools on the country (14–22 days):** lock and re-roll, terrain brushes, biome paint, drawn rivers and roads.
+- **Players never paint cultures.** They choose a culture count. The content rules hold by construction:
+  - the palette offers building kinds, never styles;
+  - no person, costume, culture or hue tools;
+  - no asset import;
+  - no free text in links.
 - **Builder edits must keep entity ids stable.** In a toy, re-keyed ids made paired arms as noisy as unpaired seeds, costing 7–8× the seeds (measured here).
-- **Cost:** 12–29 days in all, 7–21 of them before launch (unsourced estimates).
+- **Cost:** about 46–73 full-time days in all. That is computed by summing the levels' unsourced estimates, against 12–29 days for the recommended smaller builder.
 
 
 **Maps: every layer comes from the seed, on one square grid.**
@@ -67,7 +69,11 @@ Every timing ran on one busy Windows desktop (Ryzen 5 3600) under Node 24.18, Ch
 - pass neighbour biomes to places, so towns beside farmland draw fields;
 - add sea lanes, so island settlements connect.
 
-**Decisions for the owner, with recommended defaults:**
+**Decisions.** On 6 October 2026 the owner made these calls:
+- accepted the recommended defaults (a)–(d) and (f)–(k);
+- chose the full player editor for (e);
+- approved the shared-doc update;
+- asked for the four generator fixes now.
 
 | # | Decision | Recommended default | Main reason |
 | --- | --- | --- | --- |
@@ -75,7 +81,7 @@ Every timing ran on one busy Windows desktop (Ryzen 5 3600) under Node 24.18, Ch
 | (b) | Where towns come from | Generated from the place record; drop LDtk village kits, LDtk prefab towns and WFC filler | The generator already draws GBA-style towns from the sprite set |
 | (c) | M3's default town | A fixed seed, generated and then hand-edited in the developer Build mode; LDtk only as a fallback if the port slips | One pipeline, and the Build mode becomes the seed of every later builder |
 | (d) | Building interiors | Abstract building cards; no walk-in interiors | No interior art exists, and the sim needs only "indoors" |
-| (e) | Who the builder is for | The owner first; players get settings and presets; teachers get card remix; no player map editor before launch | Settings are universal and cheap; editing a living world is where builders struggle |
+| (e) | Who the builder is for | The owner first; players get settings and presets; teachers get card remix; no player map editor before launch. **Owner's choice: a full player editor before launch, at every level** | Settings are universal and cheap; editing a living world is where builders struggle |
 | (f) | Culture in the builder | A culture count (4–8) plus a single-culture switch; no culture painting | 0 of 723 user-placed layouts met the fairness bars |
 | (g) | When edits apply | Before day 0 only; mid-run edits later as timed day-boundary inputs | Keeps replays, ledgers and the culture balance exact |
 | (h) | Share links | `#w1.` in the URL fragment with a CRC32; no free text; a `.nomos` file above 8,000 characters | About 980 edits fit 2,000 characters, and the server never sees them |
@@ -245,13 +251,31 @@ Port and crossroads are derived. Walls are dropped.
 | 3c. Card authoring | New cards from scratch | Advanced teachers | 6–10 days |
 | 4. Internal content tool | A developer-flag Build mode, or LDtk plus validators | The owner | 8–12 or 2–4 days |
 
-**MVP order:**
+**The research's MVP order:**
 1. Level 4 with M3.
 2. Level 1a with M6.
 3. Level 3a once M1 cards and M6 links exist.
 4. Level 1b with M8.
 5. Level 2-lite after M8, only on playtest demand.
-6. Levels 2, 3b and 3c are not planned.
+6. Levels 2, 3b and 3c not planned.
+
+**The owner's choice: every level before launch, in this order** (unsourced estimates):
+
+| Level | Milestone | Effort |
+| --- | --- | --- |
+| 4. The owner's Build mode | M3 | 8–12 days |
+| 1a. Town settings | M6 | 2–4 days |
+| 3b. The Build mode opened to players | M6 | 8–12 more days |
+| 3a. Card remix | Once M1 cards and M6 links exist | 3–5 days |
+| 3c. Card authoring | Once M1 cards and M6 links exist | 6–10 days |
+| 1b. Country settings | M8 | 5–8 days |
+| 2. God tools, including lock and re-roll | M8 | 14–22 days |
+| **Total** | | **about 46–73 days** (computed) |
+
+The guardrails decide whether the extra levels are safe:
+- **Card authoring:** prompts come from templates, and claims are judged by M1's statistics.
+- **Street editing:** offers kinds, never styles or people.
+- **God tools:** every terrain edit reruns the stages after it, before day 0.
 
 **Settings must be grouped by the stage they touch** (measured here, 12 seeds):
 - Changing the wonder count left every other stage identical in 12 of 12 seeds.
@@ -526,11 +550,25 @@ These go into the shared doc's Implementation plan once the owner approves. They
   - every landmark icon appears in its place;
   - edge farmland shows as fields.
 
-**After M8, on playtest demand**
-- [ ] Lock and re-roll: pins, per-stage keyed re-roll counters, a conflict list and one undo log (R9).
-
-**After M1 and M6**
-- [ ] Card remix for teachers: choose the visible knobs and a pre-validated treatment, then share a link or QR code. Paired arms keep entity ids stable (R9).
+**Player editor (the owner's choice: every level before launch)**
+- [ ] M6: open the Build mode to players as a street editor (R9).
+  - Tools: paint terrain, place buildings and props, edit home, shop and workplace zones.
+  - The palette offers building kinds, never styles. Style is a keyed uniform draw with a "restyle" button.
+  - It has no person, costume, culture or hue tools, and no asset import.
+  - Edits apply before day 0. They pass hard validation (doors on roads, capacity, reachability) and are shared as links or `.nomos` files.
+- [ ] M6: on opening a player-made world, show a "made by a player" badge, a "hide custom names" switch, and a report button that emails the owner (R9).
+- [ ] After M1 and M6: card remix (R9).
+  - Choose the visible knobs and a pre-validated treatment, then share a link or QR code.
+  - Paired arms keep entity ids stable.
+- [ ] After M1 and M6: card authoring (R9).
+  - Players set arms, metrics, claim type and seeds.
+  - Prompts come from templates, not free text, and claims are judged by M1's statistics with the "hand-picked setup" label.
+  - Treatments never key on culture.
+- [ ] M8: god tools on the country (R9).
+  - Lock and re-roll with per-stage keyed counters.
+  - Raise, lower and smooth brushes; biome paint; drawn rivers and roads; town and wonder placement.
+  - Pins, tombstones that lower counts, a conflict list and one undo log.
+  - Every edit reruns from its first dirty stage, and cultures are re-placed by the generator.
 
 **Looks**
 - [ ] Replace round 8's hue column with a one-byte look (R9):
@@ -563,5 +601,6 @@ These go into the shared doc's Implementation plan once the owner approves. They
 | Safari's URL limit and chat apps' link handling (search summaries only) | The link tiers | M6 |
 | Whether map-scale coast overlays read at 8 px, and where snow starts | The Country and Region look | M8 |
 | Whether teachers want card remix | The builder's second user | After M1 |
+| How many players use a street editor or god tools; no usage figures were found for any surveyed editor | The full player editor costs about 46–73 days | Playtests before M6 and M8 |
 
 The full list of 21 conflicts with rounds 3–4 is in [`notes/map-pipeline.md`](notes/map-pipeline.md), Q1.
