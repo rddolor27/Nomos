@@ -138,6 +138,14 @@ Goal: a deterministic core, the worker loop and the renderer contract, drawing S
 - [ ] Start the sim worker and the map fetch from an inline `<head>` script, and load uPlot and lil-gui only after the first frame (R5).
 - [ ] Convert `town.ldtk` at build time into a compact binary map, served with a compressible content type (R5).
 - [ ] Build the HUD in vanilla TypeScript and any richer UI (inspector, event log) in Solid, or Preact with signals; never React (R5).
+- [ ] Fix the ticks per sim day and days per sim year, and record both in `sim-protocol`; convert every half-life and rate from them at build time (R6).
+- [ ] Add a claims ledger beside the cash ledger, one record per loan (lender, borrower, principal in cents, rate in ppm, payment), asserting Σ borrower debt = Σ lender loan assets every day (R6).
+- [ ] Add `mulPpm`, an exact floor of cents × ppm through a 10⁶ split with a ±1 correction, and lint-ban raw `cents * rate` in `sim-core` (R6).
+- [ ] Reserve integer quantity registries for homes (one per LDtk home), property titles and firm shares; value them as integer price index × quantity at the day boundary, logged as a revaluation line and never posted to MINT (R6).
+- [ ] Build at build time with @stdlib, shipped as data: a Q16 log2 table, fade tables for 0.35-, 1- and 2.6-year half-lives, an inverse-normal table for set points, the ledger band-share table and a Gaussian-copula table for wealth ranks (R6).
+- [ ] Ban `TypedArray.prototype.sort` on views of shared memory in hot and day-boundary code, add it to the lint profile, and take top shares from a 16-bins-per-octave histogram (R6).
+- [ ] Run day work as fixed 1,024-entity slices from the boundary, on the same schedule for every device and worker count, committing the settlement record when the last slice ends, once the owner settles how late spoilage may land (R6).
+- [ ] Warm the day-boundary code at worker start on a 1,024-agent dummy world (about 20–30 ms), so the first in-game day does not run cold (R6).
 
 **Exit checks**
 
@@ -148,6 +156,8 @@ Goal: a deterministic core, the worker loop and the renderer contract, drawing S
 - [ ] The same (seed, entity, tick, stream) gives the same draw in any visiting order, and a 16-bucket χ² test over a million entities passes (R4).
 - [ ] Apportionment sums exactly and matches a BigInt reference over 10,000 random cases, including totals above 2^53 ÷ 4,095; logging a focus change that touches nothing leaves the replay hash unchanged (R4).
 - [ ] The compute gates, size-limit and the startup benchmark run on every pull request, and the M0 pipeline passes all of them (R5).
+- [ ] The CI budget gate gains a day-slice row: worst slice ≤ 0.35 ms RM at every tier, with the zero-scavenge window covering a full day of slices (R6).
+- [ ] The claims and cash identities hold exactly every day, and no revaluation changes the MINT balance (R6).
 
 ## M1 Lab mode
 
@@ -167,6 +177,10 @@ Goal: Primer-style lab cards in discrete days, drawn as Skin B blobs, with claim
 - [ ] Implement reduced motion: no hops, bobs or pans, 150 ms fades, camera cuts and static rings (R3).
 - [ ] Pass the IP gate before going public: original or CC0 art only, `assets/LICENSES.md` complete, "Pokémon" absent from every name and tag (R3).
 - [ ] Ship lab mode publicly once the exit checks pass (R1).
+- [ ] Add a bet card, "Does money buy happiness?": doubling one agent's income gives +0.60 at first and +0.35 for good; doubling everyone's gives +0.30 and then +0.05 (R6).
+- [ ] Add a bet card, "Jobs or prices?": one point of unemployment against one point of inflation, about 4 : 1 in this model (R6).
+- [ ] Keep wallet bars to lab cards, labelled lab-only, and never draw them in city or town skins outside the wealth lens (R6).
+- [ ] Allow scripted event timing only as logged inputs on lab and scenario cards, never as a state-driven director in the sim core (R6).
 
 **Exit checks**
 
@@ -191,6 +205,18 @@ Goal: Lengnick's household–firm economy, calibrated to measured targets and li
 - [ ] Add a follow-the-money view in the inspector that animates coins between counterparties (R1, R3).
 - [ ] Write `spawnFromLedger(record, seed, time)` and use it as the city's initializer: exact role counts, a keyed shuffle, homes by LDtk capacity, jobs by firm size, cash apportioned exactly with 12-bit lognormal weights, prices drawn around the record's index; write `foldToLedger(state)` to return exact sums by compartment and account (R4).
 - [ ] Log daily flows per district in headless runs (hires, separations, wage bill, consumption, repricing share and size, vacancies, firm entries and exits, taxes), and add a headless design runner over seeds × city sizes (1,000–100,000 agents) × police shares × unemployment shocks that writes columnar logs (R4).
+- [ ] Give every firm one of eight sectors (grain, fresh food, timber, stone, metal, fuel, wares, services) and an integer recipe of at most two inputs, one output and worker-days per batch (R6).
+- [ ] Run the wholesale call auction once per tradable good, never for services, and log unmet demand per good for the needs system (R6).
+- [ ] Seed household baskets per good from ICP 2021 shares by development preset (food 45 / 33 / 19 / 9% of consumption) with the Stone–Geary rule (R6).
+- [ ] Stock shops with dated food lots in six categories (≤ 32 per shelf), sell first-expiry-first, and remove expired lots into per-category waste counters only at the day boundary (R6).
+- [ ] Price food as base × grade (100 / 135 / 180%) × freshness (100% fresh, 75% stale, 50% last day) in integer cents, flooring after each multiply; log markdown sales and waste per category (R6).
+- [ ] Choose food grade from the household's consumption budget per adult relative to the price index, never from a wealth band; keep food value as a memo line outside net worth and tax bases (R6).
+- [ ] Give households a balance sheet: deposits, unsecured debt (limit 0.5–1× annual income at 12–20% a year, discharged after 5–7 years at ≥ 80% of the limit), durables (about 0.35× earnings) and shares in named firms (R6).
+- [ ] Pay firm profits as dividends to each firm's shareholders; log returns and check an SD near 6% a year with a persistent part near 3 points, re-drawn every 10–20 years (R6).
+- [ ] Use a saving rule rising by income quintile (about 0, 2, 6, 9 and 15–18% of income above subsistence and housing), with 5% a year drawn from liquid wealth and less from illiquid wealth as wealth rises (R6).
+- [ ] Define happiness income as household disposable income per adult; feed it into each agent's Q16 log2 income habit, and publish each settlement's median log income from a histogram at the day boundary (R6).
+- [ ] Extend `spawnFromLedger` to wealth: keyed rank, a per-preset quantile table, income–wealth rank correlation near 0.6, exact apportionment to group totals, a portfolio split by group, and homes by rank plus noise (R6).
+- [ ] Spawn agents household by household, so members stay adjacent in agent index (R6).
 
 **Exit checks**
 
@@ -200,6 +226,9 @@ Goal: Lengnick's household–firm economy, calibrated to measured targets and li
 - [ ] Every economy event maps to exactly one glyph across bubble, log, chart marker and legend, and price-chart ticks coincide with purchase bubbles in a replay (R3).
 - [ ] Spawn then fold returns the record exactly, in people and cents, for 1,000 random records, and the same (seed, record, time) gives a byte-identical city in Node, Bun and Deno (R4).
 - [ ] 100,000 agents spawn in ≤ 10 ms in Node, excluding LDtk lookups, and a spawned city's MSER-5 burn-in is no longer than the hand-built start's (R4).
+- [ ] In portions, every day and exactly: produced + imported = eaten + spoiled + exported + pre-retail loss + Δstock + Δin-transit; city-preset shops spoil 0.5–3% of throughput (R6).
+- [ ] Known answers: an earnings-only economy settles within 0.1 of the earnings Gini; the Yard-Sale model without redistribution drifts toward Gini 1; cash and loan identities hold over 50 seeds × 400 simulated years (R6).
+- [ ] Swapping the lot layout (packed against field arrays) leaves state hashes identical (R6).
 
 ## M3 City life
 
@@ -223,6 +252,22 @@ Goal: daily routines in a real town, drawn as the Skin C pixel-art town from one
 - [ ] Make per-cell aggregates the default perception, with exact radius queries only for agents that need them (collision, conversation, pursuit), staggered to at least 1/4 per tick and capped at 16 neighbours (R5).
 - [ ] Keep sleeping and off-screen agents in dense index lists maintained by swap-remove, never filtered by a flag in every system (R5).
 - [ ] Ship the atlas as lossless WebP at native resolution with an oxipng PNG fallback, loaded in idle time after the first frame (R5).
+- [ ] Add LDtk workplace entities per sector (farm, pasture or dock, lumber camp, quarry, mine, fuel works, workshop) with worker capacity; services use the clinic, school, shop and market (R6).
+- [ ] Add the grain season: crops accrue daily and are harvested over 30–45 days once a year as dated lots, scaled by Q16 soil fertility and a keyed weather draw (SD 0.13–0.22, regional plus local) (R6).
+- [ ] Show production through places only (stock pips; fields, forests and docks that empty and regrow), with at most four or five removable job items, none black (R6).
+- [ ] Store each need as the Int32 tick at which it reaches zero and schedule meals on the timing wheel; never decay every agent's needs every tick, and make rates fractional (Q8) once ticks per day is fixed (R6).
+- [ ] Store each pantry as at most 8 Uint32 lots (`exp:16 | cat:3 | grade:2 | storage:2 | qty:9`) sorted by expiry, merging only equal keys, or into the same-category lot with the earlier expiry when full (R6).
+- [ ] Build the 6 × 3 shelf-life table from FoodKeeper and the FDA chart; derive freshness, convert storage moves by integer proportion, and give only staples in poor storage a 0.015–0.04% daily pest loss (R6).
+- [ ] Track a 6-bit weekly category mask and an 8-item monthly FIES-style tally per household, and add food poisoning at 0.01% per meal, ×10 when stale and 2% for spoiled food eaten when starving (R6).
+- [ ] Add life satisfaction to `AgentStore` (Int16 0–10,000, Int16 set point, Int32 income habit, saturating Uint16 event counters; about 12 bytes), updated in one order-independent daily pass into a back buffer (R6).
+- [ ] Wire the drivers: income terms, −700 unemployed, −200 scarring, −450 after 7 days without contact, and the food-insecurity penalty as a labelled unsourced knob (default −150 per missed-meal day, floor −700) (R6).
+- [ ] Scale on-the-job search by 1 + 0.15 per ladder point below 7, capped at ×2, and check that firm-level LS and quits correlate near r = −0.25 (R6).
+- [ ] Optional: a meal-mood knob (default 0) giving a one-day effect for grade and freshness, measured against the agent's own recent average quality, never by class (R6).
+- [ ] Let low needs and low LS only lower utility weights, except physiological collapse, and name the driver behind every effect in the click-to-explain panel (R6).
+- [ ] Show signed LS drivers with remaining fade times, household food reserves and pantry freshness in the inspector, and add a settlement LS meter (mean plus suffering, struggling and thriving shares) to the HUD (R6).
+- [ ] Keep freshness to the inspector, stall stock pips and waste charts; keep grade and stale food out of bubbles outside the wealth lens; draw carried goods by category; fire no bubble from the LS level (R6).
+- [ ] Make housing a fixed stock of LDtk homes with owners or renters, rent paid to the owner, mortgages at LTV ≤ 80% and payments ≤ 35% of income above subsistence, a forced sale at a 10% discount on default, and a monthly district price index from recent sales (R6).
+- [ ] Draw every home from the map; no tile, roof, size or decoration may depend on the occupant's wealth or the home's price (R6).
 
 **Exit checks**
 
@@ -231,6 +276,10 @@ Goal: daily routines in a real town, drawn as the Skin C pixel-art town from one
 - [ ] 10k agents in the 256² town stay within the tick budget, and rendering at 3× stays in budget in CI and when re-measured on one mid-range Android phone and one iPhone (R1, R3).
 - [ ] Outlines clear 3:1 against every walkable tile by day (the yellow body needs none at night), skin switches drop no frame, and the framebuffer path is pixel-exact at a device pixel ratio of 3 (R3).
 - [ ] At 10k and 25k agents, every system stays within its sub-budget in the CI budget gate (R5).
+- [ ] With cool storage, households spoil 3–6% of purchased portions; a no-fridge, weekly-market variant spoils ≥ 15% of perishables; no per-day random loss exists for perishables (R6).
+- [ ] In the default town, 5–15% of households score ≥ 4 on the tally (R6).
+- [ ] Within a town, LS rises 0.30–0.45 per doubling of income and the employed–unemployed gap is 0.6–1.0 (R6).
+- [ ] At 10k and 25k agents, needs, meals, the LS pass and day slices stay within their sub-budgets with zero GC (R6).
 
 ## M4 Crime and police
 
@@ -251,6 +300,11 @@ Goal: crime as an action any agent can take, calibrated policing, and the true-v
 - [ ] Audit police iconography (cap and badge only, no weapons or heroic poses, the same emotes as citizens), drive patrol schedules from data rather than night-only, and draw patrol and station overlays for Skin A (R3).
 - [ ] Log true and recorded offences, arrests, releases and the top-5% concentration share per district per day, and export and import the hotspot field as a 32×32 Uint16 grid (2 KB), upsampled on revisits (R4).
 - [ ] Make targets per offender grow with density and detection fall with anonymity, log each channel's share of offending, and add a police reaction-delay parameter for the district tier (R4).
+- [ ] Add victimisation to LS (−900 violent, −200 property, half-life 0.35 years) and a fear term of up to −300 from each cell's perceived danger, fed by true and recorded crime and the witness pass, never by police presence alone (R6).
+- [ ] Add food theft as an offend option whose gain rises with unmet food need, inside the opportunity-based utility; no agent ever becomes a "criminal" type, and LS never enters the offend utility (R6).
+- [ ] Give victims and 1–3 close contacts a "case unresolved" flag until the records office clears the case; log its prevalence, and keep any LS effect as an unsourced knob, default 0 (R6).
+- [ ] Let wrongful stops lower trust in police for the person stopped and 3–5 acquaintances (a Norland design number, to calibrate), charted beside arrests (R6).
+- [ ] Extend the appearance audit and content lint to forbid punishment spectacles, shame marks, scars from punishment and mood rewards for watching punishment (R6).
 
 **Exit checks**
 
@@ -261,6 +315,8 @@ Goal: crime as an action any agent can take, calibrated policing, and the true-v
 - [ ] The recorded view never shows a true-view cue, and every justice event produces a bubble, a log line and a chart glyph (R3).
 - [ ] District logs sum exactly to city totals, recorded never exceeds true on any district-day, and a re-imported field keeps the top-5% share within 0.05 (R4).
 - [ ] In a 1,000–100,000-agent size sweep, loot and detection explain no more than about 45% of the per-capita theft gradient, Glaeser and Sacerdote's bound (R4).
+- [ ] A violent-crime victim's LS averages 0.3–0.45 below baseline in the year of the crime and under 0.1 the year after (R6).
+- [ ] At full employment, true theft stays above zero on paired seeds (R6).
 
 ## M5 Society and policy
 
@@ -275,6 +331,19 @@ Goal: the social layer and policy sliders, each with a predicted size of effect,
 - [ ] Add an opt-in wealth lens, fear-of-crime and trust-in-police meters, and rate-limited sweat-drop and heart bubbles (R3).
 - [ ] Show policy changes through places and overlays (station staffing, patrol density, shop shutters), never through how agents look (R3).
 - [ ] Add city size (at least four sizes from 1,000 to 100,000 agents) as a factor in the calibration sweeps and keep every run's daily flow logs, so the same runs train the country emulator (R4).
+- [ ] Add development presets that set productivity per sector from World Bank 2023 bands (0.7 / 1.5 / 4.4 / 47 t of cereal per farm worker a year) (R6).
+- [ ] Add resource sliders with predicted sizes: fishing effort (collapse above 0.75 r), logging quota (recovery 70–85 years) and manure or fertiliser (unfertilised floor 0.35–0.45 of manured) (R6).
+- [ ] Add a markdown-and-donation policy predicting about 20% less shop waste, and a home-refrigeration subsidy moving homes from ambient to cool; verify Sanders's 21% first (R6).
+- [ ] Add −20 per point of settlement unemployment and −7 per point of inflation to LS, and give each policy slider a predicted LS size (R6).
+- [ ] Add an opt-in district wellbeing lens, a government-approval readout from mean LS, and a district panel of the suffering share and strongest drivers; never show mood per house, and add no elections or protests (R6).
+- [ ] Optional: a happiness-affects-productivity switch at ±4% per ladder point, capped at ±8%, off by default (R6).
+- [ ] Ship euro-like and US-like wealth presets with CI bands, measured from a spawned start (R6).
+- [ ] Add wealth-tax (0–3% above 4× mean net worth), estate-tax (0–70%), property-tax (0–2%, default 1%) and credit-access (0–2× income) sliders with the Gini and negative-net-worth sizes from the Goods & wellbeing tab (R6).
+- [ ] State on each wealth slider that Nomos has no avoidance channel, so top-end effects are upper bounds (Denmark's long-run elasticity is about 0.5), and label 3% as above Denmark's historical 2.2% (R6).
+- [ ] Log households stuck at the credit limit for at least 5 years as the poverty-trap meter (R6).
+- [ ] If a wealth term is enabled, measure liquid wealth in years of settlement median income (+50 per year, capped at +150), never by fixed coin thresholds (R6).
+- [ ] Add harvest shocks as logged scenario inputs, announced as forecasts with uncertainty (R6).
+- [ ] Extend the appearance audit: no body pixel varies with LS, faces stay event-driven, bubbles are capped per agent per day, and every rendered attribute has |Spearman| < 0.05 with wealth decile outside the lens over 50 seeds (R6).
 
 **Exit checks**
 
@@ -282,6 +351,8 @@ Goal: the social layer and policy sliders, each with a predicted size of effect,
 - [ ] No role goes extinct across seeds (R1).
 - [ ] The appearance audit, extended to wealth, finds no rendered attribute that correlates with wealth decile outside the opt-in lens (R3).
 - [ ] The emulator fitter reads the sweep logs without conversion (R4).
+- [ ] The food share falls about 7.8 points per doubling of income across presets (R6).
+- [ ] Without policy changes, wealth drift over 50 years stays within 0.03 Gini and 3 points of top-10% share; the wealth-tax Gini check runs from a spawned near-stationary state (R6).
 
 ## M6 Scale and sharing
 
@@ -304,6 +375,7 @@ Goal: 100k agents on desktop, share links that replay in any browser, and a clea
 - [ ] Port the exact neighbour query and the settlement model to Rust compiled to WASM SIMD, with raw pointer exports and no wasm-bindgen, keeping integer JS fallbacks (R5).
 - [ ] Run workers only when `crossOriginIsolated` is true and a phase carries at least 0.5 ms: fixed 1,024-agent chunks, chunk-ordered reductions, a spin of at most 50 µs before `Atomics.wait`, and at most min(hardwareConcurrency − 2, 3) helpers (R5).
 - [ ] Add a hand-written service worker for offline starts, and a `_headers` file with immutable caching for hashed assets plus COOP/COEP (R5).
+- [ ] Name the class colours, culture conflict and punishment spectacles that games like Norland use, and Nomos excludes, on the "What this toy leaves out" page (R6).
 
 **Exit checks**
 
@@ -314,6 +386,7 @@ Goal: 100k agents on desktop, share links that replay in any browser, and a clea
 - [ ] A save of 10,000 settlement ledgers stays under about 0.3 MB gzip, and a share URL with a focus log restores the same canonical hash (R4).
 - [ ] The city generator returns byte-identical maps in Node, Bun, Deno and three browsers for 100 random context records (R4).
 - [ ] A 100k-agent tick fits 16 ms on the reference machine, exact queries run only through WASM SIMD or workers, and state hashes match for one to four workers (R5).
+- [ ] A save of 10,000 settlement ledgers with goods, food, happiness and wealth blocks stays under about 0.5 MB gzip, replacing the 0.3 MB target (R6).
 
 ## M7 Country of ledgers
 
@@ -330,6 +403,20 @@ Goal: every settlement in a country advances daily as an integer ledger, headles
 - [ ] Add a terrain-free generator for tests: Zipf sizes, hexagonal or Poisson-disc spacing by level, Gibrat growth with a reflecting floor, and a Delaunay → spanning tree → spanner route graph (R4).
 - [ ] Add the country CI suite: daily identities, the integer-cent SIM known answer, the five scaling tests, Zipf and spacing, the trade band and gravity, migration and commuting decay, crime ratios, police staffing and response times (R4).
 - [ ] Keep flows on sparse CSR graphs with at most 24 neighbours per settlement, update settlements round-robin across a day's ticks, and allow dense matrices only between regions (R5).
+- [ ] Extend the settlement store with eight Int32 goods stocks and prices, a standing crop, Q16 fertility and weather, fish, forest and ore stocks as integer-valued Float64, and workers by sector (about 30 numbers, 130 B) (R6).
+- [ ] Add the 12-number food block (a 6-slot perishable ring by days left {1, 2, 3, 4–6, 7–10, 11+}, two dated staple cohorts, eaten and spoiled), aged daily, with a second ring for weekly-market villages (R6).
+- [ ] Never model a stored harvest with a single daily loss rate, which lost 19–29% of a year's harvest in testing against 0% for dated cohorts (R6).
+- [ ] Add the happiness block (employed and unemployed mean LS, income habit, base level, 5 band counts cut at 4.0, 5.5, 7.0 and 8.5), rebuilt daily from the band table by largest remainder (R6).
+- [ ] Add the wealth block (net-worth totals for the bottom 50%, next 40%, top 10% and top 1%; counts with net worth ≤ 0 and owners; debt totals; the price index; σ and α), kept separate from the crime top-5% share (R6).
+- [ ] Step goods weekly, round-robin over seven days: extraction with logistic regrowth (Q24 rates, depensation below K/4), recipes, consumption, decay, then band prices clamped to 25–175% of base (R6).
+- [ ] For storable seasonal goods, target stock at demand × days to the next harvest plus a carrying-cost drift of 1.5–3% a month (R6).
+- [ ] Trade grain, timber, metal and wares on weekly market days by margin per good (sea 1 : river 5–10 : road 23–52); send fresh food only under a day's travel and stone only to neighbours (R6).
+- [ ] Bound settlement prices by import and export parity plus transport cost, add arbitrage flows when local prices leave the band, and model market saturation as decaying demand memory, adapted from Norland's caravan ceiling (R6).
+- [ ] Apply pre-retail food loss by group (fruit and vegetables 25.4%, meat 14.0%, roots 12.3%, cereals 8.4%), scaled by a cold-chain factor of 0.75–1.73 (R6).
+- [ ] Add +150 per doubling of settlement median income over the national median, and let mean LS below the national mean raise out-migration by up to 10% per point (R6).
+- [ ] Fit wealth group-transition hazards from the M5 sweep logs; spawn and fold reproduce group totals exactly in cents (R6).
+- [ ] Use one keyed draw per settlement-day plus one hash round per rounding decision, or deterministic remainders, for aggregate band shifts; never a full keyed draw per cell (R6).
+- [ ] Budget the goods-and-wellbeing extension at ≤ 0.7 µs RM per settlement-day at 1,000 settlements, and port it to WASM with the settlement model before the 10,000-settlement tier (R6).
 
 **Exit checks**
 
@@ -339,6 +426,10 @@ Goal: every settlement in a country advances daily as an integer ledger, headles
 - [ ] On ≥ 30 settlements spanning three orders of magnitude, the GDP-like exponent's interval overlaps 1.08–1.15 and rejects 1, while homicide-like and household exponents do not reject 1 (R4).
 - [ ] Zipf's ζ stays within 0.9–1.2 for 50 years; trade distance elasticity is −0.9 ± 0.2; commuting decays at about −2; migration between settlements runs at 3.6–5.5% a year (R4).
 - [ ] Urban-to-rural property victimisation is 3.4 ± 30%; officers per 1,000 peak in towns under 10,000; an export shock to one region is partly offset by its net fiscal inflow within the year (R4).
+- [ ] The goods identity holds exactly per good every day, with spoilage as its own term; harvest stores lose only pest loss (≤ 7% a season) (R6).
+- [ ] The fishery catch at u = r/2 lands within 0.1% of rK/4, and the ledger ring's waste stays within 1 point of an exact per-day ring on presets (R6).
+- [ ] Seasonal price gaps run 17–33% in isolated villages and 2.5–3 times lower in integrated markets; grain's price doubles at about 290 km by road (R6).
+- [ ] Total migration stays at 3.6–5.5% a year with the LS push on, and 10,000 settlements meet the 12 ms budget with every block in (R6).
 
 ## M8 Country map
 
@@ -357,6 +448,7 @@ Goal: country mode ships, with a generated, seeded map, Country and Region views
 - [ ] Add the focus state, the breadcrumb (Country › Region › Settlement › District) and charts re-keyed by focus, with shared colour scales and "estimated" labels on every ledger-driven panel (R4).
 - [ ] Add "Open in City mode": a detached City-mode run seeded from a settlement's ledger and labelled as a what-if (R4).
 - [ ] Keep multi-resolution history (weekly for a year, monthly before that), quantised to Uint16 with delta coding (R4).
+- [ ] Add goods map modes: main product per settlement (eight classes, icon plus colour), the price of a chosen good, days of stock, and resource health (fish B/K, forest V/K, ore left) (R6).
 
 **Exit checks**
 
@@ -383,6 +475,9 @@ Goal: zooming from Region to street shows agents spawned from the ledger, aligne
 - [ ] Add the route strip view: a seeded strip map 20–40 tiles wide whose caravans, bandits and patrols are aligned to the route's ledger (R4).
 - [ ] Add consequential focus as an opt-in, with an observer-effect notice and the focus log in share URLs (R4).
 - [ ] Optional: pinned live settlements chosen at world creation (one on phones, up to three on desktops), agent-canonical and folded exactly into the national accounts every day (R4).
+- [ ] Fold pantry and shop lots into the ring and cohorts exactly in portions; spawn lots by largest remainder, with keyed expiry offsets inside wide slots and the category mix drawn from demand shares (R6).
+- [ ] Make spawn draw set points so spawned LS bands match the ledger, and make fold return exact band counts and summed LS (R6).
+- [ ] Add each notable's balance sheet (home ID, shares, debts) to the notables cache, so a revisited owner still owns the same home and firm (R6).
 
 **Exit checks**
 
@@ -402,6 +497,8 @@ Total effort to launch is roughly 20–30 weeks of one developer's full-time wor
 - [ ] Re-check economySim, SocSim and ndouglas/SugarScape weekly until launch, including ndouglas's announced "underworld" campaign (R2).
 - [ ] Treat GPL, AGPL and unlicensed repositories as study-only; keep `assets/LICENSES.md` current with author, pinned URL, licence, hash and changes for every file (R2, R3).
 - [ ] Keep "Pokémon", "Poké-" and creature names out of the title, repo, packages, domain, tags, store text and code; copy nothing from Nintendo, including the decompilation repos (R3).
+- [ ] Re-check Norland's "fundamental update", due before the end of 2026, for its trade, upkeep and knowledge reworks (R6).
+- [ ] Refresh the US wealth preset when SCF 2025 is released (R6).
 
 **Verify before hard-coding**
 

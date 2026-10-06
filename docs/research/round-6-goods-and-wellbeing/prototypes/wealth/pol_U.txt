@@ -1,0 +1,37 @@
+control {"saveQ":[0,20000,60000,90000,180000],"sigma":0.9,"sigRisky":250000,"creditMult":1000000,"dischargeYears":7,"shockProb":170000,"shockMult":950000,"rtSwitch":70000,"mpcIBands":[70000,45000,24000,15000,12000]}
+  t=200 gini 0.794 top10 0.651 top1 0.225 bot50 0.023 le0 0.125 own 0.389 medW_medY 0.830 meanW_meanY 2.687 taxShareY 0.014
+  t=210 gini 0.799 top10 0.661 top1 0.250 bot50 0.023 le0 0.127 own 0.388 medW_medY 0.837 meanW_meanY 2.773 taxShareY 0.014
+  t=225 gini 0.800 top10 0.663 top1 0.254 bot50 0.023 le0 0.127 own 0.388 medW_medY 0.837 meanW_meanY 2.753 taxShareY 0.014
+  t=250 gini 0.793 top10 0.650 top1 0.227 bot50 0.024 le0 0.127 own 0.391 medW_medY 0.840 meanW_meanY 2.670 taxShareY 0.014
+policy {"wealthTax":10000,"wealthTaxThreshMult":4000000}
+  +10y dgini -0.022 dtop10 -0.023 dtop1 -0.018 dbot50 0.011 dle0 -0.041 down 0.014 dmedW_medY 0.097 dmeanW_meanY -0.013 dtaxShareY 0.008 | dGini range [-0.024,-0.021] dTop10 range [-0.025,-0.022]
+  +25y dgini -0.042 dtop10 -0.044 dtop1 -0.039 dbot50 0.019 dle0 -0.064 down 0.040 dmedW_medY 0.183 dmeanW_meanY -0.027 dtaxShareY 0.008 | dGini range [-0.045,-0.039] dTop10 range [-0.048,-0.041]
+  +50y dgini -0.052 dtop10 -0.053 dtop1 -0.039 dbot50 0.024 dle0 -0.075 down 0.063 dmedW_medY 0.247 dmeanW_meanY 0.010 dtaxShareY 0.007 | dGini range [-0.055,-0.046] dTop10 range [-0.059,-0.043]
+policy {"wealthTax":30000,"wealthTaxThreshMult":4000000}
+  +10y dgini -0.065 dtop10 -0.064 dtop1 -0.052 dbot50 0.031 dle0 -0.090 down 0.048 dmedW_medY 0.273 dmeanW_meanY -0.030 dtaxShareY 0.021 | dGini range [-0.069,-0.060] dTop10 range [-0.069,-0.058]
+  +25y dgini -0.110 dtop10 -0.114 dtop1 -0.098 dbot50 0.050 dle0 -0.106 down 0.128 dmedW_medY 0.483 dmeanW_meanY -0.063 dtaxShareY 0.018 | dGini range [-0.116,-0.103] dTop10 range [-0.120,-0.107]
+  +50y dgini -0.128 dtop10 -0.135 dtop1 -0.111 dbot50 0.057 dle0 -0.107 down 0.171 dmedW_medY 0.617 dmeanW_meanY -0.060 dtaxShareY 0.014 | dGini range [-0.133,-0.124] dTop10 range [-0.143,-0.128]
+policy {"wealthTax":30000,"wealthTaxThreshMult":0}
+  +10y dgini -0.175 dtop10 -0.132 dtop1 -0.061 dbot50 0.101 dle0 -0.125 down 0.223 dmedW_medY 0.807 dmeanW_meanY -0.040 dtaxShareY 0.086 | dGini range [-0.176,-0.174] dTop10 range [-0.135,-0.128]
+  +25y dgini -0.289 dtop10 -0.232 dtop1 -0.122 dbot50 0.162 dle0 -0.125 down 0.369 dmedW_medY 1.507 dmeanW_meanY -0.070 dtaxShareY 0.087 | dGini range [-0.292,-0.283] dTop10 range [-0.238,-0.223]
+  +50y dgini -0.334 dtop10 -0.272 dtop1 -0.147 dbot50 0.186 dle0 -0.126 down 0.388 dmedW_medY 1.673 dmeanW_meanY -0.123 dtaxShareY 0.080 | dGini range [-0.339,-0.331] dTop10 range [-0.281,-0.268]
+policy {"estateTax":400000,"estateThreshMult":4000000}
+  +10y dgini -0.017 dtop10 -0.018 dtop1 -0.011 dbot50 0.009 dle0 -0.034 down 0.010 dmedW_medY 0.077 dmeanW_meanY -0.010 dtaxShareY 0.010 | dGini range [-0.018,-0.016] dTop10 range [-0.019,-0.016]
+  +25y dgini -0.037 dtop10 -0.037 dtop1 -0.029 dbot50 0.018 dle0 -0.059 down 0.035 dmedW_medY 0.167 dmeanW_meanY -0.013 dtaxShareY 0.007 | dGini range [-0.044,-0.030] dTop10 range [-0.044,-0.032]
+  +50y dgini -0.052 dtop10 -0.052 dtop1 -0.039 dbot50 0.024 dle0 -0.073 down 0.062 dmedW_medY 0.250 dmeanW_meanY -0.010 dtaxShareY 0.006 | dGini range [-0.059,-0.043] dTop10 range [-0.059,-0.045]
+policy {"propTaxPolicy":0}
+  +10y dgini 0.028 dtop10 0.020 dtop1 0.007 dbot50 -0.017 dle0 0.085 down -0.011 dmedW_medY -0.170 dmeanW_meanY -0.067 dtaxShareY -0.014 | dGini range [0.026,0.030] dTop10 range [0.018,0.021]
+  +25y dgini 0.044 dtop10 0.035 dtop1 0.017 dbot50 -0.025 dle0 0.129 down -0.035 dmedW_medY -0.297 dmeanW_meanY -0.080 dtaxShareY -0.014 | dGini range [0.043,0.046] dTop10 range [0.033,0.037]
+  +50y dgini 0.053 dtop10 0.044 dtop1 0.017 dbot50 -0.029 dle0 0.147 down -0.054 dmedW_medY -0.383 dmeanW_meanY -0.113 dtaxShareY -0.014 | dGini range [0.051,0.056] dTop10 range [0.041,0.049]
+policy {"propTaxPolicy":20000}
+  +10y dgini -0.028 dtop10 -0.018 dtop1 -0.006 dbot50 0.018 dle0 -0.065 down -0.025 dmedW_medY 0.160 dmeanW_meanY 0.060 dtaxShareY 0.013 | dGini range [-0.030,-0.027] dTop10 range [-0.019,-0.017]
+  +25y dgini -0.048 dtop10 -0.031 dtop1 -0.009 dbot50 0.031 dle0 -0.092 down -0.041 dmedW_medY 0.263 dmeanW_meanY 0.110 dtaxShareY 0.013 | dGini range [-0.049,-0.046] dTop10 range [-0.033,-0.028]
+  +50y dgini -0.062 dtop10 -0.038 dtop1 -0.008 dbot50 0.040 dle0 -0.103 down -0.044 dmedW_medY 0.313 dmeanW_meanY 0.127 dtaxShareY 0.013 | dGini range [-0.069,-0.053] dTop10 range [-0.047,-0.027]
+policy {"creditPolicy":0}
+  +10y dgini -0.029 dtop10 -0.008 dtop1 -0.001 dbot50 0.021 dle0 -0.126 down -0.053 dmedW_medY -0.010 dmeanW_meanY -0.017 dtaxShareY -0.002 | dGini range [-0.029,-0.028] dTop10 range [-0.009,-0.008]
+  +25y dgini -0.029 dtop10 -0.005 dtop1 0.005 dbot50 0.022 dle0 -0.126 down -0.058 dmedW_medY -0.010 dmeanW_meanY -0.013 dtaxShareY -0.002 | dGini range [-0.032,-0.027] dTop10 range [-0.010,-0.003]
+  +50y dgini -0.030 dtop10 -0.005 dtop1 0.007 dbot50 0.023 dle0 -0.126 down -0.061 dmedW_medY -0.013 dmeanW_meanY -0.027 dtaxShareY -0.001 | dGini range [-0.035,-0.025] dTop10 range [-0.011,-0.001]
+policy {"creditPolicy":2000000}
+  +10y dgini 0.011 dtop10 0.004 dtop1 0.001 dbot50 -0.007 dle0 0.022 down 0.017 dmedW_medY 0.017 dmeanW_meanY 0.007 dtaxShareY 0.001 | dGini range [0.011,0.012] dTop10 range [0.003,0.005]
+  +25y dgini 0.024 dtop10 0.015 dtop1 0.008 dbot50 -0.013 dle0 0.039 down 0.007 dmedW_medY -0.040 dmeanW_meanY -0.017 dtaxShareY 0.000 | dGini range [0.023,0.025] dTop10 range [0.013,0.017]
+  +50y dgini 0.038 dtop10 0.032 dtop1 0.031 dbot50 -0.018 dle0 0.051 down 0.000 dmedW_medY -0.077 dmeanW_meanY 0.003 dtaxShareY 0.000 | dGini range [0.034,0.045] dTop10 range [0.022,0.047]

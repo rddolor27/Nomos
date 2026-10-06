@@ -1,0 +1,401 @@
+{
+ "env": {
+  "node": "v24.18.0",
+  "v8": "13.6.233.17-node.50",
+  "platform": "win32 10.0.19045",
+  "cpu": "AMD Ryzen 5 3600 6-Core Processor",
+  "logicalCpus": 12,
+  "execArgv": [
+   "--expose-gc"
+  ]
+ },
+ "config": {
+  "N": 10000,
+  "mode": "wheel",
+  "order": "contig",
+  "tpd": 1440,
+  "dayMode": "fused",
+  "layout": "packed",
+  "samples": 9,
+  "warmupMs": 250,
+  "minSampleMs": 25,
+  "H": 4079,
+  "firms": 408,
+  "shopCap": 12,
+  "slicesPerDay": 14
+ },
+ "cpuBefore": {
+  "busyFrac": 0.032,
+  "busyLogicalCpus": 0.38,
+  "loadavg": [
+   0,
+   0,
+   0
+  ]
+ },
+ "buildMs": 19.981399999999894,
+ "dayEarly": {
+  "totals": [
+   5.688900000000103,
+   1.5221999999998843,
+   1.1334999999999127,
+   1.1394000000000233,
+   0.748600000000124
+  ],
+  "maxTickShare": [
+   5.688900000000103,
+   1.5221999999998843,
+   1.1334999999999127,
+   1.1394000000000233,
+   0.748600000000124
+  ]
+ },
+ "snapshot": {
+  "bytes": 1114112,
+  "copyMs": 0.292699999999968,
+  "restoreMs": 0.10050000000001091
+ },
+ "timerOverheadMs": 0.000056831999999956226,
+ "ticksPerSample": 12367,
+ "perTick": {
+  "needsEat": {
+   "med": 0.0010735795792030422,
+   "min": 0.0010524588546938158,
+   "max": 0.001102438639605432,
+   "n": 9
+  },
+  "shop": {
+   "med": 0.0001435561297000347,
+   "min": 0.0001399740160098051,
+   "max": 0.0001741294296113931,
+   "n": 9
+  },
+  "bundle": {
+   "med": 0.0012171357089030767,
+   "min": 0.0011924328707036207,
+   "max": 0.0012574445954575747,
+   "n": 9
+  },
+  "p99": 0.0026000000000294676,
+  "max": 0.10239999999998872,
+  "shopsPerTick": 1.171226292193382,
+  "mealsPerAgentDay": 2.566266666666667
+ },
+ "dayInSim": {
+  "total": {
+   "med": 0.6643999999998869,
+   "min": 0.651299999999992,
+   "max": 0.7549000000001342,
+   "n": 78
+  },
+  "maxTickShare": {
+   "med": 0.6643999999998869,
+   "min": 0.651299999999992,
+   "max": 0.7549000000001342,
+   "n": 78
+  },
+  "slices": null
+ },
+ "cpuAfterTicks": {
+  "busyFrac": 0.023,
+  "busyLogicalCpus": 0.27,
+  "loadavg": [
+   0,
+   0,
+   0
+  ]
+ },
+ "dayProbe": {
+  "separate": {
+   "med": 0.7429000000001906,
+   "min": 0.6570000000001528,
+   "max": 1.4603000000001884,
+   "n": 11
+  },
+  "separateParts": {
+   "spoilFold": {
+    "med": 0.19899999999961437,
+    "min": 0.19659999999976208,
+    "max": 0.3856999999998152,
+    "n": 11
+   },
+   "resources": {
+    "med": 0.00930000000016662,
+    "min": 0.009099999999762076,
+    "max": 0.016700000000128057,
+    "n": 11
+   },
+   "payroll": {
+    "med": 0.0850999999997839,
+    "min": 0.055600000000140426,
+    "max": 0.5651000000002568,
+    "n": 11
+   },
+   "wealthHouseholds": {
+    "med": 0.13869999999997162,
+    "min": 0.0805000000000291,
+    "max": 0.19039999999995416,
+    "n": 11
+   },
+   "happiness": {
+    "med": 0.30860000000029686,
+    "min": 0.30510000000003856,
+    "max": 0.40120000000024447,
+    "n": 11
+   },
+   "commit": {
+    "med": 0.0018000000000029104,
+    "min": 0.0016999999998006388,
+    "max": 0.0032999999998537533,
+    "n": 11
+   }
+  },
+  "fused": {
+   "med": 0.6727999999998246,
+   "min": 0.6644000000001142,
+   "max": 0.8197999999997592,
+   "n": 11
+  },
+  "slicedTotal": {
+   "med": 0.6775000000006912,
+   "min": 0.6714999999999236,
+   "max": 0.7724000000007436,
+   "n": 11
+  },
+  "slicedMaxSlice": {
+   "med": 0.07230000000026848,
+   "min": 0.06970000000001164,
+   "max": 0.10830000000032669,
+   "n": 11
+  }
+ },
+ "spoil": {
+  "fused": {
+   "med": 0.18990000000030705,
+   "min": 0.18910000000005311,
+   "max": 0.20339999999987413,
+   "n": 11
+  },
+  "plain": {
+   "med": 0.11889999999993961,
+   "min": 0.11850000000004002,
+   "max": 0.18960000000015498,
+   "n": 11
+  }
+ },
+ "dinnerRush": {
+  "nsPerAgent": {
+   "med": 15.929999999980282,
+   "min": 15.889999999990323,
+   "max": 17.489999999997963,
+   "n": 11
+  },
+  "successShare": 0.962
+ },
+ "topShare": {
+  "hist": {
+   "med": 0.0010538915192291657,
+   "min": 0.0010223315890024209,
+   "max": 0.0010621812442893831,
+   "n": 9,
+   "reps": 24078
+  },
+  "sort": {
+   "med": 0.31665189873418265,
+   "min": 0.3137025316455728,
+   "max": 0.32043291139240254,
+   "n": 9,
+   "reps": 79
+  },
+  "histQ16": 22684,
+  "sortQ16": 22702
+ },
+ "gc": [
+  {
+   "label": "ticks-only",
+   "units": 1000,
+   "count": 0,
+   "minor": 0,
+   "major": 0,
+   "incremental": 0,
+   "weakcb": 0,
+   "totalMs": 0,
+   "maxMs": 0,
+   "heapGrowthBytes": 21712,
+   "heapGrowthPerUnit": 21.712
+  },
+  {
+   "label": "ticks+day-work",
+   "units": 2890,
+   "count": 0,
+   "minor": 0,
+   "major": 0,
+   "incremental": 0,
+   "weakcb": 0,
+   "totalMs": 0,
+   "maxMs": 0,
+   "heapGrowthBytes": 29168,
+   "heapGrowthPerUnit": 10.092733564013841
+  },
+  {
+   "label": "day-separate-only",
+   "units": 20,
+   "count": 0,
+   "minor": 0,
+   "major": 0,
+   "incremental": 0,
+   "weakcb": 0,
+   "totalMs": 0,
+   "maxMs": 0,
+   "heapGrowthBytes": 18576,
+   "heapGrowthPerUnit": 928.8
+  },
+  {
+   "label": "day-fused-only",
+   "units": 20,
+   "count": 0,
+   "minor": 0,
+   "major": 0,
+   "incremental": 0,
+   "weakcb": 0,
+   "totalMs": 0,
+   "maxMs": 0,
+   "heapGrowthBytes": 21024,
+   "heapGrowthPerUnit": 1051.2
+  },
+  {
+   "label": "day-sliced-only",
+   "units": 20,
+   "count": 0,
+   "minor": 0,
+   "major": 0,
+   "incremental": 0,
+   "weakcb": 0,
+   "totalMs": 0,
+   "maxMs": 0,
+   "heapGrowthBytes": 19184,
+   "heapGrowthPerUnit": 959.2
+  },
+  {
+   "label": "topShareSort",
+   "units": 20,
+   "count": 0,
+   "minor": 0,
+   "major": 0,
+   "incremental": 0,
+   "weakcb": 0,
+   "totalMs": 0,
+   "maxMs": 0,
+   "heapGrowthBytes": 26272,
+   "heapGrowthPerUnit": 1313.6
+  }
+ ],
+ "ledgerExactAfterRun": true,
+ "memory": {
+  "reservedBytes": 1114112,
+  "usedBytes": 1065152,
+  "groups": {
+   "agent": {
+    "bytes": 600000,
+    "items": [
+     "needZ:160000",
+     "wheelNext:40000",
+     "metab:10000",
+     "household:40000",
+     "happy:40000",
+     "happySet:20000",
+     "mealQSum:20000",
+     "meals:10000",
+     "missed:10000",
+     "flags:10000",
+     "cash:80000",
+     "wage:80000",
+     "incomeDay:80000"
+    ]
+   },
+   "system": {
+    "bytes": 18448,
+    "items": [
+     "wheelHead:8192",
+     "qState:16",
+     "acct:32",
+     "dayAcc:32",
+     "wHistCount:3392",
+     "wHistCents:6784"
+    ]
+   },
+   "household": {
+    "bytes": 399742,
+    "items": [
+     "lots:130528",
+     "lotCount:4079",
+     "portions:8158",
+     "members:4079",
+     "inShopQ:4079",
+     "shopQ:16316",
+     "hhCash:32632",
+     "deposits:32632",
+     "homeValue:32632",
+     "durables:32632",
+     "netWorth:32632",
+     "foodValue:32632",
+     "memberCash:32632",
+     "wealthBand:4079"
+    ]
+   },
+   "firm": {
+    "bytes": 13056,
+    "items": [
+     "firmRes:13056"
+    ]
+   },
+   "settlement": {
+    "bytes": 1256,
+    "items": [
+     "stock:384",
+     "waste:32",
+     "eaten:32",
+     "res:32",
+     "hBand:20",
+     "wCount:32",
+     "wCents:64",
+     "scalars:32",
+     "committedI:564",
+     "committedF:64"
+    ]
+   },
+   "scratch-optional": {
+    "bytes": 32632,
+    "items": [
+     "sortBuf:32632"
+    ]
+   }
+  }
+ },
+ "process": {
+  "rss": 69189632,
+  "heapTotal": 7839744,
+  "heapUsed": 5876944,
+  "external": 6139158,
+  "arrayBuffers": 3258619
+ },
+ "lutMaxErrQ16": 0.9994418944843346,
+ "ledgerExactDeterminismRun": true,
+ "determinism": {
+  "hashes": [
+   "733208a1",
+   "733208a1"
+  ],
+  "repeatIdentical": true,
+  "ticks": 4520
+ },
+ "cpuEnd": {
+  "busyFrac": 0.105,
+  "busyLogicalCpus": 1.26,
+  "loadavg": [
+   0,
+   0,
+   0
+  ]
+ }
+}

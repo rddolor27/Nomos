@@ -1,0 +1,28 @@
+loadavg(msys) 3.23 2.14 1.49 1/11 | cpu% 35 | cpu: AMD Ryzen 5 3600 (6C/12T), Windows 10 Pro
+{"env":{"node":"v24.18.0","v8":"13.6.233.17-node.50","platform":"win32","arch":"x64"}}
+{"checks":{"goodsConserved":true,"moneySumZero":true,"orderIndependent":true,"hash":"45bf0ee2","unmetShareDay720":["grain 0.0%","fresh 62.5%","timber 10.2%","stone 0.0%","metal 100.0%","fuel 73.1%","wares 77.6%","services 0.0%"]}}
+{"fishery":{"r":0.6,"msyTheory":15000000,"rows":[{"u":0.1,"catchPerYear":8332560,"theory":8333333,"ratio":0.9999,"BoverK":0.833},{"u":0.2,"catchPerYear":13332960,"theory":13333333,"ratio":1,"BoverK":0.667},{"u":0.3,"catchPerYear":14999760,"theory":15000000,"ratio":1,"BoverK":0.5},{"u":0.4,"catchPerYear":13333320,"theory":13333333,"ratio":1,"BoverK":0.333},{"u":0.5,"catchPerYear":0,"theory":8333333,"ratio":0,"BoverK":0},{"u":0.6,"catchPerYear":0,"theory":0,"ratio":null,"BoverK":0},{"u":0.7,"catchPerYear":0,"theory":0,"ratio":null,"BoverK":0}]}}
+{"recovery":[{"r":0.06,"yearsMeasured":84.6,"yearsTheoryNoDepensation":73.2},{"r":0.15,"yearsMeasured":33.8,"yearsTheoryNoDepensation":29.3},{"r":0.6,"yearsMeasured":8.5,"yearsTheoryNoDepensation":7.3},{"r":1,"yearsMeasured":5.1,"yearsTheoryNoDepensation":4.4}]}
+{"memory":{"goodsStateBytesPerSettlement":276,"csrBytesPerSettlementK8":60.976,"tradePlanBytesPerEdgePerTradable":4}}
+N=1000 k=8 tradables=0 tradeEvery=1d edges=7622 local ns/settlement-day 162 [150-200] trade 0 [0-0] moneyZero=true
+N=1000 k=8 tradables=3 tradeEvery=1d edges=7622 local ns/settlement-day 158 [153-210] trade 225 [215-284] moneyZero=true
+N=1000 k=8 tradables=4 tradeEvery=1d edges=7622 local ns/settlement-day 163 [153-198] trade 335 [323-402] moneyZero=true
+N=1000 k=8 tradables=5 tradeEvery=1d edges=7622 local ns/settlement-day 169 [155-264] trade 410 [387-639] moneyZero=true
+N=1000 k=8 tradables=7 tradeEvery=1d edges=7622 local ns/settlement-day 164 [155-187] trade 508 [486-581] moneyZero=true
+N=1000 k=24 tradables=5 tradeEvery=1d edges=22128 local ns/settlement-day 171 [155-193] trade 1155 [1074-1308] moneyZero=true
+N=1000 k=8 tradables=5 tradeEvery=4d edges=7622 local ns/settlement-day 163 [154-234] trade 110 [104-148] moneyZero=true
+N=1000 k=24 tradables=5 tradeEvery=4d edges=22128 local ns/settlement-day 164 [154-213] trade 288 [268-356] moneyZero=true
+N=1000 k=8 tradables=4 tradeEvery=7d edges=7622 local ns/settlement-day 163 [157-168] trade 55 [53-60] moneyZero=true
+N=1000 k=24 tradables=4 tradeEvery=7d edges=22128 local ns/settlement-day 163 [157-168] trade 146 [138-156] moneyZero=true
+N=10000 k=8 tradables=0 tradeEvery=1d edges=78804 local ns/settlement-day 175 [155-292] trade 0 [0-0] moneyZero=true
+N=10000 k=8 tradables=3 tradeEvery=1d edges=78804 local ns/settlement-day 182 [168-221] trade 267 [237-302] moneyZero=true
+N=10000 k=8 tradables=4 tradeEvery=1d edges=78804 local ns/settlement-day 176 [166-193] trade 375 [359-411] moneyZero=true
+N=10000 k=8 tradables=5 tradeEvery=1d edges=78804 local ns/settlement-day 170 [163-188] trade 437 [418-476] moneyZero=true
+N=10000 k=8 tradables=7 tradeEvery=1d edges=78804 local ns/settlement-day 186 [167-211] trade 591 [546-654] moneyZero=true
+N=10000 k=24 tradables=5 tradeEvery=1d edges=234036 local ns/settlement-day 171 [161-196] trade 1205 [1146-1363] moneyZero=true
+N=10000 k=8 tradables=5 tradeEvery=4d edges=78804 local ns/settlement-day 175 [158-201] trade 128 [123-203] moneyZero=true
+N=10000 k=24 tradables=5 tradeEvery=4d edges=234036 local ns/settlement-day 169 [159-191] trade 344 [319-414] moneyZero=true
+N=10000 k=8 tradables=4 tradeEvery=7d edges=78804 local ns/settlement-day 166 [161-203] trade 69 [62-89] moneyZero=true
+N=10000 k=24 tradables=4 tradeEvery=7d edges=234036 local ns/settlement-day 178 [162-228] trade 192 [174-259] moneyZero=true
+samples=15 x 60 days, warm-up 360 days
+loadavg(msys) after 4.42 2.77 1.77 2/11 | cpu% 69

@@ -1,0 +1,1 @@
+{"saveSize10k":{"int32Bytes":840000,"int32Gzip":243840,"priceAsUint16PermilleBytes":680000,"priceAsUint16PermilleGzip":227500}}

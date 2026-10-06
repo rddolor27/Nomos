@@ -1,0 +1,364 @@
+{
+ "env": {
+  "node": "v24.18.0",
+  "v8": "13.6.233.17-node.50",
+  "cpu": "AMD Ryzen 5 3600 6-Core Processor",
+  "loadavg": [
+   0,
+   0,
+   0
+  ]
+ },
+ "rows": [
+  {
+   "variant": "full-sr",
+   "S": 1000,
+   "numbersPerSettlement": 153,
+   "bytesPerSettlement": 644,
+   "msPerDay": {
+    "med": 1.8604071428571436,
+    "min": 1.6111142857142835,
+    "max": 2.1965928571428606,
+    "reps": 14,
+    "n": 9,
+    "warmCalls": 137
+   },
+   "usPerSettlement": {
+    "med": 1.8604071428571436,
+    "min": 1.6111142857142835,
+    "max": 2.19659285714286
+   },
+   "year": {
+    "hashA": "3324a35c",
+    "hashB": "3324a35c",
+    "identical": true,
+    "shortShare": 0.006768989758797133
+   }
+  },
+  {
+   "variant": "full-sr",
+   "S": 10000,
+   "numbersPerSettlement": 153,
+   "bytesPerSettlement": 644,
+   "msPerDay": {
+    "med": 17.24440000000004,
+    "min": 16.782200000000103,
+    "max": 20.296100000000024,
+    "reps": 2,
+    "n": 9,
+    "warmCalls": 11
+   },
+   "usPerSettlement": {
+    "med": 1.7244400000000042,
+    "min": 1.6782200000000103,
+    "max": 2.0296100000000026
+   },
+   "year": {
+    "hashA": "86e8d7ca",
+    "hashB": "86e8d7ca",
+    "identical": true,
+    "shortShare": 0.0067679215772907175
+   }
+  },
+  {
+   "variant": "full-carry",
+   "S": 1000,
+   "numbersPerSettlement": 249,
+   "bytesPerSettlement": 836,
+   "msPerDay": {
+    "med": 1.0024083333332783,
+    "min": 0.9550791666667161,
+    "max": 1.2405708333333223,
+    "reps": 24,
+    "n": 9,
+    "warmCalls": 233
+   },
+   "usPerSettlement": {
+    "med": 1.0024083333332783,
+    "min": 0.9550791666667161,
+    "max": 1.2405708333333223
+   },
+   "year": {
+    "hashA": "5f5f8b78",
+    "hashB": "5f5f8b78",
+    "identical": true,
+    "shortShare": 0.006768989758797133
+   }
+  },
+  {
+   "variant": "full-carry",
+   "S": 10000,
+   "numbersPerSettlement": 249,
+   "bytesPerSettlement": 836,
+   "msPerDay": {
+    "med": 9.98413333333277,
+    "min": 9.342233333332842,
+    "max": 11.420200000000477,
+    "reps": 3,
+    "n": 9,
+    "warmCalls": 25
+   },
+   "usPerSettlement": {
+    "med": 0.998413333333277,
+    "min": 0.9342233333332842,
+    "max": 1.1420200000000478
+   },
+   "year": {
+    "hashA": "841af8f6",
+    "hashB": "841af8f6",
+    "identical": true,
+    "shortShare": 0.006767924825251277
+   }
+  },
+  {
+   "variant": "lean-sr",
+   "S": 1000,
+   "numbersPerSettlement": 89,
+   "bytesPerSettlement": 388,
+   "msPerDay": {
+    "med": 0.6784500000000716,
+    "min": 0.6622117647059307,
+    "max": 0.7039470588235204,
+    "reps": 34,
+    "n": 9,
+    "warmCalls": 337
+   },
+   "usPerSettlement": {
+    "med": 0.6784500000000716,
+    "min": 0.6622117647059307,
+    "max": 0.7039470588235204
+   },
+   "year": {
+    "hashA": "88e18df1",
+    "hashB": "88e18df1",
+    "identical": true,
+    "shortShare": 0.0067088163830538085
+   }
+  },
+  {
+   "variant": "lean-sr",
+   "S": 10000,
+   "numbersPerSettlement": 89,
+   "bytesPerSettlement": 388,
+   "msPerDay": {
+    "med": 7.086149999999179,
+    "min": 6.77902499999982,
+    "max": 8.211475000000064,
+    "reps": 4,
+    "n": 9,
+    "warmCalls": 35
+   },
+   "usPerSettlement": {
+    "med": 0.708614999999918,
+    "min": 0.677902499999982,
+    "max": 0.8211475000000064
+   },
+   "year": {
+    "hashA": "47cd361d",
+    "hashB": "47cd361d",
+    "identical": true,
+    "shortShare": 0.006709351104510562
+   }
+  },
+  {
+   "variant": "lean-fast",
+   "S": 1000,
+   "numbersPerSettlement": 89,
+   "bytesPerSettlement": 388,
+   "msPerDay": {
+    "med": 0.5784394736842123,
+    "min": 0.5618578947368836,
+    "max": 0.6752605263157564,
+    "reps": 38,
+    "n": 9,
+    "warmCalls": 371
+   },
+   "usPerSettlement": {
+    "med": 0.5784394736842123,
+    "min": 0.5618578947368836,
+    "max": 0.6752605263157564
+   },
+   "year": {
+    "hashA": "bdd0d8be",
+    "hashB": "bdd0d8be",
+    "identical": true,
+    "shortShare": 0.0067088163830538085
+   }
+  },
+  {
+   "variant": "lean-fast",
+   "S": 10000,
+   "numbersPerSettlement": 89,
+   "bytesPerSettlement": 388,
+   "msPerDay": {
+    "med": 6.007880000000296,
+    "min": 5.83067999999912,
+    "max": 7.092440000000352,
+    "reps": 5,
+    "n": 9,
+    "warmCalls": 44
+   },
+   "usPerSettlement": {
+    "med": 0.6007880000000295,
+    "min": 0.583067999999912,
+    "max": 0.7092440000000352
+   },
+   "year": {
+    "hashA": "be2d5ae4",
+    "hashB": "be2d5ae4",
+    "identical": true,
+    "shortShare": 0.006709351104510562
+   }
+  },
+  {
+   "variant": "ring",
+   "S": 1000,
+   "numbersPerSettlement": 115,
+   "bytesPerSettlement": 492,
+   "msPerDay": {
+    "med": 0.48372040816320805,
+    "min": 0.45068775510195075,
+    "max": 0.5483775510203523,
+    "reps": 49,
+    "n": 9,
+    "warmCalls": 488
+   },
+   "usPerSettlement": {
+    "med": 0.48372040816320805,
+    "min": 0.45068775510195075,
+    "max": 0.5483775510203523
+   },
+   "year": {
+    "hashA": "c74a9c0",
+    "hashB": "c74a9c0",
+    "identical": true,
+    "shortShare": 0.0067088163830538085
+   }
+  },
+  {
+   "variant": "ring",
+   "S": 10000,
+   "numbersPerSettlement": 115,
+   "bytesPerSettlement": 492,
+   "msPerDay": {
+    "med": 4.970320000000356,
+    "min": 4.63695999999909,
+    "max": 5.70566000000108,
+    "reps": 5,
+    "n": 9,
+    "warmCalls": 49
+   },
+   "usPerSettlement": {
+    "med": 0.4970320000000356,
+    "min": 0.46369599999990896,
+    "max": 0.570566000000108
+   },
+   "year": {
+    "hashA": "65856816",
+    "hashB": "65856816",
+    "identical": true,
+    "shortShare": 0.006709351104510562
+   }
+  },
+  {
+   "variant": "flat-carry",
+   "S": 1000,
+   "numbersPerSettlement": 73,
+   "bytesPerSettlement": 308,
+   "msPerDay": {
+    "med": 0.3117749999999337,
+    "min": 0.25805657894737744,
+    "max": 0.34481973684207906,
+    "reps": 76,
+    "n": 9,
+    "warmCalls": 753
+   },
+   "usPerSettlement": {
+    "med": 0.3117749999999337,
+    "min": 0.25805657894737744,
+    "max": 0.34481973684207906
+   },
+   "year": {
+    "hashA": "4e9031dc",
+    "hashB": "4e9031dc",
+    "identical": true,
+    "shortShare": 0.2619749420253946
+   }
+  },
+  {
+   "variant": "flat-carry",
+   "S": 10000,
+   "numbersPerSettlement": 73,
+   "bytesPerSettlement": 308,
+   "msPerDay": {
+    "med": 3.271612499999719,
+    "min": 3.218462499999987,
+    "max": 5.226700000000164,
+    "reps": 8,
+    "n": 9,
+    "warmCalls": 71
+   },
+   "usPerSettlement": {
+    "med": 0.3271612499999719,
+    "min": 0.32184624999999867,
+    "max": 0.5226700000000164
+   },
+   "year": {
+    "hashA": "7713e2f8",
+    "hashB": "7713e2f8",
+    "identical": true,
+    "shortShare": 0.2619753605034848
+   }
+  },
+  {
+   "variant": "social-only",
+   "S": 1000,
+   "numbersPerSettlement": 73,
+   "bytesPerSettlement": 308,
+   "msPerDay": {
+    "med": 0.08644390243903106,
+    "min": 0.08022439024392863,
+    "max": 0.10478780487804815,
+    "reps": 164,
+    "n": 9,
+    "warmCalls": 1631
+   },
+   "usPerSettlement": {
+    "med": 0.08644390243903106,
+    "min": 0.08022439024392863,
+    "max": 0.10478780487804815
+   },
+   "year": {
+    "hashA": "cfae1a31",
+    "hashB": "cfae1a31",
+    "identical": true,
+    "shortShare": null
+   }
+  },
+  {
+   "variant": "social-only",
+   "S": 10000,
+   "numbersPerSettlement": 73,
+   "bytesPerSettlement": 308,
+   "msPerDay": {
+    "med": 1.7135066666669445,
+    "min": 1.6973599999997533,
+    "max": 2.04354666666671,
+    "reps": 15,
+    "n": 9,
+    "warmCalls": 149
+   },
+   "usPerSettlement": {
+    "med": 0.17135066666669446,
+    "min": 0.16973599999997532,
+    "max": 0.204354666666671
+   },
+   "year": {
+    "hashA": "db3718f9",
+    "hashB": "db3718f9",
+    "identical": true,
+    "shortShare": null
+   }
+  }
+ ]
+}
