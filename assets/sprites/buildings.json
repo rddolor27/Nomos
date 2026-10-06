@@ -1,0 +1,276 @@
+{
+  "image": "buildings.png",
+  "size": [
+    256,
+    321
+  ],
+  "tile": 16,
+  "frames": {
+    "civic_clinic": {
+      "x": 0,
+      "y": 128,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "footprint": [
+        4,
+        2
+      ]
+    },
+    "civic_courthouse": {
+      "x": 65,
+      "y": 128,
+      "w": 80,
+      "h": 48,
+      "anchor": [
+        40,
+        47
+      ],
+      "footprint": [
+        5,
+        2
+      ]
+    },
+    "civic_jail": {
+      "x": 146,
+      "y": 128,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "footprint": [
+        4,
+        2
+      ]
+    },
+    "civic_police-station": {
+      "x": 0,
+      "y": 177,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "footprint": [
+        4,
+        2
+      ]
+    },
+    "civic_records-office": {
+      "x": 65,
+      "y": 177,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "footprint": [
+        4,
+        2
+      ]
+    },
+    "civic_school": {
+      "x": 65,
+      "y": 0,
+      "w": 64,
+      "h": 61,
+      "anchor": [
+        32,
+        60
+      ],
+      "footprint": [
+        4,
+        2
+      ]
+    },
+    "civic_town-hall": {
+      "x": 130,
+      "y": 0,
+      "w": 80,
+      "h": 60,
+      "anchor": [
+        40,
+        59
+      ],
+      "footprint": [
+        5,
+        2
+      ]
+    },
+    "shop_general": {
+      "x": 130,
+      "y": 177,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "footprint": [
+        4,
+        2
+      ]
+    },
+    "shop_market-stall": {
+      "x": 195,
+      "y": 177,
+      "w": 48,
+      "h": 48,
+      "anchor": [
+        24,
+        47
+      ],
+      "footprint": [
+        3,
+        2
+      ]
+    },
+    "shop_market-stall_closed": {
+      "x": 0,
+      "y": 226,
+      "w": 48,
+      "h": 48,
+      "anchor": [
+        24,
+        47
+      ],
+      "footprint": [
+        3,
+        2
+      ]
+    },
+    "shop_warehouse": {
+      "x": 49,
+      "y": 226,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "footprint": [
+        4,
+        2
+      ]
+    },
+    "work_dock": {
+      "x": 0,
+      "y": 0,
+      "w": 64,
+      "h": 66,
+      "anchor": [
+        32,
+        39
+      ],
+      "footprint": [
+        4,
+        2
+      ]
+    },
+    "work_farm": {
+      "x": 0,
+      "y": 67,
+      "w": 80,
+      "h": 60,
+      "anchor": [
+        40,
+        59
+      ],
+      "footprint": [
+        5,
+        2
+      ]
+    },
+    "work_fuel-works": {
+      "x": 114,
+      "y": 226,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "footprint": [
+        4,
+        2
+      ]
+    },
+    "work_lumber-camp": {
+      "x": 0,
+      "y": 275,
+      "w": 80,
+      "h": 46,
+      "anchor": [
+        40,
+        45
+      ],
+      "footprint": [
+        5,
+        2
+      ]
+    },
+    "work_mine": {
+      "x": 146,
+      "y": 67,
+      "w": 64,
+      "h": 50,
+      "anchor": [
+        32,
+        49
+      ],
+      "footprint": [
+        4,
+        2
+      ]
+    },
+    "work_pasture": {
+      "x": 146,
+      "y": 275,
+      "w": 64,
+      "h": 44,
+      "anchor": [
+        32,
+        43
+      ],
+      "footprint": [
+        4,
+        2
+      ]
+    },
+    "work_quarry": {
+      "x": 81,
+      "y": 275,
+      "w": 64,
+      "h": 46,
+      "anchor": [
+        32,
+        45
+      ],
+      "footprint": [
+        4,
+        2
+      ]
+    },
+    "work_workshop": {
+      "x": 81,
+      "y": 67,
+      "w": 64,
+      "h": 57,
+      "anchor": [
+        32,
+        56
+      ],
+      "footprint": [
+        4,
+        2
+      ]
+    }
+  }
+}

@@ -1,0 +1,662 @@
+{
+  "image": "culture.png",
+  "size": [
+    256,
+    134
+  ],
+  "tile": 16,
+  "frames": {
+    "banner_diamond": {
+      "x": 163,
+      "y": 0,
+      "w": 16,
+      "h": 32,
+      "anchor": [
+        8,
+        31
+      ],
+      "colour": "STONE"
+    },
+    "banner_feather": {
+      "x": 180,
+      "y": 0,
+      "w": 16,
+      "h": 32,
+      "anchor": [
+        8,
+        31
+      ],
+      "colour": "WOOD_L"
+    },
+    "banner_flower": {
+      "x": 197,
+      "y": 0,
+      "w": 16,
+      "h": 32,
+      "anchor": [
+        8,
+        31
+      ],
+      "colour": "PINK_D"
+    },
+    "banner_leaf": {
+      "x": 214,
+      "y": 0,
+      "w": 16,
+      "h": 32,
+      "anchor": [
+        8,
+        31
+      ],
+      "colour": "GRASS"
+    },
+    "banner_mountain": {
+      "x": 231,
+      "y": 0,
+      "w": 16,
+      "h": 32,
+      "anchor": [
+        8,
+        31
+      ],
+      "colour": "PLUM"
+    },
+    "banner_spiral": {
+      "x": 0,
+      "y": 59,
+      "w": 16,
+      "h": 32,
+      "anchor": [
+        8,
+        31
+      ],
+      "colour": "LEAF_D"
+    },
+    "banner_sunburst": {
+      "x": 17,
+      "y": 59,
+      "w": 16,
+      "h": 32,
+      "anchor": [
+        8,
+        31
+      ],
+      "colour": "SAND_D"
+    },
+    "banner_wave": {
+      "x": 34,
+      "y": 59,
+      "w": 16,
+      "h": 32,
+      "anchor": [
+        8,
+        31
+      ],
+      "colour": "WATER"
+    },
+    "dish_dumplings_16": {
+      "x": 117,
+      "y": 59,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "dish_dumplings_8": {
+      "x": 121,
+      "y": 109,
+      "w": 8,
+      "h": 8,
+      "anchor": [
+        4,
+        7
+      ]
+    },
+    "dish_flatbread_16": {
+      "x": 134,
+      "y": 59,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "dish_flatbread_8": {
+      "x": 130,
+      "y": 109,
+      "w": 8,
+      "h": 8,
+      "anchor": [
+        4,
+        7
+      ]
+    },
+    "dish_loaf_16": {
+      "x": 151,
+      "y": 59,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "dish_loaf_8": {
+      "x": 139,
+      "y": 109,
+      "w": 8,
+      "h": 8,
+      "anchor": [
+        4,
+        7
+      ]
+    },
+    "dish_noodles_16": {
+      "x": 168,
+      "y": 59,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "dish_noodles_8": {
+      "x": 148,
+      "y": 109,
+      "w": 8,
+      "h": 8,
+      "anchor": [
+        4,
+        7
+      ]
+    },
+    "dish_pickles_16": {
+      "x": 185,
+      "y": 59,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "dish_pickles_8": {
+      "x": 157,
+      "y": 109,
+      "w": 8,
+      "h": 8,
+      "anchor": [
+        4,
+        7
+      ]
+    },
+    "dish_pie_16": {
+      "x": 202,
+      "y": 59,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "dish_pie_8": {
+      "x": 166,
+      "y": 109,
+      "w": 8,
+      "h": 8,
+      "anchor": [
+        4,
+        7
+      ]
+    },
+    "dish_porridge_16": {
+      "x": 219,
+      "y": 59,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "dish_porridge_8": {
+      "x": 175,
+      "y": 109,
+      "w": 8,
+      "h": 8,
+      "anchor": [
+        4,
+        7
+      ]
+    },
+    "dish_roast_16": {
+      "x": 236,
+      "y": 59,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "dish_roast_8": {
+      "x": 184,
+      "y": 109,
+      "w": 8,
+      "h": 8,
+      "anchor": [
+        4,
+        7
+      ]
+    },
+    "dish_salad_16": {
+      "x": 0,
+      "y": 92,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "dish_salad_8": {
+      "x": 193,
+      "y": 109,
+      "w": 8,
+      "h": 8,
+      "anchor": [
+        4,
+        7
+      ]
+    },
+    "dish_skewer_16": {
+      "x": 17,
+      "y": 92,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "dish_skewer_8": {
+      "x": 202,
+      "y": 109,
+      "w": 8,
+      "h": 8,
+      "anchor": [
+        4,
+        7
+      ]
+    },
+    "dish_soup_16": {
+      "x": 34,
+      "y": 92,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "dish_soup_8": {
+      "x": 211,
+      "y": 109,
+      "w": 8,
+      "h": 8,
+      "anchor": [
+        4,
+        7
+      ]
+    },
+    "dish_stew_16": {
+      "x": 51,
+      "y": 92,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "dish_stew_8": {
+      "x": 220,
+      "y": 109,
+      "w": 8,
+      "h": 8,
+      "anchor": [
+        4,
+        7
+      ]
+    },
+    "emblem_diamond_16": {
+      "x": 68,
+      "y": 92,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "colour": "STONE"
+    },
+    "emblem_diamond_8": {
+      "x": 229,
+      "y": 109,
+      "w": 8,
+      "h": 8,
+      "anchor": [
+        4,
+        7
+      ],
+      "colour": "STONE"
+    },
+    "emblem_feather_16": {
+      "x": 85,
+      "y": 92,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "colour": "WOOD_L"
+    },
+    "emblem_feather_8": {
+      "x": 238,
+      "y": 109,
+      "w": 8,
+      "h": 8,
+      "anchor": [
+        4,
+        7
+      ],
+      "colour": "WOOD_L"
+    },
+    "emblem_flower_16": {
+      "x": 102,
+      "y": 92,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "colour": "PINK_D"
+    },
+    "emblem_flower_8": {
+      "x": 247,
+      "y": 109,
+      "w": 8,
+      "h": 8,
+      "anchor": [
+        4,
+        7
+      ],
+      "colour": "PINK_D"
+    },
+    "emblem_leaf_16": {
+      "x": 119,
+      "y": 92,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "colour": "GRASS"
+    },
+    "emblem_leaf_8": {
+      "x": 0,
+      "y": 126,
+      "w": 8,
+      "h": 8,
+      "anchor": [
+        4,
+        7
+      ],
+      "colour": "GRASS"
+    },
+    "emblem_mountain_16": {
+      "x": 136,
+      "y": 92,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "colour": "PLUM"
+    },
+    "emblem_mountain_8": {
+      "x": 9,
+      "y": 126,
+      "w": 8,
+      "h": 8,
+      "anchor": [
+        4,
+        7
+      ],
+      "colour": "PLUM"
+    },
+    "emblem_spiral_16": {
+      "x": 153,
+      "y": 92,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "colour": "LEAF_D"
+    },
+    "emblem_spiral_8": {
+      "x": 18,
+      "y": 126,
+      "w": 8,
+      "h": 8,
+      "anchor": [
+        4,
+        7
+      ],
+      "colour": "LEAF_D"
+    },
+    "emblem_sunburst_16": {
+      "x": 170,
+      "y": 92,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "colour": "SAND_D"
+    },
+    "emblem_sunburst_8": {
+      "x": 27,
+      "y": 126,
+      "w": 8,
+      "h": 8,
+      "anchor": [
+        4,
+        7
+      ],
+      "colour": "SAND_D"
+    },
+    "emblem_wave_16": {
+      "x": 187,
+      "y": 92,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "colour": "WATER"
+    },
+    "emblem_wave_8": {
+      "x": 36,
+      "y": 126,
+      "w": 8,
+      "h": 8,
+      "anchor": [
+        4,
+        7
+      ],
+      "colour": "WATER"
+    },
+    "festival_arch": {
+      "x": 65,
+      "y": 0,
+      "w": 48,
+      "h": 48,
+      "anchor": [
+        24,
+        47
+      ],
+      "footprint": [
+        3,
+        1
+      ]
+    },
+    "festival_bonfire_0": {
+      "x": 51,
+      "y": 59,
+      "w": 32,
+      "h": 32,
+      "anchor": [
+        16,
+        31
+      ],
+      "footprint": [
+        2,
+        1
+      ]
+    },
+    "festival_bonfire_1": {
+      "x": 84,
+      "y": 59,
+      "w": 32,
+      "h": 32,
+      "anchor": [
+        16,
+        31
+      ],
+      "footprint": [
+        2,
+        1
+      ]
+    },
+    "festival_bunting": {
+      "x": 204,
+      "y": 92,
+      "w": 32,
+      "h": 16,
+      "anchor": [
+        16,
+        15
+      ],
+      "joins": "lr",
+      "cord_row": 1
+    },
+    "festival_food-stall": {
+      "x": 114,
+      "y": 0,
+      "w": 48,
+      "h": 48,
+      "anchor": [
+        24,
+        47
+      ],
+      "footprint": [
+        3,
+        2
+      ]
+    },
+    "festival_lanterns_gold": {
+      "x": 0,
+      "y": 109,
+      "w": 32,
+      "h": 16,
+      "anchor": [
+        16,
+        15
+      ],
+      "joins": "lr",
+      "cord_row": 1
+    },
+    "festival_lanterns_teal": {
+      "x": 33,
+      "y": 109,
+      "w": 32,
+      "h": 16,
+      "anchor": [
+        16,
+        15
+      ],
+      "joins": "lr",
+      "cord_row": 1
+    },
+    "festival_lanterns_vermillion": {
+      "x": 66,
+      "y": 109,
+      "w": 32,
+      "h": 16,
+      "anchor": [
+        16,
+        15
+      ],
+      "joins": "lr",
+      "cord_row": 1
+    },
+    "festival_stage": {
+      "x": 0,
+      "y": 0,
+      "w": 64,
+      "h": 58,
+      "anchor": [
+        32,
+        57
+      ],
+      "footprint": [
+        4,
+        2
+      ]
+    },
+    "instrument_drum": {
+      "x": 108,
+      "y": 109,
+      "w": 12,
+      "h": 11,
+      "anchor": [
+        6,
+        10
+      ]
+    },
+    "instrument_flute": {
+      "x": 45,
+      "y": 126,
+      "w": 16,
+      "h": 4,
+      "anchor": [
+        8,
+        3
+      ]
+    },
+    "instrument_lute": {
+      "x": 99,
+      "y": 109,
+      "w": 8,
+      "h": 16,
+      "anchor": [
+        4,
+        15
+      ]
+    }
+  }
+}

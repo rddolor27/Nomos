@@ -9,6 +9,7 @@ Concept mockups for the browser society simulation, in a GBA/DS-era top-down pix
 | `city_zoomed_out.png` | Image 2: the whole city zoomed out, the "city mode" view |
 | `country_map.png` | Image 3: one region of the country, the "region view" |
 | `scale_ladder.png` | Image 4: the zoom from region to city to street, as one strip |
+| `sprites_showcase.png` | Image 5: one town scene built only from the original sprites in `assets/sprites/`, drawn at 320×180 and scaled 3× by `tools/sprites/showcase.py`; no third-party art |
 
 ## Captions
 

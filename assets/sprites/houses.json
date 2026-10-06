@@ -1,0 +1,3440 @@
+{
+  "image": "houses.png",
+  "size": [
+    256,
+    1941
+  ],
+  "tile": 16,
+  "frames": {
+    "house_apartment_night": {
+      "x": 0,
+      "y": 0,
+      "w": 64,
+      "h": 64,
+      "anchor": [
+        32,
+        63
+      ],
+      "footprint": [
+        4,
+        4
+      ],
+      "layer": "night"
+    },
+    "house_brick_apartment_roof-green": {
+      "x": 65,
+      "y": 0,
+      "w": 64,
+      "h": 64,
+      "anchor": [
+        32,
+        63
+      ],
+      "footprint": [
+        4,
+        4
+      ],
+      "door": [
+        32,
+        62
+      ],
+      "night": "house_apartment_night"
+    },
+    "house_brick_apartment_roof-plum": {
+      "x": 130,
+      "y": 0,
+      "w": 64,
+      "h": 64,
+      "anchor": [
+        32,
+        63
+      ],
+      "footprint": [
+        4,
+        4
+      ],
+      "door": [
+        32,
+        62
+      ],
+      "night": "house_apartment_night"
+    },
+    "house_brick_apartment_roof-slate": {
+      "x": 0,
+      "y": 65,
+      "w": 64,
+      "h": 64,
+      "anchor": [
+        32,
+        63
+      ],
+      "footprint": [
+        4,
+        4
+      ],
+      "door": [
+        32,
+        62
+      ],
+      "night": "house_apartment_night"
+    },
+    "house_brick_apartment_roof-terracotta": {
+      "x": 65,
+      "y": 65,
+      "w": 64,
+      "h": 64,
+      "anchor": [
+        32,
+        63
+      ],
+      "footprint": [
+        4,
+        4
+      ],
+      "door": [
+        32,
+        62
+      ],
+      "night": "house_apartment_night"
+    },
+    "house_brick_apartment_roof-thatch": {
+      "x": 130,
+      "y": 65,
+      "w": 64,
+      "h": 64,
+      "anchor": [
+        32,
+        63
+      ],
+      "footprint": [
+        4,
+        4
+      ],
+      "door": [
+        32,
+        62
+      ],
+      "night": "house_apartment_night"
+    },
+    "house_brick_detached_roof-green": {
+      "x": 130,
+      "y": 520,
+      "w": 48,
+      "h": 48,
+      "anchor": [
+        24,
+        47
+      ],
+      "footprint": [
+        3,
+        3
+      ],
+      "door": [
+        24,
+        46
+      ],
+      "night": "house_detached_night"
+    },
+    "house_brick_detached_roof-plum": {
+      "x": 179,
+      "y": 520,
+      "w": 48,
+      "h": 48,
+      "anchor": [
+        24,
+        47
+      ],
+      "footprint": [
+        3,
+        3
+      ],
+      "door": [
+        24,
+        46
+      ],
+      "night": "house_detached_night"
+    },
+    "house_brick_detached_roof-slate": {
+      "x": 0,
+      "y": 585,
+      "w": 48,
+      "h": 48,
+      "anchor": [
+        24,
+        47
+      ],
+      "footprint": [
+        3,
+        3
+      ],
+      "door": [
+        24,
+        46
+      ],
+      "night": "house_detached_night"
+    },
+    "house_brick_detached_roof-terracotta": {
+      "x": 49,
+      "y": 585,
+      "w": 48,
+      "h": 48,
+      "anchor": [
+        24,
+        47
+      ],
+      "footprint": [
+        3,
+        3
+      ],
+      "door": [
+        24,
+        46
+      ],
+      "night": "house_detached_night"
+    },
+    "house_brick_detached_roof-thatch": {
+      "x": 98,
+      "y": 585,
+      "w": 48,
+      "h": 48,
+      "anchor": [
+        24,
+        47
+      ],
+      "footprint": [
+        3,
+        3
+      ],
+      "door": [
+        24,
+        46
+      ],
+      "night": "house_detached_night"
+    },
+    "house_brick_farmhouse_roof-green": {
+      "x": 147,
+      "y": 585,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "footprint": [
+        4,
+        3
+      ],
+      "door": [
+        32,
+        46
+      ],
+      "night": "house_farmhouse_night"
+    },
+    "house_brick_farmhouse_roof-plum": {
+      "x": 0,
+      "y": 634,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "footprint": [
+        4,
+        3
+      ],
+      "door": [
+        32,
+        46
+      ],
+      "night": "house_farmhouse_night"
+    },
+    "house_brick_farmhouse_roof-slate": {
+      "x": 65,
+      "y": 634,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "footprint": [
+        4,
+        3
+      ],
+      "door": [
+        32,
+        46
+      ],
+      "night": "house_farmhouse_night"
+    },
+    "house_brick_farmhouse_roof-terracotta": {
+      "x": 130,
+      "y": 634,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "footprint": [
+        4,
+        3
+      ],
+      "door": [
+        32,
+        46
+      ],
+      "night": "house_farmhouse_night"
+    },
+    "house_brick_farmhouse_roof-thatch": {
+      "x": 0,
+      "y": 683,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "footprint": [
+        4,
+        3
+      ],
+      "door": [
+        32,
+        46
+      ],
+      "night": "house_farmhouse_night"
+    },
+    "house_brick_hut_roof-green": {
+      "x": 165,
+      "y": 1761,
+      "w": 32,
+      "h": 32,
+      "anchor": [
+        16,
+        31
+      ],
+      "footprint": [
+        2,
+        2
+      ],
+      "door": [
+        16,
+        30
+      ],
+      "night": "house_hut_night"
+    },
+    "house_brick_hut_roof-plum": {
+      "x": 198,
+      "y": 1761,
+      "w": 32,
+      "h": 32,
+      "anchor": [
+        16,
+        31
+      ],
+      "footprint": [
+        2,
+        2
+      ],
+      "door": [
+        16,
+        30
+      ],
+      "night": "house_hut_night"
+    },
+    "house_brick_hut_roof-slate": {
+      "x": 0,
+      "y": 1810,
+      "w": 32,
+      "h": 32,
+      "anchor": [
+        16,
+        31
+      ],
+      "footprint": [
+        2,
+        2
+      ],
+      "door": [
+        16,
+        30
+      ],
+      "night": "house_hut_night"
+    },
+    "house_brick_hut_roof-terracotta": {
+      "x": 33,
+      "y": 1810,
+      "w": 32,
+      "h": 32,
+      "anchor": [
+        16,
+        31
+      ],
+      "footprint": [
+        2,
+        2
+      ],
+      "door": [
+        16,
+        30
+      ],
+      "night": "house_hut_night"
+    },
+    "house_brick_hut_roof-thatch": {
+      "x": 66,
+      "y": 1810,
+      "w": 32,
+      "h": 32,
+      "anchor": [
+        16,
+        31
+      ],
+      "footprint": [
+        2,
+        2
+      ],
+      "door": [
+        16,
+        30
+      ],
+      "night": "house_hut_night"
+    },
+    "house_brick_row-left_roof-green": {
+      "x": 65,
+      "y": 683,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        13,
+        46
+      ],
+      "night": "house_row-left_night"
+    },
+    "house_brick_row-left_roof-plum": {
+      "x": 98,
+      "y": 683,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        13,
+        46
+      ],
+      "night": "house_row-left_night"
+    },
+    "house_brick_row-left_roof-slate": {
+      "x": 131,
+      "y": 683,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        13,
+        46
+      ],
+      "night": "house_row-left_night"
+    },
+    "house_brick_row-left_roof-terracotta": {
+      "x": 164,
+      "y": 683,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        13,
+        46
+      ],
+      "night": "house_row-left_night"
+    },
+    "house_brick_row-left_roof-thatch": {
+      "x": 197,
+      "y": 683,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        13,
+        46
+      ],
+      "night": "house_row-left_night"
+    },
+    "house_brick_row-middle_roof-green": {
+      "x": 0,
+      "y": 732,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        11,
+        46
+      ],
+      "night": "house_row-middle_night"
+    },
+    "house_brick_row-middle_roof-plum": {
+      "x": 33,
+      "y": 732,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        11,
+        46
+      ],
+      "night": "house_row-middle_night"
+    },
+    "house_brick_row-middle_roof-slate": {
+      "x": 66,
+      "y": 732,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        11,
+        46
+      ],
+      "night": "house_row-middle_night"
+    },
+    "house_brick_row-middle_roof-terracotta": {
+      "x": 99,
+      "y": 732,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        11,
+        46
+      ],
+      "night": "house_row-middle_night"
+    },
+    "house_brick_row-middle_roof-thatch": {
+      "x": 132,
+      "y": 732,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        11,
+        46
+      ],
+      "night": "house_row-middle_night"
+    },
+    "house_brick_row-right_roof-green": {
+      "x": 165,
+      "y": 732,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        10,
+        46
+      ],
+      "night": "house_row-right_night"
+    },
+    "house_brick_row-right_roof-plum": {
+      "x": 198,
+      "y": 732,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        10,
+        46
+      ],
+      "night": "house_row-right_night"
+    },
+    "house_brick_row-right_roof-slate": {
+      "x": 0,
+      "y": 781,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        10,
+        46
+      ],
+      "night": "house_row-right_night"
+    },
+    "house_brick_row-right_roof-terracotta": {
+      "x": 33,
+      "y": 781,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        10,
+        46
+      ],
+      "night": "house_row-right_night"
+    },
+    "house_brick_row-right_roof-thatch": {
+      "x": 66,
+      "y": 781,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        10,
+        46
+      ],
+      "night": "house_row-right_night"
+    },
+    "house_cottage_apartment_roof-green": {
+      "x": 0,
+      "y": 130,
+      "w": 64,
+      "h": 64,
+      "anchor": [
+        32,
+        63
+      ],
+      "footprint": [
+        4,
+        4
+      ],
+      "door": [
+        32,
+        62
+      ],
+      "night": "house_apartment_night"
+    },
+    "house_cottage_apartment_roof-plum": {
+      "x": 65,
+      "y": 130,
+      "w": 64,
+      "h": 64,
+      "anchor": [
+        32,
+        63
+      ],
+      "footprint": [
+        4,
+        4
+      ],
+      "door": [
+        32,
+        62
+      ],
+      "night": "house_apartment_night"
+    },
+    "house_cottage_apartment_roof-slate": {
+      "x": 130,
+      "y": 130,
+      "w": 64,
+      "h": 64,
+      "anchor": [
+        32,
+        63
+      ],
+      "footprint": [
+        4,
+        4
+      ],
+      "door": [
+        32,
+        62
+      ],
+      "night": "house_apartment_night"
+    },
+    "house_cottage_apartment_roof-terracotta": {
+      "x": 0,
+      "y": 195,
+      "w": 64,
+      "h": 64,
+      "anchor": [
+        32,
+        63
+      ],
+      "footprint": [
+        4,
+        4
+      ],
+      "door": [
+        32,
+        62
+      ],
+      "night": "house_apartment_night"
+    },
+    "house_cottage_apartment_roof-thatch": {
+      "x": 65,
+      "y": 195,
+      "w": 64,
+      "h": 64,
+      "anchor": [
+        32,
+        63
+      ],
+      "footprint": [
+        4,
+        4
+      ],
+      "door": [
+        32,
+        62
+      ],
+      "night": "house_apartment_night"
+    },
+    "house_cottage_detached_roof-green": {
+      "x": 99,
+      "y": 781,
+      "w": 48,
+      "h": 48,
+      "anchor": [
+        24,
+        47
+      ],
+      "footprint": [
+        3,
+        3
+      ],
+      "door": [
+        24,
+        46
+      ],
+      "night": "house_detached_night"
+    },
+    "house_cottage_detached_roof-plum": {
+      "x": 148,
+      "y": 781,
+      "w": 48,
+      "h": 48,
+      "anchor": [
+        24,
+        47
+      ],
+      "footprint": [
+        3,
+        3
+      ],
+      "door": [
+        24,
+        46
+      ],
+      "night": "house_detached_night"
+    },
+    "house_cottage_detached_roof-slate": {
+      "x": 197,
+      "y": 781,
+      "w": 48,
+      "h": 48,
+      "anchor": [
+        24,
+        47
+      ],
+      "footprint": [
+        3,
+        3
+      ],
+      "door": [
+        24,
+        46
+      ],
+      "night": "house_detached_night"
+    },
+    "house_cottage_detached_roof-terracotta": {
+      "x": 0,
+      "y": 830,
+      "w": 48,
+      "h": 48,
+      "anchor": [
+        24,
+        47
+      ],
+      "footprint": [
+        3,
+        3
+      ],
+      "door": [
+        24,
+        46
+      ],
+      "night": "house_detached_night"
+    },
+    "house_cottage_detached_roof-thatch": {
+      "x": 49,
+      "y": 830,
+      "w": 48,
+      "h": 48,
+      "anchor": [
+        24,
+        47
+      ],
+      "footprint": [
+        3,
+        3
+      ],
+      "door": [
+        24,
+        46
+      ],
+      "night": "house_detached_night"
+    },
+    "house_cottage_farmhouse_roof-green": {
+      "x": 98,
+      "y": 830,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "footprint": [
+        4,
+        3
+      ],
+      "door": [
+        32,
+        46
+      ],
+      "night": "house_farmhouse_night"
+    },
+    "house_cottage_farmhouse_roof-plum": {
+      "x": 163,
+      "y": 830,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "footprint": [
+        4,
+        3
+      ],
+      "door": [
+        32,
+        46
+      ],
+      "night": "house_farmhouse_night"
+    },
+    "house_cottage_farmhouse_roof-slate": {
+      "x": 0,
+      "y": 879,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "footprint": [
+        4,
+        3
+      ],
+      "door": [
+        32,
+        46
+      ],
+      "night": "house_farmhouse_night"
+    },
+    "house_cottage_farmhouse_roof-terracotta": {
+      "x": 65,
+      "y": 879,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "footprint": [
+        4,
+        3
+      ],
+      "door": [
+        32,
+        46
+      ],
+      "night": "house_farmhouse_night"
+    },
+    "house_cottage_farmhouse_roof-thatch": {
+      "x": 130,
+      "y": 879,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "footprint": [
+        4,
+        3
+      ],
+      "door": [
+        32,
+        46
+      ],
+      "night": "house_farmhouse_night"
+    },
+    "house_cottage_hut_roof-green": {
+      "x": 99,
+      "y": 1810,
+      "w": 32,
+      "h": 32,
+      "anchor": [
+        16,
+        31
+      ],
+      "footprint": [
+        2,
+        2
+      ],
+      "door": [
+        16,
+        30
+      ],
+      "night": "house_hut_night"
+    },
+    "house_cottage_hut_roof-plum": {
+      "x": 132,
+      "y": 1810,
+      "w": 32,
+      "h": 32,
+      "anchor": [
+        16,
+        31
+      ],
+      "footprint": [
+        2,
+        2
+      ],
+      "door": [
+        16,
+        30
+      ],
+      "night": "house_hut_night"
+    },
+    "house_cottage_hut_roof-slate": {
+      "x": 165,
+      "y": 1810,
+      "w": 32,
+      "h": 32,
+      "anchor": [
+        16,
+        31
+      ],
+      "footprint": [
+        2,
+        2
+      ],
+      "door": [
+        16,
+        30
+      ],
+      "night": "house_hut_night"
+    },
+    "house_cottage_hut_roof-terracotta": {
+      "x": 198,
+      "y": 1810,
+      "w": 32,
+      "h": 32,
+      "anchor": [
+        16,
+        31
+      ],
+      "footprint": [
+        2,
+        2
+      ],
+      "door": [
+        16,
+        30
+      ],
+      "night": "house_hut_night"
+    },
+    "house_cottage_hut_roof-thatch": {
+      "x": 0,
+      "y": 1843,
+      "w": 32,
+      "h": 32,
+      "anchor": [
+        16,
+        31
+      ],
+      "footprint": [
+        2,
+        2
+      ],
+      "door": [
+        16,
+        30
+      ],
+      "night": "house_hut_night"
+    },
+    "house_cottage_row-left_roof-green": {
+      "x": 195,
+      "y": 879,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        13,
+        46
+      ],
+      "night": "house_row-left_night"
+    },
+    "house_cottage_row-left_roof-plum": {
+      "x": 0,
+      "y": 928,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        13,
+        46
+      ],
+      "night": "house_row-left_night"
+    },
+    "house_cottage_row-left_roof-slate": {
+      "x": 33,
+      "y": 928,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        13,
+        46
+      ],
+      "night": "house_row-left_night"
+    },
+    "house_cottage_row-left_roof-terracotta": {
+      "x": 66,
+      "y": 928,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        13,
+        46
+      ],
+      "night": "house_row-left_night"
+    },
+    "house_cottage_row-left_roof-thatch": {
+      "x": 99,
+      "y": 928,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        13,
+        46
+      ],
+      "night": "house_row-left_night"
+    },
+    "house_cottage_row-middle_roof-green": {
+      "x": 132,
+      "y": 928,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        11,
+        46
+      ],
+      "night": "house_row-middle_night"
+    },
+    "house_cottage_row-middle_roof-plum": {
+      "x": 165,
+      "y": 928,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        11,
+        46
+      ],
+      "night": "house_row-middle_night"
+    },
+    "house_cottage_row-middle_roof-slate": {
+      "x": 198,
+      "y": 928,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        11,
+        46
+      ],
+      "night": "house_row-middle_night"
+    },
+    "house_cottage_row-middle_roof-terracotta": {
+      "x": 0,
+      "y": 977,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        11,
+        46
+      ],
+      "night": "house_row-middle_night"
+    },
+    "house_cottage_row-middle_roof-thatch": {
+      "x": 33,
+      "y": 977,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        11,
+        46
+      ],
+      "night": "house_row-middle_night"
+    },
+    "house_cottage_row-right_roof-green": {
+      "x": 66,
+      "y": 977,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        10,
+        46
+      ],
+      "night": "house_row-right_night"
+    },
+    "house_cottage_row-right_roof-plum": {
+      "x": 99,
+      "y": 977,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        10,
+        46
+      ],
+      "night": "house_row-right_night"
+    },
+    "house_cottage_row-right_roof-slate": {
+      "x": 132,
+      "y": 977,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        10,
+        46
+      ],
+      "night": "house_row-right_night"
+    },
+    "house_cottage_row-right_roof-terracotta": {
+      "x": 165,
+      "y": 977,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        10,
+        46
+      ],
+      "night": "house_row-right_night"
+    },
+    "house_cottage_row-right_roof-thatch": {
+      "x": 198,
+      "y": 977,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        10,
+        46
+      ],
+      "night": "house_row-right_night"
+    },
+    "house_detached_night": {
+      "x": 0,
+      "y": 1026,
+      "w": 48,
+      "h": 48,
+      "anchor": [
+        24,
+        47
+      ],
+      "footprint": [
+        3,
+        3
+      ],
+      "layer": "night"
+    },
+    "house_farmhouse_night": {
+      "x": 49,
+      "y": 1026,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "footprint": [
+        4,
+        3
+      ],
+      "layer": "night"
+    },
+    "house_hut_night": {
+      "x": 33,
+      "y": 1843,
+      "w": 32,
+      "h": 32,
+      "anchor": [
+        16,
+        31
+      ],
+      "footprint": [
+        2,
+        2
+      ],
+      "layer": "night"
+    },
+    "house_plaster_apartment_roof-green": {
+      "x": 130,
+      "y": 195,
+      "w": 64,
+      "h": 64,
+      "anchor": [
+        32,
+        63
+      ],
+      "footprint": [
+        4,
+        4
+      ],
+      "door": [
+        32,
+        62
+      ],
+      "night": "house_apartment_night"
+    },
+    "house_plaster_apartment_roof-plum": {
+      "x": 0,
+      "y": 260,
+      "w": 64,
+      "h": 64,
+      "anchor": [
+        32,
+        63
+      ],
+      "footprint": [
+        4,
+        4
+      ],
+      "door": [
+        32,
+        62
+      ],
+      "night": "house_apartment_night"
+    },
+    "house_plaster_apartment_roof-slate": {
+      "x": 65,
+      "y": 260,
+      "w": 64,
+      "h": 64,
+      "anchor": [
+        32,
+        63
+      ],
+      "footprint": [
+        4,
+        4
+      ],
+      "door": [
+        32,
+        62
+      ],
+      "night": "house_apartment_night"
+    },
+    "house_plaster_apartment_roof-terracotta": {
+      "x": 130,
+      "y": 260,
+      "w": 64,
+      "h": 64,
+      "anchor": [
+        32,
+        63
+      ],
+      "footprint": [
+        4,
+        4
+      ],
+      "door": [
+        32,
+        62
+      ],
+      "night": "house_apartment_night"
+    },
+    "house_plaster_apartment_roof-thatch": {
+      "x": 0,
+      "y": 325,
+      "w": 64,
+      "h": 64,
+      "anchor": [
+        32,
+        63
+      ],
+      "footprint": [
+        4,
+        4
+      ],
+      "door": [
+        32,
+        62
+      ],
+      "night": "house_apartment_night"
+    },
+    "house_plaster_detached_roof-green": {
+      "x": 114,
+      "y": 1026,
+      "w": 48,
+      "h": 48,
+      "anchor": [
+        24,
+        47
+      ],
+      "footprint": [
+        3,
+        3
+      ],
+      "door": [
+        24,
+        46
+      ],
+      "night": "house_detached_night"
+    },
+    "house_plaster_detached_roof-plum": {
+      "x": 163,
+      "y": 1026,
+      "w": 48,
+      "h": 48,
+      "anchor": [
+        24,
+        47
+      ],
+      "footprint": [
+        3,
+        3
+      ],
+      "door": [
+        24,
+        46
+      ],
+      "night": "house_detached_night"
+    },
+    "house_plaster_detached_roof-slate": {
+      "x": 0,
+      "y": 1075,
+      "w": 48,
+      "h": 48,
+      "anchor": [
+        24,
+        47
+      ],
+      "footprint": [
+        3,
+        3
+      ],
+      "door": [
+        24,
+        46
+      ],
+      "night": "house_detached_night"
+    },
+    "house_plaster_detached_roof-terracotta": {
+      "x": 49,
+      "y": 1075,
+      "w": 48,
+      "h": 48,
+      "anchor": [
+        24,
+        47
+      ],
+      "footprint": [
+        3,
+        3
+      ],
+      "door": [
+        24,
+        46
+      ],
+      "night": "house_detached_night"
+    },
+    "house_plaster_detached_roof-thatch": {
+      "x": 98,
+      "y": 1075,
+      "w": 48,
+      "h": 48,
+      "anchor": [
+        24,
+        47
+      ],
+      "footprint": [
+        3,
+        3
+      ],
+      "door": [
+        24,
+        46
+      ],
+      "night": "house_detached_night"
+    },
+    "house_plaster_farmhouse_roof-green": {
+      "x": 147,
+      "y": 1075,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "footprint": [
+        4,
+        3
+      ],
+      "door": [
+        32,
+        46
+      ],
+      "night": "house_farmhouse_night"
+    },
+    "house_plaster_farmhouse_roof-plum": {
+      "x": 0,
+      "y": 1124,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "footprint": [
+        4,
+        3
+      ],
+      "door": [
+        32,
+        46
+      ],
+      "night": "house_farmhouse_night"
+    },
+    "house_plaster_farmhouse_roof-slate": {
+      "x": 65,
+      "y": 1124,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "footprint": [
+        4,
+        3
+      ],
+      "door": [
+        32,
+        46
+      ],
+      "night": "house_farmhouse_night"
+    },
+    "house_plaster_farmhouse_roof-terracotta": {
+      "x": 130,
+      "y": 1124,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "footprint": [
+        4,
+        3
+      ],
+      "door": [
+        32,
+        46
+      ],
+      "night": "house_farmhouse_night"
+    },
+    "house_plaster_farmhouse_roof-thatch": {
+      "x": 0,
+      "y": 1173,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "footprint": [
+        4,
+        3
+      ],
+      "door": [
+        32,
+        46
+      ],
+      "night": "house_farmhouse_night"
+    },
+    "house_plaster_hut_roof-green": {
+      "x": 66,
+      "y": 1843,
+      "w": 32,
+      "h": 32,
+      "anchor": [
+        16,
+        31
+      ],
+      "footprint": [
+        2,
+        2
+      ],
+      "door": [
+        16,
+        30
+      ],
+      "night": "house_hut_night"
+    },
+    "house_plaster_hut_roof-plum": {
+      "x": 99,
+      "y": 1843,
+      "w": 32,
+      "h": 32,
+      "anchor": [
+        16,
+        31
+      ],
+      "footprint": [
+        2,
+        2
+      ],
+      "door": [
+        16,
+        30
+      ],
+      "night": "house_hut_night"
+    },
+    "house_plaster_hut_roof-slate": {
+      "x": 132,
+      "y": 1843,
+      "w": 32,
+      "h": 32,
+      "anchor": [
+        16,
+        31
+      ],
+      "footprint": [
+        2,
+        2
+      ],
+      "door": [
+        16,
+        30
+      ],
+      "night": "house_hut_night"
+    },
+    "house_plaster_hut_roof-terracotta": {
+      "x": 165,
+      "y": 1843,
+      "w": 32,
+      "h": 32,
+      "anchor": [
+        16,
+        31
+      ],
+      "footprint": [
+        2,
+        2
+      ],
+      "door": [
+        16,
+        30
+      ],
+      "night": "house_hut_night"
+    },
+    "house_plaster_hut_roof-thatch": {
+      "x": 198,
+      "y": 1843,
+      "w": 32,
+      "h": 32,
+      "anchor": [
+        16,
+        31
+      ],
+      "footprint": [
+        2,
+        2
+      ],
+      "door": [
+        16,
+        30
+      ],
+      "night": "house_hut_night"
+    },
+    "house_plaster_row-left_roof-green": {
+      "x": 65,
+      "y": 1173,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        13,
+        46
+      ],
+      "night": "house_row-left_night"
+    },
+    "house_plaster_row-left_roof-plum": {
+      "x": 98,
+      "y": 1173,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        13,
+        46
+      ],
+      "night": "house_row-left_night"
+    },
+    "house_plaster_row-left_roof-slate": {
+      "x": 131,
+      "y": 1173,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        13,
+        46
+      ],
+      "night": "house_row-left_night"
+    },
+    "house_plaster_row-left_roof-terracotta": {
+      "x": 164,
+      "y": 1173,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        13,
+        46
+      ],
+      "night": "house_row-left_night"
+    },
+    "house_plaster_row-left_roof-thatch": {
+      "x": 197,
+      "y": 1173,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        13,
+        46
+      ],
+      "night": "house_row-left_night"
+    },
+    "house_plaster_row-middle_roof-green": {
+      "x": 0,
+      "y": 1222,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        11,
+        46
+      ],
+      "night": "house_row-middle_night"
+    },
+    "house_plaster_row-middle_roof-plum": {
+      "x": 33,
+      "y": 1222,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        11,
+        46
+      ],
+      "night": "house_row-middle_night"
+    },
+    "house_plaster_row-middle_roof-slate": {
+      "x": 66,
+      "y": 1222,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        11,
+        46
+      ],
+      "night": "house_row-middle_night"
+    },
+    "house_plaster_row-middle_roof-terracotta": {
+      "x": 99,
+      "y": 1222,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        11,
+        46
+      ],
+      "night": "house_row-middle_night"
+    },
+    "house_plaster_row-middle_roof-thatch": {
+      "x": 132,
+      "y": 1222,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        11,
+        46
+      ],
+      "night": "house_row-middle_night"
+    },
+    "house_plaster_row-right_roof-green": {
+      "x": 165,
+      "y": 1222,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        10,
+        46
+      ],
+      "night": "house_row-right_night"
+    },
+    "house_plaster_row-right_roof-plum": {
+      "x": 198,
+      "y": 1222,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        10,
+        46
+      ],
+      "night": "house_row-right_night"
+    },
+    "house_plaster_row-right_roof-slate": {
+      "x": 0,
+      "y": 1271,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        10,
+        46
+      ],
+      "night": "house_row-right_night"
+    },
+    "house_plaster_row-right_roof-terracotta": {
+      "x": 33,
+      "y": 1271,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        10,
+        46
+      ],
+      "night": "house_row-right_night"
+    },
+    "house_plaster_row-right_roof-thatch": {
+      "x": 66,
+      "y": 1271,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        10,
+        46
+      ],
+      "night": "house_row-right_night"
+    },
+    "house_row-left_night": {
+      "x": 99,
+      "y": 1271,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "layer": "night"
+    },
+    "house_row-middle_night": {
+      "x": 132,
+      "y": 1271,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "layer": "night"
+    },
+    "house_row-right_night": {
+      "x": 165,
+      "y": 1271,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "layer": "night"
+    },
+    "house_stone_apartment_roof-green": {
+      "x": 65,
+      "y": 325,
+      "w": 64,
+      "h": 64,
+      "anchor": [
+        32,
+        63
+      ],
+      "footprint": [
+        4,
+        4
+      ],
+      "door": [
+        32,
+        62
+      ],
+      "night": "house_apartment_night"
+    },
+    "house_stone_apartment_roof-plum": {
+      "x": 130,
+      "y": 325,
+      "w": 64,
+      "h": 64,
+      "anchor": [
+        32,
+        63
+      ],
+      "footprint": [
+        4,
+        4
+      ],
+      "door": [
+        32,
+        62
+      ],
+      "night": "house_apartment_night"
+    },
+    "house_stone_apartment_roof-slate": {
+      "x": 0,
+      "y": 390,
+      "w": 64,
+      "h": 64,
+      "anchor": [
+        32,
+        63
+      ],
+      "footprint": [
+        4,
+        4
+      ],
+      "door": [
+        32,
+        62
+      ],
+      "night": "house_apartment_night"
+    },
+    "house_stone_apartment_roof-terracotta": {
+      "x": 65,
+      "y": 390,
+      "w": 64,
+      "h": 64,
+      "anchor": [
+        32,
+        63
+      ],
+      "footprint": [
+        4,
+        4
+      ],
+      "door": [
+        32,
+        62
+      ],
+      "night": "house_apartment_night"
+    },
+    "house_stone_apartment_roof-thatch": {
+      "x": 130,
+      "y": 390,
+      "w": 64,
+      "h": 64,
+      "anchor": [
+        32,
+        63
+      ],
+      "footprint": [
+        4,
+        4
+      ],
+      "door": [
+        32,
+        62
+      ],
+      "night": "house_apartment_night"
+    },
+    "house_stone_detached_roof-green": {
+      "x": 198,
+      "y": 1271,
+      "w": 48,
+      "h": 48,
+      "anchor": [
+        24,
+        47
+      ],
+      "footprint": [
+        3,
+        3
+      ],
+      "door": [
+        24,
+        46
+      ],
+      "night": "house_detached_night"
+    },
+    "house_stone_detached_roof-plum": {
+      "x": 0,
+      "y": 1320,
+      "w": 48,
+      "h": 48,
+      "anchor": [
+        24,
+        47
+      ],
+      "footprint": [
+        3,
+        3
+      ],
+      "door": [
+        24,
+        46
+      ],
+      "night": "house_detached_night"
+    },
+    "house_stone_detached_roof-slate": {
+      "x": 49,
+      "y": 1320,
+      "w": 48,
+      "h": 48,
+      "anchor": [
+        24,
+        47
+      ],
+      "footprint": [
+        3,
+        3
+      ],
+      "door": [
+        24,
+        46
+      ],
+      "night": "house_detached_night"
+    },
+    "house_stone_detached_roof-terracotta": {
+      "x": 98,
+      "y": 1320,
+      "w": 48,
+      "h": 48,
+      "anchor": [
+        24,
+        47
+      ],
+      "footprint": [
+        3,
+        3
+      ],
+      "door": [
+        24,
+        46
+      ],
+      "night": "house_detached_night"
+    },
+    "house_stone_detached_roof-thatch": {
+      "x": 147,
+      "y": 1320,
+      "w": 48,
+      "h": 48,
+      "anchor": [
+        24,
+        47
+      ],
+      "footprint": [
+        3,
+        3
+      ],
+      "door": [
+        24,
+        46
+      ],
+      "night": "house_detached_night"
+    },
+    "house_stone_farmhouse_roof-green": {
+      "x": 0,
+      "y": 1369,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "footprint": [
+        4,
+        3
+      ],
+      "door": [
+        32,
+        46
+      ],
+      "night": "house_farmhouse_night"
+    },
+    "house_stone_farmhouse_roof-plum": {
+      "x": 65,
+      "y": 1369,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "footprint": [
+        4,
+        3
+      ],
+      "door": [
+        32,
+        46
+      ],
+      "night": "house_farmhouse_night"
+    },
+    "house_stone_farmhouse_roof-slate": {
+      "x": 130,
+      "y": 1369,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "footprint": [
+        4,
+        3
+      ],
+      "door": [
+        32,
+        46
+      ],
+      "night": "house_farmhouse_night"
+    },
+    "house_stone_farmhouse_roof-terracotta": {
+      "x": 0,
+      "y": 1418,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "footprint": [
+        4,
+        3
+      ],
+      "door": [
+        32,
+        46
+      ],
+      "night": "house_farmhouse_night"
+    },
+    "house_stone_farmhouse_roof-thatch": {
+      "x": 65,
+      "y": 1418,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "footprint": [
+        4,
+        3
+      ],
+      "door": [
+        32,
+        46
+      ],
+      "night": "house_farmhouse_night"
+    },
+    "house_stone_hut_roof-green": {
+      "x": 0,
+      "y": 1876,
+      "w": 32,
+      "h": 32,
+      "anchor": [
+        16,
+        31
+      ],
+      "footprint": [
+        2,
+        2
+      ],
+      "door": [
+        16,
+        30
+      ],
+      "night": "house_hut_night"
+    },
+    "house_stone_hut_roof-plum": {
+      "x": 33,
+      "y": 1876,
+      "w": 32,
+      "h": 32,
+      "anchor": [
+        16,
+        31
+      ],
+      "footprint": [
+        2,
+        2
+      ],
+      "door": [
+        16,
+        30
+      ],
+      "night": "house_hut_night"
+    },
+    "house_stone_hut_roof-slate": {
+      "x": 66,
+      "y": 1876,
+      "w": 32,
+      "h": 32,
+      "anchor": [
+        16,
+        31
+      ],
+      "footprint": [
+        2,
+        2
+      ],
+      "door": [
+        16,
+        30
+      ],
+      "night": "house_hut_night"
+    },
+    "house_stone_hut_roof-terracotta": {
+      "x": 99,
+      "y": 1876,
+      "w": 32,
+      "h": 32,
+      "anchor": [
+        16,
+        31
+      ],
+      "footprint": [
+        2,
+        2
+      ],
+      "door": [
+        16,
+        30
+      ],
+      "night": "house_hut_night"
+    },
+    "house_stone_hut_roof-thatch": {
+      "x": 132,
+      "y": 1876,
+      "w": 32,
+      "h": 32,
+      "anchor": [
+        16,
+        31
+      ],
+      "footprint": [
+        2,
+        2
+      ],
+      "door": [
+        16,
+        30
+      ],
+      "night": "house_hut_night"
+    },
+    "house_stone_row-left_roof-green": {
+      "x": 130,
+      "y": 1418,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        13,
+        46
+      ],
+      "night": "house_row-left_night"
+    },
+    "house_stone_row-left_roof-plum": {
+      "x": 163,
+      "y": 1418,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        13,
+        46
+      ],
+      "night": "house_row-left_night"
+    },
+    "house_stone_row-left_roof-slate": {
+      "x": 196,
+      "y": 1418,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        13,
+        46
+      ],
+      "night": "house_row-left_night"
+    },
+    "house_stone_row-left_roof-terracotta": {
+      "x": 0,
+      "y": 1467,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        13,
+        46
+      ],
+      "night": "house_row-left_night"
+    },
+    "house_stone_row-left_roof-thatch": {
+      "x": 33,
+      "y": 1467,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        13,
+        46
+      ],
+      "night": "house_row-left_night"
+    },
+    "house_stone_row-middle_roof-green": {
+      "x": 66,
+      "y": 1467,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        11,
+        46
+      ],
+      "night": "house_row-middle_night"
+    },
+    "house_stone_row-middle_roof-plum": {
+      "x": 99,
+      "y": 1467,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        11,
+        46
+      ],
+      "night": "house_row-middle_night"
+    },
+    "house_stone_row-middle_roof-slate": {
+      "x": 132,
+      "y": 1467,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        11,
+        46
+      ],
+      "night": "house_row-middle_night"
+    },
+    "house_stone_row-middle_roof-terracotta": {
+      "x": 165,
+      "y": 1467,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        11,
+        46
+      ],
+      "night": "house_row-middle_night"
+    },
+    "house_stone_row-middle_roof-thatch": {
+      "x": 198,
+      "y": 1467,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        11,
+        46
+      ],
+      "night": "house_row-middle_night"
+    },
+    "house_stone_row-right_roof-green": {
+      "x": 0,
+      "y": 1516,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        10,
+        46
+      ],
+      "night": "house_row-right_night"
+    },
+    "house_stone_row-right_roof-plum": {
+      "x": 33,
+      "y": 1516,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        10,
+        46
+      ],
+      "night": "house_row-right_night"
+    },
+    "house_stone_row-right_roof-slate": {
+      "x": 66,
+      "y": 1516,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        10,
+        46
+      ],
+      "night": "house_row-right_night"
+    },
+    "house_stone_row-right_roof-terracotta": {
+      "x": 99,
+      "y": 1516,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        10,
+        46
+      ],
+      "night": "house_row-right_night"
+    },
+    "house_stone_row-right_roof-thatch": {
+      "x": 132,
+      "y": 1516,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        10,
+        46
+      ],
+      "night": "house_row-right_night"
+    },
+    "house_timber_apartment_roof-green": {
+      "x": 0,
+      "y": 455,
+      "w": 64,
+      "h": 64,
+      "anchor": [
+        32,
+        63
+      ],
+      "footprint": [
+        4,
+        4
+      ],
+      "door": [
+        32,
+        62
+      ],
+      "night": "house_apartment_night"
+    },
+    "house_timber_apartment_roof-plum": {
+      "x": 65,
+      "y": 455,
+      "w": 64,
+      "h": 64,
+      "anchor": [
+        32,
+        63
+      ],
+      "footprint": [
+        4,
+        4
+      ],
+      "door": [
+        32,
+        62
+      ],
+      "night": "house_apartment_night"
+    },
+    "house_timber_apartment_roof-slate": {
+      "x": 130,
+      "y": 455,
+      "w": 64,
+      "h": 64,
+      "anchor": [
+        32,
+        63
+      ],
+      "footprint": [
+        4,
+        4
+      ],
+      "door": [
+        32,
+        62
+      ],
+      "night": "house_apartment_night"
+    },
+    "house_timber_apartment_roof-terracotta": {
+      "x": 0,
+      "y": 520,
+      "w": 64,
+      "h": 64,
+      "anchor": [
+        32,
+        63
+      ],
+      "footprint": [
+        4,
+        4
+      ],
+      "door": [
+        32,
+        62
+      ],
+      "night": "house_apartment_night"
+    },
+    "house_timber_apartment_roof-thatch": {
+      "x": 65,
+      "y": 520,
+      "w": 64,
+      "h": 64,
+      "anchor": [
+        32,
+        63
+      ],
+      "footprint": [
+        4,
+        4
+      ],
+      "door": [
+        32,
+        62
+      ],
+      "night": "house_apartment_night"
+    },
+    "house_timber_detached_roof-green": {
+      "x": 165,
+      "y": 1516,
+      "w": 48,
+      "h": 48,
+      "anchor": [
+        24,
+        47
+      ],
+      "footprint": [
+        3,
+        3
+      ],
+      "door": [
+        24,
+        46
+      ],
+      "night": "house_detached_night"
+    },
+    "house_timber_detached_roof-plum": {
+      "x": 0,
+      "y": 1565,
+      "w": 48,
+      "h": 48,
+      "anchor": [
+        24,
+        47
+      ],
+      "footprint": [
+        3,
+        3
+      ],
+      "door": [
+        24,
+        46
+      ],
+      "night": "house_detached_night"
+    },
+    "house_timber_detached_roof-slate": {
+      "x": 49,
+      "y": 1565,
+      "w": 48,
+      "h": 48,
+      "anchor": [
+        24,
+        47
+      ],
+      "footprint": [
+        3,
+        3
+      ],
+      "door": [
+        24,
+        46
+      ],
+      "night": "house_detached_night"
+    },
+    "house_timber_detached_roof-terracotta": {
+      "x": 98,
+      "y": 1565,
+      "w": 48,
+      "h": 48,
+      "anchor": [
+        24,
+        47
+      ],
+      "footprint": [
+        3,
+        3
+      ],
+      "door": [
+        24,
+        46
+      ],
+      "night": "house_detached_night"
+    },
+    "house_timber_detached_roof-thatch": {
+      "x": 147,
+      "y": 1565,
+      "w": 48,
+      "h": 48,
+      "anchor": [
+        24,
+        47
+      ],
+      "footprint": [
+        3,
+        3
+      ],
+      "door": [
+        24,
+        46
+      ],
+      "night": "house_detached_night"
+    },
+    "house_timber_farmhouse_roof-green": {
+      "x": 0,
+      "y": 1614,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "footprint": [
+        4,
+        3
+      ],
+      "door": [
+        32,
+        46
+      ],
+      "night": "house_farmhouse_night"
+    },
+    "house_timber_farmhouse_roof-plum": {
+      "x": 65,
+      "y": 1614,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "footprint": [
+        4,
+        3
+      ],
+      "door": [
+        32,
+        46
+      ],
+      "night": "house_farmhouse_night"
+    },
+    "house_timber_farmhouse_roof-slate": {
+      "x": 130,
+      "y": 1614,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "footprint": [
+        4,
+        3
+      ],
+      "door": [
+        32,
+        46
+      ],
+      "night": "house_farmhouse_night"
+    },
+    "house_timber_farmhouse_roof-terracotta": {
+      "x": 0,
+      "y": 1663,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "footprint": [
+        4,
+        3
+      ],
+      "door": [
+        32,
+        46
+      ],
+      "night": "house_farmhouse_night"
+    },
+    "house_timber_farmhouse_roof-thatch": {
+      "x": 65,
+      "y": 1663,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "footprint": [
+        4,
+        3
+      ],
+      "door": [
+        32,
+        46
+      ],
+      "night": "house_farmhouse_night"
+    },
+    "house_timber_hut_roof-green": {
+      "x": 165,
+      "y": 1876,
+      "w": 32,
+      "h": 32,
+      "anchor": [
+        16,
+        31
+      ],
+      "footprint": [
+        2,
+        2
+      ],
+      "door": [
+        16,
+        30
+      ],
+      "night": "house_hut_night"
+    },
+    "house_timber_hut_roof-plum": {
+      "x": 198,
+      "y": 1876,
+      "w": 32,
+      "h": 32,
+      "anchor": [
+        16,
+        31
+      ],
+      "footprint": [
+        2,
+        2
+      ],
+      "door": [
+        16,
+        30
+      ],
+      "night": "house_hut_night"
+    },
+    "house_timber_hut_roof-slate": {
+      "x": 0,
+      "y": 1909,
+      "w": 32,
+      "h": 32,
+      "anchor": [
+        16,
+        31
+      ],
+      "footprint": [
+        2,
+        2
+      ],
+      "door": [
+        16,
+        30
+      ],
+      "night": "house_hut_night"
+    },
+    "house_timber_hut_roof-terracotta": {
+      "x": 33,
+      "y": 1909,
+      "w": 32,
+      "h": 32,
+      "anchor": [
+        16,
+        31
+      ],
+      "footprint": [
+        2,
+        2
+      ],
+      "door": [
+        16,
+        30
+      ],
+      "night": "house_hut_night"
+    },
+    "house_timber_hut_roof-thatch": {
+      "x": 66,
+      "y": 1909,
+      "w": 32,
+      "h": 32,
+      "anchor": [
+        16,
+        31
+      ],
+      "footprint": [
+        2,
+        2
+      ],
+      "door": [
+        16,
+        30
+      ],
+      "night": "house_hut_night"
+    },
+    "house_timber_row-left_roof-green": {
+      "x": 130,
+      "y": 1663,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        13,
+        46
+      ],
+      "night": "house_row-left_night"
+    },
+    "house_timber_row-left_roof-plum": {
+      "x": 163,
+      "y": 1663,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        13,
+        46
+      ],
+      "night": "house_row-left_night"
+    },
+    "house_timber_row-left_roof-slate": {
+      "x": 196,
+      "y": 1663,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        13,
+        46
+      ],
+      "night": "house_row-left_night"
+    },
+    "house_timber_row-left_roof-terracotta": {
+      "x": 0,
+      "y": 1712,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        13,
+        46
+      ],
+      "night": "house_row-left_night"
+    },
+    "house_timber_row-left_roof-thatch": {
+      "x": 33,
+      "y": 1712,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        13,
+        46
+      ],
+      "night": "house_row-left_night"
+    },
+    "house_timber_row-middle_roof-green": {
+      "x": 66,
+      "y": 1712,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        11,
+        46
+      ],
+      "night": "house_row-middle_night"
+    },
+    "house_timber_row-middle_roof-plum": {
+      "x": 99,
+      "y": 1712,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        11,
+        46
+      ],
+      "night": "house_row-middle_night"
+    },
+    "house_timber_row-middle_roof-slate": {
+      "x": 132,
+      "y": 1712,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        11,
+        46
+      ],
+      "night": "house_row-middle_night"
+    },
+    "house_timber_row-middle_roof-terracotta": {
+      "x": 165,
+      "y": 1712,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        11,
+        46
+      ],
+      "night": "house_row-middle_night"
+    },
+    "house_timber_row-middle_roof-thatch": {
+      "x": 198,
+      "y": 1712,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        11,
+        46
+      ],
+      "night": "house_row-middle_night"
+    },
+    "house_timber_row-right_roof-green": {
+      "x": 0,
+      "y": 1761,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        10,
+        46
+      ],
+      "night": "house_row-right_night"
+    },
+    "house_timber_row-right_roof-plum": {
+      "x": 33,
+      "y": 1761,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        10,
+        46
+      ],
+      "night": "house_row-right_night"
+    },
+    "house_timber_row-right_roof-slate": {
+      "x": 66,
+      "y": 1761,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        10,
+        46
+      ],
+      "night": "house_row-right_night"
+    },
+    "house_timber_row-right_roof-terracotta": {
+      "x": 99,
+      "y": 1761,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        10,
+        46
+      ],
+      "night": "house_row-right_night"
+    },
+    "house_timber_row-right_roof-thatch": {
+      "x": 132,
+      "y": 1761,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        10,
+        46
+      ],
+      "night": "house_row-right_night"
+    }
+  }
+}

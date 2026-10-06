@@ -1,0 +1,469 @@
+{
+  "image": "map.png",
+  "size": [
+    256,
+    61
+  ],
+  "tile": 16,
+  "frames": {
+    "boat_left": {
+      "x": 0,
+      "y": 49,
+      "w": 12,
+      "h": 12,
+      "anchor": [
+        6,
+        11
+      ]
+    },
+    "boat_right": {
+      "x": 13,
+      "y": 49,
+      "w": 12,
+      "h": 12,
+      "anchor": [
+        6,
+        11
+      ]
+    },
+    "caravan_left": {
+      "x": 103,
+      "y": 49,
+      "w": 12,
+      "h": 8,
+      "anchor": [
+        6,
+        7
+      ]
+    },
+    "caravan_right": {
+      "x": 116,
+      "y": 49,
+      "w": 12,
+      "h": 8,
+      "anchor": [
+        6,
+        7
+      ]
+    },
+    "map16_farmland_0": {
+      "x": 109,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "map16_farmland_1": {
+      "x": 126,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "map16_forest-conifer": {
+      "x": 143,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "map16_forest-deciduous": {
+      "x": 160,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "map16_grassland_0": {
+      "x": 177,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "map16_grassland_1": {
+      "x": 194,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "map16_hills": {
+      "x": 211,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "map16_marsh": {
+      "x": 228,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "map16_mountain": {
+      "x": 0,
+      "y": 32,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "map16_peak": {
+      "x": 64,
+      "y": 0,
+      "w": 16,
+      "h": 24,
+      "anchor": [
+        8,
+        23
+      ],
+      "overlay": true
+    },
+    "map16_peak-low": {
+      "x": 17,
+      "y": 32,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "overlay": true
+    },
+    "map16_sand": {
+      "x": 34,
+      "y": 32,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "map16_water_0": {
+      "x": 51,
+      "y": 32,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "map16_water_1": {
+      "x": 68,
+      "y": 32,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "map8_farmland_0": {
+      "x": 129,
+      "y": 49,
+      "w": 8,
+      "h": 8,
+      "anchor": [
+        4,
+        7
+      ]
+    },
+    "map8_farmland_1": {
+      "x": 138,
+      "y": 49,
+      "w": 8,
+      "h": 8,
+      "anchor": [
+        4,
+        7
+      ]
+    },
+    "map8_forest-conifer": {
+      "x": 147,
+      "y": 49,
+      "w": 8,
+      "h": 8,
+      "anchor": [
+        4,
+        7
+      ]
+    },
+    "map8_forest-deciduous": {
+      "x": 156,
+      "y": 49,
+      "w": 8,
+      "h": 8,
+      "anchor": [
+        4,
+        7
+      ]
+    },
+    "map8_grassland_0": {
+      "x": 165,
+      "y": 49,
+      "w": 8,
+      "h": 8,
+      "anchor": [
+        4,
+        7
+      ]
+    },
+    "map8_grassland_1": {
+      "x": 174,
+      "y": 49,
+      "w": 8,
+      "h": 8,
+      "anchor": [
+        4,
+        7
+      ]
+    },
+    "map8_hills": {
+      "x": 183,
+      "y": 49,
+      "w": 8,
+      "h": 8,
+      "anchor": [
+        4,
+        7
+      ]
+    },
+    "map8_marsh": {
+      "x": 192,
+      "y": 49,
+      "w": 8,
+      "h": 8,
+      "anchor": [
+        4,
+        7
+      ]
+    },
+    "map8_mountain": {
+      "x": 201,
+      "y": 49,
+      "w": 8,
+      "h": 8,
+      "anchor": [
+        4,
+        7
+      ]
+    },
+    "map8_peak": {
+      "x": 62,
+      "y": 49,
+      "w": 8,
+      "h": 10,
+      "anchor": [
+        4,
+        9
+      ],
+      "overlay": true
+    },
+    "map8_sand": {
+      "x": 210,
+      "y": 49,
+      "w": 8,
+      "h": 8,
+      "anchor": [
+        4,
+        7
+      ]
+    },
+    "map8_water_0": {
+      "x": 219,
+      "y": 49,
+      "w": 8,
+      "h": 8,
+      "anchor": [
+        4,
+        7
+      ]
+    },
+    "map8_water_1": {
+      "x": 228,
+      "y": 49,
+      "w": 8,
+      "h": 8,
+      "anchor": [
+        4,
+        7
+      ]
+    },
+    "pin_arrest": {
+      "x": 26,
+      "y": 49,
+      "w": 8,
+      "h": 12,
+      "anchor": [
+        4,
+        11
+      ]
+    },
+    "pin_crime-recorded": {
+      "x": 35,
+      "y": 49,
+      "w": 8,
+      "h": 12,
+      "anchor": [
+        4,
+        11
+      ]
+    },
+    "pin_crime-true": {
+      "x": 44,
+      "y": 49,
+      "w": 8,
+      "h": 12,
+      "anchor": [
+        4,
+        11
+      ],
+      "view": "true"
+    },
+    "pin_report": {
+      "x": 53,
+      "y": 49,
+      "w": 8,
+      "h": 12,
+      "anchor": [
+        1,
+        11
+      ]
+    },
+    "settlement_capital": {
+      "x": 0,
+      "y": 0,
+      "w": 32,
+      "h": 31,
+      "anchor": [
+        16,
+        30
+      ]
+    },
+    "settlement_city": {
+      "x": 33,
+      "y": 0,
+      "w": 30,
+      "h": 29,
+      "anchor": [
+        15,
+        28
+      ]
+    },
+    "settlement_hamlet": {
+      "x": 71,
+      "y": 49,
+      "w": 11,
+      "h": 10,
+      "anchor": [
+        5,
+        9
+      ]
+    },
+    "settlement_highlight_capital": {
+      "x": 85,
+      "y": 32,
+      "w": 40,
+      "h": 16,
+      "anchor": [
+        20,
+        10
+      ],
+      "target": "settlement_capital"
+    },
+    "settlement_highlight_city": {
+      "x": 126,
+      "y": 32,
+      "w": 38,
+      "h": 16,
+      "anchor": [
+        19,
+        10
+      ],
+      "target": "settlement_city"
+    },
+    "settlement_highlight_hamlet": {
+      "x": 83,
+      "y": 49,
+      "w": 19,
+      "h": 10,
+      "anchor": [
+        9,
+        6
+      ],
+      "target": "settlement_hamlet"
+    },
+    "settlement_highlight_town": {
+      "x": 219,
+      "y": 32,
+      "w": 35,
+      "h": 14,
+      "anchor": [
+        17,
+        9
+      ],
+      "target": "settlement_town"
+    },
+    "settlement_highlight_village": {
+      "x": 165,
+      "y": 32,
+      "w": 30,
+      "h": 15,
+      "anchor": [
+        15,
+        10
+      ],
+      "target": "settlement_village"
+    },
+    "settlement_town": {
+      "x": 81,
+      "y": 0,
+      "w": 27,
+      "h": 19,
+      "anchor": [
+        13,
+        18
+      ]
+    },
+    "settlement_village": {
+      "x": 196,
+      "y": 32,
+      "w": 22,
+      "h": 15,
+      "anchor": [
+        11,
+        14
+      ]
+    }
+  }
+}

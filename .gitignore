@@ -21,3 +21,9 @@ CLAUDE.md
 graphify-out/
 .githooks/post-commit
 .githooks/post-checkout
+
+# Sprite previews are review-only; regenerate them with tools/sprites
+assets/sprites/previews/
+
+# Python caches
+__pycache__/

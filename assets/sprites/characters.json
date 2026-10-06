@@ -1,0 +1,3253 @@
+{
+  "image": "characters.png",
+  "size": [
+    256,
+    482
+  ],
+  "tile": 16,
+  "frames": {
+    "blob_ice_sit_down": {
+      "x": 0,
+      "y": 0,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "ice",
+      "layer": "body",
+      "pose": "sit",
+      "facing": "down",
+      "face": [
+        0,
+        2
+      ]
+    },
+    "blob_ice_sit_left": {
+      "x": 19,
+      "y": 0,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "ice",
+      "layer": "body",
+      "pose": "sit",
+      "facing": "left",
+      "face": [
+        0,
+        2
+      ]
+    },
+    "blob_ice_sit_right": {
+      "x": 38,
+      "y": 0,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "ice",
+      "layer": "body",
+      "pose": "sit",
+      "facing": "right",
+      "face": [
+        0,
+        2
+      ]
+    },
+    "blob_ice_sneak_left": {
+      "x": 57,
+      "y": 0,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "ice",
+      "layer": "body",
+      "pose": "sneak",
+      "facing": "left",
+      "face": [
+        1,
+        4
+      ]
+    },
+    "blob_ice_sneak_right": {
+      "x": 76,
+      "y": 0,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "ice",
+      "layer": "body",
+      "pose": "sneak",
+      "facing": "right",
+      "face": [
+        -1,
+        4
+      ]
+    },
+    "blob_ice_stand_down": {
+      "x": 95,
+      "y": 0,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "ice",
+      "layer": "body",
+      "pose": "stand",
+      "facing": "down",
+      "face": [
+        0,
+        0
+      ]
+    },
+    "blob_ice_stand_left": {
+      "x": 114,
+      "y": 0,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "ice",
+      "layer": "body",
+      "pose": "stand",
+      "facing": "left",
+      "face": [
+        0,
+        0
+      ]
+    },
+    "blob_ice_stand_right": {
+      "x": 133,
+      "y": 0,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "ice",
+      "layer": "body",
+      "pose": "stand",
+      "facing": "right",
+      "face": [
+        0,
+        0
+      ]
+    },
+    "blob_ice_stand_up": {
+      "x": 152,
+      "y": 0,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "ice",
+      "layer": "body",
+      "pose": "stand",
+      "facing": "up"
+    },
+    "blob_ice_walk_down_0": {
+      "x": 171,
+      "y": 0,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "ice",
+      "layer": "body",
+      "pose": "walk",
+      "facing": "down",
+      "frame": 0,
+      "face": [
+        0,
+        1
+      ]
+    },
+    "blob_ice_walk_down_1": {
+      "x": 190,
+      "y": 0,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "ice",
+      "layer": "body",
+      "pose": "walk",
+      "facing": "down",
+      "frame": 1,
+      "face": [
+        0,
+        -1
+      ]
+    },
+    "blob_ice_walk_left_0": {
+      "x": 209,
+      "y": 0,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "ice",
+      "layer": "body",
+      "pose": "walk",
+      "facing": "left",
+      "frame": 0,
+      "face": [
+        0,
+        1
+      ]
+    },
+    "blob_ice_walk_left_1": {
+      "x": 228,
+      "y": 0,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "ice",
+      "layer": "body",
+      "pose": "walk",
+      "facing": "left",
+      "frame": 1,
+      "face": [
+        0,
+        -1
+      ]
+    },
+    "blob_ice_walk_right_0": {
+      "x": 0,
+      "y": 23,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "ice",
+      "layer": "body",
+      "pose": "walk",
+      "facing": "right",
+      "frame": 0,
+      "face": [
+        0,
+        1
+      ]
+    },
+    "blob_ice_walk_right_1": {
+      "x": 19,
+      "y": 23,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "ice",
+      "layer": "body",
+      "pose": "walk",
+      "facing": "right",
+      "frame": 1,
+      "face": [
+        0,
+        -1
+      ]
+    },
+    "blob_ice_walk_up_0": {
+      "x": 38,
+      "y": 23,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "ice",
+      "layer": "body",
+      "pose": "walk",
+      "facing": "up",
+      "frame": 0
+    },
+    "blob_ice_walk_up_1": {
+      "x": 57,
+      "y": 23,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "ice",
+      "layer": "body",
+      "pose": "walk",
+      "facing": "up",
+      "frame": 1
+    },
+    "blob_lilac_sit_down": {
+      "x": 76,
+      "y": 23,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "lilac",
+      "layer": "body",
+      "pose": "sit",
+      "facing": "down",
+      "face": [
+        0,
+        2
+      ]
+    },
+    "blob_lilac_sit_left": {
+      "x": 95,
+      "y": 23,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "lilac",
+      "layer": "body",
+      "pose": "sit",
+      "facing": "left",
+      "face": [
+        0,
+        2
+      ]
+    },
+    "blob_lilac_sit_right": {
+      "x": 114,
+      "y": 23,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "lilac",
+      "layer": "body",
+      "pose": "sit",
+      "facing": "right",
+      "face": [
+        0,
+        2
+      ]
+    },
+    "blob_lilac_sneak_left": {
+      "x": 133,
+      "y": 23,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "lilac",
+      "layer": "body",
+      "pose": "sneak",
+      "facing": "left",
+      "face": [
+        1,
+        4
+      ]
+    },
+    "blob_lilac_sneak_right": {
+      "x": 152,
+      "y": 23,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "lilac",
+      "layer": "body",
+      "pose": "sneak",
+      "facing": "right",
+      "face": [
+        -1,
+        4
+      ]
+    },
+    "blob_lilac_stand_down": {
+      "x": 171,
+      "y": 23,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "lilac",
+      "layer": "body",
+      "pose": "stand",
+      "facing": "down",
+      "face": [
+        0,
+        0
+      ]
+    },
+    "blob_lilac_stand_left": {
+      "x": 190,
+      "y": 23,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "lilac",
+      "layer": "body",
+      "pose": "stand",
+      "facing": "left",
+      "face": [
+        0,
+        0
+      ]
+    },
+    "blob_lilac_stand_right": {
+      "x": 209,
+      "y": 23,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "lilac",
+      "layer": "body",
+      "pose": "stand",
+      "facing": "right",
+      "face": [
+        0,
+        0
+      ]
+    },
+    "blob_lilac_stand_up": {
+      "x": 228,
+      "y": 23,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "lilac",
+      "layer": "body",
+      "pose": "stand",
+      "facing": "up"
+    },
+    "blob_lilac_walk_down_0": {
+      "x": 0,
+      "y": 46,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "lilac",
+      "layer": "body",
+      "pose": "walk",
+      "facing": "down",
+      "frame": 0,
+      "face": [
+        0,
+        1
+      ]
+    },
+    "blob_lilac_walk_down_1": {
+      "x": 19,
+      "y": 46,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "lilac",
+      "layer": "body",
+      "pose": "walk",
+      "facing": "down",
+      "frame": 1,
+      "face": [
+        0,
+        -1
+      ]
+    },
+    "blob_lilac_walk_left_0": {
+      "x": 38,
+      "y": 46,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "lilac",
+      "layer": "body",
+      "pose": "walk",
+      "facing": "left",
+      "frame": 0,
+      "face": [
+        0,
+        1
+      ]
+    },
+    "blob_lilac_walk_left_1": {
+      "x": 57,
+      "y": 46,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "lilac",
+      "layer": "body",
+      "pose": "walk",
+      "facing": "left",
+      "frame": 1,
+      "face": [
+        0,
+        -1
+      ]
+    },
+    "blob_lilac_walk_right_0": {
+      "x": 76,
+      "y": 46,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "lilac",
+      "layer": "body",
+      "pose": "walk",
+      "facing": "right",
+      "frame": 0,
+      "face": [
+        0,
+        1
+      ]
+    },
+    "blob_lilac_walk_right_1": {
+      "x": 95,
+      "y": 46,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "lilac",
+      "layer": "body",
+      "pose": "walk",
+      "facing": "right",
+      "frame": 1,
+      "face": [
+        0,
+        -1
+      ]
+    },
+    "blob_lilac_walk_up_0": {
+      "x": 114,
+      "y": 46,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "lilac",
+      "layer": "body",
+      "pose": "walk",
+      "facing": "up",
+      "frame": 0
+    },
+    "blob_lilac_walk_up_1": {
+      "x": 133,
+      "y": 46,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "lilac",
+      "layer": "body",
+      "pose": "walk",
+      "facing": "up",
+      "frame": 1
+    },
+    "blob_mint_sit_down": {
+      "x": 152,
+      "y": 46,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "mint",
+      "layer": "body",
+      "pose": "sit",
+      "facing": "down",
+      "face": [
+        0,
+        2
+      ]
+    },
+    "blob_mint_sit_left": {
+      "x": 171,
+      "y": 46,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "mint",
+      "layer": "body",
+      "pose": "sit",
+      "facing": "left",
+      "face": [
+        0,
+        2
+      ]
+    },
+    "blob_mint_sit_right": {
+      "x": 190,
+      "y": 46,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "mint",
+      "layer": "body",
+      "pose": "sit",
+      "facing": "right",
+      "face": [
+        0,
+        2
+      ]
+    },
+    "blob_mint_sneak_left": {
+      "x": 209,
+      "y": 46,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "mint",
+      "layer": "body",
+      "pose": "sneak",
+      "facing": "left",
+      "face": [
+        1,
+        4
+      ]
+    },
+    "blob_mint_sneak_right": {
+      "x": 228,
+      "y": 46,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "mint",
+      "layer": "body",
+      "pose": "sneak",
+      "facing": "right",
+      "face": [
+        -1,
+        4
+      ]
+    },
+    "blob_mint_stand_down": {
+      "x": 0,
+      "y": 69,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "mint",
+      "layer": "body",
+      "pose": "stand",
+      "facing": "down",
+      "face": [
+        0,
+        0
+      ]
+    },
+    "blob_mint_stand_left": {
+      "x": 19,
+      "y": 69,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "mint",
+      "layer": "body",
+      "pose": "stand",
+      "facing": "left",
+      "face": [
+        0,
+        0
+      ]
+    },
+    "blob_mint_stand_right": {
+      "x": 38,
+      "y": 69,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "mint",
+      "layer": "body",
+      "pose": "stand",
+      "facing": "right",
+      "face": [
+        0,
+        0
+      ]
+    },
+    "blob_mint_stand_up": {
+      "x": 57,
+      "y": 69,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "mint",
+      "layer": "body",
+      "pose": "stand",
+      "facing": "up"
+    },
+    "blob_mint_walk_down_0": {
+      "x": 76,
+      "y": 69,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "mint",
+      "layer": "body",
+      "pose": "walk",
+      "facing": "down",
+      "frame": 0,
+      "face": [
+        0,
+        1
+      ]
+    },
+    "blob_mint_walk_down_1": {
+      "x": 95,
+      "y": 69,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "mint",
+      "layer": "body",
+      "pose": "walk",
+      "facing": "down",
+      "frame": 1,
+      "face": [
+        0,
+        -1
+      ]
+    },
+    "blob_mint_walk_left_0": {
+      "x": 114,
+      "y": 69,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "mint",
+      "layer": "body",
+      "pose": "walk",
+      "facing": "left",
+      "frame": 0,
+      "face": [
+        0,
+        1
+      ]
+    },
+    "blob_mint_walk_left_1": {
+      "x": 133,
+      "y": 69,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "mint",
+      "layer": "body",
+      "pose": "walk",
+      "facing": "left",
+      "frame": 1,
+      "face": [
+        0,
+        -1
+      ]
+    },
+    "blob_mint_walk_right_0": {
+      "x": 152,
+      "y": 69,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "mint",
+      "layer": "body",
+      "pose": "walk",
+      "facing": "right",
+      "frame": 0,
+      "face": [
+        0,
+        1
+      ]
+    },
+    "blob_mint_walk_right_1": {
+      "x": 171,
+      "y": 69,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "mint",
+      "layer": "body",
+      "pose": "walk",
+      "facing": "right",
+      "frame": 1,
+      "face": [
+        0,
+        -1
+      ]
+    },
+    "blob_mint_walk_up_0": {
+      "x": 190,
+      "y": 69,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "mint",
+      "layer": "body",
+      "pose": "walk",
+      "facing": "up",
+      "frame": 0
+    },
+    "blob_mint_walk_up_1": {
+      "x": 209,
+      "y": 69,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "mint",
+      "layer": "body",
+      "pose": "walk",
+      "facing": "up",
+      "frame": 1
+    },
+    "blob_rose_sit_down": {
+      "x": 228,
+      "y": 69,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "rose",
+      "layer": "body",
+      "pose": "sit",
+      "facing": "down",
+      "face": [
+        0,
+        2
+      ]
+    },
+    "blob_rose_sit_left": {
+      "x": 0,
+      "y": 92,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "rose",
+      "layer": "body",
+      "pose": "sit",
+      "facing": "left",
+      "face": [
+        0,
+        2
+      ]
+    },
+    "blob_rose_sit_right": {
+      "x": 19,
+      "y": 92,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "rose",
+      "layer": "body",
+      "pose": "sit",
+      "facing": "right",
+      "face": [
+        0,
+        2
+      ]
+    },
+    "blob_rose_sneak_left": {
+      "x": 38,
+      "y": 92,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "rose",
+      "layer": "body",
+      "pose": "sneak",
+      "facing": "left",
+      "face": [
+        1,
+        4
+      ]
+    },
+    "blob_rose_sneak_right": {
+      "x": 57,
+      "y": 92,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "rose",
+      "layer": "body",
+      "pose": "sneak",
+      "facing": "right",
+      "face": [
+        -1,
+        4
+      ]
+    },
+    "blob_rose_stand_down": {
+      "x": 76,
+      "y": 92,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "rose",
+      "layer": "body",
+      "pose": "stand",
+      "facing": "down",
+      "face": [
+        0,
+        0
+      ]
+    },
+    "blob_rose_stand_left": {
+      "x": 95,
+      "y": 92,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "rose",
+      "layer": "body",
+      "pose": "stand",
+      "facing": "left",
+      "face": [
+        0,
+        0
+      ]
+    },
+    "blob_rose_stand_right": {
+      "x": 114,
+      "y": 92,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "rose",
+      "layer": "body",
+      "pose": "stand",
+      "facing": "right",
+      "face": [
+        0,
+        0
+      ]
+    },
+    "blob_rose_stand_up": {
+      "x": 133,
+      "y": 92,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "rose",
+      "layer": "body",
+      "pose": "stand",
+      "facing": "up"
+    },
+    "blob_rose_walk_down_0": {
+      "x": 152,
+      "y": 92,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "rose",
+      "layer": "body",
+      "pose": "walk",
+      "facing": "down",
+      "frame": 0,
+      "face": [
+        0,
+        1
+      ]
+    },
+    "blob_rose_walk_down_1": {
+      "x": 171,
+      "y": 92,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "rose",
+      "layer": "body",
+      "pose": "walk",
+      "facing": "down",
+      "frame": 1,
+      "face": [
+        0,
+        -1
+      ]
+    },
+    "blob_rose_walk_left_0": {
+      "x": 190,
+      "y": 92,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "rose",
+      "layer": "body",
+      "pose": "walk",
+      "facing": "left",
+      "frame": 0,
+      "face": [
+        0,
+        1
+      ]
+    },
+    "blob_rose_walk_left_1": {
+      "x": 209,
+      "y": 92,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "rose",
+      "layer": "body",
+      "pose": "walk",
+      "facing": "left",
+      "frame": 1,
+      "face": [
+        0,
+        -1
+      ]
+    },
+    "blob_rose_walk_right_0": {
+      "x": 228,
+      "y": 92,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "rose",
+      "layer": "body",
+      "pose": "walk",
+      "facing": "right",
+      "frame": 0,
+      "face": [
+        0,
+        1
+      ]
+    },
+    "blob_rose_walk_right_1": {
+      "x": 0,
+      "y": 115,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "rose",
+      "layer": "body",
+      "pose": "walk",
+      "facing": "right",
+      "frame": 1,
+      "face": [
+        0,
+        -1
+      ]
+    },
+    "blob_rose_walk_up_0": {
+      "x": 19,
+      "y": 115,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "rose",
+      "layer": "body",
+      "pose": "walk",
+      "facing": "up",
+      "frame": 0
+    },
+    "blob_rose_walk_up_1": {
+      "x": 38,
+      "y": 115,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "rose",
+      "layer": "body",
+      "pose": "walk",
+      "facing": "up",
+      "frame": 1
+    },
+    "blob_silver_sit_down": {
+      "x": 57,
+      "y": 115,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "silver",
+      "layer": "body",
+      "pose": "sit",
+      "facing": "down",
+      "face": [
+        0,
+        2
+      ]
+    },
+    "blob_silver_sit_left": {
+      "x": 76,
+      "y": 115,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "silver",
+      "layer": "body",
+      "pose": "sit",
+      "facing": "left",
+      "face": [
+        0,
+        2
+      ]
+    },
+    "blob_silver_sit_right": {
+      "x": 95,
+      "y": 115,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "silver",
+      "layer": "body",
+      "pose": "sit",
+      "facing": "right",
+      "face": [
+        0,
+        2
+      ]
+    },
+    "blob_silver_sneak_left": {
+      "x": 114,
+      "y": 115,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "silver",
+      "layer": "body",
+      "pose": "sneak",
+      "facing": "left",
+      "face": [
+        1,
+        4
+      ]
+    },
+    "blob_silver_sneak_right": {
+      "x": 133,
+      "y": 115,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "silver",
+      "layer": "body",
+      "pose": "sneak",
+      "facing": "right",
+      "face": [
+        -1,
+        4
+      ]
+    },
+    "blob_silver_stand_down": {
+      "x": 152,
+      "y": 115,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "silver",
+      "layer": "body",
+      "pose": "stand",
+      "facing": "down",
+      "face": [
+        0,
+        0
+      ]
+    },
+    "blob_silver_stand_left": {
+      "x": 171,
+      "y": 115,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "silver",
+      "layer": "body",
+      "pose": "stand",
+      "facing": "left",
+      "face": [
+        0,
+        0
+      ]
+    },
+    "blob_silver_stand_right": {
+      "x": 190,
+      "y": 115,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "silver",
+      "layer": "body",
+      "pose": "stand",
+      "facing": "right",
+      "face": [
+        0,
+        0
+      ]
+    },
+    "blob_silver_stand_up": {
+      "x": 209,
+      "y": 115,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "silver",
+      "layer": "body",
+      "pose": "stand",
+      "facing": "up"
+    },
+    "blob_silver_walk_down_0": {
+      "x": 228,
+      "y": 115,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "silver",
+      "layer": "body",
+      "pose": "walk",
+      "facing": "down",
+      "frame": 0,
+      "face": [
+        0,
+        1
+      ]
+    },
+    "blob_silver_walk_down_1": {
+      "x": 0,
+      "y": 138,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "silver",
+      "layer": "body",
+      "pose": "walk",
+      "facing": "down",
+      "frame": 1,
+      "face": [
+        0,
+        -1
+      ]
+    },
+    "blob_silver_walk_left_0": {
+      "x": 19,
+      "y": 138,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "silver",
+      "layer": "body",
+      "pose": "walk",
+      "facing": "left",
+      "frame": 0,
+      "face": [
+        0,
+        1
+      ]
+    },
+    "blob_silver_walk_left_1": {
+      "x": 38,
+      "y": 138,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "silver",
+      "layer": "body",
+      "pose": "walk",
+      "facing": "left",
+      "frame": 1,
+      "face": [
+        0,
+        -1
+      ]
+    },
+    "blob_silver_walk_right_0": {
+      "x": 57,
+      "y": 138,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "silver",
+      "layer": "body",
+      "pose": "walk",
+      "facing": "right",
+      "frame": 0,
+      "face": [
+        0,
+        1
+      ]
+    },
+    "blob_silver_walk_right_1": {
+      "x": 76,
+      "y": 138,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "silver",
+      "layer": "body",
+      "pose": "walk",
+      "facing": "right",
+      "frame": 1,
+      "face": [
+        0,
+        -1
+      ]
+    },
+    "blob_silver_walk_up_0": {
+      "x": 95,
+      "y": 138,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "silver",
+      "layer": "body",
+      "pose": "walk",
+      "facing": "up",
+      "frame": 0
+    },
+    "blob_silver_walk_up_1": {
+      "x": 114,
+      "y": 138,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "silver",
+      "layer": "body",
+      "pose": "walk",
+      "facing": "up",
+      "frame": 1
+    },
+    "blob_sun_sit_down": {
+      "x": 133,
+      "y": 138,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "sun",
+      "layer": "body",
+      "pose": "sit",
+      "facing": "down",
+      "face": [
+        0,
+        2
+      ]
+    },
+    "blob_sun_sit_left": {
+      "x": 152,
+      "y": 138,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "sun",
+      "layer": "body",
+      "pose": "sit",
+      "facing": "left",
+      "face": [
+        0,
+        2
+      ]
+    },
+    "blob_sun_sit_right": {
+      "x": 171,
+      "y": 138,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "sun",
+      "layer": "body",
+      "pose": "sit",
+      "facing": "right",
+      "face": [
+        0,
+        2
+      ]
+    },
+    "blob_sun_sneak_left": {
+      "x": 190,
+      "y": 138,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "sun",
+      "layer": "body",
+      "pose": "sneak",
+      "facing": "left",
+      "face": [
+        1,
+        4
+      ]
+    },
+    "blob_sun_sneak_right": {
+      "x": 209,
+      "y": 138,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "sun",
+      "layer": "body",
+      "pose": "sneak",
+      "facing": "right",
+      "face": [
+        -1,
+        4
+      ]
+    },
+    "blob_sun_stand_down": {
+      "x": 228,
+      "y": 138,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "sun",
+      "layer": "body",
+      "pose": "stand",
+      "facing": "down",
+      "face": [
+        0,
+        0
+      ]
+    },
+    "blob_sun_stand_left": {
+      "x": 0,
+      "y": 161,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "sun",
+      "layer": "body",
+      "pose": "stand",
+      "facing": "left",
+      "face": [
+        0,
+        0
+      ]
+    },
+    "blob_sun_stand_right": {
+      "x": 19,
+      "y": 161,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "sun",
+      "layer": "body",
+      "pose": "stand",
+      "facing": "right",
+      "face": [
+        0,
+        0
+      ]
+    },
+    "blob_sun_stand_up": {
+      "x": 38,
+      "y": 161,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "sun",
+      "layer": "body",
+      "pose": "stand",
+      "facing": "up"
+    },
+    "blob_sun_walk_down_0": {
+      "x": 57,
+      "y": 161,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "sun",
+      "layer": "body",
+      "pose": "walk",
+      "facing": "down",
+      "frame": 0,
+      "face": [
+        0,
+        1
+      ]
+    },
+    "blob_sun_walk_down_1": {
+      "x": 76,
+      "y": 161,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "sun",
+      "layer": "body",
+      "pose": "walk",
+      "facing": "down",
+      "frame": 1,
+      "face": [
+        0,
+        -1
+      ]
+    },
+    "blob_sun_walk_left_0": {
+      "x": 95,
+      "y": 161,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "sun",
+      "layer": "body",
+      "pose": "walk",
+      "facing": "left",
+      "frame": 0,
+      "face": [
+        0,
+        1
+      ]
+    },
+    "blob_sun_walk_left_1": {
+      "x": 114,
+      "y": 161,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "sun",
+      "layer": "body",
+      "pose": "walk",
+      "facing": "left",
+      "frame": 1,
+      "face": [
+        0,
+        -1
+      ]
+    },
+    "blob_sun_walk_right_0": {
+      "x": 133,
+      "y": 161,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "sun",
+      "layer": "body",
+      "pose": "walk",
+      "facing": "right",
+      "frame": 0,
+      "face": [
+        0,
+        1
+      ]
+    },
+    "blob_sun_walk_right_1": {
+      "x": 152,
+      "y": 161,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "sun",
+      "layer": "body",
+      "pose": "walk",
+      "facing": "right",
+      "frame": 1,
+      "face": [
+        0,
+        -1
+      ]
+    },
+    "blob_sun_walk_up_0": {
+      "x": 171,
+      "y": 161,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "sun",
+      "layer": "body",
+      "pose": "walk",
+      "facing": "up",
+      "frame": 0
+    },
+    "blob_sun_walk_up_1": {
+      "x": 190,
+      "y": 161,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "hue": "sun",
+      "layer": "body",
+      "pose": "walk",
+      "facing": "up",
+      "frame": 1
+    },
+    "face_angry_down": {
+      "x": 209,
+      "y": 161,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "face",
+      "facing": "down"
+    },
+    "face_angry_left": {
+      "x": 228,
+      "y": 161,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "face",
+      "facing": "left"
+    },
+    "face_angry_right": {
+      "x": 0,
+      "y": 184,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "face",
+      "facing": "right"
+    },
+    "face_blink_down": {
+      "x": 19,
+      "y": 184,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "face",
+      "facing": "down"
+    },
+    "face_blink_left": {
+      "x": 38,
+      "y": 184,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "face",
+      "facing": "left"
+    },
+    "face_blink_right": {
+      "x": 57,
+      "y": 184,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "face",
+      "facing": "right"
+    },
+    "face_happy_down": {
+      "x": 76,
+      "y": 184,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "face",
+      "facing": "down"
+    },
+    "face_happy_left": {
+      "x": 95,
+      "y": 184,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "face",
+      "facing": "left"
+    },
+    "face_happy_right": {
+      "x": 114,
+      "y": 184,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "face",
+      "facing": "right"
+    },
+    "face_neutral_down": {
+      "x": 133,
+      "y": 184,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "face",
+      "facing": "down"
+    },
+    "face_neutral_left": {
+      "x": 152,
+      "y": 184,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "face",
+      "facing": "left"
+    },
+    "face_neutral_right": {
+      "x": 171,
+      "y": 184,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "face",
+      "facing": "right"
+    },
+    "face_sleep_down": {
+      "x": 190,
+      "y": 184,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "face",
+      "facing": "down"
+    },
+    "face_sleep_left": {
+      "x": 209,
+      "y": 184,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "face",
+      "facing": "left"
+    },
+    "face_sleep_right": {
+      "x": 228,
+      "y": 184,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "face",
+      "facing": "right"
+    },
+    "face_wince_down": {
+      "x": 0,
+      "y": 207,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "face",
+      "facing": "down"
+    },
+    "face_wince_left": {
+      "x": 19,
+      "y": 207,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "face",
+      "facing": "left"
+    },
+    "face_wince_right": {
+      "x": 38,
+      "y": 207,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "face",
+      "facing": "right"
+    },
+    "job_builder_sit_down": {
+      "x": 57,
+      "y": 207,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "builder",
+      "facing": "down"
+    },
+    "job_builder_sit_left": {
+      "x": 76,
+      "y": 207,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "builder",
+      "facing": "left"
+    },
+    "job_builder_sit_right": {
+      "x": 95,
+      "y": 207,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "builder",
+      "facing": "right"
+    },
+    "job_builder_sneak_left": {
+      "x": 114,
+      "y": 207,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "builder",
+      "facing": "left"
+    },
+    "job_builder_sneak_right": {
+      "x": 133,
+      "y": 207,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "builder",
+      "facing": "right"
+    },
+    "job_builder_stand_down": {
+      "x": 152,
+      "y": 207,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "builder",
+      "facing": "down"
+    },
+    "job_builder_stand_left": {
+      "x": 171,
+      "y": 207,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "builder",
+      "facing": "left"
+    },
+    "job_builder_stand_right": {
+      "x": 190,
+      "y": 207,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "builder",
+      "facing": "right"
+    },
+    "job_builder_stand_up": {
+      "x": 209,
+      "y": 207,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "builder",
+      "facing": "up"
+    },
+    "job_builder_walk_down_0": {
+      "x": 228,
+      "y": 207,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "builder",
+      "facing": "down"
+    },
+    "job_builder_walk_down_1": {
+      "x": 0,
+      "y": 230,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "builder",
+      "facing": "down"
+    },
+    "job_builder_walk_left_0": {
+      "x": 19,
+      "y": 230,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "builder",
+      "facing": "left"
+    },
+    "job_builder_walk_left_1": {
+      "x": 38,
+      "y": 230,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "builder",
+      "facing": "left"
+    },
+    "job_builder_walk_right_0": {
+      "x": 57,
+      "y": 230,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "builder",
+      "facing": "right"
+    },
+    "job_builder_walk_right_1": {
+      "x": 76,
+      "y": 230,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "builder",
+      "facing": "right"
+    },
+    "job_builder_walk_up_0": {
+      "x": 95,
+      "y": 230,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "builder",
+      "facing": "up"
+    },
+    "job_builder_walk_up_1": {
+      "x": 114,
+      "y": 230,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "builder",
+      "facing": "up"
+    },
+    "job_clinic_sit_down": {
+      "x": 133,
+      "y": 230,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "clinic",
+      "facing": "down"
+    },
+    "job_clinic_sit_left": {
+      "x": 152,
+      "y": 230,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "clinic",
+      "facing": "left"
+    },
+    "job_clinic_sit_right": {
+      "x": 171,
+      "y": 230,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "clinic",
+      "facing": "right"
+    },
+    "job_clinic_sneak_left": {
+      "x": 190,
+      "y": 230,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "clinic",
+      "facing": "left"
+    },
+    "job_clinic_sneak_right": {
+      "x": 209,
+      "y": 230,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "clinic",
+      "facing": "right"
+    },
+    "job_clinic_stand_down": {
+      "x": 228,
+      "y": 230,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "clinic",
+      "facing": "down"
+    },
+    "job_clinic_stand_left": {
+      "x": 0,
+      "y": 253,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "clinic",
+      "facing": "left"
+    },
+    "job_clinic_stand_right": {
+      "x": 19,
+      "y": 253,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "clinic",
+      "facing": "right"
+    },
+    "job_clinic_stand_up": {
+      "x": 38,
+      "y": 253,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "clinic",
+      "facing": "up"
+    },
+    "job_clinic_walk_down_0": {
+      "x": 57,
+      "y": 253,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "clinic",
+      "facing": "down"
+    },
+    "job_clinic_walk_down_1": {
+      "x": 76,
+      "y": 253,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "clinic",
+      "facing": "down"
+    },
+    "job_clinic_walk_left_0": {
+      "x": 95,
+      "y": 253,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "clinic",
+      "facing": "left"
+    },
+    "job_clinic_walk_left_1": {
+      "x": 114,
+      "y": 253,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "clinic",
+      "facing": "left"
+    },
+    "job_clinic_walk_right_0": {
+      "x": 133,
+      "y": 253,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "clinic",
+      "facing": "right"
+    },
+    "job_clinic_walk_right_1": {
+      "x": 152,
+      "y": 253,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "clinic",
+      "facing": "right"
+    },
+    "job_clinic_walk_up_0": {
+      "x": 171,
+      "y": 253,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "clinic",
+      "facing": "up"
+    },
+    "job_clinic_walk_up_1": {
+      "x": 190,
+      "y": 253,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "clinic",
+      "facing": "up"
+    },
+    "job_farmer_sit_down": {
+      "x": 209,
+      "y": 253,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "farmer",
+      "facing": "down"
+    },
+    "job_farmer_sit_left": {
+      "x": 228,
+      "y": 253,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "farmer",
+      "facing": "left"
+    },
+    "job_farmer_sit_right": {
+      "x": 0,
+      "y": 276,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "farmer",
+      "facing": "right"
+    },
+    "job_farmer_sneak_left": {
+      "x": 19,
+      "y": 276,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "farmer",
+      "facing": "left"
+    },
+    "job_farmer_sneak_right": {
+      "x": 38,
+      "y": 276,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "farmer",
+      "facing": "right"
+    },
+    "job_farmer_stand_down": {
+      "x": 57,
+      "y": 276,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "farmer",
+      "facing": "down"
+    },
+    "job_farmer_stand_left": {
+      "x": 76,
+      "y": 276,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "farmer",
+      "facing": "left"
+    },
+    "job_farmer_stand_right": {
+      "x": 95,
+      "y": 276,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "farmer",
+      "facing": "right"
+    },
+    "job_farmer_stand_up": {
+      "x": 114,
+      "y": 276,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "farmer",
+      "facing": "up"
+    },
+    "job_farmer_walk_down_0": {
+      "x": 133,
+      "y": 276,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "farmer",
+      "facing": "down"
+    },
+    "job_farmer_walk_down_1": {
+      "x": 152,
+      "y": 276,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "farmer",
+      "facing": "down"
+    },
+    "job_farmer_walk_left_0": {
+      "x": 171,
+      "y": 276,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "farmer",
+      "facing": "left"
+    },
+    "job_farmer_walk_left_1": {
+      "x": 190,
+      "y": 276,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "farmer",
+      "facing": "left"
+    },
+    "job_farmer_walk_right_0": {
+      "x": 209,
+      "y": 276,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "farmer",
+      "facing": "right"
+    },
+    "job_farmer_walk_right_1": {
+      "x": 228,
+      "y": 276,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "farmer",
+      "facing": "right"
+    },
+    "job_farmer_walk_up_0": {
+      "x": 0,
+      "y": 299,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "farmer",
+      "facing": "up"
+    },
+    "job_farmer_walk_up_1": {
+      "x": 19,
+      "y": 299,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "farmer",
+      "facing": "up"
+    },
+    "job_merchant_sit_down": {
+      "x": 38,
+      "y": 299,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "merchant",
+      "facing": "down"
+    },
+    "job_merchant_sit_left": {
+      "x": 57,
+      "y": 299,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "merchant",
+      "facing": "left"
+    },
+    "job_merchant_sit_right": {
+      "x": 76,
+      "y": 299,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "merchant",
+      "facing": "right"
+    },
+    "job_merchant_sneak_left": {
+      "x": 95,
+      "y": 299,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "merchant",
+      "facing": "left"
+    },
+    "job_merchant_sneak_right": {
+      "x": 114,
+      "y": 299,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "merchant",
+      "facing": "right"
+    },
+    "job_merchant_stand_down": {
+      "x": 133,
+      "y": 299,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "merchant",
+      "facing": "down"
+    },
+    "job_merchant_stand_left": {
+      "x": 152,
+      "y": 299,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "merchant",
+      "facing": "left"
+    },
+    "job_merchant_stand_right": {
+      "x": 171,
+      "y": 299,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "merchant",
+      "facing": "right"
+    },
+    "job_merchant_stand_up": {
+      "x": 190,
+      "y": 299,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "merchant",
+      "facing": "up"
+    },
+    "job_merchant_walk_down_0": {
+      "x": 209,
+      "y": 299,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "merchant",
+      "facing": "down"
+    },
+    "job_merchant_walk_down_1": {
+      "x": 228,
+      "y": 299,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "merchant",
+      "facing": "down"
+    },
+    "job_merchant_walk_left_0": {
+      "x": 0,
+      "y": 322,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "merchant",
+      "facing": "left"
+    },
+    "job_merchant_walk_left_1": {
+      "x": 19,
+      "y": 322,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "merchant",
+      "facing": "left"
+    },
+    "job_merchant_walk_right_0": {
+      "x": 38,
+      "y": 322,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "merchant",
+      "facing": "right"
+    },
+    "job_merchant_walk_right_1": {
+      "x": 57,
+      "y": 322,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "merchant",
+      "facing": "right"
+    },
+    "job_merchant_walk_up_0": {
+      "x": 76,
+      "y": 322,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "merchant",
+      "facing": "up"
+    },
+    "job_merchant_walk_up_1": {
+      "x": 95,
+      "y": 322,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "merchant",
+      "facing": "up"
+    },
+    "job_police_sit_down": {
+      "x": 114,
+      "y": 322,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "police",
+      "facing": "down"
+    },
+    "job_police_sit_left": {
+      "x": 133,
+      "y": 322,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "police",
+      "facing": "left"
+    },
+    "job_police_sit_right": {
+      "x": 152,
+      "y": 322,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "police",
+      "facing": "right"
+    },
+    "job_police_sneak_left": {
+      "x": 171,
+      "y": 322,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "police",
+      "facing": "left"
+    },
+    "job_police_sneak_right": {
+      "x": 190,
+      "y": 322,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "police",
+      "facing": "right"
+    },
+    "job_police_stand_down": {
+      "x": 209,
+      "y": 322,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "police",
+      "facing": "down"
+    },
+    "job_police_stand_left": {
+      "x": 228,
+      "y": 322,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "police",
+      "facing": "left"
+    },
+    "job_police_stand_right": {
+      "x": 0,
+      "y": 345,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "police",
+      "facing": "right"
+    },
+    "job_police_stand_up": {
+      "x": 19,
+      "y": 345,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "police",
+      "facing": "up"
+    },
+    "job_police_walk_down_0": {
+      "x": 38,
+      "y": 345,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "police",
+      "facing": "down"
+    },
+    "job_police_walk_down_1": {
+      "x": 57,
+      "y": 345,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "police",
+      "facing": "down"
+    },
+    "job_police_walk_left_0": {
+      "x": 76,
+      "y": 345,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "police",
+      "facing": "left"
+    },
+    "job_police_walk_left_1": {
+      "x": 95,
+      "y": 345,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "police",
+      "facing": "left"
+    },
+    "job_police_walk_right_0": {
+      "x": 114,
+      "y": 345,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "police",
+      "facing": "right"
+    },
+    "job_police_walk_right_1": {
+      "x": 133,
+      "y": 345,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "police",
+      "facing": "right"
+    },
+    "job_police_walk_up_0": {
+      "x": 152,
+      "y": 345,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "police",
+      "facing": "up"
+    },
+    "job_police_walk_up_1": {
+      "x": 171,
+      "y": 345,
+      "w": 18,
+      "h": 22,
+      "anchor": [
+        9,
+        20
+      ],
+      "layer": "job",
+      "job": "police",
+      "facing": "up"
+    },
+    "preview_builder": {
+      "x": 0,
+      "y": 368,
+      "w": 113,
+      "h": 22,
+      "anchor": [
+        56,
+        21
+      ],
+      "review_only": true
+    },
+    "preview_clinic": {
+      "x": 114,
+      "y": 368,
+      "w": 113,
+      "h": 22,
+      "anchor": [
+        56,
+        21
+      ],
+      "review_only": true
+    },
+    "preview_faces_down": {
+      "x": 0,
+      "y": 391,
+      "w": 113,
+      "h": 22,
+      "anchor": [
+        56,
+        21
+      ],
+      "review_only": true
+    },
+    "preview_faces_left": {
+      "x": 114,
+      "y": 391,
+      "w": 113,
+      "h": 22,
+      "anchor": [
+        56,
+        21
+      ],
+      "review_only": true
+    },
+    "preview_farmer": {
+      "x": 0,
+      "y": 414,
+      "w": 113,
+      "h": 22,
+      "anchor": [
+        56,
+        21
+      ],
+      "review_only": true
+    },
+    "preview_hues": {
+      "x": 114,
+      "y": 414,
+      "w": 113,
+      "h": 22,
+      "anchor": [
+        56,
+        21
+      ],
+      "review_only": true
+    },
+    "preview_hues_jobs": {
+      "x": 0,
+      "y": 437,
+      "w": 94,
+      "h": 22,
+      "anchor": [
+        47,
+        21
+      ],
+      "review_only": true
+    },
+    "preview_merchant": {
+      "x": 95,
+      "y": 437,
+      "w": 113,
+      "h": 22,
+      "anchor": [
+        56,
+        21
+      ],
+      "review_only": true
+    },
+    "preview_plain": {
+      "x": 0,
+      "y": 460,
+      "w": 113,
+      "h": 22,
+      "anchor": [
+        56,
+        21
+      ],
+      "review_only": true
+    },
+    "preview_police": {
+      "x": 114,
+      "y": 460,
+      "w": 113,
+      "h": 22,
+      "anchor": [
+        56,
+        21
+      ],
+      "review_only": true
+    }
+  }
+}

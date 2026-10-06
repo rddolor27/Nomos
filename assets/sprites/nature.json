@@ -1,0 +1,569 @@
+{
+  "image": "nature.png",
+  "size": [
+    256,
+    107
+  ],
+  "tile": 16,
+  "frames": {
+    "crop_grain_growing": {
+      "x": 203,
+      "y": 41,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "crop_grain_ripe": {
+      "x": 220,
+      "y": 41,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "crop_grain_seedling": {
+      "x": 237,
+      "y": 41,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "crop_grain_stubble": {
+      "x": 0,
+      "y": 63,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "crop_pasture": {
+      "x": 17,
+      "y": 63,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "crop_veg_growing": {
+      "x": 34,
+      "y": 63,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "crop_veg_ripe": {
+      "x": 51,
+      "y": 63,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "crop_veg_seedling": {
+      "x": 68,
+      "y": 63,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "prop_barrel": {
+      "x": 102,
+      "y": 80,
+      "w": 12,
+      "h": 14,
+      "anchor": [
+        6,
+        13
+      ]
+    },
+    "prop_bench": {
+      "x": 223,
+      "y": 80,
+      "w": 16,
+      "h": 11,
+      "anchor": [
+        8,
+        10
+      ]
+    },
+    "prop_bush": {
+      "x": 155,
+      "y": 80,
+      "w": 16,
+      "h": 13,
+      "anchor": [
+        8,
+        12
+      ]
+    },
+    "prop_cart_empty_left": {
+      "x": 109,
+      "y": 0,
+      "w": 32,
+      "h": 21,
+      "anchor": [
+        20,
+        20
+      ],
+      "hitch": [
+        1,
+        12
+      ]
+    },
+    "prop_cart_empty_right": {
+      "x": 142,
+      "y": 0,
+      "w": 32,
+      "h": 21,
+      "anchor": [
+        11,
+        20
+      ],
+      "hitch": [
+        30,
+        12
+      ]
+    },
+    "prop_cart_grain_left": {
+      "x": 175,
+      "y": 0,
+      "w": 32,
+      "h": 21,
+      "anchor": [
+        20,
+        20
+      ],
+      "hitch": [
+        1,
+        12
+      ]
+    },
+    "prop_cart_grain_right": {
+      "x": 208,
+      "y": 0,
+      "w": 32,
+      "h": 21,
+      "anchor": [
+        11,
+        20
+      ],
+      "hitch": [
+        30,
+        12
+      ]
+    },
+    "prop_cart_logs_left": {
+      "x": 0,
+      "y": 41,
+      "w": 32,
+      "h": 21,
+      "anchor": [
+        20,
+        20
+      ],
+      "hitch": [
+        1,
+        12
+      ]
+    },
+    "prop_cart_logs_right": {
+      "x": 33,
+      "y": 41,
+      "w": 32,
+      "h": 21,
+      "anchor": [
+        11,
+        20
+      ],
+      "hitch": [
+        30,
+        12
+      ]
+    },
+    "prop_cart_stone_left": {
+      "x": 66,
+      "y": 41,
+      "w": 32,
+      "h": 21,
+      "anchor": [
+        20,
+        20
+      ],
+      "hitch": [
+        1,
+        12
+      ]
+    },
+    "prop_cart_stone_right": {
+      "x": 99,
+      "y": 41,
+      "w": 32,
+      "h": 21,
+      "anchor": [
+        11,
+        20
+      ],
+      "hitch": [
+        30,
+        12
+      ]
+    },
+    "prop_crate": {
+      "x": 115,
+      "y": 80,
+      "w": 14,
+      "h": 14,
+      "anchor": [
+        7,
+        13
+      ]
+    },
+    "prop_fence_corner_bottom-left": {
+      "x": 85,
+      "y": 63,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "joins": "ur"
+    },
+    "prop_fence_corner_bottom-right": {
+      "x": 102,
+      "y": 63,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "joins": "ul"
+    },
+    "prop_fence_corner_top-left": {
+      "x": 119,
+      "y": 63,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "joins": "r"
+    },
+    "prop_fence_corner_top-right": {
+      "x": 136,
+      "y": 63,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "joins": "l"
+    },
+    "prop_fence_horizontal": {
+      "x": 153,
+      "y": 63,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "joins": "lr"
+    },
+    "prop_fence_post": {
+      "x": 170,
+      "y": 63,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "joins": ""
+    },
+    "prop_fence_vertical": {
+      "x": 187,
+      "y": 63,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "joins": "u"
+    },
+    "prop_flower-patch": {
+      "x": 0,
+      "y": 97,
+      "w": 16,
+      "h": 10,
+      "anchor": [
+        8,
+        9
+      ]
+    },
+    "prop_hay-bale": {
+      "x": 206,
+      "y": 80,
+      "w": 16,
+      "h": 12,
+      "anchor": [
+        8,
+        11
+      ]
+    },
+    "prop_lamp-post": {
+      "x": 99,
+      "y": 0,
+      "w": 9,
+      "h": 23,
+      "anchor": [
+        4,
+        22
+      ]
+    },
+    "prop_signpost": {
+      "x": 130,
+      "y": 80,
+      "w": 14,
+      "h": 14,
+      "anchor": [
+        7,
+        13
+      ]
+    },
+    "prop_well": {
+      "x": 186,
+      "y": 41,
+      "w": 16,
+      "h": 19,
+      "anchor": [
+        8,
+        18
+      ]
+    },
+    "rock_boulder": {
+      "x": 172,
+      "y": 80,
+      "w": 16,
+      "h": 13,
+      "anchor": [
+        8,
+        12
+      ]
+    },
+    "rock_coal": {
+      "x": 17,
+      "y": 97,
+      "w": 16,
+      "h": 10,
+      "anchor": [
+        8,
+        9
+      ]
+    },
+    "rock_ore": {
+      "x": 189,
+      "y": 80,
+      "w": 16,
+      "h": 13,
+      "anchor": [
+        8,
+        12
+      ]
+    },
+    "rock_outcrop": {
+      "x": 132,
+      "y": 41,
+      "w": 32,
+      "h": 21,
+      "anchor": [
+        16,
+        20
+      ]
+    },
+    "terrain_dirt-path": {
+      "x": 204,
+      "y": 63,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "terrain_grass_0": {
+      "x": 221,
+      "y": 63,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "terrain_grass_1": {
+      "x": 238,
+      "y": 63,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "terrain_grass_2": {
+      "x": 0,
+      "y": 80,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "terrain_paving": {
+      "x": 17,
+      "y": 80,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "terrain_sand": {
+      "x": 34,
+      "y": 80,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "terrain_soil-tilled": {
+      "x": 51,
+      "y": 80,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "terrain_water_0": {
+      "x": 68,
+      "y": 80,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "terrain_water_1": {
+      "x": 85,
+      "y": 80,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "tree_conifer": {
+      "x": 0,
+      "y": 0,
+      "w": 32,
+      "h": 40,
+      "anchor": [
+        16,
+        39
+      ]
+    },
+    "tree_deciduous_mature": {
+      "x": 33,
+      "y": 0,
+      "w": 32,
+      "h": 32,
+      "anchor": [
+        16,
+        31
+      ]
+    },
+    "tree_deciduous_sapling": {
+      "x": 145,
+      "y": 80,
+      "w": 9,
+      "h": 14,
+      "anchor": [
+        4,
+        13
+      ]
+    },
+    "tree_deciduous_stump": {
+      "x": 240,
+      "y": 80,
+      "w": 14,
+      "h": 11,
+      "anchor": [
+        7,
+        10
+      ]
+    },
+    "tree_deciduous_young": {
+      "x": 165,
+      "y": 41,
+      "w": 20,
+      "h": 21,
+      "anchor": [
+        10,
+        20
+      ]
+    },
+    "tree_fruit": {
+      "x": 66,
+      "y": 0,
+      "w": 32,
+      "h": 28,
+      "anchor": [
+        16,
+        27
+      ]
+    },
+    "tree_log": {
+      "x": 34,
+      "y": 97,
+      "w": 28,
+      "h": 10,
+      "anchor": [
+        14,
+        9
+      ]
+    }
+  }
+}
