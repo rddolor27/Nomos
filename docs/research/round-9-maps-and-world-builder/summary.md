@@ -68,7 +68,7 @@ The resulting tasks are in Implementation plan, tagged (R9).
 
 ## World builder: every level, by the owner's choice
 
-The research recommended a small builder: settings for players and a tool for the owner. The owner chose a full player editor. Every level on a pre-launch milestone ships by launch. The country-level tools ship with M8, which the plan places after launch.
+The research recommended a small builder: settings for players and a tool for the owner. The owner chose a full player editor, all before launch, and moved launch after M8 so the country-level tools make it too.
 
 | Level | Milestone | Effort |
 | --- | --- | --- |
@@ -107,7 +107,7 @@ The reference generator was fixed before its outputs become test goldens:
 
 ## Decisions the owner settled
 
-On 6 October 2026 the owner accepted every recommended default but one, and chose the full player editor.
+On 6 October 2026 the owner accepted every recommended default but one, chose the full player editor, and moved launch after M8.
 
 | Decision | Adopted |
 | --- | --- |
@@ -115,7 +115,8 @@ On 6 October 2026 the owner accepted every recommended default but one, and chos
 | Where towns come from | Generated from the place record |
 | The first town | Generated, then hand-edited; LDtk only as a fallback |
 | Building interiors | Abstract building cards |
-| Who the builder is for | Players, at every level; the country tools ship with M8 |
+| Who the builder is for | Players, at every level, all before launch |
+| Launch | After M8; M9 stays after launch. Adds M7 (19–28 days), M8 (13–20) and the builder levels (46–73): about 178–271 days in all, against 100–150 before |
 | Culture in the builder | A culture count and a single-culture switch; no painting |
 | When edits apply | Before day 0 only |
 | Share links | `#w1.` in the URL fragment with a CRC32; a file above 8,000 characters |
