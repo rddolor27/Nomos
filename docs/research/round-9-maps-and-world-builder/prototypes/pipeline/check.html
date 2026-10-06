@@ -1,0 +1,17 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>worldgen port check</title>
+<pre id="out">running</pre>
+<script type="module">
+  import { compare } from './compare.mjs';
+
+  const vectors = await (await fetch('/vectors.json')).json();
+  const started = performance.now();
+  const result = compare(vectors);
+  result.engine = navigator.userAgent;
+  result.python = vectors.python;
+  result.ms = Math.round(performance.now() - started);
+  await fetch('/result', { method: 'POST', body: JSON.stringify(result, null, 2) });
+  document.getElementById('out').textContent = JSON.stringify(result, null, 2);
+  document.body.insertAdjacentHTML('beforeend', '<div id="done">done</div>');
+</script>

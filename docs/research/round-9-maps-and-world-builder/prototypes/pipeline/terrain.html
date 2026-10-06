@@ -1,0 +1,23 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>worldgen terrain check</title>
+<pre id="out">running</pre>
+<script type="module">
+  import { checkShapes } from './terrain.mjs';
+
+  const golden = await (await fetch('/vectors.json')).json();
+  const { rows, matches } = checkShapes(golden);
+  const warm = [];
+  for (let pass = 0; pass < 3; pass++) warm.push(...checkShapes(golden).rows.map((r) => r.ms));
+  warm.sort((a, b) => a - b);
+  const result = {
+    engine: navigator.userAgent,
+    matches,
+    of: golden.length,
+    mismatches: rows.filter((r) => r.got !== r.expected).map((r) => r.seed.toString(16)),
+    warmMs: { median: warm[warm.length >> 1], min: warm[0], max: warm[warm.length - 1], samples: warm.length },
+  };
+  await fetch('/result', { method: 'POST', body: JSON.stringify(result, null, 2) });
+  document.getElementById('out').textContent = JSON.stringify(result, null, 2);
+  document.body.insertAdjacentHTML('beforeend', '<div id="done">done</div>');
+</script>
