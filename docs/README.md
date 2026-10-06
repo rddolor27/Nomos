@@ -20,13 +20,14 @@ This folder holds the research and planning behind Nomos; product code lives out
 | [6 · Goods and wellbeing](research/round-6-goods-and-wellbeing/) | Resources and production chains, food quality and spoilage, happiness, wealth, their cost, and Norland as prior art | `summary.md`, `report.md`, `questions.md`, `notes/`, `prototypes/` |
 | [7 · Million agents](research/round-7-million-agents/) | Paused: compute, memory and rendering for up to 1 million agents; prototypes and results only, no notes yet | `questions.md`, `prototypes/` |
 | [8 · Cultures](research/round-8-cultures/) | Fictional, learned cultures: how customs pass on and mix, customs as preferences, prior art and ethics, and the guardrails that keep culture out of crime and wealth | `summary.md`, `report.md`, `questions.md`, `notes/`, `prototypes/` |
+| [9 · Maps and world builder](research/round-9-maps-and-world-builder/) | How each map layer is made, the world builder's scope, edits on a seeded world, and the browser editor | `summary.md`, `report.md`, `questions.md`, `notes/`, `prototypes/` |
 
 What each file type holds:
 
 - **`summary.md`**: the round's tab from the shared doc, which is the short, edited version.
 - **`report.md`**: the full fact-checked report behind that tab.
 - **`notes/`**: the raw research notes. Each claim is labelled by how it was checked: "opened" means the source was read in full; "search summary" or "snippet only" means it was seen only in search results; "measured here" or "computed" means the research team produced it.
-- **`prototypes/`**: benchmark and analysis code from the research. It is not product code. Some scripts read datasets or cloned repositories that are not included; the notes name the sources. Timings come from a 4-vCPU cloud VM (rounds 2–5) or a Windows desktop (rounds 6–8), mostly under Node, and are not phone measurements.
+- **`prototypes/`**: benchmark and analysis code from the research. It is not product code. Some scripts read datasets or cloned repositories that are not included; the notes name the sources. Timings come from a 4-vCPU cloud VM (rounds 2–5) or a Windows desktop (rounds 6–9), mostly under Node, and are not phone measurements.
 
 ## Mockups
 
