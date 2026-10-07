@@ -28,9 +28,9 @@ The plan's own effort lines sum to about 210–322 days before launch, but many 
 | Sub-milestone | Delivers | Estimate | How |
 | --- | --- | --- | --- |
 | [M0.1 Workspace and kernels](m0-pipeline/m0.1-workspace-and-kernels/task.md) | The workspace, CI, the keyed draw, integer noise and the calendar | 2–3 days | [step plan](m0-pipeline/m0.1-workspace-and-kernels/plan.md) |
-| [M0.2 State and money](m0-pipeline/m0.2-state-and-money/task.md) | One preallocated memory for agents, and money that always balances | 3–5 days | — |
+| [M0.2 State and money](m0-pipeline/m0.2-state-and-money/task.md) | One preallocated memory for agents, and money that always balances | 3–5 days | [step plan](m0-pipeline/m0.2-state-and-money/plan.md) |
 | [M0.3 Loop and protocol](m0-pipeline/m0.3-loop-and-protocol/task.md) | The sim worker at 10 ticks a second, the day boundary and snapshots | 3–4 days | — |
-| [M0.4 Renderer and Skin A](m0-pipeline/m0.4-renderer-and-skin-a/task.md) | One WebGL2 renderer drawing 10,000 agents as dots over a map | 4–6 days | — |
+| [M0.4 Renderer and Skin A](m0-pipeline/m0.4-renderer-and-skin-a/task.md) | One WebGL2 renderer drawing 10,000 agents as dots over a map | 4–6 days | [step plan](m0-pipeline/m0.4-renderer-and-skin-a/plan.md) |
 | [M0.5 Web app](m0-pipeline/m0.5-web-app/task.md) | The page a visitor opens: first frame, HUD, charts, tiers, accessibility | 3–4 days | — |
 | [M0.6 Gates and guards](m0-pipeline/m0.6-gates-and-guards/task.md) | CI gates that enforce every rule the plan relies on | 3–5 days | — |
 
