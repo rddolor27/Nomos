@@ -8,6 +8,7 @@ Random worlds for Nomos, drawn with the sprites in `tools/sprites`. It is the Py
   - `country.png`: the Country view, 8-px tiles;
   - `region.png`: the Region view around the capital, 16-px tiles;
   - the capital, the largest town and village, and every natural wonder's view;
+  - `<capital>_seasons.png`: the capital in spring, summer, autumn and winter;
   - `looks.png`: the world's first 48 people.
 - Country maps only: `python tools/worldgen/world.py`. Hand-made test places: `python tools/worldgen/place.py --demo`.
 
@@ -66,6 +67,7 @@ Random worlds for Nomos, drawn with the sprites in `tools/sprites`. It is the Py
 - Fields lean toward the sides that face farmland on the country map.
 - Shore tidying judges every cell before flooding any, so the result never depends on the order cells are visited in. An editor that tidies only a stroke's cells gets the same map as a whole rebuild.
 - `placedraw.render` draws the tiles, then the ground sprites, then everything standing sorted by anchor y.
+- A `placedraw.Season` redraws a place at another time of year from `assets/sprites/season_map.json`: palette and sprite swaps, and in winter snow on the ground, trees and roofs. Snow falls only where the place's temperature allows it.
 
 ## Looks (`looks.py`)
 
