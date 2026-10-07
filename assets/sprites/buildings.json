@@ -2,19 +2,35 @@
   "image": "buildings.png",
   "size": [
     256,
-    321
+    584
   ],
   "tile": 16,
   "frames": {
     "civic_clinic": {
-      "x": 0,
-      "y": 128,
+      "x": 130,
+      "y": 190,
       "w": 64,
       "h": 48,
       "anchor": [
         32,
         47
       ],
+      "snow": "civic_clinic_snow",
+      "footprint": [
+        4,
+        2
+      ]
+    },
+    "civic_clinic_snow": {
+      "x": 0,
+      "y": 248,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "layer": "snow",
       "footprint": [
         4,
         2
@@ -22,41 +38,89 @@
     },
     "civic_courthouse": {
       "x": 65,
-      "y": 128,
+      "y": 248,
       "w": 80,
       "h": 48,
       "anchor": [
         40,
         47
       ],
+      "snow": "civic_courthouse_snow",
+      "footprint": [
+        5,
+        2
+      ]
+    },
+    "civic_courthouse_snow": {
+      "x": 146,
+      "y": 248,
+      "w": 80,
+      "h": 48,
+      "anchor": [
+        40,
+        47
+      ],
+      "layer": "snow",
       "footprint": [
         5,
         2
       ]
     },
     "civic_jail": {
-      "x": 146,
-      "y": 128,
+      "x": 0,
+      "y": 297,
       "w": 64,
       "h": 48,
       "anchor": [
         32,
         47
       ],
+      "snow": "civic_jail_snow",
+      "footprint": [
+        4,
+        2
+      ]
+    },
+    "civic_jail_snow": {
+      "x": 65,
+      "y": 297,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "layer": "snow",
       "footprint": [
         4,
         2
       ]
     },
     "civic_police-station": {
-      "x": 0,
-      "y": 177,
+      "x": 130,
+      "y": 297,
       "w": 64,
       "h": 48,
       "anchor": [
         32,
         47
       ],
+      "snow": "civic_police-station_snow",
+      "footprint": [
+        4,
+        2
+      ]
+    },
+    "civic_police-station_snow": {
+      "x": 0,
+      "y": 346,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "layer": "snow",
       "footprint": [
         4,
         2
@@ -64,20 +128,36 @@
     },
     "civic_records-office": {
       "x": 65,
-      "y": 177,
+      "y": 346,
       "w": 64,
       "h": 48,
       "anchor": [
         32,
         47
       ],
+      "snow": "civic_records-office_snow",
+      "footprint": [
+        4,
+        2
+      ]
+    },
+    "civic_records-office_snow": {
+      "x": 130,
+      "y": 346,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "layer": "snow",
       "footprint": [
         4,
         2
       ]
     },
     "civic_school": {
-      "x": 65,
+      "x": 130,
       "y": 0,
       "w": 64,
       "h": 61,
@@ -85,42 +165,90 @@
         32,
         60
       ],
+      "snow": "civic_school_snow",
+      "footprint": [
+        4,
+        2
+      ]
+    },
+    "civic_school_snow": {
+      "x": 0,
+      "y": 67,
+      "w": 64,
+      "h": 61,
+      "anchor": [
+        32,
+        60
+      ],
+      "layer": "snow",
       "footprint": [
         4,
         2
       ]
     },
     "civic_town-hall": {
-      "x": 130,
-      "y": 0,
+      "x": 65,
+      "y": 67,
       "w": 80,
       "h": 60,
       "anchor": [
         40,
         59
       ],
+      "snow": "civic_town-hall_snow",
+      "footprint": [
+        5,
+        2
+      ]
+    },
+    "civic_town-hall_snow": {
+      "x": 146,
+      "y": 67,
+      "w": 80,
+      "h": 60,
+      "anchor": [
+        40,
+        59
+      ],
+      "layer": "snow",
       "footprint": [
         5,
         2
       ]
     },
     "shop_general": {
-      "x": 130,
-      "y": 177,
+      "x": 0,
+      "y": 395,
       "w": 64,
       "h": 48,
       "anchor": [
         32,
         47
       ],
+      "snow": "shop_general_snow",
+      "footprint": [
+        4,
+        2
+      ]
+    },
+    "shop_general_snow": {
+      "x": 65,
+      "y": 395,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "layer": "snow",
       "footprint": [
         4,
         2
       ]
     },
     "shop_market-stall": {
-      "x": 195,
-      "y": 177,
+      "x": 130,
+      "y": 395,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -133,8 +261,8 @@
       ]
     },
     "shop_market-stall_closed": {
-      "x": 0,
-      "y": 226,
+      "x": 179,
+      "y": 395,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -147,14 +275,30 @@
       ]
     },
     "shop_warehouse": {
-      "x": 49,
-      "y": 226,
+      "x": 0,
+      "y": 444,
       "w": 64,
       "h": 48,
       "anchor": [
         32,
         47
       ],
+      "snow": "shop_warehouse_snow",
+      "footprint": [
+        4,
+        2
+      ]
+    },
+    "shop_warehouse_snow": {
+      "x": 65,
+      "y": 444,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "layer": "snow",
       "footprint": [
         4,
         2
@@ -169,6 +313,22 @@
         32,
         39
       ],
+      "snow": "work_dock_snow",
+      "footprint": [
+        4,
+        2
+      ]
+    },
+    "work_dock_snow": {
+      "x": 65,
+      "y": 0,
+      "w": 64,
+      "h": 66,
+      "anchor": [
+        32,
+        39
+      ],
+      "layer": "snow",
       "footprint": [
         4,
         2
@@ -176,21 +336,37 @@
     },
     "work_farm": {
       "x": 0,
-      "y": 67,
+      "y": 129,
       "w": 80,
       "h": 60,
       "anchor": [
         40,
         59
       ],
+      "snow": "work_farm_snow",
+      "footprint": [
+        5,
+        2
+      ]
+    },
+    "work_farm_snow": {
+      "x": 81,
+      "y": 129,
+      "w": 80,
+      "h": 60,
+      "anchor": [
+        40,
+        59
+      ],
+      "layer": "snow",
       "footprint": [
         5,
         2
       ]
     },
     "work_fuel-works": {
-      "x": 114,
-      "y": 226,
+      "x": 130,
+      "y": 444,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -204,21 +380,37 @@
     },
     "work_lumber-camp": {
       "x": 0,
-      "y": 275,
+      "y": 493,
       "w": 80,
       "h": 46,
       "anchor": [
         40,
         45
       ],
+      "snow": "work_lumber-camp_snow",
+      "footprint": [
+        5,
+        2
+      ]
+    },
+    "work_lumber-camp_snow": {
+      "x": 81,
+      "y": 493,
+      "w": 80,
+      "h": 46,
+      "anchor": [
+        40,
+        45
+      ],
+      "layer": "snow",
       "footprint": [
         5,
         2
       ]
     },
     "work_mine": {
-      "x": 146,
-      "y": 67,
+      "x": 65,
+      "y": 190,
       "w": 64,
       "h": 50,
       "anchor": [
@@ -231,22 +423,38 @@
       ]
     },
     "work_pasture": {
-      "x": 146,
-      "y": 275,
+      "x": 0,
+      "y": 540,
       "w": 64,
       "h": 44,
       "anchor": [
         32,
         43
       ],
+      "snow": "work_pasture_snow",
+      "footprint": [
+        4,
+        2
+      ]
+    },
+    "work_pasture_snow": {
+      "x": 65,
+      "y": 540,
+      "w": 64,
+      "h": 44,
+      "anchor": [
+        32,
+        43
+      ],
+      "layer": "snow",
       "footprint": [
         4,
         2
       ]
     },
     "work_quarry": {
-      "x": 81,
-      "y": 275,
+      "x": 162,
+      "y": 493,
       "w": 64,
       "h": 46,
       "anchor": [
@@ -259,14 +467,30 @@
       ]
     },
     "work_workshop": {
-      "x": 81,
-      "y": 67,
+      "x": 162,
+      "y": 129,
       "w": 64,
       "h": 57,
       "anchor": [
         32,
         56
       ],
+      "snow": "work_workshop_snow",
+      "footprint": [
+        4,
+        2
+      ]
+    },
+    "work_workshop_snow": {
+      "x": 0,
+      "y": 190,
+      "w": 64,
+      "h": 57,
+      "anchor": [
+        32,
+        56
+      ],
+      "layer": "snow",
       "footprint": [
         4,
         2

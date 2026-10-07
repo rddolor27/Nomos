@@ -7,15 +7,20 @@ no grand or shabby variants, and police and jail imagery stays plain.
 
 A standard building matches the houses: a 24-row roof, an eave line, a 21-row front wall and
 a 2-px roof overhang, so a 4-tile building is 64x48 and eaves line up along a street.
+
+Every building also gets a snow overlay: it is drawn a second time under snowfall(), where the
+roof helpers lay snow on every roof, and the pixels that change become `<name>_snow`.
 """
-from spritekit import TILE, Sheet, add_outline, cmap, from_ascii
+from contextlib import contextmanager
+
+from spritekit import TILE, Sheet, add_outline, cmap, from_ascii, overlay
 
 SYM = cmap(
     O='OUTLINE', W='WHITE', C='CREAM', c='CREAM_D', S='SAND', s='SAND_D',
     L='WOOD_L', w='WOOD', d='WOOD_D', g='GRASS_L', G='GRASS', l='LEAF_D',
     T='TEAL', t='TEAL_D', A='WATER_L', a='WATER', N='NAVY', n='NAVY_D',
     K='STONE_L', k='STONE', x='STONE_D', R='ROOF', r='ROOF_D', V='VERMILLION',
-    Y='GOLD', y='BODY_S', P='PINK', p='PINK_D', U='PLUM',
+    Y='GOLD', y='BODY_S', P='PINK', p='PINK_D', U='PLUM', I='ICE_L', i='ICE',
 )
 
 ROOF = 24        # roof rows of a standard two-tile-deep building (the eave line follows)
@@ -135,7 +140,38 @@ RAMPS = {
     'stone': dict(H='K', B='k', D='x'),
     'wood': dict(H='L', B='w', D='d'),
     'red': dict(H='p', B='V', D='r'),
+    'snow': dict(H='W', B='W', D='I'),
 }
+SNOW_DECK = {'K': 'W', 'k': 'W', 'x': 'I'}     # stone decks and spires under snow
+
+_snowing = False
+
+
+@contextmanager
+def snowfall():
+    """While active, every roof helper draws its roof under snow."""
+    global _snowing
+    _snowing = True
+    try:
+        yield
+    finally:
+        _snowing = False
+
+
+def snowing():
+    return _snowing
+
+
+def add_with_snow(sheet, name, im, redraw, anchor=None, **meta):
+    """Add a sprite and, when snow changes it, its `<name>_snow` overlay from redraw() under snowfall()."""
+    with snowfall():
+        snow = overlay(im, redraw())
+    if snow is None:
+        sheet.add(name, im, anchor=anchor, **meta)
+        return
+    sheet.add(name, im, anchor=anchor, snow=f'{name}_snow', **meta)
+    shape = {'footprint': meta['footprint']} if 'footprint' in meta else {}
+    sheet.add(f'{name}_snow', snow, anchor=anchor, layer='snow', **shape)
 
 BEAM_IN = 8                       # ridge beam inset from the roof ends
 SHOULDER = [5, 3, 2, 1, 1, 0]     # rounded roof shoulders: inset per row under the beam
@@ -183,7 +219,11 @@ def roof_mark(tex, rel, x, H, B, D):
 
 def roof_hip(c, x0, x1, y0, y1, ramp, tex):
     """Rounded hipped roof: a ridge beam on top, curved shoulders lit on the left and shaded on
-    the right, a quiet textured face and a two-tone eave lip on the last three rows."""
+    the right, a quiet textured face and a two-tone eave lip on the last three rows. Under snow
+    the face is plain and only the lowest eave row keeps the roof's colour."""
+    edge = RAMPS[ramp]['D']
+    if _snowing:
+        ramp, tex = 'snow', None
     rp = RAMPS[ramp]
     H, B, D = rp['H'], rp['B'], rp['D']
     b0, b1 = x0 + BEAM_IN, x1 - BEAM_IN
@@ -212,7 +252,7 @@ def roof_hip(c, x0, x1, y0, y1, ramp, tex):
                 c.put(rx - 2 if k < 3 else rx - 3, y, D)
     c.hline(x0, x1, y1 - 2, H)
     c.hline(x0, x1, y1 - 1, B)
-    c.hline(x0, x1, y1, D)
+    c.hline(x0, x1, y1, edge)
     c.put(x1, y1 - 2, B)
     c.put(x0 + 1, y1 - 1, H)
     c.put(x1, y1 - 1, D)
@@ -223,7 +263,7 @@ def roof_gable(c, x0, x1, front, rise, depth, ramp, trim='C'):
 
     `front` is the trim row at the eave corners, `rise` the apex height above it (slope 1:2) and
     `depth` the band thickness. Returns (apex column, function giving the trim row at x)."""
-    rp = RAMPS[ramp]
+    rp = RAMPS['snow' if _snowing else ramp]
     H, B, D = rp['H'], rp['B'], rp['D']
     xm = (x0 + x1) // 2
     odd = (x1 - x0) % 2
@@ -269,6 +309,8 @@ def roof_flat(c, x0, x1, y0, y1):
     c.hline(x0, x1, y1 - 2, 'k')
     c.hline(x0, x1, y1 - 1, 'k')
     c.hline(x0, x1, y1, 'x')
+    if _snowing:
+        c.swap(x0, y0, x1, y1 - 3, SNOW_DECK)
 
 
 def wall(c, x0, x1, y0, y1, ramp, tex='plaster', plinth='stone'):
@@ -701,6 +743,8 @@ def town_hall():
         c.put(x0, y, 'K')
         c.put(x0 + 1, y, 'K')
         c.put(x1, y, 'x')
+    if _snowing:
+        c.swap(0, 1, W - 1, 8, SNOW_DECK)
     c.hline(tx0 - 1, tx1 + 1, 10, 'O')
     c.hline(tx0 - 1, tx1 + 1, 11, 'C')                        # cornice
     c.hline(tx0 - 1, tx1 + 1, 12, 's')
@@ -1308,7 +1352,7 @@ def build():
         s = fn()
         im = s.c.image()
         anchor = s.anchor or (im.width // 2, im.height - 1)
-        sheet.add(name, im, anchor=anchor, footprint=s.footprint)
+        add_with_snow(sheet, name, im, lambda: fn().c.image(), anchor=anchor, footprint=s.footprint)
     return sheet
 
 
