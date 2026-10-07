@@ -16,6 +16,8 @@ A society simulation that runs entirely in the browser. Blob-shaped people work,
 
 ## What it will be
 
+- **Watch, never control.** You set up a world and its policies, press play and watch: pause, speed up, skip ahead a season or a year, follow and inspect people. Trying a different policy starts a new branch.
+- **Seasons and years.** A year is four 28-day seasons. Crops are planted in spring and harvested in autumn, snow falls in winter, and people age a year at a time.
 - **A new world every game.** Each game generates a country from a seed: coasts, mountains, rivers, climate, towns, roads, natural wonders and landmarks. The same seed always rebuilds the same world, so worlds can be shared.
 - **Zoom from country to street.** Every settlement runs as an exact ledger. Zoom in and its people appear, spawned from the ledger; zoom out and they fold back into it.
 - **An exact economy.** Money is stored in whole cents and always balances. Goods move through production chains, food spoils, and wellbeing and wealth respond to both.
