@@ -17,6 +17,7 @@ Concept mockups for the browser society simulation, in a GBA/DS-era top-down pix
 | `random_world_capital.png` | Image 10: the same world's coastal capital zoomed in, with randomly styled houses and people with random looks (scaled 2×), made the same way |
 | `random_world_dune.png` | Image 11: the same world's dune wonder with an oasis and visitors (scaled 2×), made the same way |
 | `blob_looks.png` | Image 12: the same world's first 48 people, each with a random hue, eye shape and pattern, turned four ways so the patterns show (scaled 3×), made the same way |
+| `seasons_showcase.png` | Image 13: the same world's capital in spring, summer, autumn and mid-winter (left to right, top to bottom; 1×), drawn by `tools/worldgen/generate.py` with `assets/sprites/season_map.json`: palette and sprite swaps, and snow on the ground, trees and roofs; no third-party art |
 
 ## Captions
 
