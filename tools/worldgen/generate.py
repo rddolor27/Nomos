@@ -2,7 +2,8 @@
 
 Without --seed every run makes a new world; the seed it prints rebuilds that world exactly. Writes
 the Country and Region maps, the capital, the largest town and village, every natural wonder's
-view and a line-up of the world's first people to dist/worldgen/<seed>/.
+view, the capital in all four seasons and a line-up of the world's first people to
+dist/worldgen/<seed>/.
 """
 import argparse
 import sys
@@ -54,8 +55,11 @@ def main():
     out.mkdir(parents=True, exist_ok=True)
     mapdraw.country_png(world, out / 'country.png')
     mapdraw.region_png(world, out / 'region.png')
-    for ctx in chosen(place_contexts(world)):
+    picks = chosen(place_contexts(world))
+    for ctx in picks:
         placedraw.render(place.build(ctx), out / f'{ctx.name}.png')
+    capital = picks[0]
+    placedraw.seasons(place.build(capital), out / f'{capital.name}_seasons.png', capital.temperature)
     placedraw.render(lineup(seed), out / 'looks.png', scale=3)
     print(summary(world, seconds))
     print(f'wrote {out}')

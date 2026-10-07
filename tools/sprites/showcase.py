@@ -21,11 +21,17 @@ class Sheets:
     def __init__(self):
         self.cache = {}
 
-    def get(self, category, name):
+    def load(self, category):
         if category not in self.cache:
             manifest = json.loads((ASSETS / f'{category}.json').read_text(encoding='utf-8'))
             self.cache[category] = (Image.open(ASSETS / manifest['image']).convert('RGBA'), manifest['frames'])
-        sheet, frames = self.cache[category]
+        return self.cache[category]
+
+    def frame(self, category, name):
+        return self.load(category)[1][name]
+
+    def get(self, category, name):
+        sheet, frames = self.load(category)
         f = frames[name]
         return sheet.crop((f['x'], f['y'], f['x'] + f['w'], f['y'] + f['h'])), tuple(f['anchor'])
 
