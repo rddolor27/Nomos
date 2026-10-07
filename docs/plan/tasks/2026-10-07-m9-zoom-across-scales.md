@@ -1,6 +1,6 @@
 # M9 Zoom across scales: sub-milestones
 
-M9 holds 22 build tasks and 7 exit checks in the [implementation plan](../implementation-plan.md#m9-zoom-across-scales), so it runs as six sub-milestones. Each one ends with software that runs and passes its own checks. M9 comes after launch, because the owner moved launch to follow M8. None has a step-by-step plan yet; each gets one when the sub-milestone before it closes.
+M9 holds 22 build tasks and 7 exit checks in the [implementation plan](../implementation-plan.md#m9-zoom-across-scales), so it runs as six sub-milestones. Each one ends with software that runs and passes its own checks. M9 comes after launch, because round 9 moved launch to follow M8. None has a step-by-step plan yet; each gets one when the sub-milestone before it closes.
 
 Estimates are full-time days for one person coding by hand (unsourced estimates). The Actual column records the real time, so the pace measured in earlier milestones can rescale them. The plan's M9 effort line, 20–30 days after round 9 dropped the village-kit authoring, covers round 4 only. The owner's plans add 1 day for patrols and 0.5–1 for the sound crossfade. The 8 tasks from rounds 6, 8 and 9 carry no estimate of their own. The plan's own figures sum to 21.5–32 days, and this breakdown to 25–40.
 
@@ -72,7 +72,7 @@ Two points apply throughout:
   - the route strip view: a seeded strip map 20–40 tiles wide whose caravans, bandits and patrols are aligned to the route's ledger (R4);
   - route strips built from route cells with the place code, and wonder views with vista props (R9; the wonder art exists, so wire it in);
   - patrols shown walking the route strip view, aligned to the route ledger (Military; the soldier art exists).
-- **Needs:** M7.7's route ledgers and patrols; M8.4's route view on the map.
+- **Needs:** M7.7's route ledgers and patrols; M8.4's route view on the map; M8.3's 11 wonder loops, which play in full in these wonder views.
 - **Exit checks:** the plan sets none here. Proposed: on presets, a strip's caravans, bandits and patrols match its route ledger's daily counts.
 
 ## M9.6 Consequential focus
