@@ -85,13 +85,13 @@ The plan's own effort lines sum to about 210–322 days before launch, but many 
 
 | Sub-milestone | Delivers | Estimate | How |
 | --- | --- | --- | --- |
-| [M5.1 Policies, budget and branches](m5-society-and-policy/m5.1-policies-budget-and-branches/task.md) | The treasury and policy settings with predicted sizes, set before Run, where a change forks a branch | 6–9 days | — |
-| [M5.2 Ageing and social ties](m5-society-and-policy/m5.2-ageing-and-social-ties/task.md) | Real ages, friends, rumours and fear, and culture-blind housing moves and partners | 6–9 days | — |
-| [M5.3 Wealth and resources](m5-society-and-policy/m5.3-wealth-and-resources/task.md) | Wealth and resource policies, development and wealth presets, and harvest shocks | 8–12 days | — |
-| [M5.4 Wellbeing and fear on screen](m5-society-and-policy/m5.4-wellbeing-and-fear-on-screen/task.md) | Life satisfaction tied to policy, and opt-in lenses and meters that never mark a person | 4–7 days | — |
-| [M5.5 Culture lens and audits](m5-society-and-policy/m5.5-culture-lens-and-audits/task.md) | The opt-in culture and exposure lenses, and the appearance audits extended to wealth, culture and looks | 7–11 days | — |
-| [M5.6 Calibration sweeps](m5-society-and-policy/m5.6-calibration-sweeps/task.md) | Sensitivity analysis over every policy and city size, logged for the country emulator | 3–5 days | — |
-| [M5.7 Year in review](m5-society-and-policy/m5.7-year-in-review/task.md) | The year-end card and gazette edition, and the follow-the-news camera | 2–3 days | — |
+| [M5.1 Policies, budget and branches](m5-society-and-policy/m5.1-policies-budget-and-branches/task.md) | The treasury and policy settings with predicted sizes, set before Run, where a change forks a branch | 6–9 days | [brief](m5-society-and-policy/m5.1-policies-budget-and-branches/plan.md) |
+| [M5.2 Ageing and social ties](m5-society-and-policy/m5.2-ageing-and-social-ties/task.md) | Real ages, friends, rumours and fear, and culture-blind housing moves and partners | 6–9 days | [brief](m5-society-and-policy/m5.2-ageing-and-social-ties/plan.md) |
+| [M5.3 Wealth and resources](m5-society-and-policy/m5.3-wealth-and-resources/task.md) | Wealth and resource policies, development and wealth presets, and harvest shocks | 8–12 days | [brief](m5-society-and-policy/m5.3-wealth-and-resources/plan.md) |
+| [M5.4 Wellbeing and fear on screen](m5-society-and-policy/m5.4-wellbeing-and-fear-on-screen/task.md) | Life satisfaction tied to policy, and opt-in lenses and meters that never mark a person | 4–7 days | [brief](m5-society-and-policy/m5.4-wellbeing-and-fear-on-screen/plan.md) |
+| [M5.5 Culture lens and audits](m5-society-and-policy/m5.5-culture-lens-and-audits/task.md) | The opt-in culture and exposure lenses, and the appearance audits extended to wealth, culture and looks | 7–11 days | [brief](m5-society-and-policy/m5.5-culture-lens-and-audits/plan.md) |
+| [M5.6 Calibration sweeps](m5-society-and-policy/m5.6-calibration-sweeps/task.md) | Sensitivity analysis over every policy and city size, logged for the country emulator | 3–5 days | [brief](m5-society-and-policy/m5.6-calibration-sweeps/plan.md) |
+| [M5.7 Year in review](m5-society-and-policy/m5.7-year-in-review/task.md) | The year-end card and gazette edition, and the follow-the-news camera | 2–3 days | [brief](m5-society-and-policy/m5.7-year-in-review/plan.md) |
 
 ### [M6 Scale and sharing](m6-scale-and-sharing/milestone.md)
 

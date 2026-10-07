@@ -1,6 +1,6 @@
 # M5 Society and policy: sub-milestones
 
-M5 holds 34 build tasks and 9 exit checks in the [implementation plan](../../implementation-plan.md#m5-society-and-policy), so it runs as seven sub-milestones. Each one ends with software that runs and passes its own checks. None has a step-by-step plan yet; each gets one when the sub-milestone before it closes.
+M5 holds 34 build tasks and 9 exit checks in the [implementation plan](../../implementation-plan.md#m5-society-and-policy), so it runs as seven sub-milestones. Each one ends with software that runs and passes its own checks. Each has an implementation brief in its `plan.md`, which becomes a step-by-step plan when the sub-milestone before it closes.
 
 Estimates are full-time days for one person coding by hand (unsourced estimates). The Actual column records the real time, so the pace measured in M0–M4 can rescale them. The plan's M5 effort line, about 2 weeks plus 1–2 days for the visual layer, covers rounds 1 and 3 only. The owner's plans add 3–6 days for the calendar, 1–2 for the defence budget and 1 for the gazette. The 25 tasks from rounds 2, 4, 6, 8 and 9 carry no estimate of their own. The plan's own figures sum to 16–21 days, and this breakdown to 36–56.
 
