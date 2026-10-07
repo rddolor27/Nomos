@@ -1,0 +1,196 @@
+{
+  "image": "seasons.png",
+  "size": [
+    256,
+    57
+  ],
+  "tile": 16,
+  "frames": {
+    "season_autumn_16": {
+      "x": 120,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "season_autumn_8": {
+      "x": 34,
+      "y": 41,
+      "w": 8,
+      "h": 8,
+      "anchor": [
+        4,
+        7
+      ]
+    },
+    "season_spring_16": {
+      "x": 137,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "season_spring_8": {
+      "x": 43,
+      "y": 41,
+      "w": 8,
+      "h": 8,
+      "anchor": [
+        4,
+        7
+      ]
+    },
+    "season_summer_16": {
+      "x": 154,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "season_summer_8": {
+      "x": 52,
+      "y": 41,
+      "w": 8,
+      "h": 8,
+      "anchor": [
+        4,
+        7
+      ]
+    },
+    "season_winter_16": {
+      "x": 171,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "season_winter_8": {
+      "x": 61,
+      "y": 41,
+      "w": 8,
+      "h": 8,
+      "anchor": [
+        4,
+        7
+      ]
+    },
+    "snow_full_0": {
+      "x": 188,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "layer": "ground"
+    },
+    "snow_full_1": {
+      "x": 205,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "layer": "ground"
+    },
+    "snow_light_0": {
+      "x": 222,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "layer": "ground"
+    },
+    "snow_light_1": {
+      "x": 239,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "layer": "ground"
+    },
+    "snow_patchy_0": {
+      "x": 0,
+      "y": 41,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "layer": "ground"
+    },
+    "snow_patchy_1": {
+      "x": 17,
+      "y": 41,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "layer": "ground"
+    },
+    "tree_conifer_snow": {
+      "x": 0,
+      "y": 0,
+      "w": 32,
+      "h": 40,
+      "anchor": [
+        16,
+        39
+      ]
+    },
+    "tree_deciduous_mature_bare": {
+      "x": 33,
+      "y": 0,
+      "w": 32,
+      "h": 32,
+      "anchor": [
+        16,
+        31
+      ]
+    },
+    "tree_deciduous_young_bare": {
+      "x": 99,
+      "y": 0,
+      "w": 20,
+      "h": 21,
+      "anchor": [
+        10,
+        20
+      ]
+    },
+    "tree_fruit_bare": {
+      "x": 66,
+      "y": 0,
+      "w": 32,
+      "h": 28,
+      "anchor": [
+        16,
+        27
+      ]
+    }
+  }
+}

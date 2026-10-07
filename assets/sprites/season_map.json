@@ -1,0 +1,140 @@
+{
+  "seasons": [
+    "spring",
+    "summer",
+    "autumn",
+    "winter"
+  ],
+  "days": 28,
+  "recolour": {
+    "ground": [
+      "nature/terrain_grass_*",
+      "scenery/terrain_meadow_*",
+      "nature/crop_pasture",
+      "scenery/shore_*",
+      "scenery/cliff_*"
+    ],
+    "foliage": [
+      "nature/tree_deciduous_*",
+      "nature/tree_fruit",
+      "nature/prop_bush"
+    ]
+  },
+  "palette": {
+    "spring": {
+      "ground": {
+        "GRASS_L": "SPRING_L",
+        "GRASS": "SPRING",
+        "LEAF_D": "SPRING_D"
+      },
+      "foliage": {
+        "GRASS_L": "SPRING_L",
+        "GRASS": "SPRING",
+        "LEAF_D": "SPRING_D"
+      }
+    },
+    "summer": {},
+    "autumn": {
+      "ground": {
+        "GRASS_L": "AUTUMN_L",
+        "GRASS": "AUTUMN",
+        "LEAF_D": "AUTUMN_D"
+      },
+      "foliage": {
+        "GRASS_L": "GOLD",
+        "GRASS": "SAND_D",
+        "LEAF_D": "WOOD_L"
+      }
+    },
+    "winter": {
+      "ground": {
+        "GRASS_L": "WINTER_L",
+        "GRASS": "WINTER",
+        "LEAF_D": "WINTER_D"
+      },
+      "foliage": {
+        "GRASS_L": "WINTER_L",
+        "GRASS": "WINTER",
+        "LEAF_D": "WINTER_D"
+      }
+    }
+  },
+  "sprites": {
+    "spring": {
+      "scenery/tree_autumn": "nature/tree_deciduous_mature"
+    },
+    "summer": {
+      "scenery/tree_blossom": "nature/tree_deciduous_mature",
+      "scenery/tree_autumn": "nature/tree_deciduous_mature"
+    },
+    "autumn": {
+      "scenery/tree_blossom": "scenery/tree_autumn"
+    },
+    "winter": {
+      "nature/tree_deciduous_mature": "seasons/tree_deciduous_mature_bare",
+      "scenery/tree_blossom": "seasons/tree_deciduous_mature_bare",
+      "scenery/tree_autumn": "seasons/tree_deciduous_mature_bare",
+      "nature/tree_deciduous_young": "seasons/tree_deciduous_young_bare",
+      "nature/tree_fruit": "seasons/tree_fruit_bare"
+    }
+  },
+  "snow": {
+    "max_temperature": 140,
+    "schedule": [
+      [
+        1,
+        6,
+        "light"
+      ],
+      [
+        7,
+        22,
+        "full"
+      ],
+      [
+        23,
+        28,
+        "patchy"
+      ]
+    ],
+    "ground": {
+      "light": [
+        "seasons/snow_light_0",
+        "seasons/snow_light_1"
+      ],
+      "full": [
+        "seasons/snow_full_0",
+        "seasons/snow_full_1"
+      ],
+      "patchy": [
+        "seasons/snow_patchy_0",
+        "seasons/snow_patchy_1"
+      ]
+    },
+    "road": {
+      "full": [
+        "seasons/snow_light_0",
+        "seasons/snow_light_1"
+      ],
+      "patchy": [
+        "seasons/snow_light_0",
+        "seasons/snow_light_1"
+      ]
+    },
+    "on_ground": [
+      "nature/terrain_grass_*",
+      "scenery/terrain_meadow_*",
+      "nature/terrain_sand",
+      "nature/terrain_soil-tilled",
+      "nature/crop_*"
+    ],
+    "on_road": [
+      "nature/terrain_dirt-path",
+      "nature/terrain_paving"
+    ],
+    "sprites": {
+      "nature/tree_conifer": "seasons/tree_conifer_snow"
+    },
+    "overlay": "snow"
+  }
+}
