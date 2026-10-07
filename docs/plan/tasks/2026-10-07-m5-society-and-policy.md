@@ -2,7 +2,7 @@
 
 M5 holds 34 build tasks and 9 exit checks in the [implementation plan](../implementation-plan.md#m5-society-and-policy), so it runs as seven sub-milestones. Each one ends with software that runs and passes its own checks. None has a step-by-step plan yet; each gets one when the sub-milestone before it closes.
 
-Estimates are full-time days for one person coding by hand (unsourced estimates). The Actual column records the real time, so the pace measured in M0–M4 can rescale them. The plan's M5 effort line, about 2 weeks plus 1–2 days for the visual layer, covers rounds 1 and 3 only. The owner's plans add 3–6 days for the calendar, 1–2 for the defence budget and 1 for the gazette. The 23 tasks from rounds 2, 4, 6, 8 and 9 carry no estimate of their own. The plan's own figures sum to 16–21 days, and this breakdown to 36–56.
+Estimates are full-time days for one person coding by hand (unsourced estimates). The Actual column records the real time, so the pace measured in M0–M4 can rescale them. The plan's M5 effort line, about 2 weeks plus 1–2 days for the visual layer, covers rounds 1 and 3 only. The owner's plans add 3–6 days for the calendar, 1–2 for the defence budget and 1 for the gazette. The 25 tasks from rounds 2, 4, 6, 8 and 9 carry no estimate of their own. The plan's own figures sum to 16–21 days, and this breakdown to 36–56.
 
 | Sub-milestone | Delivers | Estimate | Started | Done | Actual |
 | --- | --- | --- | --- | --- | --- |
@@ -111,4 +111,5 @@ Three points apply throughout:
 - **Needs:** M5.2's births and deaths; M5.3's wealth shifts; M3.8's gazette and M4.7's justice column.
 - **Owner decision first:** whether the year-in-review card pauses the run or appears without stopping it.
 - **Exit checks:**
-  - the follow-the-news camera is off by default and never changes the state hash (Gazette).
+  - the follow-the-news camera is off by default and never changes the state hash (Gazette);
+  - the year-end edition never breaks figures down by culture; this half of the Gazette tab's check is missing from the implementation plan (Gazette).
