@@ -23,7 +23,7 @@ This is a lean round, following `/research-round`: four researchers, then a repo
 
 ## Status
 
-All four questions are answered. `report.md` is written and fact-checked, and `summary.md` is drafted.
+Round 9 is complete. All four questions are answered, and `report.md` is written and fact-checked. On 7 October 2026 the shared doc gained a "Maps and world builder" tab, exported as `summary.md`. Its Implementation plan tab gained the (R9) tasks, exported to `docs/plan/implementation-plan.md`.
 
 On 6 October 2026 the owner made four calls:
 - accepted the recommended defaults (a)–(d) and (f)–(k);
@@ -31,4 +31,4 @@ On 6 October 2026 the owner made four calls:
 - approved the shared-doc update;
 - asked for the four generator fixes, which are now in `tools/worldgen`.
 
-Still to do: add `summary.md` as a tab in the shared doc, add the (R9) tasks to its Implementation plan tab, then export with `/sync-plan-doc`. The doc belongs to the account used earlier, so it needs sharing with the current one first. The same day the owner moved launch after M8, so every builder level ships before launch.
+The same day the owner moved launch after M8, so every builder level ships before launch.
