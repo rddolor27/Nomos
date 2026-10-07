@@ -73,13 +73,13 @@ The plan's own effort lines sum to about 210–322 days before launch, but many 
 
 | Sub-milestone | Delivers | Estimate | How |
 | --- | --- | --- | --- |
-| [M4.1 Guarded decisions](m4-crime-and-police/m4.1-guarded-decisions/task.md) | Every guarded decision as a threshold and one keyed draw, under the flip test in CI | 2–3 days | — |
-| [M4.2 Crime and justice loop](m4-crime-and-police/m4.2-crime-and-justice-loop/task.md) | Offending, the hotspot field, patrols, arrests and jail, with true and recorded crime kept apart | 8–11 days | — |
-| [M4.3 Calibrated crime](m4-crime-and-police/m4.3-calibrated-crime/task.md) | Clearances, reporting, hotspots and re-arrests tuned to measured figures, with daily district logs | 5–7 days | — |
-| [M4.4 Victims, records and trust](m4-crime-and-police/m4.4-victims-records-and-trust/task.md) | Record states, and what crime and wrongful stops do to victims, contacts and trust in police | 3–4 days | — |
-| [M4.5 Culture audit](m4-crime-and-police/m4.5-culture-audit/task.md) | The outcome and exposure audit over 50 paired seeds, with its counterfactual worlds | 3–5 days | — |
-| [M4.6 Justice on screen](m4-crime-and-police/m4.6-justice-on-screen/task.md) | Justice buildings, events and the true and recorded views, drawn without stereotypes | 5–7 days | — |
-| [M4.7 Justice sounds and gazette](m4-crime-and-police/m4.7-justice-sounds-and-gazette/task.md) | The justice sounds in play, and the gazette's justice column | 2–3 days | — |
+| [M4.1 Guarded decisions](m4-crime-and-police/m4.1-guarded-decisions/task.md) | Every guarded decision as a threshold and one keyed draw, under the flip test in CI | 2–3 days | [brief](m4-crime-and-police/m4.1-guarded-decisions/plan.md) |
+| [M4.2 Crime and justice loop](m4-crime-and-police/m4.2-crime-and-justice-loop/task.md) | Offending, the hotspot field, patrols, arrests and jail, with true and recorded crime kept apart | 8–11 days | [brief](m4-crime-and-police/m4.2-crime-and-justice-loop/plan.md) |
+| [M4.3 Calibrated crime](m4-crime-and-police/m4.3-calibrated-crime/task.md) | Clearances, reporting, hotspots and re-arrests tuned to measured figures, with daily district logs | 5–7 days | [brief](m4-crime-and-police/m4.3-calibrated-crime/plan.md) |
+| [M4.4 Victims, records and trust](m4-crime-and-police/m4.4-victims-records-and-trust/task.md) | Record states, and what crime and wrongful stops do to victims, contacts and trust in police | 3–4 days | [brief](m4-crime-and-police/m4.4-victims-records-and-trust/plan.md) |
+| [M4.5 Culture audit](m4-crime-and-police/m4.5-culture-audit/task.md) | The outcome and exposure audit over 50 paired seeds, with its counterfactual worlds | 3–5 days | [brief](m4-crime-and-police/m4.5-culture-audit/plan.md) |
+| [M4.6 Justice on screen](m4-crime-and-police/m4.6-justice-on-screen/task.md) | Justice buildings, events and the true and recorded views, drawn without stereotypes | 5–7 days | [brief](m4-crime-and-police/m4.6-justice-on-screen/plan.md) |
+| [M4.7 Justice sounds and gazette](m4-crime-and-police/m4.7-justice-sounds-and-gazette/task.md) | The justice sounds in play, and the gazette's justice column | 2–3 days | [brief](m4-crime-and-police/m4.7-justice-sounds-and-gazette/plan.md) |
 
 ### [M5 Society and policy](m5-society-and-policy/milestone.md)
 

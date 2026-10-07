@@ -1,6 +1,6 @@
 # M4 Crime and police: sub-milestones
 
-M4 holds 24 build tasks and 15 exit checks in the [implementation plan](../../implementation-plan.md#m4-crime-and-police), so it runs as seven sub-milestones. Each one ends with software that runs and passes its own checks. None has a step-by-step plan yet; each gets one when the sub-milestone before it closes.
+M4 holds 24 build tasks and 15 exit checks in the [implementation plan](../../implementation-plan.md#m4-crime-and-police), so it runs as seven sub-milestones. Each one ends with software that runs and passes its own checks. Each has an implementation brief in its `plan.md`, which becomes a step-by-step plan when the sub-milestone before it closes.
 
 Estimates are full-time days for one person coding by hand (unsourced estimates). The Actual column records the real time, so the pace measured in M0–M3 can rescale them. The plan's M4 effort line, 2–3 weeks plus 4–6 days for the visual layer, covers rounds 1 and 3 only. Round 4 adds 1–2 days, and the owner's plans add 0.5–1 day for sound and 1–2 for the gazette. The 14 tasks from rounds 2, 6 and 8 carry no estimate of their own. The plan's own figures sum to 16.5–26 days, and this breakdown to 28–40.
 
