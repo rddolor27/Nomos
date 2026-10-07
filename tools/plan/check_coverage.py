@@ -1,8 +1,9 @@
-"""Flag plan items that a milestone breakdown seems to have dropped: python tools/plan/check_coverage.py [N ...]
+"""Flag plan items that a milestone's tasks seem to have dropped: python tools/plan/check_coverage.py [N ...]
 
 Every build task and exit check in a milestone of docs/plan/implementation-plan.md should appear in
-that milestone's breakdown under docs/plan/tasks/. Items are matched by word overlap, so a weak match
-is a lead to read, not proof of a gap: merged or reworded items can score low.
+that milestone's folder under docs/plan/tasks/, in its milestone.md or one of its task.md files.
+Items are matched by word overlap, so a weak match is a lead to read, not proof of a gap: merged or
+reworded items can score low.
 """
 import re
 import sys
@@ -25,24 +26,30 @@ def plan_items(plan, n):
     return [line[6:] for line in section.splitlines() if re.match(r'- \[[ x]\] ', line)]
 
 
-def breakdown(n):
-    found = [p for p in TASKS.glob('*.md') if re.search(rf'-m{n}-[a-z]', p.name)]
+def folder(n):
+    found = [p for p in TASKS.iterdir() if p.is_dir() and re.match(rf'm{n}-[a-z]', p.name)]
     return found[0] if found else None
+
+
+def bullets(path):
+    files = [path / 'milestone.md', *sorted(path.glob('*/task.md'))]
+    return [line.strip() for f in files if f.exists()
+            for line in f.read_text(encoding='utf-8').splitlines() if line.lstrip().startswith('-')]
 
 
 def main(numbers):
     plan = PLAN.read_text(encoding='utf-8')
     for n in numbers:
-        path = breakdown(n)
+        path = folder(n)
         if path is None:
-            print(f'M{n}: no breakdown file')
+            print(f'M{n}: no milestone folder')
             continue
-        bullets = [line.strip() for line in path.read_text(encoding='utf-8').splitlines() if line.lstrip().startswith('-')]
+        lines = bullets(path)
         items = plan_items(plan, n)
         weak = []
         for item in items:
             need = words(item)
-            score, best = max((len(need & words(b)) / max(1, len(need)), b) for b in bullets)
+            score, best = max((len(need & words(b)) / max(1, len(need)), b) for b in lines)
             if score < THRESHOLD:
                 weak.append((score, item, best))
         print(f'M{n}: {len(items)} plan items, {len(weak)} weak matches ({path.name})')
