@@ -38,11 +38,11 @@ The plan's own effort lines sum to about 210–322 days before launch, but many 
 
 | Sub-milestone | Delivers | Estimate | How |
 | --- | --- | --- | --- |
-| [M1.1 Lab engine and claims](m1-lab-mode/m1.1-lab-engine-and-claims/task.md) | The thief/trader contest and the ±1 market in discrete days as Skin A dots, with claims judged on paired seeds | 5–8 days | — |
-| [M1.2 Bet cards and watch-only runs](m1-lab-mode/m1.2-bet-cards-and-watch-only-runs/task.md) | Bet cards that lock a prediction before Run, and runs the player can only pause, speed up or skip | 5–9 days | — |
-| [M1.3 Skin B blobs](m1-lab-mode/m1.3-skin-b-blobs/task.md) | The lab drawn as blobs, with faces, bubbles, takes shown as acts, and reduced motion | 4–6 days | — |
-| [M1.4 Sound](m1-lab-mode/m1.4-sound/task.md) | The TypeScript synth, the audio controls and the UI sounds, silent until the first click | 4.5–6.5 days | — |
-| [M1.5 Public lab](m1-lab-mode/m1.5-public-lab/task.md) | The IP gate, playtests with novices and a diverse panel, and lab mode in public | 2–4 days | — |
+| [M1.1 Lab engine and claims](m1-lab-mode/m1.1-lab-engine-and-claims/task.md) | The thief/trader contest and the ±1 market in discrete days as Skin A dots, with claims judged on paired seeds | 5–8 days | [brief](m1-lab-mode/m1.1-lab-engine-and-claims/plan.md) |
+| [M1.2 Bet cards and watch-only runs](m1-lab-mode/m1.2-bet-cards-and-watch-only-runs/task.md) | Bet cards that lock a prediction before Run, and runs the player can only pause, speed up or skip | 5–9 days | [brief](m1-lab-mode/m1.2-bet-cards-and-watch-only-runs/plan.md) |
+| [M1.3 Skin B blobs](m1-lab-mode/m1.3-skin-b-blobs/task.md) | The lab drawn as blobs, with faces, bubbles, takes shown as acts, and reduced motion | 4–6 days | [brief](m1-lab-mode/m1.3-skin-b-blobs/plan.md) |
+| [M1.4 Sound](m1-lab-mode/m1.4-sound/task.md) | The TypeScript synth, the audio controls and the UI sounds, silent until the first click | 4.5–6.5 days | [brief](m1-lab-mode/m1.4-sound/plan.md) |
+| [M1.5 Public lab](m1-lab-mode/m1.5-public-lab/task.md) | The IP gate, playtests with novices and a diverse panel, and lab mode in public | 2–4 days | [brief](m1-lab-mode/m1.5-public-lab/plan.md) |
 
 ### [M2 Economy](m2-economy/milestone.md)
 
