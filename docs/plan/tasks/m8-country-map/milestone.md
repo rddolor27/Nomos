@@ -1,6 +1,6 @@
 # M8 Country map: sub-milestones
 
-M8 holds 29 build tasks and 6 exit checks in the [implementation plan](../../implementation-plan.md#m8-country-map), so it runs as seven sub-milestones. It is the last milestone before launch. Each one ends with software that runs and passes its own checks. None has a step-by-step plan yet; each gets one when the sub-milestone before it closes, and M8.1 when M7 closes.
+M8 holds 29 build tasks and 6 exit checks in the [implementation plan](../../implementation-plan.md#m8-country-map), so it runs as seven sub-milestones. It is the last milestone before launch. Each one ends with software that runs and passes its own checks. Each has an implementation brief in its `plan.md`, which becomes a step-by-step plan when the sub-milestone before it closes; M8.1's does so when M7 closes.
 
 Estimates are full-time days for one person coding by hand (unsourced estimates). The Actual column records the real time, so the rest of the plan can be rescaled to the measured pace. The plan's own M8 effort line, 13–20 days, is round 4's and predates rounds 6, 8 and 9 and the owner's plans. Round 9's New country settings and god tools add 19–30 days. The other added tasks, from those rounds and the owner's sound, military and gazette plans, come to about 12–19 more.
 

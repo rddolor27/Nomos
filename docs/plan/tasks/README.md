@@ -121,13 +121,13 @@ The plan's own effort lines sum to about 210–322 days before launch, but many 
 
 | Sub-milestone | Delivers | Estimate | How |
 | --- | --- | --- | --- |
-| [M8.1 World generator](m8-country-map/m8.1-world-generator/task.md) | A seeded country built in the worker, matching the Python generator stage by stage | 6–9 days | — |
-| [M8.2 Cultures and names](m8-country-map/m8.2-cultures-and-names/task.md) | Culture home regions balanced after spin-up, and filtered names for places and festivals | 3–5 days | — |
-| [M8.3 Country and Region views](m8-country-map/m8.3-country-and-region-views/task.md) | The country drawn as 8- and 16-px tilemaps, with military sites and country sound | 6–10 days | — |
-| [M8.4 Map modes, flows and papers](m8-country-map/m8.4-map-modes-flows-and-papers/task.md) | Map modes, flow bands, route ledgers, town papers and the national gazette | 6–9 days | — |
-| [M8.5 Focus, fork and history](m8-country-map/m8.5-focus-fork-and-history/task.md) | The breadcrumb, a what-if fork into City mode, and ten years of history in a save | 4–6 days | — |
-| [M8.6 New country settings](m8-country-map/m8.6-new-country-settings/task.md) | The settings panel with presets, a live preview and validation | 5–8 days | — |
-| [M8.7 God tools](m8-country-map/m8.7-god-tools/task.md) | Lock, re-roll, brushes and paint on the country, each edit rerun before day 0 | 14–22 days | — |
+| [M8.1 World generator](m8-country-map/m8.1-world-generator/task.md) | A seeded country built in the worker, matching the Python generator stage by stage | 6–9 days | [brief](m8-country-map/m8.1-world-generator/plan.md) |
+| [M8.2 Cultures and names](m8-country-map/m8.2-cultures-and-names/task.md) | Culture home regions balanced after spin-up, and filtered names for places and festivals | 3–5 days | [brief](m8-country-map/m8.2-cultures-and-names/plan.md) |
+| [M8.3 Country and Region views](m8-country-map/m8.3-country-and-region-views/task.md) | The country drawn as 8- and 16-px tilemaps, with military sites and country sound | 6–10 days | [brief](m8-country-map/m8.3-country-and-region-views/plan.md) |
+| [M8.4 Map modes, flows and papers](m8-country-map/m8.4-map-modes-flows-and-papers/task.md) | Map modes, flow bands, route ledgers, town papers and the national gazette | 6–9 days | [brief](m8-country-map/m8.4-map-modes-flows-and-papers/plan.md) |
+| [M8.5 Focus, fork and history](m8-country-map/m8.5-focus-fork-and-history/task.md) | The breadcrumb, a what-if fork into City mode, and ten years of history in a save | 4–6 days | [brief](m8-country-map/m8.5-focus-fork-and-history/plan.md) |
+| [M8.6 New country settings](m8-country-map/m8.6-new-country-settings/task.md) | The settings panel with presets, a live preview and validation | 5–8 days | [brief](m8-country-map/m8.6-new-country-settings/plan.md) |
+| [M8.7 God tools](m8-country-map/m8.7-god-tools/task.md) | Lock, re-roll, brushes and paint on the country, each edit rerun before day 0 | 14–22 days | [brief](m8-country-map/m8.7-god-tools/plan.md) |
 
 ### [M9 Zoom across scales](m9-zoom-across-scales/milestone.md)
 
