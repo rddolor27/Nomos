@@ -13,6 +13,9 @@ from soundkit import RATE, render  # noqa: E402
 
 # Upper bounds on length, so a short cue never turns into a drone.
 MAX_SECONDS = {'effect': 3.0, 'loop': 30.0, 'music': 120.0}
+# The README's level table, per bank: (peak ceiling, RMS floor, RMS ceiling) in dBFS.
+LEVELS = {'ui': (-8, -30, -22), 'events': (-6, -28, -18), 'justice': (-6, -28, -18), 'military': (-6, -28, -18),
+          'ambience': (-6, -36, -24), 'wonders': (-6, -36, -24), 'music': (-3, -24, -16)}
 
 
 def seam(x):
@@ -23,9 +26,13 @@ def seam(x):
 
 def check(name):
     bank = importlib.import_module(name).build()
+    peak, floor, ceiling = LEVELS[name]
     problems = []
     for sound, entry in bank.sounds.items():
         kind, x = entry['kind'], bank.audio[sound]
+        if entry['peak_db'] > peak or not floor <= entry['rms_db'] <= ceiling:
+            problems.append(f'{sound}: peak {entry["peak_db"]} / RMS {entry["rms_db"]} dBFS outside the {name} '
+                            f'targets (peak ≤ {peak}, RMS {floor} to {ceiling})')
         if entry['seconds'] > MAX_SECONDS[kind]:
             problems.append(f'{sound}: {entry["seconds"]} s is longer than {MAX_SECONDS[kind]} s for a {kind}')
         again = render(kind, json.loads(json.dumps(entry['def'])), entry['seed'])
