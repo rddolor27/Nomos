@@ -62,8 +62,8 @@ Each season changes the fields, the colours and the sound, and the harvest windo
 | Winter | 85–112 | Fallow soil; food comes from stores | Snow on ground and roofs; short days | Soft cold wind (`amb_snow`) |
 
 - **The harvest is rescaled.** Round 6's 30–45-day harvest becomes 9–14 days of autumn (× 112/365, computed). Grain's 365-day use-by now outlasts three years, which removes round 6's conflict (m).
-- **Palette swaps draw the seasons.** Grass and foliage shift through spring green, summer green, autumn gold and winter pale, GBA-style, so no sprite is redrawn per season.
-- **Snow is an overlay** of tiles on ground and roofs, extending the snow tiles the art still lacks.
+- **Palette swaps draw the seasons.** Grass and foliage shift through spring green, summer green, autumn olive on the ground and gold on leaves, and winter pale, GBA-style, so no sprite is redrawn per season.
+- **Snow is an overlay** of tiles on ground and roofs; the art was drawn on 7 October 2026, with assets/sprites/season\_map.json saying what each season changes.
 - **Ambience follows the season** through the existing biome loops: birds in spring and summer, wind in autumn, and `amb_snow` in winter.
 - **Season icons** in the HUD stay distinct from the eight culture emblems.
 
@@ -119,14 +119,14 @@ Daily life runs per real day, and everything annual runs per 112-day year. The y
 
 ## Work by milestone
 
-The calendar takes about 12–19 days, spread over six milestones (unsourced estimate). Each task is in Implementation plan, tagged (Calendar).
+The calendar takes about 11–17 more days over six milestones, now that its art is drawn (unsourced estimate). Each task is in Implementation plan, tagged (Calendar).
 
 | Milestone | Work | Days |
 | --- | --- | --- |
 | M0 Pipeline | 1,440 ticks a day and 112 days a year recorded in `sim-protocol` (1); the calendar module with date maths and day-length tables (1) | 2 |
 | M1 Lab mode | Speed controls, shortcuts and per-tier caps (1–2); the HUD date (0.5–1); watch-only in the protocol (0.5) | 2–3.5 |
 | M2 Economy | Recalibrate to the 112-day year: daily wages, prices, interest and loan terms | 1–2 |
-| M3 City life | Seasons in the town: crop cycle, day length, palettes, snow and ambience (2–3); seasonal palettes, snow overlays and season icons as art (1–2) | 3–5 |
+| M3 City life | Seasons in the town: crop cycle, day length, palettes, snow and ambience (2–3); the seasonal art is already drawn | 2–3 |
 | M5 Society and policy | Ageing with real lifespans (1–2); the year-in-review card (1–2); branches in place of live policy changes (1–2) | 3–6 |
 | M7 Country of ledgers | The spin-up and country skip-ahead in 112-day years | 0.5 |
 
@@ -141,5 +141,5 @@ The calendar takes about 12–19 days, spread over six milestones (unsourced est
 ## Open questions
 
 - Should the year-in-review card pause the run, or appear without stopping it?
-- Do fast speeds need an auto-camera that follows notable events, or does the player steer?
+- Do fast speeds need an auto-camera? The Gazette tab proposes an opt-in one that follows the front-page story; otherwise the player steers.
 - Verify first: do round 6's calibrated targets still hold once daily wages and prices are rescaled?
