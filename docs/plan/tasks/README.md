@@ -133,12 +133,12 @@ The plan's own effort lines sum to about 210–322 days before launch, but many 
 
 | Sub-milestone | Delivers | Estimate | How |
 | --- | --- | --- | --- |
-| [M9.1 Spawn and fold](m9-zoom-across-scales/m9.1-spawn-and-fold/task.md) | Zooming in spawns a settlement's people from its ledger, and zooming out folds them back exactly | 8–12 days | — |
-| [M9.2 Daily alignment](m9-zoom-across-scales/m9.2-daily-alignment/task.md) | Spawned agents kept in line with the ledger each day, with a divergence meter | 3–4 days | — |
-| [M9.3 Streets from the generator](m9-zoom-across-scales/m9.3-streets-from-the-generator/task.md) | Every settlement's streets generated on hover, with stable plans and dormant edits | 5–8 days | — |
-| [M9.4 Villages and the district window](m9-zoom-across-scales/m9.4-villages-and-the-district-window/task.md) | Village rules, and agents only in the districts in view above the device cap | 3–5 days | — |
-| [M9.5 Route strips and wonder views](m9-zoom-across-scales/m9.5-route-strips-and-wonder-views/task.md) | Roads drawn as strips whose caravans, bandits and patrols match the route ledger | 3–6 days | — |
-| [M9.6 Consequential focus](m9-zoom-across-scales/m9.6-consequential-focus/task.md) | The opt-in mode where watching changes history, and optional pinned live settlements | 3–5 days | — |
+| [M9.1 Spawn and fold](m9-zoom-across-scales/m9.1-spawn-and-fold/task.md) | Zooming in spawns a settlement's people from its ledger, and zooming out folds them back exactly | 8–12 days | [brief](m9-zoom-across-scales/m9.1-spawn-and-fold/plan.md) |
+| [M9.2 Daily alignment](m9-zoom-across-scales/m9.2-daily-alignment/task.md) | Spawned agents kept in line with the ledger each day, with a divergence meter | 3–4 days | [brief](m9-zoom-across-scales/m9.2-daily-alignment/plan.md) |
+| [M9.3 Streets from the generator](m9-zoom-across-scales/m9.3-streets-from-the-generator/task.md) | Every settlement's streets generated on hover, with stable plans and dormant edits | 5–8 days | [brief](m9-zoom-across-scales/m9.3-streets-from-the-generator/plan.md) |
+| [M9.4 Villages and the district window](m9-zoom-across-scales/m9.4-villages-and-the-district-window/task.md) | Village rules, and agents only in the districts in view above the device cap | 3–5 days | [brief](m9-zoom-across-scales/m9.4-villages-and-the-district-window/plan.md) |
+| [M9.5 Route strips and wonder views](m9-zoom-across-scales/m9.5-route-strips-and-wonder-views/task.md) | Roads drawn as strips whose caravans, bandits and patrols match the route ledger | 3–6 days | [brief](m9-zoom-across-scales/m9.5-route-strips-and-wonder-views/plan.md) |
+| [M9.6 Consequential focus](m9-zoom-across-scales/m9.6-consequential-focus/task.md) | The opt-in mode where watching changes history, and optional pinned live settlements | 3–5 days | [brief](m9-zoom-across-scales/m9.6-consequential-focus/plan.md) |
 
 ## Ongoing
 

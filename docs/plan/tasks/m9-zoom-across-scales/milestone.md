@@ -1,6 +1,6 @@
 # M9 Zoom across scales: sub-milestones
 
-M9 holds 22 build tasks and 7 exit checks in the [implementation plan](../../implementation-plan.md#m9-zoom-across-scales), so it runs as six sub-milestones. Each one ends with software that runs and passes its own checks. M9 comes after launch, because round 9 moved launch to follow M8. None has a step-by-step plan yet; each gets one when the sub-milestone before it closes.
+M9 holds 22 build tasks and 7 exit checks in the [implementation plan](../../implementation-plan.md#m9-zoom-across-scales), so it runs as six sub-milestones. Each one ends with software that runs and passes its own checks. M9 comes after launch, because round 9 moved launch to follow M8. Each has an implementation brief in its `plan.md`, which becomes a step-by-step plan when the sub-milestone before it closes.
 
 Estimates are full-time days for one person coding by hand (unsourced estimates). The Actual column records the real time, so the pace measured in earlier milestones can rescale them. The plan's M9 effort line, 20–30 days after round 9 dropped the village-kit authoring, covers round 4 only. The owner's plans add 1 day for patrols and 0.5–1 for the sound crossfade. The 8 tasks from rounds 6, 8 and 9 carry no estimate of their own. The plan's own figures sum to 21.5–32 days, and this breakdown to 25–40.
 
