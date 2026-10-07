@@ -141,9 +141,9 @@ def render_loop(defn, seed=0):
     held = []
     for i, layer in enumerate(defn.get('layers', [])):
         x = render_layer({'attack': 0, 'release': 0, **layer, 'length': length + FOLD + 0.01}, seed + i)
-        ramp = np.linspace(0, 1, fold)
+        # Constant-power ramps: held layers are mostly noise, which a linear crossfade dips by 3 dB.
         y = x[:n].copy()
-        y[:fold] = x[:fold] * ramp + x[n:n + fold] * (1 - ramp)
+        y[:fold] = x[:fold] * np.sqrt(np.linspace(0, 1, fold)) + x[n:n + fold] * np.sqrt(np.linspace(1, 0, fold))
         if 'swell' in layer:
             rate, depth = layer['swell']
             cycles = max(1, round(rate * length))
