@@ -21,6 +21,7 @@ Status: draft, 7 October 2026. No code or audio exists yet. This plan is not in 
 | UI | Click, toggle, bet locked, Run, result revealed | Menus, lab cards, the builder |
 | Town events | Purchase, emote blips (heart, question, food, sleep), door, harvest, building work | Near the camera, at street and district zoom |
 | Justice | Theft (true view only), report filed, stop, arrest, wrongful stop, release | Under the same rules as the visuals |
+| Military | Drill drum cadence, a short horn call for the change of watch, marching steps, a gate creak; no battle sounds or fanfare | Near garrisons, forts and patrols ([military plan](military.md)) |
 | Ambience | Birds by day, crickets at night, sea, river, wind, marsh frogs, a crowd murmur that rises with visible density | By biome, time of day and zoom |
 | Wonders | Waterfall roar, geyser rumble and burst, waves at the sea arch, wind on the glacier, bubbling hot springs, cave drips, birds at the giant tree, desert wind at the dune | In wonder views, and faintly nearby |
 | Music | Title, lab, town by day, town by night, country map, festival styles | One track at a time, crossfaded |
