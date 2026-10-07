@@ -5,14 +5,15 @@ shapes sized by density, never by wealth: a detached house, row-house pieces tha
 side, an apartment block, a village hut and a farmhouse. Every style shares the same door,
 windows, chimney size, lintels and flower boxes, so no style reads as richer or poorer
 (content rule 5). Roofs are drawn in terracotta and recoloured for the other variants.
-Each shape also gets a night overlay of lit windows that fits every style of that shape.
+Each shape also gets a night overlay of lit windows that fits every style of that shape, and
+each style of a shape a snow overlay that fits every roof colour.
 
 Build: python tools/sprites/houses.py
 """
 import numpy as np
 from PIL import Image
 
-from spritekit import PALETTE, TILE, Sheet, add_outline, cmap, from_ascii, recolor
+from spritekit import PALETTE, TILE, Sheet, add_outline, cmap, from_ascii, overlay, recolor
 
 # One symbol per palette colour, shared by every grid in this module. The digits are the
 # roof ramp (light, base, shade, deep): roofs are drawn in terracotta and recoloured.
@@ -21,9 +22,10 @@ SYM = cmap(**{
     'L': 'WOOD_L', 'W': 'WOOD', 'D': 'WOOD_D', 'G': 'GRASS_L', 'g': 'GRASS', 'F': 'LEAF_D',
     'B': 'WATER_L', 'b': 'WATER', 'N': 'NAVY', 'n': 'NAVY_D', 'S': 'STONE_L', 's': 'STONE',
     'd': 'STONE_D', 'R': 'ROOF', 'r': 'ROOF_D', 'V': 'VERMILLION', 'o': 'GOLD', 'P': 'PINK',
-    'p': 'PINK_D', 'M': 'PLUM', 'u': 'BODY_L',
+    'p': 'PINK_D', 'M': 'PLUM', 'u': 'BODY_L', 'I': 'ICE_L', 'i': 'ICE',
     '1': 'SAND', '2': 'ROOF', '3': 'ROOF_D', '4': 'WOOD_D',
 })
+SNOW_TONE = {'1': 'w', '2': 'w', '3': 'I', '4': 'i'}   # roof ramp under snow; the eave edge stays bare
 
 ROOF_COLOURS = {
     'terracotta': {},
@@ -247,13 +249,14 @@ TONES = {   # per roof facet: front, lit left hip, shaded right hip
 THATCH = 'cottage'
 
 
-def hip_roof(g, x0, y0, x1, y1, style, ends=(True, True)):
+def hip_roof(g, x0, y0, x1, y1, style, ends=(True, True), plain=False):
     """A hipped roof over columns x0..x1, rows y0..y1, lit from the top left.
 
     `ends` says which ends get a hip; a row-house middle piece has none, so its roof runs
-    straight through both edges and tiles with its neighbours.
+    straight through both edges and tiles with its neighbours. `plain` drops the texture,
+    for a roof under snow.
     """
-    tex = ROOF_TEX[style]
+    tex = ['.'] if plain else ROOF_TEX[style]
     thatch = style == THATCH
     eave = 3 if thatch else 2
     yb = y1 - eave
@@ -441,7 +444,7 @@ class Plan:
         return out
 
 
-def draw_house(plan, style, roof):
+def draw_house(plan, style, roof, snow=False):
     w, h = plan.w, plan.h
     x0, y0, x1, y1 = plan.walls
     g = blank(w, h)
@@ -457,13 +460,15 @@ def draw_house(plan, style, roof):
     im = render(g)
     r = blank(w, h)
     rx0, ry0, rx1, ry1 = plan.roof
-    hip_roof(r, rx0, ry0, rx1, ry1, style, plan.ends)
+    hip_roof(r, rx0, ry0, rx1, ry1, style, plan.ends, plain=snow)
     for (cx, cy, small) in plan.chimneys:     # each chimney shades the roof to its right
         art = chimney_art(style, small)
         for y in range(ry0, cy + len(art) + 1):
             for x in (cx + len(art[0]) - 1, cx + len(art[0])):
                 if r[y][x] in ROOF_SHADE:
                     r[y][x] = ROOF_SHADE[r[y][x]]
+    if snow:
+        r = [[SNOW_TONE.get(ch, ch) for ch in row] if y < ry1 else row for y, row in enumerate(r)]
     im.alpha_composite(recolor(render(r), ROOF_COLOURS[roof]))
     c = blank(w, h)
     for (cx, cy, small) in plan.chimneys:
@@ -524,11 +529,15 @@ def build():
     for shape, plan in plans().items():
         night = f'house_{shape}_night'
         for style in STYLES:
+            snow = f'house_{style}_{shape}_snow'
             for roof in ROOF_COLOURS:
                 im = draw_house(plan, style, roof)
                 doors = [[x + len(DOOR[0]) // 2, plan.walls[3]] for x in plan.doors]
                 sheet.add(f'house_{style}_{shape}_roof-{roof}', im, footprint=footprint(plan),
-                          door=doors[0], night=night)
+                          door=doors[0], night=night, snow=snow)
+            bare = draw_house(plan, style, 'terracotta')
+            sheet.add(snow, overlay(bare, draw_house(plan, style, 'terracotta', snow=True)),
+                      footprint=footprint(plan), layer='snow')
         sheet.add(night, draw_night(plan), footprint=footprint(plan), layer='night')
     return sheet
 
