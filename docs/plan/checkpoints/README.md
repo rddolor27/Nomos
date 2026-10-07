@@ -54,3 +54,4 @@ Then these sections, in this order:
 - **Where things go:** plans in `docs/plan/`, task plans and milestone breakdowns in `docs/plan/tasks/`, checkpoints here, product code in `apps/`, `packages/` and `tools/`.
 - **Source of truth:** the shared plan doc is the live plan, and `docs/plan/implementation-plan.md` is its export. Its milestone sections carry the rules each task must follow, such as determinism, budgets and content rules.
 - **Art and sound rules:** `tools/sprites/README.md` and `tools/sounds/README.md`.
+- **Plan tools:** after editing a milestone breakdown, run `python tools/plan/check_coverage.py` to catch dropped plan items, and `python tools/plan/roadmap.py` to rebuild the roadmap. The roadmap is generated; never edit it by hand.
