@@ -8,7 +8,7 @@
 
 **Tech Stack:** Node 24 (runs `.ts` scripts natively), pnpm 10.12.1, TypeScript in strict mode, Vitest, ESLint 9 with typescript-eslint, GitHub Actions, Python 3.12 for the vectors.
 
-**Spec:** [M0 Pipeline](../implementation-plan.md#m0-pipeline), [calendar.md](../calendar.md), `tools/worldgen/rng.py` and `tools/worldgen/noise.py`. The sub-milestone list is [2026-10-07-m0-pipeline.md](2026-10-07-m0-pipeline.md).
+**Spec:** [M0 Pipeline](../../../implementation-plan.md#m0-pipeline), [calendar.md](../../../calendar.md), `tools/worldgen/rng.py` and `tools/worldgen/noise.py`. The sub-milestone list is [milestone.md](../milestone.md).
 
 ## Global Constraints
 
@@ -213,7 +213,7 @@ git commit -m "feat(sim-core): add the calendar"
 ### Task 5: Close M0.1
 
 **Files:**
-- Modify: `docs/plan/tasks/2026-10-07-m0-pipeline.md`, and the shared plan doc, then its export `docs/plan/implementation-plan.md`
+- Modify: `docs/plan/tasks/m0-pipeline/milestone.md`, and the shared plan doc, then its export `docs/plan/implementation-plan.md`
 
 - [ ] **Step 1: Confirm CI passes on `main`.** Run: `gh run list --limit 1`. Expected: the latest run's conclusion is success.
 - [ ] **Step 2: Record the pace.** Fill in M0.1's Started, Done and Actual cells in the overview's table. Compare Actual with the 2–3-day estimate, and rescale the remaining estimates by that ratio.
@@ -221,7 +221,7 @@ git commit -m "feat(sim-core): add the calendar"
 - [ ] **Step 4: Commit**
 
 ```bash
-git add docs/plan/tasks/2026-10-07-m0-pipeline.md
+git add docs/plan/tasks/m0-pipeline/milestone.md
 git commit -m "docs(plan): record the M0.1 pace"
 git add docs/plan/implementation-plan.md
 git commit -m "docs(plan): sync the implementation plan from the doc"
