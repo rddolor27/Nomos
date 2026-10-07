@@ -6,7 +6,7 @@ Oct 6, 2026 · @Rd
 
 Work top to bottom: each milestone lists what to build and the checks that close it, merged from every research round. Tick a box when it lands; a milestone is done when its exit checks pass in CI, not when the demo looks right.
 
-- **Where items come from:** round 1 is Findings & plan and Full report, round 2 is Follow-up research, round 3 is 2D game look & assets, round 4 is Villages, cities & countries, round 5 is the Performance budget section below, round 6 is Goods & wellbeing, round 8 is Cultures, round 9 is Maps and world builder, and (Sound), (Military) and (Calendar) mark the owner's plans of 7 October 2026, in the Sound, Military and Time & calendar tabs.
+- **Where items come from:** round 1 is Findings & plan and Full report, round 2 is Follow-up research, round 3 is 2D game look & assets, round 4 is Villages, cities & countries, round 5 is the Performance budget section below, round 6 is Goods & wellbeing, round 8 is Cultures, round 9 is Maps and world builder, and (Sound), (Military), (Calendar) and (Gazette) mark the owner's plans of 7 October 2026, in the Sound, Military, Time & calendar and Gazette tabs.
 - **Effort:** rough full-time estimates for one developer; round 1 put the whole plan at 12–19 weeks, and an AI coding assistant shortens that.
 - **Something to look at from week one:** every milestone ships at least one of the three visual styles below, so the project is never just a test suite.
 
@@ -324,12 +324,14 @@ Goal: daily routines in a real town, drawn as the Skin C pixel-art town from one
 - [ ] Build the minimal developer-flag Build mode as a lazy chunk, in 8–12 days: `WorldRenderer.patchTiles` over 32×32 chunks; terrain brush, rectangle and fill, with a 3-tile minimum land brush; prefab stamps; cell-diff undo; save and load in a versioned container; and a Play hand-off to the worker (R9).
 - [ ] Draw the two shore saddle keys (`1001`, `0110`) for both shores: 4 frames, or 8 with variants. Then the corner set is complete and tidying can drop its diagonal clause (R9).
 - [ ] Add seasons to the town: plant in spring, grow in summer, harvest over 9–14 days of autumn and lie fallow in winter; day length from the sunrise table; seasonal palettes, winter snow and ambience by season (Calendar).
-- [ ] Draw seasonal palette maps for grass, foliage and crops, snow overlays for ground and roofs, and HUD season icons distinct from the eight culture emblems (Calendar).
+- [x] Draw seasonal palettes for ground and foliage, snow tiles and roof overlays, bare and snowy trees, and HUD season icons distinct from the eight culture emblems (Calendar).
 - [ ] Add the soldier job: a public-sector job paid from taxes, with shifts like other jobs and home after work; the helmet and baldric come off at home (Military).
 - [ ] Play town events near the camera, panned by screen position: purchase, emotes, doors, footsteps, work, the clock and animals. Cap voices at about 24 and each kind per second, and step the town bed from quiet to busy to market instead of stacking sounds (Sound).
 - [ ] Play ambience by biome, time of day and season, crossfaded at dawn and dusk with the town's light periods (Sound).
 - [ ] Add the music player: title, lab, town day and town night, one track at a time with crossfades and variations keyed on (world seed, place, day). Music loads as its own chunk when first needed (Sound).
 - [ ] Play festival music in one of the four styles, which differ only in tempo, loudness and structure; culture music never plays in justice views (Sound).
+- [ ] Add the town gazette: one edition per settlement each dawn, built only from the record store at the day boundary, with town, market and calendar stories in plain templates, no personal names, and a HUD panel with back issues by date (Gazette).
+- [ ] Draw the gazette button icon at 16 and 8 px and the paper panel frame (Gazette).
 
 **Exit checks**
 
@@ -349,6 +351,8 @@ Goal: daily routines in a real town, drawn as the Skin C pixel-art town from one
 - [ ] The harvest comes once a year in autumn, and stores carry the town through winter (Calendar).
 - [ ] Every event type with a sound also has a visual twin (Sound).
 - [ ] No soldier frame draws a weapon out of its sheath or shows a fight (Military).
+- [ ] Every gazette story traces to a record id, the gazette module imports only the record store, a replay prints byte-identical editions, and turning the gazette off changes no state hash (Gazette).
+- [ ] Every gazette template and printed edition passes the name, profanity, generic-claim and hierarchy-word filters (Gazette).
 
 ## M4 Crime and police
 
@@ -379,6 +383,7 @@ Goal: crime as an action any agent can take, calibrated policing, and the true-v
 - [ ] Add the outcome and exposure audit in headless CI over 50 paired seeds × 20 simulated years, using agent-level units: raw per-culture rates of true offending, victimisation, stops, wrongful stops, arrests, records and wealth decile within 0.9–1.1 of the population rate, and Mantel–Haenszel ratios on place × time × visible-cue strata within |ln ratio| ≤ 0.05, overall and by period. Log reporting and trust by culture too (R8).
 - [ ] Run the audit against a single-culture world, a culture-blind twin with preference shifts set to zero, and customs counterfactuals on the same seeds (R8).
 - [ ] Play the justice sounds under the visual rules: theft in the true view only and the same for everyone; report, stop, arrest, wrongful stop, release and record filed, with the wrongful stop matching the arrest (Sound).
+- [ ] Add the gazette's justice column from police and court records: reports, stops, arrests, wrongful stops, releases and verdicts, by case number and role only, with a wrongful stop given an arrest's priority. In the true view, a margin note counts the day's unrecorded crimes (Gazette).
 
 **Exit checks**
 
@@ -395,6 +400,8 @@ Goal: crime as an action any agent can take, calibrated policing, and the true-v
 - [ ] The audit passes both bands, or each exception is explained by a named place-time mechanism (R8).
 - [ ] Audio audit: outside festival music, no sound parameter differs by hue, look, culture, wealth decile or offender status in the recorded view, and a wrongful stop matches an arrest in length and loudness (Sound).
 - [ ] No code path sends soldiers into a town to keep order; town stops and arrests come only from the police (Military).
+- [ ] Over 50 paired seeds, the gazette's justice counts equal the recorded counts, never the true ones (Gazette).
+- [ ] No justice story carries a name, culture, look or wealth term, and the culture flip test leaves every gazette story outside festivals unchanged (Gazette).
 
 ## M5 Society and policy
 
@@ -435,6 +442,7 @@ Goal: the social layer and policy sliders, set before Run and each with a predic
 - [ ] Age people one year per 112-day year, with real lifespans, birthdays spread over the year, and age hazards converted as 1 − (1 − p)^(1/112) into build-time integer tables (Calendar).
 - [ ] Add the year-in-review card (population, births and deaths, festivals held, true against recorded crime, wealth shifts) and history charts on a year axis, never broken down by culture (Calendar).
 - [ ] Add the defence budget as a policy set before Run: soldier posts and pay from taxes, with its predicted effect on raids and taxes (Military).
+- [ ] Print the year in review as the gazette's year-end edition, and add an opt-in follow-the-news camera that eases to the front-page story at 4× and 16× (Gazette).
 
 **Exit checks**
 
@@ -446,6 +454,7 @@ Goal: the social layer and policy sliders, set before Run and each with a predic
 - [ ] Without policy changes, wealth drift over 50 years stays within 0.03 Gini and 3 points of top-10% share; the wealth-tax Gini check runs from a spawned near-stationary state (R6).
 - [ ] The age pyramid stays within its band, no culture's festivals cluster in one season, and a branch replays identically from (seed, settings, fork day, change) (Calendar).
 - [ ] Recruitment and postings never read culture, region, looks or wealth, and the appearance and culture audits cover soldiers (Military).
+- [ ] The follow-the-news camera is off by default and never changes the state hash (Gazette).
 
 ## M6 Scale and sharing
 
@@ -582,6 +591,7 @@ Goal: country mode ships, with a generated, seeded map, Country and Region views
 - [ ] Re-baseline M7's and M8's settlement counts to listed places plus a region tier, and fit Zipf on true ranks (R9).
 - [ ] Place garrisons in the capital and coastal or border towns, forts at road junctions near coasts and borders, and watchtowers along long roads, all in the world generator; draw their map icons and play the military sounds (Military).
 - [ ] Play country and region music and ambience, and the 11 wonder loops in wonder views (Sound).
+- [ ] Add the national gazette from the aggregate ledgers: harvests, prices, migration and recorded raids on the roads (Gazette).
 
 **Exit checks**
 
@@ -590,6 +600,7 @@ Goal: country mode ships, with a generated, seeded map, Country and Region views
 - [ ] Country and Region views take ≤ 2 ms of main-thread render time per frame in CI's software-GL Chromium, a proposed bar (R4).
 - [ ] A render-filter test checks that the recorded view never shows a true-only cue; a fork's fold at its first tick equals the source ledger; a save with ten years of history stays under about 3 MB gzip, since history alone came to about 1.9 MB on synthetic data (R4).
 - [ ] After spin-up, cultures' mean development stays within the set tolerance, and the share of development regions holding only one culture is reported (R8).
+- [ ] The national gazette's figures equal the ledgers' recorded figures (Gazette).
 
 ## M9 Zoom across scales
 
@@ -636,7 +647,7 @@ Total effort to launch is roughly 20–30 weeks of one developer's full-time wor
 
 Round 9 adds a full world builder and moves M7 and M8 before launch: about 178–271 days to launch, up from 100–150 (computed from the milestone estimates) (R9).
 
-The owner's plans of 7 October 2026 add about 27–44 days before launch (sound 11.5–18, military 4–7, calendar 11.5–19) and 1.5–2 days in M9. That puts launch at about 205–315 days (computed from unsourced estimates).
+The owner's plans of 7 October 2026 add about 31.5–51 days before launch (sound 11.5–18, military 4–7, calendar 10.5–17 now that its art is drawn, gazette 5.5–9) and 1.5–2 days in M9. That puts launch at about 210–322 days (computed from unsourced estimates).
 
 **Ongoing**
 
@@ -664,7 +675,7 @@ The owner's plans of 7 October 2026 add about 27–44 days before launch (sound 
 | FBI tables 16 and 70–74, BJS reporting by location, and Bettencourt 2007 with intervals | Crime, police and scaling bands for country mode | M7 |
 | Alignment nudges with the real emulator, read on the divergence meter | Shadow-canonical as the default, or pinned live cities | M7, M9 |
 | Day-step, spawn and map-generation times in browser workers and on phones | The phone tier for country mode | M8, M9 |
-| Whether a stream of animated crime events builds illusory correlation as static sentence lists do (round 8) | How strict the culture lens and justice-view rules must be | M4, M5 |
+| Whether a stream of animated crime events, or the gazette's daily justice column, builds illusory correlation as static sentence lists do (round 8) | How strict the culture lens and justice-view rules must be | M4, M5 |
 | The culture audit's outcome band (0.9–1.1), equivalence margin (0.05) and power over 50 paired seeds | Whether the audit detects culture leaks | M4 |
 | Round 8's transmission bands re-run with similar culture shares, not one 60% culture | CI retention bands and the 0.5% inflow default | M3, M5 |
 | Festival demand spikes (2–4×), attendance targets, and festival and music transmission rates | Festival markets, crowds and custom rates | M3 |
