@@ -2,19 +2,20 @@
   "image": "military.png",
   "size": [
     256,
-    64
+    129
   ],
   "tile": 16,
   "frames": {
     "building_barracks": {
-      "x": 130,
-      "y": 0,
+      "x": 33,
+      "y": 65,
       "w": 64,
       "h": 48,
       "anchor": [
         32,
         47
       ],
+      "snow": "building_barracks_snow",
       "footprint": [
         4,
         2
@@ -24,9 +25,24 @@
         46
       ]
     },
+    "building_barracks_snow": {
+      "x": 98,
+      "y": 65,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "layer": "snow",
+      "footprint": [
+        4,
+        2
+      ]
+    },
     "map16_military_fort": {
-      "x": 212,
-      "y": 0,
+      "x": 180,
+      "y": 65,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -36,8 +52,8 @@
       "overlay": true
     },
     "map16_military_watchtower": {
-      "x": 195,
-      "y": 0,
+      "x": 163,
+      "y": 65,
       "w": 16,
       "h": 20,
       "anchor": [
@@ -47,8 +63,8 @@
       "overlay": true
     },
     "map8_military_fort": {
-      "x": 238,
-      "y": 0,
+      "x": 206,
+      "y": 65,
       "w": 8,
       "h": 8,
       "anchor": [
@@ -58,8 +74,8 @@
       "overlay": true
     },
     "map8_military_watchtower": {
-      "x": 229,
-      "y": 0,
+      "x": 197,
+      "y": 65,
       "w": 8,
       "h": 10,
       "anchor": [
@@ -77,6 +93,7 @@
         48,
         63
       ],
+      "snow": "military_fort_snow",
       "footprint": [
         6,
         3
@@ -86,8 +103,23 @@
         62
       ]
     },
-    "military_watchtower": {
+    "military_fort_snow": {
       "x": 97,
+      "y": 0,
+      "w": 96,
+      "h": 64,
+      "anchor": [
+        48,
+        63
+      ],
+      "layer": "snow",
+      "footprint": [
+        6,
+        3
+      ]
+    },
+    "military_watchtower": {
+      "x": 194,
       "y": 0,
       "w": 32,
       "h": 64,
@@ -95,6 +127,7 @@
         16,
         63
       ],
+      "snow": "military_watchtower_snow",
       "footprint": [
         2,
         1
@@ -102,6 +135,21 @@
       "door": [
         16,
         62
+      ]
+    },
+    "military_watchtower_snow": {
+      "x": 0,
+      "y": 65,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "layer": "snow",
+      "footprint": [
+        2,
+        1
       ]
     }
   }

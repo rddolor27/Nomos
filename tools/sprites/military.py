@@ -12,7 +12,7 @@ of their footprint, and the fort is stamped together from ringed parts, back to 
 Build: python tools/sprites/military.py
 """
 import buildings
-from buildings import Building, Canvas, roof_hip, wall
+from buildings import Building, Canvas, add_with_snow, roof_hip, snowing, wall
 from landmarks import ring
 from spritekit import Sheet, add_outline, from_ascii, pad
 
@@ -64,6 +64,8 @@ def watchtower():
                 ch = {'L': 'w', 'w': 'd', 'd': 'd'}[ch]
             c.put(x, 1 + i, ch)
     c.hline(1, W - 2, 9, 'w')
+    if snowing():
+        c.swap(0, 1, W - 1, 9, {'L': 'W', 'w': 'W', 'd': 'I'})
     c.hline(1, W - 2, 10, 'd')
     c.hline(3, W - 4, 11, 'O')
     c.rect(4, 12, W - 5, 23, 'd')                             # the lookout's shaded inside
@@ -110,14 +112,20 @@ def watchtower():
 
 
 # ------------------------------------------------------------------ fort
+def tops():
+    """Lit, plain and shaded symbols for surfaces open to the sky: stone, or snow."""
+    return ('W', 'W', 'I') if snowing() else ('K', 'k', 'x')
+
+
 def merlons(w, far):
     """Merlons along a parapet, 3 px wide and 3 apart: lit caps over their faces, with the parapet's
     lit top between them. Far-side gaps open on the sky; near-side gaps show the shaded walkway."""
-    gap = ('.', '.', 'K') if far else ('O', 'x', 'K')
+    cap = tops()[0]
+    gap = ('.', '.', cap) if far else ('O', 'x', cap)
     rows = ['', '', '']
     for x in range(w):
         face = 'x' if x % 6 == 2 else 'k'
-        for r, ch in enumerate(('K', face, face) if x % 6 < 3 else gap):
+        for r, ch in enumerate((cap, face, face) if x % 6 < 3 else gap):
             rows[r] += ch
     return rows
 
@@ -133,7 +141,8 @@ def stone_face(w, h, oy=0):
 
 def tower(w, h):
     """A square tower: merlons round a deck seen from above, then its front face."""
-    deck = ['K' + 'x' * (w - 2) + 'x', 'K' + 'k' * (w - 2) + 'x']
+    lit, plain, shade = tops()
+    deck = [lit + shade * (w - 1), lit + plain * (w - 2) + shade]
     top = merlons(w, True) + deck + merlons(w, False)
     return top + stone_face(w, h - len(top))
 
@@ -161,10 +170,12 @@ def gatehouse(w, h):
 
 def walkway(h, side):
     """A side wall seen from above: merlons notching its outer edge, the walkway, a drop to the yard."""
+    lit, plain, shade = tops()
+    path = lit + plain * 4 + shade
     rows = []
     for y in range(h):
-        merlon = ('K' if side == 'left' else 'x') if y % 5 < 3 else '.'
-        rows.append(merlon + 'Kkkkkx' if side == 'left' else 'Kkkkkx' + merlon)
+        merlon = (lit if side == 'left' else shade) if y % 5 < 3 else '.'
+        rows.append(merlon + path if side == 'left' else path + merlon)
     return rows
 
 
@@ -183,11 +194,12 @@ def yard_house(w):
 def fort():
     W, H = 96, 64
     c = Canvas(W, H)
-    c.rect(9, 17, W - 10, 44, 's')                             # the packed-earth yard
+    earth, speck = ('W', 'I') if snowing() else ('s', 'S')
+    c.rect(9, 17, W - 10, 44, earth)                           # the packed-earth yard
     for y in range(17, 45):
         for x in range(9, W - 9):
             if buildings._hash(x, y) % 9 == 0:
-                c.put(x, y, 'S')
+                c.put(x, y, speck)
     c.prop(13, 0, ring(curtain(W - 26, 17, far=True)))         # back wall
     for x, side in ((1, 'left'), (W - 9, 'right')):
         c.prop(x, 14, ring(walkway(24, side)))                 # side walls
@@ -272,11 +284,14 @@ def icon(rows, size, name):
 def build():
     sheet = Sheet('military')
     b, door = barracks()
-    sheet.add('building_barracks', b.c.image(), footprint=b.footprint, door=door)
+    add_with_snow(sheet, 'building_barracks', b.c.image(), lambda: barracks()[0].c.image(),
+                  footprint=b.footprint, door=door)
     t = watchtower()
-    sheet.add('military_watchtower', t.image(), footprint=[2, 1], door=[t.w // 2, t.h - 2])
+    add_with_snow(sheet, 'military_watchtower', t.image(), lambda: watchtower().image(),
+                  footprint=[2, 1], door=[t.w // 2, t.h - 2])
     f = fort()
-    sheet.add('military_fort', f.image(), footprint=[6, 3], door=[f.w // 2, f.h - 2])
+    add_with_snow(sheet, 'military_fort', f.image(), lambda: fort().image(),
+                  footprint=[6, 3], door=[f.w // 2, f.h - 2])
     for size, icons in ((16, ICON16), (8, ICON8)):
         for name, rows in icons.items():
             sheet.add(f'map{size}_military_{name}', icon(rows, size, name), overlay=True)
