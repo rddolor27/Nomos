@@ -42,7 +42,7 @@ An edition is a pure function of the records: edition(settlement, day) = f(recor
 - **The panel:** a paper-styled panel in the HUD, in HTML rather than canvas so screen readers can read it. A dot on the gazette button marks a new edition, and the run never pauses for it. Back issues browse by date, and a replay that seeks to a date shows that day's edition.
 - **Follow the news:** an opt-in camera that, at 4× and 16×, eases to the place of the front-page story with each new edition. It answers the open question about steering at fast speeds (Time & calendar).
 - **The year-end edition** is the year-in-review card, printed as the gazette's special issue.
-- **Country mode** adds a national gazette from the aggregate ledgers: harvests, prices, migration and recorded raids on the roads.
+- **Country mode** keeps one paper per town, built from each town's ledger (owner, 7 October 2026), and adds a national gazette from the aggregate ledgers: harvests, prices, migration and recorded raids on the roads.
 - **Cost:** an edition is a few hundred bytes of text from tens of records a day, well under 1 ms to build (unsourced estimate).
 - **Art and sound:** a rolled-paper button icon at 16 and 8 px, and a paper panel frame. No new sound: a new edition shows only the dot.
 
@@ -55,7 +55,7 @@ The gazette takes about 5.5–9 days, all before launch (unsourced estimate). Ea
 | M3 City life | The core: record queries, story priorities, templates, the daily edition and the panel with back issues, with town, market and calendar sections (2–3); the button icon and panel frame (0.5–1) | 2.5–4 |
 | M4 Crime and police | The justice column, the true-view margin note and the audits | 1–2 |
 | M5 Society and policy | The year-end edition and the follow-the-news camera | 1 |
-| M8 Country map | The national gazette from the aggregate ledgers | 1–2 |
+| M8 Country map | Each town's paper from its ledger, and the national gazette | 1–2 |
 
 **Exit checks:**
 
@@ -69,6 +69,5 @@ The gazette takes about 5.5–9 days, all before launch (unsourced estimate). Ea
 ## Open questions
 
 - Should the true view's margin note exist, or should players find unrecorded crime only on the true-view map?
-- One paper per settlement, or one per region in country mode?
 - Do street and district names ever come from a culture's naming custom? If so, justice stories should name districts by number.
 - Does a daily justice column build the illusory correlation that round 8 flagged for streams of crime events? Test it with the playtest panel before M4 ships.
