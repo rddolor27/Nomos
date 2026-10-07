@@ -33,6 +33,8 @@ KEY = sk.cmap(
     Y='GOLD',
     L='BODY_L', B='BODY', b='BODY_S', D='BODY_D',
     p='PINK_D',
+    t='WOOD', u='WOOD_D',
+    **{'1': 'STONE_L', '3': 'STONE_D'},
 )
 OUTLINE = sk.PALETTE['OUTLINE']
 W, H, GROUND = 18, 22, 20
@@ -341,6 +343,14 @@ HEADS = {
                    (1, 3, 'YYYYYYYYYYbD'), (2, 2, 'DDDDDDDDDDDDDD')],
         },
     },
+    'soldier': {  # steel kettle hat, the same from every side; steel and leather only, never a role or culture colour
+        'narrow': dict.fromkeys(('down', 'left', 'up'), [
+            (-3, 7, 'WW13'), (-2, 5, '1W111113'), (-1, 4, '1W11111133'), (0, 4, '1111111133'),
+            (1, 2, '11111111111133'), (2, 2, '33333333333333'), (3, 2, '3'), (3, 15, '3')]),
+        'wide': dict.fromkeys(('down', 'left', 'up'), [
+            (-3, 6, '1WW113'), (-2, 4, '1W11111113'), (-1, 3, '1W1111111133'), (0, 3, '111111111133'),
+            (1, 1, '1111111111111133'), (2, 1, '3333333333333333'), (3, 1, '3'), (3, 16, '3')]),
+    },
 }
 # Body items: absolute (row, x, text) per body shape; the hop frame uses the stand rows one higher.
 BODIES = {
@@ -386,6 +396,36 @@ BODIES = {
                      (18, 13, 'gf'), (19, 13, 'ff'), (20, 13, 'ff')],
         },
     },
+    'soldier': {  # baldric slanting to a sheathed sword at the hip, never level like the merchant's sash; nothing drawn
+        'stand': {
+            'down': [(15, 2, 'tt'), (16, 2, 'uutt'), (17, 4, 'uutt'), (18, 6, 'uutt'), (19, 8, 'uutt'), (20, 10, 'uutt'),
+                     (15, 15, '3'), (16, 15, 't'), (17, 14, '3W3'), (18, 15, 'tu'), (19, 15, 'tu'), (20, 15, '13')],
+            'left': [(12, 14, 'tu'), (13, 14, 'tu'), (14, 14, 'tu'), (15, 14, 'u'), (16, 14, 'u'),
+                     (15, 13, '3'), (16, 13, 't'), (17, 12, '3W3'), (18, 13, 'tu'), (19, 14, 'tu'), (20, 15, '13')],
+            'up': [(12, 14, 'tt'), (13, 12, 'ttuu'), (14, 10, 'ttuu'), (15, 8, 'ttuu'), (16, 6, 'ttuu'),
+                   (17, 4, 'ttuu'), (18, 3, 'tuu'), (19, 3, 'u'),
+                   (15, 2, '3'), (16, 2, 't'), (17, 1, '3W3'), (18, 1, 'tu'), (19, 1, 'tu'), (20, 1, '13')],
+        },
+        'squash': {
+            'down': [(16, 1, 'tt'), (17, 1, 'uutt'), (18, 3, 'uutt'), (19, 5, 'uutt'), (20, 7, 'uutt'),
+                     (16, 15, '3'), (17, 15, 't'), (18, 14, '3W3'), (19, 15, 'tu'), (20, 15, '13')],
+            'left': [(13, 15, 'tu'), (14, 15, 'tu'), (15, 15, 'tu'), (16, 15, 'u'), (17, 15, 'u'),
+                     (16, 13, '3'), (17, 13, 't'), (18, 12, '3W3'), (19, 13, 'tu'), (20, 14, '13')],
+            'up': [(13, 15, 'tt'), (14, 13, 'ttuu'), (15, 11, 'ttuu'), (16, 9, 'ttuu'), (17, 7, 'ttuu'),
+                   (18, 5, 'ttuu'), (19, 3, 'ttuu'), (20, 3, 'uu'),
+                   (16, 2, '3'), (17, 2, 't'), (18, 1, '3W3'), (19, 1, 'tu'), (20, 1, '13')],
+        },
+        'sit': {
+            'down': [(17, 1, 'tt'), (18, 1, 'uutt'), (19, 3, 'uutt'), (20, 5, 'uutt'),
+                     (17, 15, '3'), (18, 15, 't'), (19, 14, '3W3'), (20, 15, '13')],
+            'left': [(14, 15, 'tu'), (15, 15, 'tu'), (16, 15, 'tu'), (17, 15, 'u'), (18, 15, 'u'),
+                     (17, 13, '3'), (18, 13, 't'), (19, 12, '3W3'), (20, 13, 'tu13')],
+        },
+        'sneak': {  # strap and sword behind the low face
+            'left': [(14, 15, 'tu'), (15, 15, 'tu'),
+                     (16, 15, '3'), (17, 15, 't'), (18, 14, '3W3'), (19, 15, 'tu'), (20, 15, '13')],
+        },
+    },
 }
 # Head items on the crouched sneak (facing left): the standing pose's left view moved with the face.
 SNEAK_HEADS = {
@@ -395,8 +435,10 @@ SNEAK_HEADS = {
     'clinic': [(11, 9, 'gg'), (12, 6, 'WWggggWWc'), (13, 4, 'WWWWWggWWWWc'), (13, 16, 'W'), (14, 16, 'c')],
     'builder': [(8, 8, 'LLYb'), (9, 6, 'LYYYYYbb'), (10, 5, 'LYYYYYYYbD'), (11, 5, 'YYYYYYYYbD'),
                 (12, 5, 'YYYYYYYYbD'), (13, 2, 'DDDDDDDDDDDDDD')],
+    'soldier': [(8, 8, 'WW13'), (9, 6, '1W111113'), (10, 5, '1W11111133'), (11, 5, '1111111133'),
+                (12, 3, '11111111111133'), (13, 3, '33333333333333'), (14, 3, '3'), (14, 16, '3')],
 }
-JOBS = ('police', 'merchant', 'clinic', 'builder', 'farmer')
+JOBS = ('police', 'merchant', 'clinic', 'builder', 'farmer', 'soldier')
 
 
 def job_rows(job, pose, view):
