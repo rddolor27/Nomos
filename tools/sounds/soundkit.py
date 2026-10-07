@@ -233,3 +233,33 @@ class Bank:
         for name, x in self.audio.items():
             write_wav(PREVIEWS / self.name / f'{name}.wav', x)
         return out
+
+
+# ------------------------------------------------------------------------------ effect layers
+def pitched(pitch):
+    """A layer's pitch fields: a MIDI note, or a [start, end] sweep in Hz."""
+    return {'freq': list(pitch)} if isinstance(pitch, (list, tuple)) else {'note': pitch}
+
+
+def pluck(at, pitch, decay, volume, wave='triangle', attack=0.002, **extra):
+    """A tone that peaks after `attack` and falls straight to silence by `decay` seconds."""
+    return {'start': at, 'wave': wave, **pitched(pitch), 'length': decay, 'attack': attack,
+            'decay': decay - attack, 'sustain': 0, 'release': 0.005, 'volume': volume, **extra}
+
+
+def bell(at, pitch, ring, volume, wave='triangle'):
+    """A struck tone: a quick drop to a third, then a long straight fade over `ring` seconds."""
+    return {'start': at, 'wave': wave, **pitched(pitch), 'length': 0.04, 'attack': 0.002,
+            'decay': 0.038, 'sustain': 0.35, 'release': ring, 'volume': volume}
+
+
+def hiss(at, rate, length, volume, attack=0.002, **extra):
+    """A noise burst; its hold rate in Hz sets the colour, and lower is darker."""
+    return pluck(at, rate if isinstance(rate, list) else [rate, rate], length, volume, 'noise', attack, **extra)
+
+
+def add_effect(bank, name, rms_db, layers):
+    """Add an effect with the gain that brings its RMS to rms_db, so a bank's levels stay even."""
+    probe = Bank(bank.name)
+    probe.add(name, 'effect', {'layers': layers})
+    bank.add(name, 'effect', {'gain': round(rms_db - probe.sounds[name]['rms_db'], 1), 'layers': layers})

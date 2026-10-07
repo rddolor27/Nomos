@@ -6,11 +6,12 @@ through arpeggios with dotted rhythms. The drill cadence is written as a step gr
 per sixteenth: X an accent, x a soft hit, . a rest. Marching comes as a short run of steps and as
 one squad footfall, which the game can time to the walk cycle and keep softer.
 
-Each sound gives its loudness as RMS in dBFS, and add() sets the gain that reaches it.
+Each sound gives its loudness as RMS in dBFS, and soundkit.add_effect() sets the gain that reaches it.
 
 Build: python tools/sounds/military.py
 """
 import soundkit as sk
+from soundkit import add_effect, hiss, pluck
 
 D4, E4 = 62, 64
 STEP = 0.15
@@ -18,21 +19,6 @@ CADENCE = {
     'bass':  'X...x...X...x...X',
     'snare': '....X..x....X.xx.',
 }
-
-
-def _pitch(pitch):
-    return {'freq': list(pitch)} if isinstance(pitch, (list, tuple)) else {'note': pitch}
-
-
-def pluck(at, pitch, decay, volume, wave='triangle', attack=0.002, **extra):
-    """A tone that peaks after `attack` and falls straight to silence by `decay` seconds."""
-    return {'start': at, 'wave': wave, **_pitch(pitch), 'length': decay, 'attack': attack,
-            'decay': decay - attack, 'sustain': 0, 'release': 0.005, 'volume': volume, **extra}
-
-
-def hiss(at, rate, length, volume, attack=0.002, **extra):
-    """A noise burst; its hold rate in Hz sets the colour, and lower is darker."""
-    return pluck(at, rate if isinstance(rate, list) else [rate, rate], length, volume, 'noise', attack, **extra)
 
 
 def bass(at, loud):
@@ -68,13 +54,6 @@ def footfall(at, volume):
             for lag in (0, 0.011, 0.023)] + [pluck(at, [100, 60], 0.05, volume * 0.8)]
 
 
-def add(bank, name, rms_db, layers):
-    """Add an effect with the gain that brings its RMS to rms_db, so a bank's levels stay even."""
-    probe = sk.Bank(bank.name)
-    probe.add(name, 'effect', {'layers': layers})
-    bank.add(name, 'effect', {'gain': round(rms_db - probe.sounds[name]['rms_db'], 1), 'layers': layers})
-
-
 SOUNDS = {
     'military_drill-drum': (-27.5, cadence(CADENCE)),
     'military_watch-horn': (-24, [*horn(0, D4, 0.35, 0.3), *horn(0.42, E4, 0.35, 0.3), *horn(0.84, D4, 0.6, 0.3)]),
@@ -106,7 +85,7 @@ SOUNDS = {
 def build():
     bank = sk.Bank('military')
     for name, (rms_db, layers) in SOUNDS.items():
-        add(bank, name, rms_db, layers)
+        add_effect(bank, name, rms_db, layers)
     return bank
 
 

@@ -5,39 +5,19 @@ in one neutral voice (a triangle with a faint pulse edge); the game adds a small
 event. Animals are stylised chiptune calls, not recordings. Two pulses a fraction of a semitone
 apart beat against each other, which gives the sheep, goat and horse their tremble.
 
-Each sound gives its loudness as RMS in dBFS, and add() sets the gain that reaches it.
+Each sound gives its loudness as RMS in dBFS, and soundkit.add_effect() sets the gain that reaches it.
 
 Build: python tools/sounds/events.py
 """
 import soundkit as sk
+from soundkit import add_effect, bell, hiss, pitched, pluck
 
 G4, A6 = 67, 93
 
 
-def _pitch(pitch):
-    return {'freq': list(pitch)} if isinstance(pitch, (list, tuple)) else {'note': pitch}
-
-
-def pluck(at, pitch, decay, volume, wave='triangle', attack=0.002, **extra):
-    """A tone that peaks after `attack` and falls straight to silence by `decay` seconds."""
-    return {'start': at, 'wave': wave, **_pitch(pitch), 'length': decay, 'attack': attack,
-            'decay': decay - attack, 'sustain': 0, 'release': 0.005, 'volume': volume, **extra}
-
-
-def bell(at, pitch, ring, volume, wave='triangle'):
-    """A struck tone: a quick drop to a third, then a long straight fade over `ring` seconds."""
-    return {'start': at, 'wave': wave, **_pitch(pitch), 'length': 0.04, 'attack': 0.002,
-            'decay': 0.038, 'sustain': 0.35, 'release': ring, 'volume': volume}
-
-
-def hiss(at, rate, length, volume, attack=0.002, **extra):
-    """A noise burst; its hold rate in Hz sets the colour, and lower is darker."""
-    return pluck(at, rate if isinstance(rate, list) else [rate, rate], length, volume, 'noise', attack, **extra)
-
-
 def voice(at, pitch, length, volume, release=0.03, **extra):
     """The emote voice, the same for everyone: a triangle with a faint pulse edge."""
-    tone = {'start': at, **_pitch(pitch), 'length': length, 'attack': 0.01, 'release': release, **extra}
+    tone = {'start': at, **pitched(pitch), 'length': length, 'attack': 0.01, 'release': release, **extra}
     return [{**tone, 'wave': 'triangle', 'volume': volume},
             {**tone, 'wave': 'pulse', 'volume': volume / 4, 'lowpass': 2500}]
 
@@ -60,13 +40,6 @@ def flutter(at, flaps, gap, rate, volume):
     """Wing beats that fade as the bird climbs away."""
     return [hiss(at + gap * k + 0.006 * (k % 3), rate, 0.03, volume * (1 - k / (flaps + 2)), attack=0.008,
                  highpass=600, lowpass=3500) for k in range(flaps)]
-
-
-def add(bank, name, rms_db, layers):
-    """Add an effect with the gain that brings its RMS to rms_db, so a bank's levels stay even."""
-    probe = sk.Bank(bank.name)
-    probe.add(name, 'effect', {'layers': layers})
-    bank.add(name, 'effect', {'gain': round(rms_db - probe.sounds[name]['rms_db'], 1), 'layers': layers})
 
 
 SOUNDS = {
@@ -201,7 +174,7 @@ SOUNDS = {
 def build():
     bank = sk.Bank('events')
     for name, (rms_db, layers) in SOUNDS.items():
-        add(bank, name, rms_db, layers)
+        add_effect(bank, name, rms_db, layers)
     return bank
 
 

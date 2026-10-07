@@ -5,34 +5,14 @@ one instrument. The three lab verdicts share a rhythm, a timbre and a loudness a
 contour: a held claim rises, a failed claim falls, as its effect went the other way, and an
 inconclusive one rocks on an open fifth. There is no fail buzzer.
 
-Each sound gives its loudness as RMS in dBFS, and add() sets the gain that reaches it.
+Each sound gives its loudness as RMS in dBFS, and soundkit.add_effect() sets the gain that reaches it.
 
 Build: python tools/sounds/ui.py
 """
 import soundkit as sk
+from soundkit import add_effect, bell, hiss, pluck
 
 E4, C5, E5, G5, A5, C6, E6 = 64, 72, 76, 79, 81, 84, 88
-
-
-def _pitch(pitch):
-    return {'freq': list(pitch)} if isinstance(pitch, (list, tuple)) else {'note': pitch}
-
-
-def pluck(at, pitch, decay, volume, wave='triangle', attack=0.002, **extra):
-    """A tone that peaks after `attack` and falls straight to silence by `decay` seconds."""
-    return {'start': at, 'wave': wave, **_pitch(pitch), 'length': decay, 'attack': attack,
-            'decay': decay - attack, 'sustain': 0, 'release': 0.005, 'volume': volume, **extra}
-
-
-def bell(at, pitch, ring, volume, wave='triangle'):
-    """A struck tone: a quick drop to a third, then a long straight fade over `ring` seconds."""
-    return {'start': at, 'wave': wave, **_pitch(pitch), 'length': 0.04, 'attack': 0.002,
-            'decay': 0.038, 'sustain': 0.35, 'release': ring, 'volume': volume}
-
-
-def hiss(at, rate, length, volume, attack=0.002, **extra):
-    """A noise burst; its hold rate in Hz sets the colour, and lower is darker."""
-    return pluck(at, rate if isinstance(rate, list) else [rate, rate], length, volume, 'noise', attack, **extra)
 
 
 def verdict(notes):
@@ -41,13 +21,6 @@ def verdict(notes):
     at = 0.085 * len(steps)
     return [bell(0.085 * i, note, 0.25, 0.35) for i, note in enumerate(steps)] + [
         bell(at, last, 0.5, 0.35), bell(at, last + 12, 0.3, 0.08, 'sine')]
-
-
-def add(bank, name, rms_db, layers):
-    """Add an effect with the gain that brings its RMS to rms_db, so a bank's levels stay even."""
-    probe = sk.Bank(bank.name)
-    probe.add(name, 'effect', {'layers': layers})
-    bank.add(name, 'effect', {'gain': round(rms_db - probe.sounds[name]['rms_db'], 1), 'layers': layers})
 
 
 SOUNDS = {
@@ -126,7 +99,7 @@ SOUNDS = {
 def build():
     bank = sk.Bank('ui')
     for name, (rms_db, layers) in SOUNDS.items():
-        add(bank, name, rms_db, layers)
+        add_effect(bank, name, rms_db, layers)
     return bank
 
 

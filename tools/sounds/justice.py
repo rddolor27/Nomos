@@ -6,29 +6,15 @@ and a wrongful stop share one frame, a short transient and then two soft mid ton
 timing, so they match in length and weight and differ only in timbre and interval. build() checks
 that they stay equal.
 
-Each sound gives its loudness as RMS in dBFS, and add() sets the gain that reaches it.
+Each sound gives its loudness as RMS in dBFS, and soundkit.add_effect() sets the gain that reaches it.
 
 Build: python tools/sounds/justice.py
 """
 import soundkit as sk
+from soundkit import add_effect, hiss, pluck
 
 A4, B4, E4 = 69, 71, 64
 OUTCOME_DB = -24
-
-
-def _pitch(pitch):
-    return {'freq': list(pitch)} if isinstance(pitch, (list, tuple)) else {'note': pitch}
-
-
-def pluck(at, pitch, decay, volume, wave='triangle', attack=0.002, **extra):
-    """A tone that peaks after `attack` and falls straight to silence by `decay` seconds."""
-    return {'start': at, 'wave': wave, **_pitch(pitch), 'length': decay, 'attack': attack,
-            'decay': decay - attack, 'sustain': 0, 'release': 0.005, 'volume': volume, **extra}
-
-
-def hiss(at, rate, length, volume, attack=0.002, **extra):
-    """A noise burst; its hold rate in Hz sets the colour, and lower is darker."""
-    return pluck(at, rate if isinstance(rate, list) else [rate, rate], length, volume, 'noise', attack, **extra)
 
 
 def outcome(transient, notes):
@@ -40,13 +26,6 @@ def outcome(transient, notes):
         tones += [{**tone, 'wave': 'triangle', 'volume': 0.4},
                   {**tone, 'wave': 'pulse', 'volume': 0.1, 'lowpass': 1500}]
     return transient + tones
-
-
-def add(bank, name, rms_db, layers):
-    """Add an effect with the gain that brings its RMS to rms_db, so a bank's levels stay even."""
-    probe = sk.Bank(bank.name)
-    probe.add(name, 'effect', {'layers': layers})
-    bank.add(name, 'effect', {'gain': round(rms_db - probe.sounds[name]['rms_db'], 1), 'layers': layers})
 
 
 SOUNDS = {
@@ -97,7 +76,7 @@ SOUNDS = {
 def build():
     bank = sk.Bank('justice')
     for name, (rms_db, layers) in SOUNDS.items():
-        add(bank, name, rms_db, layers)
+        add_effect(bank, name, rms_db, layers)
     arrest, wrongful = bank.sounds['justice_arrest'], bank.sounds['justice_wrongful-stop']
     assert len(bank.audio['justice_wrongful-stop']) == len(bank.audio['justice_arrest']), \
         'a wrongful stop must last exactly as long as an arrest'
