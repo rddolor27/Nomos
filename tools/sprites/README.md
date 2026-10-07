@@ -26,6 +26,7 @@ Original pixel art for Nomos, drawn as code. Each module draws one category with
 - Looks are cosmetic: hue, eye shape and pattern are drawn independently at random at birth, never inherited and never read by the sim, so no look marks a group, a status or a mood. Every eye shape is open and calm. Patterns are tone-on-tone marks in the body's light tone, kept off the face and lower face, with no stripes or emblem motifs.
 - Culture shows in things such as emblems, banners, dishes and festival props, never on bodies or clothes. Emblem colours are mid tones, unlike the pastel body hues, and avoid the police navy, the merchant teal and the reds and oranges that round 3 keeps for crime.
 - Police iconography stays neutral: no weapons, flags or heroic poses.
+- Soldiers defend and patrol the roads and never police towns, so nothing about them reads as police. Their job item is a steel kettle hat and a leather baldric slanting to a sheathed sword, in steel and leather only: no police navy, merchant teal, crime red or culture colour. Weapons stay sheathed or shouldered, and nothing military carries a flag, banner or heraldry.
 - No role wears black. `OUTLINE` is for outlines only, never a fill.
 - Buildings use generic names (Clinic, Market, Police Station, Town Hall), and signs use pictograms rather than words. The Clinic never uses a red cross, which is a protected emblem.
 
