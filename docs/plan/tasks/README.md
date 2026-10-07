@@ -60,14 +60,14 @@ The plan's own effort lines sum to about 210–322 days before launch, but many 
 
 | Sub-milestone | Delivers | Estimate | How |
 | --- | --- | --- | --- |
-| [M3.1 Town generator](m3-city-life/m3.1-town-generator/task.md) | The TypeScript place generator: a 256² town from a seed, with walkability and entities in the binary map | 8–12 days | — |
-| [M3.2 Daily routines](m3-city-life/m3.2-daily-routines/task.md) | Agents who work, shop, eat and sleep on schedule, and the inspector that explains them | 12–18 days | — |
-| [M3.3 Skin C town](m3-city-life/m3.3-skin-c-town/task.md) | The pixel-art town: tiles, roofs, light periods, automatic skins, the phone path and the follow-cam | 6–9 days | — |
-| [M3.4 Build mode and default town](m3-city-life/m3.4-build-mode-and-default-town/task.md) | The owner's Build mode, and the hand-edited default town within budget on phones | 11–17 days | — |
-| [M3.5 Food and harvest](m3-city-life/m3.5-food-and-harvest/task.md) | Pantries, shelf lives, a food-insecurity tally and one grain harvest a year | 6–9 days | — |
-| [M3.6 Wellbeing and housing](m3-city-life/m3.6-wellbeing-and-housing/task.md) | Life satisfaction with named drivers, and homes that are owned, rented or mortgaged | 8–12 days | — |
-| [M3.7 Cultures and festivals](m3-city-life/m3.7-cultures-and-festivals/task.md) | Customs passed on and adopted, festivals, music events and personal names | 9–14 days | — |
-| [M3.8 Seasons, sound and gazette](m3-city-life/m3.8-seasons-sound-and-gazette/task.md) | Seasons in the town, its sounds and music, and a paper every dawn | 9–15 days | — |
+| [M3.1 Town generator](m3-city-life/m3.1-town-generator/task.md) | The TypeScript place generator: a 256² town from a seed, with walkability and entities in the binary map | 8–12 days | [brief](m3-city-life/m3.1-town-generator/plan.md) |
+| [M3.2 Daily routines](m3-city-life/m3.2-daily-routines/task.md) | Agents who work, shop, eat and sleep on schedule, and the inspector that explains them | 12–18 days | [brief](m3-city-life/m3.2-daily-routines/plan.md) |
+| [M3.3 Skin C town](m3-city-life/m3.3-skin-c-town/task.md) | The pixel-art town: tiles, roofs, light periods, automatic skins, the phone path and the follow-cam | 6–9 days | [brief](m3-city-life/m3.3-skin-c-town/plan.md) |
+| [M3.4 Build mode and default town](m3-city-life/m3.4-build-mode-and-default-town/task.md) | The owner's Build mode, and the hand-edited default town within budget on phones | 11–17 days | [brief](m3-city-life/m3.4-build-mode-and-default-town/plan.md) |
+| [M3.5 Food and harvest](m3-city-life/m3.5-food-and-harvest/task.md) | Pantries, shelf lives, a food-insecurity tally and one grain harvest a year | 6–9 days | [brief](m3-city-life/m3.5-food-and-harvest/plan.md) |
+| [M3.6 Wellbeing and housing](m3-city-life/m3.6-wellbeing-and-housing/task.md) | Life satisfaction with named drivers, and homes that are owned, rented or mortgaged | 8–12 days | [brief](m3-city-life/m3.6-wellbeing-and-housing/plan.md) |
+| [M3.7 Cultures and festivals](m3-city-life/m3.7-cultures-and-festivals/task.md) | Customs passed on and adopted, festivals, music events and personal names | 9–14 days | [brief](m3-city-life/m3.7-cultures-and-festivals/plan.md) |
+| [M3.8 Seasons, sound and gazette](m3-city-life/m3.8-seasons-sound-and-gazette/task.md) | Seasons in the town, its sounds and music, and a paper every dawn | 9–15 days | [brief](m3-city-life/m3.8-seasons-sound-and-gazette/plan.md) |
 
 ### [M4 Crime and police](m4-crime-and-police/milestone.md)
 
