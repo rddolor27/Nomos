@@ -1,79 +1,103 @@
-# Time and calendar plan
+# Time & calendar
 
-Status: draft, 7 October 2026. No code exists yet. The owner's decisions below are settled. The plan is not in the shared plan doc, and its tasks carry no round tag. Every figure is an unsourced estimate unless marked otherwise.
+Oct 7, 2026 · @Rd
 
-## The answer
-
-- **Nomos is watch-only.** Nobody is ever controlled. A run plays itself, and the player can:
-  - pause, change speed, or skip ahead to the next season or year;
-  - move the camera, follow and inspect people, and switch views.
-  
-  World settings, the builder and policies are set before a run. Trying something else starts a new branch, and the original run carries on untouched.
-- **A year is 112 days:** four seasons of 28 days (spring, summer, autumn, winter), counted from Year 1. A week is 7 days: 5 workdays and 2 rest days, so each season holds 4 weeks.
-- **A day is 1,440 ticks,** one per in-game minute. At 10 ticks a second, that makes round 6's working figure of 144 seconds a day at normal speed:
-  - a season takes about 67 minutes;
-  - a year takes about 4.5 hours.
-- **People age for real:** one birthday per in-game year, with lifespans of decades. Children grow up in 18 years, about 2,000 days, so new generations show when you skip ahead.
-- **Daily life stays daily; everything annual runs on the 112-day year.**
-  - Meals, shifts, shelf lives and prices stay per day.
-  - Ages, birth and death rates, school and careers, festivals a year, contracts, interest, and annual statistics are per 112-day year.
+Nomos is watch-only: nobody is ever controlled, and a run plays itself while the player watches. A year is four 28-day seasons, a day is 1,440 ticks, and people age a year at a time. The tasks are in Implementation plan, tagged (Calendar).
 
 ## Owner's decisions (7 October 2026)
 
-| Decision | Adopted |
-| --- | --- |
-| Year length | 4 seasons × 28 days = 112 days |
-| Ageing | Real ages: one birthday per in-game year |
-| While a run plays | Only watch. Policies and the world are set before a run; a different policy starts a new branch |
+Four decisions fix time in Nomos, and they settle round 6's open time questions.
+
+| Decision | Adopted | Settles |
+| --- | --- | --- |
+| Year length | 4 seasons × 28 days = 112 days | Round 6's open days per year |
+| Day length | 1,440 ticks, one per in-game minute, at 10 ticks a second at 1× | Round 6's open ticks per day, and the tick rate the performance budget assumed |
+| Ageing | Real ages: one birthday per in-game year, and lifespans of decades | Round 6's open age structure and time compression |
+| While a run plays | Only watch. The world and policies are set before Run, and a different policy starts a new branch | Live policy changes in M5 |
+
+Children grow up in 18 years, about 2,000 days, so new generations show when the player skips ahead.
 
 ## The calendar
 
+Time is one integer tick counter, and sim-core derives every date from it with integer maths.
+
 | Unit | Length | Notes |
 | --- | --- | --- |
-| Tick | 1 in-game minute | 10 ticks a second at normal speed |
-| Day | 1,440 ticks | 144 s at normal speed |
+| Tick | 1 in-game minute | 10 ticks a second at 1× |
+| Day | 1,440 ticks | 144 s at 1× |
 | Week | 7 days | 5 workdays, then 2 rest days for markets, leisure and festivals |
-| Season | 28 days (4 weeks) | Spring, summer, autumn, winter |
-| Year | 112 days | Counted from Year 1; the date reads "Spring 12, Year 3" |
+| Season | 28 days = 4 weeks | Spring, summer, autumn, winter |
+| Year | 112 days = 161,280 ticks | Counted from Year 1 |
 
-- **Day length follows the season.** Dawn and dusk shift, giving about 14 hours of light in midsummer and 10 in midwinter, which feeds the town's light periods. Schedules keep clock times.
-- **Plain names.** Seasons and weekdays use plain words (spring; workday and rest day) rather than invented or real month names. That keeps the calendar neutral, with nothing tied to a real religion or culture.
-- **Festivals sit on the calendar.** Round 8's 8–12 festival days per culture a year land on rest days or evenings, with the same totals and timing for every culture. They spread across the seasons, so no season belongs to one culture.
+**Date maths,** with integer division and remainder only:
+
+- day = tick ÷ 1,440, and minute of the day = tick mod 1,440;
+- year = day ÷ 112 + 1, and day of the year = day mod 112;
+- season = day of the year ÷ 28, from 0 (spring) to 3 (winter), and day of the season = day of the year mod 28 + 1;
+- weekday = day mod 7: 0–4 are workdays, 5 and 6 rest days.
+
+**Details:**
+
+- **Tick 0** is 00:00 on Spring 1, Year 1, a workday; the ledger spin-up runs before it. Because 28 = 4 × 7, every season starts on a workday.
+- **An Int32 tick** lasts about 13,000 years (computed), far past any run.
+- **The date reads** "Spring 12, Year 3 · 08:40 · rest day".
+- **Day length follows the season:** about 14 h of light at mid-summer and 10 h at mid-winter, with noon at 12:00.
+  - A 112-entry table of sunrise and sunset minutes feeds the town's light periods.
+  - It is built at build time, because sim-core may not call `Math.sin`.
+  - Schedules keep clock times.
+- **Plain names:** seasons and day types use plain words (spring; workday, rest day), never invented or real month names, so the calendar is tied to no real religion or culture.
+- **Festivals sit on the calendar:** round 8's 8–12 festival days per culture a year land on rest days or evenings.
+  - Every culture gets the same totals and timing rules.
+  - They spread across the seasons, so no season belongs to one culture.
 
 ## Seasons in the world
 
-| Season | Fields | Town and nature | Sound |
-| --- | --- | --- | --- |
-| Spring | Planting; seedlings | Blossom trees flower | Birds, light wind |
-| Summer | Crops grow | Long days | Birds, crickets at night |
-| Autumn | Harvest over 9–14 days, then stubble | Autumn foliage | Wind, fewer birds |
-| Winter | Fallow soil; food comes from stores | Snow on ground and roofs; short days | Soft cold wind |
+Each season changes the fields, the colours and the sound, and the harvest window shrinks to fit the 112-day year.
 
-- **The harvest window is rescaled.** Round 6's 30–45-day harvest becomes 9–14 days of autumn (×112/365). Grain's 365-day use-by now outlasts three years, which removes round 6's conflict (m).
-- **Seasons are drawn by palette swaps.** Grass and foliage shift through spring green, summer green, autumn gold and winter pale, GBA-style. Snow comes from overlay tiles on ground and roofs. These reuse the planned snow art rather than redrawing every sprite.
-- **Ambience follows the season** through the existing biome loops: birds in spring and summer, wind in autumn, and the snow loop in winter.
+| Season | Days | Fields | Town and nature | Sound |
+| --- | --- | --- | --- | --- |
+| Spring | 1–28 | Planting; seedlings | Blossom trees flower | Birds, light wind |
+| Summer | 29–56 | Crops grow | Long days | Birds; crickets at night |
+| Autumn | 57–84 | Harvest over 9–14 days, then stubble | Autumn foliage | Wind, fewer birds |
+| Winter | 85–112 | Fallow soil; food comes from stores | Snow on ground and roofs; short days | Soft cold wind (`amb_snow`) |
+
+- **The harvest is rescaled.** Round 6's 30–45-day harvest becomes 9–14 days of autumn (× 112/365, computed). Grain's 365-day use-by now outlasts three years, which removes round 6's conflict (m).
+- **Palette swaps draw the seasons.** Grass and foliage shift through spring green, summer green, autumn gold and winter pale, GBA-style, so no sprite is redrawn per season.
+- **Snow is an overlay** of tiles on ground and roofs, extending the snow tiles the art still lacks.
+- **Ambience follows the season** through the existing biome loops: birds in spring and summer, wind in autumn, and `amb_snow` in winter.
+- **Season icons** in the HUD stay distinct from the eight culture emblems.
 
 ## Watching
 
-- **Speeds:**
+The player watches and never steers: while a run plays, speed, camera and views are the only inputs.
 
-  | Speed | A year takes about |
-  | --- | --- |
-  | Pause | — |
-  | 1× | 4.5 hours |
-  | 4× | 67 minutes |
-  | 16× | 17 minutes |
-  | Skip | As fast as the machine allows, with nothing drawn |
+| Speed | Ticks a second | A year takes about |
+| --- | --- | --- |
+| Pause | 0 | — |
+| 1× | 10 | 4.5 h |
+| 4× | 40 | 67 min |
+| 16× | 160 | 17 min |
+| Skip | As fast as the machine allows, with nothing drawn | Seconds for the country's ledgers |
 
-  Skip runs to the next season or year without drawing, then resumes. The country's ledgers run a year in seconds. Fast speeds cap by tier: at 100,000 agents the 16 ms tick budget allows only a few times normal speed while drawing.
-- **Controls:** Space pauses, keys 1–4 set the speed, and the HUD carries a skip button. Under reduced motion the run starts paused, as the plan already requires.
-- **The HUD shows** the date, the time and the day type ("Spring 12, Year 3 · 08:40 · rest day"), a season icon, and the year's progress.
-- **Year in review:** each new year brings a short card with population, births and deaths, festivals held, true against recorded crime, and wealth shifts. It never breaks figures down by culture (round 8). History charts take a year axis, and replays can seek by date.
-- **Branches, not live changes.** "Try a different policy" forks the run at the current day into a new branch, with the change labelled as a what-if. The original keeps running, and both stay replayable.
+- **Skip** runs to the next season or year without drawing, then resumes at the earlier speed.
+- **Speeds cap by tier.** At 100,000 agents the 16 ms tick budget leaves room for only a few times normal speed while drawing.
+- **Controls:** Space pauses, keys 1–4 set the speed, and the HUD carries a skip button. Under reduced motion the run starts paused.
+- **The HUD shows** the date, time and day type ("Spring 12, Year 3 · 08:40 · rest day"), a season icon and the year's progress.
+- **Year in review:** each new year brings a short card.
+  - It shows population, births and deaths, festivals held, true against recorded crime, and wealth shifts.
+  - It never breaks figures down by culture (round 8).
+  - History charts take a year axis, and replays seek by date.
+- **Watch-only in the protocol:** while a run plays, the worker accepts only pause, speed, skip and read-only queries such as follow, inspect and views. It refuses settings messages until the player forks.
+- **Branches, not live changes.** "Try a different policy" forks the run at the next day boundary, after that day's commit, into a labelled what-if branch.
+  - The original keeps running, and both stay replayable from (seed, settings, fork day, change).
+  - The fork is logged like a player command, since only the day boundary may write canonical state.
+- **Speed never changes the result.** A run's state hash at any date is the same at every speed, with or without skips, and with sound on or off.
 
 ## Rescaling rules
 
-- **Per year (112 days):**
+Daily life runs per real day, and everything annual runs per 112-day year. The year is shorter, but the economy's ratios hold.
+
+- **Per 112-day year:**
   - ages and birthdays;
   - birth, death, marriage and migration hazards by age;
   - school years and retirement;
@@ -81,58 +105,41 @@ Status: draft, 7 October 2026. No code exists yet. The owner's decisions below a
   - loan terms, interest and debt limits;
   - the 50–100-year ledger spin-up (5,600–11,200 days);
   - annual statistics.
-  
-  Hazards convert to per day as the annual rate divided by 112.
-- **Per day (real):** meals, needs, shifts, shop hours, shelf lives and spoilage, prices per item, and the daily wage.
-- **Money ratios hold.**
-  - The daily wage is the annual income divided by 80 workdays.
-  - Item prices are set so food, housing and the rest take their calibrated shares of income.
-  - Shares, Gini and saving rates are ratios, so the shorter year leaves them unchanged.
-  - The currency is invented, so absolute levels are free.
+- **Per day:** meals and needs, shifts and shop hours, shelf lives and spoilage, prices per item, and the daily wage.
+- **Hazards convert exactly.** For an annual hazard p, the daily hazard is 1 − (1 − p)^(1/112), precomputed into integer tables at build time. Dividing by 112 works only for small rates: a 30% annual risk would fall to about 26% (computed).
+- **Draws stay integer.** Each daily hazard is a 32-bit threshold, round(p\_day × 2^32), tested with one keyed draw, as round 8's guarded-decision rule already asks.
+- **Birthdays spread over the year.** A birthday is the day of the year a person was born, drawn for the starting population, so nobody ages all at once on Spring 1.
+- **Money ratios hold:**
+  - daily wage = annual income ÷ 80 workdays (5 a week × 4 weeks × 4 seasons);
+  - item prices keep food, housing and the rest at their calibrated shares of income;
+  - shares, the Gini and saving rates are ratios, so the shorter year leaves them unchanged;
+  - the currency is invented, so absolute levels are free.
+- **The spin-up gets 3.3× shorter** than with 365-day years. 5,600–11,200 country days take about 8–17 s at 1,000 settlements and 67–134 s at 10,000, from the 1.5 ms and 12 ms day budgets (computed).
+- **Round 6 rates to re-check** before M2 hard-codes them: the 1.5–3% monthly carrying cost of stored goods and the ≤ 7% pest loss a season were set for a 365-day year. Each must be read as per day or per year.
 
-## Tasks by milestone (draft)
+## Work by milestone
 
-**M0 Pipeline**
-- [ ] Fix the tick rate: 10 ticks a second at normal speed and 1,440 ticks a day (1 tick = 1 in-game minute). The performance budget already assumes 10 a second (1 day).
-- [ ] Add a calendar module in sim-core: 112 days a year, 28 a season, 7 a week (5 workdays and 2 rest days), date and season maths, and day-length tables, in integer arithmetic only (1 day).
+The calendar takes about 12–19 days, spread over six milestones (unsourced estimate). Each task is in Implementation plan, tagged (Calendar).
 
-**M1 Lab mode**
-- [ ] Add speed controls: pause, 1×, 4×, 16× and skip to the next season or year. Add keyboard shortcuts, and per-tier speed caps (1–2 days).
-- [ ] Add the date, time and season to the HUD, with year progress (0.5–1 day).
-- [ ] Settle watch-only: no sim input during a run except the camera, speed and views. Lab cards set treatments before Run (0.5 day).
+| Milestone | Work | Days |
+| --- | --- | --- |
+| M0 Pipeline | 1,440 ticks a day and 112 days a year recorded in `sim-protocol` (1); the calendar module with date maths and day-length tables (1) | 2 |
+| M1 Lab mode | Speed controls, shortcuts and per-tier caps (1–2); the HUD date (0.5–1); watch-only in the protocol (0.5) | 2–3.5 |
+| M2 Economy | Recalibrate to the 112-day year: daily wages, prices, interest and loan terms | 1–2 |
+| M3 City life | Seasons in the town: crop cycle, day length, palettes, snow and ambience (2–3); seasonal palettes, snow overlays and season icons as art (1–2) | 3–5 |
+| M5 Society and policy | Ageing with real lifespans (1–2); the year-in-review card (1–2); branches in place of live policy changes (1–2) | 3–6 |
+| M7 Country of ledgers | The spin-up and country skip-ahead in 112-day years | 0.5 |
 
-**M2 Economy**
-- [ ] Recalibrate to the 112-day year: daily wages from annual income over 80 workdays, and item prices that keep the calibrated shares of income. Interest, debt limits and loan terms run per in-game year (1–2 days).
+**Exit checks:**
 
-**M3 City life**
-- [ ] Add seasons in the town (2–3 days):
-  - the crop cycle: plant in spring, grow in summer, harvest over 9–14 days of autumn, lie fallow in winter;
-  - day length by season;
-  - seasonal palettes and winter snow overlays;
-  - ambience by season.
-
-**M5 Society and policy**
-- [ ] Age people one year per 112-day year, with real lifespans, birthdays spread over the year, and birth and death hazards by year of age (1–2 days).
-- [ ] Add the year-in-review card and history charts on a year axis, never broken down by culture (1–2 days).
-- [ ] Replace live policy sliders with branches. "Try a different policy" forks the run at the current day as a labelled what-if, and policies are otherwise set before a run (1–2 days).
-
-**M7 Country of ledgers**
-- [ ] Run the 50–100-year spin-up and country skip-ahead in 112-day years (0.5 day).
-
-**Art and sound**
-- [ ] Seasonal palette maps for grass, foliage and crops; snow overlays for ground and roofs, extending the planned snow tiles; season icons for the HUD, kept distinct from the eight culture emblems (1–2 days).
-
-In all, about 11–18 days.
-
-## Exit checks
-
-- [ ] Calendar maths: every date round-trips through its tick count, and the seasons and weeks line up (28 days a season, 4 weeks a season, 112 days a year).
-- [ ] Watch-only: a run's input log holds only camera, speed and view events between its fork points, and changing speed or skipping never changes the state hash at any date.
-- [ ] Rescaling: over 50 paired seeds, food, housing and saving shares, the wealth Gini and the age pyramid stay within the calibrated bands on the 112-day year.
-- [ ] Seasons: the harvest happens once a year in autumn, stores carry the town through winter, and no culture's festivals cluster in one season.
+- M0: every date round-trips through its tick count; a season is 28 days and 4 weeks, a year 112 days, and every season starts on a workday.
+- M1: while a run plays, the worker accepts only pause, speed, skip and read-only queries, and speed or skips never change the state hash at any date.
+- M2: over 50 paired seeds, food, housing and saving shares and the wealth Gini stay within their calibrated bands on the 112-day year.
+- M3: the harvest comes once a year in autumn, and stores carry the town through winter.
+- M5: the age pyramid stays within its band, no culture's festivals cluster in one season, and a branch replays identically from (seed, settings, fork day, change).
 
 ## Open questions
 
 - Should the year-in-review card pause the run, or appear without stopping it?
-- Do fast speeds need an auto-camera, such as following notable events, or does the player steer?
-- A new verify-first item: do round 6's calibrated targets still hold once daily wages and prices are rescaled?
+- Do fast speeds need an auto-camera that follows notable events, or does the player steer?
+- Verify first: do round 6's calibrated targets still hold once daily wages and prices are rescaled?
