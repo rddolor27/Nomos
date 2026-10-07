@@ -1,6 +1,6 @@
 # M2 Economy: sub-milestones
 
-M2 holds 30 build tasks and 12 exit checks in the [implementation plan](../../implementation-plan.md#m2-economy), so it runs as seven sub-milestones. Each one ends with software that runs and passes its own checks. None has a step-by-step plan yet; each gets its plan when the one before it closes, and M2.1 gets its plan when M1 closes.
+M2 holds 30 build tasks and 12 exit checks in the [implementation plan](../../implementation-plan.md#m2-economy), so it runs as seven sub-milestones. Each one ends with software that runs and passes its own checks. Each has an implementation brief in its `plan.md`, which becomes a step-by-step plan when the sub-milestone before it closes; M2.1's does so when M1 closes.
 
 Estimates are full-time days for one person coding by hand (unsourced estimates). The Actual column records the real time, so the pace measured in M0 and M1 can rescale them. The plan's M2 effort line, 2–3 weeks plus 1–2 days for the visual layer, covers rounds 1 and 3 only. Round 4 adds 2–3 days and the Calendar tab 1–2 days. Rounds 2, 6 and 8 added 24 tasks with no estimate, which explain most of the gap between that line and the total here.
 
