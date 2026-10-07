@@ -27,7 +27,7 @@ Needs: M0's keyed draw and integer noise, and M7's region tier and country CI su
 - **Builds:**
   - the terrain stage in the worker, ported from `tools/worldgen` in pipeline order: template and noise elevation, keyed mountain chains, priority-flood, flow accumulation, erosion-lite passes, climate, biomes and habitability, each stage proven against the Python golden fingerprints (R4, R9);
   - a snow biome for cold lowland (R9);
-  - settlements and routes on the grid: capitals, then towns, then villages, with minimum spacing and rank-size populations; routes as a spanning tree per landmass plus spanner shortcuts, routed by A\* with slope, bridge and road-reuse costs; sea lanes between landmasses; regions and market territories grown by multi-source Dijkstra (R4, R9);
+  - settlements and routes on the grid: capitals, then towns, then villages, with minimum spacing and P₁/k rank-size populations; routes as a spanning tree per landmass plus spanner shortcuts (`tools/worldgen` skips round 4's Delaunay step), routed by A\* with slope, bridge and road-reuse costs; sea lanes between landmasses; regions and market territories grown by multi-source Dijkstra (R4, R9);
   - place seeds, landmark draws and names keyed on a stable settlement uid, its cell, never on population rank (R9);
   - 4–8 natural wonders per world by site rules, each kind at most once, with hot springs, geyser and caldera lake sharing one geothermal hotspot; built landmarks by tier and site, on the settlement or, for viaducts, observatories and lighthouses, on cells of their own (R9);
   - M7's and M8's settlement counts re-baselined to listed places plus a region tier, with Zipf fitted on true ranks (R9).
@@ -41,7 +41,7 @@ Needs: M7's culture block and spin-up, and M3's shared sound set and name filter
 
 - **Builds:**
   - 4–8 culture hearths by keyed Poisson-disc, never `Math.random`, with regions grown by multi-source Dijkstra over the grid's travel and terrain costs, a mixed border band and similar country-wide shares; layouts rejected when cultures differ in mean land quality or development beyond the set tolerance, single-culture development regions flagged, M7's 50–100-year spin-up run before play, and favoured foods taken from each hearth region's abundance (R8);
-  - names for places, regions and festivals from the shared sound set and a seeded foswig chain, with theme words and site words such as "Ford" and "Port" kept as separate UI-language words, never fused suffixes, checked over 1,000 seeds by M3's name filter, which replaces round 4's (R4, R8).
+  - names for places, regions and festivals from the shared sound set and a seeded foswig chain on an original corpus, with theme words and site words such as "Ford" and "Port" kept as separate UI-language words, never fused suffixes, checked over 1,000 seeds by M3's name filter, which replaces round 4's (R4, R8).
 - **Owner decision first:** round 8 left the hearth-balance tolerance undesigned, and the layout check needs a value. The Gazette tab asks whether street and district names ever follow a culture's naming custom. Place and region names raise the same question for the gazette's road-raid stories.
 - **Exit checks:**
   - the name filter passes 1,000 seeds (R4);
