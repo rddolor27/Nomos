@@ -51,7 +51,10 @@ Then these sections, in this order:
 ## Conventions for agents
 
 - **Git:** commit straight to `main`, with no branches or pull requests. Use Conventional Commits headers only, at most 72 characters, with no body and no co-author. Author and committer are the owner's no-reply address: `git -c user.name=rddolor27 -c user.email=80044625+rddolor27@users.noreply.github.com commit`. Push only when the owner asks.
-- **Where things go:** plans in `docs/plan/`, task plans and milestone breakdowns in `docs/plan/tasks/`, checkpoints here, product code in `apps/`, `packages/` and `tools/`.
+- **Where things go:** plans in `docs/plan/`, checkpoints here, and product code in `apps/`, `packages/` and `tools/`. Milestones live in `docs/plan/tasks/`, whose README is the roadmap:
+  - each milestone has a folder, such as `m3-city-life/`, with `milestone.md` giving its overview and progress table;
+  - each sub-milestone has a folder inside it, such as `m3.2-daily-routines/`, with `task.md` (what to build and the checks that close it) and `plan.md` (how to build it);
+  - a `plan.md` is either a step-by-step plan, ready to execute, or a brief that is expanded into one with the writing-plans skill just before the work starts.
 - **Source of truth:** the shared plan doc is the live plan, and `docs/plan/implementation-plan.md` is its export. Its milestone sections carry the rules each task must follow, such as determinism, budgets and content rules.
 - **Art and sound rules:** `tools/sprites/README.md` and `tools/sounds/README.md`.
 - **Plan tools:** after editing a milestone breakdown, run `python tools/plan/check_coverage.py` to catch dropped plan items, and `python tools/plan/roadmap.py` to rebuild the roadmap. The roadmap is generated; never edit it by hand.
