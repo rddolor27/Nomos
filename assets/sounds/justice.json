@@ -1,0 +1,616 @@
+{
+ "rate": 22050,
+ "sounds": {
+  "justice_theft": {
+   "kind": "effect",
+   "seed": 3026087128,
+   "seconds": 0.175,
+   "peak_db": -11.7,
+   "rms_db": -25.0,
+   "def": {
+    "gain": -4.3,
+    "layers": [
+     {
+      "start": 0,
+      "wave": "noise",
+      "freq": [
+       1800,
+       7000
+      ],
+      "length": 0.14,
+      "attack": 0.04,
+      "decay": 0.1,
+      "sustain": 0,
+      "release": 0.005,
+      "volume": 0.4,
+      "highpass": 600,
+      "lowpass": 5000
+     },
+     {
+      "start": 0.12,
+      "wave": "triangle",
+      "freq": [
+       520,
+       390
+      ],
+      "length": 0.05,
+      "attack": 0.002,
+      "decay": 0.048,
+      "sustain": 0,
+      "release": 0.005,
+      "volume": 0.25
+     }
+    ]
+   }
+  },
+  "justice_report-filed": {
+   "kind": "effect",
+   "seed": 7747806,
+   "seconds": 0.305,
+   "peak_db": -9.2,
+   "rms_db": -27.0,
+   "def": {
+    "gain": 0.1,
+    "layers": [
+     {
+      "start": 0,
+      "wave": "noise",
+      "freq": [
+       5000,
+       3500
+      ],
+      "length": 0.06,
+      "attack": 0.01,
+      "decay": 0.049999999999999996,
+      "sustain": 0,
+      "release": 0.005,
+      "volume": 0.25,
+      "highpass": 1500,
+      "lowpass": 5000
+     },
+     {
+      "start": 0.08,
+      "wave": "noise",
+      "freq": [
+       4000,
+       5500
+      ],
+      "length": 0.06,
+      "attack": 0.01,
+      "decay": 0.049999999999999996,
+      "sustain": 0,
+      "release": 0.005,
+      "volume": 0.25,
+      "highpass": 1500,
+      "lowpass": 5000
+     },
+     {
+      "start": 0.16,
+      "wave": "noise",
+      "freq": [
+       5000,
+       3000
+      ],
+      "length": 0.06,
+      "attack": 0.01,
+      "decay": 0.049999999999999996,
+      "sustain": 0,
+      "release": 0.005,
+      "volume": 0.25,
+      "highpass": 1500,
+      "lowpass": 5000
+     },
+     {
+      "start": 0.26,
+      "wave": "triangle",
+      "freq": [
+       600,
+       400
+      ],
+      "length": 0.04,
+      "attack": 0.002,
+      "decay": 0.038,
+      "sustain": 0,
+      "release": 0.005,
+      "volume": 0.25
+     },
+     {
+      "start": 0.262,
+      "wave": "noise",
+      "freq": [
+       3000,
+       3000
+      ],
+      "length": 0.02,
+      "attack": 0.002,
+      "decay": 0.018000000000000002,
+      "sustain": 0,
+      "release": 0.005,
+      "volume": 0.18,
+      "lowpass": 3000
+     }
+    ]
+   }
+  },
+  "justice_stop": {
+   "kind": "effect",
+   "seed": 3697844440,
+   "seconds": 0.17,
+   "peak_db": -7.9,
+   "rms_db": -21.5,
+   "def": {
+    "gain": -1.2,
+    "layers": [
+     {
+      "start": 0,
+      "wave": "triangle",
+      "freq": [
+       800,
+       560
+      ],
+      "length": 0.045,
+      "attack": 0.002,
+      "decay": 0.043,
+      "sustain": 0,
+      "release": 0.005,
+      "volume": 0.4
+     },
+     {
+      "start": 0,
+      "wave": "noise",
+      "freq": [
+       8000,
+       8000
+      ],
+      "length": 0.006,
+      "attack": 0.002,
+      "decay": 0.004,
+      "sustain": 0,
+      "release": 0.005,
+      "volume": 0.12,
+      "highpass": 2000
+     },
+     {
+      "start": 0.12,
+      "wave": "triangle",
+      "freq": [
+       800,
+       560
+      ],
+      "length": 0.045,
+      "attack": 0.002,
+      "decay": 0.043,
+      "sustain": 0,
+      "release": 0.005,
+      "volume": 0.4
+     },
+     {
+      "start": 0.12,
+      "wave": "noise",
+      "freq": [
+       8000,
+       8000
+      ],
+      "length": 0.006,
+      "attack": 0.002,
+      "decay": 0.004,
+      "sustain": 0,
+      "release": 0.005,
+      "volume": 0.12,
+      "highpass": 2000
+     }
+    ]
+   }
+  },
+  "justice_arrest": {
+   "kind": "effect",
+   "seed": 4099147153,
+   "seconds": 0.76,
+   "peak_db": -12.5,
+   "rms_db": -24.0,
+   "def": {
+    "gain": -6.5,
+    "layers": [
+     {
+      "start": 0.0,
+      "wave": "noise",
+      "freq": [
+       14000,
+       14000
+      ],
+      "length": 0.004,
+      "attack": 0.002,
+      "decay": 0.002,
+      "sustain": 0,
+      "release": 0.005,
+      "volume": 0.25,
+      "highpass": 3000
+     },
+     {
+      "start": 0.02,
+      "wave": "noise",
+      "freq": [
+       14000,
+       14000
+      ],
+      "length": 0.004,
+      "attack": 0.002,
+      "decay": 0.002,
+      "sustain": 0,
+      "release": 0.005,
+      "volume": 0.25,
+      "highpass": 3000
+     },
+     {
+      "start": 0.04,
+      "wave": "noise",
+      "freq": [
+       14000,
+       14000
+      ],
+      "length": 0.004,
+      "attack": 0.002,
+      "decay": 0.002,
+      "sustain": 0,
+      "release": 0.005,
+      "volume": 0.25,
+      "highpass": 3000
+     },
+     {
+      "start": 0.06,
+      "wave": "noise",
+      "freq": [
+       14000,
+       14000
+      ],
+      "length": 0.004,
+      "attack": 0.002,
+      "decay": 0.002,
+      "sustain": 0,
+      "release": 0.005,
+      "volume": 0.25,
+      "highpass": 3000
+     },
+     {
+      "start": 0.08,
+      "wave": "triangle",
+      "freq": [
+       2100,
+       2100
+      ],
+      "length": 0.15,
+      "attack": 0.002,
+      "decay": 0.148,
+      "sustain": 0,
+      "release": 0.005,
+      "volume": 0.2
+     },
+     {
+      "start": 0.08,
+      "wave": "sine",
+      "freq": [
+       3070,
+       3070
+      ],
+      "length": 0.1,
+      "attack": 0.002,
+      "decay": 0.098,
+      "sustain": 0,
+      "release": 0.005,
+      "volume": 0.1
+     },
+     {
+      "start": 0.15,
+      "note": 69,
+      "length": 0.18,
+      "attack": 0.01,
+      "decay": 0.17,
+      "sustain": 0.5,
+      "release": 0.2,
+      "wave": "triangle",
+      "volume": 0.4
+     },
+     {
+      "start": 0.15,
+      "note": 69,
+      "length": 0.18,
+      "attack": 0.01,
+      "decay": 0.17,
+      "sustain": 0.5,
+      "release": 0.2,
+      "wave": "pulse",
+      "volume": 0.1,
+      "lowpass": 1500
+     },
+     {
+      "start": 0.38,
+      "note": 64,
+      "length": 0.18,
+      "attack": 0.01,
+      "decay": 0.17,
+      "sustain": 0.5,
+      "release": 0.2,
+      "wave": "triangle",
+      "volume": 0.4
+     },
+     {
+      "start": 0.38,
+      "note": 64,
+      "length": 0.18,
+      "attack": 0.01,
+      "decay": 0.17,
+      "sustain": 0.5,
+      "release": 0.2,
+      "wave": "pulse",
+      "volume": 0.1,
+      "lowpass": 1500
+     }
+    ]
+   }
+  },
+  "justice_wrongful-stop": {
+   "kind": "effect",
+   "seed": 1719592731,
+   "seconds": 0.76,
+   "peak_db": -12.8,
+   "rms_db": -24.0,
+   "def": {
+    "gain": -7.5,
+    "layers": [
+     {
+      "start": 0,
+      "wave": "triangle",
+      "freq": [
+       300,
+       200
+      ],
+      "length": 0.06,
+      "attack": 0.002,
+      "decay": 0.057999999999999996,
+      "sustain": 0,
+      "release": 0.005,
+      "volume": 0.4
+     },
+     {
+      "start": 0,
+      "wave": "noise",
+      "freq": [
+       4000,
+       4000
+      ],
+      "length": 0.03,
+      "attack": 0.002,
+      "decay": 0.027999999999999997,
+      "sustain": 0,
+      "release": 0.005,
+      "volume": 0.25,
+      "lowpass": 3000
+     },
+     {
+      "start": 0.08,
+      "wave": "triangle",
+      "freq": [
+       620,
+       620
+      ],
+      "length": 0.15,
+      "attack": 0.002,
+      "decay": 0.148,
+      "sustain": 0,
+      "release": 0.005,
+      "volume": 0.45
+     },
+     {
+      "start": 0.08,
+      "wave": "sine",
+      "freq": [
+       1490,
+       1490
+      ],
+      "length": 0.1,
+      "attack": 0.002,
+      "decay": 0.098,
+      "sustain": 0,
+      "release": 0.005,
+      "volume": 0.12
+     },
+     {
+      "start": 0.15,
+      "note": 69,
+      "length": 0.18,
+      "attack": 0.01,
+      "decay": 0.17,
+      "sustain": 0.5,
+      "release": 0.2,
+      "wave": "triangle",
+      "volume": 0.4
+     },
+     {
+      "start": 0.15,
+      "note": 69,
+      "length": 0.18,
+      "attack": 0.01,
+      "decay": 0.17,
+      "sustain": 0.5,
+      "release": 0.2,
+      "wave": "pulse",
+      "volume": 0.1,
+      "lowpass": 1500
+     },
+     {
+      "start": 0.38,
+      "note": 71,
+      "length": 0.18,
+      "attack": 0.01,
+      "decay": 0.17,
+      "sustain": 0.5,
+      "release": 0.2,
+      "wave": "triangle",
+      "volume": 0.4
+     },
+     {
+      "start": 0.38,
+      "note": 71,
+      "length": 0.18,
+      "attack": 0.01,
+      "decay": 0.17,
+      "sustain": 0.5,
+      "release": 0.2,
+      "wave": "pulse",
+      "volume": 0.1,
+      "lowpass": 1500
+     }
+    ]
+   }
+  },
+  "justice_release": {
+   "kind": "effect",
+   "seed": 2951803335,
+   "seconds": 0.555,
+   "peak_db": -9.8,
+   "rms_db": -26.5,
+   "def": {
+    "gain": -2.8,
+    "layers": [
+     {
+      "start": 0,
+      "wave": "noise",
+      "freq": [
+       9000,
+       9000
+      ],
+      "length": 0.008,
+      "attack": 0.002,
+      "decay": 0.006,
+      "sustain": 0,
+      "release": 0.005,
+      "volume": 0.15,
+      "highpass": 1500
+     },
+     {
+      "start": 0,
+      "wave": "triangle",
+      "freq": [
+       900,
+       600
+      ],
+      "length": 0.02,
+      "attack": 0.002,
+      "decay": 0.018000000000000002,
+      "sustain": 0,
+      "release": 0.005,
+      "volume": 0.3
+     },
+     {
+      "start": 0.005,
+      "wave": "triangle",
+      "freq": [
+       220,
+       150
+      ],
+      "length": 0.06,
+      "attack": 0.002,
+      "decay": 0.057999999999999996,
+      "sustain": 0,
+      "release": 0.005,
+      "volume": 0.35
+     },
+     {
+      "start": 0.06,
+      "wave": "pulse",
+      "duty": 0.15,
+      "freq": [
+       120,
+       200
+      ],
+      "length": 0.3,
+      "attack": 0.05,
+      "decay": 0.25,
+      "sustain": 0.4,
+      "release": 0.08,
+      "vibrato": [
+       10,
+       0.6
+      ],
+      "highpass": 500,
+      "lowpass": 2000,
+      "volume": 0.25
+     },
+     {
+      "start": 0.1,
+      "wave": "noise",
+      "freq": [
+       1500,
+       3500
+      ],
+      "length": 0.45,
+      "attack": 0.2,
+      "decay": 0.25,
+      "sustain": 0,
+      "release": 0.005,
+      "volume": 0.08,
+      "highpass": 400,
+      "lowpass": 3000
+     }
+    ]
+   }
+  },
+  "justice_record-filed": {
+   "kind": "effect",
+   "seed": 2872155899,
+   "seconds": 0.215,
+   "peak_db": -8.5,
+   "rms_db": -25.5,
+   "def": {
+    "gain": -5.3,
+    "layers": [
+     {
+      "start": 0,
+      "wave": "noise",
+      "freq": [
+       7000,
+       4000
+      ],
+      "length": 0.12,
+      "attack": 0.03,
+      "decay": 0.09,
+      "sustain": 0,
+      "release": 0.005,
+      "volume": 0.2,
+      "highpass": 1500,
+      "lowpass": 5000
+     },
+     {
+      "start": 0.15,
+      "wave": "triangle",
+      "freq": [
+       160,
+       90
+      ],
+      "length": 0.06,
+      "attack": 0.002,
+      "decay": 0.057999999999999996,
+      "sustain": 0,
+      "release": 0.005,
+      "volume": 0.5
+     },
+     {
+      "start": 0.15,
+      "wave": "noise",
+      "freq": [
+       2000,
+       2000
+      ],
+      "length": 0.03,
+      "attack": 0.002,
+      "decay": 0.027999999999999997,
+      "sustain": 0,
+      "release": 0.005,
+      "volume": 0.3,
+      "lowpass": 1500
+     }
+    ]
+   }
+  }
+ }
+}
