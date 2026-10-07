@@ -30,6 +30,15 @@ Original pixel art for Nomos, drawn as code. Each module draws one category with
 - No role wears black. `OUTLINE` is for outlines only, never a fill.
 - Buildings use generic names (Clinic, Market, Police Station, Town Hall), and signs use pictograms rather than words. The Clinic never uses a red cross, which is a protected emblem.
 
+## Seasons
+
+Nothing is redrawn per season. `seasons.py` writes `assets/sprites/season_map.json`, which tells the renderer what each 28-day season changes:
+- **Palette swaps:** `GRASS_L`, `GRASS` and `LEAF_D` swap to spring, autumn or winter colours, only on the sprites listed under `recolour`, so green roofs, flower boxes and icons keep their colours. Ground and foliage swap separately: autumn ground turns olive, so roads keep their contrast, and autumn leaves take the gold of `tree_autumn`.
+- **Sprite swaps:** deciduous trees go bare in winter, and the blossom and autumn trees show their colours only in their own season.
+- **Snow:** in winter, on places no warmer than `max_temperature`, snow tiles lie over grass, sand, soil and crops. Cover runs light, then full, then patchy over the season. Roads only ever get light snow, so the streets stay readable. Conifers swap to `tree_conifer_snow`, and every sprite with a `snow` field draws that overlay.
+- **Roof snow:** houses get one overlay per shape and style, which fits every roof colour. Buildings and military set pieces are drawn again under `buildings.snowfall()`, and the pixels that change become `<name>_snow`. The lowest eave row keeps the roof's own colour.
+- **Season icons:** the HUD icons are one tree through the year, never a sun, leaf or flower, because those are culture emblems.
+
 ## Naming and layout
 
 - Names are lowercase, with underscores between parts and hyphens inside a part: `cow_walk_down_0`, `house_cottage_roof-slate`, `crop_grain_ripe`.
@@ -46,8 +55,9 @@ Every frame has `x`, `y`, `w`, `h` and `anchor`. Some carry more:
 | `footprint` | Tiles a building or set piece occupies, `[w, h]` |
 | `door` | Pixel where people enter a house |
 | `joins` | Edges that tile seamlessly with a neighbour: `lr`, `l` or `r` |
-| `layer` | `ground` draws with the terrain, under people (bridges, steps); `night` is a lit overlay; characters use `body`, `pattern`, `face` and `job` |
+| `layer` | `ground` draws with the terrain, under people (bridges, steps, snow tiles); `night` is a lit overlay and `snow` a winter one; characters use `body`, `pattern`, `face` and `job` |
 | `night` | Name of the overlay drawn over this sprite after dark |
+| `snow` | Name of the overlay drawn over this sprite while snow lies |
 | `overlay` | A map icon that rises into the tile above, so draw it after that row |
 | `corners` | Shore autotile key: land (1) or water (0) at nw, ne, sw, se. A land cell takes `_<side>` from water on that side, `_<corner>-outer` from water on two sides, and `_<corner>-inner` from water on one diagonal |
 | `target` | The icon a highlight ring belongs to |
