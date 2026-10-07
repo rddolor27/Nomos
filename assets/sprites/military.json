@@ -1,0 +1,108 @@
+{
+  "image": "military.png",
+  "size": [
+    256,
+    64
+  ],
+  "tile": 16,
+  "frames": {
+    "building_barracks": {
+      "x": 130,
+      "y": 0,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "footprint": [
+        4,
+        2
+      ],
+      "door": [
+        32,
+        46
+      ]
+    },
+    "map16_military_fort": {
+      "x": 212,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "overlay": true
+    },
+    "map16_military_watchtower": {
+      "x": 195,
+      "y": 0,
+      "w": 16,
+      "h": 20,
+      "anchor": [
+        8,
+        19
+      ],
+      "overlay": true
+    },
+    "map8_military_fort": {
+      "x": 238,
+      "y": 0,
+      "w": 8,
+      "h": 8,
+      "anchor": [
+        4,
+        7
+      ],
+      "overlay": true
+    },
+    "map8_military_watchtower": {
+      "x": 229,
+      "y": 0,
+      "w": 8,
+      "h": 10,
+      "anchor": [
+        4,
+        9
+      ],
+      "overlay": true
+    },
+    "military_fort": {
+      "x": 0,
+      "y": 0,
+      "w": 96,
+      "h": 64,
+      "anchor": [
+        48,
+        63
+      ],
+      "footprint": [
+        6,
+        3
+      ],
+      "door": [
+        48,
+        62
+      ]
+    },
+    "military_watchtower": {
+      "x": 97,
+      "y": 0,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        1
+      ],
+      "door": [
+        16,
+        62
+      ]
+    }
+  }
+}

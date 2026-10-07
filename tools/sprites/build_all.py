@@ -9,7 +9,7 @@ sys.path.insert(0, str(HERE))
 
 from spritekit import ASSETS  # noqa: E402
 
-CATEGORIES = ['animals', 'houses', 'buildings', 'nature', 'icons', 'characters', 'map', 'culture', 'landmarks', 'scenery', 'wonders']
+CATEGORIES = ['animals', 'houses', 'buildings', 'nature', 'icons', 'characters', 'map', 'culture', 'landmarks', 'scenery', 'wonders', 'military']
 LICENSES = ASSETS.parent / 'LICENSES.md'
 
 HEADER = """# Asset licences
