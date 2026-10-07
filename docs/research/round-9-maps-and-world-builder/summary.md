@@ -2,13 +2,7 @@
 
 Oct 6, 2026 · @Rd
 
-Every layer of a Nomos world comes from its seed, on one square grid. Hero towns are generated, then hand-edited. Players get a full world builder (settings, god tools, a street editor and card authoring), with the content rules built into the tools. Round 9 answered four questions:
-- how each map layer gets made;
-- who the builder is for;
-- how edits live on a seeded world;
-- how to build the editor in a browser.
-
-The resulting tasks are in Implementation plan, tagged (R9).
+Every layer of a Nomos world comes from its seed, on one square grid. Hero towns are generated, then hand-edited. Players get a full world builder (settings, god tools, a street editor and card authoring) before launch, with the content rules built into the tools. Round 9 answered four questions: how each map layer gets made, who the builder is for, how edits live on a seeded world, and how to build the editor in a browser. The resulting tasks are in Implementation plan, tagged (R9).
 
 ## Maps: every layer from the seed
 
@@ -21,31 +15,15 @@ The resulting tasks are in Implementation plan, tagged (R9).
 | Interior | Abstract building cards; no walk-in interiors |
 | Route | Strip maps built from the route's cells by the place code |
 
-**This replaces three planned methods:** LDtk village kits, LDtk prefab towns and wave function collapse filler. Round 4's wealth-keyed prefabs are dropped too; content rule 5 bans them.
-
-**The grid replaces round 4's mesh.** The 8- and 16-px art is square, and a mesh would have to be rasterised back onto this grid anyway. The existing shore rule draws 99.6% of coast cells.
-
-**The ported parts match Python exactly.**
-- A JavaScript port of the keyed draw and noise matched Python on 1,132,769 cases.
-- The terrain stage matched on 300 of 300 seeds, in Node and Chromium.
-- It ran 90–100× faster than Python, so a whole country should take tens of milliseconds.
-- The later stages and most of the place code are not ported yet.
-
-**A standard world lists 40–61 settlements, not 1,000.** The rest of the population folds into a region tier, and M8's exit check is re-baselined.
-
-**A place stays identical across visits, growth and versions.**
-- Its record gains edge biomes, relief, river size, road rank and a founding tier.
-- Growth adds lots and districts but never moves a street.
-- Generator versions select the code but never enter the seed.
+- **This replaces three planned methods:** LDtk village kits, LDtk prefab towns and wave function collapse filler. Round 4's wealth-keyed prefabs are dropped too, since content rule 5 bans them.
+- **The grid replaces round 4's mesh.** The 8- and 16-px art is square, and a mesh would have to be rasterised back onto this grid anyway. The existing shore rule draws 99.6% of coast cells.
+- **The ported parts match Python exactly.** A JavaScript port of the keyed draw and noise matched Python on 1,132,769 cases, and the terrain stage on 300 of 300 seeds, in Node and Chromium. It ran 90–100× faster, so a whole country should take tens of milliseconds. The later stages and most of the place code are not ported yet.
+- **A standard world lists 40–61 settlements, not 1,000.** The rest of the population folds into a region tier, and M8's exit check is re-baselined.
+- **A place stays identical across visits, growth and versions.** Its record gains edge biomes, relief, river size, road rank and a founding tier. Growth adds lots and districts but never moves a street, and generator versions select code but never enter the seed.
 
 ## Edits: inputs to stages, keyed by stable ids
 
-**A world is a seed, pinned generator versions and per-stage edit layers.**
-- Each edit feeds one stage and reruns everything after it.
-- Hand-placed things are pins the generator flows around.
-- A delete is a tombstone that lowers the count.
-- A re-roll is a logged, keyed counter.
-- Conflicts block play, and no edit is ever silently dropped.
+A world is a seed, pinned generator versions and per-stage edit layers. Each edit feeds one stage and reruns everything after it. Hand-placed things are pins the generator flows around; a delete is a tombstone that lowers the count; a re-roll is a logged, keyed counter; conflicts block play, and no edit is ever silently dropped.
 
 | Towns rebuilt by one edit | Today | With locks | With locks and stable ids |
 | --- | --- | --- | --- |
@@ -58,15 +36,9 @@ The resulting tasks are in Implementation plan, tagged (R9).
 | 8,000 characters | about 4,550 |
 | Larger | a `.nomos` file with the same bytes |
 
-**Links ride in the URL fragment, which servers never see.** They carry a CRC32 that catches corrupted links, caps that stop decompression bombs, and no free text.
+Links ride in the URL fragment, which servers never see, with a CRC32 that catches corrupted links, caps that stop decompression bombs, and no free text. Validation runs on Play, on Share and on every open: every settlement reaches the capital by road or sea lane, food is checked per country, names pass round 8's filter in ASCII, and the generator re-places cultures after every edit, never users.
 
-**Validation runs on Play, on Share and on every open:**
-- every settlement reaches the capital by road or sea lane;
-- food is checked per country;
-- names pass round 8's filter in ASCII;
-- cultures are placed by the generator after every edit, never by users.
-
-## World builder: every level, by the owner's choice
+## World builder: every level before launch
 
 The research recommended a small builder: settings for players and a tool for the owner. The owner chose a full player editor, all before launch, and moved launch after M8 so the country-level tools make it too.
 
@@ -79,31 +51,24 @@ The research recommended a small builder: settings for players and a tool for th
 | Card authoring | Once M1 cards and M6 links exist | 6–10 days |
 | New country settings | M8 | 5–8 days |
 | God tools, including lock and re-roll | M8 | 14–22 days |
-| **Total** | | **about 46–73 days**, beyond the plan's current milestone budgets |
+| **Total** |  | **about 46–73 days**, beyond the current milestone budgets |
 
-**The content rules hold by construction.**
-- The palette offers building kinds, never styles; a house's style is a keyed draw with a "restyle" button.
-- There are no person, costume, culture or hue tools, and no asset import.
-- Players choose a culture count; they never paint cultures. Random user-placed culture hearths met the fairness bars in 0 of 723 layouts.
-- Card prompts come from templates, and M1's statistics judge every claim.
-
-**Teaching uses paired arms on one world.** Builder edits must keep entity ids stable. In a toy, re-keyed ids made paired arms as noisy as unpaired seeds, costing 7–8× the seeds.
+- **The content rules hold by construction.** The palette offers building kinds, never styles: a house's style is a keyed draw with a "restyle" button. There are no person, costume, culture or hue tools, and no asset import.
+- **Players never paint cultures.** They choose a culture count; random user-placed culture hearths met the fairness bars in 0 of 723 layouts.
+- **Cards stay honest.** Card prompts come from templates, and M1's statistics judge every claim.
+- **Teaching uses paired arms on one world.** Builder edits must keep entity ids stable; in a toy, re-keyed ids made paired arms as noisy as unpaired seeds, costing 7–8× the seeds.
 
 ## Editor: a Build mode inside the app
 
 - **Loading:** it loads only when chosen, so the first frame keeps its 8 KB of JS. The renderer gains one method that patches 32×32 tile chunks.
-- **Speed:** on a 1,024² map, a brush event costs under 0.07 ms and a whole stroke 0.06–3.0 ms (desktop). Map-wide edits go to the worker.
-- **Undo:** per-edit commands holding cell diffs, as in Tiled. 100 strokes hold 0.27 MB.
-- **Tidying:** shores tidy once per stroke, judging every cell before changing any. The smallest land brush is 3 tiles.
+- **Speed:** on a 1,024² map a brush event costs under 0.07 ms and a whole stroke 0.06–3.0 ms (desktop). Map-wide edits go to the worker.
+- **Undo:** per-edit commands holding cell diffs, as in Tiled; 100 strokes hold 0.27 MB.
+- **Tidying:** shores tidy once per stroke, judging every cell before changing any; the smallest land brush is 3 tiles.
 - **LDtk:** it stays only for hand-made kits until the builder can author them, importing kinds and entities. The sprite manifest is the shared vocabulary.
 
 ## Generator fixes made now
 
-The reference generator was fixed before its outputs become test goldens:
-- every settlement's draws key on its cell;
-- shore tidying is order-free;
-- towns beside farmland draw fields;
-- sea lanes join islands port to port.
+The reference generator was fixed before its outputs become test goldens: every settlement's draws key on its cell, shore tidying is order-free, towns beside farmland draw fields, and sea lanes join islands port to port. A check over 6 worlds then built 327 places with no crashes or overlaps.
 
 ## Decisions the owner settled
 
@@ -124,4 +89,4 @@ On 6 October 2026 the owner accepted every recommended default but one, chose th
 | World sizes | 96×64 standard, 192×128 large |
 | Art | About 55–81 new tiles and a snow biome |
 
-The fact-checked report, with every source, measurement and open question, is `docs/research/round-9-maps-and-world-builder/report.md` in the repo. Its notes and prototypes sit beside it.
+The fact-checked report, with every source, measurement and open question, is `docs/research/round-9-maps-and-world-builder/report.md` in the repo; its notes and prototypes sit beside it.
