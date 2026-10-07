@@ -109,13 +109,13 @@ The plan's own effort lines sum to about 210–322 days before launch, but many 
 
 | Sub-milestone | Delivers | Estimate | How |
 | --- | --- | --- | --- |
-| [M7.1 Ledgers and national accounts](m7-country-of-ledgers/m7.1-ledgers-and-national-accounts/task.md) | Integer settlement ledgers on a test country, with one treasury and one issuer | 7–11 days | — |
-| [M7.2 Emulator](m7-country-of-ledgers/m7.2-emulator/task.md) | Ledger hazards fitted from the city model and docked against it | 5–8 days | — |
-| [M7.3 Flows and villages](m7-country-of-ledgers/m7.3-flows-and-villages/task.md) | Trade, migration and commuting between settlements, village rules and the country CI suite | 8–11 days | — |
-| [M7.4 Goods and food](m7-country-of-ledgers/m7.4-goods-and-food/task.md) | Eight goods stepped weekly, dated food, harvest stores and trade priced by distance | 6–10 days | — |
-| [M7.5 Happiness, wealth and WASM](m7-country-of-ledgers/m7.5-happiness-wealth-and-wasm/task.md) | Happiness and wealth blocks, and a WASM settlement model inside the 12 ms budget | 5–9 days | — |
-| [M7.6 Cultures](m7-country-of-ledgers/m7.6-cultures/task.md) | Culture counts per settlement, kept exact through births, switching and migration | 4–6 days | — |
-| [M7.7 Spin-up and patrols](m7-country-of-ledgers/m7.7-spin-up-and-patrols/task.md) | A 50–100-year spin-up, skip-ahead, garrisons and road patrols | 2–4 days | — |
+| [M7.1 Ledgers and national accounts](m7-country-of-ledgers/m7.1-ledgers-and-national-accounts/task.md) | Integer settlement ledgers on a test country, with one treasury and one issuer | 7–11 days | [brief](m7-country-of-ledgers/m7.1-ledgers-and-national-accounts/plan.md) |
+| [M7.2 Emulator](m7-country-of-ledgers/m7.2-emulator/task.md) | Ledger hazards fitted from the city model and docked against it | 5–8 days | [brief](m7-country-of-ledgers/m7.2-emulator/plan.md) |
+| [M7.3 Flows and villages](m7-country-of-ledgers/m7.3-flows-and-villages/task.md) | Trade, migration and commuting between settlements, village rules and the country CI suite | 8–11 days | [brief](m7-country-of-ledgers/m7.3-flows-and-villages/plan.md) |
+| [M7.4 Goods and food](m7-country-of-ledgers/m7.4-goods-and-food/task.md) | Eight goods stepped weekly, dated food, harvest stores and trade priced by distance | 6–10 days | [brief](m7-country-of-ledgers/m7.4-goods-and-food/plan.md) |
+| [M7.5 Happiness, wealth and WASM](m7-country-of-ledgers/m7.5-happiness-wealth-and-wasm/task.md) | Happiness and wealth blocks, and a WASM settlement model inside the 12 ms budget | 5–9 days | [brief](m7-country-of-ledgers/m7.5-happiness-wealth-and-wasm/plan.md) |
+| [M7.6 Cultures](m7-country-of-ledgers/m7.6-cultures/task.md) | Culture counts per settlement, kept exact through births, switching and migration | 4–6 days | [brief](m7-country-of-ledgers/m7.6-cultures/plan.md) |
+| [M7.7 Spin-up and patrols](m7-country-of-ledgers/m7.7-spin-up-and-patrols/task.md) | A 50–100-year spin-up, skip-ahead, garrisons and road patrols | 2–4 days | [brief](m7-country-of-ledgers/m7.7-spin-up-and-patrols/plan.md) |
 
 ### [M8 Country map](m8-country-map/milestone.md)
 

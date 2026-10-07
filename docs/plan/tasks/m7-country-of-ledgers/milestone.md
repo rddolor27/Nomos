@@ -1,6 +1,6 @@
 # M7 Country of ledgers: sub-milestones
 
-M7 holds 29 build tasks and 14 exit checks in the [implementation plan](../../implementation-plan.md#m7-country-of-ledgers), so it runs as seven sub-milestones. Each one ends with a headless country that runs and passes its own checks. None has a step-by-step plan yet; each gets one when the sub-milestone before it closes.
+M7 holds 29 build tasks and 14 exit checks in the [implementation plan](../../implementation-plan.md#m7-country-of-ledgers), so it runs as seven sub-milestones. Each one ends with a headless country that runs and passes its own checks. Each has an implementation brief in its `plan.md`, which becomes a step-by-step plan when the sub-milestone before it closes.
 
 Estimates are full-time days for one person coding by hand (unsourced estimates). The Actual column records the real time, so the later estimates can be rescaled to the measured pace. The plan's own M7 effort line, 19–28 days with 5–8 of them for the emulator, comes from round 4. The Calendar plan adds 0.5 days and the Military plan 1–2. Rounds 5, 6 and 8 add work nobody estimated, mostly round 6's goods and wellbeing blocks. With those, the sub-milestones below come to 37–59 days.
 
