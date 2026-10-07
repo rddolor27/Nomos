@@ -10,6 +10,7 @@ This folder holds the research and planning behind Nomos; product code lives out
 | [plan/sound.md](plan/sound.md) | Chiptune sound as data: what plays when, the sound rules, the bank format, porting the synth, mixing and controls |
 | [plan/military.md](plan/military.md) | Soldiers who defend and patrol roads, never towns: rules, how patrols feed the route ledgers, and the finished art and sounds |
 | [plan/calendar.md](plan/calendar.md) | Watch-only runs and the 112-day year: date maths, seasons, speeds, branches and the rescaling rules |
+| [plan/gazette.md](plan/gazette.md) | The daily town paper, printed only from records: its sections, rules, how editions are built, and the follow-the-news camera |
 
 ## Research rounds
 
