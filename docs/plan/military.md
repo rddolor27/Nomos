@@ -1,79 +1,81 @@
-# Military plan
+# Military
 
-Status: draft, 7 October 2026. No code exists yet. This plan is not in the shared plan doc, and its tasks carry no round tag, because no research round has checked them. Every figure is an unsourced estimate unless marked otherwise.
+Oct 7, 2026 · @Rd
 
-## The answer
-
-- **The military defends; it never polices towns.** Soldiers are a paid public job: garrisons, forts and watchtowers, and patrols on the roads between settlements. There are no wars.
-- **Patrols guard the routes.** Round 4 already plans route ledgers with bandit pressure, patrols and incidents (M7–M9). The military supplies those patrols, so more patrols mean fewer raids on caravans.
-- **The same lesson holds on the roads:** what gets watched shapes what gets recorded. A raid on an unpatrolled stretch happens but is rarely recorded.
-- **Defence costs money.** A defence budget slider (M5) pays soldiers from taxes, a guns-and-butter trade-off. Its predicted effect is shown before Run, like every policy slider.
-- **The setting is storybook pre-industrial:** soldiers wear a steel helmet and a leather baldric, and carry a sheathed sword or a spear at rest. No weapon is ever drawn, and there is no blood, no guns, no flags and no heroic poses.
+The military defends and patrols the roads; it never polices towns. On 7 October 2026 the owner chose defence and route patrols only, sheathed swords or spears with no guns, and a storybook pre-industrial setting. The art and sounds already exist; the tasks are in Implementation plan, tagged (Military).
 
 ## Rules
 
+Soldiers defend and patrol roads; they never police towns. Content rule 6 carries this, as the owner set it on 7 October 2026.
+
 1. **Soldiers never police towns.** Town crime, stops and arrests stay with the police. Nothing in the game sends soldiers into a town to keep order.
 2. **Weapons stay at rest:** a sheathed sword or a shouldered spear. Nothing is drawn, no fight is animated, and there is no blood.
-3. **No flags, heraldry or heroic poses.** Soldiers follow the police iconography rule: neutral, never glorified.
+3. **No guns, flags, heraldry or heroic poses.** The setting is storybook pre-industrial, and soldiers follow the police iconography rule: neutral, never glorified.
 4. **Soldiers are a removable job,** like every role. The helmet and baldric come off at home, and nobody is born a soldier.
-5. **Soldiers carry no culture.** Recruitment and postings never read culture, region or looks. No uniform colour matches a culture emblem colour.
-6. **Route stops are drawn like town stops.** If patrols stop travellers, wrongful stops show as prominently as arrests, and bandits are an act, never a costume.
+5. **Soldiers carry no culture.** Recruitment and postings never read culture, region, looks or wealth, and no uniform colour matches a culture emblem.
+6. **Road stops are drawn like town stops.** If patrols stop travellers, wrongful stops show as prominently as arrests. Bandits are an act, never a costume.
+7. **There are no wars.** The military deters raids on the roads. There is no enemy country, siege or battle, and no battle sound.
 
 ## How it works in the sim
 
-| Piece | Rule | Milestone |
-|---|---|---|
-| Soldier job | A public-sector job, paid wages from taxes, with shifts like other jobs | M2–M3 |
-| Defence budget | A policy slider that sets the number of soldier posts and their pay, funded from taxes | M5 |
-| Garrisons | Barracks in the capital and in coastal or border towns, sized by the defence budget | M7–M8 |
-| Forts and watchtowers | Generated on roads: forts at junctions near coasts and borders, watchtowers along long stretches | M8 |
-| Patrols | Each route ledger gets a patrol intensity from nearby garrisons. Raids fall as patrols rise, and are recorded only when reported or seen | M7 |
-| Route strip view | Patrols appear as soldiers walking the road, aligned to the route ledger | M9 |
+The military is a paid public job plus three placed structures. Its one effect on the sim is the patrol intensity on round 4's route ledgers.
 
-## Art (tools/sprites)
+| Piece | Rule | Built on | Milestone |
+| --- | --- | --- | --- |
+| Soldier job | A public-sector job paid from taxes, with shifts like other jobs, home after work | M2 wages and taxes; M3 schedules | M3 |
+| Defence budget | A policy set before Run: the number of soldier posts and their pay, funded from taxes. Its predicted effect on raids and taxes shows before Run, and a new value forks a branch | M5 treasury and policy sliders | M5 |
+| Garrisons | Soldier posts in the capital and in coastal or border towns, sized by the budget; drawn as barracks | Settlement tiers and coasts from the generator | M7 ledger, M8 map |
+| Patrols | Each route ledger gets a patrol intensity from nearby garrisons and the budget. Raids fall as patrols rise, and a raid is recorded only when reported or seen | Round 4's route ledgers: traffic, bandit pressure, patrols, incidents | M7 |
+| Forts and watchtowers | Forts at road junctions near coasts and borders; watchtowers along long road stretches | The generator's road graph | M8 |
+| Route strip view | Soldiers walk the road, aligned to the route ledger | Round 4's strip view | M9 |
 
-- **The soldier job item** follows every pose, like the other job items:
-  - a grey steel helmet (rounded kettle hat);
-  - a brown leather baldric crossing the body diagonally, so it never reads as the merchant's horizontal sash;
-  - a sheathed sword at the hip.
-  - It avoids police navy, merchant teal, crime reds and oranges, black and the eight culture emblem colours.
-- **Buildings:**
-  - barracks (a civic building);
-  - a wooden or stone watchtower;
-  - a small fort with a gate, as a set piece on roads.
-- **Map icons:** forts and watchtowers at 16 and 8 px for the Region and Country views.
+- **Money stays exact.** Soldier wages move from the treasury to soldiers' accounts in whole cents, like any public wage, so all accounts plus MINT still sum to zero.
+- **Draws are keyed** by (route, day, event). Changing patrols on one road never shifts another road's raids, so paired seeds stay comparable.
+- **True and recorded stay apart.** The route ledger counts true and recorded raids separately. The chance a raid is recorded rises with patrol intensity and traffic, so a quiet, unpatrolled stretch records few of its raids.
+- **Guarded decisions follow round 8:** each posting, patrol and stop is an integer threshold and one keyed draw, and the flip test covers them.
+- **Watch-only:** the defence budget is set before Run, like every policy. Trying another budget forks a branch.
+- **Placement reads the generator:** garrison towns from settlement tiers and coasts, forts from road junctions, watchtowers from long road segments. M8 tunes the spacing against generated previews.
 
-## Sound (tools/sounds)
+Open: with no neighbouring country, what counts as a border? The map edge, mountain passes or region lines?
 
-- **A drum cadence for drills,** a short horn call for the change of watch, marching steps and a gate creak.
-- **No battle sounds,** and no heroic fanfare.
+## Art and sound (done)
 
-## Tasks by milestone (draft)
+The art and sounds were built and tested on 7 October 2026; only the game code remains.
 
-**M2–M3**
-- [ ] Add the soldier job: wages from taxes, shifts, home after work. The job item comes off at home (1 day).
+| Asset | Size | Footprint | Sheet |
+| --- | --- | --- | --- |
+| `job_soldier_<pose>`: steel kettle hat, diagonal leather baldric, sheathed sword | 18×22 px, 17 frames covering every pose | — | `characters` |
+| `building_barracks` | 64×48 px | 4×2 tiles | `military` |
+| `military_watchtower` | 32×64 px | 2×1 tiles | `military` |
+| `military_fort`, a small fort with a gate | 96×64 px | 6×3 tiles | `military` |
+| `map16_military_fort`, `map16_military_watchtower` | 16×16 and 16×20 px | Region view icons | `military` |
+| `map8_military_fort`, `map8_military_watchtower` | 8×8 and 8×10 px | Country view icons | `military` |
 
-**M5 Society and policy**
-- [ ] Add a defence budget slider with a predicted effect on raids and taxes, shown before Run (1–2 days).
+- **Colours:** the soldier avoids police navy, merchant teal, crime reds and oranges, black and the eight culture emblem colours.
+- **Shape:** the baldric crosses the body diagonally, so it never reads as the merchant's horizontal sash.
+- **Sounds** (`assets/sounds/military.json`, 7 effects; see Sound):
+  - `military_drill-drum`, a 2.65 s cadence at drills;
+  - `military_watch-horn`, 1.56 s on D4–E4–D4, at the change of watch;
+  - `military_march` (1.59 s) and `military_march-step` for patrols;
+  - `military_gate-creak` for fort gates;
+  - `military_spear-tap` and `military_helmet-clink`, small sounds for guards at rest.
 
-**M7 Country of ledgers**
-- [ ] Give each route ledger a patrol intensity from garrisons and the defence budget. Raids fall as patrols rise, and records follow reports and sightings (1–2 days).
+## Work by milestone
 
-**M8 Country map**
-- [ ] Generate garrisons, forts at junctions near coasts and borders, and watchtowers along long roads. Draw their map icons (1–2 days).
+With the art and sounds done, about 5–8 days of game code remain (unsourced estimate). Each task is in Implementation plan, tagged (Military).
 
-**M9 Zoom across scales**
-- [ ] Show patrols walking the route strip view, aligned to the ledger (1 day).
+| Milestone | Work | Days |
+| --- | --- | --- |
+| Done, 7 October 2026 | Soldier job item, barracks, watchtower, fort, map icons and 7 sounds | — |
+| M3 City life | The soldier job: wages from taxes, shifts, home after work; the job item comes off at home | 1 |
+| M5 Society and policy | The defence budget, set before Run, with its predicted effect on raids and taxes | 1–2 |
+| M7 Country of ledgers | Garrison posts, and patrol intensity on route ledgers, with true and recorded raids kept apart | 1–2 |
+| M8 Country map | Garrisons, forts and watchtowers placed by the generator; their map icons; the military sounds | 1–2 |
+| M9 Zoom across scales | Patrols walking the route strip view | 1 |
 
-**Art and sound**
-- [ ] Soldier job item, barracks, watchtower, fort, and map icons (2–3 days).
-- [ ] Military sounds (0.5 day).
+**Exit checks:**
 
-In all, about 7.5–12 days.
-
-## Exit checks
-
-- [ ] No code path sends soldiers into a town to keep order, and town stops and arrests come only from the police.
-- [ ] Recruitment and postings never read culture, region, looks or wealth: the existing appearance and culture audits extend to soldiers.
-- [ ] No weapon sprite is drawn out of its sheath, and no soldier frame shows a fight.
-- [ ] On paired seeds, more patrols cut true raids. Recorded raids rise or fall with sightings, as the true-versus-recorded lesson predicts.
+- M3: no soldier frame draws a weapon out of its sheath or shows a fight.
+- M4: no code path sends soldiers into a town to keep order; town stops and arrests come only from the police.
+- M5: recruitment and postings never read culture, region, looks or wealth, and the appearance and culture audits cover soldiers.
+- M7: on paired seeds, more patrols cut true raids, and recorded raids rise or fall with sightings, as the true-versus-recorded lesson predicts.
