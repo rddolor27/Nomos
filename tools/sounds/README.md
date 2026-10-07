@@ -52,3 +52,7 @@ These targets are unsourced starting points. Nothing may pass −1 dBFS: `Bank.a
 ## Naming
 
 Names are lowercase, with underscores between parts and hyphens inside a part, like the sprites: `ui_click`, `emote_heart`, `amb_coast_day`, `music_town-day`.
+
+## Provenance
+
+Every bank is listed in `assets/LICENSES.md` with its generator, licence and SHA-256. Both build scripts rewrite that list through `tools/licenses.py`.
