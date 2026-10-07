@@ -22,6 +22,7 @@ A society simulation that runs entirely in the browser. Blob-shaped people work,
 - **Zoom from country to street.** Every settlement runs as an exact ledger. Zoom in and its people appear, spawned from the ledger; zoom out and they fold back into it.
 - **An exact economy.** Money is stored in whole cents and always balances. Goods move through production chains, food spoils, and wellbeing and wealth respond to both.
 - **Crime and policing.** Anyone can choose crime. The sim keeps true crime apart from recorded crime, so you can watch where police look shape the record. Crime is an act, never a costume: nobody looks like a criminal.
+- **A town gazette.** Every town prints a daily paper written only from its records, so a crime nobody records never makes the news.
 - **Fictional cultures.** Learned customs (foods, festivals, music, naming and home region) shape what people prefer, never their ability, honesty, work or crime.
 - **One body, 96 looks.** Everyone shares one blob body with a random hue, eye shape and pattern. Looks are never inherited, and no rule reads them.
 - **Lab mode.** Primer-style experiment cards: lock in a prediction, run paired seeds and see whether it held.
