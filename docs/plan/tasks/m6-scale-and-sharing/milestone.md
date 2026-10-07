@@ -1,6 +1,6 @@
 # M6 Scale and sharing: sub-milestones
 
-M6 holds 29 build tasks and 9 exit checks in the [implementation plan](../../implementation-plan.md#m6-scale-and-sharing), so it runs as seven sub-milestones. Each one ends with software that runs and passes its own checks. None has a step-by-step plan yet; each gets one when the sub-milestone before it closes.
+M6 holds 29 build tasks and 9 exit checks in the [implementation plan](../../implementation-plan.md#m6-scale-and-sharing), so it runs as seven sub-milestones. Each one ends with software that runs and passes its own checks. Each has an implementation brief in its `plan.md`, which becomes a step-by-step plan when the sub-milestone before it closes.
 
 Estimates are full-time days for one person coding by hand (unsourced estimates). The Actual column records the real time, so the later estimates can be rescaled to the measured pace. The plan's own M6 effort line, 2–4 weeks plus 5–8 days for the visual layer, comes from rounds 1 and 3. Round 4 adds 2–3 days, round 9's New town panel, street editor and cards 19–31, and the Sound plan 1–1.5. Rounds 2, 5, 8 and 9 add further work nobody estimated. With those, the sub-milestones below come to 49–81 days.
 

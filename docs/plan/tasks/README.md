@@ -97,13 +97,13 @@ The plan's own effort lines sum to about 210–322 days before launch, but many 
 
 | Sub-milestone | Delivers | Estimate | How |
 | --- | --- | --- | --- |
-| [M6.1 Generated cities](m6-scale-and-sharing/m6.1-generated-cities/task.md) | Cities of 400² to 1,024² tiles from a context record, frozen generator versions and the New town panel | 7–12 days | — |
-| [M6.2 100,000 agents](m6-scale-and-sharing/m6.2-100-000-agents/task.md) | 100k agents at 60 fps on a desktop, with workers, WASM SIMD, the heatmap and offline starts | 9–16 days | — |
-| [M6.3 Worlds, saves and links](m6-scale-and-sharing/m6.3-worlds-saves-and-links/task.md) | Worlds as a seed plus edit layers, saves, and links that replay in any browser | 5–8 days | — |
-| [M6.4 Street editor](m6-scale-and-sharing/m6.4-street-editor/task.md) | The Build mode opened to players, with player-made towns shared as links or files | 9–14 days | — |
-| [M6.5 Card remix and authoring](m6-scale-and-sharing/m6.5-card-remix-and-authoring/task.md) | Lab cards that players remix and write, judged by M1's statistics | 9–15 days | — |
-| [M6.6 Launch kit](m6-scale-and-sharing/m6.6-launch-kit/task.md) | Preview cards, the "What this toy leaves out" page, credits, ODD+D and the name review | 8–13 days | — |
-| [M6.7 Country save hooks](m6-scale-and-sharing/m6.7-country-save-hooks/task.md) | Country sections in saves and links, once M7's ledgers exist | 2–3 days | — |
+| [M6.1 Generated cities](m6-scale-and-sharing/m6.1-generated-cities/task.md) | Cities of 400² to 1,024² tiles from a context record, frozen generator versions and the New town panel | 7–12 days | [brief](m6-scale-and-sharing/m6.1-generated-cities/plan.md) |
+| [M6.2 100,000 agents](m6-scale-and-sharing/m6.2-100-000-agents/task.md) | 100k agents at 60 fps on a desktop, with workers, WASM SIMD, the heatmap and offline starts | 9–16 days | [brief](m6-scale-and-sharing/m6.2-100-000-agents/plan.md) |
+| [M6.3 Worlds, saves and links](m6-scale-and-sharing/m6.3-worlds-saves-and-links/task.md) | Worlds as a seed plus edit layers, saves, and links that replay in any browser | 5–8 days | [brief](m6-scale-and-sharing/m6.3-worlds-saves-and-links/plan.md) |
+| [M6.4 Street editor](m6-scale-and-sharing/m6.4-street-editor/task.md) | The Build mode opened to players, with player-made towns shared as links or files | 9–14 days | [brief](m6-scale-and-sharing/m6.4-street-editor/plan.md) |
+| [M6.5 Card remix and authoring](m6-scale-and-sharing/m6.5-card-remix-and-authoring/task.md) | Lab cards that players remix and write, judged by M1's statistics | 9–15 days | [brief](m6-scale-and-sharing/m6.5-card-remix-and-authoring/plan.md) |
+| [M6.6 Launch kit](m6-scale-and-sharing/m6.6-launch-kit/task.md) | Preview cards, the "What this toy leaves out" page, credits, ODD+D and the name review | 8–13 days | [brief](m6-scale-and-sharing/m6.6-launch-kit/plan.md) |
+| [M6.7 Country save hooks](m6-scale-and-sharing/m6.7-country-save-hooks/task.md) | Country sections in saves and links, once M7's ledgers exist | 2–3 days | [brief](m6-scale-and-sharing/m6.7-country-save-hooks/plan.md) |
 
 ### [M7 Country of ledgers](m7-country-of-ledgers/milestone.md)
 
