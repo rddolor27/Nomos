@@ -63,6 +63,17 @@ PALETTE = {
     'SILVER_S': (170, 174, 194),
     'SILVER_D': (132, 136, 158),
     'SILVER_L': (236, 238, 246),
+    # Seasonal stand-ins for GRASS_L, GRASS and LEAF_D: the renderer swaps them in on vegetation
+    # (assets/sprites/season_map.json), so no sprite is redrawn per season.
+    'SPRING_L': (186, 232, 114),
+    'SPRING': (122, 196, 78),
+    'SPRING_D': (66, 138, 64),
+    'AUTUMN_L': (200, 206, 100),
+    'AUTUMN': (160, 164, 70),
+    'AUTUMN_D': (104, 112, 52),
+    'WINTER_L': (208, 218, 198),
+    'WINTER': (162, 178, 158),
+    'WINTER_D': (110, 126, 114),
 }
 assert len(PALETTE) <= 64 and len(set(PALETTE.values())) == len(PALETTE)
 PALETTE_RGB = set(PALETTE.values())
@@ -143,6 +154,17 @@ def recolor(im, mapping):
         s, d = PALETTE[src], PALETTE[dst]
         hit = (a[:, :, 0] == s[0]) & (a[:, :, 1] == s[1]) & (a[:, :, 2] == s[2]) & (a[:, :, 3] > 0)
         out[hit, :3] = d
+    return Image.fromarray(out)
+
+
+def overlay(base, changed):
+    """The pixels where `changed` differs from `base`, on transparency, or None if none differ."""
+    a, b = np.array(base), np.array(changed)
+    diff = (a != b).any(axis=2)
+    if not diff.any():
+        return None
+    out = np.zeros_like(b)
+    out[diff] = b[diff]
     return Image.fromarray(out)
 
 
