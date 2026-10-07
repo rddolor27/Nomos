@@ -6,7 +6,7 @@ Oct 6, 2026 · @Rd
 
 Work top to bottom: each milestone lists what to build and the checks that close it, merged from every research round. Tick a box when it lands; a milestone is done when its exit checks pass in CI, not when the demo looks right.
 
-- **Where items come from:** round 1 is Findings & plan and Full report, round 2 is Follow-up research, round 3 is 2D game look & assets, round 4 is Villages, cities & countries, round 5 is the Performance budget section below, round 6 is Goods & wellbeing, and round 8 is Cultures.
+- **Where items come from:** round 1 is Findings & plan and Full report, round 2 is Follow-up research, round 3 is 2D game look & assets, round 4 is Villages, cities & countries, round 5 is the Performance budget section below, round 6 is Goods & wellbeing, round 8 is Cultures, and round 9 is Maps and world builder.
 - **Effort:** rough full-time estimates for one developer; round 1 put the whole plan at 12–19 weeks, and an AI coding assistant shortens that.
 - **Something to look at from week one:** every milestone ships at least one of the three visual styles below, so the project is never just a test suite.
 
@@ -15,6 +15,8 @@ Work top to bottom: each milestone lists what to build and the checks that close
 ![build order · 10 milestones, 3 after launch](images/roadmap.png)
 
 The drawing is round 1's seven milestones plus round 4's three country milestones, dashed because they come after launch; the sections below add each round's tasks without changing the order.
+
+Round 9 moves launch after M8: M7 and M8 become pre-launch milestones and M9 stays after launch, so the drawing's launch line now falls after M8 (R9).
 
 ## Visual styles
 
@@ -148,13 +150,16 @@ Goal: a deterministic core, the worker loop and the renderer contract, drawing S
 - [ ] Warm the day-boundary code at worker start on a 1,024-agent dummy world (about 20–30 ms), so the first in-game day does not run cold (R6).
 - [ ] Add culture columns to `AgentStore`: `culture` and `birthCulture` (Uint8), `customs` (Uint16, four 4-bit culture-of-origin nibbles for food, festival, music and naming) and `homeRegion` (Uint16), at most 8 cultures per world, drawn on their own keyed stream; document the layout in `sim-protocol` (R8).
 - [ ] Put culture code in its own package, `sim-culture`: preference rows, festival calendar, naming rules, region ids, and the splits by culture of migration flows and spawned households, which act on totals from culture-blind code. Add a dependency-cruiser `reachable` rule and an ESLint profile so crime, police, labour, wage, wealth, ability, housing and migration code can neither import it nor read culture columns by property, destructuring or brackets (R8).
-- [ ] Add a `hue` column (Uint8): one of six abstract body hues (sun, lilac, rose, ice, mint, silver), drawn uniformly at birth on its own keyed stream. Only the renderer reads it, as a palette swap; no sim rule ever does (content rule 1) (R8).
+- [ ] Add a `hue` column (Uint8), now a one-byte look: one of 96 looks, a body hue (sun, lilac, rose, ice, mint, silver) × eye shape × pattern, drawn uniformly at birth from draw(seed, LOOK, id) and never inherited. Only the renderer reads it, drawing body, pattern, face, then job item; no sim rule ever does (content rule 1) (R8, R9).
 - [ ] Key culture-level draws, such as festival scheduling, by a stable culture uid, never its index. Never key a guarded decision's draw on culture, never let culture set a loop order that matters, and never index anything but custom tables by culture (R8).
 - [ ] Add the relabel test to every pull request: permuting culture ids together with their custom rows leaves every non-culture state hash identical (R8).
 - [ ] Add a stride scheduler for staggered checks: agent i is due on day d when i ≡ d − offset (mod P), with the offset re-keyed yearly. It reads a day-boundary snapshot, applies an ordered change list, and gives identical hashes in reversed visiting order (R8).
 - [ ] Give the keyed draw a murmur3-style finaliser after every input, and extend the χ² test to cross-stream pairs (R8).
 - [ ] Split every flow of people by culture with keyed stochastic rounding, never flooring or plain largest remainder (R8).
 - [ ] Extend the name lint with a real-world fixture of countries, demonyms, languages, ethnonyms and religions, and add text lints that reject bare-plural generic sentences and hierarchy words in culture strings (R8).
+- [ ] Make worldgen's `draw(seed, stream, ...keys)`, with the seed hashed first, the sim's single keyed draw, with fixed-arity hot-path variants. Lint-ban bare `/` and `%` in generator code outside floor-division helpers (R9).
+- [ ] Define one binary map for generated and hand-made maps: terrain kinds, IntGrid walkability, and entities (homes with capacity, workplaces, shops with hours, civic buildings) (R9).
+- [ ] Publish the sprite manifest as a versioned JSON Schema with generated TypeScript types. Maps name frames, never atlas indices (R9).
 
 **Exit checks**
 
@@ -169,6 +174,7 @@ Goal: a deterministic core, the worker loop and the renderer contract, drawing S
 - [ ] The claims and cash identities hold exactly every day, and no revaluation changes the MINT balance (R6).
 - [ ] The lint profile and dependency-cruiser catch planted direct, property, destructuring, bracket and transitive violations, and pass the consumption package (R8).
 - [ ] The relabel test gives identical hashes for 3 seeds × 1 simulated year (R8).
+- [ ] The kernel fuzzer (draw, below, fade, value, fbm) matches the Python vectors in Node, Bun, Chromium, Firefox and WebKit (R9).
 
 ## M1 Lab mode
 
@@ -252,7 +258,7 @@ Goal: Lengnick's household–firm economy, calibrated to measured targets and li
 
 ## M3 City life
 
-Goal: daily routines in a real town, drawn as the Skin C pixel-art town from one LDtk map. Effort: 2–3 weeks, plus 8–12 days for the visual layer (3–5 of them authoring the town).
+Goal: daily routines in a real town, drawn as the Skin C pixel-art town from one generated, hand-edited map. Effort: 2–3 weeks, plus 8–12 days for the visual layer (3–5 of them editing the generated town).
 
 **Build**
 
@@ -261,7 +267,7 @@ Goal: daily routines in a real town, drawn as the Skin C pixel-art town from one
 - [ ] Optional: idle back-off, shop hours shifted by travel time, day plans made at dawn and one global witness pass (R2).
 - [ ] Re-download Ninja Adventure from its canonical page, confirm the CC0 text, drop culturally specific tiles and re-index to a 32-colour master palette (R3).
 - [ ] Set up the LDtk project: IntGrid values for wall, water, road, sidewalk, grass and door; auto-layer rules; a roof and treetop layer; entities for homes, shops, workplaces and the market with capacity, owner and opening hours (R3).
-- [ ] Hand-author the 256×256 default town with apartment blocks, and save house rows, shop rows, a market square and a park as prefab levels (R3).
+- [ ] Make the 256×256 default town a fixed seed of the place generator, with apartment blocks, house rows, shop rows, a market square and a park, hand-edited in the developer Build mode; hand-authoring it in LDtk is the fallback if the port slips (R3, R9).
 - [ ] Add the tile pass (a tile-index texture read with `texelFetch`, animated tiles) and the roof pass drawn over people (R3).
 - [ ] Add the phone path: render at one pixel per texel into a framebuffer and blit at integer scale, retiring the pixel-ratio cap of 2 for the world layer (R3).
 - [ ] Add four light periods that tint only ground and buildings, with lit windows and lamps, fades of at least 2 s and a tint-off toggle (R3).
@@ -300,6 +306,9 @@ Goal: daily routines in a real town, drawn as the Skin C pixel-art town from one
 - [ ] Add a name filter for people, places and festivals: distinctive Pokémon town and city names and species names (edit distance 1 up to 5 letters, 2 above), the "poke" and "-mon" bans, LDNOOBW Latin-script lists (exact for 3-letter entries, substring for 4+), real festival names and the real-world fixture (R8).
 - [ ] Screen the shared sound set at authoring time by trigram similarity to real name bases (below 0.26 pass, 0.26–0.40 review, above 0.40 fail) (R8).
 - [ ] Use one shared set of festival decorations, never in national-flag colours or the six body hues, and the culture emblems drafted in `assets/sprites/culture.png` on the unmerged `feat/pixel-sprites` branch. Banner and lens colours also avoid the job colours and the reds and oranges kept for crime (R8).
+- [ ] Port `place.py` to TypeScript, with plan-then-apply shore tidying, 64×64 districts, frontage lot packing and entity export (R9).
+- [ ] Build the minimal developer-flag Build mode as a lazy chunk, in 8–12 days: `WorldRenderer.patchTiles` over 32×32 chunks; terrain brush, rectangle and fill, with a 3-tile minimum land brush; prefab stamps; cell-diff undo; save and load in a versioned container; and a Play hand-off to the worker (R9).
+- [ ] Draw the two shore saddle keys (`1001`, `0110`) for both shores: 4 frames, or 8 with variants. Then the corner set is complete and tidying can drop its diagonal clause (R9).
 
 **Exit checks**
 
@@ -394,6 +403,7 @@ Goal: the social layer and policy sliders, each with a predicted size of effect,
 - [ ] Add a place-and-hour Exposure lens: night outdoor hours, and victimisation and police contacts per 1,000 outdoor hours, by district and hour, never by culture. Remedies act only on places and times (R8).
 - [ ] Extend the appearance audit with a culture row (|Cramér's V| < 0.05 for every rendered attribute outside the lens over 50 seeds), add a hue × culture independence test over 10⁶ births, and let no policy slider read culture (R8).
 - [ ] Run the diverse playtest panel on customs and names: which real people does each culture resemble, and which commits more crime? A proposed bar: at least 8 in 10 name none and see no difference (R8).
+- [ ] Extend the appearance audit and the hue × culture independence test to eye shape and pattern (R9).
 
 **Exit checks**
 
@@ -412,7 +422,7 @@ Goal: 100k agents on desktop, share links that replay in any browser, and a clea
 
 - [ ] Stagger decisions, add per-cell aggregates, and move to SharedArrayBuffer workers behind a `crossOriginIsolated` check (R1).
 - [ ] Finish semantic zoom for 25k and 100k agents: a Skin A heatmap from 128×128 render-side bins with a log ramp, visible-set compaction, and optional 16-bit positions at 8 bytes per agent (R3).
-- [ ] Generate cities of 400² to 1,024² tiles from a seeded road grid stamped with LDtk prefab blocks, with wave function collapse only for decorative filler (R3).
+- [ ] Generate cities of 400² to 1,024² tiles with the place generator's district grid, building 64×64 districts lazily as they come into view; no LDtk prefab blocks or wave function collapse (R3, R9).
 - [ ] Extend the Canvas2D fallback to all three skins (R3).
 - [ ] Add saves and share URLs that encode seed, config, skin, zoom and camera, and replay identically across browsers (R1, R2, R3).
 - [ ] Prepare the launch kit: playable with no signup, a 1200×600 preview card per scenario drawn in Skin C with blobs and alt text, a share text that carries a bet, translation-ready text files (R2, R3).
@@ -429,6 +439,14 @@ Goal: 100k agents on desktop, share links that replay in any browser, and a clea
 - [ ] On the "What this toy leaves out" page, say that cultures are fictional, learned, preference-only and never drawn; that real cultures are far richer; that housing ignores culture; that festival and taste spending never crowds out food (Atkin; Banerjee and Duflo); and what Nomos leaves out on purpose (real cultures, discrimination by law as in Victoria 3, xenophobia and culture conflict as in Norland). Publish the outcome-audit result in words, and link the illusory-correlation and generic-language studies (R8).
 - [ ] Review the custom catalogue and a sample of generated names with sensitivity readers or the diverse panel before launch (R8).
 - [ ] Add the settlement culture block to the save format as top-3 sparse counts with dense counts where needed; budget 50–118 KB gzip at 10,000 settlements, and measure before the format freezes (R8).
+- [ ] Define a world as seed + pinned generator versions + per-stage edit layers. Edits are stage inputs, applied before day 0 (R9).
+- [ ] Share links: `#w1.` + deflate-raw columns + base64url + CRC32, carried in the URL fragment; caps of 32 KiB of link, 1 MiB inflated and 20,000 ops; a `.nomos` file above 8,000 characters; no free text (R9).
+- [ ] Freeze each released generator version with golden fingerprints for about 100 seeds, and ship old versions as lazy chunks. "Rebuild on the latest generator" is explicit and lists conflicts (R9).
+- [ ] Add a "New town" settings panel: seed with re-roll, 3–5 presets, size tier, biome, river, coast and port (R9).
+- [ ] Open the Build mode to players as a street editor: M3's tools plus an eraser, an eyedropper and a line tool; place buildings and props; edit home, shop and workplace zones. The palette offers building kinds, never styles (style is a keyed uniform draw with a "restyle" button), with no person, costume, culture or hue tools and no asset import. Edits apply before day 0, pass hard validation (doors on roads, capacity, reachability) and are shared as links or `.nomos` files (R9).
+- [ ] On opening a player-made world, show a "made by a player" badge, a "hide custom names" switch, and a report button that emails the owner (R9).
+- [ ] Once M1 cards and M6 links exist, add card remix: choose the visible knobs and a pre-validated treatment, then share a link or QR code; paired arms keep entity ids stable (R9).
+- [ ] Once M1 cards and M6 links exist, add card authoring: players set arms, metrics, claim type and seeds; prompts come from templates, not free text; M1's statistics judge every claim, with the "hand-picked setup" label; treatments never key on culture (R9).
 
 **Exit checks**
 
@@ -497,7 +515,7 @@ Goal: country mode ships, with a generated, seeded map, Country and Region views
 
 **Build**
 
-- [ ] Build the terrain stage in the worker: jittered-grid or shipped points (no trigonometry), Delaunator, template plus noise elevation with a continental falloff, priority-flood, flow accumulation, two or three stream-power passes and habitability (R4).
+- [ ] Build the terrain stage in the worker as the TypeScript port of tools/worldgen on a square grid, not a Voronoi mesh: template plus noise elevation, keyed mountain chains, priority-flood, flow accumulation, erosion-lite passes, climate, biomes and habitability, each stage proven against Python golden fingerprints and ported in pipeline order (R4, R9).
 - [ ] Place settlements on the mesh, capitals then towns then villages, with minimum spacing and P₁/k sizes (R4).
 - [ ] Build routes as Delaunay → spanning tree → spanner, routed by A\* with slope, bridge and road-reuse costs and sea lanes where no land path exists; add multi-source Dijkstra regions and market territories (R4).
 - [ ] Add names: a seeded foswig chain on an original corpus, site suffixes, and a CI filter against Pokémon place names (a test fixture only) and a profanity list (R4).
@@ -512,10 +530,21 @@ Goal: country mode ships, with a generated, seeded map, Country and Region views
 - [ ] Place 4–8 culture hearths by keyed Poisson-disc, grow regions by multi-source Dijkstra on the travel-cost mesh with terrain costs (no `Math.random`), mix a border band, reject layouts whose cultures differ in mean land quality or development beyond a set tolerance, flag development regions that hold only one culture, and spin the ledger up 50–100 years before play. Give cultures similar country-wide shares, and derive each culture's favoured foods from its hearth region's abundance (R8).
 - [ ] Name places, regions and festivals with theme words in the UI language and the shared sound set, keeping descriptive words such as "Ford" and "Port" separate, and run them through the name filter for 1,000 seeds (R8).
 - [ ] Add the home-regions map mode to the culture lens: dominant culture with hatching for diversity, and labels. It never uses the six body-hue colours or the police, merchant and crime colours, and it is never the default view (R8).
+- [ ] Run settlements and routes on the grid, and add sea lanes between landmasses. Grow regions by multi-source Dijkstra (R9).
+- [ ] Key place seeds, landmark draws and names on a stable settlement uid (its cell), never on population rank (R9).
+- [ ] Place 4–8 natural wonders per world by site rules, each kind at most once. Hot springs, geyser and caldera lake share one geothermal hotspot (R9).
+- [ ] Place built landmarks by tier and site: in-place ones on the settlement, and viaducts, observatories and lighthouses on cells of their own (R9).
+- [ ] Draw the Country and Region views as 8- and 16-px tilemaps of the same cells, with map-scale coast overlays and wonder and landmark icons (R9).
+- [ ] Add a snow biome for cold lowland (R9).
+- [ ] Draw about 55–81 tiles: map-scale coast and cliff-coast overlays, snow at map and street scale, cliff faces for east, west and north, rock ground and sand variants (R9).
+- [ ] Add a "New country" settings panel: about 10 overrides, grouped by stage and badged ("keeps coastline", "new world"); standard or large size; a culture count and a single-culture switch; presets, a live preview, and validation (R9).
+- [ ] Validate on Play, on Share and on every open: every settlement reaches the capital by road or sea lane; food capacity per country; no pin in water; names through round 8's filter in ASCII; payload caps (R9).
+- [ ] Add god tools on the country: lock and re-roll with per-stage keyed counters; raise, lower and smooth brushes; biome paint; drawn rivers and roads; town and wonder placement; pins, tombstones that lower counts, a conflict list and one undo log. Every edit reruns from its first dirty stage, and the generator re-places cultures (R9).
+- [ ] Re-baseline M7's and M8's settlement counts to listed places plus a region tier, and fit Zipf on true ranks (R9).
 
 **Exit checks**
 
-- [ ] A 1,000-settlement country on 30,000 cells generates in ≤ 1.5 s in desktop Chromium, with identical elevation, roads and names in Chromium, Firefox and WebKit (R4).
+- [ ] A standard 96×64 world generates in ≤ 100 ms and a large 192×128 world in ≤ 400 ms in desktop Chromium, with per-stage fingerprints matching the Python goldens in Node, Bun, Chromium, Firefox and WebKit (R4, R9).
 - [ ] The name filter passes 1,000 seeds (R4).
 - [ ] Country and Region views take ≤ 2 ms of main-thread render time per frame in CI's software-GL Chromium, a proposed bar (R4).
 - [ ] A render-filter test checks that the recorded view never shows a true-only cue; a fork's fold at its first tick equals the source ledger; a save with ten years of history stays under about 3 MB gzip, since history alone came to about 1.9 MB on synthetic data (R4).
@@ -523,7 +552,7 @@ Goal: country mode ships, with a generated, seeded map, Country and Region views
 
 ## M9 Zoom across scales
 
-Goal: zooming from Region to street shows agents spawned from the ledger, aligned to it daily and folded back on exit, and the camera never changes canonical history. Effort: 23–35 days (5–7 weeks), 3–5 of them authoring village kits.
+Goal: zooming from Region to street shows agents spawned from the ledger, aligned to it daily and folded back on exit, and the camera never changes canonical history. Effort: 20–30 days (4–6 weeks); round 9 drops the 3–5 days of village-kit authoring.
 
 **Build**
 
@@ -533,7 +562,7 @@ Goal: zooming from Region to street shows agents spawned from the ledger, aligne
 - [ ] Keep two ledgers: the canonical one, which agents never touch, and an apportioned micro-ledger that changes across the boundary only through mirrored flows, with a reconciliation band between households and firms (R4).
 - [ ] Add a divergence meter: daily z-scores per flow in the developer panel, logged for emulator refits (R4).
 - [ ] Fold on leave: drop the micro-ledger; cache in an LRU the notables (officers, owners, anyone with a record, anyone followed or named), the 2 KB hotspot field and the price list (R4).
-- [ ] Build interiors by tier (LDtk village kits with procedural dressing, BSP towns with prefabs, cities from M6's generator), prefetched on hover and cross-faded in (R4).
+- [ ] Build every tier's street maps with the district generator, prefetched on hover and cross-faded in; building interiors stay abstract, as building cards (R4, R9).
 - [ ] Add the district window: above the device cap, agents run only in the districts in view, and the district tier with a 16×16 crime lattice runs elsewhere (R4).
 - [ ] Add village agent rules: one general shop, own-farm work as the default for the unemployed, kin credit that nets to zero, and a market day with itinerant merchants (R4).
 - [ ] Add the route strip view: a seeded strip map 20–40 tiles wide whose caravans, bandits and patrols are aligned to the route's ledger (R4).
@@ -543,6 +572,10 @@ Goal: zooming from Region to street shows agents spawned from the ledger, aligne
 - [ ] Make spawn draw set points so spawned LS bands match the ledger, and make fold return exact band counts and summed LS (R6).
 - [ ] Add each notable's balance sheet (home ID, shares, debts) to the notables cache, so a revisited owner still owns the same home and firm (R6).
 - [ ] Spawn and fold customs exactly from the culture block, and keep notables' customs across visits (R8).
+- [ ] Adopt place record version 2: a stable id and cell, edge biomes per side, elevation and relief, river size, road rank, region, founding tier and versions, with temperature and moisture quantised to the place generator's bands (R9).
+- [ ] Lock each place's plan type at its founding tier, and build keyed lots by population, so growth never moves a street (R9).
+- [ ] Build route strips from route cells with the place code, and wonder views with vista props (R9).
+- [ ] Place edits are reservations the generator flows around. They are stored per place uid with the place version and a record hash, and go dormant rather than being dropped (R9).
 
 **Exit checks**
 
@@ -552,10 +585,13 @@ Goal: zooming from Region to street shows agents spawned from the ledger, aligne
 - [ ] On presets, daily |z| < 2 on at least 95% of flow-days (a proposed bar), and a camera oscillating across the threshold causes at most one switch per dwell period (R4).
 - [ ] Notables and followed agents reappear on revisits with consistent records; under consequential focus, the hand-off twin test keeps output, prices, crime and money per head within the ledger's noise; under shadow-canonical it passes by construction, so the divergence meter does that job (R4).
 - [ ] A village preset shows money and transactions per head well below the city's at equal real consumption (R4).
+- [ ] A zoom-consistency CI test passes: road, river and sea sides match the country exactly; every landmark icon appears in its place; edge farmland shows as fields (R9).
 
 ## Ongoing and verify-first
 
 Total effort to launch is roughly 20–30 weeks of one developer's full-time work: round 1's 12–19 weeks, about 6–9 weeks for the visual layer and about 2 weeks of country hooks in M0–M6. Country mode (M7–M9) then adds 55–83 days, about 11–17 weeks. Round 2's calibration and test work comes on top and was not estimated; all of these are unsourced guesses that an AI coding assistant shortens.
+
+Round 9 adds a full world builder and moves M7 and M8 before launch: about 178–271 days to launch, up from 100–150 (computed from the milestone estimates) (R9).
 
 **Ongoing**
 
@@ -564,6 +600,8 @@ Total effort to launch is roughly 20–30 weeks of one developer's full-time wor
 - [ ] Keep "Pokémon", "Poké-" and creature names out of the title, repo, packages, domain, tags, store text and code; copy nothing from Nintendo, including the decompilation repos (R3).
 - [ ] Re-check Norland's "fundamental update", due before the end of 2026, for its trade, upkeep and knowledge reworks (R6).
 - [ ] Refresh the US wealth preset when SCF 2025 is released (R6).
+- [ ] A no-op edit leaves the replay hash unchanged, and a treatment edit changes no unrelated entity id (R9).
+- [ ] A partial rerun from the first dirty stage equals a full rerun, byte for byte, for random edit logs (R9).
 
 **Verify before hard-coding**
 
