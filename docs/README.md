@@ -1,6 +1,6 @@
 # Docs
 
-This folder holds the research and planning behind Nomos; product code lives outside it. The plan was written in a shared Claude doc: https://claude.ai/code/artifact/599c64c6-a677-4b0e-8fb7-1b4c799dc152. The Markdown here was exported from it on 6 October 2026. If the two differ, the doc is the live version.
+This folder holds the research and planning behind Nomos; product code lives outside it. The plan was written in a shared Claude doc: https://claude.ai/code/artifact/599c64c6-a677-4b0e-8fb7-1b4c799dc152. The Markdown here was last exported from it on 7 October 2026. If the two differ, the doc is the live version.
 
 ## Plan
 
