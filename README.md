@@ -11,7 +11,7 @@ A society simulation that runs entirely in the browser. Blob-shaped people work,
 
 **Status: planning and art.** There is no game code yet. What exists today:
 - eight research rounds and a ten-milestone build plan, in [`docs/`](docs/);
-- an original pixel-art sprite set of 1,247 sprites in 11 sheets, drawn as code, in [`tools/sprites/`](tools/sprites/);
+- an original pixel-art sprite set of 1,342 sprites in 13 sheets, drawn as code, in [`tools/sprites/`](tools/sprites/), with seasons and snow;
 - a random world generator that previews worlds with that art, in [`tools/worldgen/`](tools/worldgen/).
 
 ## What it will be
@@ -34,6 +34,12 @@ A society simulation that runs entirely in the browser. Blob-shaped people work,
 </p>
 
 *Natural wonders, and the first 48 people of a world, each with a random look.*
+
+<p>
+  <img src="docs/mockups/seasons_showcase.png" alt="The same capital in four panels: fresh spring green, deep summer green, olive autumn ground with gold trees, and winter snow on the ground, roofs and bare trees">
+</p>
+
+*The capital through one year, from a single season map: palette swaps, bare trees in winter and snow on the ground and roofs.*
 
 ## Try the tools
 
