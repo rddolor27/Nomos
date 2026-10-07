@@ -591,7 +591,7 @@ Goal: country mode ships, with a generated, seeded map, Country and Region views
 - [ ] Re-baseline M7's and M8's settlement counts to listed places plus a region tier, and fit Zipf on true ranks (R9).
 - [ ] Place garrisons in the capital and coastal or border towns, forts at road junctions near coasts and borders, and watchtowers along long roads, all in the world generator; draw their map icons and play the military sounds (Military).
 - [ ] Play country and region music and ambience, and the 11 wonder loops in wonder views (Sound).
-- [ ] Add the national gazette from the aggregate ledgers: harvests, prices, migration and recorded raids on the roads (Gazette).
+- [ ] In country mode, print each town's own paper from its ledger, one paper per town, and add the national gazette from the aggregate ledgers: harvests, prices, migration and recorded raids on the roads (Gazette).
 
 **Exit checks**
 
