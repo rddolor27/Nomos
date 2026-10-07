@@ -6,7 +6,7 @@ Oct 6, 2026 · @Rd
 
 Work top to bottom: each milestone lists what to build and the checks that close it, merged from every research round. Tick a box when it lands; a milestone is done when its exit checks pass in CI, not when the demo looks right.
 
-- **Where items come from:** round 1 is Findings & plan and Full report, round 2 is Follow-up research, round 3 is 2D game look & assets, round 4 is Villages, cities & countries, round 5 is the Performance budget section below, round 6 is Goods & wellbeing, round 8 is Cultures, and round 9 is Maps and world builder.
+- **Where items come from:** round 1 is Findings & plan and Full report, round 2 is Follow-up research, round 3 is 2D game look & assets, round 4 is Villages, cities & countries, round 5 is the Performance budget section below, round 6 is Goods & wellbeing, round 8 is Cultures, round 9 is Maps and world builder, and (Sound), (Military) and (Calendar) mark the owner's plans of 7 October 2026, in the Sound, Military and Time & calendar tabs.
 - **Effort:** rough full-time estimates for one developer; round 1 put the whole plan at 12–19 weeks, and an AI coding assistant shortens that.
 - **Something to look at from week one:** every milestone ships at least one of the three visual styles below, so the project is never just a test suite.
 
@@ -34,7 +34,7 @@ Every skin reads the same per-agent data: x, y and a 32-bit visual word for outf
 
 Every tier has a hard tick budget that CI enforces: 5.3 ms for 10k agents, 13.3 ms for 25k and 16 ms for 100k, and 1.5 ms (1k settlements) or 12 ms (10k) per country day. Optimised JavaScript already fits each with at least 20% slack, provided perception uses per-cell aggregates and decisions are event-driven. WebAssembly SIMD and workers are kept for the two loops where they pay.
 
-Budgets are in reference-machine (RM) milliseconds: a 4-vCPU Xeon cloud VM whose Speedometer 3.1 score (9.5) falls between budget and mid-range Android phones. They assume 10 ticks a second at 1× speed on one sim worker, which is an assumption, because the project has not fixed a tick rate. Device times use conservative multipliers built from search-snippet Speedometer scores: ×1.5 for budget Android, ×0.6 for capable phones and ×0.75 for desktops.
+Budgets are in reference-machine (RM) milliseconds: a 4-vCPU Xeon cloud VM whose Speedometer 3.1 score (9.5) falls between budget and mid-range Android phones. They assume 10 ticks a second at 1× speed on one sim worker, the rate the owner fixed on 7 October 2026, with 1,440 ticks a day (Calendar). Device times use conservative multipliers built from search-snippet Speedometer scores: ×1.5 for budget Android, ×0.6 for capable phones and ×0.75 for desktops.
 
 | Tier | Budget, RM | On the device | Measured now, optimised JS |
 | --- | --- | --- | --- |
@@ -140,7 +140,7 @@ Goal: a deterministic core, the worker loop and the renderer contract, drawing S
 - [ ] Start the sim worker and the map fetch from an inline `<head>` script, and load uPlot and lil-gui only after the first frame (R5).
 - [ ] Convert `town.ldtk` at build time into a compact binary map, served with a compressible content type (R5).
 - [ ] Build the HUD in vanilla TypeScript and any richer UI (inspector, event log) in Solid, or Preact with signals; never React (R5).
-- [ ] Fix the ticks per sim day and days per sim year, and record both in `sim-protocol`; convert every half-life and rate from them at build time (R6).
+- [ ] Record 1,440 ticks per sim day and 112 days per sim year (4 seasons of 28 days) in `sim-protocol`; convert every half-life and rate from them at build time (R6, Calendar).
 - [ ] Add a claims ledger beside the cash ledger, one record per loan (lender, borrower, principal in cents, rate in ppm, payment), asserting Σ borrower debt = Σ lender loan assets every day (R6).
 - [ ] Add `mulPpm`, an exact floor of cents × ppm through a 10⁶ split with a ±1 correction, and lint-ban raw `cents * rate` in `sim-core` (R6).
 - [ ] Reserve integer quantity registries for homes (one per LDtk home), property titles and firm shares; value them as integer price index × quantity at the day boundary, logged as a revaluation line and never posted to MINT (R6).
@@ -160,6 +160,7 @@ Goal: a deterministic core, the worker loop and the renderer contract, drawing S
 - [ ] Make worldgen's `draw(seed, stream, ...keys)`, with the seed hashed first, the sim's single keyed draw, with fixed-arity hot-path variants. Lint-ban bare `/` and `%` in generator code outside floor-division helpers (R9).
 - [ ] Define one binary map for generated and hand-made maps: terrain kinds, IntGrid walkability, and entities (homes with capacity, workplaces, shops with hours, civic buildings) (R9).
 - [ ] Publish the sprite manifest as a versioned JSON Schema with generated TypeScript types. Maps name frames, never atlas indices (R9).
+- [ ] Add a calendar module to sim-core: day = tick ÷ 1,440, year = day ÷ 112 + 1, season = day of the year ÷ 28, and weekday = day mod 7 (5 workdays, 2 rest days), plus a build-time table of sunrise and sunset minutes; integer maths only (Calendar).
 
 **Exit checks**
 
@@ -175,6 +176,7 @@ Goal: a deterministic core, the worker loop and the renderer contract, drawing S
 - [ ] The lint profile and dependency-cruiser catch planted direct, property, destructuring, bracket and transitive violations, and pass the consumption package (R8).
 - [ ] The relabel test gives identical hashes for 3 seeds × 1 simulated year (R8).
 - [ ] The kernel fuzzer (draw, below, fade, value, fbm) matches the Python vectors in Node, Bun, Chromium, Firefox and WebKit (R9).
+- [ ] Every date round-trips through its tick count; a season is 28 days and 4 weeks, a year is 112 days, and every season starts on a workday (Calendar).
 
 ## M1 Lab mode
 
@@ -199,12 +201,22 @@ Goal: Primer-style lab cards in discrete days, drawn as Skin B blobs, with claim
 - [ ] Keep wallet bars to lab cards, labelled lab-only, and never draw them in city or town skins outside the wealth lens (R6).
 - [ ] Allow scripted event timing only as logged inputs on lab and scenario cards, never as a state-driven director in the sim core (R6).
 - [ ] Add a bet card, "Evening events: are people out at night stopped more?", on paired seeds, framed by place and hour, never by culture. In the toy, evening festivals raised victimisation 8.7% and stops 1.3% against daytime ones, while the rate per outdoor hour stayed the same (R8).
+- [ ] Add speed controls: pause, 1×, 4×, 16× and skip to the next season or year, with Space and keys 1–4, per-tier speed caps, and a paused start under reduced motion (Calendar).
+- [ ] Show the date, time, day type, season icon and year progress in the HUD, such as "Spring 12, Year 3 · 08:40 · rest day" (Calendar).
+- [ ] Make runs watch-only: while a run plays, the worker accepts only pause, speed, skip and read-only queries, and lab cards set treatments before Run (Calendar).
+- [ ] Load the audio chunk after the first frame and start the audio context on the first click. Add master, music, ambience, effects and UI buses with ducking, `M` to mute, three sliders saved per device and never in share links, and a classroom mode that starts muted (Sound).
+- [ ] Port `tools/sounds/soundkit.py` to a TypeScript synth in an AudioWorklet: hash32, waves, envelopes, sweeps, one-pole filters, loop folding and the step sequencer. A port test renders every bank entry in both and compares them within a tolerance (Sound).
+- [ ] Play the UI bank: clicks, toggles, panels, the lab bet, Run and the three result reveals, which match in length and loudness (Sound).
+- [x] Build `tools/sounds/`: sound definitions as data, 7 JSON banks holding 94 sounds, WAV previews, licence rows, and tests for determinism, levels, length, loop seams and wrongful stop against arrest (Sound).
 
 **Exit checks**
 
 - [ ] The contest's median hawk share lands within 0.05 of the paper-computed p\* over 50 seeds, and the ±1 market price converges on the supply-and-demand intersection (R1).
 - [ ] In a recognition test, at least 8 of about 10 novices identify each role and each M1 glyph at 2× and 3×, and playtests with colour-blind players and a demographically diverse panel leave no unresolved readability or fairness issue (R3).
 - [ ] The body layer is byte-identical across roles, a 40-agent card never shows more than six bubbles, and a reduced-motion golden run contains no hops or pans (R3).
+- [ ] No sound plays before the first click, mute and sliders survive a reload, and a replay with sound on and off gives identical state hashes (Sound).
+- [ ] Every bank entry renders in the TypeScript synth within the port test's tolerance, and comes from `tools/sounds/` or a CC0 file listed in `assets/LICENSES.md` (Sound).
+- [ ] Changing speed or skipping never changes the state hash at any date, and the worker refuses settings messages while a run plays (Calendar).
 
 ## M2 Economy
 
@@ -241,6 +253,7 @@ Goal: Lengnick's household–firm economy, calibrated to measured targets and li
 - [ ] Set a household's shift to the mean of its adults' shifts, rounded by largest remainder to sum to zero, and recompute it only when the household or a culture changes (R8).
 - [ ] Extend `spawnFromLedger` to culture: apportion settlement culture counts exactly, household by household; give "mixed" people one or two local-plurality customs by keyed draw; keep culture independent of wealth rank, home, job and body hue; fold returns exact counts (R8).
 - [ ] Let shops stock anticipated festival demand from the public calendar, and log festival-week sales, markdowns, spoilage and price moves per category (R8).
+- [ ] Recalibrate to the 112-day year: daily wage = annual income ÷ 80 workdays, item prices that keep the calibrated shares of income, and interest, debt limits and loan terms per in-game year (Calendar).
 
 **Exit checks**
 
@@ -255,6 +268,7 @@ Goal: Lengnick's household–firm economy, calibrated to measured targets and li
 - [ ] Swapping the lot layout (packed against field arrays) leaves state hashes identical (R6).
 - [ ] Engel's law holds for every culture alike: the food share falls about 7.8 points per doubling of income (R8).
 - [ ] Unmet food need and the food-insecurity tally do not differ by culture at equal income on paired seeds, and Cramér's V between culture and wealth decile, home district and job stays below 0.05 at spawn over 50 seeds (R8).
+- [ ] Over 50 paired seeds, food, housing and saving shares and the wealth Gini stay within their calibrated bands on the 112-day year (Calendar).
 
 ## M3 City life
 
@@ -279,9 +293,9 @@ Goal: daily routines in a real town, drawn as the Skin C pixel-art town from one
 - [ ] Keep sleeping and off-screen agents in dense index lists maintained by swap-remove, never filtered by a flag in every system (R5).
 - [ ] Ship the atlas as lossless WebP at native resolution with an oxipng PNG fallback, loaded in idle time after the first frame (R5).
 - [ ] Add LDtk workplace entities per sector (farm, pasture or dock, lumber camp, quarry, mine, fuel works, workshop) with worker capacity; services use the clinic, school, shop and market (R6).
-- [ ] Add the grain season: crops accrue daily and are harvested over 30–45 days once a year as dated lots, scaled by Q16 soil fertility and a keyed weather draw (SD 0.13–0.22, regional plus local) (R6).
+- [ ] Add the grain season: crops accrue daily and are harvested over 9–14 days of autumn once a year (round 6's 30–45 days on the 112-day year) as dated lots, scaled by Q16 soil fertility and a keyed weather draw (SD 0.13–0.22, regional plus local) (R6, Calendar).
 - [ ] Show production through places only (stock pips; fields, forests and docks that empty and regrow), with at most four or five removable job items, none black (R6).
-- [ ] Store each need as the Int32 tick at which it reaches zero and schedule meals on the timing wheel; never decay every agent's needs every tick, and make rates fractional (Q8) once ticks per day is fixed (R6).
+- [ ] Store each need as the Int32 tick at which it reaches zero and schedule meals on the timing wheel; never decay every agent's needs every tick, and make rates fractional (Q8) on the 1,440-tick day (R6, Calendar).
 - [ ] Store each pantry as at most 8 Uint32 lots (`exp:16 | cat:3 | grade:2 | storage:2 | qty:9`) sorted by expiry, merging only equal keys, or into the same-category lot with the earlier expiry when full (R6).
 - [ ] Build the 6 × 3 shelf-life table from FoodKeeper and the FDA chart; derive freshness, convert storage moves by integer proportion, and give only staples in poor storage a 0.015–0.04% daily pest loss (R6).
 - [ ] Track a 6-bit weekly category mask and an 8-item monthly FIES-style tally per household, and add food poisoning at 0.01% per meal, ×10 when stale and 2% for spoiled food eaten when starving (R6).
@@ -309,6 +323,13 @@ Goal: daily routines in a real town, drawn as the Skin C pixel-art town from one
 - [ ] Port `place.py` to TypeScript, with plan-then-apply shore tidying, 64×64 districts, frontage lot packing and entity export (R9).
 - [ ] Build the minimal developer-flag Build mode as a lazy chunk, in 8–12 days: `WorldRenderer.patchTiles` over 32×32 chunks; terrain brush, rectangle and fill, with a 3-tile minimum land brush; prefab stamps; cell-diff undo; save and load in a versioned container; and a Play hand-off to the worker (R9).
 - [ ] Draw the two shore saddle keys (`1001`, `0110`) for both shores: 4 frames, or 8 with variants. Then the corner set is complete and tidying can drop its diagonal clause (R9).
+- [ ] Add seasons to the town: plant in spring, grow in summer, harvest over 9–14 days of autumn and lie fallow in winter; day length from the sunrise table; seasonal palettes, winter snow and ambience by season (Calendar).
+- [ ] Draw seasonal palette maps for grass, foliage and crops, snow overlays for ground and roofs, and HUD season icons distinct from the eight culture emblems (Calendar).
+- [ ] Add the soldier job: a public-sector job paid from taxes, with shifts like other jobs and home after work; the helmet and baldric come off at home (Military).
+- [ ] Play town events near the camera, panned by screen position: purchase, emotes, doors, footsteps, work, the clock and animals. Cap voices at about 24 and each kind per second, and step the town bed from quiet to busy to market instead of stacking sounds (Sound).
+- [ ] Play ambience by biome, time of day and season, crossfaded at dawn and dusk with the town's light periods (Sound).
+- [ ] Add the music player: title, lab, town day and town night, one track at a time with crossfades and variations keyed on (world seed, place, day). Music loads as its own chunk when first needed (Sound).
+- [ ] Play festival music in one of the four styles, which differ only in tempo, loudness and structure; culture music never plays in justice views (Sound).
 
 **Exit checks**
 
@@ -325,6 +346,9 @@ Goal: daily routines in a real town, drawn as the Skin C pixel-art town from one
 - [ ] Culture costs at most 0.1 ms RM a day at 10k agents, with zero scavenges across a year of day passes (R8).
 - [ ] With equal festival days and timing, mean contact and wellbeing do not differ by culture on paired seeds (R8).
 - [ ] The name filter passes 1,000 seeds per culture at ≤ 5% rejection, and the shared sound set passes the screen (R8).
+- [ ] The harvest comes once a year in autumn, and stores carry the town through winter (Calendar).
+- [ ] Every event type with a sound also has a visual twin (Sound).
+- [ ] No soldier frame draws a weapon out of its sheath or shows a fight (Military).
 
 ## M4 Crime and police
 
@@ -354,6 +378,7 @@ Goal: crime as an action any agent can take, calibrated policing, and the true-v
 - [ ] Never show culture or names in justice bubbles, log lines, record states, the records office or the true and recorded panels; show case numbers and roles. Add no offence or report type tied to customs (noise, gathering, street vending), and never let patrols read culture, the festival calendar or crowds (R8).
 - [ ] Add the outcome and exposure audit in headless CI over 50 paired seeds × 20 simulated years, using agent-level units: raw per-culture rates of true offending, victimisation, stops, wrongful stops, arrests, records and wealth decile within 0.9–1.1 of the population rate, and Mantel–Haenszel ratios on place × time × visible-cue strata within |ln ratio| ≤ 0.05, overall and by period. Log reporting and trust by culture too (R8).
 - [ ] Run the audit against a single-culture world, a culture-blind twin with preference shifts set to zero, and customs counterfactuals on the same seeds (R8).
+- [ ] Play the justice sounds under the visual rules: theft in the true view only and the same for everyone; report, stop, arrest, wrongful stop, release and record filed, with the wrongful stop matching the arrest (Sound).
 
 **Exit checks**
 
@@ -368,10 +393,12 @@ Goal: crime as an action any agent can take, calibrated policing, and the true-v
 - [ ] At full employment, true theft stays above zero on paired seeds (R6).
 - [ ] The flip test changes zero thresholds and draw keys over one seed-year of ticks, and catches planted id, custom, keyed-draw and hiring leaks (R8).
 - [ ] The audit passes both bands, or each exception is explained by a named place-time mechanism (R8).
+- [ ] Audio audit: outside festival music, no sound parameter differs by hue, look, culture, wealth decile or offender status in the recorded view, and a wrongful stop matches an arrest in length and loudness (Sound).
+- [ ] No code path sends soldiers into a town to keep order; town stops and arrests come only from the police (Military).
 
 ## M5 Society and policy
 
-Goal: the social layer and policy sliders, each with a predicted size of effect, and wealth and fear shown without stereotypes. Effort: about 2 weeks, plus 1–2 days for the visual layer.
+Goal: the social layer and policy sliders, set before Run and each with a predicted size of effect, and wealth and fear shown without stereotypes. Effort: about 2 weeks, plus 1–2 days for the visual layer.
 
 **Build**
 
@@ -404,6 +431,10 @@ Goal: the social layer and policy sliders, each with a predicted size of effect,
 - [ ] Extend the appearance audit with a culture row (|Cramér's V| < 0.05 for every rendered attribute outside the lens over 50 seeds), add a hue × culture independence test over 10⁶ births, and let no policy slider read culture (R8).
 - [ ] Run the diverse playtest panel on customs and names: which real people does each culture resemble, and which commits more crime? A proposed bar: at least 8 in 10 name none and see no difference (R8).
 - [ ] Extend the appearance audit and the hue × culture independence test to eye shape and pattern (R9).
+- [ ] Set policies before Run: moving a slider during a run forks a labelled what-if branch at the next day boundary, the original keeps running, and both replay from (seed, settings, fork day, change) (Calendar).
+- [ ] Age people one year per 112-day year, with real lifespans, birthdays spread over the year, and age hazards converted as 1 − (1 − p)^(1/112) into build-time integer tables (Calendar).
+- [ ] Add the year-in-review card (population, births and deaths, festivals held, true against recorded crime, wealth shifts) and history charts on a year axis, never broken down by culture (Calendar).
+- [ ] Add the defence budget as a policy set before Run: soldier posts and pay from taxes, with its predicted effect on raids and taxes (Military).
 
 **Exit checks**
 
@@ -413,6 +444,8 @@ Goal: the social layer and policy sliders, each with a predicted size of effect,
 - [ ] The emulator fitter reads the sweep logs without conversion (R4).
 - [ ] The food share falls about 7.8 points per doubling of income across presets (R6).
 - [ ] Without policy changes, wealth drift over 50 years stays within 0.03 Gini and 3 points of top-10% share; the wealth-tax Gini check runs from a spawned near-stationary state (R6).
+- [ ] The age pyramid stays within its band, no culture's festivals cluster in one season, and a branch replays identically from (seed, settings, fork day, change) (Calendar).
+- [ ] Recruitment and postings never read culture, region, looks or wealth, and the appearance and culture audits cover soldiers (Military).
 
 ## M6 Scale and sharing
 
@@ -447,6 +480,8 @@ Goal: 100k agents on desktop, share links that replay in any browser, and a clea
 - [ ] On opening a player-made world, show a "made by a player" badge, a "hide custom names" switch, and a report button that emails the owner (R9).
 - [ ] Once M1 cards and M6 links exist, add card remix: choose the visible knobs and a pre-validated treatment, then share a link or QR code; paired arms keep entity ids stable (R9).
 - [ ] Once M1 cards and M6 links exist, add card authoring: players set arms, metrics, claim type and seeds; prompts come from templates, not free text; M1's statistics judge every claim, with the "hand-picked setup" label; treatments never key on culture (R9).
+- [ ] Profile sound at 100,000 agents: aggregation, voice caps and worklet cost within budget (Sound).
+- [ ] Play the builder sounds (`ui_build_*`) in the player street editor: brush, place, erase and undo (Sound).
 
 **Exit checks**
 
@@ -458,6 +493,7 @@ Goal: 100k agents on desktop, share links that replay in any browser, and a clea
 - [ ] The city generator returns byte-identical maps in Node, Bun, Deno and three browsers for 100 random context records (R4).
 - [ ] A 100k-agent tick fits 16 ms on the reference machine, exact queries run only through WASM SIMD or workers, and state hashes match for one to four workers (R5).
 - [ ] A save of 10,000 settlement ledgers with goods, food, happiness and wealth blocks stays under about 0.5 MB gzip, replacing the 0.3 MB target (R6).
+- [ ] The audio chunks stay within budget, and main-thread audio work stays under about 0.5 ms a frame at 100,000 agents (Sound).
 
 ## M7 Country of ledgers
 
@@ -492,6 +528,8 @@ Goal: every settlement in a country advances daily as an integer ledger, headles
 - [ ] Split every migration flow by culture exactly, outflow by culture first and then by destination, with about 20% long-distance movers weighted by pop^1.5, spread over the month with sparse loops. Migration never reads culture (R8).
 - [ ] Derive settlement demand shifts as Σ share × Δβ, recomputed only when counts change (R8).
 - [ ] Fit the culture hazards from M3–M5 agent runs and dock them on held-out runs, as round 4 does for other flows (R8).
+- [ ] Run the 50–100-year spin-up (5,600–11,200 days) and country skip-ahead in 112-day years (Calendar).
+- [ ] Add garrison posts to settlement ledgers and give each route ledger a patrol intensity from nearby garrisons and the defence budget. Raids fall as patrols rise, true and recorded raids stay apart, and records follow reports and sightings (Military).
 
 **Exit checks**
 
@@ -508,6 +546,7 @@ Goal: every settlement in a country advances daily as an integer ledger, headles
 - [ ] People by culture sum exactly to population every day, spawn and fold are exact per culture, and minority move rates stay within 5% of their population share over 30 years (R8).
 - [ ] Over 100 years, regional G\_ST stays at 0.3 or more with acculturation, at least 90% of settlements keep their dominant culture, and the capital's effective number of cultures exceeds the village median (R8).
 - [ ] Culture is independent of settlement wealth bands within the audit's bands (R8).
+- [ ] On paired seeds, more patrols cut true raids, and recorded raids rise or fall with sightings (Military).
 
 ## M8 Country map
 
@@ -541,6 +580,8 @@ Goal: country mode ships, with a generated, seeded map, Country and Region views
 - [ ] Validate on Play, on Share and on every open: every settlement reaches the capital by road or sea lane; food capacity per country; no pin in water; names through round 8's filter in ASCII; payload caps (R9).
 - [ ] Add god tools on the country: lock and re-roll with per-stage keyed counters; raise, lower and smooth brushes; biome paint; drawn rivers and roads; town and wonder placement; pins, tombstones that lower counts, a conflict list and one undo log. Every edit reruns from its first dirty stage, and the generator re-places cultures (R9).
 - [ ] Re-baseline M7's and M8's settlement counts to listed places plus a region tier, and fit Zipf on true ranks (R9).
+- [ ] Place garrisons in the capital and coastal or border towns, forts at road junctions near coasts and borders, and watchtowers along long roads, all in the world generator; draw their map icons and play the military sounds (Military).
+- [ ] Play country and region music and ambience, and the 11 wonder loops in wonder views (Sound).
 
 **Exit checks**
 
@@ -576,6 +617,8 @@ Goal: zooming from Region to street shows agents spawned from the ledger, aligne
 - [ ] Lock each place's plan type at its founding tier, and build keyed lots by population, so growth never moves a street (R9).
 - [ ] Build route strips from route cells with the place code, and wonder views with vista props (R9).
 - [ ] Place edits are reservations the generator flows around. They are stored per place uid with the place version and a record hash, and go dormant rather than being dropped (R9).
+- [ ] Show patrols walking the route strip view, aligned to the route ledger (Military).
+- [ ] Crossfade music and ambience between country, region, city and street (Sound).
 
 **Exit checks**
 
@@ -593,6 +636,8 @@ Total effort to launch is roughly 20–30 weeks of one developer's full-time wor
 
 Round 9 adds a full world builder and moves M7 and M8 before launch: about 178–271 days to launch, up from 100–150 (computed from the milestone estimates) (R9).
 
+The owner's plans of 7 October 2026 add about 27–44 days before launch (sound 11.5–18, military 4–7, calendar 11.5–19) and 1.5–2 days in M9. That puts launch at about 205–315 days (computed from unsourced estimates).
+
 **Ongoing**
 
 - [ ] Re-check economySim, SocSim and ndouglas/SugarScape weekly until launch, including ndouglas's announced "underworld" campaign (R2).
@@ -602,6 +647,7 @@ Round 9 adds a full world builder and moves M7 and M8 before launch: about 178�
 - [ ] Refresh the US wealth preset when SCF 2025 is released (R6).
 - [ ] A no-op edit leaves the replay hash unchanged, and a treatment edit changes no unrelated entity id (R9).
 - [ ] A partial rerun from the first dirty stage equals a full rerun, byte for byte, for random edit logs (R9).
+- [ ] Before any new sound is committed, a person listens to it for resemblance to well-known jingles (Sound).
 
 **Verify before hard-coding**
 
@@ -624,3 +670,5 @@ Round 9 adds a full world builder and moves M7 and M8 before launch: about 178�
 | Festival demand spikes (2–4×), attendance targets, and festival and music transmission rates | Festival markets, crowds and custom rates | M3 |
 | Culture lens and emblem colours against body-hue shade tones (CIEDE2000 6.0–9.1) | Whether a lens colour reads as a body colour | M5, M8 |
 | A manual search of Reddit, Steam and itch.io | Competitor risk | Ongoing |
+| Round 6's calibrated targets on the 112-day year, including the 1.5–3% monthly carrying cost and the ≤ 7% pest loss a season | Daily wages, prices and storage rates | M2 |
+| WCAG 2.2's audio-control rule and browser autoplay rules | Sound controls and the first-click start | M1 |
