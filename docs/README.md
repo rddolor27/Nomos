@@ -11,6 +11,8 @@ This folder holds the research and planning behind Nomos; product code lives out
 | [plan/military.md](plan/military.md) | Soldiers who defend and patrol roads, never towns: rules, how patrols feed the route ledgers, and the finished art and sounds |
 | [plan/calendar.md](plan/calendar.md) | Watch-only runs and the 112-day year: date maths, seasons, speeds, branches and the rescaling rules |
 | [plan/gazette.md](plan/gazette.md) | The daily town paper, printed only from records: its sections, rules, how editions are built, and the follow-the-news camera |
+| [plan/tasks/](plan/tasks/) | Each milestone split into sub-milestones with estimates and progress, and step-by-step plans for the next one to build |
+| [plan/checkpoints/](plan/checkpoints/) | Hand-off notes for agents and people: where the project stands, what is decided and what comes next; the highest number is current |
 
 ## Research rounds
 
