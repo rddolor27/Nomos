@@ -7,9 +7,14 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "types": "node scripts/manifest-types.ts"
   },
   "dependencies": {
     "@nomos/sim-core": "workspace:*"
+  },
+  "devDependencies": {
+    "ajv": "^8.20.0",
+    "json-schema-to-typescript": "^16.0.0"
   }
 }
