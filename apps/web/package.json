@@ -6,6 +6,7 @@
     "build": "vite build",
     "preview": "vite preview --host 127.0.0.1 --port 4173 --strictPort",
     "size": "size-limit",
+    "typecheck": "tsc --noEmit",
     "startup": "STARTUP=1 playwright test -c ../../playwright.config.ts startup --project=chromium"
   },
   "dependencies": {

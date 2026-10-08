@@ -1,0 +1,7 @@
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+/assets/maps/*
+  Content-Type: application/x-protobuf
+/*
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Embedder-Policy: require-corp
