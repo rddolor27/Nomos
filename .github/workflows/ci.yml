@@ -29,6 +29,7 @@ jobs:
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm names
+      - run: pnpm depcruise
       - run: pnpm test
       - run: |
           node tools/cli/src/main.ts --seed 42 --tier phone --ticks 1000 > "$RUNNER_TEMP/replay-1.txt"
