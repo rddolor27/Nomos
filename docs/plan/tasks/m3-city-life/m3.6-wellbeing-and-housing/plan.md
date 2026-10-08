@@ -17,7 +17,7 @@
   - Persistent conditions stay in the target while they last; only one-off events fade, through build-time tables (R6).
 - **Drivers, in ladder units × 1,000:**
   - income: +300 per doubling relative to the settlement median;
-  - unemployed: −700, plus −200 for scarring;
+  - unemployed: −700, and −200 scarring after re-employment, fading with a 1-year half-life;
   - no friend or household contact for 7 days: −450;
   - food insecurity: −150 per missed-meal day, floor −700. This is a labelled, unsourced knob.
 - **What LS may drive:** low needs and low LS only lower utility weights, except in physiological collapse. The driver behind every effect is named in the click-to-explain panel.

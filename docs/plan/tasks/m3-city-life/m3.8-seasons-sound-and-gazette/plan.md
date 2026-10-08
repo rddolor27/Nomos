@@ -8,7 +8,7 @@
 
 - **Seasons in the town (Calendar):**
   - fields are planted in spring, grow in summer, are harvested over 9–14 days of autumn (M3.5) and lie fallow in winter;
-  - day length comes from M0.1's sunrise table and feeds M3.3's light periods;
+  - day length comes from M0.1's sunrise table and feeds M1.2's light periods;
   - the renderer applies `assets/sprites/season_map.json`: palette swaps for the ground and foliage groups, sprite swaps for bare and snowy trees, and snow overlays on ground tiles and roofs;
   - the snow schedule follows the map file: light, then full, then patchy across winter.
 
@@ -25,13 +25,13 @@
   - loaded as its own chunk when first needed.
 - **Festival music** plays in one of the four styles, which differ only in tempo, loudness and structure. It never plays in justice views.
 - **The town gazette (Gazette):**
-  - An edition is a pure function: edition(settlement, day) = f(records up to that day's boundary). One edition per settlement prints at dawn (06:00), covering the day before.
+  - An edition is a pure function: edition(settlement, day) = f(records up to that day's boundary). One edition per settlement prints at 06:00, covering the day before. The calendar's dawn moves with the season, so the clock time, not the light period, sets the print.
   - **Stories:** each new record maps to a story type with a fixed priority. Ties break by record id, and at most two stories come from one section.
   - **Templates:** plain sentences with slots, from one string table. The variant comes from a keyed draw on (world seed, settlement, day, story), outside the sim's streams.
   - **No personal names**; the justice column arrives in M4.
   - **The panel:** an HTML panel in the HUD, so screen readers can read it, with back issues by date. A dot marks a new edition, and the run never pauses.
   - **Art:** the rolled-paper button icon at 16 and 8 px, and the paper panel frame, both drawn in `tools/sprites`.
-- **The record store** is the gazette's only input, and no earlier task builds it.
+- **The record store** is the gazette's only input, and this sub-milestone builds it, as the plan's M3 record-store task asks (Gazette).
   - M3.8 builds a minimal append-only store of day-boundary records: town events, market moves, calendar events and festivals, each with an id.
   - It grows from M0.3's day-boundary record and M2's flow logs.
   - It lives beside the sim and is written only at the day boundary.
@@ -51,7 +51,7 @@
 ## Interfaces and data
 
 - **Record:** `{ id, day, settlement, kind, slots }`. The slots are counts, places, goods, prices and case numbers, never a person's name.
-- **Store read API:** `recordsFor(settlement, fromDay, toDay)`, returning a read-only view.
+- **Store read API:** `recordsFor(settlement, fromDay, toDay)`, returning a read-only view. The store lives in `sim-core`; its record layout and this read API live in `sim-protocol`, so `packages/gazette` and the app read records without importing `sim-core`.
 - **Edition:** `printEdition(settlement, day, store, templates, seed): Edition`, where an edition is `{ settlement, day, stories: { recordId, section, text }[] }`.
 - **Event-sound map:** event kind → sound name, from [sound.md](../../../sound.md)'s trigger table. A test checks that every entry has a visual twin.
 
@@ -92,7 +92,7 @@
 Suggestions for the step plan, which makes the final call.
 
 - **Build order:** the record store and a pure `printEdition` first, headless, with the replay and gazette-off checks. Then the panel, seasons in the renderer, event sounds, ambience, the music player, and festival music last.
-- **Reuse:** M1.4's player, synth and buses; M3.3's light periods; M3.5's harvest; M3.7's festivals and name filter; M0.6's text lints; M0.3's day-boundary record.
+- **Reuse:** M1.4's player, synth and buses; M1.2's light periods; M3.5's harvest; M3.7's festivals and name filter; M0.6's text lints; M0.3's day-boundary record.
 - **Keep it simple:** records as fixed-width slots in a preallocated ring sized for the chosen retention, never as objects.
 - **Pitfalls:**
   - The app never imports `sim-core` ([interfaces.md](../../m0-pipeline/interfaces.md)), so put the record layout and read API in `sim-protocol` and post each day's records to the app.

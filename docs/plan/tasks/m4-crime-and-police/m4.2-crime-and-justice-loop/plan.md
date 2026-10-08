@@ -72,6 +72,7 @@
 - **Owner:** Police as officers near 0.25% of the population, or as labelled patrol units that each stand for several? Units would need their own pay, homes and officer counts in M4.3's sweeps. Suggested: officers, one agent per person, about 25 at 10k agents. Needed before: the step plan.
 - **Measure:** What arrest cap per patrol per day, and what hotspot cooldown, stop runaway feedback without binding in normal runs? Both guardrails are unsourced, and a cap that binds often would distort M4.3's calibration. Suggested: set each to bind on under 1% of patrol-days or cell-days in default runs (unsourced estimate), and log every activation. Needed before: building.
 - **Research:** What A0, time step and grid spacing does Short et al. (2008) use? A0 = 1/30 is unconfirmed, and ω = 1/15 rests on snippets of later papers (R2 crime notes, Q7). Suggested: open the paper and record each value with its evidence label. Needed before: the step plan.
+- **Owner:** should darkness lower the chance that a crime is witnessed? The calendar plan leaves it open, and no sim rule reads the light yet. Suggested: decide before this step plan; if yes, the witness pass reads M1.2's `lightPeriod`, calibrated like any other rate. Needed before: the step plan.
 
 ## Implementation notes
 

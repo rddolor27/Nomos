@@ -48,7 +48,7 @@
 ## Tests for the exit checks
 
 - `10k agents fit in the default town`: M0.6's budget gate runs 10,000 agents in the 256² town, and every system stays within its sub-budget.
-- `renders at 3× in budget`: M0.6's frame gate draws the town at 3× with 10,000 agents, and main-thread draw time stays within the Performance budget.
+- `renders at 3× in budget`: M0.4's frame-budget test draws the town at 3× with 10,000 agents, and main-thread draw time stays within the Performance budget.
 - **Re-measure on phones:** the same scene on one mid-range Android phone and one iPhone, recorded in the playtest record. This is manual, with device and browser versions noted.
 - **Round 9's ongoing edit checks apply from here:**
   - `a no-op edit changes nothing`: the replay hash is unchanged;

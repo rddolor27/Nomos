@@ -10,4 +10,4 @@ Part of [M4 Crime and police](../milestone.md).
 - **Exit checks:**
   - the audio audit: outside festival music, no sound parameter differs by hue, look, culture, wealth decile or offender status in the recorded view, and a wrongful stop matches an arrest in length and loudness (Sound);
   - over 50 paired seeds, the justice column's counts equal the recorded counts, never the true ones (Gazette);
-  - no justice story carries a name, culture, look or wealth term, and the culture flip test leaves every gazette story outside festivals unchanged (Gazette).
+  - no justice story carries a name, culture, look or wealth term, a wrongful stop and an arrest get the same priority, and the culture flip test leaves every gazette story outside festivals unchanged (Gazette).

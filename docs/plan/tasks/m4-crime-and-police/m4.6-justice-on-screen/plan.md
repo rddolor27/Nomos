@@ -45,7 +45,7 @@
   - Skin A's patrol and station overlays.
 - `apps/web`: the two synced true and recorded panels, and the justice log.
 - `tools/audit/appearance.ts`: the appearance audit.
-- M0.6's content and text lints, extended with the punishment-spectacle terms.
+- M0.6's text lints, extended with the punishment-spectacle terms. No earlier task builds a content lint, so this extension is it.
 
 ## Interfaces and data
 

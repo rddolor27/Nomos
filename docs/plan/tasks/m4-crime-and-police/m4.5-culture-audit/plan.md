@@ -67,6 +67,7 @@
 - **Owner:** Who accepts an exception's named place-time mechanism? An exception list that grows unchecked could hide a real leak. Suggested: the owner signs off each new exception, kept in the repo with its mechanism and twin evidence. Needed before: building.
 - **Measure:** Can 50 seeds × 20 years × 4 worlds run nightly? Each seed-world is about 3.2 million ticks, or 4.7 hours at the 5.3 ms budget, so a full audit is about 950 runner-hours (computed for 10k agents). Suggested: measure ticks per second, then pick agents, years and cadence, perhaps a weekly full run and a nightly slice. Needed before: the step plan.
 - **Measure:** Do the 0.9–1.1 band and the 0.05 margin keep their power at the size that fits? Round 8 showed power for only one planted bias, a 1.25× evening stop bias (R8 report, layer 4). Suggested: a power probe with planted biases of 1.1×, 1.25× and 1.5× at the chosen size, before fixing the seeds. Needed before: the step plan.
+- **Design:** M5.5's exposure lens and M10.3's rain card need these counters by district and hour in every build, not only by cell and period in audit builds. Suggested: keep them in every build, outside the state hash, and give night one meaning, M1.2's light period. Needed before: the step plan.
 
 ## Implementation notes
 

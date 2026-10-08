@@ -33,11 +33,11 @@
 ## Packages and files
 
 - `packages/worldgen` (`@nomos/worldgen`), new:
-  - pure TypeScript under the generator lints;
+  - pure TypeScript under the generator lints, though M0.6's `GENERATOR_FILES` glob names `packages/sim-*/src/worldgen/**` for this port, so it must cover this package first;
   - `src/place/` mirrors `place.py`'s functions one to one, so a diff against Python stays readable;
   - `src/place/export.ts` writes `MapV1` through `sim-protocol`'s writer.
 - `tools/worldgen/goldens.py`: writes per-stage fingerprints for a seed list as a fixture. Golden fingerprints cost about 363 B per seed (R9).
-- `tools/sprites`: the saddle keys, then `place.py`'s tidying without its diagonal clause, with the goldens regenerated in the same commit.
+- `tools/sprites`: the saddle keys, then `tools/worldgen/place.py`'s tidying without its diagonal clause, with the goldens regenerated in the same commit.
 - `assets/maps/fallback-town.ldtk`: the fallback town only.
 
 ## Interfaces and data
@@ -52,7 +52,7 @@
 - **Generated towns over LDtk:** the [R9 summary](../../../../research/round-9-maps-and-world-builder/summary.md), owner decisions: "Where towns come from" and "The first town".
 - **Workplaces per sector:** [R6 resources notes](../../../../research/round-6-goods-and-wellbeing/notes/resources-production.md), the recommendation.
 - **IntGrid values and the roof layer:** [R3 rendering notes](../../../../research/round-3-2d-look/notes/rendering-tooling.md), the LDtk sections.
-- **Reference code:** `tools/worldgen/place.py`, `rng.py` and `noise.py`, already ported in M0.1.
+- **Reference code:** `tools/worldgen/place.py`, plus `rng.py` and `noise.py`, which M0.1 already ported.
 
 ## Tests for the exit checks
 
@@ -73,7 +73,7 @@
 ## Open questions
 
 - **Owner:** Build the LDtk fallback town now, or only if the port slips? M3.4 already names it the fallback, and its auto-layer rules and roof layer go unused if the port lands. Suggested: only if the port slips. Needed before: the step plan.
-- **Owner:** Should capacity, hours, owner and sector be added to `place.py`, or derived in a TypeScript-only export stage? `place.py` exports none of these fields today, so Python goldens cannot cover them. Suggested: a TypeScript stage after the golden-checked ones, from building-kind tables, with "owner" a kind (household, firm or town) that M2.2's spawn fills in. Needed before: the step plan.
+- **Owner:** Should capacity, hours, owner and sector be added to `place.py`, or derived in a TypeScript-only export stage? `place.py` exports none of these fields, but M0.4's `tools/worldgen/export_map.py` already derives home capacity and shop hours in Python, so goldens can cover those two; owner and sector have no Python source yet. Suggested: port `export_map.py`'s capacity and hours rules with the golden-checked stages, and add owner and sector in a TypeScript stage after them, from building-kind tables, with "owner" a kind (household, firm or town) that M2.2's spawn fills in. Needed before: the step plan.
 - **Measure:** How long does the town stage take in desktop Chromium and on a mid-range phone? Round 9's ≤ 100 ms covers a whole world in M8, so the town needs headroom. Suggested: track it in M0.6's bench, with no gate until M8. Needed before: launch.
 
 ## Implementation notes

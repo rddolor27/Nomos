@@ -28,20 +28,20 @@
 - `packages/render-gl`:
   - `src/skins/town/tile-pass.ts`, `src/skins/town/roof-pass.ts` and `src/skins/town/light.ts`, which extends M1.2's `src/light.ts` with buildings and night overlays;
   - `src/framebuffer-path.ts`;
-  - `src/auto-skin.ts`;
+  - `src/skin.ts`, M0.4's skin switch, where town joins `BUILT_SKINS`;
   - `src/follow-cam.ts`.
-- `tools/sprites/atlas.py`, extending M0.5's atlas stub:
-  - packs every sheet into atlas pages of at most 2,048²;
+- `tools/atlas/build_atlas.py`, extending M0.5's atlas stub:
+  - packs every frame into atlas pages of at most 2,048², since `houses.png` alone is 2,316 px tall;
   - writes lossless WebP and an oxipng PNG;
   - writes a frame table keyed by frame name.
 - `assets/third-party/ninja-adventure/`, holding the placeholders with their licence file, or nothing if the original art covers every tile.
-- `apps/web`: idle-time atlas loading and the tint-off toggle.
+- `apps/web`: idle-time atlas loading. M1.2's tint-off toggle already reaches the town through `setTint`.
 
 ## Interfaces and data
 
 - **Frame table:** `frameName → { page, x, y, w, h, anchorX, anchorY }`, generated with types from M0.5's manifest schema. Maps and skins look frames up by name only.
 - **Light period:** M1.2's `lightPeriod(tick)`, re-exported by `sim-protocol`. Night overlays draw while it is dusk, night or dawn.
-- **Auto-skin policy:** `chooseSkin(zoom, current): Skin`, with the hysteresis band as a constant (15%).
+- **Auto-skin policy:** M0.4's `autoSkin(current, cssPxPerTile, visibleAgents)`, with its 15% hysteresis. The 150 ms cross-fade, which M0.4 left waiting for a second built skin, arrives here.
 
 ## Method and sources
 

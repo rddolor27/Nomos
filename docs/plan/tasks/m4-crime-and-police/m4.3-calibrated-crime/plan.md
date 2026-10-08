@@ -50,10 +50,10 @@
 
 ## Method and sources
 
-- **Police elasticities, clearance rates, reporting, concentration, journeys, displacement, feedback and validation targets:** [R2 crime notes](../../../../research/round-2-follow-up/notes/crime-policing-calibration.md), Q1–Q9.
+- **Police elasticities, clearance rates, reporting, concentration, journeys, displacement, feedback and validation targets:** [R2 crime notes](../../../../research/round-2-follow-up/notes/crime-policing-calibration.md), Q1–Q10, where Q10 confirms the re-arrest figures.
 - **Crime by settlement size, and Glaeser and Sacerdote's bound:** [R4 economy and demography notes](../../../../research/round-4-multi-scale/notes/economy-demography.md), part 5.
 - **Crime fields across detail levels:** [R4 architecture notes](../../../../research/round-4-multi-scale/notes/architecture-lod.md), part 4.
-- **Food theft and opportunity, never a criminal type:** the [R6 summary](../../../../research/round-6-goods-and-wellbeing/summary.md) and [R6 integration notes](../../../../research/round-6-goods-and-wellbeing/notes/integration-cost.md).
+- **Food theft and opportunity, never a criminal type:** the [R6 summary](../../../../research/round-6-goods-and-wellbeing/summary.md) and [R6 Norland notes](../../../../research/round-6-goods-and-wellbeing/notes/norland-prior-art.md), part g and the recommendation.
 
 ## Tests for the exit checks
 

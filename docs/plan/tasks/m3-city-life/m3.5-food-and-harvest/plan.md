@@ -45,6 +45,7 @@
 
 - **Crop state per field:** `growth` (Int32, Q16), `fertilityQ16` and `harvestDay`.
 - **Household columns:** `pantry` (8 × `Uint32`), `varietyMask` (`Uint8`, 6 bits used) and `fiesTally` (`Uint8`, the 8 monthly flags).
+- **Missed meals:** the days in the last 7 with a meal missed for lack of food, the tally's item 4. M3.6's food-insecurity penalty and M4.3's food theft read them, as round 6 hands that measure to the food side.
 - **Food ledger:** M2.4's daily portion identity, extended with harvest as "produced" and household spoilage as "spoiled".
 
 ## Method and sources
@@ -73,6 +74,7 @@
 ## Open questions
 
 - **Owner:** What does a food-poisoning event do before any health system exists? Round 6 makes it a health event, but M3 has no health model ([R6 food notes](../../../../research/round-6-goods-and-wellbeing/notes/food-quality-spoilage.md), part c). Suggested: one sick day at home, logged as an event, and nothing more until health arrives. Needed before: building.
+- **Owner:** When does research round 10 run? If it runs first, the harvest draw can share one design with M10's daily weather; if not, M10.1 must fit or derive the weather from this draw ([Weather](../../../weather.md), "Open questions"). Suggested: before this step plan, as M10.1 suggests. Needed before: the step plan.
 - **Measure:** Where does a year's grain wait between harvest and sale? One 9–14-day harvest must feed the town all year, but a shop shelf holds at most 32 × 511 = 16,352 portions (computed). Suggested: a store per farm or granary holding one portion count per harvest day, since grain's 365-day use-by outlasts three game years. Needed before: the step plan.
 
 ## Implementation notes
@@ -85,5 +87,5 @@ Suggestions for the step plan, which makes the final call.
 - **Pitfalls:**
   - Test the town's grain stock through winter, not each pantry, since the 5–15% insecurity target means some households run short by design.
   - The tally's monthly window follows M2.1's month constant.
-  - Key regional weather on (seed, region, year) and local weather on (seed, farm, year), never on farm order.
+  - Key regional weather on (seed, region, year) and local weather on (seed, farm, year), never on farm order, and on a stream of its own, since M10's daily chain keys `WEATHER` on (region, day).
 - **Hard and easy parts:** hitting the 3–6% spoilage and 5–15% insecurity bands together is the hard part. The mask, the tally and the poisoning odds are mechanical.

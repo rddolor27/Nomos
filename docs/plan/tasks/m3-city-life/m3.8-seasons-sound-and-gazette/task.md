@@ -2,7 +2,7 @@
 
 Part of [M3 City life](../milestone.md).
 
-Needs M1's audio chunk, synth and buses, M3.3's light periods, M3.5's harvest and M3.7's festivals. The gazette reads a record store that no plan task builds; M0.3's day-boundary record and M2's flow logs come closest.
+Needs M1's audio chunk, synth and buses, M1.2's light periods, M3.5's harvest and M3.7's festivals. The gazette reads a record store that this sub-milestone builds; M0.3's day-boundary record and M2's flow logs come closest to one today.
 
 - **Builds:**
   - seasons in the town: fields planted in spring, grown in summer, harvested over 9–14 days of autumn and fallow in winter, day length from the sunrise table, seasonal palettes, winter snow and ambience by season; art exists; wire it in (Calendar);
@@ -10,7 +10,8 @@ Needs M1's audio chunk, synth and buses, M3.3's light periods, M3.5's harvest an
   - ambience by biome, time of day and season, crossfaded at dawn and dusk with the town's light periods; sounds exist; wire them in (Sound);
   - the music player for title, lab, town day and town night: one track at a time, with crossfades and variations keyed on (world seed, place, day), loaded as its own chunk when first needed; sounds exist; wire them in (Sound);
   - festival music in one of the four styles, which differ only in tempo, loudness and structure, never played in justice views; sounds exist; wire them in (Sound);
-  - the town gazette: one edition per settlement each dawn, built only from the record store at the day boundary, with town, market and calendar stories in plain templates, no personal names, and a HUD panel with back issues by date (Gazette);
+  - the record store the gazette reads: append-only records, written only at the day boundary and read only through its read API; M4's justice records and M5's year-end edition extend it (Gazette);
+  - the town gazette: one edition per settlement each morning at 06:00, built only from the record store at the day boundary, with town, market and calendar stories in plain templates, no personal names, and a HUD panel with back issues by date (Gazette);
   - the gazette button icon at 16 and 8 px and the paper panel frame (Gazette).
 - **Already done:** seasonal palettes for ground and foliage, snow tiles and roof overlays, bare and snowy trees, and HUD season icons distinct from the eight culture emblems (Calendar).
 - **Owner decision first:**
