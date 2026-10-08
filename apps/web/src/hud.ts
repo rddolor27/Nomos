@@ -3,8 +3,13 @@ import type { Tier } from '@nomos/sim-protocol';
 import { element, type App } from './app.ts';
 
 const REFRESH_MS = 250;
-const COUNT = new Intl.NumberFormat('en');
 const TIER_LABELS: Record<Tier, string> = { phone: 'Phone tier', 'phone-plus': 'Phone-plus tier', desktop: 'Desktop tier' };
+
+// A page's first Intl formatter sets up ICU, about 100 ms at the startup gate's phone CPU rate before the first frame,
+// so the HUD groups digits itself.
+export function formatCount(value: number): string {
+  return String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
 
 type Write = (text: string) => void;
 
@@ -54,9 +59,9 @@ export function frameMedianMs(frameMs: readonly number[]): number {
 }
 
 function agentsText(app: App): string {
-  const total = COUNT.format(app.agents);
+  const total = formatCount(app.agents);
   if (app.renderer.backend !== 'canvas2d') return `${total} agents`;
-  return `${COUNT.format(Math.min(CANVAS2D_AGENT_CAP, app.agents))} of ${total} agents shown (no WebGL2)`;
+  return `${formatCount(Math.min(CANVAS2D_AGENT_CAP, app.agents))} of ${total} agents shown (no WebGL2)`;
 }
 
 function bindPlay(play: HTMLButtonElement, app: App): void {
@@ -111,7 +116,7 @@ export function mountHud(root: HTMLElement, app: App): void {
   root.append(element(doc, '#status'));
 
   const refresh = (): void => {
-    tick(COUNT.format(app.tick));
+    tick(formatCount(app.tick));
     agents(agentsText(app));
     tier(TIER_LABELS[app.tier]);
     zoom(`Zoom ${app.camera.zoom}×`);
