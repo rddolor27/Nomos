@@ -91,10 +91,27 @@ describe('the sim loop', () => {
     expect(page.posted).toEqual([]);
 
     page.handle({ type: 'init', seed: 42, tier: 'phone', map: new ArrayBuffer(0) });
-    expect(page.posted).toEqual([{ type: 'ready', agents: 10_000 }]);
+    expect(page.posted.map(({ type }) => type)).toEqual(['ready', 'snapshot']);
+    expect(page.posted[0]).toEqual({ type: 'ready', agents: 10_000 });
     page.advance(1_000);
     expect(page.tick()).toBe(0);
-    expect(page.posted).toHaveLength(1);
+    expect(page.posted).toHaveLength(2);
+  });
+
+  it('posts the spawn after ready', () => {
+    const page = fakePage();
+    const [ready, spawn] = page.posted;
+    expect(ready).toEqual({ type: 'ready', agents: 10_000 });
+    if (spawn.type !== 'snapshot') throw new Error(`expected a snapshot, not ${spawn.type}`);
+    expect([spawn.tick, spawn.count]).toEqual([0, 10_000]);
+    const { x, y } = page.world().agents;
+    const view = new DataView(spawn.buffer);
+    expect([view.getFloat32(0, true), view.getFloat32(4, true)]).toEqual([x[0] / 256, y[0] / 256]);
+    page.advance(1_000);
+    expect(page.posted).toHaveLength(2);
+    page.handle({ type: 'resume' });
+    page.advance(100);
+    expect(page.ofType('snapshot').map(({ tick }) => tick)).toEqual([0, 1]);
   });
 
   it('runs 10 ticks per second of wall time', () => {
@@ -167,17 +184,17 @@ describe('the sim loop', () => {
     page.advance(1_000);
     const sent = page.ofType('snapshot');
     expect(page.tick()).toBe(10);
-    expect(sent.map(({ tick }) => tick)).toEqual([1, 2, 3]);
+    expect(sent.map(({ tick }) => tick)).toEqual([0, 1, 2]);
     expect(sent.map(({ count, buffer }) => [count, buffer.byteLength])).toEqual(Array(3).fill([10_000, 120_000]));
 
     page.handle({ type: 'return', buffer: sent[0].buffer });
     page.advance(1_000);
     expect(page.tick()).toBe(20);
-    expect(page.ofType('snapshot').map(({ tick }) => tick)).toEqual([1, 2, 3, 11]);
+    expect(page.ofType('snapshot').map(({ tick }) => tick)).toEqual([0, 1, 2, 11]);
     page.handle({ type: 'return', buffer: sent[1].buffer });
     page.handle({ type: 'return', buffer: sent[2].buffer });
     page.advance(1_000);
-    expect(page.ofType('snapshot').map(({ tick }) => tick)).toEqual([1, 2, 3, 11, 21, 22]);
+    expect(page.ofType('snapshot').map(({ tick }) => tick)).toEqual([0, 1, 2, 11, 21, 22]);
   });
 
   it('reports per-system milliseconds', () => {

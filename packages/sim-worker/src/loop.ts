@@ -89,8 +89,11 @@ export function createSimLoop(host: LoopHost): { handle(msg: AppMessage): void }
     running = false;
     warmUp();
     const world = host.makeWorld(seed, tier, map);
-    session = { world, pool: createSnapshotPool(world.agents.capacity) };
+    const pool = createSnapshotPool(world.agents.capacity);
+    session = { world, pool };
     host.post({ type: 'ready', agents: world.agents.count[0] }, []);
+    // The spawn, so a page that starts paused, as under reduced motion, still draws its agents (M0.5).
+    postSnapshot(world, pool);
   }
 
   // Time spent paused is dropped, not caught up.
