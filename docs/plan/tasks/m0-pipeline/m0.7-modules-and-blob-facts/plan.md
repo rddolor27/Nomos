@@ -7,7 +7,7 @@
 ## Approach
 
 - **Order:** the move, the lints, the handle, wallets, names, then the inspector.
-  - The move comes first and changes no behaviour, so the goldens prove it: seed 42 still hashes `b9e2775f` at tick 1,000 on the phone tier.
+  - The move comes first and changes no behaviour, so the goldens prove it: seed 42 still hashes what `goldens.json` holds when the move starts, at tick 1,000 on every tier.
   - Wallets and names then move the goldens once each. Regenerate them with `node packages/sim-core/scripts/goldens.ts` in the commit that moves them.
 - **The move (Structure):**
   - Move each file with `git mv`, so history follows it. Make one commit per package, and never mix a move with a change of behaviour.
@@ -74,7 +74,7 @@
   - The app turns the device pixel into a world pixel with render-gl's new `worldAt` and posts `inspect`. The worker answers with `nearestAgent` within one tile.
   - `panels/inspector.ts` loads on demand at the first inspect. It is vanilla TypeScript, like the HUD, and shows the name and the wallet in an `aria-live="polite"` region, or "No blob here".
   - **Ruling:** two lines of text don't justify Solid's or Preact's bytes. M3.2's full inspector makes that choice.
-  - **Ruling:** the wallet appears only in the inspector, never on bodies, bubbles or skins (content rule 5). Round 6 puts freshness and wellbeing drivers there too ([R6 report](../../../../research/round-6-goods-and-wellbeing/report.md), "On screen").
+  - **Ruling:** the wallet appears only in the inspector, never on bodies, bubbles or skins (content rule 5). Round 6 puts freshness and wellbeing drivers there too ([R6 report](../../../../research/round-6-goods-and-wellbeing/report.md), "On screen", at its lines 137 and 186).
   - Names appear only in the inspector, which round 8 allows with the follow-cam. No justice view exists yet.
 
 ## Packages and files
@@ -150,7 +150,7 @@
 ## Tests for the exit checks
 
 - `the move keeps every hash`:
-  - after each package's commit, `node tools/cli/src/main.ts --seed 42 --tier phone --ticks 1000` prints `hash=b9e2775f`;
+  - after each package's commit, `node tools/cli/src/main.ts --seed 42 --tier phone --ticks 1000` prints the phone hash that `goldens.json` holds;
   - `node packages/sim-core/scripts/engines.ts` prints "kernels 865 ok, goldens 3 ok";
   - `pnpm test && pnpm lint && pnpm typecheck && pnpm depcruise && pnpm names` passes.
 - `the layout lint`: a planted `packages/sim-core/src/planted.ts` draws one layout message. `packages/sim-core/src/money/planted.ts` and each entry file draw none.
