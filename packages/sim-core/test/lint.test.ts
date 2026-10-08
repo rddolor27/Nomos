@@ -32,4 +32,14 @@ describe('the sim-core lint profile', { timeout: 30_000 }, () => {
   it('allows the same maths in build scripts', async () => {
     expect(await profileMessageCount('export const x = Math.cos(1)', 'packages/sim-core/scripts/planted.ts')).toBe(0);
   });
+
+  it('rejects reading the look column outside the store', async () => {
+    for (const code of ['s.look[0]', 'const { look } = s', "s['look'][0]"]) {
+      expect(await profileMessageCount(code, 'packages/sim-core/src/planted.ts'), code).toBeGreaterThan(0);
+      expect(await profileMessageCount(code, 'packages/sim-core/src/store.ts'), code).toBe(0);
+    }
+    for (const code of ['2 ** 3', 'BigInt(1)']) {
+      expect(await profileMessageCount(code, 'packages/sim-core/src/store.ts'), code).toBeGreaterThan(0);
+    }
+  });
 });

@@ -3,13 +3,31 @@ import { defineConfig, globalIgnores } from 'eslint/config';
 import tseslint from 'typescript-eslint';
 
 const EXACT_MATHS =
-  'sim-core rules, Determinism: use only + - * /, Math.sqrt, Math.floor, Math.imul and bit operations; build tables at build time.';
+  'sim-core rules, Determinism: use only + - * /, Math.sqrt, Math.floor, Math.imul, Math.max, Math.min, Math.abs, Math.round and bit operations; build tables at build time.';
 const KEYED_DRAW = 'sim-core rules, Determinism: take every random number from the keyed draw.';
 const NO_BIGINT = 'sim-core rules, Determinism: no BigInt in hot code; it is 115x slower in JavaScriptCore.';
+const UNREAD_LOOK = 'content rules, Art direction 1: no sim rule ever reads a look; only src/store.ts writes it.';
 
 const TRANSCENDENTAL_MATH = [
   'sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'atan2', 'sinh', 'cosh', 'tanh', 'asinh', 'acosh', 'atanh',
   'exp', 'expm1', 'log', 'log1p', 'log2', 'log10', 'pow', 'hypot', 'cbrt',
+];
+
+// no-restricted-syntax groups for sim-core source. Flat config replaces a rule's options block by block, so a block
+// that exempts a file from one group lists every other group again.
+const MATH_SYNTAX = [
+  { selector: "BinaryExpression[operator='**']", message: EXACT_MATHS },
+  { selector: "AssignmentExpression[operator='**=']", message: EXACT_MATHS },
+];
+const BIGINT_SYNTAX = [
+  { selector: 'Literal[bigint]', message: NO_BIGINT },
+  { selector: "CallExpression[callee.name='BigInt']", message: NO_BIGINT },
+  { selector: 'Identifier[name=/^Big(Int|Uint)64Array$/]', message: NO_BIGINT },
+];
+const LOOK_READS = [
+  { selector: "MemberExpression[property.name='look']", message: UNREAD_LOOK },
+  { selector: "MemberExpression[property.value='look']", message: UNREAD_LOOK },
+  { selector: "ObjectPattern > Property[key.name='look']", message: UNREAD_LOOK },
 ];
 
 export default defineConfig(
@@ -34,14 +52,13 @@ export default defineConfig(
         ...TRANSCENDENTAL_MATH.map((property) => ({ object: 'Math', property, message: EXACT_MATHS })),
         { object: 'Math', property: 'random', message: KEYED_DRAW },
       ],
-      'no-restricted-syntax': [
-        'error',
-        { selector: "BinaryExpression[operator='**']", message: EXACT_MATHS },
-        { selector: "AssignmentExpression[operator='**=']", message: EXACT_MATHS },
-        { selector: 'Literal[bigint]', message: NO_BIGINT },
-        { selector: "CallExpression[callee.name='BigInt']", message: NO_BIGINT },
-        { selector: 'Identifier[name=/^Big(Int|Uint)64Array$/]', message: NO_BIGINT },
-      ],
+      'no-restricted-syntax': ['error', ...MATH_SYNTAX, ...BIGINT_SYNTAX, ...LOOK_READS],
+    },
+  },
+  {
+    files: ['packages/sim-core/src/store.ts'],
+    rules: {
+      'no-restricted-syntax': ['error', ...MATH_SYNTAX, ...BIGINT_SYNTAX],
     },
   },
 );
