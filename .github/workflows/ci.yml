@@ -17,8 +17,12 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
+      - run: pip install -r tools/requirements.txt
       - run: pnpm install --frozen-lockfile
       - run: python tools/worldgen/vectors.py --check
+      - run: python tools/worldgen/mapfile.py --check
+      - run: python tools/worldgen/export_map.py --check
+      - run: python tools/sprites/test_skin_a.py
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm test
@@ -27,3 +31,17 @@ jobs:
           node tools/cli/src/main.ts --seed 42 --tier phone --ticks 1000 > "$RUNNER_TEMP/replay-2.txt"
           cat "$RUNNER_TEMP/replay-1.txt"
           diff "$RUNNER_TEMP/replay-1.txt" "$RUNNER_TEMP/replay-2.txt"
+
+  # The renderer's specs in Chromium (WebGL2 on SwiftShader), Firefox and WebKit, on a runner with no GPU.
+  browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium firefox webkit
+      - run: pnpm test:browser
