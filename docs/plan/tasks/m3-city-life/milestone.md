@@ -1,6 +1,6 @@
 # M3 City life: sub-milestones
 
-M3 holds 56 build tasks, one of them done, and 18 exit checks in the [implementation plan](../../implementation-plan.md#m3-city-life). That is more than any other milestone, so it runs as eight sub-milestones. Each one ends with software that runs and passes its own checks. Each has an implementation brief in its `plan.md`, which becomes a step-by-step plan when the sub-milestone before it closes.
+M3 holds 56 build tasks, one of them done, and 19 exit checks in the [implementation plan](../../implementation-plan.md#m3-city-life). That is more than any other milestone, so it runs as eight sub-milestones. Each one ends with software that runs and passes its own checks. Each has an implementation brief in its `plan.md`, which becomes a step-by-step plan when the sub-milestone before it closes.
 
 Estimates are full-time days for one person coding by hand (unsourced estimates). The plan's M3 effort line is 2–3 weeks plus 8–12 days for the visual layer. It covers round 1's routines and round 3's town, including 3–5 days editing the generated town. Later rounds and the owner's plans added most of the other tasks. The Build mode adds 8–12 days (R9), and the owner's plans add 10–16: calendar 2–3, sound 4.5–8, military 1 and gazette 2.5–4. This file estimates the rest, chiefly the `place.py` port, which round 9 moved from M6, and the round 2, 5, 6 and 8 tasks. The plan's own figures sum to 36–55 days, and this breakdown to 69–106. The Actual column records the real time, so later estimates can be rescaled to the measured pace.
 

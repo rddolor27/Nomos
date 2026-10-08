@@ -34,6 +34,9 @@
   - a take is shown only as an act: the taker sneaks, and the item hops from victim to taker;
   - there is no taker bubble, sack, mask or colour, and nothing marks the taker afterwards.
 - **Reduced motion:** no hops, bobs or pans, 150 ms fades, camera cuts and static rings (R3). Read `prefers-reduced-motion` and the app's own setting.
+- **Light periods (R3, Calendar):**
+  - M1.2's ground tint covers Skin B's flat zone map, and the blob pass draws after it, untinted.
+  - Round 3's yellow body, now the sun hue, needs no outline at night. The other five hues have no night rule yet: compute each against the night-tinted ground, and add a night outline colour only where one fails.
 
 ## Packages and files
 
@@ -80,6 +83,7 @@
   - Fades last 150 ms ± one frame.
 - `wallet bars only on lab cards`: switching to a town or city skin leaves the bar layer uncreated.
 - `a take shows no marker`: after a take, the taker's visual word differs from a non-taker's only in `action` and only during the act.
+- `body hues clear 3:1 in every period`: for every hue against every zone colour under each period's tint, and at the midpoint of each fade, the better of the body fill and its outline reaches at least 3:1.
 
 ## Risks and unknowns
 
@@ -92,6 +96,7 @@
 
 - **Owner:** on the Canvas2D fallback, do lab cards draw blobs or Skin A dots? M0.4's fallback copies the dots pixel for pixel, and a blob copy would be a second sprite pass held to that standard. Suggested: dots, so blobs keep one implementation. Needed before: the step plan.
 - **Owner:** should a few novices see the sprite previews before the passes are built? A glyph that fails in M1.5 loops back here, and a second formal playtest means recruiting again. Suggested: yes, an informal look, with M1.5's test still the gate. Needed before: building.
+- **Measure:** which of the five non-sun hues fall below 3:1 against the night-tinted ground? Round 3 set an outline rule by day only. Suggested: compute night contrast per hue, and add a night outline colour only where it fails. Needed before: building.
 - **Measure:** do the navy cap and teal sash stay apart from all six body hues under simulated colour blindness? Round 3 cleared them only against the yellow body, at ΔE 33 or more in CAM02-UCS ([R3 report](../../../../research/round-3-2d-look/report.md), computed), and M0.4's palette test checks only that trio. Suggested: extend that colorspacious test to every hue against both item colours, at round 3's assumed ΔE ≥ 20. Needed before: building.
 
 ## Implementation notes

@@ -16,12 +16,9 @@
 - **The phone path.**
   - Render the world at one pixel per texel into a framebuffer, then blit it at integer scale.
   - This cuts fill by zoom², and retires the device-pixel-ratio cap of 2 for the world layer (R3).
-- **Four light periods** tint only ground and buildings, never people:
-  - lit windows and lamps at night;
-  - fades of at least 2 s;
-  - a tint-off toggle.
-
-  The house window and lamp art exists; wire it in (R3).
+- **M1.2's light periods reach the town (R3, Calendar).** The five periods, the ground tint, the fades and the tint-off toggle already run. Skin C adds two things:
+  - buildings take the tint, and people still never do;
+  - windows and lamps light from the start of dusk to the end of dawn. 175 house sprites already name a lit-window overlay in their manifest; wire them in. The lamp post, `prop_lamp-post` in `nature.json`, has no lit overlay yet.
 - **Automatic skins:** dots at city zoom, and the town from district zoom inward, with 15% hysteresis and 150 ms cross-fades. The manual override from M0.4 still wins (R3).
 - **Follow-cam** at 5–6×, with a dead zone of about 3×2 tiles and a thought panel synced to M3.2's inspector. Under reduced motion it cuts rather than pans (R3).
 - **Optional:** a human character sheet as an opt-in variant, with looks redrawn at every birth. It is blocked by the owner decision below.
@@ -29,7 +26,7 @@
 ## Packages and files
 
 - `packages/render-gl`:
-  - `src/skins/town/tile-pass.ts`, `src/skins/town/roof-pass.ts` and `src/skins/town/light.ts`;
+  - `src/skins/town/tile-pass.ts`, `src/skins/town/roof-pass.ts` and `src/skins/town/light.ts`, which extends M1.2's `src/light.ts` with buildings and night overlays;
   - `src/framebuffer-path.ts`;
   - `src/auto-skin.ts`;
   - `src/follow-cam.ts`.
@@ -43,7 +40,7 @@
 ## Interfaces and data
 
 - **Frame table:** `frameName → { page, x, y, w, h, anchorX, anchorY }`, generated with types from M0.5's manifest schema. Maps and skins look frames up by name only.
-- **Light period:** an enum of night, dawn, day and dusk, from M0.1's sunrise and sunset tables. The tint is a uniform blended over ≥ 2 s.
+- **Light period:** M1.2's `lightPeriod(tick)`, re-exported by `sim-protocol`. Night overlays draw while it is dusk, night or dawn.
 - **Auto-skin policy:** `chooseSkin(zoom, current): Skin`, with the hysteresis band as a constant (15%).
 
 ## Method and sources
@@ -57,8 +54,10 @@
 ## Tests for the exit checks
 
 - `outlines clear 3:1 by day`:
-  - for every walkable tile's colours and every body hue, the outline colour reaches a contrast ratio of at least 3:1 in the day period;
-  - the night rule for the five hues besides sun is open, so this check covers day only and lists the night gaps.
+  - for every walkable tile's colours and every body hue, the outline colour reaches a contrast ratio of at least 3:1 in the morning and afternoon periods;
+  - M1.3's night rule covers the other periods.
+- `hues clear 3:1 in every period`: for every walkable tile under each period's tint, the better of each hue's fill and its outline reaches at least 3:1, as M1.3 checks on the zone map.
+- `lights only from dusk to dawn`: night overlays draw in dusk, night and dawn, and never in morning or afternoon, on day 42 and day 98.
 - `skin switches drop no frame`: Playwright zooms through the auto-skin threshold 20 times. No frame takes more than twice the median frame time, and the hysteresis prevents flapping.
 - `framebuffer path is pixel-exact at DPR 3`: a golden frame at device pixel ratio 3 matches, byte for byte, the 1-texel framebuffer blitted 3× in software.
 - `light never tints people`: sample an agent's pixels in each light period, and they are identical.
@@ -69,7 +68,7 @@
 - **Verify first:**
   - the canonical licence pages for Ninja Adventure, Kenney and LimeZu, and Mana Seed's AI clause;
   - tick and frame times on a mid-range Android phone and an iPhone, which decide the device tiers and the phone path.
-- **Night outlines for five hues** have no rule yet. Round 3's yellow body is now the sun hue, and needs no outline at night.
+- **Night outlines** come from M1.3, which measured them on the flat zone map. Town tiles are more varied, so re-check every hue against them.
 - **Atlas size:** the 16 MiB atlas is a memory risk on iOS tabs (R5). Keep pages at 2,048² or smaller, and release pages unused at the current zoom.
 
 ## Open questions
@@ -77,7 +76,7 @@
 - **Owner:** Drop the optional human sheet for good? Content rule 1 gives everyone one shared blob body, and round 3 tied the sheet to M1's playtest. Suggested: drop it, as the brief's default does. Needed before: the step plan.
 - **Measure:** Does the original art in `tools/sprites` cover every tile the generated town uses? If it does, no third-party pack ships and the licence checks drop out; Mana Seed is already excluded, and paid LimeZu stays out of the public repo. Suggested: diff the frame names M3.1's export uses against the sprite manifests, and confirm the canonical CC0 text only for packs still needed. Needed before: the step plan.
 - **Measure:** What tick and frame times do one mid-range Android phone and one iPhone reach at 10k agents? They decide the device tiers and whether the framebuffer path is the phone default, so task.md asks for them first. Suggested: measure M3.2's town drawn as blobs before building, and Skin C again once its tile and roof passes run. Needed before: building.
-- **Measure:** Which of the five non-sun hues fall below 3:1 against night-tinted tiles? The exit check covers day only, and night has no outline rule. Suggested: compute night contrast per hue, and add a night outline colour only where it fails. Needed before: launch.
+- **Design:** How does the lamp post light up? `prop_lamp-post` has no lit overlay, unlike the houses. Suggested: draw one in `tools/sprites` under the sprite rules, rather than a shader glow. Needed before: building.
 
 ## Implementation notes
 
@@ -90,4 +89,4 @@ Suggestions for the step plan, which makes the final call.
   - Until the idle-time atlas loads, auto-skin must stay on dots or blobs.
   - Shared CI machines give noisy timings (R5), so compare switch frames with a median over many frames, never one sample.
   - The blit needs nearest filtering and a canvas sized to whole multiples, or the DPR 3 golden drifts at the edges.
-- **Hard and easy parts:** the pixel-exact framebuffer path and iOS memory are the hard parts. Auto-skin, the light enum and the follow-cam are mechanical.
+- **Hard and easy parts:** the pixel-exact framebuffer path and iOS memory are the hard parts. Auto-skin, the night overlays and the follow-cam are mechanical.
