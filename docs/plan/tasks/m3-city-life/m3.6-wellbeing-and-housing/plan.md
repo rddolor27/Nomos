@@ -76,3 +76,22 @@
 - **The food-insecurity penalty is unsourced,** a labelled knob. Report its value beside every LS result.
 - **Housing makes M2's saving rule complete.** Re-run M2.5's saving checks and M2.7's housing-share check once rents exist.
 - **The quit correlation (r ≈ −0.25)** is a check, not a target to tune. If it misses, report it and look for a missing driver before changing weights.
+
+## Open questions
+
+- **Owner:** Should the unsourced food-insecurity penalty ship on, at −150 per missed-meal day? It moves every LS result and has no source. Suggested: on, labelled unsourced in the inspector and beside every LS report. Needed before: launch.
+- **Owner:** What share of households own their home at spawn, and who owns the rest? Tenure sets rents, mortgages and M2.5's saving checks. Suggested: the wealth preset's rate, 60.1% euro-like or 66.1% US-like, with rented homes held by other households by wealth rank ([R6 wealth notes](../../../../research/round-6-goods-and-wellbeing/notes/wealth-assets.md), parts a and b). Needed before: the step plan.
+- **Measure:** How is rent set? The brief pays rent to the owner but gives no level. Suggested: a yield on the district price index, tuned to renters' median rent-to-income ratios by income quintile, 45.7% down to 11.3% (same notes, part c, computed there from SCF 2022). Needed before: building.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** the LS block and its order-independent daily pass first, with the income and unemployment drivers. Then the other drivers, the inspector and HUD, on-the-job search, and housing last.
+- **Reuse:** M2.5's happiness income, habit column and saving rule; M0.2's claims ledger and registries; M0.3's histogram; M3.5's missed-meal count; M3.2's inspector.
+- **Keep it simple:** leave the optional meal-mood knob unbuilt, use one forced-sale rule, and build no new homes, since the stock is fixed.
+- **Pitfalls:**
+  - A small town may record no home sales in a month, so hold the last index value and widen the window.
+  - A forced sale needs a buyer with cash; define what happens when none exists.
+  - LS scales on-the-job search in guarded `labour/`, and the wall checks guarded code, not data flowing into it, so LS must never read culture.
+- **Hard and easy parts:** housing is the hard part, since tenure, mortgages and forced sales must keep the claims and cash identities every day. The LS pass and fade tables are mechanical.

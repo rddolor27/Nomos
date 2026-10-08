@@ -79,3 +79,22 @@
 - **Owner decision first:** whether street and district names come from a culture's naming custom. If they do, the gazette names districts by number.
 - **The record store is new architecture.** Keep it minimal and append-only; M4's justice records and M5's year-end edition extend it.
 - **Voice caps are estimates** set in M1.4, so re-measure them with a busy market.
+
+## Open questions
+
+- **Owner:** Chiptune only, or soft sampled instruments too? Samples would need a recorded format that plays in Safari ([Sound](../../../sound.md), "Open questions"). Suggested: chiptune only, as sound.md's opening line already says, so no recorded format is needed. Needed before: building.
+- **Owner:** Do street and district names ever come from a culture's naming custom? If they do, justice stories must name districts by number ([Gazette](../../../gazette.md), "Open questions"). Suggested: no, so every place name comes from the shared sound set and any section, M4's justice column included, can name districts (content rule 8). Needed before: the step plan.
+- **Owner:** How far back do back issues go? The append-only store grows every day against the 64 MB app memory budget at 10k agents. Suggested: one game year of records in memory, the span M5's year-end edition needs, with older editions re-printed by replaying to that date. Needed before: building.
+- **Measure:** Do about 24 voices and the per-kind caps hold in a busy market? M1.4 set them as estimates. Suggested: measure in the default town's market at 10k agents on the mid-range Android phone. Needed before: launch.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** the record store and a pure `printEdition` first, headless, with the replay and gazette-off checks. Then the panel, seasons in the renderer, event sounds, ambience, the music player, and festival music last.
+- **Reuse:** M1.4's player, synth and buses; M3.3's light periods; M3.5's harvest; M3.7's festivals and name filter; M0.6's text lints; M0.3's day-boundary record.
+- **Keep it simple:** records as fixed-width slots in a preallocated ring sized for the chosen retention, never as objects.
+- **Pitfalls:**
+  - The app never imports `sim-core` ([interfaces.md](../../m0-pipeline/interfaces.md)), so put the record layout and read API in `sim-protocol` and post each day's records to the app.
+  - Print at 06:00 only from records committed when the last day slice ends (M0.3), so no edition sees a half-committed day.
+- **Hard and easy parts:** the record store is the hard part, as new architecture that M4 and M5 extend. Palette swaps, ambience choice and the music player are mechanical.

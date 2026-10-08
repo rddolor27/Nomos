@@ -71,3 +71,22 @@
 - **Owner decision first:** the soldiers' stopgap payer until M5's treasury.
 - **Flow fields at 256²** take memory: one `Uint8Array` direction grid per destination class. Measure against the 256 bytes per agent budget at 10k agents.
 - **Determinism of the top-few pick:** ties and the keyed draw must not depend on visiting order. M0.3's stride and plan-then-apply rules apply.
+
+## Open questions
+
+- **Owner:** Who pays soldiers until M5's treasury exists? Their pay comes from taxes, which arrive only with M5. Suggested: M0.2's local-government account, funded at spawn from the record's local-government balance. Needed before: the step plan.
+- **Owner:** What shifts do jobs run, and does any sector work evenings or rest days? Shifts and shop hours are the only clock inputs, so they decide when rush hours fall. Suggested: one daytime shift on the 5 workdays, except shops and the market, which also open on the rest days the [calendar](../../../calendar.md) gives to markets. Needed before: the step plan.
+- **Measure:** How does an agent reach its own home or workplace? A field per destination class leads to the nearest member, and round 1 pairs class fields with cached A\* at 10k agents ([R1 findings](../../../../research/round-1-baseline/findings-and-plan.md), the scaling table). Suggested: class fields for shops and the market and cached A\* for homes and jobs, timed against the 1.0 ms pathfinding-and-events sub-budget at 10k. Needed before: the step plan.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** dense lists, the timing wheel and needs as deadlines first, with agents walking between home and work. Then utility scoring with its win counters, Huff shop choice, perception, the inspector, and the soldier job last.
+- **Reuse:** M2.2's spawn and M2's firms, wages and shops; M3.1's map; M0.3's stride and plan-then-apply rules; M0.6's budget and allocation gates; M1.2's read-only query.
+- **Keep it simple:** pick among the top three actions, the three the inspector shows. Build none of round 2's optional items unless a gate fails.
+- **Pitfalls:**
+  - Shift starts and mealtimes can put thousands of entries in one wheel bucket. Size buckets for every agent, or spill to the next tick in agent order.
+  - Huff's attractiveness ÷ d² divides by zero at the shop door, so use d² + 1.
+  - Clear the job bits of the visual word off shift, or the helmet stays on at home. Soldiers' posts sit on roads, never on town patrols (content rule 6).
+- **Hard and easy parts:** routing within the pathfinding and memory budgets, and tuning considerations so no action always or never wins, are the hard parts. Dense lists, the wheel and Huff are mechanical.

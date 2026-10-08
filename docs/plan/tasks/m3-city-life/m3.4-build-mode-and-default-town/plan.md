@@ -61,3 +61,21 @@
 - **8–12 days** for the minimal Build mode is round 9's estimate. The default town's hand edits add 3–5 days.
 - **The port must land first.** If M3.1's port slips, the LDtk fallback town keeps M3.5–M3.8 moving; switch back once the port passes.
 - **The save format is forever.** Version the container from the first save, and keep a loader per version.
+
+## Open questions
+
+- **Owner:** What must the default town show to count as done? The hand edits take 3–5 days, and no exit check judges them. Suggested: the task's apartment blocks, house rows, shop rows, market square and park, plus one workplace per sector and passing budget runs. Needed before: building.
+- **Owner:** Build the compressed save container now, or keep the committed JSON edit log until players can save? Once players save, the format is forever, and M3's Build mode is developer-only. Suggested: the JSON edit log now, and the versioned container with M6's player editor. Needed before: the step plan.
+- **Measure:** Does the edited 256² default town fit the 40 KB map budget ([Performance budget](../../../implementation-plan.md#performance-budget))? It sits on the critical path, and round 5's stand-in binary map was 33 KB (measured there). Suggested: add it to size-limit when the first edits land. Needed before: building.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** `patchTiles` and one brush with undo first, as the core loop. Then the Play hand-off, the other tools, the default town's edits, and the 10k budget and phone runs last.
+- **Reuse:** M3.1's generator and plan-then-apply tidying; M3.3's tile chunks and M0.4's `MapV1`; M0.5's lazy loading; M0.6's budget gate and M0.4's frame budget test; M1.2's watch-only protocol.
+- **Keep it simple:** a short fixed prefab list for stamps, with no LDtk import, multi-select or prefab editor.
+- **Pitfalls:**
+  - A generator change shifts the base town under the edit log. Pin the generator version in `seed.json`, and fail the build when an edit's old value doesn't match.
+  - Keep one source of truth for the edited map; map-wide edits done in the worker come back as cell patches.
+- **Hard and easy parts:** stable entity ids and partial-rerun equality are the hard parts. The tools and undo are mechanical.

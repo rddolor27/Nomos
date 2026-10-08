@@ -69,3 +69,21 @@
 - **M0.3's ruling on late spoilage** must exist before pantry expiry is final (round 6 conflict e).
 - **Round 6 rates set for a 365-day year** must be re-read as per day or per year first (M2.7's verify-first item), especially the ≤ 7% pest loss a season.
 - **Weather SD 0.13–0.22 is a band, not a value.** Pick one per biome in the step plan and log it as a knob.
+
+## Open questions
+
+- **Owner:** What does a food-poisoning event do before any health system exists? Round 6 makes it a health event, but M3 has no health model ([R6 food notes](../../../../research/round-6-goods-and-wellbeing/notes/food-quality-spoilage.md), part c). Suggested: one sick day at home, logged as an event, and nothing more until health arrives. Needed before: building.
+- **Measure:** Where does a year's grain wait between harvest and sale? One 9–14-day harvest must feed the town all year, but a shop shelf holds at most 32 × 511 = 16,352 portions (computed). Suggested: a store per farm or granary holding one portion count per harvest day, since grain's 365-day use-by outlasts three game years. Needed before: the step plan.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** pantries and their merge rules first, on M2.4's lot word. Then the shelf-life table, household spoilage with its two checks, the harvest and weather, quality and the tally, and the place visuals last.
+- **Reuse:** M2.4's lot word, FEFO, spoilage sweep and portion ledger; M0.2's keyed stochastic rounding and tables; M3.1's farms; the existing field and pip art.
+- **Keep it simple:** one spoilage sweep for shelves and pantries, never a second path.
+- **Pitfalls:**
+  - Test the town's grain stock through winter, not each pantry, since the 5–15% insecurity target means some households run short by design.
+  - The tally's monthly window follows M2.1's month constant.
+  - Key regional weather on (seed, region, year) and local weather on (seed, farm, year), never on farm order.
+- **Hard and easy parts:** hitting the 3–6% spoilage and 5–15% insecurity bands together is the hard part. The mask, the tally and the poisoning odds are mechanical.

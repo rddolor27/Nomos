@@ -69,3 +69,21 @@
 - **Python changes ripple.** Removing the diagonal clause changes Python's outputs too. Regenerate the goldens and the mockups that depend on them in the same commit.
 - **Map format growth:** capacity, owner and hours may need fields `MapV1` lacks. Version the format, and never reuse a field.
 - **Generation time:** round 9 sets ≤ 100 ms for a standard world in desktop Chromium, an M8 check. Measure the town stage alone here to keep headroom.
+
+## Open questions
+
+- **Owner:** Build the LDtk fallback town now, or only if the port slips? M3.4 already names it the fallback, and its auto-layer rules and roof layer go unused if the port lands. Suggested: only if the port slips. Needed before: the step plan.
+- **Owner:** Should capacity, hours, owner and sector be added to `place.py`, or derived in a TypeScript-only export stage? `place.py` exports none of these fields today, so Python goldens cannot cover them. Suggested: a TypeScript stage after the golden-checked ones, from building-kind tables, with "owner" a kind (household, firm or town) that M2.2's spawn fills in. Needed before: the step plan.
+- **Measure:** How long does the town stage take in desktop Chromium and on a mid-range phone? Round 9's ≤ 100 ms covers a whole world in M8, so the town needs headroom. Suggested: track it in M0.6's bench, with no gate until M8. Needed before: launch.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** `goldens.py` and per-stage fingerprints first, then the port stage by stage in `place.py`'s order, each green before the next. The saddle keys and the diagonal-clause removal come as their own step, then the export and the exit check.
+- **Reuse:** M0.1's ported draw and noise; M0.4's `parseMap`, building-kind tables and Python `write_map`, the reference for a TypeScript writer; M0.5's manifest types; M0.6's generator lints and five-engine harness.
+- **Keep it simple:** bump the map format once, with every new field together, rather than once per field.
+- **Pitfalls:**
+  - Beyond round 9's four traps, Python sets iterate in hash order, while a JavaScript `Set` keeps insertion order. Loop over sorted cells where order matters. JavaScript objects also order integer keys ascending, and a sort comparator must return a number.
+  - Regenerated mockups live in `docs/`, so they need their own commit after the goldens, since code and docs never share a commit ([interfaces.md](../../m0-pipeline/interfaces.md)).
+- **Hard and easy parts:** bit-equality stage by stage is the hard part. The export, the civic signals and the walkability check are mechanical.

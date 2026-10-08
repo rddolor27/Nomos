@@ -89,3 +89,22 @@
   - round 8's transmission bands, re-run with similar culture shares rather than one 60% culture; these decide the retention bands and the 0.5% inflow default;
   - festival demand spikes, attendance targets, and festival and music transmission rates.
 - **Third-party fixture licences.** LDNOOBW (CC BY 4.0) and Fantasy Map Generator's bases (MIT) need licence notices if committed for CI.
+
+## Open questions
+
+- **Owner:** Test transmission on a harness until M5's births, or pull minimal births forward? Births, partner choice and ageing arrive only in M5, and the retention check needs generations. Suggested: the harness, the brief's default. Needed before: the step plan.
+- **Owner:** How do eight cultures share four music styles? The answer also sets M3.8's festival music ([Sound](../../../sound.md)). Suggested: each culture draws one style at world generation, keyed by its uid. Needed before: the step plan.
+- **Measure:** Do the 40–85% and 8–30% retention bands hold with similar culture shares? Round 8 ran one 60% culture, and the re-run sets the CI bands and confirms the 0.5% newcomer default. Suggested: re-run [`town.mjs`](../../../../research/round-8-cultures/prototypes/transmission/town.mjs) with M2.6's default mix before fixing the bands. Needed before: building.
+- **Research:** What evidence sets festival demand spikes (2–4×, an unsourced estimate), attendance targets, and festival and music transmission rates? They drive festival markets, crowds and custom rates. Suggested: a short research round first, as task.md asks, with each value kept a labelled knob. Needed before: building.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** the name filter and sound-set screen first, as tools with no sim dependency. Then the festival table and attendance, adoption on the stride, the transmission harness, festival demand, music events, UI names, and decorations last.
+- **Reuse:** M0.6's `sim-culture` wall, relabel test, and name and text lints; M0.3's stride scheduler; M2.6's shifts, festival stocking and, if built, its recompute hook; M3.6's isolation counter; M3.3's follow-cam.
+- **Pitfalls:**
+  - Convert yearly adoption rates to a hazard per 30-day visit, 1 − (1 − p)^(30/112), never p ÷ 3.73 ([calendar.md](../../../calendar.md), "Rescaling rules").
+  - Festival contact feeds the isolation counter, LS and then on-the-job search, a path from culture to labour that no import check sees. The fairness check must pass before any festival knob leaves 0.
+  - A change to name generation renames everyone in older saves, so version the generator with the save.
+- **Hard and easy parts:** the transmission bands and festival fairness are the hard parts. The festival table, music preferences and list loading are mechanical.

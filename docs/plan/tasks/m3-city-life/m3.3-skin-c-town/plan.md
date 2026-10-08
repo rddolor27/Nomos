@@ -71,3 +71,23 @@
   - tick and frame times on a mid-range Android phone and an iPhone, which decide the device tiers and the phone path.
 - **Night outlines for five hues** have no rule yet. Round 3's yellow body is now the sun hue, and needs no outline at night.
 - **Atlas size:** the 16 MiB atlas is a memory risk on iOS tabs (R5). Keep pages at 2,048² or smaller, and release pages unused at the current zoom.
+
+## Open questions
+
+- **Owner:** Drop the optional human sheet for good? Content rule 1 gives everyone one shared blob body, and round 3 tied the sheet to M1's playtest. Suggested: drop it, as the brief's default does. Needed before: the step plan.
+- **Measure:** Does the original art in `tools/sprites` cover every tile the generated town uses? If it does, no third-party pack ships and the licence checks drop out; Mana Seed is already excluded, and paid LimeZu stays out of the public repo. Suggested: diff the frame names M3.1's export uses against the sprite manifests, and confirm the canonical CC0 text only for packs still needed. Needed before: the step plan.
+- **Measure:** What tick and frame times do one mid-range Android phone and one iPhone reach at 10k agents? They decide the device tiers and whether the framebuffer path is the phone default, so task.md asks for them first. Suggested: measure M3.2's town drawn as blobs before building, and Skin C again once its tile and roof passes run. Needed before: building.
+- **Measure:** Which of the five non-sun hues fall below 3:1 against night-tinted tiles? The exit check covers day only, and night has no outline rule. Suggested: compute night contrast per hue, and add a night outline colour only where it fails. Needed before: launch.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** the tile pass on M3.1's map first, then the roof pass and the atlas pipeline, then the framebuffer path with its DPR 3 golden. Light periods, auto-skin and the follow-cam come last.
+- **Reuse:** M1.3's instanced blob pass; M0.4's renderer, camera and skin switch; M0.5's atlas stub and manifest types; M3.2's inspector for the thought panel.
+- **Keep it simple:** release atlas pages by zoom only if the iPhone measurement shows memory pressure.
+- **Pitfalls:**
+  - Until the idle-time atlas loads, auto-skin must stay on dots or blobs.
+  - Shared CI machines give noisy timings (R5), so compare switch frames with a median over many frames, never one sample.
+  - The blit needs nearest filtering and a canvas sized to whole multiples, or the DPR 3 golden drifts at the edges.
+- **Hard and easy parts:** the pixel-exact framebuffer path and iOS memory are the hard parts. Auto-skin, the light enum and the follow-cam are mechanical.
