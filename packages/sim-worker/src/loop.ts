@@ -49,7 +49,7 @@ export function createSimLoop(host: LoopHost, cpuSlowdown = 1): { handle(msg: Ap
   let turnPending = false;
   let lastMs = 0;
   let accMs = 0;
-  // When the work the next reply waits on began: the message, the turn or the last reply.
+  // When the work the next slowed wait covers began: the message, the turn or the last reply.
   let workFromMs = 0;
 
   // Sums since the last stats message, which reports them as means.
@@ -91,13 +91,16 @@ export function createSimLoop(host: LoopHost, cpuSlowdown = 1): { handle(msg: Ap
 
   function init(seed: number, tier: Tier, map: ArrayBuffer): void {
     running = false;
-    warmUp();
     const world = host.makeWorld(seed, tier, map);
     const pool = createSnapshotPool(world.agents.capacity);
     session = { world, pool };
     post({ type: 'ready', agents: world.agents.count[0] }, []);
     // The spawn, so a page that starts paused, as under reduced motion, still draws its agents (M0.5).
     postSnapshot(world, pool);
+    // After the replies, so the first frame never waits for it; whatever the page sends meanwhile queues behind it. A
+    // slower CPU would warm up for longer, so a slowed worker holds the queue for that long too.
+    warmUp();
+    if (cpuSlowdown > 1) waitAsSlowerCpu();
   }
 
   // Time spent paused is dropped, not caught up.
@@ -179,11 +182,11 @@ export function createSimLoop(host: LoopHost, cpuSlowdown = 1): { handle(msg: Ap
     workFromMs = host.now();
   }
 
-  // A CPU cpuSlowdown times slower would still be working, so spin until it would have sent this reply.
+  // A CPU cpuSlowdown times slower would still be working, so spin until it would be done.
   function waitAsSlowerCpu(): void {
     let nowMs = host.now();
-    const sendAtMs = nowMs + (cpuSlowdown - 1) * (nowMs - workFromMs);
-    while (nowMs < sendAtMs) nowMs = host.now();
+    const doneAtMs = nowMs + (cpuSlowdown - 1) * (nowMs - workFromMs);
+    while (nowMs < doneAtMs) nowMs = host.now();
   }
 
   return { handle };

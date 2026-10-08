@@ -1,10 +1,21 @@
-import { createWorld, currentTick, restoreWorld, stateHash, type World } from '@nomos/sim-core';
-import { bindPageLifecycle, type WorkerMessage } from '@nomos/sim-protocol';
-import { describe, expect, it } from 'vitest';
+import { createWorld, currentTick, restoreWorld, stateHash, step, warmUp, type World } from '@nomos/sim-core';
+import { bindPageLifecycle, type AppMessage, type WorkerMessage } from '@nomos/sim-protocol';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { SLEEP_MIN_MS, STATS_MS, createSimLoop, type LoopHost } from '../src/index.ts';
+
+// The real warm-up, wrapped so a test can see when the loop runs it or stand in for its time.
+vi.mock('@nomos/sim-core', async (importOriginal) => {
+  const simCore = await importOriginal<typeof import('@nomos/sim-core')>();
+  return { ...simCore, warmUp: vi.fn(simCore.warmUp) };
+});
+
+afterEach(() => {
+  vi.mocked(warmUp).mockReset();
+});
 
 type Posted<T extends WorkerMessage['type']> = Extract<WorkerMessage, { type: T }>;
 type FakeDoc = EventTarget & { visibilityState: string };
+type Page = ReturnType<typeof fakePage>;
 
 // A manual clock and the loop's one pending callback. Scheduling a second turn while one is pending throws, so every
 // test also checks that only one loop ever runs.
@@ -112,6 +123,59 @@ describe('the sim loop', () => {
     page.handle({ type: 'resume' });
     page.advance(100);
     expect(page.ofType('snapshot').map(({ tick }) => tick)).toEqual([0, 1]);
+  });
+
+  it('posts ready and the spawn before it warms up', () => {
+    const page = fakePage({ init: false });
+    const postedFirst: string[] = [];
+    vi.mocked(warmUp).mockImplementationOnce(() => {
+      for (const { type } of page.posted) postedFirst.push(type);
+    });
+    page.handle({ type: 'init', seed: 42, tier: 'phone', map: new ArrayBuffer(0) });
+    expect(postedFirst).toEqual(['ready', 'snapshot']);
+  });
+
+  // Both orders finish the warm-up before the world's first tick, and the scratch both worlds share is written before
+  // it is read, so a warm-up after the world exists changes no replay.
+  it('replays the same whether it warms up before or after making the world', () => {
+    warmUp();
+    const warmedFirst = createWorld(42, 'phone');
+    while (currentTick(warmedFirst) < 1_000) step(warmedFirst);
+    const page = fakePage();
+    page.handle({ type: 'resume' });
+    page.advance(100_000);
+    expect(page.tick()).toBe(1_000);
+    expect(stateHash(page.world())).toBe(stateHash(warmedFirst));
+  });
+
+  it('handles what the page sends during the warm-up once it ends', () => {
+    // A worker runs one task at a time, so whatever the page sends while init warms up waits in its queue, in order.
+    function initWhileSending(send: (page: Page) => AppMessage[]): Page {
+      const page = fakePage({ init: false });
+      let queued: AppMessage[] = [];
+      vi.mocked(warmUp).mockImplementationOnce(() => {
+        queued = send(page);
+        page.stall(300);
+      });
+      page.handle({ type: 'init', seed: 42, tier: 'phone', map: new ArrayBuffer(0) });
+      expect(page.posted.map(({ type }) => type)).toEqual(['ready', 'snapshot']);
+      for (const msg of queued) page.handle(msg);
+      return page;
+    }
+
+    const playing = initWhileSending((page) => [
+      { type: 'resume' },
+      { type: 'return', buffer: page.ofType('snapshot')[0].buffer },
+      { type: 'checkpoint' },
+    ]);
+    expect(playing.ofType('checkpoint').map(({ tick }) => tick)).toEqual([0]);
+    playing.advance(1_000);
+    expect(playing.tick()).toBe(10);
+    expect(playing.ofType('snapshot').map(({ tick }) => tick)).toEqual([0, 1, 2, 3]);
+
+    const paused = initWhileSending(() => [{ type: 'resume' }, { type: 'pause' }]);
+    paused.advance(1_000);
+    expect(paused.tick()).toBe(0);
   });
 
   it('runs 10 ticks per second of wall time', () => {
@@ -232,29 +296,40 @@ describe('the sim loop', () => {
     expect(page.tick()).toBe(20);
   });
 
-  it("delays a slowed worker's replies", () => {
+  it("delays a slowed worker's replies, and its next message by its warm-up", () => {
     const WORK_MS = 100;
-    // Ms from init to ready, on a clock that each reading moves 0.25 ms, so a busy-wait on it always ends.
-    function readyAfterMs(cpuSlowdown: number): number {
+    const WARM_MS = 200;
+    // Ms from init to ready and to init's return, when the worker can take its next message, on a clock that each
+    // reading moves 0.25 ms, so a busy-wait on it always ends.
+    function initTimesMs(cpuSlowdown: number): { readyMs: number; doneMs: number } {
       let clock = 0;
-      let readyAtMs = -1;
+      let readyMs = -1;
       const host: LoopHost = {
         now: () => (clock += 0.25),
         sleep: () => {},
         yieldNow: () => {},
         post: (msg) => {
-          if (msg.type === 'ready') readyAtMs = clock;
+          if (msg.type === 'ready') readyMs = clock;
         },
         makeWorld: (seed, tier) => {
           clock += WORK_MS;
           return createWorld(seed, tier);
         },
       };
+      vi.mocked(warmUp).mockImplementationOnce(() => {
+        clock += WARM_MS;
+      });
       createSimLoop(host, cpuSlowdown).handle({ type: 'init', seed: 42, tier: 'phone', map: new ArrayBuffer(0) });
-      return readyAtMs;
+      return { readyMs, doneMs: clock };
     }
-    expect(readyAfterMs(4)).toBeGreaterThanOrEqual(4 * WORK_MS);
-    expect(readyAfterMs(1)).toBeGreaterThan(WORK_MS);
-    expect(readyAfterMs(1)).toBeLessThan(2 * WORK_MS);
+
+    const slowed = initTimesMs(4);
+    expect(slowed.readyMs).toBeGreaterThanOrEqual(4 * WORK_MS);
+    expect(slowed.readyMs).toBeLessThan(4 * WORK_MS + WARM_MS);
+    expect(slowed.doneMs - slowed.readyMs).toBeGreaterThanOrEqual(4 * WARM_MS);
+    const full = initTimesMs(1);
+    expect(full.readyMs).toBeGreaterThan(WORK_MS);
+    expect(full.readyMs).toBeLessThan(2 * WORK_MS);
+    expect(full.doneMs - full.readyMs).toBeLessThan(2 * WARM_MS);
   });
 });
