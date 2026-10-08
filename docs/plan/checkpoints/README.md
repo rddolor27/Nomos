@@ -50,7 +50,7 @@ Then these sections, in this order:
 
 ## Conventions for agents
 
-- **Git:** commit straight to `main`, with no branches or pull requests. Use Conventional Commits headers only, at most 72 characters, with no body and no co-author. Author and committer are the owner's no-reply address: `git -c user.name=rddolor27 -c user.email=80044625+rddolor27@users.noreply.github.com commit`. Push only when the owner asks.
+- **Git:** commit straight to `main`, with no branches or pull requests. Use a Conventional Commits header of at most 72 characters, then a body whose `Task:` line names the work by ID and title, such as `Task: M0.1 Workspace and kernels, task 2: The sim-core lint profile`, with no co-author. Author and committer are the owner's no-reply address: `git -c user.name=rddolor27 -c user.email=80044625+rddolor27@users.noreply.github.com commit`. Push only when the owner asks.
 - **Where things go:** plans in `docs/plan/`, checkpoints here, and product code in `apps/`, `packages/` and `tools/`. Milestones live in `docs/plan/tasks/`, whose README is the roadmap:
   - each milestone has a folder, such as `m3-city-life/`, with `milestone.md` giving its overview and progress table;
   - each sub-milestone has a folder inside it, such as `m3.2-daily-routines/`, with `task.md` (what to build and the checks that close it) and `plan.md` (how to build it);

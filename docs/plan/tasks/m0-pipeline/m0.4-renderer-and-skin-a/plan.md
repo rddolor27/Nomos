@@ -12,7 +12,7 @@
 
 ## Global Constraints
 
-- Commit straight to `main` with `git -c user.name=rddolor27 -c user.email=80044625+rddolor27@users.noreply.github.com commit`: a `type(scope): description` header of at most 72 characters, no body, no co-author.
+- Commit straight to `main` with `git -c user.name=rddolor27 -c user.email=80044625+rddolor27@users.noreply.github.com commit`: a `type(scope): description` header of at most 72 characters, then a body whose `Task:` line names the task by ID and title, such as `Task: M0.4 Renderer and Skin A, task 1: The binary map format`, and no co-author.
 - One custom WebGL2 renderer, no PixiJS or Phaser; every skin reads the same 12-byte snapshot (web rules, R3).
 - Integer device-pixel zoom, texel and camera snapping, no CSS scaling, and a working Canvas2D fallback (web rules).
 - The recorded view never shows a true-only cue. Skin A draws no cue, so its render-filter test checks that the `trueOnly` bit changes no pixel; M4 extends it to the recorded view (web rules).

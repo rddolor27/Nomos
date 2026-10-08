@@ -12,7 +12,7 @@
 
 ## Global Constraints
 
-- Commit straight to `main` with `git -c user.name=rddolor27 -c user.email=80044625+rddolor27@users.noreply.github.com commit`: a `type(scope): description` header of at most 72 characters, no body, no co-author.
+- Commit straight to `main` with `git -c user.name=rddolor27 -c user.email=80044625+rddolor27@users.noreply.github.com commit`: a `type(scope): description` header of at most 72 characters, then a body whose `Task:` line names the task by ID and title, such as `Task: M0.5 Web app, task 1: Assets by licence family`, and no co-author.
 - Load order: an inline `<head>` script starts the worker and the map fetch; the first frame needs only the dots skin, the HUD and the worker; uPlot and lil-gui load after it, the atlas in idle time, and country mode, the inspector and WebGPU on demand (web rules, R5).
 - Budgets: ≤ 100 KB brotli before the first frame, ≤ 35 KB of it JS; the town map ≤ 40 KB; first frame ≤ 1.5 s and interactive ≤ 2.0 s on cold Fast 4G with a mid-tier phone CPU; libraries about 45 KB gzip (web rules, Performance budget, R3).
 - The HUD in vanilla TypeScript; richer UI in Solid, or Preact with signals; never React, PixiJS or Phaser (web rules). M0.5 builds no inspector or event log, so it adds neither Solid nor Preact.

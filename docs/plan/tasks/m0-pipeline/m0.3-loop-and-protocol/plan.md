@@ -18,7 +18,7 @@
 
 ## Global Constraints
 
-- Commit straight to `main` with `git -c user.name=rddolor27 -c user.email=80044625+rddolor27@users.noreply.github.com commit`: a `type(scope): description` header of at most 72 characters, no body and no co-author.
+- Commit straight to `main` with `git -c user.name=rddolor27 -c user.email=80044625+rddolor27@users.noreply.github.com commit`: a `type(scope): description` header of at most 72 characters, then a body whose `Task:` line names the task by ID and title, such as `Task: M0.3 Loop and protocol, task 1: The world step and its replay hash`, and no co-author.
 - In `sim-*` source, use only exactly specified arithmetic and integer or fixed-point replay state, draw every random number from the keyed draw on stable ids, with `draw1`–`draw4` in per-tick code, and use no `BigInt`; M0.2's apportionment module is the one exemption (sim-core rules).
 - Per-tick functions allocate nothing: no literals, closures, `new`, spread, `for…of`, array callbacks, `slice`, `subarray`, strings or clocks. Clocks live only in `sim-worker` (sim-core rules).
 - Plan, then apply. Only the day boundary writes canonical state, read as R6's fixed window of day slices, and those writes are logged like player commands (sim-core rules, R6 conflict e).

@@ -12,7 +12,7 @@
 
 ## Global Constraints
 
-- Commit straight to `main` with `git -c user.name=rddolor27 -c user.email=80044625+rddolor27@users.noreply.github.com commit`: a `type(scope): description` header of at most 72 characters, no body, no co-author; `docs/` in its own commits.
+- Commit straight to `main` with `git -c user.name=rddolor27 -c user.email=80044625+rddolor27@users.noreply.github.com commit`: a `type(scope): description` header of at most 72 characters, then a body whose `Task:` line names the task by ID and title, such as `Task: M0.6 Gates and guards, task 1: Kernels and replay goldens in five engines`, and no co-author; `docs/` in its own commits.
 - Sim source uses exact arithmetic and keyed draws on stable ids; per-tick functions allocate nothing (no literals, closures, `new`, spread, templates, `for…of`, array callbacks, `slice`, `subarray`, strings or clocks); only the day boundary writes canonical state (sim-core rules).
 - Culture shapes demand and leisure only: `crime/`, `police/`, `labour/`, `wages/`, `wealth/`, `ability/`, `housing/` and `migration/` never import `sim-culture` or read a culture column, and `consumption/` may. Culture-level draws are keyed by a stable uid, never an index (R8, content rule 8).
 - No "Pokémon", "Poké-" or "-mon" name in file names, package names, identifiers or strings, fixture names included (content rules).

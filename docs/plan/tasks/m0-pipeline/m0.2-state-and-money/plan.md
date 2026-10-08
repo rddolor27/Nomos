@@ -12,7 +12,7 @@
 
 ## Global Constraints
 
-- Commit straight to `main` with `git -c user.name=rddolor27 -c user.email=80044625+rddolor27@users.noreply.github.com commit`: a `type(scope): description` header of at most 72 characters, no body and no co-author.
+- Commit straight to `main` with `git -c user.name=rddolor27 -c user.email=80044625+rddolor27@users.noreply.github.com commit`: a `type(scope): description` header of at most 72 characters, then a body whose `Task:` line names the task by ID and title, such as `Task: M0.2 State and money, task 1: Verify @stdlib bit-identity first`, and no co-author.
 - In `sim-core/src`, use only `+ - * /`, `Math.sqrt`, `Math.floor`, `Math.imul` and bit operations, never transcendental `Math`, `**` or `Math.random`. Every random number comes from M0.1's keyed draw on stable ids, with `draw1`–`draw4` in per-tick code (sim-core rules, R9).
 - Replay-relevant state is integer: Q8 positions in `Int32Array`s with power-of-two cells, and integer-valued `Float64Array` cents, exact below 2^53. No `BigInt` in hot code, 115× slower in JavaScriptCore (R5); `src/apportion.ts`, never called per tick, is the one module the lint lets use it (Task 6).
 - Plan, then apply: flows come from a read-only snapshot and apply as integer additions in a fixed order (sim-core rules).

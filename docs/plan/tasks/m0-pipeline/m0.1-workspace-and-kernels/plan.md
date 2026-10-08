@@ -12,7 +12,7 @@
 
 ## Global Constraints
 
-- Commit straight to `main` with `git -c user.name=rddolor27 -c user.email=80044625+rddolor27@users.noreply.github.com commit`: a `type(scope): description` header of at most 72 characters, no body and no co-author.
+- Commit straight to `main` with `git -c user.name=rddolor27 -c user.email=80044625+rddolor27@users.noreply.github.com commit`: a `type(scope): description` header of at most 72 characters, then a body whose `Task:` line names the task by ID and title, such as `Task: M0.1 Workspace and kernels, task 1: Workspace, CI and the keyed draw`, and no co-author.
 - `sim-core` is pure TypeScript with no DOM (R1).
 - In `sim-core`, use only `+ - * /`, `Math.sqrt`, `Math.floor`, `Math.imul` and bit operations. Never use `Math.sin`, `cos`, `exp`, `log`, `pow`, `hypot`, `atan2`, `**` or `Math.random`; build tables at build time instead (sim-core rules).
 - No `BigInt` in hot code (sim-core rules).
