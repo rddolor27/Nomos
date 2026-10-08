@@ -19,6 +19,11 @@ async function hotMessageCount(code: string, filePath: string): Promise<number> 
   return (await ruleIds(code, filePath)).filter((id) => id.startsWith('hot/')).length;
 }
 
+async function genMessages(code: string, filePath: string): Promise<string[]> {
+  const [result] = await eslint.lintText(code, { filePath });
+  return result.messages.filter((message) => message.ruleId?.startsWith('gen/')).map((message) => message.message);
+}
+
 // A fresh install's first ESLint load took 6.4 s, past Vitest's 5 s default, and CI always starts fresh.
 describe('the sim-core lint profile', { timeout: 30_000 }, () => {
   it('rejects transcendental Math, ** and BigInt in sim-core source', async () => {
@@ -80,6 +85,22 @@ describe('the sim-core lint profile', { timeout: 30_000 }, () => {
       }
     }
     expect(await profileMessageCount('s.look[0]', 'packages/sim-protocol/src/planted.ts')).toBe(0);
+  });
+
+  it('bans transcendental maths in every sim package', async () => {
+    const files = [
+      'packages/sim-culture/src/planted.ts',
+      'packages/sim-protocol/src/map.ts',
+      'packages/sim-core/src/draw.ts',
+      'packages/sim-core/src/noise.ts',
+    ];
+    for (const filePath of files) {
+      for (const code of ['export const a = Math.sin(1)', 'BigInt(1)']) {
+        expect(await profileMessageCount(code, filePath), `${filePath}: ${code}`).toBeGreaterThan(0);
+      }
+    }
+    expect(await profileMessageCount('s.look[0]', 'packages/sim-culture/src/planted.ts')).toBeGreaterThan(0);
+    expect(await profileMessageCount('s.look[0]', 'packages/sim-protocol/src/map.ts')).toBe(0);
   });
 
   it('rejects sorting in sim code', async () => {
@@ -151,6 +172,40 @@ describe('the hot-path lint', { timeout: 30_000 }, () => {
   it('leaves other files alone', async () => {
     for (const plant of HOT_PLANTS) {
       expect(await hotMessageCount(inTick(plant), 'packages/sim-core/src/warm.ts'), plant).toBe(0);
+    }
+  });
+});
+
+const GENERATOR_FILES = [
+  'packages/sim-core/src/draw.ts',
+  'packages/sim-core/src/noise.ts',
+  'packages/sim-protocol/src/map.ts',
+];
+const BARE_DIVISIONS = ['a / b', 'a /= 2'];
+const BARE_REMAINDERS = ['a % b', '(a | 0) % b', 'a %= 3'];
+
+describe('the generator lint', { timeout: 30_000 }, () => {
+  it('bans bare division in generator code', async () => {
+    for (const filePath of GENERATOR_FILES) {
+      for (const code of BARE_DIVISIONS) {
+        expect(await genMessages(code, filePath), `${filePath}: ${code}`).toEqual([expect.stringContaining('floorDiv')]);
+      }
+      for (const code of BARE_REMAINDERS) {
+        expect(await genMessages(code, filePath), `${filePath}: ${code}`).toEqual([expect.stringContaining('floorMod')]);
+      }
+      expect(await genMessages('(h >>> 0) % n', filePath), filePath).toEqual([]);
+    }
+  });
+
+  it('spares the helpers and other code', async () => {
+    const files = ['packages/sim-core/src/int.ts', 'packages/sim-core/src/ledger.ts', 'packages/sim-core/src/planted.ts'];
+    for (const filePath of files) {
+      for (const code of [...BARE_DIVISIONS, ...BARE_REMAINDERS]) {
+        expect(await genMessages(code, filePath), `${filePath}: ${code}`).toEqual([]);
+      }
+      for (const code of ['a / b', 'a % b']) {
+        expect(await profileMessageCount(code, filePath), `${filePath}: ${code}`).toBe(0);
+      }
     }
   });
 });
