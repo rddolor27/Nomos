@@ -15,6 +15,7 @@ import {
   stateHash,
   type World,
 } from '../src/world.ts';
+import { run } from './run.ts';
 
 const TIERS: readonly Tier[] = ['phone', 'phone-plus', 'desktop'];
 const WALK_Q8 = 1_024;
@@ -24,11 +25,6 @@ const WALK_VELOCITY_Q8: Record<number, readonly [number, number]> = {
   [FACING_UP]: [0, -WALK_Q8],
   [FACING_RIGHT]: [WALK_Q8, 0],
 };
-
-function run(world: World, toTick: number): World {
-  while (currentTick(world) < toTick) step(world);
-  return world;
-}
 
 function agentsOffMap(world: World): number[] {
   const { count, x, y } = world.agents;
@@ -106,12 +102,14 @@ describe('the world step', () => {
     expect(() => restoreWorld(42, 'phone', checkpoint(createWorld(42, 'phone-plus')))).toThrow(RangeError);
   });
 
-  it('hashes every canonical region, the globals included', () => {
+  it('hashes every canonical region, the globals and the record included', () => {
     const world = createWorld(42, 'phone');
     const regions = world.arena.canonical;
     const bytes = new Uint8Array(world.arena.memory.buffer);
     const hash = stateHash(world);
-    expect(regions.filter((_, i) => i % 2 === 0)).toContain(world.globals.byteOffset);
+    const offsets = regions.filter((_, i) => i % 2 === 0);
+    expect(offsets).toContain(world.globals.byteOffset);
+    expect(offsets).toContain(world.record.byteOffset);
     for (let r = 0; r < regions.length; r += 2) {
       for (const at of [regions[r], regions[r] + regions[r + 1] - 1]) {
         bytes[at] ^= 1;

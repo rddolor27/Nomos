@@ -2,12 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { logFocus, logInput } from '../src/day.ts';
 import { INPUT_CAPACITY, INPUT_FOCUS } from '../src/inputs.ts';
 import { step } from '../src/step.ts';
-import { checkpoint, createWorld, currentTick, restoreWorld, stateHash, type World } from '../src/world.ts';
-
-function run(world: World, toTick: number): World {
-  while (currentTick(world) < toTick) step(world);
-  return world;
-}
+import { checkpoint, createWorld, currentTick, restoreWorld, stateHash } from '../src/world.ts';
+import { run } from './run.ts';
 
 describe('the day boundary', () => {
   it('applies an input at the next day boundary, once', () => {

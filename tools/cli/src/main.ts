@@ -1,5 +1,5 @@
 import { parseArgs } from 'node:util';
-import { TIER_AGENTS, createWorld, currentTick, logFocus, stateHash, step, type Tier } from '@nomos/sim-core';
+import { TIER_AGENTS, createWorld, currentTick, logFocus, stateHash, step, warmUp, type Tier } from '@nomos/sim-core';
 
 const MAX_SEED = 0xffff_ffff;
 const MAX_INT32 = 0x7fff_ffff;
@@ -38,6 +38,7 @@ const { values } = parseArgs({
     tier: { type: 'string', default: 'phone' },
     ticks: { type: 'string', default: '1000' },
     focus: { type: 'string', multiple: true, default: [] },
+    warmup: { type: 'boolean', default: false },
   },
 });
 
@@ -46,6 +47,12 @@ const ticks = wholeNumber('ticks', values.ticks, MAX_INT32);
 const tier = values.tier;
 if (!isTier(tier)) throw new RangeError(`--tier must be one of ${Object.keys(TIER_AGENTS).join(', ')}, not ${tier}`);
 const focuses = values.focus.map((text) => parseFocus(text, ticks));
+
+if (values.warmup) {
+  const start = performance.now();
+  warmUp();
+  console.log(`warmup=${(performance.now() - start).toFixed(1)}ms`);
+}
 
 const world = createWorld(seed, tier);
 for (let tick = 0; tick < ticks; tick++) {

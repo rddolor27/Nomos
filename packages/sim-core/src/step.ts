@@ -1,8 +1,9 @@
 import { TICKS_PER_DAY } from './calendar.ts';
 import { dayBoundary } from './day.ts';
 import { OK, checkInvariants, failInvariant } from './invariants.ts';
+import { SPOILAGE_RULE, daySliceCount, runDaySlice } from './slices.ts';
 import { move } from './wander.ts';
-import { TICK, type World } from './world.ts';
+import { DAY_AGENTS, DAY_HOUSEHOLDS, TICK, type World } from './world.ts';
 
 export interface SystemTimer {
   lap(system: number): void;
@@ -14,7 +15,7 @@ const DAY_SYSTEM = 0;
 const MOVE_SYSTEM = 1;
 
 export function step(world: World, timer?: SystemTimer): void {
-  if (world.globals[TICK] % TICKS_PER_DAY === 0) dayBoundary(world);
+  runDayWork(world);
   timer?.lap(DAY_SYSTEM);
   move(world);
   timer?.lap(MOVE_SYSTEM);
@@ -22,4 +23,12 @@ export function step(world: World, timer?: SystemTimer): void {
   if (!world.checks) return;
   const code = checkInvariants(world.cash, world.claims);
   if (code !== OK) failInvariant(code);
+}
+
+// The boundary when a day starts, then slice k on the day's tick k while the window is open.
+function runDayWork(world: World): void {
+  const globals = world.globals;
+  const k = globals[TICK] % TICKS_PER_DAY;
+  if (k === 0) dayBoundary(world);
+  if (k < daySliceCount(globals[DAY_AGENTS], globals[DAY_HOUSEHOLDS], SPOILAGE_RULE, world.tier)) runDaySlice(world, k);
 }

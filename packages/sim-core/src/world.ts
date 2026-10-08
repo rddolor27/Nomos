@@ -9,7 +9,17 @@ import { SPAWN } from './streams.ts';
 import { TIER_AGENTS, TIER_MEMORY_BYTES, type Tier } from './tiers.ts';
 
 export const TICK = 0;
+export const RECORD_FRONT = 1;
+export const DAY_AGENTS = 2;
+export const DAY_HOUSEHOLDS = 3;
 const GLOBAL_SLOTS = 8;
+
+// The settlement record is double-buffered: day slices fold into the back half, and the last slice flips
+// globals[RECORD_FRONT], so a reader only ever sees a whole day.
+export const RECORD_DAY = 0;
+export const RECORD_POPULATION = 1;
+export const RECORD_WALKING = 2;
+export const RECORD_FIELDS = 3;
 
 // The stand-in world until M0.4's map.
 const MAP_TILES = 256;
@@ -28,6 +38,7 @@ export interface World {
   readonly agents: AgentStore;
   readonly cash: Ledger;
   readonly claims: Claims;
+  readonly record: Int32Array;
   readonly inputs: InputLog;
   // The watched settlement, or -1. Watching never writes canonical state (R4's shadow-canonical history).
   readonly focus: Int32Array;
@@ -48,10 +59,24 @@ export function layoutWorld(seed: number, tier: Tier, agents: number, memoryByte
   const store = createAgentStore(arena, agents);
   const cash = createLedger(arena, SETTLEMENTS);
   const claims = createClaims(arena, cash, LOAN_CAPACITY);
+  const record = take(arena, Int32Array, 2 * RECORD_FIELDS, true);
   const inputs = createInputLog(arena);
   const focus = take(arena, Int32Array, 1, false);
   focus[0] = NO_FOCUS;
-  return { seed, tier, arena, globals, agents: store, cash, claims, inputs, focus, extent: EXTENT_Q8, checks: true };
+  return {
+    seed,
+    tier,
+    arena,
+    globals,
+    agents: store,
+    cash,
+    claims,
+    record,
+    inputs,
+    focus,
+    extent: EXTENT_Q8,
+    checks: true,
+  };
 }
 
 export function populate(world: World): void {
@@ -66,10 +91,20 @@ export function populate(world: World): void {
     agents.y[slot] = draw2(seed, SPAWN, id, 1) & mask;
   }
   issue(world.cash, sectorAccount(0, HOUSEHOLDS), STARTING_CENTS * people);
+  // Nothing is committed before the first day's last slice.
+  world.record[frontRecord(world) + RECORD_DAY] = -1;
 }
 
 export function currentTick(world: World): number {
   return world.globals[TICK];
+}
+
+export function committed(world: World, field: number): number {
+  return world.record[frontRecord(world) + field];
+}
+
+function frontRecord(world: World): number {
+  return world.globals[RECORD_FRONT] * RECORD_FIELDS;
 }
 
 // The one view this makes is fine here: the hash runs between ticks, never inside step.

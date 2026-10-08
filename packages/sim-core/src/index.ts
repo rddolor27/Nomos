@@ -25,3 +25,5 @@ export * from './step.ts';
 export * from './inputs.ts';
 export * from './day.ts';
 export * from './stride.ts';
+export * from './slices.ts';
+export * from './warm.ts';
