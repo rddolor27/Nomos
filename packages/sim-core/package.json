@@ -4,11 +4,15 @@
   "type": "module",
   "sideEffects": false,
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./kernels": "./src/kernels.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
     "tables": "node scripts/day-length.ts && node scripts/tables.ts"
+  },
+  "dependencies": {
+    "@nomos/sim-culture": "workspace:*"
   },
   "devDependencies": {
     "@stdlib/math-base-special-cos": "^0.3.1",

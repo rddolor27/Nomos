@@ -1,0 +1,13 @@
+{
+  "name": "@nomos/bench",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "budget": "node src/budget.ts",
+    "alloc": "node --expose-gc src/alloc.ts"
+  },
+  "dependencies": {
+    "@nomos/sim-core": "workspace:*",
+    "@nomos/sim-protocol": "workspace:*"
+  }
+}
