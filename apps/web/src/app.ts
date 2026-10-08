@@ -45,7 +45,7 @@ type SnapshotMessage = Extract<WorkerMessage, { type: 'snapshot' }>;
 
 // What the frame loop knows beyond the App: what has arrived, and what the last draw showed.
 interface Scene {
-  map: MapV1 | null;
+  map: MapV1;
   size: [number, number] | null;
   fitted: boolean;
   // 0 until the first snapshot arrives.
@@ -79,10 +79,10 @@ async function loadMap(boot: Boot, status: HTMLElement): Promise<{ bytes: ArrayB
   }
 }
 
-// A map that arrived before the view had a size would fit a 0 × 0 view, so this waits for whichever comes second.
+// A hidden view measures 0 × 0, so the camera fits on the view's first real size.
 function fit(app: App, scene: Scene): void {
   const { map, size } = scene;
-  if (scene.fitted || !map || !size) return;
+  if (scene.fitted || !size) return;
   app.camera = fitCamera(map.width, map.height, size[0], size[1]);
   scene.fitted = true;
   scene.dirty = true;
@@ -101,8 +101,8 @@ function markFirstFrame(scene: Scene): void {
   scene.firstFrameDrawn = null;
 }
 
-// Draws only on a change: a snapshot still easing in, a new camera, a resize or the map. A paused run that has
-// reached its snapshot draws nothing, and the canvas keeps its last frame, which spares phones' batteries.
+// Draws only on a change: a snapshot still easing in, a new camera or a resize. A paused run that has reached its
+// snapshot draws nothing, and the canvas keeps its last frame, which spares phones' batteries.
 function drawFrame(app: App, scene: Scene, nowMs: number): void {
   if (!scene.size) return;
   const alpha = Math.max(0, Math.min(1, (nowMs - scene.snapshotAtMs) / TICK_MS));
@@ -126,9 +126,9 @@ function pushSnapshot(app: App, scene: Scene, frame: SnapshotMessage): void {
   app.tick = frame.tick;
 }
 
-function createScene(): Scene {
+function createScene(map: MapV1): Scene {
   return {
-    map: null,
+    map,
     size: null,
     fitted: false,
     snapshotAtMs: 0,
@@ -145,6 +145,11 @@ export async function startApp(boot: Boot, doc: Document, start: Start): Promise
   const status = element<HTMLElement>(doc, '#status');
   const { worker } = boot;
   const post = (msg: AppMessage, transfer: Transferable[] = []): void => worker.postMessage(msg, transfer);
+  // The worker builds the world while this thread sets up WebGL, so it gets the map first. parseMap copies what it
+  // keeps, so the bytes can go to the worker. Nothing may await between the post and the listeners below, or a fast
+  // worker's ready and spawn would arrive to find none.
+  const { bytes, map } = await loadMap(boot, status);
+  post({ type: 'init', seed: start.seed, tier: start.tier, map: bytes }, [bytes]);
   const renderer = createWorldRenderer(element<HTMLCanvasElement>(doc, '#world'), {
     backend: start.backend,
     release: (buffer) => post({ type: 'return', buffer }, [buffer]),
@@ -154,8 +159,9 @@ export async function startApp(boot: Boot, doc: Document, start: Start): Promise
   } catch (error) {
     fail(status, 'This browser cannot draw the town', error);
   }
+  renderer.setMap(map);
 
-  const scene = createScene();
+  const scene = createScene(map);
   const listeners: StatsListener[] = [];
   const app: App = {
     renderer,
@@ -201,7 +207,8 @@ export async function startApp(boot: Boot, doc: Document, start: Start): Promise
     event.preventDefault();
     workerStopped(event.message);
   });
-  // The boot script keeps an error that fired before this listener existed, as one can while the entry chunk loads.
+  // The boot script keeps an error that fired before this listener existed, as one can while the entry chunk or the
+  // map loads.
   if (boot.failed) workerStopped();
 
   // Drawn at once, inside the observer, so a resized canvas never shows a blank frame before the next one.
@@ -217,14 +224,6 @@ export async function startApp(boot: Boot, doc: Document, start: Start): Promise
     requestAnimationFrame(onAnimationFrame);
   };
   requestAnimationFrame(onAnimationFrame);
-
-  // parseMap copies what it keeps, so the bytes can go to the worker.
-  const { bytes, map } = await loadMap(boot, status);
-  renderer.setMap(map);
-  scene.map = map;
-  scene.dirty = true;
-  fit(app, scene);
-  post({ type: 'init', seed: start.seed, tier: start.tier, map: bytes }, [bytes]);
   window.__app = app;
   return app;
 }
