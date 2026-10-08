@@ -21,7 +21,7 @@ Each region draws one weather a day at the day boundary, so a seed always brings
 - **Weather within the day.** Showers, storms and fog get a start and an end minute, so rain can begin in the afternoon and fog can lift by mid-morning.
 - **Biomes set the odds** through the world generator's temperature and moisture: deserts stay dry, coasts and marshes fog over, and cold biomes snow.
 - **One source.** M3's harvest already scales by a keyed weather draw, and M7's settlement store keeps a weather value. In M10 both agree with the weather on screen, so a wet year looks wet.
-- **Old runs still replay.** Weather lands after launch, so a share link made before it must replay unchanged.
+- **Old runs still replay.** Weather lands after launch and enters the run's state, so each share link carries its version, and a link made before M10 replays with the rules it was made with.
 - **Exact and cheap:** a few bytes per region per day, stepped day by day through a skip, and bit for bit the same in every engine.
 
 ## On screen and in sound
@@ -72,6 +72,6 @@ M10 takes about 16–27 days over four parts (unsourced estimate). Each task is 
 ## Open questions
 
 - Does weather change what people do, or only how the world looks and sounds?
-- How do runs from before M10 keep replaying: fit the daily weather to M3's existing harvest draw, or let each run's version pick the rule?
+- Should the daily weather fit M3's existing harvest draw, so every harvest stays as it was, or should the harvest follow the weather days? Either way, old links need their version to replay.
 - Should snow cover follow snowfall instead of winter's fixed schedule?
 - When should research round 10 run: just before M10, or before M3's harvest draw, so the harvest and the later weather share one design?
