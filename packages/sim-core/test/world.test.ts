@@ -1,11 +1,13 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { ACTION_IDLE, ACTION_WALK, FACING_RIGHT, FACING_UP } from '../src/actions.ts';
+import { draw2 } from '../src/draw.ts';
 import { CASH_NOT_ZERO, OK, checkInvariants } from '../src/invariants.ts';
 import { HOUSEHOLDS, MINT, sectorAccount } from '../src/ledger.ts';
 import { SYSTEM_NAMES, step, type SystemTimer } from '../src/step.ts';
+import { SPAWN } from '../src/streams.ts';
 import { TIER_AGENTS, TIER_MEMORY_BYTES, type Tier } from '../src/tiers.ts';
-import { WALK_X_Q8, WALK_Y_Q8, facingFor } from '../src/wander.ts';
+import { WALK_X_Q8, WALK_Y_Q8, facingFor } from '../src/walk.ts';
 import {
   TICK,
   checkpoint,
@@ -49,6 +51,11 @@ function agentsMovingWrongly(world: World): number[] {
   return ids;
 }
 
+function walkingShare(world: World): number {
+  const { count, action } = world.agents;
+  return action.subarray(0, count[0]).filter((a) => a === ACTION_WALK).length / count[0];
+}
+
 describe('the world step', () => {
   it('gives seed 42 the same state hash at tick 1,000 across runs', () => {
     const hash = stateHash(run(createWorld(42, 'phone'), 1_000));
@@ -69,6 +76,37 @@ describe('the world step', () => {
     const walkerShare = action.subarray(0, count[0]).filter((a) => a === ACTION_WALK).length / count[0];
     expect(walkerShare).toBeGreaterThanOrEqual(0.65);
     expect(walkerShare).toBeLessThanOrEqual(0.85);
+  });
+
+  it('spawns three in four blobs walking, each on its keyed heading, and the rest idle facing down', () => {
+    const world = createWorld(42, 'phone');
+    const { count, action, heading } = world.agents;
+    expect(agentsMovingWrongly(world)).toEqual([]);
+    const wrong: number[] = [];
+    const walkingHeadings: number[] = [];
+    for (let i = 0; i < count[0]; i++) {
+      const roll = draw2(42, SPAWN, i, 2);
+      const walks = (roll & 3) !== 0;
+      if (walks) walkingHeadings.push(roll >>> 24);
+      if (action[i] !== (walks ? ACTION_WALK : ACTION_IDLE) || heading[i] !== (walks ? roll >>> 24 : 0)) wrong.push(i);
+    }
+    expect(wrong).toEqual([]);
+    expect(walkingShare(world)).toBeGreaterThan(0.73);
+    expect(walkingShare(world)).toBeLessThan(0.77);
+    expect(new Set(walkingHeadings.map((h) => h >> 6)).size).toBe(4);
+  });
+
+  it('keeps about three in four blobs walking from the first tick, not ramping up to it', () => {
+    const world = createWorld(42, 'phone');
+    const shares: Record<number, number> = {};
+    for (let tick = 0; tick <= 64; tick++) {
+      if (tick === 0 || tick === 16 || tick === 64) shares[tick] = walkingShare(world);
+      step(world);
+    }
+    for (const tick of [0, 16, 64]) {
+      expect(shares[tick], `tick ${tick}`).toBeGreaterThan(0.73);
+      expect(shares[tick], `tick ${tick}`).toBeLessThan(0.77);
+    }
   });
 
   it('turns a walker off the map edge instead of stepping off it or straight back', () => {

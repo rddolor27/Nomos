@@ -20,7 +20,7 @@ export interface AgentStore {
   readonly vy: Int16Array;
   readonly action: Uint8Array;
   readonly facing: Uint8Array;
-  // One of 256 headings, clockwise on screen from down; vx, vy and facing follow it (wander.ts).
+  // One of 256 headings, clockwise on screen from down; vx, vy and facing follow it (walk.ts).
   readonly heading: Uint8Array;
   readonly look: Uint8Array;
   readonly culture: Uint8Array;

@@ -20,6 +20,7 @@ export * from './tiers.ts';
 export * from './actions.ts';
 export * from './histogram.ts';
 export * from './world.ts';
+export * from './walk.ts';
 export * from './wander.ts';
 export * from './step.ts';
 export * from './inputs.ts';

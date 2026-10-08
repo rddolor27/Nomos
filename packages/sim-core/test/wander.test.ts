@@ -6,7 +6,7 @@ import { draw2 } from '../src/draw.ts';
 import { walkableAt, type Ground } from '../src/ground.ts';
 import { step } from '../src/step.ts';
 import { WANDER } from '../src/streams.ts';
-import { WALK_X_Q8, WALK_Y_Q8, facingFor } from '../src/wander.ts';
+import { WALK_X_Q8, WALK_Y_Q8, facingFor } from '../src/walk.ts';
 import { TICK, layoutWorld, populate, type World } from '../src/world.ts';
 
 const TILE_Q8 = 4_096;

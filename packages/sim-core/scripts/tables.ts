@@ -92,7 +92,7 @@ function copulaTable(): number[] {
   return table;
 }
 
-// The walking step's sine over a quarter of the 256 headings, from 0 to 1,024 Q8. wander.ts mirrors it into both
+// The walking step's sine over a quarter of the 256 headings, from 0 to 1,024 Q8. walk.ts mirrors it into both
 // parts of every heading's step at load, so the worker ships 65 numbers instead of 512.
 function walkSineTable(): number[] {
   const table: number[] = [];

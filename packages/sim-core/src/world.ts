@@ -1,3 +1,4 @@
+import { ACTION_WALK } from './actions.ts';
 import { createClaims, type Claims } from './claims.ts';
 import { below, draw2, mix } from './draw.ts';
 import { openCells, pointInTileQ8, standInGround, type Ground } from './ground.ts';
@@ -8,6 +9,7 @@ import { MAX_CULTURES, addAgent, createAgentStore, type AgentStore } from './sto
 import { SPAWN, STRIDE } from './streams.ts';
 import { STRIDE_DAYS, createStride, type Stride } from './stride.ts';
 import { TIER_AGENTS, TIER_MEMORY_BYTES, type Tier } from './tiers.ts';
+import { setHeading } from './walk.ts';
 
 export const TICK = 0;
 export const RECORD_FRONT = 1;
@@ -28,6 +30,9 @@ const CULTURES = 4;
 const LOAN_CAPACITY = 4_096;
 const STARTING_CENTS = 100_000;
 const NO_FOCUS = -1;
+// Three in four blobs spawn walking, the share that walking settles at (wander.ts), so the first seconds look like
+// the rest.
+const WALK_START_MASK = 3;
 
 export interface World {
   readonly seed: number;
@@ -109,6 +114,11 @@ export function populate(world: World): void {
     const spot = draw2(seed, SPAWN, id, 1);
     agents.x[slot] = pointInTileQ8(cell % width, spot);
     agents.y[slot] = pointInTileQ8(Math.floor(cell / width), spot >>> 12);
+    const start = draw2(seed, SPAWN, id, 2);
+    if ((start & WALK_START_MASK) !== 0) {
+      agents.action[slot] = ACTION_WALK;
+      setHeading(agents, slot, start >>> 24);
+    }
   }
   issue(world.cash, sectorAccount(0, HOUSEHOLDS), STARTING_CENTS * people);
   // Nothing is committed before the first day's last slice.

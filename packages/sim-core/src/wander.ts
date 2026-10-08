@@ -3,7 +3,7 @@ import { draw2 } from './draw.ts';
 import { tileOf, walkableAt } from './ground.ts';
 import type { AgentStore } from './store.ts';
 import { WANDER } from './streams.ts';
-import { WALK_SINE_Q8 } from './tables.ts';
+import { HALF_TURN_MASK, HEADING_MASK, QUARTER_TURN, setHeading } from './walk.ts';
 import { TICK, type World } from './world.ts';
 
 // Each agent redraws every 16 ticks, staggered by index, so only a 16th of them draw in any tick.
@@ -14,15 +14,6 @@ const REDRAW_MASK = REDRAW_TICKS - 1;
 const ROLL_MASK = 15;
 const STOP_ROLLS = 1;
 const START_ROLLS = 3;
-// Headings run clockwise on screen from down, as the facings do: 0 down, 64 left, 128 up and 192 right.
-const HEADINGS = 256;
-const HEADING_MASK = 255;
-const HALF_TURN = 128;
-const HALF_TURN_MASK = 127;
-const QUARTER_TURN = 64;
-const QUARTER_TURN_SHIFT = 6;
-const EIGHTH_TURN = 32;
-const FACING_MASK = 3;
 // A wall met through a row edge runs along x, so along heading 64, and one met through a column edge along y.
 const ALONG_X = 64;
 const ALONG_Y = 0;
@@ -30,14 +21,6 @@ const ALONG_Y = 0;
 // work inside the loop, even a call-free mirror, took move at 100k from 0.41 to 0.6-1.1 ms, against 0.8 (measured).
 const WALK_CHUNK = 1_024;
 const blocked = new Int32Array(WALK_CHUNK);
-
-// The step per tick on each heading, in Q8: -1,024 sin and 1,024 cos of 2πh / 256, so 4 px whichever way a blob walks.
-export const WALK_X_Q8 = new Int16Array(HEADINGS);
-export const WALK_Y_Q8 = new Int16Array(HEADINGS);
-for (let h = 0; h < HEADINGS; h++) {
-  WALK_X_Q8[h] = -sineQ8(h);
-  WALK_Y_Q8[h] = sineQ8(h + QUARTER_TURN);
-}
 
 export function move(world: World): void {
   const seed = world.seed;
@@ -82,23 +65,7 @@ function meetWall(agents: AgentStore, i: number): void {
     if (tileOf(nextY) === tileOf(y[i])) y[i] = nextY;
     turned = offWall(agents.heading[i], ALONG_Y);
   }
-  agents.heading[i] = turned;
-  agents.vx[i] = WALK_X_Q8[turned];
-  agents.vy[i] = WALK_Y_Q8[turned];
-  agents.facing[i] = facingFor(turned);
-}
-
-// 1,024 sin(2πh / 256) from the generated quarter wave: read forwards, then backwards, then both again negated.
-function sineQ8(heading: number): number {
-  const k = heading & HALF_TURN_MASK;
-  const sine = WALK_SINE_Q8[k <= QUARTER_TURN ? k : HALF_TURN - k];
-  return (heading & HALF_TURN) === 0 ? sine : -sine;
-}
-
-// The facing nearest the heading, so its step's dominant axis: facings 0-3 point down, left, up and right, as headings
-// 0, 64, 128 and 192 do. The four exact diagonals round clockwise.
-export function facingFor(heading: number): number {
-  return ((heading + EIGHTH_TURN) >> QUARTER_TURN_SHIFT) & FACING_MASK;
+  setHeading(agents, i, turned);
 }
 
 // Agent i is due when (tick + i) & REDRAW_MASK is 0, so the first due agent is -tick modulo REDRAW_TICKS.
@@ -123,10 +90,7 @@ function redraw(agents: AgentStore, seed: number, i: number, tick: number): void
     agents.action[i] = ACTION_WALK;
     turned = w >>> 24;
   }
-  agents.heading[i] = turned;
-  agents.vx[i] = WALK_X_Q8[turned];
-  agents.vy[i] = WALK_Y_Q8[turned];
-  agents.facing[i] = facingFor(turned);
+  setHeading(agents, i, turned);
 }
 
 // -15 to +15 headings, the difference of two 4-bit draws, so small turns are likelier than big ones.
