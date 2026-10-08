@@ -1,0 +1,62 @@
+name: stdlib
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - packages/sim-core/scripts/stdlib-*.ts
+      - packages/sim-core/test/fixtures/stdlib-digests.json
+      - pnpm-lock.yaml
+      - .github/workflows/stdlib.yml
+
+permissions:
+  contents: read
+
+jobs:
+  node:
+    name: node (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, ubuntu-24.04-arm, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: node packages/sim-core/scripts/stdlib-probe.ts --check
+
+  bun:
+    name: bun (macos-latest)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.3'
+      - run: pnpm install --frozen-lockfile
+      - run: bun packages/sim-core/scripts/stdlib-probe.ts --check
+
+  firefox:
+    name: firefox (ubuntu-latest)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps firefox
+      - run: node packages/sim-core/scripts/stdlib-firefox.ts
