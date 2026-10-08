@@ -36,7 +36,8 @@ test('loads uPlot and lil-gui after the first frame', async ({ page }) => {
 test('gives every chart a data table', async ({ page }) => {
   await openInteractive(page);
   const figures = page.locator('#charts figure');
-  await expect(figures).toHaveCount(2);
+  // The charts appear with the first stats, at their next once-a-second refresh.
+  await expect(figures).toHaveCount(2, { timeout: 15_000 });
   await page.waitForTimeout(2000);
   // uPlot's legend is a table too, so the data table is the one inside details.
   for (const figure of await figures.all()) {

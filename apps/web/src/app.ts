@@ -11,6 +11,8 @@ export interface Start {
   seed: number;
   tier: Tier;
   backend: 'auto' | 'canvas2d';
+  // Starts as if the user had paused: no tick runs until Play, and the first frame shows the tick-0 snapshot.
+  paused: boolean;
 }
 
 export interface App {
@@ -163,8 +165,8 @@ export async function startApp(boot: Boot, doc: Document, start: Start): Promise
     agents: 0,
     tick: 0,
     camera: { x: 0, y: 0, zoom: 1 },
-    paused: false,
-    userPaused: false,
+    paused: start.paused,
+    userPaused: start.paused,
     frameMs: [],
     firstFrame: new Promise((resolve) => {
       scene.firstFrameDrawn = resolve;

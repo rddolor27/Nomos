@@ -8,6 +8,11 @@ import { chooseTier, deviceClass, loadVerdict, saveVerdict, tierFromQuery, tierV
 
 performance.mark('main:eval');
 
+// The user's own setting, so the start counts as their pause: hiding and showing the tab never resumes it (R2).
+function prefersReducedMotion(win: Window): boolean {
+  return win.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
 function randomSeed(): number {
   return crypto.getRandomValues(new Uint32Array(1))[0];
 }
@@ -40,18 +45,20 @@ function nextTask(): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, 0));
 }
 
-// Each mount runs in a task of its own, so input never waits behind them all (load-memory.md §2); uPlot and lil-gui
-// download only now, after the first frame (R5).
+// uPlot and lil-gui download only after the first frame (R5), both at once, since one after the other costs a round
+// trip; each mount still runs in a task of its own, so input never waits behind them all (load-memory.md §2).
 async function afterFirstFrame(app: App): Promise<void> {
   await app.firstFrame;
   mountHud(element(document, '#hud'), app);
   bindCameraInput(element(document, '#view'), app);
+  const chartsModule = import('./charts.ts');
+  const controlsModule = import('./controls.ts');
   await nextTask();
-  const { mountCharts } = await import('./charts.ts');
+  const { mountCharts } = await chartsModule;
   const charts = mountCharts(element(document, '#charts'));
   app.onStats((tick, systemMs) => charts.push(tick, systemMs, frameMedianMs(app.frameMs)));
   await nextTask();
-  const { mountControls } = await import('./controls.ts');
+  const { mountControls } = await controlsModule;
   mountControls(app);
   performance.mark('app:interactive');
 }
@@ -62,7 +69,14 @@ const device = deviceClass(navigator, matchMedia('(pointer: coarse) and (hover: 
 const verdict = loadVerdict(storage, SIM_BUILD);
 const tier = chooseTier(device, verdict, tierFromQuery(search));
 
-startApp(takeBoot(), document, { seed: seedFrom(search, randomSeed), tier, backend: backendFrom(search) })
+const start = {
+  seed: seedFrom(search, randomSeed),
+  tier,
+  backend: backendFrom(search),
+  paused: prefersReducedMotion(window),
+};
+
+startApp(takeBoot(), document, start)
   .then((app) => {
     bindLifecycle(document, window, app);
     if (device === 'phone' && tier === 'phone' && verdict === null) checkTier(app, storage);
