@@ -21,7 +21,7 @@
 - Hot-path draws take a fixed number of arguments, so per-tick code never allocates (R9).
 - Relative imports carry their `.ts` extension, so Node runs scripts without a build step.
 - The calendar has 1,440 ticks a day, 7-day weeks (weekdays 0–4 are workdays, 5 and 6 rest days), 28-day seasons and 112-day years, with tick 0 at 00:00 on Spring 1, Year 1 (calendar.md).
-- Keep it simple, build only what this sub-milestone needs, and comment only the why (code rules).
+- Keep it simple, build only what this sub-milestone needs, and comment only the why (code rules). When a simplicity limit fires, split or flatten the code; never silence it with `eslint-disable`.
 
 ## Review Focus
 
@@ -30,6 +30,7 @@
 3. **Small noise cells.** Cell sizes of 1 and 3, and fbm octaves where `cell >> octave` reaches 0 and `max(1, …)` applies, are in the vectors (Task 3).
 4. **Calendar edges:** the last minute of a year (tick 161,279 → 161,280) and negative ticks before Year 1 (Task 4).
 5. **The lint profile** must reject banned maths in `src/` but allow it in the build script that generates the day-length table (Task 2).
+6. **Simplicity limits:** no `eslint-disable` comment silences `complexity`, `max-depth` or `no-nested-ternary` (Task 1).
 
 ---
 
@@ -58,6 +59,12 @@
   - `packages/sim-core/tsconfig.json`: extends the base and includes `src`, `test` and `scripts`.
   - `vitest.config.ts`: `test.include` is `['packages/*/test/**/*.test.ts']`.
   - `eslint.config.js`: `@eslint/js` recommended plus typescript-eslint recommended, ignoring `docs/**`, `graphify-out/**`, `.claude/**`, `dist/**`, `coverage/**` and `assets/**`. Round 7's prototypes under `docs/` carry their own `node_modules`, and the local-only `.claude/` holds scripts outside the workspace.
+  - The same file sets simplicity limits for `**/*.ts` (code rules):
+    - `complexity: ['error', { max: 10, variant: 'modified' }]`, where `modified` counts a `switch` once and needs ESLint 9.12 or later;
+    - `max-depth: ['error', 4]`;
+    - `no-nested-ternary: 'error'`.
+
+    Add no parameter limit: per-tick code passes values one by one rather than allocating an options object.
 
   Run: `pnpm install`. Expected: it succeeds and writes `pnpm-lock.yaml`.
 
