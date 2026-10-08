@@ -12,6 +12,7 @@ This folder holds the research and planning behind Nomos; product code lives out
 | [plan/calendar.md](plan/calendar.md) | Watch-only runs and the 112-day year: date maths, seasons, day and night, speeds, branches and the rescaling rules |
 | [plan/gazette.md](plan/gazette.md) | The daily town paper, printed only from records: its sections, rules, how editions are built, and the follow-the-news camera |
 | [plan/weather.md](plan/weather.md) | Weather after launch, in M10: six kinds in wet and dry spells by season and biome, how they look and sound, and whether they change daily life |
+| [plan/cicd.md](plan/cicd.md) | CI/CD in GitHub Actions, in M1.6: dev on every push to `main`, releases promoted from dev by hand, rollback, and the version scheme |
 | [plan/tasks/](plan/tasks/) | The roadmap, and a folder per milestone: its overview and progress, then a folder per sub-milestone with the task and its implementation plan |
 | [plan/checkpoints/](plan/checkpoints/) | Hand-off notes for agents and people: where the project stands, what is decided and what comes next; the highest number is current |
 
