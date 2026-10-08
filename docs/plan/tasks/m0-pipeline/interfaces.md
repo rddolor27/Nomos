@@ -207,13 +207,13 @@ Skin B and Skin C arrive as `blobs/` and `town/` beside `dots/` (M1.3, M3.3).
   - `{ type: 'checkpoint' }`, which the app sends on `pagehide`
   - `{ type: 'inspect', x, y }`, in world pixels: a read-only query, answered at any time, even while a run plays (M0.7)
 - Worker to app:
-  - `{ type: 'ready', agents }`. A tick-0 snapshot follows (M0.4), then the worker waits for `resume`. Under reduced motion the app withholds `resume` (M0.5).
+  - `{ type: 'ready', agents }`. A tick-0 snapshot follows (M0.4), then the worker warms up (R6) and waits for `resume`. Messages sent during the warm-up wait until it ends. Under reduced motion the app withholds `resume` (M0.5).
   - `{ type: 'snapshot', tick, count, buffer: ArrayBuffer }`
   - `{ type: 'stats', tick, systemMs: Record<string, number> }`, keyed by `SYSTEM_NAMES` plus `snapshot`, the mean milliseconds per snapshot (M0.3)
   - `{ type: 'checkpoint', tick, state: ArrayBuffer }`, the answer to the app's `checkpoint`
   - `{ type: 'inspected', tick, agent, nameKey, cents }`, the answer to `inspect`: the nearest blob within one tile (16 world pixels), or `agent` −1 with `nameKey` and `cents` 0 (M0.7)
 - `sim-protocol`'s `bindPageLifecycle(doc, win, post): void` sends `pause` and `resume` on `visibilitychange`, and `checkpoint` on `pagehide`. M0.5 wraps it.
-- `sim-worker`'s `createSimLoop(host: LoopHost, cpuSlowdown = 1): { handle(msg: AppMessage): void }` runs the loop. A `cpuSlowdown` above 1 makes the worker wait before each reply as a CPU that many times slower would, since CDP's CPU throttling skips workers. Only the startup gate sets it, through a `__nomosCpuSlowdown` global that its server prefixes to the worker chunk (M0.6, R5).
+- `sim-worker`'s `createSimLoop(host: LoopHost, cpuSlowdown = 1): { handle(msg: AppMessage): void }` runs the loop. A `cpuSlowdown` above 1 makes the worker wait before each reply, and after its warm-up, as a CPU that many times slower would, since CDP's CPU throttling skips workers. Only the startup gate sets it, through a `__nomosCpuSlowdown` global that its server prefixes to the worker chunk (M0.6, R5).
 - The startup gate's server, `startServer(options: ServeOptions): Promise<Served>` in `apps/web/test/serve.ts`, serves a build over an emulated Fast 4G link, with `latencyMs` 165, `bytesPerSecond` 1,012,500 and `setupRtts` 3 by default. Its `workerSlowdown`, 1 by default, is the `cpuSlowdown` it prefixes to the worker chunk (M0.6, R5).
 - Speed controls and skip arrive in M1 (Calendar); the worker refuses settings messages while a run plays.
 
