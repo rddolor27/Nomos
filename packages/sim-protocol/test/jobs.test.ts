@@ -1,6 +1,6 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { JOB_ITEMS } from '../src/index.ts';
+import { JOB_ITEMS, jobId } from '../src/index.ts';
 
 const spritesDir = new URL('../../../assets/sprites/', import.meta.url);
 const MANIFEST_WITHOUT_FRAMES = 'season_map.json';
@@ -36,5 +36,9 @@ describe('the job items', () => {
       '6 soldier',
     ]);
     expect(JOB_ITEMS.length).toBeLessThanOrEqual(255);
+  });
+
+  it('gives each item its id', () => {
+    expect([jobId('builder'), jobId('merchant'), jobId('police'), jobId('soldier')]).toEqual([1, 4, 5, 6]);
   });
 });
