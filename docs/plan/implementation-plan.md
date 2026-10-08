@@ -6,7 +6,7 @@ Oct 6, 2026 · @Rd
 
 Work top to bottom: each milestone lists what to build and the checks that close it, merged from every research round. Tick a box when it lands; a milestone is done when its exit checks pass in CI, not when the demo looks right.
 
-- **Where items come from:** round 1 is Findings & plan and Full report, round 2 is Follow-up research, round 3 is 2D game look & assets, round 4 is Villages, cities & countries, round 5 is the Performance budget section below, round 6 is Goods & wellbeing, round 8 is Cultures, round 9 is Maps and world builder, and (Sound), (Military), (Calendar) and (Gazette) mark the owner's plans of 7 October 2026, in the Sound, Military, Time & calendar and Gazette tabs, and (Weather) marks the owner's Weather tab of 8 October 2026.
+- **Where items come from:** round 1 is Findings & plan and Full report, round 2 is Follow-up research, round 3 is 2D game look & assets, round 4 is Villages, cities & countries, round 5 is the Performance budget section below, round 6 is Goods & wellbeing, round 8 is Cultures, round 9 is Maps and world builder, and (Sound), (Military), (Calendar) and (Gazette) mark the owner's plans of 7 October 2026, in the Sound, Military, Time & calendar and Gazette tabs, (Weather) marks the owner's Weather tab of 8 October 2026, and (CI/CD) marks the CI/CD tab of the same day.
 - **Effort:** rough full-time estimates for one developer; round 1 put the whole plan at 12–19 weeks, and an AI coding assistant shortens that.
 - **Something to look at from week one:** every milestone ships at least one of the three visual styles below, so the project is never just a test suite.
 
@@ -198,6 +198,8 @@ Goal: Primer-style lab cards in discrete days, drawn as Skin B blobs, with claim
 - [ ] Implement reduced motion: no hops, bobs or pans, 150 ms fades, camera cuts and static rings (R3).
 - [ ] Pass the IP gate before going public: original or CC0 art only, `assets/LICENSES.md` complete, "Pokémon" absent from every name and tag (R3).
 - [ ] Ship lab mode publicly once the exit checks pass (R1).
+- [ ] Deploy to dev on every push to `main` that passes CI, then smoke-test the live site: COOP and COEP, immutable caching on hashed assets, the map served compressed, a first frame, and the commit in `version.json` (CI/CD).
+- [ ] Release by hand from the Actions page: promote the newest build that passed CI and the perf gates, smoke-test it, then tag it and publish notes built from the commit headers. Running an earlier version rolls back (CI/CD).
 - [ ] Add a bet card, "Does money buy happiness?": doubling one agent's income gives +0.60 at first and +0.35 for good; doubling everyone's gives +0.30 and then +0.05 (R6).
 - [ ] Add a bet card, "Jobs or prices?": one point of unemployment against one point of inflation, about 4 : 1 in this model (R6).
 - [ ] Keep wallet bars to lab cards, labelled lab-only, and never draw them in city or town skins outside the wealth lens (R6).
@@ -221,6 +223,7 @@ Goal: Primer-style lab cards in discrete days, drawn as Skin B blobs, with claim
 - [ ] Every bank entry renders in the TypeScript synth within the port test's tolerance, and comes from `tools/sounds/` or a CC0 file listed in `assets/LICENSES.md` (Sound).
 - [ ] Changing speed or skipping never changes the state hash at any date, and the worker refuses settings messages while a run plays (Calendar).
 - [ ] The light period at every minute of all 112 days follows the sunrise table, every dot and body hue clears 3:1 against the tinted ground in every period by its outline or its fill, and the tint never changes the state hash (Calendar).
+- [ ] A rehearsal release serves dev's exact build and passes the smoke test, rerunning an earlier version restores it, and every workflow passes actionlint (CI/CD).
 
 ## M2 Economy
 
@@ -679,7 +682,7 @@ Total effort to launch is roughly 20–30 weeks of one developer's full-time wor
 
 Round 9 adds a full world builder and moves M7 and M8 before launch: about 178–271 days to launch, up from 100–150 (computed from the milestone estimates) (R9).
 
-The owner's plans of 7 and 8 October 2026 add about 32.5–52.5 days before launch (sound 11.5–18, military 4–7, calendar 11.5–18.5 now that its art is drawn, gazette 5.5–9), 1.5–2 days in M9 and 16–27 days for M10 Weather after launch. That puts launch at about 211–324 days (computed from unsourced estimates).
+The owner's plans of 7 and 8 October 2026 add about 34.5–55.5 days before launch (sound 11.5–18, military 4–7, calendar 11.5–18.5 now that its art is drawn, gazette 5.5–9, CI/CD 2–3), 1.5–2 days in M9 and 16–27 days for M10 Weather after launch. That puts launch at about 213–327 days (computed from unsourced estimates).
 
 **Ongoing**
 
@@ -715,4 +718,5 @@ The owner's plans of 7 and 8 October 2026 add about 32.5–52.5 days before laun
 | A manual search of Reddit, Steam and itch.io | Competitor risk | Ongoing |
 | Round 6's calibrated targets on the 112-day year, including the 1.5–3% monthly carrying cost and the ≤ 7% pest loss a season | Daily wages, prices and storage rates | M2 |
 | WCAG 2.2's audio-control rule and browser autoplay rules | Sound controls and the first-click start | M1 |
+| Whether a Cloudflare direct upload to the production branch goes live as production, and whether dashboard rollback covers direct uploads | The release deploy and its rollback | M1 |
 | Season and biome odds for each weather kind, the length of wet and dry spells, and the evidence on weather, time outdoors and crime (research round 10) | Weather odds, and whether weather changes routines | M10 |
