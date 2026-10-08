@@ -52,3 +52,18 @@ Its own tests:
 
 - **Judging cost on phones:** 50 paired seeds × 2 arms may take minutes. The two-stage design and a seeds cap per tier keep it bearable; show an estimate before Run.
 - **Authored claims can mislead.** Every verdict shows its claim type, seed count, the "hand-picked setup" label and an Inconclusive option, never a bare "true".
+
+## Open questions
+
+- **Owner:** May authored treatments change customs, such as festival timing, when the metric is crime or victimisation? That would pair customs with crime on a player surface, against the R8 summary's "Never shown together" rule (inference). Suggested: treatments offer no custom or festival fields, and customs stay fixed in every arm. Needed before: the step plan.
+- **Measure:** How long do 20 paired seeds × 2 arms take on a budget phone for a typical card? It sets each tier's seed cap, and whether phones can judge at all. Suggested: cap phones at 20 seeds, and print the seed count in every verdict. Needed before: the step plan.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** `CardDef` and its link section first, then remix of an existing card with the browser judge, then authoring with templates.
+- **Reuse:** M1.1's `claims` package and two-stage design, M6.3's link format, M4.1's guarded shape for treatment draws, and M0.6's text lints for templates.
+- **Keep it simple:** a remix is an authored card with fixed arms, so one judge path serves both.
+- **Pitfalls:** resolve `'fresh'` to concrete seeds before the link is written, or two openings judge different runs. Compare verdicts exactly across engines, but statistics within a tolerance if `claims` uses `Math.log` or `Math.exp` (inference).
+- **Hard and easy parts:** keeping entity ids stable across arms needs the most care; the template picker is routine.

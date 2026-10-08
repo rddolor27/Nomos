@@ -58,3 +58,18 @@
 - **Link size grows with edits.** The 8,000-character threshold sends large worlds to `.nomos` files, so test it with M6.4's editor.
 - **Format versions are forever.** Keep a decoder per version, and golden links for each.
 - **CompressionStream** is available in all three engines, but check its `deflate-raw` support in the oldest browsers the project supports.
+
+## Open questions
+
+- **Owner:** Must a link replay identically after the sim changes, or only reopen the same world? Identical replay across app versions means shipping old sim code, as M6.1 does for generators. Suggested: links pin a sim version, and a newer build reopens the world with a warning that the run may differ. Needed before: the step plan.
+- **Owner:** What is the oldest browser Nomos supports? `CompressionStream('deflate-raw')` needs Chrome 103, Firefox 113 or Safari 16.4 (R9 edits and saves notes). Suggested: that floor, so no inflate fallback ships. Needed before: building.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** `WorldDef` and its columns with golden fixtures first, then `encodeLink` and `decodeLink` with the caps, then saves, then view restore and the three-browser checks.
+- **Reuse:** M6.1's version registry, M0.6's cross-engine harness, M0.4's golden-frame statistics, and R9's codec measurements as the size baseline.
+- **Keep it simple:** use IndexedDB alone, where one readwrite transaction already gives the atomic swap without a temporary key; request strict durability where offered.
+- **Pitfalls:** deflate bytes may differ between engines (inference), so golden tests compare decoded columns, and the CRC covers the inflated columns, as R9's encoder orders it. The strict parser still accepts R9's filtered place names, 2–24 ASCII characters, checked again on open.
+- **Hard and easy parts:** keeping every format version decodable forever needs the most care; base64url and CRC32 are mechanical.

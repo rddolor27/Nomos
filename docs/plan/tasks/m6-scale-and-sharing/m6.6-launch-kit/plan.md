@@ -61,3 +61,20 @@
 - **Owner decision first:** whether the optional LLM narration ships. It would add about 2–3 days (unsourced estimate), and calls an outside service, which breaks "no server". Default: no narration.
 - **Verify first:** the effect sizes behind the stereotype studies, which decide how the page cites them.
 - **Sensitivity readers** need recruiting. Start while M6.4 is built.
+
+## Open questions
+
+- **Owner:** Ship the optional LLM narration? It calls an outside service, which breaks "no server", and adds about 2–3 days (unsourced estimate). Suggested: no narration. Needed before: the step plan.
+- **Owner:** Which licence does the repository take? The notices, the credits and the CoMSES submission depend on it, and checkpoint 0005 still lists it as open. Suggested: MIT for code, with each asset keeping its own licence. Needed before: the step plan.
+- **Owner:** Who reviews the custom catalogue and names: paid sensitivity readers or the diverse panel? Recruiting needs lead time, which is why the brief starts it during M6.4. Suggested: M5.5's panel for names, plus paid readers for the catalogue if the budget allows. Needed before: the step plan.
+- **Research:** What effect sizes do the illusory-correlation and generic-language studies report? They decide how strongly the page may cite them. Suggested: open each study and quote its effect with an evidence label. Needed before: launch.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** the string files and the name lint over them first. Then notices and credits, the leaves-out page and preview cards, and ODD+D and TRACE last.
+- **Reuse:** `assets/LICENSES.md`, M0.6's name and text lints, M4.5's audit report for the result in words, and M0.4's renderer for headless previews.
+- **Keep it simple:** generate the notices and the credits screen from one source, `assets/LICENSES.md` plus the lockfile.
+- **Pitfalls:** if M1–M5 kept user strings in code, moving them can touch many UI modules, so count them early. State the audit result in words, with no per-culture table (R8 summary, "Never shown together"). ODD+D written now goes stale in M7 and M8, so update it at launch.
+- **Hard and easy parts:** the culture section's wording and its review need the most care; notices and previews are mechanical.

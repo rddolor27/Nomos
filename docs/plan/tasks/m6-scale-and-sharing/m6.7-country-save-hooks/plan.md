@@ -51,3 +51,18 @@
 - **Owner decision first:** whether the culture block must fit under the 0.5 MB save cap, or the cap rises to round 8's projected 0.55–0.62 MB.
 - **History resolution decides most of the size.** Set it by measurement, not by guess.
 - **OPFS support** varies by browser, so keep the IndexedDB path tested in WebKit.
+
+## Open questions
+
+- **Owner:** Must the culture block fit the 0.5 MB save cap, or does the cap rise to round 8's 0.55–0.62 MB? Round 8 measured +50 KB gzip (top-3 sparse) to +118 KB (dense, mixed counts) at 10,000 settlements, on different synthetic countries. Suggested: measure the whole save first, and raise the cap to 0.6 MB only if it overruns. Needed before: the step plan.
+- **Measure:** How many bytes does each history resolution add at 10,000 settlements? History decides most of the save's size. Suggested: measure daily, weekly and yearly layers on M7's ledgers, then fix the recent window. Needed before: the step plan.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** the container header and section table first, then the ledger sections with round-trip tests. The culture block and size gate follow, and the country link and focus log come last.
+- **Reuse:** M6.3's save path and link format, M7's ledger columns, and M0.6's byte gate pattern for `save-size.ts`.
+- **Keep it simple:** reserve section ids and versions for history, notables and edit diffs, and define their layouts when M8 and M9 fill them. If M6.3 settles on IndexedDB alone, reuse that one path rather than adding OPFS.
+- **Pitfalls:** focus changes are tier switches, which only the day boundary may write, so log them by day and settlement (Calendar).
+- **Hard and easy parts:** sizing the history needs the most care; the section registry is mechanical.

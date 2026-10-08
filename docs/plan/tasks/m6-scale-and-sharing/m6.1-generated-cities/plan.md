@@ -55,3 +55,19 @@
 - **Version chunks grow** with every release. Keep each frozen version's code minimal, and measure the lazy chunk sizes in M0.6's size gate.
 - **Deno joins CI** for the first time in M2.2. Reuse that setup.
 - **1,024² cities** stress memory: about 1 MB per byte-per-tile layer. Build districts lazily in the renderer too, never the whole city at once.
+
+## Open questions
+
+- **Owner:** When does the first generator version freeze: at M6.1, or at launch? Each frozen version ships forever as a lazy chunk of about 20 KB gzip (R9 edits and saves notes, source-size proxy). Suggested: build and test the freezing now, and freeze v1 at launch. Needed before: the step plan.
+- **Owner:** Which 3–5 presets does the New town panel offer? They are the first towns most players see, and their names must pass the name lint. Suggested: river, coast with port, and crossroads, with generic names. Needed before: building.
+- **Measure:** How long does one 64×64 district take to generate in the worker? Lazy districts must be ready before the camera reaches them. Suggested: measure it, then prefetch a ring of districts around the camera. Needed before: the step plan.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** the context record and one byte-identical district in Node first. Then lazy districts in any order, the six-engine check, goldens and versions, and the panel last.
+- **Reuse:** M3.1's place generator and its goldens against `tools/worldgen`, M0.6's engine harness, M2.2's Deno setup, and sim-core's integer noise and keyed draw.
+- **Keep it simple:** a frozen version is a copy of the generator code it ran, loaded by lazy `import()`; shared code never branches on the version.
+- **Pitfalls:** one `Math.sin` in a river curve can break the six-engine check, so use integer noise and build-time tables. A district never reads a neighbour's bytes; roads and rivers that cross edges come from the context record.
+- **Hard and easy parts:** seams where roads and rivers cross district edges need the most care. The panel is routine.

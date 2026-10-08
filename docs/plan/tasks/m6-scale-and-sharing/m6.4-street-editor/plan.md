@@ -65,3 +65,18 @@ Its own tests:
 - **Player-made names** are the main moderation risk. The filters, the hide switch and the report button are the whole defence; there are no accounts and no server.
 - **Reachability checks on 1,024² maps** must stay fast. Run them per stroke, in the worker.
 - **The report button needs the owner's address** shown in the app, which the owner must approve.
+
+## Open questions
+
+- **Owner:** Which address does the report button show? The app and repo are public, so everyone can see it. Suggested: a dedicated reporting address, never a personal one. Needed before: launch.
+- **Measure:** How long does a reachability flood take on a 1,024² map in the worker? It runs per stroke, and erasing one road can cut off homes far away. Suggested: one full flood per stroke; if it passes 16 ms, run it when the stroke ends. Needed before: the step plan.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** validation first, since every tool depends on it. Then the new tools, palette and restyle, the player-world badge, switch and report, and sounds last.
+- **Reuse:** M3.4's Build mode and command format, M6.3's links and `.nomos` files, M0.6's and M3.7's name filters, and M1.4's player.
+- **Keep it simple:** drop no-op edits before they enter the layer, so the no-op check holds by construction.
+- **Pitfalls:** a partial rerun equals a full one only if each stage reads nothing but its inputs, so key cached stage outputs by input hash. Building ids come from stable keys such as the cell, never a running counter, or one deletion restyles later buildings.
+- **Hard and easy parts:** partial reruns from the first dirty stage need the most care; the tools and sounds are routine.

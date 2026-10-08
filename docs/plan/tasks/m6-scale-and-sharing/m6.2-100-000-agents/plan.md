@@ -71,3 +71,18 @@
 - **Cross-origin isolation** blocks some embeds and third-party resources. Check that the static host serves COOP and COEP, and that nothing on the page breaks.
 - **Rust joins the toolchain.** CI needs the wasm target, and the built `.wasm` is checked by size and hash. If Rust is a burden, the integer JS fallback ships alone at 25k.
 - **Phones never get workers by default:** at 10k, staggering and aggregates save more than barriers cost (R5).
+
+## Open questions
+
+- **Owner:** Add Rust and WASM SIMD now, or only if a measured 100k tick misses 16 ms? JS cell aggregates alone took about 5.61 of perception's 6.0 ms at 100k (R5, Chromium 141), but the exit check accepts workers instead. Suggested: workers and JS first, adding the Rust kernel only if the budget gate fails or M7.5 needs it. Needed before: the step plan.
+- **Measure:** Do M2–M5's other agent systems fit their 1.4 ms sub-budget at 100k? That is 14 ns per agent per tick, barely above the 1.2 ms allowed at 10k (computed). Suggested: profile each at 100k before adding helpers, and stagger slow ones or move them to the day boundary. Needed before: the step plan.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** headers and the service worker, or a check of M1.5's, first. Then the algorithms at 100k on one thread, semantic zoom, helpers, and WASM only if needed. Canvas2D and the sound profile come last.
+- **Reuse:** M3's timing wheel, per-cell aggregates and voice caps, M0.6's budget, allocation and size gates, and M0.3's snapshot pool.
+- **Keep it simple:** skip the optional 16-bit positions unless the 100k snapshot misses its 0.3 ms sub-budget, so snapshot v1 stays unchanged. The plan's ≈0.1 ms is an older figure at an unstated size (R5 compute notes), so measure it at 100k.
+- **Pitfalls:** reserve the shared memory for 100k at start, since `grow` detaches views. Reductions sum in chunk order even when a helper finishes early.
+- **Hard and easy parts:** the barrier and order-fixed reductions need the most care; the headers and service worker are mechanical.
