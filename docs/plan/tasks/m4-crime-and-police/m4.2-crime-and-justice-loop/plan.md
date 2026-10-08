@@ -66,3 +66,19 @@
 
   A0 = 1/30 and ω = 1/15 are not confirmed (R2).
 - **Cascades:** feedback between records and patrols can run away. The guardrails need tests, and M4.3 adds separate switches for reporting bias and patrol feedback.
+
+## Open questions
+
+- **Owner:** Police as officers near 0.25% of the population, or as labelled patrol units that each stand for several? Units would need their own pay, homes and officer counts in M4.3's sweeps. Suggested: officers, one agent per person, about 25 at 10k agents. Needed before: the step plan.
+- **Measure:** What arrest cap per patrol per day, and what hotspot cooldown, stop runaway feedback without binding in normal runs? Both guardrails are unsourced, and a cap that binds often would distort M4.3's calibration. Suggested: set each to bind on under 1% of patrol-days or cell-days in default runs (unsourced estimate), and log every activation. Needed before: building.
+- **Research:** What A0, time step and grid spacing does Short et al. (2008) use? A0 = 1/30 is unconfirmed, and ω = 1/15 rests on snippets of later papers (R2 crime notes, Q7). Suggested: open the paper and record each value with its evidence label. Needed before: the step plan.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** offend and the true log first, then the hotspot field, then patrols, stops and arrests, then jail, stigma and recidivism. Recorded ≤ true can be asserted from the first record.
+- **Reuse:** M3.2's utility scoring, per-cell aggregates and witness pass if M3 built it, M3.8's record store, and M4.1's registry for every new threshold.
+- **Keep it simple:** update the field once a day at the day boundary, so δt is one day and only the day boundary writes it. Per tick at ω = 1/15 a day, decay is under one Q16 unit wherever B < 0.33, so rounding stalls or over-decays it (computed).
+- **Pitfalls:** η is a per-step mixing fraction that does not scale with δt (R2 crime notes, Q7), so fix the cadence before tuning. Set `trueOnly` on act cues from the first offence, and never put an offender flag in the snapshot.
+- **Hard and easy parts:** feedback between records, patrols and the field needs the most care. The soldier guard and the hotspot tables are mechanical.

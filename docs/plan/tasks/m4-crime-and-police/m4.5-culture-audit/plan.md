@@ -61,3 +61,19 @@
 - **Verify first:** the band (0.9–1.1), the equivalence margin (0.05) and the power over 50 paired seeds. All are proposals; power was shown only for one planted bias (R8).
 - **Cost:** 50 seeds × 20 years × 4 worlds is heavy. If the nightly job overruns, audit 10 years and rotate seeds across nights, and record that in the report.
 - **Emergent differences are shown, never hidden or "fixed"** by making police culture-aware. That would put culture into policing (R8).
+
+## Open questions
+
+- **Owner:** Who accepts an exception's named place-time mechanism? An exception list that grows unchecked could hide a real leak. Suggested: the owner signs off each new exception, kept in the repo with its mechanism and twin evidence. Needed before: building.
+- **Measure:** Can 50 seeds × 20 years × 4 worlds run nightly? Each seed-world is about 3.2 million ticks, or 4.7 hours at the 5.3 ms budget, so a full audit is about 950 runner-hours (computed for 10k agents). Suggested: measure ticks per second, then pick agents, years and cadence, perhaps a weekly full run and a nightly slice. Needed before: the step plan.
+- **Measure:** Do the 0.9–1.1 band and the 0.05 margin keep their power at the size that fits? Round 8 showed power for only one planted bias, a 1.25× evening stop bias (R8 report, layer 4). Suggested: a power probe with planted biases of 1.1×, 1.25× and 1.5× at the chosen size, before fixing the seeds. Needed before: the step plan.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** the exposure counters and a one-seed report first, then the planted-bias power check, then the twins, then nightly sharding.
+- **Reuse:** M2.3's design runner, M4.1's planted evening stop leak, M2.6's spawn by culture for the single-culture world, and M3.7's customs for the twins.
+- **Keep it simple:** add no bootstrap, mixed models or statistics library beyond the planned seed-level intervals, unless the power probe needs them.
+- **Pitfalls:** keep the counters out of the state hash and unread by sim code. Test that the audit and shipped builds hash alike. Fixed seeds make every statistic deterministic, so a false failure repeats each night; never re-roll seeds to pass. The report pairs culture with crime by design, so it stays a CI artifact, never a player surface (R8 summary, "Never shown together").
+- **Hard and easy parts:** the Mantel–Haenszel strata and the exception write-ups need care. Sharding and the Markdown report are mechanical.

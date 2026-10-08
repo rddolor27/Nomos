@@ -65,3 +65,18 @@
 - **Refactoring M2's decisions** into threshold-then-draw form may change their random streams. Re-run M2.3's targets after the refactor.
 - **CI time:** a full seed-year at 10k agents is 161,280 ticks. Sampling keeps the test to minutes; record the sampling rate beside the result.
 - **Data leaks through shared columns** are invisible to lint and dependency-cruiser. This test is the layer that sees them, so it must cover every guarded decision.
+
+## Open questions
+
+- **Owner:** May reshaping M2's hiring, wages, productivity and spawn wealth rank change their draw streams and replay goldens? M2's replay goldens would change once, and M2.3's targets would need a re-run. Suggested: accept one golden reset, re-run M2.3's targets and record the reset in the commit. Needed before: building.
+- **Measure:** How long does the seed-year flip test take on a CI runner at 1 tick in 60? A seed-year at 10k agents is 161,280 ticks, about 14 minutes of stepping at the 5.3 ms budget (computed). Suggested: M0.6's 1,024-agent relabel world on every push, moving the 10k seed-year to nightly if it takes over 10 minutes. Needed before: the step plan.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** the registry and flip harness over M2's four decisions first, then the four planted leaks, then the CI job. Each later M4 decision registers as it is written.
+- **Reuse:** M0.6's relabel harness for the keyed permutation and `stateHashExcept`, `sim-culture`'s re-derivation, and M0.1's keyed draw.
+- **Keep it simple:** a test-time scan that lists every draw call in guarded folders is simpler than a new lint rule. Keep the shuffle generic over one column, since M5.5 reuses it for region, look and wealth decile.
+- **Pitfalls:** a system that computes a threshold inline, instead of calling its registered function, passes the flip silently; only the draw scan catches it. Pass each id to the keyed draw as its own key: an ad-hoc mixer moved an R8 audit ratio from 1.047 to 0.950 (R8 report, measured there).
+- **Hard and easy parts:** reshaping M2's decisions without changing what they decide needs the most care. The planted leaks and the counting are mechanical.

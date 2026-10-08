@@ -57,3 +57,18 @@
 - **Owner decision first:** whether the true view's margin note exists, or whether players find unrecorded crime only on the true-view map.
 - **Needs M3.8's ruling** on whether district names come from naming customs. If they do, stories name districts by number.
 - **Claude cannot hear audio.** The owner listens to the justice set once more before M4 ships, above all to the wrongful stop against the arrest.
+
+## Open questions
+
+- **Owner:** Keep the true view's margin note? It tells players how much crime goes unrecorded, which the true-view map shows only to those who look. Suggested: keep it, in the true view only, as the Gazette tab's rule 8 drafts it. Needed before: the step plan.
+- **Owner:** Does the wrongful stop sound as heavy as the arrest when heard in play? The 1 dB RMS and 1% length checks cannot judge how it feels. Suggested: one listening pass on the justice set before M4 closes. Needed before: launch.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** the router's justice kinds and true-view gate first, then the audio audit. The justice column and its count test follow, and the margin note comes last.
+- **Reuse:** M3.8's router, voice caps, gazette core and record store; M4.1's flip test; M0.6's and M3.7's text filters; the justice bank's 1 dB assertion.
+- **Keep it simple:** the margin note, if kept, is one number in a fixed sentence, with no breakdown by place, type or time.
+- **Pitfalls:** pan and distance gain follow screen position, which follows place, so compare them within position bins, or the audit reads place as culture.
+- **Hard and easy parts:** the audit's statistics need care; wiring the existing sounds is routine.

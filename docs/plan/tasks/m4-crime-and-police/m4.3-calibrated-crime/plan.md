@@ -71,3 +71,19 @@
 - **Verify first (from M4.2):** NCVS 2024 reporting and FBI 2025 clearance by crime type. They set the capture and reporting constants here.
 - **Targets interact.** Clearance, displacement and concentration share parameters. Tune them in a design-runner sweep with Morris screening first (M2.3), never one at a time.
 - **Long horizons:** re-arrest at 10 years needs 1,120 days per seed of history. Run it in the nightly job.
+
+## Open questions
+
+- **Owner:** Add a peer-effect channel, so loot and detection stay under about 45% of the size gradient? Round 4 puts the rest on composition and social multipliers, but density and anonymity are the only size channels listed here (R4 economy notes, part 5). Suggested: measure the shares in the size sweep first, and add an Epstein-style peer term only if composition cannot carry the rest. Needed before: the step plan.
+- **Measure:** How many seeds and agents can the 10-year re-arrest check afford? Each seed's 1,120 days are about 1.6 million ticks, or 2.4 hours at the 5.3 ms budget for 10k agents (computed). Suggested: size it from measured ticks per second, so each cohort holds a few hundred releases (unsourced estimate). Needed before: the step plan.
+- **Research:** Do NCVS 2024 reporting, FBI 2025 clearance by crime type, and Glaeser and Sacerdote's 1/4 and 1/5 shares hold when opened? They set constants and the 45% bound, and the last is snippet-only (R4). Suggested: open all three before tuning. Needed before: the step plan.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** the district logs first, since every target reads them, with the field export beside them; then trips and displacement, reporting and legitimacy, then food theft. Tune last, in one sweep.
+- **Reuse:** M2.3's design runner, Morris screening and district flow logs, M3.5's missed meals, and M4.1's registry for the new thresholds.
+- **Keep it simple:** measure the 45% bound with paired runs that freeze loot and detection at the smallest size's values. The share of the gradient that vanishes is theirs; logged channel shares alone cannot decompose it.
+- **Pitfalls:** date each recorded event by its offence's day and district, or a late report makes recorded exceed true on a district-day. At 1,000 agents, 0.05% is half an officer (computed), so run the tipping sweep at 10k or more and log the realised count.
+- **Hard and easy parts:** tuning clearance, displacement and concentration together is the hard part. The logs, the 2 KB field round trip and the district sums are mechanical.

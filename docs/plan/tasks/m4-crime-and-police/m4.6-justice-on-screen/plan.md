@@ -79,3 +79,19 @@
 - **Verify first:** whether a stream of animated crime events, or the gazette's daily justice column, builds illusory correlation as static sentence lists do (round 8). The answer sets how strict the justice-view rules must be, and the [Gazette](../../../gazette.md) tab asks for a playtest before M4 ships.
 - **Sight lines** must stay short and straight, never a cone or spotlight that dramatises.
 - **New bubbles need the M1.5 recognition test** before shipping: 8 of about 10 novices must read each one.
+
+## Open questions
+
+- **Owner:** Does a new run open in the true view or the recorded view? The plan sets no default, and it decides whether players first see acts or only what police know. Suggested: the recorded view, with the true view one labelled toggle away. Needed before: building.
+- **Measure:** Do the four new bubbles pass M1.5's recognition test, with 8 of about 10 novices reading each? A bubble nobody reads makes the three-surface check hollow. Suggested: test the clipboard, handcuff ring, bars and open door on still frames before wiring them. Needed before: building.
+- **Research:** Does a stream of animated crime events build illusory correlation, as static sentence lists did in round 8? It sets how strict the justice view must be, and the Gazette tab wants a playtest before M4 ships. Suggested: build to the strict rules, then run the playtest panel on M4.6's build before M4 closes. Needed before: launch.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** the recorded-view filter and its pixel test first, since every later cue relies on it. Then the buildings, then events one kind at a time with all three surfaces.
+- **Reuse:** M0.3's `trueOnly` bit and M0.4's render-filter test, M1.3's bubble passes, M2.7's glyph table, the existing "!" and "?" art, and M3.3's follow-cam.
+- **Keep it simple:** one table maps each justice kind to its bubble, log template and glyph. The three-surface check is then a table test plus one replay scan.
+- **Pitfalls:** rings, escorts and bars end with their event, so nothing stays on a person afterwards (R3 summary, rules 3 and 4). Add R3's rule 7 to the iconography audit: no role wears black.
+- **Hard and easy parts:** the 50-seed appearance audit and the masked framebuffer diff need care. Wiring the existing sprites is routine.

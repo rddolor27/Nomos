@@ -55,3 +55,18 @@
 - **The trust numbers are a design guess** from Norland, at 3–5 acquaintances. Calibrate them against M4.3's reporting band.
 - **The stand-in contact network** changes when M5.2 lands. Re-run the LS and trust checks then.
 - **The case knob stays at 0** unless evidence supports an effect. Its prevalence is logged either way.
+
+## Open questions
+
+- **Owner:** Is "the year of the crime" the 112 days after it, or the calendar year it falls in? If LS follows the −900 term, 112-day windows give −0.39 then −0.05, but calendar years give −0.26 then −0.17, failing both bands (computed). Suggested: 112-day windows from the event. Needed before: the step plan.
+- **Measure:** What trust drop per wrongful stop keeps reporting inside M4.3's 2.5× band? The 3–5 acquaintances are a Norland design number, not a measurement (R6). Suggested: calibrate the drop and its fade on M2.3's design runner, and log both. Needed before: launch.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** the record-state machine first, driven by M4.2's arrests, jailings and releases; then victimisation in LS, then fear, then trust and its link to reporting.
+- **Reuse:** M3.6's LS drivers and decay tables, M3.2's inspector, M3.8's record store and the witness pass from M3.2 or M4.2.
+- **Keep it simple:** one Int16 victimisation offset per agent, decayed daily by a table factor, with each new crime added to it. Both kinds share the 0.35-year half-life, so no list of past crimes is needed.
+- **Pitfalls:** give the fear pass no patrol input at all, so "never from police alone" holds by construction. Let the inspector fetch record state on demand, so no snapshot field ever needs it.
+- **Hard and easy parts:** calibrating trust against reporting needs the most care. The state machine and the LS terms are mechanical.
