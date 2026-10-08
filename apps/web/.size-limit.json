@@ -1,0 +1,34 @@
+[
+  {
+    "name": "Library budget",
+    "path": [
+      "dist/assets/render-gl-*.js",
+      "dist/assets/charts-*.js",
+      "dist/assets/charts-*.css",
+      "dist/assets/controls-*.js"
+    ],
+    "gzip": true,
+    "limit": "45 kB"
+  },
+  {
+    "name": "Initial JS",
+    "path": ["dist/assets/index-*.js", "dist/assets/render-gl-*.js", "dist/assets/worker-*.js"],
+    "limit": "35 kB"
+  },
+  {
+    "name": "Before the first frame",
+    "path": [
+      "dist/index.html",
+      "dist/assets/index-*.js",
+      "dist/assets/render-gl-*.js",
+      "dist/assets/worker-*.js",
+      "dist/assets/maps/town-*.nmap"
+    ],
+    "limit": "100 kB"
+  },
+  {
+    "name": "Town map",
+    "path": ["dist/assets/maps/town-*.nmap"],
+    "limit": "40 kB"
+  }
+]
