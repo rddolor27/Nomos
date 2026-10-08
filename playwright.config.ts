@@ -1,6 +1,7 @@
 import { defineConfig } from 'playwright/test';
 
-const HARNESS = 'http://localhost:5174';
+// IPv4, as the harness listens there: Firefox sometimes fails to reach a ::1-only server through localhost.
+const HARNESS = 'http://127.0.0.1:5174';
 
 export default defineConfig({
   testDir: '.',

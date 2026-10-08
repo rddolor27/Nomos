@@ -29,5 +29,6 @@ function serveMaps(): Plugin {
   };
 }
 
-// Builders edit the packages the harness imports while tests run, and HMR would reload a page mid-test.
-export default defineConfig({ plugins: [serveMaps()], server: { hmr: false } });
+// Builders edit the packages the harness imports while tests run, and HMR would reload a page mid-test. The host is
+// IPv4 because Vite's default listens on ::1 alone, which Firefox sometimes fails to reach through localhost.
+export default defineConfig({ plugins: [serveMaps()], server: { hmr: false, host: '127.0.0.1' } });
