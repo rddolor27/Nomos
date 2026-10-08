@@ -129,7 +129,8 @@ const HOT_SYNTAX = [
   },
 ];
 
-// The generator code that exists: the keyed draw, value noise and the map parser. M3.1 adds packages/worldgen/src.
+// The generator code that exists: the keyed draw, value noise and the map parser. M8.1 adds packages/worldgen/src,
+// built before M1 (owner, 9 October 2026).
 const GENERATOR_FILES = ['packages/sim-core/src/{draw,noise}.ts', 'packages/sim-protocol/src/map.ts'];
 // % is allowed on an unsigned left operand, where JS and Python agree.
 const GEN_SYNTAX = [

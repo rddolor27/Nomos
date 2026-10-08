@@ -37,7 +37,9 @@ export function draw4(seed: number, stream: number, a: number, b: number, c: num
   return mix(draw3(seed, stream, a, b, c) ^ d);
 }
 
-// JS % follows the dividend's sign and Python's the divisor's; >>> 0 makes the dividend unsigned, so they agree (R9).
+// JS % follows the dividend's sign and Python's the divisor's, so they agree only on an unsigned dividend (R9). draw
+// already returns unsigned values, since mix ends in >>> 0; the extra >>> 0 is there only so the generator lint
+// accepts the %.
 export function below(n: number, seed: number, stream: number, ...keys: number[]): number {
   return (draw(seed, stream, ...keys) >>> 0) % n;
 }
