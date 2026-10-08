@@ -23,13 +23,13 @@ export interface App {
   agents: number;
   tick: number;
   camera: Camera;
+  // The user's choice, or the reduced-motion start. A hidden tab pauses the worker without changing it.
   paused: boolean;
-  userPaused: boolean;
   // Push-and-draw milliseconds of the last FRAME_SAMPLES frames, in no order.
   frameMs: number[];
   // Resolves as frame:first is marked, so whatever loads after the first frame knows when to start.
   firstFrame: Promise<void>;
-  setPaused(paused: boolean, byUser: boolean): void;
+  setPaused(paused: boolean): void;
   onStats(listener: StatsListener): void;
   // Asks for a draw on the next frame, for a change the camera does not show, such as the skin.
   redraw(): void;
@@ -166,14 +166,12 @@ export async function startApp(boot: Boot, doc: Document, start: Start): Promise
     tick: 0,
     camera: { x: 0, y: 0, zoom: 1 },
     paused: start.paused,
-    userPaused: start.paused,
     frameMs: [],
     firstFrame: new Promise((resolve) => {
       scene.firstFrameDrawn = resolve;
     }),
-    setPaused(paused, byUser) {
+    setPaused(paused) {
       app.paused = paused;
-      if (byUser) app.userPaused = paused;
       post({ type: paused ? 'pause' : 'resume' });
     },
     onStats(listener) {

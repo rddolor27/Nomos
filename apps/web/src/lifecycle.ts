@@ -4,7 +4,7 @@ import type { App } from './app.ts';
 // Hidden pauses and visible resumes, unless the user paused: then returning to the tab keeps the run paused.
 export function bindLifecycle(doc: Document, win: Window, app: App): void {
   bindPageLifecycle(doc, win, (msg) => {
-    if (msg.type === 'resume' && app.userPaused) return;
+    if (msg.type === 'resume' && app.paused) return;
     app.worker.postMessage(msg);
   });
 }

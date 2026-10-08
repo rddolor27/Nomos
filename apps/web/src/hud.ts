@@ -64,7 +64,7 @@ function bindPlay(play: HTMLButtonElement, app: App): void {
     play.textContent = app.paused ? 'Play' : 'Pause';
   };
   play.addEventListener('click', () => {
-    app.setPaused(!app.paused, true);
+    app.setPaused(!app.paused);
     label();
   });
   app.worker.addEventListener('error', () => {
