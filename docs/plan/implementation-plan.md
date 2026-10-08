@@ -6,7 +6,7 @@ Oct 6, 2026 · @Rd
 
 Work top to bottom: each milestone lists what to build and the checks that close it, merged from every research round. Tick a box when it lands; a milestone is done when its exit checks pass in CI, not when the demo looks right.
 
-- **Where items come from:** round 1 is Findings & plan and Full report, round 2 is Follow-up research, round 3 is 2D game look & assets, round 4 is Villages, cities & countries, round 5 is the Performance budget section below, round 6 is Goods & wellbeing, round 8 is Cultures, round 9 is Maps and world builder, and (Sound), (Military), (Calendar) and (Gazette) mark the owner's plans of 7 October 2026, in the Sound, Military, Time & calendar and Gazette tabs.
+- **Where items come from:** round 1 is Findings & plan and Full report, round 2 is Follow-up research, round 3 is 2D game look & assets, round 4 is Villages, cities & countries, round 5 is the Performance budget section below, round 6 is Goods & wellbeing, round 8 is Cultures, round 9 is Maps and world builder, and (Sound), (Military), (Calendar) and (Gazette) mark the owner's plans of 7 October 2026, in the Sound, Military, Time & calendar and Gazette tabs, and (Weather) marks the owner's Weather tab of 8 October 2026.
 - **Effort:** rough full-time estimates for one developer; round 1 put the whole plan at 12–19 weeks, and an AI coding assistant shortens that.
 - **Something to look at from week one:** every milestone ships at least one of the three visual styles below, so the project is never just a test suite.
 
@@ -17,6 +17,8 @@ Work top to bottom: each milestone lists what to build and the checks that close
 The drawing is round 1's seven milestones plus round 4's three country milestones, dashed because they come after launch; the sections below add each round's tasks without changing the order.
 
 Round 9 moves launch after M8: M7 and M8 become pre-launch milestones and M9 stays after launch, so the drawing's launch line now falls after M8 (R9).
+
+The owner added M10 Weather on 8 October 2026. It follows M9 after launch, and the drawing has no box for it yet (Weather).
 
 ## Visual styles
 
@@ -202,7 +204,8 @@ Goal: Primer-style lab cards in discrete days, drawn as Skin B blobs, with claim
 - [ ] Allow scripted event timing only as logged inputs on lab and scenario cards, never as a state-driven director in the sim core (R6).
 - [ ] Add a bet card, "Evening events: are people out at night stopped more?", on paired seeds, framed by place and hour, never by culture. In the toy, evening festivals raised victimisation 8.7% and stops 1.3% against daytime ones, while the rate per outdoor hour stayed the same (R8).
 - [ ] Add speed controls: pause, 1×, 4×, 16× and skip to the next season or year, with Space and keys 1–4, per-tier speed caps, and a paused start under reduced motion (Calendar).
-- [ ] Show the date, time, day type, season icon and year progress in the HUD, such as "Spring 12, Year 3 · 08:40 · rest day" (Calendar).
+- [ ] Show the date, time, light period, day type, season icon and year progress in the HUD, such as "Spring 12, Year 3 · 08:40 · morning · rest day" (Calendar).
+- [ ] Add five light periods from the sunrise table as a calendar function: dawn and dusk span 30 minutes either side of sunrise and sunset, morning runs to noon, afternoon from noon to dusk, and night the rest. The renderer tints only the ground, never people, with fades of at least 2 s and a tint-off toggle, and lab days take the periods with their phases (R3, Calendar).
 - [ ] Make runs watch-only: while a run plays, the worker accepts only pause, speed, skip and read-only queries, and lab cards set treatments before Run (Calendar).
 - [ ] Load the audio chunk after the first frame and start the audio context on the first click. Add master, music, ambience, effects and UI buses with ducking, `M` to mute, three sliders saved per device and never in share links, and a classroom mode that starts muted (Sound).
 - [ ] Port `tools/sounds/soundkit.py` to a TypeScript synth in an AudioWorklet: hash32, waves, envelopes, sweeps, one-pole filters, loop folding and the step sequencer. A port test renders every bank entry in both and compares them within a tolerance (Sound).
@@ -217,6 +220,7 @@ Goal: Primer-style lab cards in discrete days, drawn as Skin B blobs, with claim
 - [ ] No sound plays before the first click, mute and sliders survive a reload, and a replay with sound on and off gives identical state hashes (Sound).
 - [ ] Every bank entry renders in the TypeScript synth within the port test's tolerance, and comes from `tools/sounds/` or a CC0 file listed in `assets/LICENSES.md` (Sound).
 - [ ] Changing speed or skipping never changes the state hash at any date, and the worker refuses settings messages while a run plays (Calendar).
+- [ ] The light period at every minute of all 112 days follows the sunrise table, every dot and body hue clears 3:1 against the tinted ground in every period by its outline or its fill, and the tint never changes the state hash (Calendar).
 
 ## M2 Economy
 
@@ -284,7 +288,7 @@ Goal: daily routines in a real town, drawn as the Skin C pixel-art town from one
 - [ ] Make the 256×256 default town a fixed seed of the place generator, with apartment blocks, house rows, shop rows, a market square and a park, hand-edited in the developer Build mode; hand-authoring it in LDtk is the fallback if the port slips (R3, R9).
 - [ ] Add the tile pass (a tile-index texture read with `texelFetch`, animated tiles) and the roof pass drawn over people (R3).
 - [ ] Add the phone path: render at one pixel per texel into a framebuffer and blit at integer scale, retiring the pixel-ratio cap of 2 for the world layer (R3).
-- [ ] Add four light periods that tint only ground and buildings, with lit windows and lamps, fades of at least 2 s and a tint-off toggle (R3).
+- [ ] Extend M1's light periods to the town: buildings take the tint, and windows and lamps light from dusk to dawn (R3, Calendar).
 - [ ] Turn on automatic skins (dots at city zoom, the town from district zoom inward) with 15% hysteresis and 150 ms cross-fades, keeping the manual override (R3).
 - [ ] Add the follow-cam at 5–6× with a thought panel synced to the inspector (R3).
 - [ ] Draw the civic signals: teal-and-cream shop awnings with a gold coin sign, and home roofs chosen at random, never by wealth (R3).
@@ -339,6 +343,7 @@ Goal: daily routines in a real town, drawn as the Skin C pixel-art town from one
 - [ ] One LDtk file drives both walkability and tiles: every walkable cell has a ground tile and every zone entity a building (R3).
 - [ ] 10k agents in the 256² town stay within the tick budget, and rendering at 3× stays in budget in CI and when re-measured on one mid-range Android phone and one iPhone (R1, R3).
 - [ ] Outlines clear 3:1 against every walkable tile by day (the yellow body needs none at night), skin switches drop no frame, and the framebuffer path is pixel-exact at a device pixel ratio of 3 (R3).
+- [ ] Windows and lamps light only from dusk to dawn, and every body hue clears 3:1 against every walkable tile in every light period, by its outline or its fill (Calendar).
 - [ ] At 10k and 25k agents, every system stays within its sub-budget in the CI budget gate (R5).
 - [ ] With cool storage, households spoil 3–6% of purchased portions; a no-fridge, weekly-market variant spoils ≥ 15% of perishables; no per-day random loss exists for perishables (R6).
 - [ ] In the default town, 5–15% of households score ≥ 4 on the tally (R6).
@@ -641,13 +646,38 @@ Goal: zooming from Region to street shows agents spawned from the ledger, aligne
 - [ ] A village preset shows money and transactions per head well below the city's at equal real consumption (R4).
 - [ ] A zoom-consistency CI test passes: road, river and sea sides match the country exactly; every landmark icon appears in its place; edge farmland shows as fields (R9).
 
+## M10 Weather
+
+Goal: weather the player can see and hear, with rain, snow, fog and storms by season and biome, replaying exactly from the seed. It comes last, after M9 and after launch, as the owner decided on 8 October 2026. Effort: about 16–27 days (unsourced estimate).
+
+**Build**
+
+- [ ] Draw each region's weather once a day at the day boundary: clear, cloudy, rain, storm, fog or snow, with start and end minutes for showers, storms and fog. A chain on `draw(seed, WEATHER, region, day)`, with odds by season and biome, makes wet and dry spells (Weather).
+- [ ] Give weather one source: M3's harvest draw and M7's settlement weather agree with the weather on screen, and share links made before M10 still replay (Weather).
+- [ ] Draw the weather over the world layer: rain and snow particles, fog, drifting cloud shadows, wet ground and puddles that dry, and weather tints stacked on the light periods, with people untinted (Weather).
+- [ ] Keep weather calm to watch: lightning is a soft glow at most once every few seconds, never a full-screen flash, and under reduced motion rain and snow draw as still overlays (Weather).
+- [ ] Draw the weather art as code in `tools/sprites`: rain streaks, snowflakes, puddles, wet-ground palettes, fog, and HUD weather icons at 16 and 8 px (Weather).
+- [ ] Make the weather sounds as synth data in `tools/sounds`: light rain, heavy rain, storm wind and distant thunder, layered over the biome ambience within the voice caps (Weather).
+- [ ] Show the weather in the HUD beside the season icon, and let the gazette's calendar stories report it (Weather).
+- [ ] If the owner chooses routines, let weather change where people go: shelter in rain and storms, thinner markets and festivals, and slower travel. Weather never changes crime directly, only who is out and who sees it (Weather).
+- [ ] Show each region's weather on the country map, the same weather that zooming into it shows (Weather).
+
+**Exit checks**
+
+- [ ] The same seed gives the same weather every day in Node and all three browser engines, and drawing or hiding the weather never changes the state hash (Weather).
+- [ ] Over 50 seeds, each biome's share of rain, storm, fog and snow days per season lands in its target band (Weather).
+- [ ] No frame sequence flashes more than three times a second, and a reduced-motion golden run has no falling particles (Weather).
+- [ ] At its heaviest, weather keeps the town within its frame budget at 3× (Weather).
+- [ ] Every weather sound has a visual twin, and the owner has listened to each (Weather).
+- [ ] If weather changes routines: on paired seeds, rain lowers outdoor hours, and true against recorded crime is reported by weather, never by culture (Weather).
+
 ## Ongoing and verify-first
 
 Total effort to launch is roughly 20–30 weeks of one developer's full-time work: round 1's 12–19 weeks, about 6–9 weeks for the visual layer and about 2 weeks of country hooks in M0–M6. Country mode (M7–M9) then adds 55–83 days, about 11–17 weeks. Round 2's calibration and test work comes on top and was not estimated; all of these are unsourced guesses that an AI coding assistant shortens.
 
 Round 9 adds a full world builder and moves M7 and M8 before launch: about 178–271 days to launch, up from 100–150 (computed from the milestone estimates) (R9).
 
-The owner's plans of 7 October 2026 add about 31.5–51 days before launch (sound 11.5–18, military 4–7, calendar 10.5–17 now that its art is drawn, gazette 5.5–9) and 1.5–2 days in M9. That puts launch at about 210–322 days (computed from unsourced estimates).
+The owner's plans of 7 and 8 October 2026 add about 32.5–52.5 days before launch (sound 11.5–18, military 4–7, calendar 11.5–18.5 now that its art is drawn, gazette 5.5–9), 1.5–2 days in M9 and 16–27 days for M10 Weather after launch. That puts launch at about 211–324 days (computed from unsourced estimates).
 
 **Ongoing**
 
@@ -683,3 +713,4 @@ The owner's plans of 7 October 2026 add about 31.5–51 days before launch (soun
 | A manual search of Reddit, Steam and itch.io | Competitor risk | Ongoing |
 | Round 6's calibrated targets on the 112-day year, including the 1.5–3% monthly carrying cost and the ≤ 7% pest loss a season | Daily wages, prices and storage rates | M2 |
 | WCAG 2.2's audio-control rule and browser autoplay rules | Sound controls and the first-click start | M1 |
+| Season and biome odds for each weather kind, the length of wet and dry spells, and the evidence on weather, time outdoors and crime (research round 10) | Weather odds, and whether weather changes routines | M10 |
