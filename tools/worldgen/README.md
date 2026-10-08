@@ -11,6 +11,8 @@ Random worlds for Nomos, drawn with the sprites in `tools/sprites`. It is the Py
   - `<capital>_seasons.png`: the capital in spring, summer, autumn and winter;
   - `looks.png`: the world's first 48 people.
 - Country maps only: `python tools/worldgen/world.py`. Hand-made test places: `python tools/worldgen/place.py --demo`.
+- Export the default town, Highcourt, as a binary map: `python tools/worldgen/export_map.py` writes `assets/maps/town.nmap` (seed `0xC0FFEE42`, 48×28 tiles) and refreshes `assets/LICENSES.md`. `--check` compares with the committed file and exits 1 on a difference.
+- `mapfile.py` writes map v1, the format [`parseMap`](../../packages/sim-protocol/src/map.ts) reads, and raises `ValueError` on any map `parseMap` would reject. Run it to write the 3×2 test fixture `packages/sim-protocol/test/fixtures/tiny.nmap`; `--check` compares.
 
 ## Randomness
 
