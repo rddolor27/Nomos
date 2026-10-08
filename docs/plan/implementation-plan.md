@@ -118,10 +118,10 @@ Goal: a deterministic core, the worker loop and the renderer contract, drawing S
 
 - [ ] Set up the pnpm monorepo: `sim-core` (pure TypeScript, no DOM), `sim-protocol`, `sim-worker`, `render-gl`, `apps/web`, `tools/cli`, `tools/bench` (R1).
 - [x] Write the `AgentStore` of typed columns and seeded sfc32 streams per subsystem, with every random draw keyed to a stable agent ID and tick (R1, R2).
-- [ ] Write the integer-cent ledger with a MINT account, and run `checkInvariants` every tick in development (R1).
+- [x] Write the integer-cent ledger with a MINT account, and run `checkInvariants` every tick in development (R1).
 - [x] Lint-ban `Math` transcendental functions and `**` in `sim-core`; use @stdlib-built lookup tables in per-agent code and @stdlib calls elsewhere (R2).
-- [ ] Build the worker loop: fixed timestep, MessageChannel yield, pause on `visibilitychange`, checkpoint on `pagehide`, resume without catching up (R1, R2).
-- [ ] Define snapshot v1: float32 x and y plus a 32-bit visual word per agent (12 bytes) in pooled transferable buffers, with the bits documented in `sim-protocol` and no "wanted" bit; choose the eight action states the 3-bit field holds, since sneak and carry must displace two of the rendering research's list (R1, R3).
+- [x] Build the worker loop: fixed timestep, MessageChannel yield, pause on `visibilitychange`, checkpoint on `pagehide`, resume without catching up (R1, R2).
+- [x] Define snapshot v1: float32 x and y plus a 32-bit visual word per agent (12 bytes) in pooled transferable buffers, with the bits documented in `sim-protocol` and no "wanted" bit; choose the eight action states the 3-bit field holds, since sneak and carry must displace two of the rendering research's list (R1, R3).
 - [ ] Build one WebGL2 `WorldRenderer` (`init`, `resize`, `setMap`, `pushSnapshot`, `draw`, `setSkin`, `setLod`, `dispose`) on one context, with context-loss handling, a Canvas2D fallback capped near 5,000 agents, and no PixiJS (R2, R3).
 - [ ] Draw Skin A: shape-coded dots at least 5 px across, in the sprite palette (it replaces round 2's Tol muted set, which vanishes on sand tiles), with dark outlines on light ground and light rims on dark ground (R3).
 - [ ] Load `town.ldtk` in the worker (IntGrid walkability and zone entities, quicktype types) and draw its zone colours as Skin A's minimap (R3).
@@ -133,7 +133,7 @@ Goal: a deterministic core, the worker loop and the renderer contract, drawing S
 - [ ] Cover accessibility basics: Play/Pause first in tab order, start paused under reduced motion, a data table for each chart (R2).
 - [x] Make every draw a counter-based hash, `draw(seed, entity, tick, stream)`, built from `Math.imul`, xor and shifts, with separate salts for agents and ledgers, so a focus change can never shift another draw (R4).
 - [x] Reserve ledger account ranges for MINT, a national treasury, per-settlement sector accounts (households, firms, local government, police budget) and a rounding account, keeping the one-line Σ = 0 invariant (R4).
-- [ ] Add a day-boundary phase to the fixed-step loop where aggregate commits and any tier switch that writes canonical state take effect, and record focus changes as tick-stamped inputs (R4).
+- [x] Add a day-boundary phase to the fixed-step loop where aggregate commits and any tier switch that writes canonical state take effect, and record focus changes as tick-stamped inputs (R4).
 - [x] Add exact apportionment (largest remainder, ties by index, leftover cents along a keyed stride) with a BigInt path once total × weight reaches 2^53 (R4).
 - [ ] Add a plan-then-apply helper for flows between entities, with a metamorphic test that shuffles iteration order, and extend the `Math` lint to world-generation and map code (R4).
 - [x] Allocate sim state as SoA typed arrays in one `WebAssembly.Memory` reserved at start for the device tier (32 MB on phones, 64–128 MB on desktops) and never grown; JS systems use views created once (R5).
@@ -142,20 +142,20 @@ Goal: a deterministic core, the worker loop and the renderer contract, drawing S
 - [ ] Start the sim worker and the map fetch from an inline `<head>` script, and load uPlot and lil-gui only after the first frame (R5).
 - [ ] Convert `town.ldtk` at build time into a compact binary map, served with a compressible content type (R5).
 - [ ] Build the HUD in vanilla TypeScript and any richer UI (inspector, event log) in Solid, or Preact with signals; never React (R5).
-- [ ] Record 1,440 ticks per sim day and 112 days per sim year (4 seasons of 28 days) in `sim-protocol`; convert every half-life and rate from them at build time (R6, Calendar).
+- [x] Record 1,440 ticks per sim day and 112 days per sim year (4 seasons of 28 days) in `sim-protocol`; convert every half-life and rate from them at build time (R6, Calendar).
 - [x] Add a claims ledger beside the cash ledger, one record per loan (lender, borrower, principal in cents, rate in ppm, payment), asserting Σ borrower debt = Σ lender loan assets every day (R6).
 - [x] Add `mulPpm`, an exact floor of cents × ppm through a 10⁶ split with a ±1 correction, and lint-ban raw `cents * rate` in `sim-core` (R6).
 - [x] Reserve integer quantity registries for homes (one per LDtk home), property titles and firm shares; value them as integer price index × quantity at the day boundary, logged as a revaluation line and never posted to MINT (R6).
 - [x] Build at build time with @stdlib, shipped as data: a Q16 log2 table, fade tables for 0.35-, 1- and 2.6-year half-lives, an inverse-normal table for set points, the ledger band-share table and a Gaussian-copula table for wealth ranks (R6).
-- [ ] Ban `TypedArray.prototype.sort` on views of shared memory in hot and day-boundary code, add it to the lint profile, and take top shares from a 16-bins-per-octave histogram (R6).
-- [ ] Run day work as fixed 1,024-entity slices from the boundary, on the same schedule for every device and worker count, committing the settlement record when the last slice ends, once the owner settles how late spoilage may land (R6).
-- [ ] Warm the day-boundary code at worker start on a 1,024-agent dummy world (about 20–30 ms), so the first in-game day does not run cold (R6).
-- [ ] Add culture columns to `AgentStore`: `culture` and `birthCulture` (Uint8), `customs` (Uint16, four 4-bit culture-of-origin nibbles for food, festival, music and naming) and `homeRegion` (Uint16), at most 8 cultures per world, drawn on their own keyed stream; document the layout in `sim-protocol` (R8).
+- [x] Ban `TypedArray.prototype.sort` on views of shared memory in hot and day-boundary code, add it to the lint profile, and take top shares from a 16-bins-per-octave histogram (R6).
+- [x] Run day work as fixed 1,024-entity slices from the boundary, on the same schedule for every device and worker count, committing the settlement record when the last slice ends, with expired food skipped, as the owner chose on 8 October 2026 (R6).
+- [x] Warm the day-boundary code at worker start on a 1,024-agent dummy world (about 20–30 ms), so the first in-game day does not run cold (R6).
+- [x] Add culture columns to `AgentStore`: `culture` and `birthCulture` (Uint8), `customs` (Uint16, four 4-bit culture-of-origin nibbles for food, festival, music and naming) and `homeRegion` (Uint16), at most 8 cultures per world, drawn on their own keyed stream; document the layout in `sim-protocol` (R8).
 - [ ] Put culture code in its own package, `sim-culture`: preference rows, festival calendar, naming rules, region ids, and the splits by culture of migration flows and spawned households, which act on totals from culture-blind code. Add a dependency-cruiser `reachable` rule and an ESLint profile so crime, police, labour, wage, wealth, ability, housing and migration code can neither import it nor read culture columns by property, destructuring or brackets (R8).
 - [x] Add a `hue` column (Uint8), now a one-byte look: one of 96 looks, a body hue (sun, lilac, rose, ice, mint, silver) × eye shape × pattern, drawn uniformly at birth from draw(seed, LOOK, id) and never inherited. Only the renderer reads it, drawing body, pattern, face, then job item; no sim rule ever does (content rule 1) (R8, R9).
 - [ ] Key culture-level draws, such as festival scheduling, by a stable culture uid, never its index. Never key a guarded decision's draw on culture, never let culture set a loop order that matters, and never index anything but custom tables by culture (R8).
 - [ ] Add the relabel test to every pull request: permuting culture ids together with their custom rows leaves every non-culture state hash identical (R8).
-- [ ] Add a stride scheduler for staggered checks: agent i is due on day d when i ≡ d − offset (mod P), with the offset re-keyed yearly. It reads a day-boundary snapshot, applies an ordered change list, and gives identical hashes in reversed visiting order (R8).
+- [x] Add a stride scheduler for staggered checks: agent i is due on day d when i ≡ d − offset (mod P), with the offset re-keyed yearly. It reads a day-boundary snapshot, applies an ordered change list, and gives identical hashes in reversed visiting order (R8).
 - [x] Give the keyed draw a murmur3-style finaliser after every input, and extend the χ² test to cross-stream pairs (R8).
 - [x] Split every flow of people by culture with keyed stochastic rounding, never flooring or plain largest remainder (R8).
 - [ ] Extend the name lint with a real-world fixture of countries, demonyms, languages, ethnonyms and religions, and add text lints that reject bare-plural generic sentences and hierarchy words in culture strings (R8).
@@ -167,11 +167,11 @@ Goal: a deterministic core, the worker loop and the renderer contract, drawing S
 **Exit checks**
 
 - [ ] Seed 42 gives an identical state hash at tick 1,000 across runs, and identical replay hashes in Chromium, Firefox and WebKit (R1, R2).
-- [ ] The ledger sums to zero on every tick (R1).
+- [x] The ledger sums to zero on every tick (R1).
 - [ ] Skin A draws a 10k-agent replay in at most 1 ms of main-thread time per frame in CI, and golden-frame statistics agree at 1–4× zoom and device pixel ratios 1, 1.5 and 2 in all three engines (R3).
 - [ ] CI passes context-loss recovery, pause on hide, outline contrast of at least 3:1, role colour difference of at least ΔE 20 under three simulated colour-blindness types, a name lint rejecting "pokemon" and "poké", and a library budget of about 45 KB gzip (R2, R3).
 - [x] The same (seed, entity, tick, stream) gives the same draw in any visiting order, and a 16-bucket χ² test over a million entities passes (R4).
-- [ ] Apportionment sums exactly and matches a BigInt reference over 10,000 random cases, including totals above 2^53 ÷ 4,095; logging a focus change that touches nothing leaves the replay hash unchanged (R4).
+- [x] Apportionment sums exactly and matches a BigInt reference over 10,000 random cases, including totals above 2^53 ÷ 4,095; logging a focus change that touches nothing leaves the replay hash unchanged (R4).
 - [ ] The compute gates, size-limit and the startup benchmark run on every pull request, and the M0 pipeline passes all of them (R5).
 - [ ] The CI budget gate gains a day-slice row: worst slice ≤ 0.35 ms RM at every tier, with the zero-scavenge window covering a full day of slices (R6).
 - [x] The claims and cash identities hold exactly every day, and no revaluation changes the MINT balance (R6).
