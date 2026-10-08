@@ -7,6 +7,7 @@
     ".": "./src/index.ts"
   },
   "scripts": {
+    "typecheck": "tsc --noEmit",
     "harness": "vite harness --port 5174 --strictPort",
     "golden": "UPDATE_GOLDEN=1 playwright test -c ../../playwright.config.ts golden --project=chromium"
   },

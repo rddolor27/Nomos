@@ -1,0 +1,8 @@
+{
+  "citizen": { "name": "BODY", "rgb": "#F7C948" },
+  "merchant": { "name": "TEAL", "rgb": "#2A9D8F" },
+  "police": { "name": "NAVY", "rgb": "#283A7C" },
+  "outline": { "name": "OUTLINE", "rgb": "#020202" },
+  "rim": { "name": "CREAM", "rgb": "#F6F0DE" },
+  "background": { "name": "STONE_D", "rgb": "#464C5E" }
+}
