@@ -87,3 +87,18 @@
 - **Depth y-sort needs strictly binary alpha.** Check every frame's alpha in `tools/sprites` tests.
 - **Bubble events add a second buffer** per snapshot. Keep it pooled and transferable, so per-tick allocation stays at zero.
 - **Sleep has no frame of its own.** Draw it as sit with the "Zz" bubble until a sleep frame is drawn.
+
+## Open questions
+
+- **Owner:** on the Canvas2D fallback, do lab cards draw blobs or Skin A dots? M0.4's fallback copies the dots pixel for pixel, and a blob copy would be a second sprite pass held to that standard. Suggested: dots, so blobs keep one implementation. Needed before: the step plan.
+- **Owner:** should a few novices see the sprite previews before the passes are built? A glyph that fails in M1.5 loops back here, and a second formal playtest means recruiting again. Suggested: yes, an informal look, with M1.5's test still the gate. Needed before: building.
+- **Measure:** do the navy cap and teal sash stay apart from all six body hues under simulated colour blindness? Round 3 cleared them only against the yellow body, at ΔE 33 or more in CAM02-UCS ([R3 report](../../../../research/round-3-2d-look/report.md), computed), and M0.4's palette test checks only that trio. Suggested: extend that colorspacious test to every hue against both item colours, at round 3's assumed ΔE ≥ 20. Needed before: building.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** the bubble scheduler and its six-bubble test in Node come first, then the body pass with the byte-identical test, then faces, items and blinks. The take, bars and reduced-motion golden come last, while carry and cheer are drawn alongside.
+- **Keep it simple:** if every layer shares the 18×22 cell, composite body, pattern, face and item in one fragment shader, topmost opaque texel winning. Each agent is then one instance at one depth, so layers never interleave between agents. Resolve frame names to atlas rects once at load, into a small lookup texture.
+- **Pitfalls:** the 3-bit `action` field is full and has no cheer, and work and talk have no stem. Map actions to stems in one table, carry cheer as an emote id, and record it in `interfaces.md`. Under reduced motion the item hop must become a 150 ms fade, or the take vanishes; chart particles fade too. R3 times the bubble hop in frames, about 183 ms at 60 Hz (computed), so time it in milliseconds.
+- **Hard and easy parts:** the shader's interpolation, facing, snapping and depth, and the Playwright golden, need the most care. The scheduler, bars and manifest entries are mechanical.

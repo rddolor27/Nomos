@@ -103,3 +103,20 @@
 - **Lab rules are not city rules.** Each card's lab-only rules may disagree with M3–M5's later city rules. Label them "lab rules" on the card, and re-judge the claims when the city versions arrive.
 - **The evening-events card sits close to culture.** Keep culture off the card entirely, and run M0.6's text lint on its copy. The framing is place and hour, as round 8 asks.
 - **Caps from measured time vary by device.** That is fine for results, but golden runs must pin the speed, never rely on the cap.
+
+## Open questions
+
+- **Owner:** how long does a lab day last at 1×? It sets M1.1's phase table and the lab's HUD date, and at the calendar's 144 s a 400-day contest takes 16 h at 1× (computed). Suggested: Primer's 5.5 s, or 55 ticks, with lab dates shown without a clock. Needed before: the step plan.
+- **Owner:** do keys 1–3 set 1×, 4× and 16×, and key 4 skip to the next season? [calendar.md](../../../calendar.md) says only that keys 1–4 set the speed. Suggested: yes, as the Approach rules. Needed before: the step plan.
+- **Owner:** do the contest's roles read "takers" and "traders" on the card? No lint can tell whether a role name judges, so the wording needs a person. Suggested: keep both, since they name acts. Needed before: building.
+- **Measure:** does the evening card Hold for victimisation at its own population? Round 8's ×1.087 [1.079–1.095] on 50 paired seeds came from 10,000 agents × 360 days ([R8 customs notes](../../../../research/round-8-cultures/notes/customs-preferences.md), part d). Suggested: judge the port at the card's size before writing its copy, and certify at the toy's size if it misses. Needed before: building.
+- **Research:** what margin does each new estimate and equivalence claim use? No claim can be judged without one, and the brief gives ±0.05 only for the happiness sizes. Suggested: fix each from its round before any run, such as 3.5–4.5 for "about 4 : 1" (inference) and round 8's proposed |ln ratio| ≤ 0.05 for the hourly rate. Needed before: the step plan.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** the worker's two states and the refusal test come first, then the scheduler with its fake-clock hash test, then the HUD parts. The card shell wraps M1.1's contest card next, and each new card follows once its claims judge.
+- **Keep it simple:** `running` checks one allow-list of message types. Speed sets only how many ticks run each second, and the tick never sees it.
+- **Pitfalls:** a season is 40,320 ticks, not a multiple of 1,024 (computed), so skip stops on the calendar's boundary tick, not at a chunk's end. The speed test runs 322,560 ticks at each of four settings (computed), so give it a small world, such as M0.6's 1,024 agents. A year skip is 161,280 ticks, 2.7 min if a tick takes 1 ms (computed), so show its progress.
+- **Hard and easy parts:** the scheduler and faithful ports of each prototype's rules need the most care. The date format, season icon, unlock record and refusal path are mechanical.

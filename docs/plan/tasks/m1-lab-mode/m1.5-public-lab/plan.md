@@ -72,3 +72,19 @@
 - **Owner decision first:** the repository licence. It must be chosen before anything is public.
 - **Playtests need people.** Recruiting about 10 novices, colour-blind players and a diverse panel is the slowest step, so start recruiting while M1.3 is built.
 - **A failed glyph means redrawn art,** which loops back to M1.3. Budget one revision.
+
+## Open questions
+
+- **Owner:** does lab mode go public when M1 closes, or wait for M8's launch? It decides whether M1.5 ships a public site or only a playtest build. Suggested: deploy to an unlisted URL for the playtests, and announce nothing until M8. Needed before: the step plan.
+- **Owner:** which licence covers the code and the original assets? `assets/LICENSES.md` waits on it, and nothing goes public without it. Suggested: MIT for both, as the plan assumes for code. Needed before: launch.
+- **Owner:** Cloudflare Pages or Netlify? The deploy workflow, its secret and the header checks depend on the host. Suggested: Cloudflare Pages, whose header, caching and compression docs R5 opened; it could not confirm Netlify's compression ([R5 load notes](../../../../research/round-5-performance/notes/load-memory.md), §5). Needed before: the step plan.
+- **Owner:** who takes the playtests, and how many? R3 sets 8 of about 10 novices but no panel sizes, and recruiting is the slowest step. Suggested: exactly 10 novices, about 3 colour-blind players and 5–8 panellists, all adults and unnamed (unsourced estimate). Needed before: building.
+- **Measure:** does the host compress the binary map once `_headers` gives it a compressible type? R5 could not verify it (§4), and its test map would ship at 593 KB instead of 33 KB. Suggested: check the response on the first preview deploy, and if it fails, pre-gzip the map and inflate it with `DecompressionStream`. Needed before: launch.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** the `ip-gate` script and its four planted failures come first, since they need no people, then `_headers` and a preview deploy, then the recognition page.
+- **Keep it simple:** the recognition page can draw atlas frames layer by layer with Canvas2D `drawImage` at whole scales. It needs no worker, sim or WebGL, yet shows the shipped pixels (inference).
+- **Pitfalls:** derived files, such as the packed atlas and hashed JS chunks, have no source row. Check them through their inputs, or the gate fails every build. Upload no `.br` files to Cloudflare Pages, which compresses at the edge (R5).

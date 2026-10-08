@@ -84,3 +84,18 @@
 - **Names must be neutral (R2).** The contest's roles are "takers" and "traders" in card text. Final wording belongs to M1.2's neutral-names rule and the content rules: crime is an act, never a role on a body.
 - **The fresh-seed job can flip a verdict.** A flip is a finding: fix the card or relabel the claim Inconclusive; never pin the lucky seeds.
 - **Holm's correction** changes thresholds as claims are added. Record the claim count in `claims.json`.
+
+## Open questions
+
+- **Measure:** does the 61-site contest keep its median hawk share within 0.05 of p\* over 50 seeds × 400 days? If not, the statistics runs need more sites than the watched run, and the reveal must say so. Suggested: probe 61 sites and Primer's 1,830-site run ([R1 sources](../../../../research/round-1-baseline/sources.md), `aggression.py`). Needed before: the step plan.
+- **Measure:** do ±2 price units in at least 47 of 50 seeds suit the market test? Both are starting values, and they decide when M1.1 closes. Suggested: keep them unless the ±1 steps alone swing wider, and never widen a bound just to pass. Needed before: building.
+- **Research:** which interval and which Fails rule do estimate claims use? The [R2 summary](../../../../research/round-2-follow-up/summary.md), "Validation method", says only that the interval must lie inside the target ± a margin. Suggested: a 90% interval of the mean, as in two one-sided tests at 5%, failing when wholly outside the band (inference). Needed before: the step plan.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** the contest's `labDay` and its 50-seed median test in Node come first, then the market and its ledger check. `@nomos/claims` against the SciPy fixture and the `claims` command follow, and the worker's lab `init` and Skin A phases come last.
+- **Keep it simple:** claims runs call `labDay` alone and skip the animation ticks. A comparison then costs 40,000 day steps (50 seeds × 2 arms × 400 days, computed). M1's cards carry about ten claims (M1.1 and M1.2 briefs), so the two-stage variant and Holm's correction can wait until nearer 20.
+- **Pitfalls:** the animation must never feed a day's outcome, or headless and watched runs disagree. With integer limits the price curves often cross over a range, so define the intersection, such as its midpoint, before the test. SciPy and @stdlib pick exact or approximate p-values by sample size, ties and zeros. Their defaults may differ at exactly 50 pairs (inference), so pin both. M0.6's culture wall guards only folders such as `crime/` and `wages/` ([M0.6 plan](../../m0-pipeline/m0.6-gates-and-guards/plan.md), Tasks 5–6), but the lab's takes and prices sit in `src/cards/`. Guard all of `sim-lab`.
+- **Hard and easy parts:** small-population drift and the statistics' edge cases need the most care. The payoff table, `mixedEquilibrium`, Wald's thresholds and the ±1 rule are mechanical.

@@ -101,3 +101,20 @@
 - **Verify first:** WCAG 2.2's audio-control rule and current autoplay rules. These decide the controls and the first-click start, and a lean research round could check them.
 - **Bundle size.** The banks deflate to 19.7 KB, 9.0 KB of it music, so with the synth one chunk passes 20 KB (measured, zlib).
 - **AudioWorklet support:** Safari's worklet timing and suspend behaviour need a check on a real iPhone.
+
+## Open questions
+
+- **Owner:** do the sounds pass a listen, above all the nine tracks against well-known jingles? Only a person can hear a resemblance ([sound.md](../../../sound.md), rule 9). Suggested: play all of `dist/sounds/` before M1 starts, as task.md asks. Needed before: building.
+- **Owner:** does the synth render at 22,050 Hz or at the context's 44.1 or 48 kHz? It fixes the port test's references and where resampling happens. Suggested: 22,050 Hz. Needed before: the step plan.
+- **Owner:** may the AudioWorklet wait for M3's music player, though task.md and [sound.md](../../../sound.md), "Work by milestone", put it in M1? M1 plays only the UI bank, whose cached effects need no streaming. Suggested: yes; M1 builds the pure core, its port test and UI playback. Needed before: the step plan.
+- **Measure:** do the port tolerances, 1e-3 peak and −60 dB RMS, pass on all 94 entries? Loose bounds hide a wrong port, and tight ones fail on last-bit maths. Suggested: keep them unless the first effect, loop and track ported show last-bit error alone exceeds them. Needed before: building.
+- **Research:** do WCAG 2.2's audio-control rule (SC 1.4.2) and the browsers' autoplay rules accept a first-click start, with `M` and the HUD button as controls? They decide the controls and the start. Suggested: a lean research round that opens each source. Needed before: the step plan.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** the pure core and its port test in Node come first, one wave and filter at a time, starting with the UI bank. Then come the first-click start, controls and storage with UI sounds playing, then the buses, and the size-limit entry last.
+- **Keep it simple:** render each UI effect once into a 22,050 Hz `AudioBuffer` and let the browser resample it on playback. Ship only the UI bank in M1's chunk, extending the brief's music split; the other banks load with the features that play them.
+- **Pitfalls:** whenever it is built, a worklet runs at the context's rate (inference). At 22,050 Hz it must resample itself or run in a context created at that rate. A 120 s track also needs a block renderer that carries filter and sequencer state across 128-sample calls, tested equal to the whole render.
+- **Hard and easy parts:** sweeps, filters and loop folding need the most care, and Safari needs a real iPhone. Controls, storage, `M` and the dependency rule are mechanical.
