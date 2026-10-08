@@ -1,9 +1,60 @@
 import { JOB_ITEMS } from '@nomos/sim-protocol';
-import { expect, test } from 'playwright/test';
+import { expect, test, type Page } from 'playwright/test';
 
 const MERCHANT_JOB = JOB_ITEMS.indexOf('merchant') + 1;
 const POLICE_JOB = JOB_ITEMS.indexOf('police') + 1;
 const CITIZEN = '#f7c948';
+const ROW = 100;
+
+interface Push {
+  x: number;
+  y?: number;
+  agents?: number;
+}
+
+interface Track {
+  backend: string;
+  centres: number[][];
+}
+
+// After the pushes, the centre of agent 0's fill at each alpha, drawn by the engine's own backend, then by Canvas2D.
+// Agent 0 is the only citizen in view: any others stand far off the canvas.
+function track(page: Page, pushes: Push[], alphas: number[]): Promise<Track[]> {
+  return page.evaluate(
+    async ({ pushes, alphas, row, citizen }) => {
+      const harness = window.harness;
+      const centreAt = (alpha: number): number[] => {
+        const { width } = harness.draw(alpha);
+        const rgba = harness.rgba();
+        const xs: number[] = [];
+        const ys: number[] = [];
+        for (let i = 0; i < rgba.length; i += 4) {
+          if (rgba[i] !== citizen[0] || rgba[i + 1] !== citizen[1] || rgba[i + 2] !== citizen[2]) continue;
+          xs.push((i / 4) % width);
+          ys.push(Math.floor(i / 4 / width));
+        }
+        return [(Math.min(...xs) + Math.max(...xs)) / 2, (Math.min(...ys) + Math.max(...ys)) / 2];
+      };
+      const far = { x: 1_000_000, y: 1_000_000, job: 0 };
+      const tracks = [];
+      for (const choice of ['auto', 'canvas2d'] as const) {
+        const backend = await harness.boot({ backend: choice });
+        harness.view({ x: 0, y: 0, zoom: 1 });
+        for (const { x, y = row, agents = 1 } of pushes) {
+          harness.place([{ x, y, job: 0 }, ...Array.from({ length: agents - 1 }, () => far)]);
+        }
+        tracks.push({ backend, centres: alphas.map(centreAt) });
+      }
+      return tracks;
+    },
+    { pushes, alphas, row: ROW, citizen: [0xf7, 0xc9, 0x48] },
+  );
+}
+
+function expectCentres(tracks: Track[], centres: number[][]): void {
+  expect(tracks.map((run) => run.backend)).toContain('canvas2d');
+  for (const run of tracks) expect(run.centres, run.backend).toEqual(centres);
+}
 
 let errors: string[] = [];
 
@@ -136,4 +187,27 @@ test('draws no true-only cue', async ({ page }) => {
   });
   expect(plain[CITIZEN]).toBeGreaterThan(0);
   expect(marked).toEqual(plain);
+});
+
+test('interpolates between snapshots', async ({ page }) => {
+  const tracks = await track(page, [{ x: 100 }, { x: 104 }], [0, 0.5, 1]);
+  expectCentres(tracks, [[100, ROW], [102, ROW], [104, ROW]]);
+});
+
+test('shows a jump of over 16 px at its new spot', async ({ page }) => {
+  const tracks = await track(page, [{ x: 100 }, { x: 120 }], [0, 0.5]);
+  expectCentres(tracks, [[120, ROW], [120, ROW]]);
+});
+
+test('keeps the previous snapshot when the buffers grow', async ({ page }) => {
+  const slide = await track(page, [{ x: 100, agents: 1_000 }, { x: 104, agents: 20_000 }], [0.5]);
+  const jump = await track(page, [{ x: 100, agents: 1_000 }, { x: 120, agents: 20_000 }], [0.5]);
+  expectCentres(slide, [[102, ROW]]);
+  expectCentres(jump, [[120, ROW]]);
+});
+
+// Within 16 px of (0, 0), where an empty previous snapshot would slide the dot in from the corner instead.
+test('draws the first snapshot where its agents stand', async ({ page }) => {
+  const tracks = await track(page, [{ x: 12, y: 12 }], [0, 0.5]);
+  expectCentres(tracks, [[12, 12], [12, 12]]);
 });

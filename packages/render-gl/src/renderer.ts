@@ -40,10 +40,15 @@ function grow(retained: Retained, agents: number): void {
 
 function retain(retained: Retained, frame: { count: number; buffer: ArrayBuffer }): void {
   const bytes = frame.count * SNAPSHOT_BYTES;
+  // Until a snapshot arrives the copies are empty. The first is its own previous one too, or a frame drawn before the
+  // second, as a paused spawn's is, would slide agents in from (0, 0).
+  const first = retained.copies[0].length === 0;
   if (bytes > retained.copies[0].length) grow(retained, frame.count);
   retained.slot ^= 1;
   // One small view per snapshot, made outside any frame, as the worker's pool makes one per return.
-  retained.copies[retained.slot].set(new Uint8Array(frame.buffer, 0, bytes));
+  const snapshot = new Uint8Array(frame.buffer, 0, bytes);
+  retained.copies[retained.slot].set(snapshot);
+  if (first) retained.copies[retained.slot ^ 1].set(snapshot);
   retained.count = frame.count;
 }
 
