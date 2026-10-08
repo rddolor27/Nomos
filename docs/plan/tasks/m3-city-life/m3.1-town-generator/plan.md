@@ -7,8 +7,8 @@
 ## Approach
 
 - **Port `tools/worldgen/place.py` to TypeScript** and prove it bit-equal against Python goldens. The Python generator stays the reference.
-  - The port starts with the town stage, because M3 needs towns before M8 needs the country.
-  - Round 9's port order still holds for the country stages, which come in M8.
+  - M8.1 ported the country stages first, before M1 (owner, 9 October 2026), following round 9's port order.
+  - The place stages join them in `packages/worldgen`, and their fingerprints join M8.1's `goldens.py`.
 - **Round 9's four traps** each broke 33–88% of results ([R9 report](../../../../research/round-9-maps-and-world-builder/report.md), "The port matches so far, with four traps to avoid"):
   - a signed draw before `%`;
   - `>> 16` instead of `>>> 16`;
@@ -32,11 +32,11 @@
 
 ## Packages and files
 
-- `packages/worldgen` (`@nomos/worldgen`), new:
-  - pure TypeScript under the generator lints, though M0.6's `GENERATOR_FILES` glob names `packages/sim-*/src/worldgen/**` for this port, so it must cover this package first;
+- `packages/worldgen` (`@nomos/worldgen`), from M8.1:
+  - pure TypeScript under the generator lints, whose glob M8.1 extended to this package;
   - `src/place/` mirrors `place.py`'s functions one to one, so a diff against Python stays readable;
   - `src/place/export.ts` writes `MapV1` through `sim-protocol`'s writer.
-- `tools/worldgen/goldens.py`: writes per-stage fingerprints for a seed list as a fixture. Golden fingerprints cost about 363 B per seed (R9).
+- `tools/worldgen/goldens.py`, from M8.1: extended with per-stage fingerprints for the place stages. Golden fingerprints cost about 363 B per seed (R9).
 - `tools/sprites`: the saddle keys, then `tools/worldgen/place.py`'s tidying without its diagonal clause, with the goldens regenerated in the same commit.
 - `assets/maps/fallback-town.ldtk`: the fallback town only.
 
@@ -68,7 +68,7 @@
 
 - **Python changes ripple.** Removing the diagonal clause changes Python's outputs too. Regenerate the goldens and the mockups that depend on them in the same commit.
 - **Map format growth:** capacity, owner and hours may need fields `MapV1` lacks. Version the format, and never reuse a field.
-- **Generation time:** round 9 sets ≤ 100 ms for a standard world in desktop Chromium, an M8 check. Measure the town stage alone here to keep headroom.
+- **Generation time:** round 9 sets ≤ 100 ms for a standard world in desktop Chromium, an M8.1 check met before M1. A town is generated apart from the world, so measure the town stage alone here.
 
 ## Open questions
 
@@ -80,8 +80,8 @@
 
 Suggestions for the step plan, which makes the final call.
 
-- **Build order:** `goldens.py` and per-stage fingerprints first, then the port stage by stage in `place.py`'s order, each green before the next. The saddle keys and the diagonal-clause removal come as their own step, then the export and the exit check.
-- **Reuse:** M0.1's ported draw and noise; M0.4's `parseMap`, building-kind tables and Python `write_map`, the reference for a TypeScript writer; M0.5's manifest types; M0.6's generator lints and five-engine harness.
+- **Build order:** the place stages' fingerprints in `goldens.py` first, then the port stage by stage in `place.py`'s order, each green before the next. The saddle keys and the diagonal-clause removal come as their own step, then the export and the exit check.
+- **Reuse:** M0.1's ported draw and noise; M8.1's `packages/worldgen`, `goldens.py` and golden test across five engines; M0.4's `parseMap`, building-kind tables and Python `write_map`, the reference for a TypeScript writer; M0.5's manifest types; M0.6's generator lints and five-engine harness.
 - **Keep it simple:** bump the map format once, with every new field together, rather than once per field.
 - **Pitfalls:**
   - Beyond round 9's four traps, Python sets iterate in hash order, while a JavaScript `Set` keeps insertion order. Loop over sorted cells where order matters. JavaScript objects also order integer keys ascending, and a sort comparator must return a number.

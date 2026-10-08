@@ -17,7 +17,7 @@
   - below a mean of 8, use stochastic rounding;
   - otherwise, a 4,096-entry inverse-normal table plus `Math.sqrt`, which the sim rules allow;
   - price revisions are the share of firms repricing.
-- **The national layer follows Godley–Lavoie Model REG (R4):**
+- **The national layer follows Godley–Lavoie Model REG (R4).** A world holds 3–5 countries, but they differ only by map facts (owner, 9 October 2026), so this one layer serves every country:
   - one treasury, and a central bank as the only issuer;
   - a uniform national tax;
   - services and police paid per settlement, by Hamilton apportionment;
@@ -29,7 +29,7 @@
   - Gibrat growth with a reflecting floor;
   - a Delaunay → spanning tree → spanner route graph.
 
-  This lets M7 run and be tested before M8's map exists. It is test code only: M8's country map replaces it, and `tools/worldgen` has no Delaunay step.
+  M8.1's real worlds exist before M1 (owner, 9 October 2026), but they list only 40–237 places. So this generator stays for the 1,000- and 10,000-settlement budget tiers and the scaling checks, while tests that need geography use M8.1's worlds. It is test code only, and `tools/worldgen` has no Delaunay step.
 
 ## Packages and files
 

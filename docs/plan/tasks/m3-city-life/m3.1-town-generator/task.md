@@ -2,7 +2,7 @@
 
 Part of [M3 City life](../milestone.md).
 
-The port needs M0.1's keyed draw and noise, M0.4's binary map format and M0.5's sprite manifest types, and passes M0.6's generator lints.
+The port needs M0.1's keyed draw and noise, M0.4's binary map format and M0.5's sprite manifest types, and passes M0.6's generator lints. M8.1, built before M1 (owner, 9 October 2026), already created `packages/worldgen`, extended the lint's glob to it and wrote `tools/worldgen/goldens.py`, so the place port joins its country stages there.
 
 - **Builds:**
   - the two shore saddle keys (`1001`, `0110`) for both shores, 4 frames or 8 with variants, drawn before the port so the corner set is complete and tidying can drop its diagonal clause (R9);

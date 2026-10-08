@@ -15,9 +15,10 @@ Estimates are full-time days for one person coding by hand (unsourced estimates)
 | [M7.7 Spin-up and patrols](m7.7-spin-up-and-patrols/task.md) | A 50–100-year spin-up, skip-ahead, garrisons and road patrols | 2–4 days | | | |
 | **Total** | | **37–59 days** | | | |
 
-Three decisions apply throughout:
+Four decisions apply throughout:
 - **The ledger owns history.** Agents never write it (shadow-canonical), so one seed yields the same country wherever anyone looks.
 - **A year is 112 days.** Annual rates, hazards and test horizons run per 112-day year, and daily hazards come from 1 − (1 − p)^(1/112) in build-time integer tables (Calendar).
-- **Settlement counts are provisional.** Round 9's standard 96×64 world lists only 40–61 places, and M8 re-baselines M7's counts to listed places plus a region tier (R9). Until then, the 1,000- and 10,000-settlement budgets run on M7.1's terrain-free generator.
+- **Real worlds exist before M7.** M8.1's world generator is built before M1 (owner, 9 October 2026), so M7 tests geography on its worlds, and M8.1 re-baselines M7's counts to listed places plus a region tier before M7's step plans (R9). A standard 96×64 world lists only 40–61 places and a large one 182–237, so the 1,000- and 10,000-settlement budgets still run on M7.1's terrain-free generator.
+- **Countries are map facts (owner, 9 October 2026).** A world holds 3–5 countries that differ only by name, map colour, capital, borders and towns. Laws, money and cultures stay shared, so one treasury, issuer and tax serve them all, no ledger rule reads a country id, and trade, migration and commuting cross borders as if they weren't there.
 
 Each sub-milestone has its own folder: `task.md` says what to build and the checks that close it, and `plan.md` says how to build it.

@@ -18,7 +18,7 @@
 - **Wonder views (R9):**
   - a vista of each natural wonder, with props, built by the place code from the wonder's cell;
   - the wonder art exists; wire it in;
-  - M8.3's 11 wonder loops play in full here.
+  - M8.8's 11 wonder loops play in full here.
 
 ## Packages and files
 
@@ -64,7 +64,7 @@ Its own tests:
 Suggestions for the step plan, which makes the final call.
 
 - **Build order:** a strip from route cells, drawn by the town renderer, first, then aligned counts, then patrols and raids, then wonder views and their loops.
-- **Reuse:** M9.1's spawn and switch rules, M9.2's alignment, M7.7's route ledger, M6.1's place code and M8.3's wonder loops.
+- **Reuse:** M9.1's spawn and switch rules, M9.2's alignment, M7.7's route ledger, M6.1's place code and M8.8's wonder loops.
 - **Keep it simple:** strip agents are view-only, keyed by (route, day, event), never notables, and dropped on leave, since the route ledger holds only counts.
 - **Pitfalls:** raids show here, so strip agents show no culture (content rule 8). Bandits look like everyone else until they act (content rule 3). If M7.7 added road stops, wrongful stops are drawn as heavily as arrests (Military).
 - **Hard and easy parts:** fitting moving caravans to daily counts on a compressed strip needs care; wonder views reuse the place code.

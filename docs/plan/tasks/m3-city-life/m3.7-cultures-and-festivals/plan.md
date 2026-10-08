@@ -33,17 +33,20 @@
   - one shared set of festival decorations, never in national-flag colours or the six body hues;
   - the eight culture emblems from `assets/sprites/culture.png`;
   - banner and lens colours that avoid the job colours, and the reds and oranges kept for crime.
-- **Names are generated in the UI,** never stored in the sim, from (seed, id, birth culture):
-  - one shared invented sound set, with naming customs setting the structure;
-  - no gendered forms and no diacritics, and site words kept separate;
-  - shown only in the inspector and the follow-cam.
-- **The full name filter** for people, places and festivals extends M0.6's filter with:
+- **Names come from a stored key (M0.7).** Each blob carries a 32-bit `nameKey`, drawn at birth on the `PERSON_NAME` stream. The sim stores and hashes it but never reads it.
+  - `personName(nameKey)` in `sim-culture` already turns it into "Given Family" from M0.7's word table of the one shared invented sound set, round 8's design H.
+  - This adds the naming custom's structure, set by the birth culture, as `personName()`'s second argument: given and family name, given and parent's given name, or given, "of" and home place.
+  - Every word passes the full filter by construction, since the table keeps only words that pass.
+  - No gendered forms and no diacritics, and site words stay separate.
+  - Names show only in the inspector and the follow-cam.
+- **The full name filter** for people, places and festivals: M0.7 built it before M1 (owner, 9 October 2026). It already holds:
   - distinctive Pokémon town and city names and species names, rejected at edit distance 1 up to 5 letters and 2 above;
   - the "poke" and "-mon" bans;
   - LDNOOBW Latin-script lists, exact for 3-letter entries and substring for 4 or more;
-  - real festival names;
   - M0.6's real-world fixture.
-- **The sound-set screen at authoring time:** trigram similarity to real name bases, where below 0.26 passes, 0.26–0.40 goes to review and above 0.40 fails.
+
+  This adds real festival names, and runs the filter over festival names.
+- **The sound-set screen at authoring time:** design H scored 0.209 in round 8, and M8.1's trigram screen checks M0.7's word tables: below 0.26 passes, 0.26–0.40 goes to review and above 0.40 fails. Any word added for people's names takes the same screen.
 
 ## Packages and files
 
@@ -51,19 +54,18 @@
   - `src/transmission.ts` and `src/adoption.ts`;
   - `src/festivals.ts`: the table, the calendar and attendance;
   - `src/music.ts`;
-  - `src/naming.ts`: name structure and the shared sound set.
+  - `src/naming/`: the naming custom's structure, added to M0.7's `person-name.ts`.
 - `packages/sim-core/src/consumption/festival-demand.ts`: reads the festival calendar, which is allowed in `consumption/`.
-- `apps/web/src/names.ts`: UI-side name generation, and the inspector's Customs tab.
-- `tools/names/`, extending M0.6's filter:
-  - fixtures under `tools/names/fixtures/`. File names never contain the franchise name, so the place and species lists are `avoid-places.txt` and `avoid-species.txt`;
-  - a licence file beside each third-party list. LDNOOBW is CC BY 4.0 and needs attribution.
-- `tools/names/screen.py`: the authoring-time trigram screen against real name bases. Fantasy Map Generator's bases are MIT.
+- `apps/web/src/panels/inspector.ts`, from M0.7: names through `personName()`, and the inspector's Customs tab.
+- `tools/names/`, from M0.7:
+  - a real festival names fixture beside M0.7's `avoid-places.txt`, `avoid-species.txt` and LDNOOBW lists, with its licence file;
+  - M8.1's trigram screen against Fantasy Map Generator's bases (MIT), rerun for any word added for people's names.
 
 ## Interfaces and data
 
 - **Festival record (8 B):** culture uid, day of the year, length in days, a daytime or evening flag, and favoured categories.
 - **Transmission inputs:** the parents' customs nibbles, district custom counts from the day-boundary snapshot, and keyed draws on (seed, child id, purpose).
-- **Name API:** `personName(seed, id, birthCulture): string`. It runs only outside the sim, and is never called by sim code.
+- **Name API:** `personName(nameKey: number, custom: number): string`, extending M0.7's `personName(nameKey)` with the naming custom from the birth culture's customs. It runs only outside the sim, and is never called by sim code.
 
 ## Method and sources
 
@@ -77,8 +79,8 @@
 - `heritage retention bands`: second-generation children keep 40–85% and third-generation children 8–30% of heritage customs, and exogamy rises from the first generation to the second, over 50 seeds × 100 years. This runs on a transmission harness until births arrive.
 - `culture costs ≤ 0.1 ms a day at 10k`: M0.6's budget gate gives the culture day pass ≤ 0.1 ms RM at 10k agents, with zero scavenges across a year of day passes.
 - `festivals are fair`: with equal festival days and timing, mean contact and mean LS do not differ by culture on 50 paired seeds. Each ratio is within 0.95–1.05, a proposed band.
-- `names pass the filter`: 1,000 seeds per culture generate person, place and festival names with no more than 5% rejected, and every accepted name passes the full filter.
-- `sound set passes the screen`: no syllable combination in the shared sound set scores above 0.40, and every one between 0.26 and 0.40 has a recorded review.
+- `names pass the filter`: 1,000 seeds per culture build person and festival names with no more than 5% rejected, and every accepted name passes the full filter. Person names reject none, since every table word passes.
+- `sound set passes the screen`: M8.1's screen scores every word table below 0.40, and any table between 0.26 and 0.40 has a recorded review.
 - The relabel test (M0.6) and every guard keep passing.
 
 ## Risks and unknowns
@@ -88,7 +90,7 @@
 - **Verify first:**
   - round 8's transmission bands, re-run with similar culture shares rather than one 60% culture; these decide the retention bands and the 0.5% inflow default;
   - festival demand spikes, attendance targets, and festival and music transmission rates.
-- **Third-party fixture licences.** LDNOOBW (CC BY 4.0) and Fantasy Map Generator's bases (MIT) need licence notices if committed for CI.
+- **Third-party fixture licences.** M0.7 commits LDNOOBW (CC BY 4.0), and M8.1 Fantasy Map Generator's bases (MIT), each with its licence notice; the festival fixture needs its own.
 
 ## Open questions
 
@@ -101,10 +103,10 @@
 
 Suggestions for the step plan, which makes the final call.
 
-- **Build order:** the name filter and sound-set screen first, as tools with no sim dependency. Then the festival table and attendance, adoption on the stride, the transmission harness, festival demand, music events, UI names, and decorations last.
-- **Reuse:** M0.6's `sim-culture` wall, relabel test, and name and text lints; M0.3's stride scheduler; M2.6's shifts, festival stocking and, if built, its recompute hook; M3.6's isolation counter; M3.3's follow-cam.
+- **Build order:** the filter's festival fixture first, as a tool with no sim dependency. Then the festival table and attendance, adoption on the stride, the transmission harness, festival demand, music events, UI names, and decorations last.
+- **Reuse:** M0.7's `nameKey`, `personName()`, word table and name filter; M8.1's trigram screen; M0.6's `sim-culture` wall, relabel test, and name and text lints; M0.3's stride scheduler; M2.6's shifts, festival stocking and, if built, its recompute hook; M3.6's isolation counter; M3.3's follow-cam.
 - **Pitfalls:**
   - Convert yearly adoption rates to a hazard per 30-day visit, 1 − (1 − p)^(30/112), never p ÷ 3.73 ([calendar.md](../../../calendar.md), "Rescaling rules").
   - Festival contact feeds the isolation counter, LS and then on-the-job search, a path from culture to labour that no import check sees. The fairness check must pass before any festival knob leaves 0.
-  - A change to name generation renames everyone in older saves, so version the generator with the save.
+  - A new word table or naming structure renames everyone in older saves, so version both with the save, as M0.7 notes.
 - **Hard and easy parts:** the transmission bands and festival fairness are the hard parts. The festival table, music preferences and list loading are mechanical.

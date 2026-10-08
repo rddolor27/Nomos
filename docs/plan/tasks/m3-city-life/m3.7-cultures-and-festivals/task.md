@@ -2,7 +2,7 @@
 
 Part of [M3 City life](../milestone.md).
 
-Needs M0.2's culture columns, M0.3's stride scheduler, M0.6's `sim-culture` walls, M2's preference shifts and festival budget, M3.6's isolation counter and M3.3's follow-cam.
+Needs M0.2's culture columns, M0.3's stride scheduler, M0.6's `sim-culture` walls, M2's preference shifts and festival budget, M3.6's isolation counter and M3.3's follow-cam. M0.7 already gives each blob a stored `nameKey` and `personName()`, on a word table of the one shared sound set that passes the full name filter, and M8.1 screens that table; both come before M1 (owner, 9 October 2026), so this reuses them.
 
 - **Builds:**
   - customs passed on at birth from both parents: shared customs kept with fidelity rising from 0.5 to f₁ (0.9 food and naming, 0.95 festival, 0.5 music) as they become locally rare; when parents differ, vertical succession with probability 0.6, following a lead parent 75% of the time; otherwise learning from five district adults with conformity 0.3 (R8);
@@ -14,9 +14,9 @@ Needs M0.2's culture columns, M0.3's stride scheduler, M0.6's `sim-culture` wall
   - demand for a festival's favoured categories raised 2–4× on festival days (an unsourced estimate), funded from the festival budget within the month's discretionary spending, keeping the monthly food total within +5%, never from subsistence (R8);
   - music as an abstract preference (tempo, loudness, structure) with invented style names, and music events at the park or square that buy services, where any services worker may perform any style (R8);
   - one shared set of festival decorations, never in national-flag colours or the six body hues, and the culture emblems in `assets/sprites/culture.png`, drafted on `feat/pixel-sprites` and now on `main`; banner and lens colours also avoid the job colours and the reds and oranges kept for crime; art exists; wire it in (R8);
-  - personal names generated in the UI from (seed, id, birth culture), from one shared invented sound set, with naming customs setting the structure, no gendered forms, no diacritics and site words kept separate, shown only in the inspector and follow-cam (R8);
-  - the name filter for people, places and festivals: distinctive Pokémon town and city names and species names (edit distance 1 up to 5 letters, 2 above), the "poke" and "-mon" bans, LDNOOBW Latin-script lists (exact for 3-letter entries, substring for 4+), real festival names and the real-world fixture (R8);
-  - the shared name sound set screened at authoring time by trigram similarity to real name bases (below 0.26 pass, 0.26–0.40 review, above 0.40 fail) (R8).
+  - personal names read from each blob's stored `nameKey`, drawn at birth on the `PERSON_NAME` stream, and turned into text in the UI by `personName()` from M0.7's word table of the one shared invented sound set; this adds the naming custom's structure, set by the birth culture, as `personName()`'s second argument, with no gendered forms, no diacritics and site words kept separate, shown only in the inspector and follow-cam (R8);
+  - the name filter for people, places and festivals: M0.7 built it, with distinctive Pokémon town and city names and species names (edit distance 1 up to 5 letters, 2 above), the "poke" and "-mon" bans, LDNOOBW Latin-script lists (exact for 3-letter entries, substring for 4+) and the real-world fixture; this adds real festival names and runs the filter over festival names (R8);
+  - the shared name sound set screened at authoring time by trigram similarity to real name bases (below 0.26 pass, 0.26–0.40 review, above 0.40 fail): M0.7 built it from round 8's design H, which scored 0.209, and M8.1's screen checks its word tables; any word added for people's names takes the same screen (R8).
 - **Owner decision first:**
   - customs pass on at birth, but births, partner choice and ageing arrive only in M5. Pull minimal births forward, or test transmission on a harness until then;
   - eight culture emblems share four music styles. Either each culture draws one at world generation, or more styles are written; this also sets M3.8's festival music ([Sound](../../../sound.md)).

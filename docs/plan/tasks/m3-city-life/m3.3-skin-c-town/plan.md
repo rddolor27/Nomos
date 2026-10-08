@@ -6,9 +6,9 @@
 
 ## Approach
 
-- **Skin C is the third skin in the one renderer.** It reuses M1.3's instanced blob pass for people and adds two passes:
-  - **tile pass:** a tile-index texture, read with `texelFetch`, draws the ground in one quad per chunk. Animated tiles step by frame offset (R3).
-  - **roof pass:** roofs and treetops draw over people, so agents walk "under" them.
+- **Skin C is the third skin in the one renderer.** It reuses M1.3's instanced blob pass for people, and two passes for the ground:
+  - **tile pass:** M8.3's, built for the map before M1 (owner, 9 October 2026). A tile-index texture, read with `texelFetch`, draws the ground in one quad per chunk. This adds the town's chunks, and animated tiles stepped by frame offset (R3).
+  - **roof pass,** new: roofs and treetops draw over people, so agents walk "under" them.
 - **Original art first.**
   - The original sprites, on a master palette of at most 64 colours, replace round 3's 32-colour re-index.
   - Ninja Adventure stays a placeholder only: re-download it from its canonical page, confirm the CC0 text, and drop culturally specific tiles (R3, R9).
@@ -26,12 +26,13 @@
 ## Packages and files
 
 - `packages/render-gl`:
-  - `src/skins/town/tile-pass.ts`, `src/skins/town/roof-pass.ts` and `src/skins/town/light.ts`, which extends M1.2's `src/light.ts` with buildings and night overlays;
+  - M8.3's tile pass, given animated tiles and the town's chunks;
+  - `src/skins/town/roof-pass.ts` and `src/skins/town/light.ts`, which extends M1.2's `src/light.ts` with buildings and night overlays;
   - `src/framebuffer-path.ts`;
   - `src/skin.ts`, M0.4's skin switch, where town joins `BUILT_SKINS`;
   - `src/follow-cam.ts`.
-- `tools/atlas/build_atlas.py`, extending M0.5's atlas stub:
-  - packs every frame into atlas pages of at most 2,048², since `houses.png` alone is 2,316 px tall;
+- `tools/atlas/build_atlas.py`, extending M0.5's atlas stub and M8.3's map page:
+  - packs every other frame into town pages of at most 2,048², since `houses.png` alone is 2,316 px tall;
   - writes lossless WebP and an oxipng PNG;
   - writes a frame table keyed by frame name.
 - `assets/third-party/ninja-adventure/`, holding the placeholders with their licence file, or nothing if the original art covers every tile.
@@ -82,8 +83,8 @@
 
 Suggestions for the step plan, which makes the final call.
 
-- **Build order:** the tile pass on M3.1's map first, then the roof pass and the atlas pipeline, then the framebuffer path with its DPR 3 golden. Light periods, auto-skin and the follow-cam come last.
-- **Reuse:** M1.3's instanced blob pass; M0.4's renderer, camera and skin switch; M0.5's atlas stub and manifest types; M3.2's inspector for the thought panel.
+- **Build order:** M8.3's tile pass on M3.1's map first, then the roof pass and the town's atlas pages, then the framebuffer path with its DPR 3 golden. Light periods, auto-skin and the follow-cam come last.
+- **Reuse:** M8.3's tile pass, map atlas page and page loader; M1.3's instanced blob pass; M0.4's renderer, camera and skin switch; M0.5's atlas stub and manifest types; M3.2's inspector for the thought panel.
 - **Keep it simple:** release atlas pages by zoom only if the iPhone measurement shows memory pressure.
 - **Pitfalls:**
   - Until the idle-time atlas loads, auto-skin must stay on dots or blobs.
