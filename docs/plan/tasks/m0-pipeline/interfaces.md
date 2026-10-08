@@ -6,28 +6,122 @@ M0's sub-milestones are planned in parallel, so the names and layouts they share
 
 | Package | Path | Role | Built in |
 | --- | --- | --- | --- |
-| `@nomos/sim-core` | `packages/sim-core` | Pure TypeScript sim with no DOM: draws, noise, calendar, agent store, ledgers, exact maths, and the world step | M0.1–M0.3 |
+| `@nomos/sim-core` | `packages/sim-core` | Pure TypeScript sim with no DOM: draws, noise, calendar, agent store and the `Blob` handle, ledgers and wallets, exact maths, and the world step | M0.1–M0.3, handle and wallets in M0.7 |
 | `@nomos/sim-protocol` | `packages/sim-protocol` | Constants, the snapshot layout, the binary map format, the sprite-manifest schema and the worker messages, shared by every side | M0.3, map in M0.4, sprite manifest in M0.5 |
 | `@nomos/sim-worker` | `packages/sim-worker` | The Web Worker: timing, pause and checkpoints around sim-core's world step | M0.3 |
 | `@nomos/render-gl` | `packages/render-gl` | `WorldRenderer` on WebGL2, with the Canvas2D fallback | M0.4 |
-| `@nomos/web` | `apps/web` | The page: load path, HUD, charts, tiers and accessibility | M0.5 |
+| `@nomos/web` | `apps/web` | The page: load path, HUD, charts, the inspector, tiers and accessibility | M0.5, inspector in M0.7 |
 | `@nomos/cli` | `tools/cli` | Headless runs and replay hashes in Node, through sim-core's world step | M0.3 |
 | `@nomos/bench` | `tools/bench` | The CI budget, allocation and startup gates | M0.6 |
-| `@nomos/sim-culture` | `packages/sim-culture` | Culture code, walled off from crime, police, labour, wage, wealth, ability, housing and migration code | M0.6 |
-| `@nomos/names` | `tools/names` | The name lint, its real-world fixture and the culture text lint; M3.7 extends it | M0.6 |
+| `@nomos/sim-culture` | `packages/sim-culture` | Culture code, walled off from crime, police, labour, wage, wealth, ability, housing and migration code; it also turns name keys into names | M0.6, names in M0.7 |
+| `@nomos/names` | `tools/names` | The name lint, its real-world fixture, the person-name filter and the culture text lint; M3.7 extends it | M0.6, person-name filter in M0.7 |
 
 Dependencies point one way:
 - `sim-core` ← `sim-protocol` ← `sim-worker`;
 - `render-gl` imports only `sim-protocol`;
 - `web` imports `sim-protocol` and `render-gl`, and `sim-worker` only for its `./worker` export, which it starts;
 - `cli` imports `sim-core` and `sim-protocol`;
-- `sim-culture` imports values only from the `@nomos/sim-core/kernels` subpath (the draws, `DAYS_PER_YEAR`, the stream ids `CULTURE` and `FESTIVAL`, and the culture column helpers), whose modules never import it. `sim-core`'s `consumption/` and its orchestration call `sim-culture`, and dependency-cruiser keeps modules acyclic (M0.6).
+- `sim-culture` imports values only from the `@nomos/sim-core/kernels` subpath (the draws, `DAYS_PER_YEAR`, the stream ids `CULTURE` and `FESTIVAL`, and the culture column helpers), whose modules never import it. `sim-core`'s `consumption/` and its orchestration call `sim-culture`, and dependency-cruiser keeps modules acyclic (M0.6);
+- `web` imports `sim-culture` only in `src/panels/inspector.ts`, which loads on demand, for `personName` (M0.7);
+- `tools/names` writes `sim-culture`'s generated `naming/words.ts` and checks it; no package imports `tools/names` at run time (M0.7).
 
 The world step lives in `sim-core`, so headless runs and the worker run the same code.
 
+## Layout (owner: M0.7)
+
+The owner decided on 9 October 2026 that every package groups its source into module folders by concern. The rules:
+- **Entry files only at `src/`:** `index.ts`, a subpath export such as `kernels.ts`, and any file that a package script, CI or a test runs or bundles by path. Every other source file sits in a concern folder directly under `src/`, and a lint reports any that doesn't.
+- **One level of concern folders.** The culture wall matches `packages/sim-*/src/<concern>/`, so `crime`, `police`, `labour`, `wages`, `wealth`, `ability`, `housing` and `migration` are each a top-level folder when they arrive, never nested in another folder.
+- **Named for the concern,** never for a kind of code such as `utils/`. A concern may start with one file and grows in place, so paths and lint globs stay stable.
+- **Imports by path inside a package.** A source module imports another folder's module by its path; only other packages and tests use `index.ts`.
+- **The barrel caveat:** `sim-core`'s `index.ts` re-exports `consumption/stand-in.ts`, which imports `sim-culture`, so the barrel reaches `sim-culture`. In `sim-core`, only `consumption/` and `index.ts` may reach `sim-culture`, which dependency-cruiser enforces; M2.6 adds `step/` when the step first calls consumption. Guarded code elsewhere imports `@nomos/sim-core/kernels` or module paths, never the barrel.
+
+The tables give the layout M0.7 builds, including the files it adds. A renamed file says what it was; every other file keeps its name.
+
+**`packages/sim-core/src`**
+
+| Folder | Files | Concern |
+| --- | --- | --- |
+| `src/` | `index.ts`, `kernels.ts` | The barrel, and the `./kernels` subpath that `sim-culture` imports |
+| `random/` | `draw.ts`, `noise.ts`, `streams.ts` | The keyed draw, value noise and the stream ids |
+| `maths/` | `int.ts`, `log2.ts`, `tables.ts` (generated), `apportion.ts`, `split.ts` | Exact integer maths and apportionment |
+| `time/` | `calendar.ts`, `day-length.ts` (generated) | The calendar and the sunrise table |
+| `memory/` | `arena.ts` (was `memory.ts`), `tiers.ts` | The one reserved memory, and the device tiers |
+| `agents/` | `store.ts`, `actions.ts`, `blob.ts` (new), `nearest.ts` (new) | Agent columns, action and facing codes, the `Blob` handle, and the nearest-blob query |
+| `money/` | `ledger.ts`, `ppm.ts` (was `money.ts`), `claims.ts`, `registry.ts`, `invariants.ts`, `flows.ts`, `histogram.ts` | Cents, accounts, wallets, loans, holdings and the money invariants |
+| `world/` | `world.ts`, `checkpoint.ts` (split from `world.ts`), `ground.ts`, `inputs.ts`, `space.ts` | The `World`, its creation and population; the hash, checkpoints and restore; the ground and the input log |
+| `day/` | `day.ts`, `slices.ts`, `stride.ts` | The day boundary, day slices and the stride scheduler |
+| `movement/` | `wander.ts` | `move` |
+| `step/` | `step.ts`, `warm.ts` | The world step and its warm-up |
+| `consumption/` | `stand-in.ts` | Consumption's stand-in, the one `sim-core` folder that reads culture |
+
+`world/checkpoint.ts` takes `stateHash`, `stateHashExcept`, `checkpoint` and `restoreWorld`; `world/world.ts` keeps the `World`, its global slots, `layoutWorld`, `populate`, `createWorld`, `currentTick` and `committed`.
+
+**`packages/sim-protocol/src`**
+
+| Folder | Files | Concern |
+| --- | --- | --- |
+| `src/` | `index.ts` | The barrel |
+| `snapshot/` | `snapshot.ts`, `visual.ts`, `jobs.ts` | Snapshot v1, the visual word and job ids |
+| `messages/` | `messages.ts`, `lifecycle.ts` | Worker messages and the page lifecycle |
+| `map/` | `map.ts` | The binary map |
+| `sprites/` | `sprite-manifest.ts` (generated) | The sprite-manifest types |
+| `shared/` | `calendar.ts`, `columns.ts` | Constants re-exported from `sim-core`, so `render-gl` and the app never import it |
+
+**`packages/sim-worker/src`:** `index.ts` and `worker.ts` (the `./worker` export) at `src/`, and `loop/loop.ts`.
+
+**`packages/sim-culture/src`:** `index.ts` at `src/`, `festivals/festivals.ts`, `relabel/relabel.ts`, and the new `naming/person-name.ts` and generated `naming/words.ts`.
+
+**`packages/render-gl/src`**
+
+| Folder | Files | Concern |
+| --- | --- | --- |
+| `src/` | `index.ts` | The barrel |
+| `renderer/` | `renderer.ts`, `types.ts` | `createWorldRenderer` and the `WorldRenderer` contract |
+| `backends/` | `webgl.ts`, `canvas2d.ts` | The WebGL2 and Canvas2D painters |
+| `camera/` | `camera.ts`, `device-size.ts` | Camera maths and device-pixel sizing |
+| `skins/` | `skin.ts`, `skin-toggle.ts` | Skin choice, the automatic policy and the toggle |
+| `dots/` | `dots.ts`, `colour.ts`, `minimap.ts`, `skin-a.json` | Skin A: dot shapes, its palette and contrast, and the minimap |
+
+Skin B and Skin C arrive as `blobs/` and `town/` beside `dots/` (M1.3, M3.3).
+
+**`apps/web/src`**
+
+| Folder | Files | Concern |
+| --- | --- | --- |
+| `src/` | `main.ts` | The entry `index.html` loads |
+| `app/` | `app.ts`, `boot.ts`, `lifecycle.ts`, `query.ts`, `tiers.ts` | The app shell: boot hand-off, worker link, query, tiers and the page lifecycle |
+| `view/` | `camera-input.ts` | Pointer and keyboard input on the view, and the click that inspects |
+| `panels/` | `hud.ts`, `charts.ts`, `controls.ts`, `inspector.ts` (new) | The HUD, the lazy charts and controls, and the on-demand inspector |
+
+`apps/web/vite/` keeps the build plugins. Vite names a lazy chunk after its file, so the size-limit globs `charts-*.js` and `controls-*.js` hold after the move, and the inspector's chunk needs its own entry.
+
+**`tools/cli/src`:** `main.ts` only, the entry CI runs.
+
+**`tools/bench/src`**
+
+| Folder | Files | Concern |
+| --- | --- | --- |
+| `src/` | `alloc.ts`, `assert-startup.ts`, `browser-entry.ts`, `budget.ts`, `calibrate.ts`, `chunks.ts` | Entries that package scripts, CI and the budget spec run or bundle by path |
+| `compute/` | `allocation.ts`, `budgets.ts`, `judge.ts`, `sample.ts`, `serve-isolated.ts` | The compute gates' sampling, budget table and verdicts |
+| `machine/` | `benchmark-index.ts`, `LICENSE-lighthouse.txt`, `loadavg.ts` | The machine measured on: its speed index and its load |
+
+**`tools/names/src`**
+
+| Folder | Files | Concern |
+| --- | --- | --- |
+| `src/` | `cli.ts` | The entry `pnpm names` runs |
+| `text/` | `fold.ts`, `edit.ts` | Folding, tokens and edit distance |
+| `filters/` | `franchise.ts`, `real-world.ts`, `name-filter.ts` (new) | The franchise ban, the real-world fixture and the person-name filter |
+| `sound-set/` | `sound-set.ts` (new) | The one shared invented sound set: round 8's design H and its candidate words |
+| `lints/` | `culture-text.ts`, `scan.ts` | The culture text lint and the repo scan |
+
+`tools/names/scripts/` gains `words.ts`, which writes the person-name table into `sim-culture` and checks it with `--check`. M8.1's place-name parts come from the same `sound-set/`.
+
 ## The world step (owner: M0.3)
 
-- **Creation:** `createWorld(seed: number, tier: Tier, ground?: Ground): World`, and `restoreWorld(seed, tier, state: ArrayBuffer, ground?: Ground): World` for checkpoints. A `World` holds the agent store, the ledgers, the tick counter and `world.ground`.
+- **Creation:** `createWorld(seed: number, tier: Tier, ground?: Ground): World`, and `restoreWorld(seed, tier, state: ArrayBuffer, ground?: Ground): World` for checkpoints. A `World` holds the agent store, the ledgers, the tick counter, `world.ground`, and `world.blob`, the world's `Blob` handle, made once in `layoutWorld` (M0.7).
+- **Checks:** while `world.checks` is true, the default, `step` runs `checkInvariants` after every tick. Tests and the CLI keep the default. The worker sets it from `init.checks`, which the app sends as true only from development builds, because wallets make the check cost grow with population (M0.7).
 - **Ground (M0.4):** `{ width, height, walk: Uint8Array }` in `sim-core`, tiles row-major from the top-left, where nonzero means walkable. A `MapV1` is a `Ground`, so `sim-core` never imports `sim-protocol`.
   - The ground is an unhashed input: it stays out of the arena and the hash, and a restore must pass the same ground.
   - Without one, `standInGround()` gives a 256 × 256 all-open square, as in the CLI.
@@ -39,6 +133,28 @@ The world step lives in `sim-core`, so headless runs and the worker run the same
 - `World.cultureUid`: a canonical `Uint8Array(MAX_CULTURES)` of stable culture uids, c + 1 per culture and 0 when unused. Culture-level draws key on it, never on the index (M0.6, R8).
 - Seed 42's replay hashes at tick 1,000, one per tier, live in `packages/sim-core/test/fixtures/goldens.json`, keyed `"<seed>/<tier>"`; the Node, Bun and browser checks all read it. A commit that moves the sim on purpose regenerates it with `node packages/sim-core/scripts/goldens.ts` (M0.6).
 - `Tier` is `'phone' | 'phone-plus' | 'desktop'`, with agent caps of 10,000, 25,000 and 100,000. `sim-protocol` re-exports `Tier` and `TIER_AGENTS` from its `messages.ts` (M0.3).
+
+## Agents and the Blob handle (owner: M0.7)
+
+- **Rows, not objects.** Each blob is one row of `world.agents`' typed columns. The owner decided on 9 October 2026 that code reads and writes a row through a handle object that is made once and re-pointed, never through an object per blob.
+- **The new column:** `nameKey`, a `Uint32Array`, 4 bytes, appended to `AGENT_COLUMNS`. `addAgent` draws it at birth as `draw1(seed, PERSON_NAME, id)`, with the new agent stream `PERSON_NAME` = `AGENT_SALT + 6` (0x106), named apart from the world stream `NAME` that M8.1 adds to `rng.py`. Its low 16 bits pick the given name and its high 16 bits the family name. No sim rule reads it, and the culture lint already bans it from guarded folders.
+- **`Blob`,** in `agents/blob.ts`:
+  - `new Blob(agents: AgentStore, cash: Ledger)` copies the column references it needs. `layoutWorld` makes `world.blob`, and code that needs two rows at once makes its own second handle at world creation, the only other time a `Blob` is made;
+  - `at(index: number): void` re-points it. It returns nothing, so a handle is never held under two names;
+  - `index` (read-only) is the current row;
+  - `x` and `y` (Q8 sub-pixels), `vx` and `vy` (Q8 a tick), `action` and `facing` read and write their columns;
+  - `nameKey` (read-only), `wallet` (read-only, the row's account in `world.cash`) and `cash` (read-only, that account's balance in cents). Money moves only through `transfer`, `issue` and `retire`.
+- Column accessors carry their column's exact name, so the look and culture lints see every read. `Blob` has no `look` accessor, since no sim rule reads a look, and no culture accessors until a consumption system needs one.
+- **Per-tick loops** use the accessors or plain columns, and call no method per blob. A method per blob made `move` 2.0–2.7× slower, while accessors cost 7% (M0.7's brief, measured).
+- `nearestAgent(agents: AgentStore, xQ8: number, yQ8: number, radiusQ8: number): number`, in `agents/nearest.ts`: the nearest blob by squared distance within the radius, ties to the lower index, or −1. It serves the inspector between ticks.
+
+## Wallets (owner: M0.7)
+
+- **One cash account per blob** in `world.cash`, after the settlement accounts: national accounts 0–15, then 4 sector accounts per settlement, then one wallet per agent slot.
+- `createLedger(arena, settlements: number, wallets: number): Ledger`. `Ledger` gains `firstWallet`, and `walletAccount(ledger: Ledger, slot: number): number` returns `firstWallet + slot`. `layoutWorld` passes the tier's agent cap.
+- **Opening balance:** `populate` issues `OPENING_CENTS` from MINT into each new blob's wallet, and no longer funds the households sector account. The owner sets the amount; the stand-in is 100,000 cents (1,000.00), as today's per-agent issue.
+- **Invariants:** wallets are ledger accounts, so `checkCash` covers them, and all accounts plus MINT still sum to zero. The claims rows `debt` and `lent` are sized by `cash.accounts`, so they cover wallets too.
+- **Bytes:** 4 for `nameKey`, 8 for the wallet and 16 for its claims rows, so 28 bytes per agent; at 100k agents the arena grows from 2.29 MB to about 5.09 MB of its 64 MiB (computed). `TIER_MEMORY_BYTES` and snapshot v1 are unchanged; neither fact is drawn.
 
 ## Snapshot v1 (owner: M0.3)
 
@@ -65,15 +181,17 @@ The world step lives in `sim-core`, so headless runs and the worker run the same
 ## Worker messages (owner: M0.3)
 
 - App to worker:
-  - `{ type: 'init', seed, tier, map: ArrayBuffer }`
+  - `{ type: 'init', seed, tier, map: ArrayBuffer, checks: boolean }`; `checks` sets `world.checks`, and the app sends true only from development builds (M0.7)
   - `{ type: 'pause' }` and `{ type: 'resume' }`
   - `{ type: 'return', buffer: ArrayBuffer }`
   - `{ type: 'checkpoint' }`, which the app sends on `pagehide`
+  - `{ type: 'inspect', x, y }`, in world pixels: a read-only query, answered at any time, even while a run plays (M0.7)
 - Worker to app:
   - `{ type: 'ready', agents }`. A tick-0 snapshot follows (M0.4), then the worker waits for `resume`. Under reduced motion the app withholds `resume` (M0.5).
   - `{ type: 'snapshot', tick, count, buffer: ArrayBuffer }`
   - `{ type: 'stats', tick, systemMs: Record<string, number> }`, keyed by `SYSTEM_NAMES` plus `snapshot`, the mean milliseconds per snapshot (M0.3)
   - `{ type: 'checkpoint', tick, state: ArrayBuffer }`, the answer to the app's `checkpoint`
+  - `{ type: 'inspected', tick, agent, nameKey, cents }`, the answer to `inspect`: the nearest blob within one tile (16 world pixels), or `agent` −1 with `nameKey` and `cents` 0 (M0.7)
 - `sim-protocol`'s `bindPageLifecycle(doc, win, post): void` sends `pause` and `resume` on `visibilitychange`, and `checkpoint` on `pagehide`. M0.5 wraps it.
 - Speed controls and skip arrive in M1 (Calendar); the worker refuses settings messages while a run plays.
 
@@ -105,6 +223,7 @@ The world step lives in `sim-core`, so headless runs and the worker run the same
 - Other exports:
   - `Camera` is `{ x, y, zoom }`: the world pixel at the view's top-left, and whole device pixels per texel, from `MIN_ZOOM` 1 to `MAX_ZOOM` 16;
   - `fitCamera(mapWidth, mapHeight, deviceWidth, deviceHeight)`, with the map in tiles; `zoomAt(camera, zoom, deviceX, deviceY)`; `panBy(camera, dxDevice, dyDevice)`, where a positive delta moves the view right or down; `snapCamera(camera)`; and `cssPxPerTile(zoom, dpr)`. The first four return a new `Camera`;
+  - `worldAt(camera, deviceX, deviceY): [number, number]`, the world pixel under a device pixel, which `zoomAt` also uses (M0.7);
   - `observeDeviceSize(element, onSize, forceFallback?)` calls `onSize(deviceWidth, deviceHeight, dpr)` as the element resizes and returns an unsubscribe function;
   - `skinFromQuery`, `builtSkin`, `autoSkin`, and `mountSkinToggle(parent, renderer: SkinRenderer, initial: Skin | 'auto')`;
   - `CANVAS2D_AGENT_CAP` = 5,000, the most agents in view that Canvas2D draws (R2);
@@ -115,3 +234,8 @@ The world step lives in `sim-core`, so headless runs and the worker run the same
 - `@nomos/sim-core/kernels` exports `draw1`–`draw4`, `DAYS_PER_YEAR`, the stream ids `CULTURE` (0x101) and `FESTIVAL` (0x105), `customOf`, `withCustom`, `CUSTOM_FOOD`, `CUSTOM_FESTIVAL`, `CUSTOM_MUSIC`, `CUSTOM_NAMING` and `MAX_CULTURES` (8). Later code adds more.
 - `sim-culture` exports `STAND_IN_FESTIVAL_DAYS` (10) and `festivalToday(seed, uid, day): boolean`, true when `draw2(seed, FESTIVAL, uid, day) % DAYS_PER_YEAR < STAND_IN_FESTIVAL_DAYS`. Callers pass a uid from `World.cultureUid`, never a culture's index, and M3.7's festival table replaces it.
 - `sim-core`'s `festivalShoppers(world, day): number`, in `consumption/stand-in.ts` and exported from its index, counts the agents whose festival custom's culture holds a festival that day. It stands in for consumption until M2.6, and the step never calls it.
+- **Names (M0.7, R8):**
+  - `sim-culture` exports `personName(nameKey: number): string`, "Given Family" with each word capitalised. The given word is `NAME_WORDS[(nameKey & 0xffff) % NAME_WORDS.length]` and the family word the same over `nameKey >>> 16`, moved to the next word when the two would match.
+  - `NAME_WORDS`, in the generated `naming/words.ts`, holds 1,024 words of the shared sound set in `tools/names/src/sound-set/`, each 4 or more letters and each passing `tools/names`' person-name filter. `node tools/names/scripts/words.ts` rebuilds it, and `--check` fails when it is stale.
+  - Names are text only on screen: the sim stores the key, and only the app's inspector calls `personName`. M3.7 adds the naming custom's structure, such as given and parent's given name, as a second argument.
+- **The person-name filter (M0.7, R3, R8):** `tools/names`' `rejectName(word: string): string | null` returns the rule a word breaks, or null. It joins M0.6's franchise ban and real-world fixture with distinctive Pokémon town and city names and species names, at edit distance 1 up to 5 letters and 2 above, and the LDNOOBW Latin-script lists, exact for 3-letter entries and by substring for 4 or more. M3.7 adds real festival names and runs it over places and festivals.
