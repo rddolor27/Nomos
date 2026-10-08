@@ -24,3 +24,4 @@ export * from './wander.ts';
 export * from './step.ts';
 export * from './inputs.ts';
 export * from './day.ts';
+export * from './stride.ts';
