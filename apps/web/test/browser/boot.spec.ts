@@ -43,6 +43,14 @@ test('says when the map is missing', async ({ page }) => {
   await expect(page.locator('#status')).toContainText('map');
 });
 
+test('says when the map cannot be read', async ({ page }) => {
+  await page.route('**/assets/maps/**', (route) =>
+    route.fulfill({ status: 200, contentType: 'application/x-protobuf', body: 'these bytes are not a map' }),
+  );
+  await page.goto(TOWN);
+  await expect(page.locator('#status')).toContainText('could not be read');
+});
+
 test('says when the worker fails before the app listens', async ({ page }) => {
   await page.route('**/assets/worker-*.js', (route) => route.fulfill({ status: 404 }));
   // The entry chunk arrives only after the worker has failed, so the app's own error listener comes too late for it.
