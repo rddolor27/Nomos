@@ -231,4 +231,30 @@ describe('the sim loop', () => {
     page.advance(1_000);
     expect(page.tick()).toBe(20);
   });
+
+  it("delays a slowed worker's replies", () => {
+    const WORK_MS = 100;
+    // Ms from init to ready, on a clock that each reading moves 0.25 ms, so a busy-wait on it always ends.
+    function readyAfterMs(cpuSlowdown: number): number {
+      let clock = 0;
+      let readyAtMs = -1;
+      const host: LoopHost = {
+        now: () => (clock += 0.25),
+        sleep: () => {},
+        yieldNow: () => {},
+        post: (msg) => {
+          if (msg.type === 'ready') readyAtMs = clock;
+        },
+        makeWorld: (seed, tier) => {
+          clock += WORK_MS;
+          return createWorld(seed, tier);
+        },
+      };
+      createSimLoop(host, cpuSlowdown).handle({ type: 'init', seed: 42, tier: 'phone', map: new ArrayBuffer(0) });
+      return readyAtMs;
+    }
+    expect(readyAfterMs(4)).toBeGreaterThanOrEqual(4 * WORK_MS);
+    expect(readyAfterMs(1)).toBeGreaterThan(WORK_MS);
+    expect(readyAfterMs(1)).toBeLessThan(2 * WORK_MS);
+  });
 });

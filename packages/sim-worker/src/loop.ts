@@ -42,12 +42,15 @@ interface Session {
 type SnapshotMessage = Extract<WorkerMessage, { type: 'snapshot' }>;
 type StatsMessage = Extract<WorkerMessage, { type: 'stats' }>;
 
-export function createSimLoop(host: LoopHost): { handle(msg: AppMessage): void } {
+// cpuSlowdown stands in for CDP's CPU throttling, which skips workers: the startup gate sets it (R5 load notes §2).
+export function createSimLoop(host: LoopHost, cpuSlowdown = 1): { handle(msg: AppMessage): void } {
   let session: Session | null = null;
   let running = false;
   let turnPending = false;
   let lastMs = 0;
   let accMs = 0;
+  // When the work the next reply waits on began: the message, the turn or the last reply.
+  let workFromMs = 0;
 
   // Sums since the last stats message, which reports them as means.
   const systemMsSum = new Float64Array(SYSTEM_NAMES.length);
@@ -74,6 +77,7 @@ export function createSimLoop(host: LoopHost): { handle(msg: AppMessage): void }
   };
 
   function handle(msg: AppMessage): void {
+    workFromMs = host.now();
     if (msg.type === 'init') {
       init(msg.seed, msg.tier, msg.map);
       return;
@@ -91,7 +95,7 @@ export function createSimLoop(host: LoopHost): { handle(msg: AppMessage): void }
     const world = host.makeWorld(seed, tier, map);
     const pool = createSnapshotPool(world.agents.capacity);
     session = { world, pool };
-    host.post({ type: 'ready', agents: world.agents.count[0] }, []);
+    post({ type: 'ready', agents: world.agents.count[0] }, []);
     // The spawn, so a page that starts paused, as under reduced motion, still draws its agents (M0.5).
     postSnapshot(world, pool);
   }
@@ -111,6 +115,7 @@ export function createSimLoop(host: LoopHost): { handle(msg: AppMessage): void }
     if (!running || session === null) return;
     const world = session.world;
     const startMs = host.now();
+    workFromMs = startMs;
     accMs = Math.min(accMs + (startMs - lastMs), MAX_GAP_MS);
     lastMs = startMs;
     let ticks = 0;
@@ -143,7 +148,7 @@ export function createSimLoop(host: LoopHost): { handle(msg: AppMessage): void }
     snapshotMsg.tick = currentTick(world);
     snapshotMsg.buffer = view.buffer;
     snapshotTransfer[0] = view.buffer;
-    host.post(snapshotMsg, snapshotTransfer);
+    post(snapshotMsg, snapshotTransfer);
   }
 
   function postStats(world: World, nowMs: number): void {
@@ -154,7 +159,7 @@ export function createSimLoop(host: LoopHost): { handle(msg: AppMessage): void }
     }
     systemMs.snapshot = meanMs(snapshotMsSum, snapshotsTimed);
     statsMsg.tick = currentTick(world);
-    host.post(statsMsg, noTransfer);
+    post(statsMsg, noTransfer);
     ticksTimed = 0;
     snapshotMsSum = 0;
     snapshotsTimed = 0;
@@ -163,7 +168,22 @@ export function createSimLoop(host: LoopHost): { handle(msg: AppMessage): void }
 
   function postCheckpoint(world: World): void {
     const state = checkpoint(world);
-    host.post({ type: 'checkpoint', tick: currentTick(world), state }, [state]);
+    post({ type: 'checkpoint', tick: currentTick(world), state }, [state]);
+  }
+
+  // Waits before the post rather than after the handler, which would come too late: init posts ready and the spawn
+  // that the page's first frame waits for before it returns.
+  function post(msg: WorkerMessage, transfer: Transferable[]): void {
+    if (cpuSlowdown > 1) waitAsSlowerCpu();
+    host.post(msg, transfer);
+    workFromMs = host.now();
+  }
+
+  // A CPU cpuSlowdown times slower would still be working, so spin until it would have sent this reply.
+  function waitAsSlowerCpu(): void {
+    let nowMs = host.now();
+    const sendAtMs = nowMs + (cpuSlowdown - 1) * (nowMs - workFromMs);
+    while (nowMs < sendAtMs) nowMs = host.now();
   }
 
   return { handle };
