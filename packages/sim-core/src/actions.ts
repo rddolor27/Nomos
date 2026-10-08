@@ -9,7 +9,6 @@ export const ACTION_CARRY = 7;
 
 export const ACTION_NAMES: readonly string[] = ['idle', 'walk', 'sit', 'sleep', 'work', 'talk', 'sneak', 'carry'];
 
-// Opposite facings differ in bit 1, so facing ^ 2 turns an agent around.
 export const FACING_DOWN = 0;
 export const FACING_LEFT = 1;
 export const FACING_UP = 2;

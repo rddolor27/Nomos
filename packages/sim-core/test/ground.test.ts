@@ -42,7 +42,7 @@ describe('the ground', () => {
     const { count, x, y } = world.agents;
     expect(count[0]).toBe(10_000);
     expect(agentsOutsideRoom(world)).toBe(0);
-    // 139 agents a tile still spawn at keyed points of their own, so none stack.
+    // For seed 42, 139 agents a tile still spawn at keyed points of their own, so none stack.
     expect(agentsSharingASpot(world)).toBe(0);
     const spawnX = x.slice();
     const spawnY = y.slice();
@@ -61,7 +61,8 @@ describe('the ground', () => {
     const { x, y } = createWorld(42, 'phone').agents;
     const d = draw2(42, SPAWN, 0, 1);
     expect([x[0] % TILE_Q8, y[0] % TILE_Q8]).toEqual([d & 4_095, (d >>> 12) & 4_095]);
-    // 10,000 agents on 100 open tiles, ten times as crowded as the phone tier on the town's 958, never share a point.
+    // 10,000 agents on 100 open tiles, ten times as crowded as the phone tier on the town's 958, never share a point
+    // for seed 42.
     const walk = new Uint8Array(32 * 32);
     walk.fill(1, 0, 100);
     const crowded = layoutWorld(42, 'phone', 10_000, PHONE_MEMORY_BYTES, { width: 32, height: 32, walk });

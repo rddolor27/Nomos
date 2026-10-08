@@ -63,6 +63,32 @@ function stepOf(heading: number): [number, number] {
   return [WALK_X_Q8[h], WALK_Y_Q8[h]];
 }
 
+// Walks a blob into a wall on every heading whose step has a positive part across it, from one sub-pixel off the wall
+// (across is that part's table, and the wall runs along headings alongA and alongB). Each must leave at half its
+// angle to the wall, rounded up, pointing away, and not straight back.
+function badWallExits(
+  ground: Ground,
+  xQ8: number,
+  yQ8: number,
+  across: Int16Array,
+  alongA: number,
+  alongB: number,
+): string[] {
+  const bad: string[] = [];
+  for (let h = 0; h < 256; h++) {
+    if (across[h] <= 0) continue;
+    const world = walkerAt(ground, xQ8, yQ8, h);
+    step(world);
+    const turned = world.agents.heading[0];
+    const intoWall = Math.min(Math.abs(signedTurn(alongA, h)), Math.abs(signedTurn(alongB, h)));
+    const offWall = Math.min(Math.abs(signedTurn(alongA, turned)), Math.abs(signedTurn(alongB, turned)));
+    if (across[turned] >= 0 || offWall !== Math.ceil(intoWall / 2) || turned === ((h + 128) & 255)) {
+      bad.push(`heading ${h} turned to ${turned}`);
+    }
+  }
+  return bad;
+}
+
 describe('the walking steps', () => {
   it('walks every heading at 4 px a tick, clockwise from down', () => {
     expect([WALK_X_Q8, WALK_Y_Q8].map((walk) => [walk.constructor, walk.length])).toEqual([
@@ -227,20 +253,29 @@ describe('free-heading movement', () => {
     expect(motion(world)).toEqual([edgeQ8, MIDDLE_Q8, 96, -724, -724, FACING_UP, ACTION_WALK]);
   });
 
-  it('leaves every wall it meets, never straight back and never along it', () => {
-    const bad: string[] = [];
-    for (let h = 0; h < 256; h++) {
-      if (WALK_Y_Q8[h] <= 0) continue;
-      const world = walkerAt(groundWith(row(4)), 3 * TILE_Q8 + 2_048, 4 * TILE_Q8 - 1, h);
-      step(world);
-      const turned = world.agents.heading[0];
-      const intoWall = Math.min(Math.abs(signedTurn(64, h)), Math.abs(signedTurn(192, h)));
-      const offWall = Math.min(Math.abs(signedTurn(64, turned)), Math.abs(signedTurn(192, turned)));
-      if (WALK_Y_Q8[turned] >= 0 || offWall !== Math.ceil(intoWall / 2) || turned === ((h + 128) & 255)) {
-        bad.push(`heading ${h} turned to ${turned}`);
-      }
-    }
-    expect(bad).toEqual([]);
+  it('turns a whole crowd off the map edge, across the walking chunks', () => {
+    const blobs = 2_048;
+    const tick = 1;
+    const edgeQ8 = SIDE * TILE_Q8 - 1;
+    const world = layoutWorld(42, 'phone', blobs, 1_048_576, groundWith([]));
+    populate(world);
+    for (let i = 0; i < blobs; i++) setWalker(world, i, edgeQ8, 16 * i, 192);
+    world.globals[TICK] = tick;
+    step(world);
+    const { x, heading } = world.agents;
+    // A blob due for a redraw this tick may pick a new heading before it walks.
+    const unturned: number[] = [];
+    for (let i = 0; i < blobs; i++) if ((tick + i) % 16 !== 0 && heading[i] !== 96) unturned.push(i);
+    expect(unturned).toEqual([]);
+    expect(x.subarray(0, blobs).every((xQ8) => xQ8 <= edgeQ8)).toBe(true);
+  });
+
+  it('leaves every row wall it meets, never straight back and never along it', () => {
+    expect(badWallExits(groundWith(row(4)), 3 * TILE_Q8 + 2_048, 4 * TILE_Q8 - 1, WALK_Y_Q8, 64, 192)).toEqual([]);
+  });
+
+  it('leaves every column wall it meets, never straight back and never along it', () => {
+    expect(badWallExits(groundWith(column(4)), 4 * TILE_Q8 - 1, 3 * TILE_Q8 + 2_048, WALK_X_Q8, 0, 128)).toEqual([]);
   });
 
   it('keeps every blob on open ground among scattered walls', () => {

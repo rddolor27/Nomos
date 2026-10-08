@@ -18,7 +18,8 @@ const START_ROLLS = 3;
 const ALONG_X = 64;
 const ALONG_Y = 0;
 // The walking loop only lists a chunk's blocked agents, and meetWall turns them once the chunk has walked. Any wall
-// work inside the loop, even a call-free mirror, took move at 100k from 0.41 to 0.6-1.1 ms, against 0.8 (measured).
+// work inside the loop, even a call-free mirror, took move at 100k from 0.41 to 0.6-1.1 ms. As built, move measured
+// 0.53 ms at 100k (Node 24.18.0), against the 0.8 ms budget.
 const WALK_CHUNK = 1_024;
 const blocked = new Int32Array(WALK_CHUNK);
 
