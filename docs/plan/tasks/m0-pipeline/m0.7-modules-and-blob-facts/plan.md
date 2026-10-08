@@ -135,8 +135,8 @@
 
 - [interfaces.md](../interfaces.md) holds the contract this plan refines: "Layout", "Agents and the Blob handle", "Wallets", the new worker messages, `worldAt`, and "Names" and the person-name filter under "Culture".
 - **Bytes per agent:** 4 for `nameKey`, 8 for the wallet and 16 for its claims rows, 28 in all.
-- **Arena tops** before and after (computed from measured tops): 381 KB to 661 KB of 32 MiB on phones, 698 KB to 1.40 MB of 32 MiB at 25k, and 2.29 MB to 5.09 MB of 64 MiB at 100k. The warm-up world grows from 191 KB to 220 KB of its 1 MiB. `TIER_MEMORY_BYTES` stays.
-- **Snapshot v1 stays 12 bytes:** no blob fact is drawn. Checkpoints grow with the arena, to about 5.1 MB at 100k (computed).
+- **Arena tops** before and after (computed from tops measured before the movement heading, plus its 1 byte per agent): 391 KB to 671 KB of 32 MiB on phones, 723 KB to 1.42 MB of 32 MiB at 25k, and 2.39 MB to 5.19 MB of 64 MiB at 100k. The warm-up world grows from 192 KB to 221 KB of its 1 MiB. `TIER_MEMORY_BYTES` stays.
+- **Snapshot v1 stays 12 bytes:** no blob fact is drawn. Checkpoints grow with the arena, to about 5.2 MB at 100k (computed).
 
 ## Method and sources
 
