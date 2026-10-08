@@ -42,7 +42,7 @@ An edition is a pure function of the records: edition(settlement, day) = f(recor
 - **The panel:** a paper-styled panel in the HUD, in HTML rather than canvas so screen readers can read it. A dot on the gazette button marks a new edition, and the run never pauses for it. Back issues browse by date, and a replay that seeks to a date shows that day's edition.
 - **Follow the news:** an opt-in camera that, at 4× and 16×, eases to the place of the front-page story with each new edition. It answers the open question about steering at fast speeds (Time & calendar).
 - **The year-end edition** is the year-in-review card, printed as the gazette's special issue.
-- **Country mode** keeps one paper per town, built from each town's ledger (owner, 7 October 2026), and adds a national gazette from the aggregate ledgers: harvests, prices, migration and recorded raids on the roads.
+- **Country mode** keeps one paper per town, built from each town's ledger (owner, 7 October 2026), and adds a gazette for each country from its aggregate ledgers: harvests, prices, migration and recorded raids on its roads (owner, 9 October 2026, for a world of 3–5 countries).
 - **Cost:** an edition is a few hundred bytes of text from tens of records a day, well under 1 ms to build (unsourced estimate).
 - **Art and sound:** a rolled-paper button icon at 16 and 8 px, and a paper panel frame. No new sound: a new edition shows only the dot.
 
@@ -55,7 +55,7 @@ The gazette takes about 5.5–9 days, all before launch (unsourced estimate). Ea
 | M3 City life | The core: record queries, story priorities, templates, the daily edition and the panel with back issues, with town, market and calendar sections (2–3); the button icon and panel frame (0.5–1) | 2.5–4 |
 | M4 Crime and police | The justice column, the true-view margin note and the audits | 1–2 |
 | M5 Society and policy | The year-end edition and the follow-the-news camera | 1 |
-| M8 Country map | Each town's paper from its ledger, and the national gazette | 1–2 |
+| M8 Country map | Each town's paper from its ledger, and a gazette per country | 1–2 |
 
 **Exit checks:**
 
@@ -64,7 +64,7 @@ The gazette takes about 5.5–9 days, all before launch (unsourced estimate). Ea
 - M4: over 50 paired seeds, the justice column's counts equal the recorded counts, never the true ones.
 - M4: no justice story carries a name, culture, look or wealth term; a wrongful stop and an arrest get the same priority; and the culture flip test leaves every story outside festivals unchanged.
 - M5: the follow-the-news camera is off by default and never changes the state hash, and the year-end edition never breaks figures down by culture.
-- M8: the national edition's figures equal the ledgers' recorded figures.
+- M8: every figure in each country's edition equals its recorded ledger figure.
 
 ## Open questions
 
