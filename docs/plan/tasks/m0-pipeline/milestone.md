@@ -9,12 +9,12 @@ Estimates are full-time days for one person coding by hand (unsourced estimates)
 | [M0.1 Workspace and kernels](m0.1-workspace-and-kernels/task.md) | The workspace, CI, the keyed draw, integer noise and the calendar | 2–3 days | 8 Oct 2026, 15:45 | 8 Oct 2026, 16:20 | 35 min, 4 agents |
 | [M0.2 State and money](m0.2-state-and-money/task.md) | One preallocated memory for agents, and money that always balances | 3–5 days | 8 Oct 2026, 16:33 | 8 Oct 2026, 17:16 | 43 min, 4 agents |
 | [M0.3 Loop and protocol](m0.3-loop-and-protocol/task.md) | The sim worker at 10 ticks a second, the day boundary and snapshots | 3–4 days | 8 Oct 2026, 17:09 | 8 Oct 2026, 18:22 | 73 min, 4 agents |
-| [M0.4 Renderer and Skin A](m0.4-renderer-and-skin-a/task.md) | One WebGL2 renderer drawing 10,000 agents as dots over a map | 4–6 days | | | |
+| [M0.4 Renderer and Skin A](m0.4-renderer-and-skin-a/task.md) | One WebGL2 renderer drawing 10,000 agents as dots over a map | 4–6 days | 8 Oct 2026, 18:20 | 8 Oct 2026, 23:19 | 195 min of work, 4–6 agents (plus a 1 h 44 min pause when usage ran out) |
 | [M0.5 Web app](m0.5-web-app/task.md) | The page a visitor opens: first frame, HUD, charts, tiers, accessibility | 3–4 days | | | |
 | [M0.6 Gates and guards](m0.6-gates-and-guards/task.md) | CI gates that enforce every rule the plan relies on | 3–5 days | | | |
 | **Total** | | **18–27 days** | | | |
 
-M0.1 took 35 minutes, M0.2 43 and M0.3 73 of Claude Code time, each with four agents working in parallel: 8–12 estimated days in 151 minutes, or 13–19 minutes per estimated day. The estimates stay in days by hand, so they keep their relative sizes. At this pace the rest of M0 (10–15 days) takes about 2–5 hours, and everything before launch (331–519 days) about 70–165 hours. From M1 the plans are briefs, not step plans, so expect a slower pace there (inference).
+M0.1 took 35 minutes, M0.2 43, M0.3 73 and M0.4 195 of Claude Code time, each with four to six agents working in parallel: 12–18 estimated days in 346 minutes, or 19–29 minutes per estimated day. M0.4's browser testing in three engines made it slower than the sim sub-milestones. The estimates stay in days by hand, so they keep their relative sizes. At this pace the rest of M0 (6–9 days) takes about 2–4.5 hours, and everything before launch (331–519 days) about 105–250 hours. From M1 the plans are briefs, not step plans, so expect a slower pace there (inference).
 
 Two decisions apply throughout:
 - **One keyed draw.** Rounds 4 and 9 replace round 1's seeded sfc32 streams with the stateless `draw(seed, stream, ...keys)` from `tools/worldgen/rng.py`, so every package draws the same way the world generator does.
