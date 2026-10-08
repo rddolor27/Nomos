@@ -1,9 +1,9 @@
 import { createClaims, type Claims } from './claims.ts';
-import { draw2, mix } from './draw.ts';
+import { below, mix } from './draw.ts';
+import { openCells, standInGround, tileCentreQ8, type Ground } from './ground.ts';
 import { createInputLog, type InputLog } from './inputs.ts';
 import { HOUSEHOLDS, createLedger, issue, sectorAccount, type Ledger } from './ledger.ts';
 import { reserveArena, take, type Arena } from './memory.ts';
-import { SUBPIXELS, TILE_PX } from './space.ts';
 import { addAgent, createAgentStore, type AgentStore } from './store.ts';
 import { SPAWN, STRIDE } from './streams.ts';
 import { STRIDE_DAYS, createStride, type Stride } from './stride.ts';
@@ -22,9 +22,7 @@ export const RECORD_POPULATION = 1;
 export const RECORD_WALKING = 2;
 export const RECORD_FIELDS = 3;
 
-// The stand-in world until M0.4's map.
-const MAP_TILES = 256;
-const EXTENT_Q8 = MAP_TILES * TILE_PX * SUBPIXELS;
+// Stand-ins until later milestones supply settlements, cultures, loans and money.
 const SETTLEMENTS = 8;
 const CULTURES = 4;
 const LOAN_CAPACITY = 4_096;
@@ -44,18 +42,28 @@ export interface World {
   readonly inputs: InputLog;
   // The watched settlement, or -1. Watching never writes canonical state (R4's shadow-canonical history).
   readonly focus: Int32Array;
-  readonly extent: number;
+  readonly ground: Ground;
   checks: boolean;
 }
 
-export function createWorld(seed: number, tier: Tier): World {
-  const world = layoutWorld(seed, tier, TIER_AGENTS[tier], TIER_MEMORY_BYTES[tier]);
+export function createWorld(seed: number, tier: Tier, ground?: Ground): World {
+  const world = layoutWorld(seed, tier, TIER_AGENTS[tier], TIER_MEMORY_BYTES[tier], ground);
   populate(world);
   return world;
 }
 
 // No take is caught: create* is not atomic across its takes, so a world that does not fit is dropped whole.
-export function layoutWorld(seed: number, tier: Tier, agents: number, memoryBytes: number): World {
+export function layoutWorld(
+  seed: number,
+  tier: Tier,
+  agents: number,
+  memoryBytes: number,
+  ground: Ground = standInGround(),
+): World {
+  // A short walk would read as open past its end.
+  if (ground.walk.length !== ground.width * ground.height) {
+    throw new RangeError(`a ${ground.width} x ${ground.height} ground needs ${ground.width * ground.height} walk cells`);
+  }
   const arena = reserveArena(memoryBytes);
   const globals = take(arena, Int32Array, GLOBAL_SLOTS, true);
   const store = createAgentStore(arena, agents);
@@ -78,7 +86,7 @@ export function layoutWorld(seed: number, tier: Tier, agents: number, memoryByte
     stride,
     inputs,
     focus,
-    extent: EXTENT_Q8,
+    ground,
     checks: true,
   };
 }
@@ -87,12 +95,14 @@ export function populate(world: World): void {
   const seed = world.seed;
   const agents = world.agents;
   const people = agents.capacity;
-  // extent is a power of two, so the mask keeps every draw on the map.
-  const mask = world.extent - 1;
+  const width = world.ground.width;
+  const open = openCells(world.ground);
+  if (open.length === 0) throw new RangeError('the ground has no walkable cell to spawn on');
   for (let id = 0; id < people; id++) {
     const slot = addAgent(agents, seed, id, CULTURES, 0);
-    agents.x[slot] = draw2(seed, SPAWN, id, 0) & mask;
-    agents.y[slot] = draw2(seed, SPAWN, id, 1) & mask;
+    const cell = open[below(open.length, seed, SPAWN, id, 0)];
+    agents.x[slot] = tileCentreQ8(cell % width);
+    agents.y[slot] = tileCentreQ8(Math.floor(cell / width));
   }
   issue(world.cash, sectorAccount(0, HOUSEHOLDS), STARTING_CENTS * people);
   // Nothing is committed before the first day's last slice.
@@ -127,8 +137,8 @@ export function checkpoint(world: World): ArrayBuffer {
   return world.arena.memory.buffer.slice(0, world.arena.top);
 }
 
-export function restoreWorld(seed: number, tier: Tier, state: ArrayBuffer): World {
-  const world = layoutWorld(seed, tier, TIER_AGENTS[tier], TIER_MEMORY_BYTES[tier]);
+export function restoreWorld(seed: number, tier: Tier, state: ArrayBuffer, ground?: Ground): World {
+  const world = layoutWorld(seed, tier, TIER_AGENTS[tier], TIER_MEMORY_BYTES[tier], ground);
   if (state.byteLength !== world.arena.top) {
     throw new RangeError(`a ${tier} checkpoint holds ${world.arena.top} bytes, not ${state.byteLength}`);
   }

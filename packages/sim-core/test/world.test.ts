@@ -18,6 +18,7 @@ import {
 import { run } from './run.ts';
 
 const TIERS: readonly Tier[] = ['phone', 'phone-plus', 'desktop'];
+const TILE_Q8 = 16 * 256;
 const WALK_Q8 = 1_024;
 const WALK_VELOCITY_Q8: Record<number, readonly [number, number]> = {
   [FACING_DOWN]: [0, WALK_Q8],
@@ -28,9 +29,11 @@ const WALK_VELOCITY_Q8: Record<number, readonly [number, number]> = {
 
 function agentsOffMap(world: World): number[] {
   const { count, x, y } = world.agents;
+  const widthQ8 = world.ground.width * TILE_Q8;
+  const heightQ8 = world.ground.height * TILE_Q8;
   const ids: number[] = [];
   for (let i = 0; i < count[0]; i++) {
-    if (x[i] < 0 || x[i] >= world.extent || y[i] < 0 || y[i] >= world.extent) ids.push(i);
+    if (x[i] < 0 || x[i] >= widthQ8 || y[i] < 0 || y[i] >= heightQ8) ids.push(i);
   }
   return ids;
 }
@@ -50,8 +53,8 @@ function agentsMovingWrongly(world: World): number[] {
 describe('the world step', () => {
   it('gives seed 42 the same state hash at tick 1,000 across runs', () => {
     const hash = stateHash(run(createWorld(42, 'phone'), 1_000));
-    // Pinned, because CI's two-run diff can't see a change in behaviour; M0.4's map moves it.
-    expect(hash).toBe(0x014e7d71);
+    // Pinned, because CI's two-run diff can't see a change in behaviour.
+    expect(hash).toBe(0xd9bc671b);
     expect(stateHash(run(createWorld(42, 'phone'), 1_000))).toBe(hash);
     expect(stateHash(run(createWorld(43, 'phone'), 1_000))).not.toBe(hash);
   });
@@ -59,7 +62,7 @@ describe('the world step', () => {
   it('walks agents on the map in whole sub-pixels', () => {
     const world = run(createWorld(42, 'phone'), 1_000);
     const { count, x, y, action } = world.agents;
-    expect(world.extent).toBe(2 ** 20);
+    expect(world.ground.width * TILE_Q8).toBe(2 ** 20);
     expect(x).toBeInstanceOf(Int32Array);
     expect(y).toBeInstanceOf(Int32Array);
     expect(agentsOffMap(world)).toEqual([]);
@@ -73,17 +76,18 @@ describe('the world step', () => {
     const world = layoutWorld(42, 'phone', 1, 1_048_576);
     populate(world);
     const { x, vx, vy, action, facing } = world.agents;
+    const edgeQ8 = world.ground.width * TILE_Q8 - 1;
     action[0] = ACTION_WALK;
     facing[0] = FACING_RIGHT;
     vx[0] = WALK_Q8;
     vy[0] = 0;
-    x[0] = world.extent - 1;
+    x[0] = edgeQ8;
     world.globals[TICK] = 1; // agent 0 re-draws only on ticks divisible by 64
 
     step(world);
-    expect([x[0], facing[0], vx[0], vy[0]]).toEqual([world.extent - 1, FACING_LEFT, -WALK_Q8, 0]);
+    expect([x[0], facing[0], vx[0], vy[0]]).toEqual([edgeQ8, FACING_LEFT, -WALK_Q8, 0]);
     step(world);
-    expect(x[0]).toBe(world.extent - 1 - WALK_Q8);
+    expect(x[0]).toBe(edgeQ8 - WALK_Q8);
   });
 
   it('checks the money invariants every tick in development', () => {

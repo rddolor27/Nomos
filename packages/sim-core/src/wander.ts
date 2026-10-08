@@ -1,5 +1,6 @@
 import { ACTION_IDLE, ACTION_WALK } from './actions.ts';
 import { draw2 } from './draw.ts';
+import { walkableAt } from './ground.ts';
 import { SUBPIXELS } from './space.ts';
 import type { AgentStore } from './store.ts';
 import { WANDER } from './streams.ts';
@@ -14,7 +15,7 @@ const STEP_Y: readonly number[] = [1, 0, -1, 0];
 
 export function move(world: World): void {
   const seed = world.seed;
-  const extent = world.extent;
+  const ground = world.ground;
   const tick = world.globals[TICK];
   const agents = world.agents;
   const count = agents.count[0];
@@ -26,7 +27,8 @@ export function move(world: World): void {
     if (((tick + i) & REDRAW_MASK) === 0) redraw(agents, seed, i, tick);
     const nextX = x[i] + vx[i];
     const nextY = y[i] + vy[i];
-    if (onMap(nextX, extent) && onMap(nextY, extent)) {
+    // A step off the map or onto a blocked cell turns the agent back, so agents stay on the open ground they spawn on.
+    if (walkableAt(ground, nextX, nextY)) {
       x[i] = nextX;
       y[i] = nextY;
     } else {
@@ -49,10 +51,6 @@ function redraw(agents: AgentStore, seed: number, i: number, tick: number): void
   agents.facing[i] = facing;
   agents.vx[i] = STEP_X[facing] * WALK_Q8_PER_TICK;
   agents.vy[i] = STEP_Y[facing] * WALK_Q8_PER_TICK;
-}
-
-function onMap(q8: number, extent: number): boolean {
-  return q8 >= 0 && q8 < extent;
 }
 
 function turnAround(agents: AgentStore, i: number): void {
