@@ -1,0 +1,32 @@
+{
+  "countries": {
+    "query": "https://raw.githubusercontent.com/unicode-org/cldr-json/47.0.0/cldr-json/cldr-localenames-full/main/en/territories.json",
+    "date": "2026-10-08",
+    "licence": "Unicode-3.0",
+    "count": 285
+  },
+  "languages": {
+    "query": "https://raw.githubusercontent.com/unicode-org/cldr-json/47.0.0/cldr-json/cldr-localenames-full/main/en/languages.json",
+    "date": "2026-10-08",
+    "licence": "Unicode-3.0",
+    "count": 630
+  },
+  "demonyms": {
+    "query": "SELECT DISTINCT ?label WHERE { ?item wdt:P1549 ?label ; wikibase:sitelinks ?links . FILTER(LANG(?label) = \"en\" && ?links >= 5) }",
+    "date": "2026-10-08",
+    "licence": "CC0-1.0",
+    "count": 958
+  },
+  "ethnonyms": {
+    "query": "SELECT DISTINCT ?label WHERE { ?item wdt:P31 wd:Q41710 ; wikibase:sitelinks ?links ; rdfs:label ?label . FILTER(LANG(?label) = \"en\" && ?links >= 5) }",
+    "date": "2026-10-08",
+    "licence": "CC0-1.0",
+    "count": 3390
+  },
+  "religions": {
+    "query": "SELECT DISTINCT ?label WHERE { VALUES ?kind { wd:Q9174 wd:Q13414953 } ?item wdt:P31 ?kind ; wikibase:sitelinks ?links ; rdfs:label ?label . FILTER(LANG(?label) = \"en\" && ?links >= 5) }",
+    "date": "2026-10-08",
+    "licence": "CC0-1.0",
+    "count": 280
+  }
+}
