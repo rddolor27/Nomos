@@ -70,12 +70,16 @@ const HOT_FILES = [
   'packages/sim-protocol/src/{snapshot,visual}.ts',
   'packages/sim-core/src/{int,calendar,space,store,ledger,money,claims,registry,flows,split,log2,invariants,ground}.ts',
 ];
-// Functions in hot files that run only at creation, restore or failure, or between ticks, so they may allocate.
-const COLD = '/^(create|layout|populate|restore|checkpoint|giveBack|fail|stateHash|openCells|standIn)/';
+// Functions in hot files that run only at creation, restore or failure, or between ticks, so they may allocate. A name
+// matches whole, so one that only starts with a cold word, such as createdToday or failures, stays hot.
+const COLD =
+  '/^((create|layout|restore|fail)[A-Z][A-Za-z0-9]*|populate|checkpoint|giveBack|stateHash|stateHashExcept|openCells|standInGround)$/';
 const IN_HOT = `FunctionDeclaration:not([id.name=${COLD}])`;
 const ARRAY_METHODS =
   '/^(map|filter|reduce|forEach|flatMap|some|every|find|slice|subarray|concat|splice|push|pop|shift|unshift|from|of|entries|keys|values|join|split)$/';
+const STRING_METHODS = '/^(toString|toFixed|toPrecision)$/';
 const NO_ALLOCATION = 'sim-core rules, Hot paths: per-tick functions allocate nothing, so';
+const NO_STRINGS = `${NO_ALLOCATION} build no strings; only a throw may format one.`;
 const HOT_SYNTAX = [
   { selector: `${IN_HOT} ArrayExpression`, message: `${NO_ALLOCATION} write into a preallocated typed array.` },
   { selector: `${IN_HOT} ObjectExpression`, message: `${NO_ALLOCATION} write results into struct-of-arrays columns.` },
@@ -89,8 +93,17 @@ const HOT_SYNTAX = [
   },
   { selector: `${IN_HOT} SpreadElement`, message: `${NO_ALLOCATION} pass values one by one, never spread.` },
   {
-    selector: `${IN_HOT} TemplateLiteral:not(ThrowStatement TemplateLiteral)`,
-    message: `${NO_ALLOCATION} build no strings; only a throw may format one.`,
+    selector: `${IN_HOT} RestElement`,
+    message: `${NO_ALLOCATION} take fixed parameters; a rest parameter builds an array per call.`,
+  },
+  { selector: `${IN_HOT} TemplateLiteral:not(ThrowStatement TemplateLiteral)`, message: NO_STRINGS },
+  {
+    selector: `${IN_HOT} BinaryExpression[operator='+']:not(ThrowStatement BinaryExpression) > Literal[raw=/^['"]/]`,
+    message: NO_STRINGS,
+  },
+  {
+    selector: `${IN_HOT} CallExpression:not(ThrowStatement CallExpression):matches([callee.name='String'], [callee.property.name=${STRING_METHODS}])`,
+    message: NO_STRINGS,
   },
   {
     selector: `${IN_HOT} :matches(ForOfStatement, ForInStatement)`,
@@ -110,7 +123,8 @@ const HOT_SYNTAX = [
   },
   {
     // Anywhere in a hot file, so that no per-tick function escapes the checks above.
-    selector: 'VariableDeclarator > :matches(ArrowFunctionExpression, FunctionExpression)',
+    selector:
+      ':matches(VariableDeclarator, Property, ExportDefaultDeclaration, AssignmentExpression) > :matches(ArrowFunctionExpression, FunctionExpression)',
     message: 'sim-core rules, Hot paths: declare functions in hot files with function, so the hot-path lint sees them.',
   },
 ];

@@ -141,6 +141,21 @@ const HOT_PLANTS = [
   'g(Date.now())',
   'g(performance.now())',
   'g(draw(1, 2, 3))',
+  "g('x' + a[0])",
+  'g(String(a[0]))',
+  'g(a[0].toString())',
+  'g(a[0].toFixed(2))',
+];
+// Shapes a statement in tick cannot show: a signature, a name that only starts with a cold word, and functions not
+// declared with function.
+const HOT_FILE_PLANTS = [
+  'export function tick(...a: number[]): void {}\n',
+  'export function createdToday(a: Int32Array): void {\n  g([1]);\n}\n',
+  'export function failures(a: Int32Array): void {\n  g([1]);\n}\n',
+  'export function checkpointDue(a: Int32Array): void {\n  g([1]);\n}\n',
+  'export const sys = { tick(a) { return [a]; } };\n',
+  'export default (a) => [a];\n',
+  'sys.tick = function (a) { return [a]; };\n',
 ];
 
 function inTick(statement: string): string {
@@ -154,11 +169,20 @@ describe('the hot-path lint', { timeout: 30_000 }, () => {
     }
   });
 
+  it('rejects the shapes a statement cannot show', async () => {
+    for (const code of HOT_FILE_PLANTS) {
+      expect(await hotMessageCount(code, HOT_FILE), code).toBeGreaterThan(0);
+    }
+  });
+
   it('allows creation, errors and constants', async () => {
     const allowed = [
       'export function createThing(): Int32Array {\n  return new Int32Array(4);\n}\n',
       inTick('throw new RangeError(`bad ${a.length}`)'),
+      inTick("throw new RangeError('bad ' + a.length)"),
+      inTick('throw new RangeError(String(a.length))'),
       'export const TABLE = [1, 2, 3];\n',
+      inTick('a[0] = a[1] + 2'),
     ];
     for (const code of allowed) {
       expect(await profileMessageCount(code, HOT_FILE), code).toBe(0);
@@ -172,6 +196,9 @@ describe('the hot-path lint', { timeout: 30_000 }, () => {
   it('leaves other files alone', async () => {
     for (const plant of HOT_PLANTS) {
       expect(await hotMessageCount(inTick(plant), 'packages/sim-core/src/warm.ts'), plant).toBe(0);
+    }
+    for (const code of HOT_FILE_PLANTS) {
+      expect(await hotMessageCount(code, 'packages/sim-core/src/warm.ts'), code).toBe(0);
     }
   });
 });
