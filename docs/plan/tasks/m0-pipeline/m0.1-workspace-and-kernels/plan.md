@@ -6,7 +6,7 @@
 
 **Architecture:** `sim-core` is pure TypeScript with no DOM. Every random number comes from a stateless keyed hash, `draw(seed, stream, ...keys)`, ported from `tools/worldgen/rng.py`. Noise and the calendar use integer maths only. A Python script writes test vectors from the reference generator, and Vitest checks the port against them in Node; other engines follow in M0.6.
 
-**Tech Stack:** Node 24 (runs `.ts` scripts natively), pnpm 10.12.1, TypeScript in strict mode, Vitest, ESLint 9 with typescript-eslint, GitHub Actions, Python 3.12 for the vectors.
+**Tech Stack:** Node 24 (runs `.ts` scripts natively), pnpm 10.12.1, TypeScript 6.0 in strict mode, Vitest 5, ESLint 10 with typescript-eslint, GitHub Actions, Python 3.12 for the vectors.
 
 **Spec:** [M0 Pipeline](../../../implementation-plan.md#m0-pipeline), [calendar.md](../../../calendar.md), `tools/worldgen/rng.py` and `tools/worldgen/noise.py`. The sub-milestone list is [milestone.md](../milestone.md).
 
@@ -51,14 +51,14 @@
 - Produces the fixture `kernels.json`: `{ "mix": [[x, out], …], "draw": [{ "seed", "stream", "keys", "out" }, …], "below": [{ "n", "seed", "stream", "keys", "out" }, …], "fade": [[t, out], …], "value": [{ "seed", "stream", "x", "y", "cell", "octave", "out" }, …], "fbm": [{ "seed", "stream", "x", "y", "cell", "octaves", "out" }, …] }`.
 
 - [ ] **Step 1: Scaffold the workspace**
-  - Root `package.json`: `"name": "nomos"`, `"private": true`, `"type": "module"`, `"packageManager": "pnpm@10.12.1"`, `"engines": { "node": ">=24" }`, and scripts `"test": "vitest run"`, `"lint": "eslint ."`, `"typecheck": "pnpm -r --if-present run typecheck"`.
+  - Root `package.json`: `"name": "nomos"`, `"private": true`, `"type": "module"`, `"packageManager": "pnpm@10.12.1"`, `"engines": { "node": ">=24.2" }`, since the day-length generator uses `import.meta.main`, and scripts `"test": "vitest run"`, `"lint": "eslint ."`, `"typecheck": "pnpm -r --if-present run typecheck"`.
   - `pnpm-workspace.yaml`: `packages: [packages/*, apps/*, tools/cli, tools/bench]`.
-  - Run `pnpm add -Dw typescript vitest eslint @eslint/js typescript-eslint @types/node`.
+  - Run `pnpm add -Dw typescript@~6.0.3 vitest@^5.0.3 eslint@^10.12.0 @eslint/js@^10.0.1 typescript-eslint@^8.71.1 @types/node@^24`. Unpinned, it installs TypeScript 7, which typescript-eslint 8.71 rejects: it accepts only versions below 6.1.
   - `tsconfig.base.json`: `strict`, `target` and `lib` ES2022, `module` ESNext, `moduleResolution` Bundler, `verbatimModuleSyntax`, `isolatedModules`, `allowImportingTsExtensions`, `noEmit`, `skipLibCheck`.
   - `packages/sim-core/package.json`: `"name": "@nomos/sim-core"`, `"private": true`, `"type": "module"`, `"exports": { ".": "./src/index.ts" }`, `"scripts": { "typecheck": "tsc --noEmit" }`.
-  - `packages/sim-core/tsconfig.json`: extends the base and includes `src`, `test` and `scripts`.
+  - `packages/sim-core/tsconfig.json`: extends the base, includes `src`, `test` and `scripts`, and sets `"types": ["node"]`, because TypeScript 6 no longer loads `@types/node` by itself.
   - `vitest.config.ts`: `test.include` is `['packages/*/test/**/*.test.ts']`.
-  - `eslint.config.js`: `@eslint/js` recommended plus typescript-eslint recommended, ignoring `docs/**`, `graphify-out/**`, `.claude/**`, `dist/**`, `coverage/**` and `assets/**`. Round 7's prototypes under `docs/` carry their own `node_modules`, and the local-only `.claude/` holds scripts outside the workspace.
+  - `eslint.config.js`: `@eslint/js` recommended plus typescript-eslint recommended, ignoring `docs/**`, `graphify-out/**`, `.claude/**`, `.githooks/**`, `dist/**`, `coverage/**` and `assets/**`. Round 7's prototypes under `docs/` carry their own `node_modules`, and the local-only `.claude/` and the CommonJS hook in `.githooks/` hold scripts outside the workspace.
   - The same file sets simplicity limits for `**/*.ts` (code rules):
     - `complexity: ['error', { max: 10, variant: 'modified' }]`, where `modified` counts a `switch` once and needs ESLint 9.12 or later;
     - `max-depth: ['error', 4]`;
@@ -94,6 +94,7 @@ git commit -m "test(worldgen): write kernel vectors for the TypeScript port"
   - `gives the fixed-arity draws the same values`: for every `draw` case with one to four keys, `drawN` equals `draw`;
   - `gives each entity the same draw in any visiting order`: `draw2(42, 7, id, 1000)` for ids 0–9,999 visited forward and in the order of `draw(1, 99, id)` match per id;
   - `spreads a million entities evenly over 16 buckets`: bucket `draw2(42, 7, id, 1000) >>> 28` for ids 0–999,999; expected 62,500 per bucket; χ² below 37.70 (p = 0.001, 15 degrees of freedom);
+  - `gives neighbouring seeds unrelated draws`, added as built for task.md's verify-first item: seeds 0 and 1, and 42 and 43, share no draws over 10,000 ids;
   - `keeps streams independent`: for stream pairs (1, 2), (2, 3) and (7, 255), the joint bucket `(draw2(42, s1, id, 0) >>> 30) * 4 + (draw2(42, s2, id, 0) >>> 30)` over a million ids has χ² below 37.70 (R8).
 
   Run: `pnpm test`. Expected: FAIL, because `../src/index.ts` exports nothing yet.
@@ -102,7 +103,7 @@ git commit -m "test(worldgen): write kernel vectors for the TypeScript port"
 
 - [ ] **Step 6: Run the tests.** Run: `pnpm test && pnpm lint && pnpm typecheck`. Expected: PASS.
 
-- [ ] **Step 7: Add CI** in `.github/workflows/ci.yml`. It runs on push to `main` on `ubuntu-latest`, with `actions/checkout@v4`, `pnpm/action-setup@v4` (which reads `packageManager`), `actions/setup-node@v4` (Node 24, pnpm cache) and `actions/setup-python@v5` (3.12). Its steps are `pnpm install --frozen-lockfile`, `python tools/worldgen/vectors.py --check`, `pnpm lint`, `pnpm typecheck` and `pnpm test`.
+- [ ] **Step 7: Add CI** in `.github/workflows/ci.yml`. It runs on push to `main` on `ubuntu-latest`, with `actions/checkout@v7`, `pnpm/action-setup@v6` (which reads `packageManager`), `actions/setup-node@v7` (Node 24, with an explicit `cache: pnpm`, since it auto-caches only npm from v6 on) and `actions/setup-python@v7` (3.12). Its steps are `pnpm install --frozen-lockfile`, `python tools/worldgen/vectors.py --check`, `pnpm lint`, `pnpm typecheck` and `pnpm test`.
 
 - [ ] **Step 8: Commit**
 
@@ -127,6 +128,8 @@ git commit -m "ci: run the vectors, lint, types and tests on main"
   - `rejects transcendental Math, ** and BigInt in sim-core source`: each of `export const a = Math.sin(1)`, `Math.pow(2, 3)`, `Math.random()`, `Math.log(2)`, `2 ** 3`, `let b = 2; b **= 2; export { b }`, `export const c = 10n`, `BigInt(1)` and `new BigInt64Array(1)`, at `packages/sim-core/src/planted.ts`, gives at least one such message;
   - `allows the same maths in build scripts`: `export const x = Math.cos(1)` at `packages/sim-core/scripts/planted.ts` gives none.
 
+  Give the test `{ timeout: 30_000 }`: its first run on a fresh install takes about 6 s, past Vitest's 5 s default.
+
   Run: `pnpm test -- lint`. Expected: FAIL on the first test.
 
 - [ ] **Step 2: Add the profile** for `packages/sim-core/src/**/*.ts`. It bans the `Math` members `sin`, `cos`, `tan`, `asin`, `acos`, `atan`, `atan2`, `sinh`, `cosh`, `tanh`, `asinh`, `acosh`, `atanh`, `exp`, `expm1`, `log`, `log1p`, `log2`, `log10`, `pow`, `hypot`, `cbrt` and `random`. It also bans these syntax selectors: `BinaryExpression[operator='**']`, `AssignmentExpression[operator='**=']`, `Literal[bigint]`, `CallExpression[callee.name='BigInt']` and `Identifier[name=/^Big(Int|Uint)64Array$/]`. Each message names the sim-core rule it enforces.
@@ -143,6 +146,7 @@ git commit -m "build(sim-core): lint-ban transcendental maths and BigInt"
 ### Task 3: Integer value noise
 
 **Files:**
+- As built: `int.ts` and its `floors like Python` test, in `test/int.test.ts`, landed with Task 4, which ran first because it needs them.
 - Create: `packages/sim-core/src/int.ts`, `packages/sim-core/src/noise.ts`
 - Modify: `packages/sim-core/src/index.ts`
 - Test: `packages/sim-core/test/noise.test.ts`
