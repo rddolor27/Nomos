@@ -64,3 +64,19 @@
 - **Owner decision first:** what counts as a border with no neighbouring country: the map edge, mountain passes or region lines. Garrison and fort placement waits for it.
 - **Drawing 55–81 tiles is art work.** It goes through the sprite rules and `test_sprites.py`, and the owner reviews them.
 - **Shore tiles and landmarks have no snow yet,** an open item since checkpoint 0001.
+
+## Open questions
+
+- **Owner:** With no neighbouring country, what counts as a border: the map edge, mountain passes or region lines? Garrison and fort placement waits for it, as M7.7's posts do. Suggested: region lines, which M8.1 already grows. Needed before: the step plan.
+- **Owner:** Do shore tiles and landmarks get snow variants in this batch? M8.1's snow biome can reach cold coasts, where plain shore tiles would show seams (inference). Suggested: snowy shore tiles now, with landmarks left snow-free. Needed before: building.
+- **Owner:** Is the proposed bar of 2 ms main-thread render time per frame in software-GL Chromium accepted? It is the only exit check here. Suggested: accept it, timed while panning with labels on. Needed before: building.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** the Country view with plain tiles and icons, timed against 2 ms, then routes, labels, the Region view, military places, new tiles and sound.
+- **Reuse:** M3.3's tile pass, the existing `map8_` and `map16_` icon frames, M1.4's player, M3.8's router and `test_sprites.py`.
+- **Keep it simple:** label bands are a fixed table of zoom ranges per settlement tier, with no layout beyond collision culling.
+- **Pitfalls:** an untiled terrain mix draws as a hole, so drive the "tiles complete" scan from the generator's emitted combinations, not a hand list. Label culling runs every frame and must allocate nothing.
+- **Hard and easy parts:** labels within 2 ms need the most care; wiring the existing icons and sounds is mechanical.

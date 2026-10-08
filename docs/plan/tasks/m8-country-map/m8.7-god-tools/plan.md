@@ -53,3 +53,19 @@ Its own tests:
 
 - **Edits that fight the generator,** such as a town placed on a river, need clear conflict rules. Round 9 lists the guardrails; anything they don't cover goes in the conflict list, never silently dropped.
 - **Undo across reruns** must restore the exact world. Store edit logs, never world snapshots, so undo replays the log.
+
+## Open questions
+
+- **Owner:** Does each edit rerun the 50–100-year spin-up, or only the generator, with spin-up once on Play? R9 assumed a rerun per edit from round 8's 0.14 s culture-only run; M7.7 computes 8–17 s at 1,000 settlements for the full ledger. Suggested: the generator only per edit, with spin-up and the after-spin-up checks on Play. Needed before: the step plan.
+- **Owner:** Does a placed town take its size from the rank-size rule, or from the player? Player sizes would bend the Zipf and fairness checks. Suggested: the generator sizes it, and the player picks the site and tier. Needed before: the step plan.
+- **Measure:** How long does a rerun take on a large world after a brush stroke, with hearths re-placed? R9 computed 17–45 ms after an elevation edit on a standard world. Suggested: rerun once per finished stroke, never per pointer event, and time it on a large world in Chromium. Needed before: building.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** the edit log, first-dirty-stage detection and the partial-equals-full test first, then re-roll, pins and tombstones, then brushes, drawing and placement.
+- **Reuse:** M3.4's and M6.4's Build mode and undo, M6.3's edit layers, M8.1's stages and M8.2's hearth placement.
+- **Keep it simple:** a drawn river is an elevation channel carve (R9 edits notes), so it needs no river layer of its own.
+- **Pitfalls:** an edit that no longer fits goes dormant and is listed, never dropped silently. The tool registry has no culture, crime, wealth or hue tool (R9). A hot spring placed away from the geothermal hotspot is a conflict, not a second hotspot.
+- **Hard and easy parts:** first-dirty-stage detection with pins and tombstones needs the most care; the brush ops are mechanical.

@@ -63,3 +63,18 @@
 - **Verify first:** day-step, spawn and map-generation times in browser workers and on phones. They set the phone tier for country mode.
 - **The Python reference may still change** before the port starts. Freeze a generator version first, and regenerate goldens and mockups together.
 - **Sea cliffs form only on south coasts,** an open item since checkpoint 0001. Fix it in Python before freezing the goldens.
+
+## Open questions
+
+- **Measure:** Does a large 192×128 world fit 400 ms with A\* routes and Dijkstra regions? R9 timed only terrain (about 8 ms at 96×64); its 21–87 ms standard-world estimate becomes 84–348 ms at four times the cells (computed). Suggested: time each stage in Chromium in the first week, since A\* grows faster than the cell count. Needed before: building.
+- **Measure:** What are day-step, spawn and generation times in browser workers on phones? They set country mode's phone tier. Suggested: one mid-range Android phone and one iPhone. Needed before: the step plan.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** the elevation stage and its golden test in all five engines, proving the harness, then each stage in pipeline order, settlements and routes last.
+- **Reuse:** M3.1's place port, M0.6's engine harness and generator lints, M0's keyed draw and integer noise, and `tools/worldgen/goldens.py`.
+- **Keep it simple:** port the Python line for line, and optimise only a stage that misses the budget.
+- **Pitfalls:** A\* and Dijkstra must break ties exactly as the Python heap does, or routes and regions drift from the goldens. Route lengths in kilometres use M7.1's cell scale.
+- **Hard and easy parts:** routing and regions need the most care, for speed and tie order; climate, biomes and the wonder site rules are mechanical.

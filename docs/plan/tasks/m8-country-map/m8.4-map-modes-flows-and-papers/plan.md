@@ -61,3 +61,18 @@
 - **Verify first:** culture lens and emblem colours against body-hue shade tones (CIEDE2000 6.0–9.1). They decide whether a lens colour reads as a body colour.
 - **Too many modes overwhelm.** Group them, and keep the default mode neutral (population).
 - **Flows at the country level** need aggregation by zoom, or bands clutter. Cap the drawn bands per view.
+
+## Open questions
+
+- **Measure:** How many flow bands per view keep the views within M8.3's 2 ms? Bands clutter and cost frame time at country zoom. Suggested: set the cap from a timing run on a large world. Needed before: building.
+- **Research:** What CIEDE2000 distance keeps a lens colour from reading as a body colour? R8 found lens and emblem colours only 6.0–9.1 from the ice, sun, lilac and silver shades (computed), and set no bar. Suggested: a provisional 10, an unsourced estimate, until a short research round settles it. Needed before: building.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** the registry with population and the crime pair first, then goods modes, flows, route ledgers and papers, with the home-regions mode last.
+- **Reuse:** M8.3's views, M4's true and recorded split, M5.5's culture lens, M7.7's route ledgers, and the gazette from M3–M5.
+- **Keep it simple:** build a town's paper only when it is opened, from the record store; keep records, never rendered papers.
+- **Pitfalls:** in the recorded view the crime mode drops its true base. With the lens on, justice modes and raid markers are unavailable, and the national gazette prints no culture figures beside raids (content rule 8). Raid markers sit on routes, never on people.
+- **Hard and easy parts:** keeping every view's palette and filter rules right needs care; most modes are data rows.

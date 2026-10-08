@@ -49,3 +49,19 @@
 
 - **History quantisation loses precision.** Store scale and offset per series per year, and check that charts redraw within one quantum of the full-resolution values.
 - **Detached cities double memory** like M5.1's branches. Measure on the desktop tier.
+
+## Open questions
+
+- **Owner:** What does "Open in City mode" do for a settlement above the device's agent cap? `tools/worldgen` sizes capitals at 150,000–500,000 people (R9 builder notes), above even the desktop cap of 100,000. Suggested: offer it only for settlements within the tier's cap, with a notice, until M9.4's district window can host larger ones. Needed before: the step plan.
+- **Owner:** Is a what-if fork saved with the country? A saved fork needs its own save section. Suggested: no; a fork reopens from the ledger. Needed before: the step plan.
+- **Measure:** Which metrics keep history? R4's 1.9 MB came from 1,000 settlements × 8 metrics, so M8's 40–237 places would take 0.08–0.45 MB if size scales with count (computed). Suggested: R4's 8 metrics, with the 3 MB check run on the 1,000-settlement test country as the worst case. Needed before: the step plan.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** history buffers and the save-size test first, since they are headless, then the focus state and breadcrumb, then the fork.
+- **Reuse:** M5.1's branch machinery, M2.2's spawn, M6.7's history save section and M0.4's render-filter test.
+- **Keep it simple:** store history per settlement only, and sum region and country series on demand.
+- **Pitfalls:** memory never grows, so the start-up reserve must hold the fork's arrays beside the country. The fork can spawn ages from bands only if M7.1 kept age bands. Each quantised series keeps its per-year scale and offset.
+- **Hard and easy parts:** re-keying charts across levels with shared scales needs care; delta coding and the "estimated" label are mechanical.

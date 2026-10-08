@@ -56,3 +56,19 @@
 - **Owner decision first:** the hearth-balance tolerance. Round 8 left it undesigned, and the layout check needs a value.
 - **Owner decision first:** whether street, district, place and region names ever follow a culture's naming custom. The Gazette tab raises it for street and district names; place and region names raise it again for the gazette's road-raid stories.
 - **Rejection loops:** if fair layouts are rare for some seeds, cap the re-draws, log them, and report the seeds that need many.
+
+## Open questions
+
+- **Owner:** What hearth-balance tolerance, and what counts as "development"? The layout check and the after-spin-up check both need them. Suggested: R9's trial bar, a people-weighted land-quality gap of at most 10%, and income per head within 10% after spin-up (unsourced estimate). Needed before: the step plan.
+- **Owner:** Do place, region, street or district names ever follow a culture's naming custom? Road-raid stories name places, and culture must never appear where crime is shown (content rule 8). Suggested: never; all of these come from the shared sound set. Needed before: the step plan.
+- **Owner:** What happens when a world fails the after-spin-up check? Re-placing hearths means another 50–100-year spin-up. Suggested: no re-spin at run time; CI fails if any of 100 seeds drifts outside the tolerance. Needed before: the step plan.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** names and the 1,000-seed filter run first, since they need no spin-up, then hearths, regions and the land-quality check, then the after-spin-up check.
+- **Reuse:** M8.1's multi-source Dijkstra for regions, M3.7's sound set and filter, and M7.7's spin-up.
+- **Keep it simple:** use a keyed search that moves one hearth at a time toward balance, with a fixed step cap, rather than open-ended re-draws.
+- **Pitfalls:** rejection alone almost never succeeds. R9's bars held together in 1 of 769 Poisson-disc layouts, and 40 re-draws succeeded in 1 of 20 worlds (R9 edits notes, measured there). The capital's region skews population shares 47× before spin-up. An order-3 chain on a small corpus copies its words, so reject outputs equal to a corpus word.
+- **Hard and easy parts:** the hearth search needs the most care; site words and the name API are mechanical.

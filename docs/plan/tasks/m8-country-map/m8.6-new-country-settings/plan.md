@@ -53,3 +53,19 @@ Its own tests:
 
 - **Live preview cost:** a large world takes up to 400 ms to generate. Preview at standard size, or debounce, so the panel stays responsive.
 - **Override list size:** about 10 is round 9's estimate. Keep the list small, because each override is a stage input forever.
+
+## Open questions
+
+- **Owner:** Which ten or so overrides ship? Each one is a stage input forever. Suggested: one per world-level draw in `tools/worldgen`, eleven from template to wonder count (R9 builder notes), plus the culture settings. Needed before: the step plan.
+- **Owner:** Which presets ship, and under what names? Preset names are public text under the content rules. Suggested: "Surprise me" plus 4–6 presets named for landforms, never real places, each through the name filter. Needed before: building.
+- **Measure:** What margin makes food capacity "enough"? Validation needs a number. Suggested: capacity at least equal to need after M7.4's pre-retail losses, as a design value. Needed before: the step plan.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** validation in the worker first, since Play and Share both need it, then overrides as stage inputs, then the panel, badges, presets and preview.
+- **Reuse:** M6.3's edit layers, share links and payload caps, M8.1's `generateWorld` and M3.7's name filter.
+- **Keep it simple:** each override replaces one keyed draw, so an override set to its current value gives the same draw and the same replay hash.
+- **Pitfalls:** derive each badge from measurement, not intuition. Changing the mountain chains kept the coastline in only 7 of 12 seeds (R9 builder notes, measured there), so it is "new world".
+- **Hard and easy parts:** true badges and the edit tests need care; the panel and presets are mechanical.
