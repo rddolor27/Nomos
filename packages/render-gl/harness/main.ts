@@ -11,7 +11,9 @@ import {
 } from '@nomos/sim-protocol';
 import {
   createWorldRenderer,
+  mountSkinToggle,
   observeDeviceSize,
+  skinFromQuery,
   type Backend,
   type Camera,
   type RendererOptions,
@@ -79,6 +81,7 @@ let pool: ArrayBuffer[] = [];
 let released: ArrayBuffer[] = [];
 // resize writes the canvas's CSS size, so the observer watches the stage that the page lays out, never the canvas.
 let stage: HTMLElement | null = null;
+let toggle: HTMLFieldSetElement | null = null;
 let unobserve = (): void => {};
 let deviceSize: DeviceSize = [0, 0, 0];
 let reported: (() => void) | null = null;
@@ -105,6 +108,7 @@ function teardown(): void {
   unobserve();
   renderer?.dispose();
   stage?.remove();
+  toggle?.remove();
 }
 
 function newCanvas(): HTMLCanvasElement {
@@ -209,6 +213,8 @@ window.harness = {
     renderer = createWorldRenderer(canvas, { release, backend: choice, restoreTimeoutMs });
     const backend = renderer.init();
     renderer.setMap(map);
+    // Below the stage, so the toggle never moves the canvas off whole device pixels.
+    toggle = mountSkinToggle(document.body, renderer, skinFromQuery(location.search) ?? 'auto');
     const sized = layOut(stage, css);
     unobserve = observeDeviceSize(stage, onDeviceSize, forceFallback);
     await sized;

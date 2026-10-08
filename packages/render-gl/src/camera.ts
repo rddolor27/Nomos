@@ -41,3 +41,18 @@ export function snapCamera(camera: Camera): Camera {
 export function cssPxPerTile(zoom: number, dpr: number): number {
   return (TILE_PX * zoom) / dpr;
 }
+
+// The fraction of a map, sized in tiles, that a device-sized view shows.
+export function mapShareInView(
+  camera: Camera,
+  deviceWidth: number,
+  deviceHeight: number,
+  mapWidth: number,
+  mapHeight: number,
+): number {
+  const width = mapWidth * TILE_PX;
+  const height = mapHeight * TILE_PX;
+  const shownX = Math.min(camera.x + deviceWidth / camera.zoom, width) - Math.max(camera.x, 0);
+  const shownY = Math.min(camera.y + deviceHeight / camera.zoom, height) - Math.max(camera.y, 0);
+  return (Math.max(0, shownX) * Math.max(0, shownY)) / (width * height);
+}

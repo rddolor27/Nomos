@@ -1,4 +1,5 @@
 import type { MapV1 } from '@nomos/sim-protocol';
+import type { Skin } from './skin.ts';
 
 export type Backend = 'webgl2' | 'canvas2d';
 
@@ -22,12 +23,19 @@ export interface WorldRenderer {
   // The canvas drawn on, which the Canvas2D fallback replaces.
   readonly canvas: HTMLCanvasElement;
   readonly drawnAgents: number;
+  // The skin the last draw showed.
+  readonly drawnSkin: Skin;
   init(): Backend;
   resize(deviceWidth: number, deviceHeight: number, dpr: number): void;
   setMap(map: MapV1): void;
   // Copies the snapshot and hands the buffer to options.release before returning (interfaces.md).
   pushSnapshot(frame: { tick: number; count: number; buffer: ArrayBuffer }): void;
   draw(camera: Camera, alpha: number): void;
+  // Returns the skin a fixed policy draws for it: dots until the others are built.
+  setSkin(skin: Skin): Skin;
+  // 'auto', the default, picks dots or town each draw from the tile's CSS size and the agents in view (R3); 'fixed'
+  // draws the set skin.
+  setLod(policy: 'auto' | 'fixed'): void;
   dispose(): void;
 }
 

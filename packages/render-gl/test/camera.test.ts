@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { cssPxPerTile, fitCamera, MAX_ZOOM, MIN_ZOOM, panBy, snapCamera, zoomAt } from '../src/camera.ts';
+import { cssPxPerTile, fitCamera, mapShareInView, MAX_ZOOM, MIN_ZOOM, panBy, snapCamera, zoomAt } from '../src/camera.ts';
 import type { Camera } from '../src/types.ts';
 
 function worldAt(camera: Camera, deviceX: number, deviceY: number): [number, number] {
@@ -55,6 +55,15 @@ test('snaps to device pixels', () => {
 
 test('pans by device pixels', () => {
   expect(panBy({ x: 10, y: 20, zoom: 4 }, 8, -12)).toEqual({ x: 12, y: 17, zoom: 4 });
+});
+
+test('measures the share of the map in view', () => {
+  expect(mapShareInView(fitCamera(48, 28, 1280, 720), 1280, 720, 48, 28)).toBe(1);
+  expect(mapShareInView({ x: 384, y: 224, zoom: 1 }, 384, 224, 48, 28)).toBe(0.25);
+  expect(mapShareInView({ x: 0, y: 0, zoom: 2 }, 768, 448, 48, 28)).toBe(0.25);
+  expect(mapShareInView({ x: 64, y: 44, zoom: 1 }, 640, 360, 48, 28)).toBeCloseTo((640 * 360) / (768 * 448), 12);
+  expect(mapShareInView({ x: -1000, y: 0, zoom: 1 }, 320, 180, 48, 28)).toBe(0);
+  expect(mapShareInView({ x: 0, y: 0, zoom: 1 }, 0, 0, 48, 28)).toBe(0);
 });
 
 test('sizes a tile in CSS pixels', () => {
