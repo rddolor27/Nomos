@@ -11,7 +11,7 @@ A society simulation that runs entirely in the browser. Blob-shaped people work,
 
 **Status: planning done, building not started.** There is no game code yet. What exists today:
 - nine research rounds, in [`docs/research/`](docs/research/);
-- a ten-milestone build plan split into 67 sub-milestones, each with its tasks and the checks that close it, in [`docs/plan/`](docs/plan/); the first milestone's six have step-by-step plans;
+- an eleven-milestone build plan split into 71 sub-milestones, each with its tasks and the checks that close it, in [`docs/plan/`](docs/plan/); the first milestone's six have step-by-step plans;
 - an original pixel-art sprite set of 1,342 sprites in 13 sheets, drawn as code, in [`tools/sprites/`](tools/sprites/), with seasons and snow;
 - 94 original chiptune sounds in 7 banks, written as data for the game's own synth, in [`tools/sounds/`](tools/sounds/);
 - a random world generator that previews worlds with that art, in [`tools/worldgen/`](tools/worldgen/).
@@ -34,6 +34,7 @@ Every world and run can be shared. A link of 2,000 characters, small enough for 
 ### After launch
 
 - **Zoom across scales (M9).** You zoom from a region straight down to a street. People spawn from their town's ledger, stay in step with it every day and fold back in when you leave. The camera never changes history, and notable people, such as officers, owners, anyone with a record and anyone you followed, are still there when you return.
+- **Weather (M10).** Rain, snow, fog and storms by season and biome, on screen and in sound, replaying exactly from the seed. Whether bad weather also keeps people indoors is still to be decided.
 - **Toward a million.** The long-term aim is a country of millions kept as ledgers, plus up to a million people simulated one by one wherever you watch, on machines strong enough to run it. Nomos should use the GPU and spare memory when a machine has them, and fall back gracefully when it doesn't. Research round 7 studies this and is paused.
 
 ### The bar it has to clear
@@ -48,6 +49,7 @@ Every world and run can be shared. A link of 2,000 characters, small enough for 
 
 - **Watch, never control.** You set up a world and its policies, press play and watch: pause, speed up, skip ahead a season or a year, follow and inspect people. Trying a different policy starts a new branch.
 - **Seasons and years.** A year is four 28-day seasons. Crops are planted in spring and harvested in autumn, snow falls in winter, and people age a year at a time.
+- **Day and night.** The light moves through dawn, morning, afternoon, dusk and night, so summer days run long and winter nights come early. Rain, snow, fog and storms follow after launch.
 - **A new world every game.** Each game generates a country from a seed: coasts, mountains, rivers, climate, towns, roads, natural wonders and landmarks. The same seed always rebuilds the same world, so worlds can be shared.
 - **Zoom from country to street.** Every settlement runs as an exact ledger. Zoom in and its people appear, spawned from the ledger; zoom out and they fold back into it.
 - **An exact economy.** Money is stored in whole cents and always balances. Goods move through production chains, food spoils, and wellbeing and wealth respond to both.
@@ -75,7 +77,7 @@ Every world and run can be shared. A link of 2,000 characters, small enough for 
 
 ## The plan
 
-The build runs in ten milestones. Each one closes when its exit checks pass in CI, not when the demo looks right. Launch comes after M8.
+The build runs in eleven milestones. Each one closes when its exit checks pass in CI, not when the demo looks right. Launch comes after M8.
 
 | Milestone | Delivers |
 | --- | --- |
@@ -89,6 +91,7 @@ The build runs in ten milestones. Each one closes when its exit checks pass in C
 | M7 Country of ledgers | Every settlement in a country advancing daily as an exact ledger |
 | M8 Country map | Country mode, with a generated map and region views |
 | M9 Zoom across scales | Zooming from a region down to a street, after launch |
+| M10 Weather | Rain, snow, fog and storms by season and biome, after launch |
 
 The [roadmap](docs/plan/tasks/README.md) splits each milestone into sub-milestones. Each has a task file, saying what to build and the checks that close it, and a plan saying how. [Checkpoints](docs/plan/checkpoints/) record where the work stands.
 
