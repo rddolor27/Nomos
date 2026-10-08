@@ -1,5 +1,6 @@
 import { createClaims, type Claims } from './claims.ts';
 import { draw2, mix } from './draw.ts';
+import { createInputLog, type InputLog } from './inputs.ts';
 import { HOUSEHOLDS, createLedger, issue, sectorAccount, type Ledger } from './ledger.ts';
 import { reserveArena, take, type Arena } from './memory.ts';
 import { SUBPIXELS, TILE_PX } from './space.ts';
@@ -17,6 +18,7 @@ const SETTLEMENTS = 8;
 const CULTURES = 4;
 const LOAN_CAPACITY = 4_096;
 const STARTING_CENTS = 100_000;
+const NO_FOCUS = -1;
 
 export interface World {
   readonly seed: number;
@@ -26,6 +28,9 @@ export interface World {
   readonly agents: AgentStore;
   readonly cash: Ledger;
   readonly claims: Claims;
+  readonly inputs: InputLog;
+  // The watched settlement, or -1. Watching never writes canonical state (R4's shadow-canonical history).
+  readonly focus: Int32Array;
   readonly extent: number;
   checks: boolean;
 }
@@ -43,7 +48,10 @@ export function layoutWorld(seed: number, tier: Tier, agents: number, memoryByte
   const store = createAgentStore(arena, agents);
   const cash = createLedger(arena, SETTLEMENTS);
   const claims = createClaims(arena, cash, LOAN_CAPACITY);
-  return { seed, tier, arena, globals, agents: store, cash, claims, extent: EXTENT_Q8, checks: true };
+  const inputs = createInputLog(arena);
+  const focus = take(arena, Int32Array, 1, false);
+  focus[0] = NO_FOCUS;
+  return { seed, tier, arena, globals, agents: store, cash, claims, inputs, focus, extent: EXTENT_Q8, checks: true };
 }
 
 export function populate(world: World): void {

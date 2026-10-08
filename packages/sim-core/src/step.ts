@@ -1,3 +1,5 @@
+import { TICKS_PER_DAY } from './calendar.ts';
+import { dayBoundary } from './day.ts';
 import { OK, checkInvariants, failInvariant } from './invariants.ts';
 import { move } from './wander.ts';
 import { TICK, type World } from './world.ts';
@@ -12,6 +14,7 @@ const DAY_SYSTEM = 0;
 const MOVE_SYSTEM = 1;
 
 export function step(world: World, timer?: SystemTimer): void {
+  if (world.globals[TICK] % TICKS_PER_DAY === 0) dayBoundary(world);
   timer?.lap(DAY_SYSTEM);
   move(world);
   timer?.lap(MOVE_SYSTEM);

@@ -22,3 +22,5 @@ export * from './histogram.ts';
 export * from './world.ts';
 export * from './wander.ts';
 export * from './step.ts';
+export * from './inputs.ts';
+export * from './day.ts';
