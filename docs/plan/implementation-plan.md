@@ -79,7 +79,7 @@ On 8 October 2026 the owner raised the 100k snapshot row from 0.3 to 0.6 ms, tak
 **CI gates**
 
 - [ ] **Budget:** Playwright with headless Chromium, plus Node, runs each system at 10k, 25k and 100k agents and the country at 1k and 10k settlements; fail if the fastest of at least 9 samples exceeds its sub-budget by more than 10%. Medians drifted 10.8% between runs at the 90th percentile on a shared machine, so they would flake (R5).
-- [ ] **Allocation:** zero scavenges over 1,000 ticks per system after warm-up, and heap growth under 64 KB a tick, read from Node's `perf_hooks` GC events (R5).
+- [ ] **Allocation:** zero scavenges over 1,000 ticks per system after warm-up, at most 16 KB allocated in the young generation over a day of ticks, read from V8's heap-space statistics so garbage too small to scavenge still fails (added after M0.6's review on 9 October 2026), and heap growth under 64 KB a tick, read from Node's `perf_hooks` GC events (R5).
 - [ ] **Lint:** an ESLint `no-restricted-syntax` profile for hot folders, their class methods, getters and setters included, bans literals, closures, `new`, spread, `for…of`, array callbacks, `subarray`, `BigInt`, `Math.random`, transcendental `Math` and clocks; in testing it caught every violation (R5, Structure).
 - [ ] **Determinism:** golden state hashes for fixed seeds match across Node (V8), Bun (JavaScriptCore, a Safari proxy) and Chromium, and between JS and WASM for integer systems, tested on full-mantissa data (R5).
 - [ ] **Ledger and size:** total cents match exactly every tick, and the WASM core stays under 64 KB gzip (R5).
