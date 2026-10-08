@@ -44,7 +44,7 @@ function onKey(app: App, event: KeyboardEvent): void {
   event.preventDefault();
 }
 
-export function bindCameraInput(view: HTMLElement, app: App): () => void {
+export function bindCameraInput(view: HTMLElement, app: App): void {
   let wheelPx = 0;
   let wheelAtMs = 0;
   let drag: Drag | null = null;
@@ -85,12 +85,4 @@ export function bindCameraInput(view: HTMLElement, app: App): () => void {
   view.addEventListener('pointerup', onPointerEnd);
   view.addEventListener('pointercancel', onPointerEnd);
   view.addEventListener('keydown', onKeyDown);
-  return () => {
-    view.removeEventListener('wheel', onWheel);
-    view.removeEventListener('pointerdown', onPointerDown);
-    view.removeEventListener('pointermove', onPointerMove);
-    view.removeEventListener('pointerup', onPointerEnd);
-    view.removeEventListener('pointercancel', onPointerEnd);
-    view.removeEventListener('keydown', onKeyDown);
-  };
 }
