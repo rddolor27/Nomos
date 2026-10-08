@@ -12,6 +12,7 @@ A society simulation that runs entirely in the browser. Blob-shaped people work,
 **Status: planning and art.** There is no game code yet. What exists today:
 - eight research rounds and a ten-milestone build plan, in [`docs/`](docs/);
 - an original pixel-art sprite set of 1,342 sprites in 13 sheets, drawn as code, in [`tools/sprites/`](tools/sprites/), with seasons and snow;
+- 94 original chiptune sounds in 7 banks, written as data for the game's own synth, in [`tools/sounds/`](tools/sounds/);
 - a random world generator that previews worlds with that art, in [`tools/worldgen/`](tools/worldgen/).
 
 ## What it will be
@@ -23,10 +24,12 @@ A society simulation that runs entirely in the browser. Blob-shaped people work,
 - **An exact economy.** Money is stored in whole cents and always balances. Goods move through production chains, food spoils, and wellbeing and wealth respond to both.
 - **Crime and policing.** Anyone can choose crime. The sim keeps true crime apart from recorded crime, so you can watch where police look shape the record. Crime is an act, never a costume: nobody looks like a criminal.
 - **A town gazette.** Every town prints a daily paper written only from its records, so a crime nobody records never makes the news.
+- **Soldiers on the roads.** Soldiers defend the country and patrol the roads between towns, but never police the towns themselves. They carry a sheathed sword or a shouldered spear, never a gun.
 - **Fictional cultures.** Learned customs (foods, festivals, music, naming and home region) shape what people prefer, never their ability, honesty, work or crime.
 - **One body, 96 looks.** Everyone shares one blob body with a random hue, eye shape and pattern. Looks are never inherited, and no rule reads them.
 - **Lab mode.** Primer-style experiment cards: lock in a prediction, run paired seeds and see whether it held.
 - **Three skins, one renderer.** Coloured dots, blobs or a GBA-era pixel-art town, switchable at any time.
+- **Chiptune sound.** Original effects, ambience and music, written as data and played by the game's own synth. Sound follows the sim and never feeds it.
 - **Browser only.** A TypeScript sim in a Web Worker and a custom WebGL2 renderer, with no backend. The plan's budgets cover 10,000 people on any phone, 25,000 on a capable phone and 100,000 on a desktop.
 
 <p>
@@ -53,6 +56,8 @@ You need Python 3.10 or newer, with Pillow and NumPy.
   - a line-up of the world's first 48 people.
 - `python tools/sprites/build_all.py` rebuilds every sprite sheet and `assets/LICENSES.md`.
 - `python tools/sprites/test_sprites.py` checks every sheet against the art rules.
+- `python tools/sounds/build_all.py` rebuilds every sound bank and `assets/LICENSES.md`, with WAV previews in `dist/sounds/`.
+- `python tools/sounds/test_sounds.py` checks every bank against the sound rules.
 
 ## Layout
 
@@ -61,9 +66,10 @@ docs/          Research, plans and mockups: everything that is not product code
   plan/        Implementation plan: milestones M0–M9, the performance budget and CI gates
   research/    Eight research rounds, each with a summary, report, notes and prototypes (round 7 is paused)
   mockups/     Concept art, sprite showcases and world previews, with their sources
-assets/        Sprite sheets and manifests; LICENSES.md records every file's provenance
+assets/        Sprite sheets, sound banks and manifests; LICENSES.md records every file's provenance
 tools/
   sprites/     The pixel-art sprite set, drawn as code
+  sounds/      The chiptune sound banks, written as data
   worldgen/    The random world generator, a reference for the sim's own
 apps/          Planned for M0: the web app
 packages/      Planned for M0: sim-core, sim-protocol, sim-worker, render-gl
@@ -76,7 +82,7 @@ Code under `docs/research/*/prototypes/` is throwaway benchmark code from the re
 1. [Implementation plan](docs/plan/implementation-plan.md): what to build, in order, and the checks that close each milestone.
 2. [Docs index](docs/README.md): every research round and what each file holds.
 3. [Findings and plan](docs/research/round-1-baseline/findings-and-plan.md): the original research and architecture.
-4. The [sprite](tools/sprites/README.md) and [world generator](tools/worldgen/README.md) READMEs: the art rules and how worlds are made.
+4. The [sprite](tools/sprites/README.md), [sound](tools/sounds/README.md) and [world generator](tools/worldgen/README.md) READMEs: the art and sound rules, and how worlds are made.
 
 ## Commits
 
@@ -88,7 +94,7 @@ During research the project was called "Dot Society" (codename) and "Civilizatio
 
 ## Licences
 
-No licence has been chosen for this repository yet; the plan assumes MIT for code. The sprites in `assets/sprites/` are original art drawn as code, and [`assets/LICENSES.md`](assets/LICENSES.md) records each file's checksum. The concept art in `docs/mockups/` is original, with two exceptions:
+No licence has been chosen for this repository yet; the plan assumes MIT for code. The sprites in `assets/sprites/` and the sounds in `assets/sounds/` are original, drawn and composed as code, and [`assets/LICENSES.md`](assets/LICENSES.md) records each file's checksum. The concept art in `docs/mockups/` is original, with two exceptions:
 - the town mockups use CC0 tiles from the Ninja Adventure pack;
 - `docs/mockups/previews/` holds unmodified CC0 images, each with its licence file.
 
