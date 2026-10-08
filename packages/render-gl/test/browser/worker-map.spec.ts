@@ -24,8 +24,11 @@ test('serves the map with its content type', async ({ page }) => {
   expect(errors).toEqual([]);
 });
 
+// Chromium names the MapError in the error event's message, but Firefox gives only "Error:" and the error's own text.
+const BAD_MAP_TEXT = 'not a Nomos map';
+
 test('fails loudly on a bad map', async ({ page }) => {
   const message = await page.evaluate(() => window.workerHarness.failOn('<!doctype html>'));
-  expect(message).toContain('MapError');
-  expect(errors.filter((error) => !error.includes('MapError'))).toEqual([]);
+  expect(message).toContain(BAD_MAP_TEXT);
+  expect(errors.filter((error) => !error.includes(BAD_MAP_TEXT))).toEqual([]);
 });
