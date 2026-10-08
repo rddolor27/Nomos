@@ -16,7 +16,35 @@ A society simulation that runs entirely in the browser. Blob-shaped people work,
 - 94 original chiptune sounds in 7 banks, written as data for the game's own synth, in [`tools/sounds/`](tools/sounds/);
 - a random world generator that previews worlds with that art, in [`tools/worldgen/`](tools/worldgen/).
 
-## What it will be
+## The end goal
+
+The finished Nomos is a society you can play with in a browser tab. You generate a country or build your own, set its policies, press play and watch years of life unfold. Then you zoom from the national map down to one street to meet the people behind the numbers. The aim is to let anyone see how economies, crime and policing work, and how what gets watched shapes what gets recorded.
+
+### At launch
+
+Launch comes after milestone M8, with four ways to play and no signup:
+
+- **Lab mode: bet, then run.** Short experiment cards in the style of Primer's blob videos. You lock in a prediction before each run. One card asks "Does money buy happiness?" In another, two districts have the same true crime but report 13% and 33% of it, and you bet where a predictor trained on the records will send patrols. Every claim runs on 50 paired seeds per side and earns a verdict: Holds, Fails or Inconclusive.
+- **City mode: a town, live.** Thousands of people, up to 100,000 on a desktop, work, trade, eat, celebrate, steal, report crimes and get arrested in a generated town. Before Run you set policies: taxes, welfare, the minimum wage, the police budget, patrol rules, and fishing and logging limits. Each slider states the size of effect to expect. The daily gazette, true and recorded crime side by side, and opt-in views of wealth, fear and wellbeing show what happened.
+- **Country mode: a nation of ledgers.** A standard generated country lists 40 to 61 towns and villages, with everyone else counted by region. Its history runs for 50 to 100 years before play begins. Every settlement advances daily as an exact ledger, linked by trade, migration, commuting, taxes and one national treasury. Map modes show prices, wages, trade, danger on the roads, and true crime with recorded crime striped over it. Any town opens in City mode as a what-if.
+- **Build mode: make your own worlds.** Players get the full world builder: new town and country settings, a street editor, and god tools that sculpt terrain, draw rivers and roads, and lock or re-roll parts of the map. They can also remix experiment cards or write their own. The content rules are built into the tools, so there are no tools for bodies, costumes, cultures or hues.
+
+Every world and run can be shared. A link of 2,000 characters, small enough for a QR code, holds about 980 edits, and bigger worlds save as a `.nomos` file. A shared run replays identically in Chromium, Firefox and WebKit, and the game works offline after the first visit.
+
+### After launch
+
+- **Zoom across scales (M9).** You zoom from a region straight down to a street. People spawn from their town's ledger, stay in step with it every day and fold back in when you leave. The camera never changes history, and notable people, such as officers, owners, anyone with a record and anyone you followed, are still there when you return.
+- **Toward a million.** The long-term aim is a country of millions kept as ledgers, plus up to a million people simulated one by one wherever you watch, on machines strong enough to run it. Nomos should use the GPU and spare memory when a machine has them, and fall back gracefully when it doesn't. Research round 7 studies this and is paused.
+
+### The bar it has to clear
+
+- **Exact:** every account balances to the cent on every tick, and a run replays bit for bit from its seed in every major browser engine.
+- **Honest:** claims are judged across many paired runs, never one lucky run. A "What this toy leaves out" page ships on launch day, and the model is documented in the ODD+D standard and submitted to CoMSES, a public library of agent-based models.
+- **Calibrated:** the economy and crime rules are fitted to measured real-world ranges. For example, police number about 0.25% of the population, and roughly 3–7% of true thefts are cleared.
+- **Fair:** bias lives in the records, never in the bodies. Nobody's look, culture or wealth marks them as a criminal, and culture never touches crime, jobs, wages or wealth.
+- **Light:** the first frame appears within 1.5 s on a mid-range phone over 4G, with no backend, no account and nothing to install.
+
+## Features
 
 - **Watch, never control.** You set up a world and its policies, press play and watch: pause, speed up, skip ahead a season or a year, follow and inspect people. Trying a different policy starts a new branch.
 - **Seasons and years.** A year is four 28-day seasons. Crops are planted in spring and harvested in autumn, snow falls in winter, and people age a year at a time.
@@ -28,7 +56,6 @@ A society simulation that runs entirely in the browser. Blob-shaped people work,
 - **Soldiers on the roads.** Soldiers defend the country and patrol the roads between towns, but never police the towns themselves. They carry a sheathed sword or a shouldered spear, never a gun.
 - **Fictional cultures.** Learned customs (foods, festivals, music, naming and home region) shape what people prefer, never their ability, honesty, work or crime.
 - **One body, 96 looks.** Everyone shares one blob body with a random hue, eye shape and pattern. Looks are never inherited, and no rule reads them.
-- **Lab mode.** Primer-style experiment cards: lock in a prediction, run paired seeds and see whether it held.
 - **Three skins, one renderer.** Coloured dots, blobs or a GBA-era pixel-art town, switchable at any time.
 - **Chiptune sound.** Original effects, ambience and music, written as data and played by the game's own synth. Sound follows the sim and never feeds it.
 - **Browser only.** A TypeScript sim in a Web Worker and a custom WebGL2 renderer, with no backend. The plan's budgets cover 10,000 people on any phone, 25,000 on a capable phone and 100,000 on a desktop.
