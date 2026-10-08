@@ -18,6 +18,7 @@
   - a conflict list shows edits a rerun could not honour;
   - one undo log covers every tool.
 - **Never culture paint.** The tools offer no culture, person or hue painting; cultures are always re-placed by the generator (R9). Builder edits keep entity ids stable, as teaching's paired arms need.
+- **Countries rerun like any stage.** M8.1's countries stage takes part in lock and re-roll, and an edit to terrain or towns reruns it, so borders and capitals follow the edit. No tool paints a border or assigns a town to a country (Countries).
 
 ## Packages and files
 

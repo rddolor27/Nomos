@@ -14,8 +14,8 @@
   - presets, a live preview and validation.
 - **Settings are edits.** Each override is an edit layer on its stage (M6.3), so a setting and a hand edit replay the same way.
 - **Validation, on Play, on Share and on every open (R9):**
-  - every settlement reaches the capital by road or sea lane;
-  - food capacity per country is enough for its population;
+  - every settlement reaches its own country's capital by road or sea lane;
+  - food capacity is enough for the population, counted over the whole world, since trade crosses borders (owner, 9 October 2026);
   - no pin sits in water;
   - names pass round 8's filter, in ASCII;
   - payloads stay within M6.3's caps.
@@ -57,6 +57,7 @@ Its own tests:
 ## Open questions
 
 - **Owner:** Which ten or so overrides ship? Each one is a stage input forever. Suggested: one per world-level draw in `tools/worldgen`, eleven from template to wonder count (R9 builder notes), plus the culture settings. Needed before: the step plan.
+- **Owner:** May players set the number of countries? The owner's decision of 9 October 2026 has the seed pick 3–5. Suggested: yes, as one override of M8.1's countries stage, limited to 3–5. Needed before: the step plan.
 - **Owner:** Which presets ship, and under what names? Preset names are public text under the content rules. Suggested: "Surprise me" plus 4–6 presets named for landforms, never real places, each through the name filter. Needed before: building.
 - **Measure:** What margin makes food capacity "enough"? Validation needs a number. Suggested: capacity at least equal to need after M7.4's pre-retail losses, as a design value. Needed before: the step plan.
 
