@@ -23,6 +23,9 @@ jobs:
       - run: python tools/worldgen/mapfile.py --check
       - run: python tools/worldgen/export_map.py --check
       - run: python tools/sprites/test_skin_a.py
+      - run: python tools/licenses.py --check
+      - run: python tools/test_licenses.py
+      - run: python tools/atlas/test_atlas.py
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm test
