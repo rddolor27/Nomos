@@ -3,7 +3,7 @@ import { runInNewContext } from 'node:vm';
 import { TICKS_PER_DAY } from '@nomos/sim-core';
 import { describe, expect, it } from 'vitest';
 import { allocationWindow, runTicks } from '../src/allocation.ts';
-import { MAX_HEAP_GROWTH_BYTES_PER_TICK } from '../src/budgets.ts';
+import { MAX_HEAP_GROWTH_BYTES_PER_TICK, MAX_YOUNG_BYTES_PER_DAY } from '../src/budgets.ts';
 import { BENCH_WARM_DAYS, createBenchWorld, type BenchWorld } from '../src/sample.ts';
 
 // Vitest runs without --expose-gc, so the tests expose gc themselves. Each window then starts from a full collection,
@@ -21,8 +21,9 @@ function warmedPhoneWorld(): BenchWorld {
 describe('the allocation window', { timeout: 120_000 }, () => {
   it('sees no scavenge in a day of phone ticks', async () => {
     const { world, view } = warmedPhoneWorld();
-    const { scavenges, heapGrowthPerTick } = await allocationWindow(world, TICKS_PER_DAY, view);
+    const { scavenges, youngBytes, heapGrowthPerTick } = await allocationWindow(world, TICKS_PER_DAY, view);
     expect(scavenges).toBe(0);
+    expect(youngBytes).toBeLessThanOrEqual(MAX_YOUNG_BYTES_PER_DAY);
     expect(heapGrowthPerTick).toBeLessThan(MAX_HEAP_GROWTH_BYTES_PER_TICK);
   });
 
@@ -33,5 +34,16 @@ describe('the allocation window', { timeout: 120_000 }, () => {
       kept[0] = new Array(10_000);
     });
     expect(scavenges).toBeGreaterThan(0);
+  });
+
+  // A warmed young generation absorbs this whole day of garbage, so only the bytes in use show it.
+  it('counts a planted allocator too small for a scavenge', async () => {
+    const { world, view } = warmedPhoneWorld();
+    const kept: unknown[] = [];
+    const { scavenges, youngBytes } = await allocationWindow(world, TICKS_PER_DAY, view, () => {
+      kept[0] = new Array(8);
+    });
+    expect(scavenges).toBe(0);
+    expect(youngBytes).toBeGreaterThan(MAX_YOUNG_BYTES_PER_DAY);
   });
 });

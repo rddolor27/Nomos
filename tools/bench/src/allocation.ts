@@ -5,7 +5,7 @@ import {
   type NodeGCPerformanceDetail,
   type PerformanceEntry,
 } from 'node:perf_hooks';
-import { getHeapStatistics } from 'node:v8';
+import { getHeapSpaceStatistics, getHeapStatistics } from 'node:v8';
 import { step, type World } from '@nomos/sim-core';
 import { writeSnapshot } from '@nomos/sim-protocol';
 
@@ -18,6 +18,7 @@ type GcEntry = PerformanceEntry & { readonly detail: NodeGCPerformanceDetail };
 
 export interface Allocation {
   readonly scavenges: number;
+  readonly youngBytes: number;
   readonly heapGrowthPerTick: number;
 }
 
@@ -31,7 +32,9 @@ export function runTicks(world: World, ticks: number, view: Uint32Array, extra?:
 }
 
 // Counts the scavenges that start inside the window, which leaves out any from before it and from the wait after it,
-// such as Vitest's own. Heap growth is NaN without --expose-gc.
+// such as Vitest's own. Young bytes are the young generation's growth between two readings with no GC in between, so
+// they are what the window allocated whenever no scavenge ran; a warmed young generation absorbs a day of small
+// garbage without one. Heap growth is NaN without --expose-gc.
 export async function allocationWindow(
   world: World,
   ticks: number,
@@ -47,13 +50,20 @@ export async function allocationWindow(
   observer.observe({ entryTypes: ['gc'] });
   const heapBefore = collectedHeapBytes();
   const startMs = performance.now();
+  const youngBefore = youngBytesInUse();
   runTicks(world, ticks, view, extra);
+  const youngAfter = youngBytesInUse();
   const endMs = performance.now();
   const heapAfter = collectedHeapBytes();
   await new Promise((resolve) => setTimeout(resolve, GC_REPORT_WAIT_MS));
   observer.disconnect();
   const scavenges = scavengeStartsMs.filter((ms) => ms >= startMs && ms <= endMs).length;
-  return { scavenges, heapGrowthPerTick: (heapAfter - heapBefore) / ticks };
+  return { scavenges, youngBytes: youngAfter - youngBefore, heapGrowthPerTick: (heapAfter - heapBefore) / ticks };
+}
+
+function youngBytesInUse(): number {
+  const youngSpace = getHeapSpaceStatistics().find((space) => space.space_name === 'new_space');
+  return youngSpace?.space_used_size ?? NaN;
 }
 
 function collectedHeapBytes(): number {

@@ -24,3 +24,8 @@ export const TOLERANCE = 0.1;
 
 // The allocation gate's limit beside its zero scavenges (R5).
 export const MAX_HEAP_GROWTH_BYTES_PER_TICK = 65_536;
+
+// The young generation's bytes in use may grow this much over a day's window: a warmed one absorbs a day of small
+// garbage with no scavenge. Nothing planted measured about 3 KB, nearly all of it the stats call itself, and one
+// new Array(8) a tick about 170 KB (M0.6's review).
+export const MAX_YOUNG_BYTES_PER_DAY = 16_384;
