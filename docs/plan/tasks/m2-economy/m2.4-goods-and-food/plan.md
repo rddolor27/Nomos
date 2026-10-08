@@ -83,7 +83,7 @@
 
 ## Open questions
 
-- **Owner:** Keep `skip-expired` as M0.3's late-spoilage default, round 6's conflict (e)? The day-boundary sweep and its tests depend on it. Suggested: `skip-expired`, since the `one-pass-at-10k` option fails M0.6's 0.35 ms slice gate ([checkpoint 0005](../../../checkpoints/0005-m0-planned.md)). Needed before: the step plan.
+- **Owner, decided:** `skip-expired` stays M0.3's late-spoilage default, round 6's conflict (e). The owner chose it on 8 October 2026, and M0.3 built it as `SPOILAGE_RULE`. The day-boundary sweep and its tests depend on it, and the `one-pass-at-10k` option fails M0.6's 0.35 ms slice gate.
 - **Owner:** Which development preset does the `city` preset use, with food at 45, 33, 19 or 9% of consumption? It sets every basket, M2.6's Engel check and M2.7's food-share band. Suggested: 19%, where food still weighs on budgets without dominating them; then check M3.5's 5–15% insecurity band against it. Needed before: the step plan.
 - **Owner:** Which sector supplies each of the six food categories? Two sectors must fill six categories, and round 6 says only that shop labour and markup stand in for milling and baking ([R6 resources notes](../../../../research/round-6-goods-and-wellbeing/notes/resources-production.md), part d). Suggested: grain gives grain and bread, fresh food gives produce, dairy and fresh protein, and preserved takes fresh food plus fuel. Needed before: the step plan.
 - **Measure:** How full do the busiest shop shelves get? Peak occupancy shows whether merging same-expiry lots is enough. Suggested: log peak lots per shelf in the city preset at 10k agents. Needed before: building.

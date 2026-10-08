@@ -65,7 +65,7 @@
 ## Open questions
 
 - **Owner:** Ship the optional LLM narration? It calls an outside service, which breaks "no server", and adds about 2–3 days (unsourced estimate). Suggested: no narration. Needed before: the step plan.
-- **Owner:** Which licence does the repository take? The notices, the credits and the CoMSES submission depend on it, and checkpoint 0005 still lists it as open. Suggested: MIT for code, with each asset keeping its own licence. Needed before: the step plan.
+- **Owner:** Which licence does the repository take? The notices, the credits and the CoMSES submission depend on it. The owner chose MIT for the code on 8 October 2026, and the art licence is still open. Suggested: each asset keeps its own licence. Needed before: the step plan.
 - **Owner:** Who reviews the custom catalogue and names: paid sensitivity readers or the diverse panel? Recruiting needs lead time, which is why the brief starts it during M6.4. Suggested: M5.5's panel for names, plus paid readers for the catalogue if the budget allows. Needed before: the step plan.
 - **Research:** What effect sizes do the illusory-correlation and generic-language studies report? They decide how strongly the page may cite them. Suggested: open each study and quote its effect with an evidence label. Needed before: launch.
 
