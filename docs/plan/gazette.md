@@ -2,7 +2,7 @@
 
 Oct 7, 2026 · @Rd
 
-Every settlement prints a short paper each dawn, written only from what its institutions recorded. A crime nobody reports never makes the paper, so the gazette teaches the core lesson by itself: the record is not the crime. It also gives a watch-only player stories to follow. The owner asked for it on 7 October 2026; the tasks are in Implementation plan, tagged (Gazette).
+Every settlement prints a short paper each morning, written only from what its institutions recorded. A crime nobody reports never makes the paper, so the gazette teaches the core lesson by itself: the record is not the crime. It also gives a watch-only player stories to follow. The owner asked for it on 7 October 2026; the tasks are in Implementation plan, tagged (Gazette).
 
 ## What it prints
 
@@ -35,7 +35,7 @@ The gazette prints the recorded world, under the same content rules as the rest 
 
 An edition is a pure function of the records: edition(settlement, day) = f(records up to that day's boundary). The gazette reads the sim's records and never feeds the sim.
 
-- **When:** one edition per settlement at dawn (06:00), covering the day before. At 4× and 16× editions keep coming and the panel shows the latest. A skip prints only the edition for the day it lands on.
+- **When:** one edition per settlement at 06:00, covering the day before. At 4× and 16× editions keep coming and the panel shows the latest. A skip prints only the edition for the day it lands on.
 - **Choosing stories:** each new record maps to a story type with a fixed priority. The front page is the top story, and ties break by record id. At most two stories come from one section, so no section crowds the paper. No randomness is involved.
 - **Templates:** each story type has a few plain sentences with slots for counts, case numbers, places, goods and prices. The variant comes from a keyed draw on (world seed, settlement, day, story), outside the sim's own streams. Templates live in one string table, so they can be translated later.
 - **Determinism:** a replay prints byte-identical editions, and turning the gazette off changes no state hash. Saves never store editions; they are rebuilt from the records.
