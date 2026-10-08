@@ -130,7 +130,7 @@ git commit -m "ci: run the vectors, lint, types and tests on main"
 
   Give the test `{ timeout: 30_000 }`: its first run on a fresh install takes about 6 s, past Vitest's 5 s default.
 
-  Run: `pnpm test -- lint`. Expected: FAIL on the first test.
+  Run: `pnpm test lint`. Expected: FAIL on the first test.
 
 - [ ] **Step 2: Add the profile** for `packages/sim-core/src/**/*.ts`. It bans the `Math` members `sin`, `cos`, `tan`, `asin`, `acos`, `atan`, `atan2`, `sinh`, `cosh`, `tanh`, `asinh`, `acosh`, `atanh`, `exp`, `expm1`, `log`, `log1p`, `log2`, `log10`, `pow`, `hypot`, `cbrt` and `random`. It also bans these syntax selectors: `BinaryExpression[operator='**']`, `AssignmentExpression[operator='**=']`, `Literal[bigint]`, `CallExpression[callee.name='BigInt']` and `Identifier[name=/^Big(Int|Uint)64Array$/]`. Each message names the sim-core rule it enforces.
 
@@ -164,7 +164,7 @@ git commit -m "build(sim-core): lint-ban transcendental maths and BigInt"
   - `floors like Python`: `floorDiv`/`floorMod` of (7, 2) → (3, 1), (−7, 2) → (−4, 1), (7, −2) → (−4, −1), (−7, −2) → (3, −1) and (0, 5) → (0, 0);
   - `matches the Python vectors for fade, value and fbm`: every fixture case.
 
-  Run: `pnpm test -- noise`. Expected: FAIL.
+  Run: `pnpm test noise`. Expected: FAIL.
 
 - [ ] **Step 2: Implement `int.ts` and `noise.ts`.** Port `noise.py`, with `floorDiv` and `floorMod` in place of `divmod` and `//`. Lattice values are `draw3(seed, stream, octave, ix, iy) >>> 16`. Interpolation uses `>>`, which floors negatives as Python's `>>` does. Every intermediate fits a signed 32-bit integer: `fade` peaks at 2^30, and `(b - a) * t` stays below 2^31.
 
@@ -206,7 +206,7 @@ git commit -m "feat(sim-core): port integer value noise"
   - `gives 14 hours of light at mid-summer and 10 at mid-winter, centred on noon`: `SUNSET[42] - SUNRISE[42] === 840`, `SUNSET[98] - SUNRISE[98] === 600`, and `SUNRISE[d] + SUNSET[d] === 1440` for all 112 days;
   - `matches its generator`: `Array.from(SUNRISE)` and `Array.from(SUNSET)` equal `dayLengthTable()`.
 
-  Run: `pnpm test -- calendar`. Expected: FAIL.
+  Run: `pnpm test calendar`. Expected: FAIL.
 
 - [ ] **Step 2: Write the generator and run it.** Run: `pnpm --filter @nomos/sim-core run tables`. Expected: it writes `src/day-length.ts` with a one-line header naming the generator.
 

@@ -66,7 +66,7 @@
   - `fits every tier and issues the starting money through MINT`: each tier's world holds `TIER_AGENTS[tier]` agents with `arena.top` ≤ `TIER_MEMORY_BYTES[tier]`, `balance[MINT]` is −100,000 × agents, and `sectorAccount(0, HOUSEHOLDS)` holds the rest.
   - `laps the timer once per system per tick`: a recording timer sees laps 0 and 1 on every step, in that order.
 
-  Run: `pnpm test -- world`. Expected: FAIL.
+  Run: `pnpm test world`. Expected: FAIL.
 
 - [ ] **Step 2: Implement.**
   - `populate` adds agent i with `addAgent(store, seed, i, 4, 0)` at `draw2(seed, SPAWN, i, 0)` and `draw2(seed, SPAWN, i, 1)`, masked to `extent − 1`.
@@ -110,7 +110,7 @@ git -c user.name=rddolor27 -c user.email=80044625+rddolor27@users.noreply.github
   - `names the eight actions with sneak and carry last`: `ACTION_NAMES` is `idle`, `walk`, `sit`, `sleep`, `work`, `talk`, `sneak`, `carry`. Against round 3's idle, walk, run, work or sit, sleep, fight, arrested and down, this drops run, fight, arrested and down, splits sit from work, and adds talk, sneak and carry (R3 rendering notes).
   - `applies the sim profile to sim-protocol and sim-worker` (in `lint.test.ts`): `Math.sin(1)` and `BigInt(1)` are rejected at `packages/sim-protocol/src/planted.ts` and `packages/sim-worker/src/planted.ts`, while `s.look[0]` passes in `sim-protocol`.
 
-  Run: `pnpm test -- protocol lint`. Expected: FAIL.
+  Run: `pnpm test protocol lint`. Expected: FAIL.
 
 - [ ] **Step 2: Implement.** Scaffold the package as M0.1 scaffolded `sim-core`, with `"sideEffects": false`, depending on `@nomos/sim-core` (`workspace:*`). In `eslint.config.js`, extend M0.1's `Math` member ban and the `MATH_SYNTAX`, `BIGINT_SYNTAX` and `RATE_PRODUCTS` groups to `packages/{sim-core,sim-protocol,sim-worker}/src/**`. `LOOK_READS` stays `sim-core`'s alone, because the snapshot writer reads looks.
 
@@ -141,7 +141,7 @@ git -c user.name=rddolor27 -c user.email=80044625+rddolor27@users.noreply.github
   - `writes 12 little-endian bytes per agent`. After 100 ticks of a phone world, check every agent i through a `DataView`: `getFloat32(12i, true) === x[i] / 256`, `getFloat32(12i + 4, true) === y[i] / 256`, and `getUint32(12i + 8, true)` equals `packVisual(look, action, 0, 0, facing, 0)`. The returned count is 10,000.
   - `circulates three buffers`. Three `takeView` calls give 120,000-byte views, and a fourth gives `null`. A returned buffer can be taken again, and a wrong-sized buffer makes `giveBack` throw `RangeError`.
 
-  Run: `pnpm test -- snapshot`. Expected: FAIL.
+  Run: `pnpm test snapshot`. Expected: FAIL.
 
 - [ ] **Step 2: Implement.** Float bits pass through one module-level `Float32Array(1)` aliased by a `Uint32Array`; every target platform is little-endian. `giveBack` wraps a returned buffer in one view: one small object per snapshot, made outside the tick, while the three buffers circulate (R1).
 
@@ -174,7 +174,7 @@ git -c user.name=rddolor27 -c user.email=80044625+rddolor27@users.noreply.github
   - `carries pending inputs through a checkpoint`. Log a focus at tick 300, checkpoint at 400 and restore. At tick 1,441 the restored focus matches the original's.
   - `refuses an input past the log's capacity`: the 4,097th `logInput` returns false.
 
-  Run: `pnpm test -- day`. Expected: FAIL.
+  Run: `pnpm test day`. Expected: FAIL.
 
 - [ ] **Step 2: Implement, run and commit.** Give the CLI a repeatable `--focus <tick>:<settlement>`, logged before that tick's step. Run: `pnpm test && pnpm lint && pnpm typecheck && node tools/cli/src/main.ts --seed 42 --ticks 3000 --focus 300:0`. Expected: PASS, then the same hash line as without `--focus`.
 
@@ -220,7 +220,7 @@ git -c user.name=rddolor27 -c user.email=80044625+rddolor27@users.noreply.github
   - `restores a checkpoint taken mid-window`: a world checkpointed after tick 5 and restored matches the original's hash at tick 1,000.
   - `warms up without changing any replay`: seed 42's hash at tick 1,000 is the same before and after `warmUp()`.
 
-  Run: `pnpm test -- slices warm`. Expected: FAIL.
+  Run: `pnpm test slices warm`. Expected: FAIL.
 
 - [ ] **Step 3: Implement, run and commit.** Add the CLI flag `--warmup`, which runs `warmUp` first and prints its milliseconds. R6 measured 18–32 ms; it is not gated here. Run: `pnpm test && pnpm lint && pnpm typecheck && node tools/cli/src/main.ts --warmup`. Expected: PASS, then a time and a hash line.
 
@@ -254,7 +254,7 @@ git -c user.name=rddolor27 -c user.email=80044625+rddolor27@users.noreply.github
     - Forward, reversed and keyed-shuffled visits all hash alike.
     - Writing directly, with a live count, makes forward and reversed differ.
 
-  Run: `pnpm test -- stride`. Expected: FAIL.
+  Run: `pnpm test stride`. Expected: FAIL.
 
 - [ ] **Step 2: Implement, run and commit.** `applyChanges` visits agents first, first + period, … below n, so the order is fixed whatever order set the changes. Run: `pnpm test && pnpm lint && pnpm typecheck`. Expected: PASS.
 
@@ -283,7 +283,7 @@ git -c user.name=rddolor27 -c user.email=80044625+rddolor27@users.noreply.github
   - `takes the top-10% share within 0.03 points of a sort` (R6). The test builds 100,000 lognormal values (σ 1.2, median 10^6 cents) and 100,000 Pareto values (α 1.5) with `Math.exp`. For each set, `topShare(h, 100_000)` lies within 300 ppm of the exact share from a sorted plain array.
   - `rejects sorting in sim code` (in `lint.test.ts`): `v.sort()` and `v.toSorted()` give messages at `packages/sim-core/src/planted.ts` and `packages/sim-worker/src/planted.ts`, but none at `packages/sim-core/scripts/planted.ts`.
 
-  Run: `pnpm test -- histogram lint`. Expected: FAIL.
+  Run: `pnpm test histogram lint`. Expected: FAIL.
 
 - [ ] **Step 2: Implement, run and commit.** `binOf` finds the octave with `Math.clz32` on the value's high or low 32-bit half, split by `Math.floor(v / 2^32)`, and takes the 4 bits below the leading one, so it needs no `Math.log2`. Add the group `SORT_CALLS`, `CallExpression[callee.property.name=/^(sort|toSorted)$/]`, to every sim source block, exemptions included. ESLint cannot tell which views are shared, and `TypedArray.prototype.sort` copies shared memory (R6), so every such call goes; histograms and slot order replace sorting. Run: `pnpm test && pnpm lint && pnpm typecheck`. Expected: PASS.
 
@@ -329,7 +329,7 @@ git -c user.name=rddolor27 -c user.email=80044625+rddolor27@users.noreply.github
   - `reports per-system milliseconds` under the keys `day`, `move` and `snapshot`.
   - In `lifecycle.test.ts`: hidden posts `pause`, visible posts `resume`, `pagehide` posts `pause`, then `checkpoint`.
 
-  Run: `pnpm test -- loop lifecycle`. Expected: FAIL.
+  Run: `pnpm test loop lifecycle`. Expected: FAIL.
 
 - [ ] **Step 2: Implement, run and commit.** Run: `pnpm install && pnpm test && pnpm lint && pnpm typecheck`. Expected: PASS. M0.5 repeats the hidden-page check in a real browser, through Playwright with a visibility shim (R2 §2). The lifecycle is committed first, since the loop's tests use it.
 

@@ -58,7 +58,7 @@ git -c user.name=rddolor27 -c user.email=80044625+rddolor27@users.noreply.github
 
 - [ ] **Step 3: Read the result** once the owner has pushed `main`. Run: `gh run list --workflow stdlib.yml --limit 1`. Expected: five green jobs, or a red one naming the functions that differ.
 
-- [ ] **Step 4: Record the rule.** If every job passes, code outside per-agent loops may call @stdlib at runtime (task.md), and nothing changes. Otherwise ban `@stdlib/*` with `no-restricted-imports` in `packages/sim-core/src/**`, and add the test `keeps @stdlib out of sim-core source` to `lint.test.ts`: `import exp from '@stdlib/math-base-special-exp'` gives a message at `src/planted.ts` and none at `scripts/planted.ts`. Run: `pnpm test -- lint && pnpm lint`. Expected: PASS.
+- [ ] **Step 4: Record the rule.** If every job passes, code outside per-agent loops may call @stdlib at runtime (task.md), and nothing changes. Otherwise ban `@stdlib/*` with `no-restricted-imports` in `packages/sim-core/src/**`, and add the test `keeps @stdlib out of sim-core source` to `lint.test.ts`: `import exp from '@stdlib/math-base-special-exp'` gives a message at `src/planted.ts` and none at `scripts/planted.ts`. Run: `pnpm test lint && pnpm lint`. Expected: PASS.
 
 ```bash
 git add eslint.config.js packages/sim-core/test/lint.test.ts
@@ -87,7 +87,7 @@ git -c user.name=rddolor27 -c user.email=80044625+rddolor27@users.noreply.github
   - `fits 25,000 agents in a phone reservation and 100,000 in a desktop one`, and `AGENT_COLUMNS` sums to at most 256 bytes, each entry matching its column's `BYTES_PER_ELEMENT`.
   - `bins Q8 positions into cells by shift`: for 10,000 keyed x below 2^22, `cellOf(x) === Math.floor(x / 32_768)` and `Math.fround(x / 256) === x / 256`.
 
-  Run: `pnpm test -- memory store`. Expected: FAIL.
+  Run: `pnpm test memory store`. Expected: FAIL.
 
 - [ ] **Step 2: Implement.** `initial` equals `maximum`, so `grow` throws. The memory is not shared: M0 runs one sim worker, and more workers pay only above 20–25k agents (R5 compute §2). `take` aligns each region to 8 bytes and pads its length to a multiple of 8. Q8 beats Q16 because it converts to float32 exactly up to 65,536 px, against 256 px (computed: 2^24 ÷ 256 and 2^24 ÷ 65,536).
 
@@ -121,7 +121,7 @@ git -c user.name=rddolor27 -c user.email=80044625+rddolor27@users.noreply.github
   - `keeps world, agent and ledger streams apart`: constants are unique, `layerOf` places `LOOK`, `CULTURE` and `LEDGER_SALT + 1`, and the fixture's streams lie below `AGENT_SALT` with its `LOOK` equal to ours.
   - `refuses a bad culture count or a full store`: 0 or 9 cultures, or a slot past `capacity`, throws `RangeError` and leaves `count[0]` unchanged.
 
-  Run: `pnpm test -- looks`. Expected: FAIL.
+  Run: `pnpm test looks`. Expected: FAIL.
 
 - [ ] **Step 3: Implement.** `addAgent` fills slot `count[0]` and increments it, with `look = draw1(seed, LOOK, id) % LOOKS` as in `look_for`, `culture = draw1(seed, CULTURE, id) % cultures` copied to `birthCulture`, and `customs = culture * 0x1111`: someone raised in one culture holds its four customs.
 
@@ -159,7 +159,7 @@ git -c user.name=rddolor27 -c user.email=80044625+rddolor27@users.noreply.github
   - `catches money made outside MINT and inexact cents`: `balance[16] += 1` gives `CASH_NOT_ZERO`; a 0.5-cent transfer, a `NaN` balance and a ±2^53 pair give `CENTS_NOT_EXACT`.
   - `sums without rounding near 2^53`: balances 2^53 − 1, 2, −(2^53 − 1) and −1, one cent off, give `CASH_NOT_ZERO`, though a plain float sum of them is 0.
 
-  Run: `pnpm test -- ledger`. Expected: FAIL.
+  Run: `pnpm test ledger`. Expected: FAIL.
 
 - [ ] **Step 2: Implement.** In one pass, `checkCash` gives `CENTS_NOT_EXACT` for any `b !== Math.floor(b)` or `|b| > MAX_SAFE_CENTS`, which catches `NaN`. It then splits each balance into `hi = Math.floor(b / 2^26)` and `lo = b − hi × 2^26` and sums each part apart. Both sums stay exact below 2^26 accounts, and `CASH_NOT_ZERO` means `hiSum × 2^26 + loSum !== 0`. It returns a code rather than throwing, so per-tick callers allocate nothing.
 
@@ -195,7 +195,7 @@ git -c user.name=rddolor27 -c user.email=80044625+rddolor27@users.noreply.github
   - `logs revaluations without moving a cent or MINT` (R6): add homes, titles and shares to that ledger, and revalue every group daily within ±5%. Every cash balance, MINT included, stays put, and each group's lines sum to its change in value.
   - `refuses full structures`: a loan or holding past `capacity` throws `RangeError`.
 
-  Run: `pnpm test -- money claims registry`. Expected: FAIL.
+  Run: `pnpm test money claims registry`. Expected: FAIL.
 
 - [ ] **Step 2: Implement `mulPpm`** by R6's split (wealth §c): `hi = Math.floor(cents / PPM)` and `lo = cents − hi × PPM`, moving `hi` by ±1 until 0 ≤ `lo` < `PPM`, since near 2^53 the division can round across an integer; then return `hi × ppm + Math.floor(lo × ppm / PPM)`. Every product stays below 2^53.
 
@@ -238,7 +238,7 @@ git -c user.name=rddolor27 -c user.email=80044625+rddolor27@users.noreply.github
   - `moves small minorities that largest remainder never moves` (R8 customs §e): `[98, 2]` with flows of 1 + m % 3 for 360 months moves 5–25 of the minority (14.4 expected); `apportion` moves none.
   - `gives the same balances in any planning order` (R4): over 10,000 keyed balances, i sends ⌊b[i] ÷ 8⌋ to (7i + 3) mod n and ⌊b[i] ÷ 16⌋ to (13i + 5) mod n daily. Forward, reverse and keyed Fisher–Yates planning agree for 30 days, while writing during the visit makes forward and reverse differ. Applied to `ledger.balance`, a plan keeps `checkCash` at `OK`.
 
-  Run: `pnpm test -- apportion split flows`. Expected: FAIL.
+  Run: `pnpm test apportion split flows`. Expected: FAIL.
 
 - [ ] **Step 2: Implement `apportion.ts`.** One quota pass serves both rules. While total × max weight < 2^53, `Math.floor(total * w / W)` is exact (R4 architecture §3). Otherwise quotas and remainders come from `BigInt` and return through `Number()`, which is exact since quotas are at most the total and remainders below W. `apportion` pops the L largest remainders from a binary max-heap in `scratch.heap`, never calling `sort`. `apportionByStride` starts at `word % n` and steps by the first value from `1 + mix(word) % n` upward that is coprime with n.
 
@@ -280,7 +280,7 @@ git -c user.name=rddolor27 -c user.email=80044625+rddolor27@users.noreply.github
   - `sums every band-share row to a million ppm`. As the mean rises, the top band never falls, and the bottom never rises, by more than 1 ppm, the most rounding can move a share. At mean 7.0 (row 140), bands 2 and 3 differ by at most 1 ppm.
   - `correlates wealth with income rank at Spearman 0.6`: the copula never falls along either axis, and the Spearman between income bin and value over its 4,096 cells is 0.60 ± 0.02.
 
-  Run: `pnpm test -- tables`. Expected: FAIL.
+  Run: `pnpm test tables`. Expected: FAIL.
 
 - [ ] **Step 2: Write the generator and run it.** Run: `pnpm --filter @nomos/sim-core run tables`. Expected: `src/tables.ts`, with one `/* @__PURE__ */` line per table under a header naming the generator.
 
