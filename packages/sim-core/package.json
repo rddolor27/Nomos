@@ -7,7 +7,7 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "tables": "node scripts/day-length.ts"
+    "tables": "node scripts/day-length.ts && node scripts/tables.ts"
   },
   "devDependencies": {
     "@stdlib/math-base-special-cos": "^0.3.1",

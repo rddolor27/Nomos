@@ -14,3 +14,5 @@ export * from './registry.ts';
 export * from './apportion.ts';
 export * from './split.ts';
 export * from './flows.ts';
+export * from './tables.ts';
+export * from './log2.ts';
