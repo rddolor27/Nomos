@@ -40,7 +40,7 @@ Time is one integer tick counter, and sim-core derives every date from it with i
 
 - **Tick 0** is 00:00 on Spring 1, Year 1, a workday; the ledger spin-up runs before it. Because 28 = 4 × 7, every season starts on a workday.
 - **An Int32 tick** lasts about 13,000 years (computed), far past any run.
-- **The date reads** "Spring 12, Year 3 · 08:40 · rest day".
+- **The date reads** "Spring 12, Year 3 · 08:40 · workday".
 - **Day length follows the season:** about 14 h of light at mid-summer and 10 h at mid-winter, with noon at 12:00.
   - A 112-entry table of sunrise and sunset minutes feeds the town's light periods.
   - It is built at build time, because sim-core may not call `Math.sin`.
@@ -86,7 +86,7 @@ The day shows its hour from M1 on: five light periods follow the sunrise table, 
   - Fades take at least 2 s of real time, so 16× and skips never flash.
   - A tint-off toggle shows the run in plain daylight.
 - **No sim rule reads the light.** Schedules keep clock times, and the state hash is the same with the tint on or off.
-- **The HUD names the period:** "Spring 12, Year 3 · 08:40 · morning · rest day".
+- **The HUD names the period:** "Spring 12, Year 3 · 08:40 · morning · workday".
 - **Lab days pass through the same periods.** If a lab day runs as phases rather than 1,440 ticks, each phase takes its light: morning stock in the morning, contests and trade in the afternoon, the walk home at dusk and the settlement at night.
 - **The town adds lights in M3.** Windows and lamps light from dusk to dawn; 175 house sprites already name a lit-window overlay, and a lamp post is drawn. Ambience and music already follow the periods (Sound).
 
@@ -105,7 +105,7 @@ The player watches and never steers: while a run plays, speed, camera and views 
 - **Skip** runs to the next season or year without drawing, then resumes at the earlier speed.
 - **Speeds cap by tier.** At 100,000 agents the 16 ms tick budget leaves room for only a few times normal speed while drawing.
 - **Controls:** Space pauses, keys 1–4 set the speed, and the HUD carries a skip button. Under reduced motion the run starts paused.
-- **The HUD shows** the date, time and day type ("Spring 12, Year 3 · 08:40 · rest day"), a season icon and the year's progress.
+- **The HUD shows** the date, time and day type ("Spring 12, Year 3 · 08:40 · workday"), a season icon and the year's progress.
 - **Year in review:** each new year brings a short card.
   - It shows population, births and deaths, festivals held, true against recorded crime, and wealth shifts.
   - It never breaks figures down by culture (round 8).
