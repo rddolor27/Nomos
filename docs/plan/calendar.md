@@ -67,6 +67,29 @@ Each season changes the fields, the colours and the sound, and the harvest windo
 - **Ambience follows the season** through the existing biome loops: birds in spring and summer, wind in autumn, and `amb_snow` in winter.
 - **Season icons** in the HUD stay distinct from the eight culture emblems.
 
+## Time of day
+
+The day shows its hour from M1 on: five light periods follow the sunrise table, so summer evenings stay light and winter nights come early. The owner added them on 8 October 2026; round 3 had four periods and no afternoon, and only the M3 town used them.
+
+| Period | Starts | Ends | Look |
+| --- | --- | --- | --- |
+| Dawn | 30 min before sunrise | 30 min after sunrise | Pink and gold, brightening |
+| Morning | End of dawn | 12:00 | Clear, neutral daylight |
+| Afternoon | 12:00 | Start of dusk | Warmer, turning golden |
+| Dusk | 30 min before sunset | 30 min after sunset | Orange into violet |
+| Night | End of dusk | Start of dawn | Deep blue; lit windows and lamps in the town |
+
+- **The periods move with the season.** At mid-summer, dawn runs 04:30–05:30 and night starts at 19:30. At mid-winter, dawn runs 06:30–07:30 and night starts at 17:30 (computed from the sunrise table). The half hour either side of sunrise and sunset is a design value.
+- **One integer rule:** the period is a pure function of the tick, comparing the minute of the day with that day's sunrise and sunset. It sits beside the calendar in sim-core, so light, HUD and sound always agree.
+- **Only the picture changes.**
+  - The tint colours the ground and buildings, never people, so bodies, outlines and hues read the same at any hour (round 3).
+  - Fades take at least 2 s of real time, so 16× and skips never flash.
+  - A tint-off toggle shows the run in plain daylight.
+- **No sim rule reads the light.** Schedules keep clock times, and the state hash is the same with the tint on or off.
+- **The HUD names the period:** "Spring 12, Year 3 · 08:40 · morning · rest day".
+- **Lab days pass through the same periods.** If a lab day runs as phases rather than 1,440 ticks, each phase takes its light: morning stock in the morning, contests and trade in the afternoon, the walk home at dusk and the settlement at night.
+- **The town adds lights in M3.** Windows and lamps light from dusk to dawn; 175 house sprites already name a lit-window overlay, and a lamp post is drawn. Ambience and music already follow the periods (Sound).
+
 ## Watching
 
 The player watches and never steers: while a run plays, speed, camera and views are the only inputs.
@@ -119,27 +142,28 @@ Daily life runs per real day, and everything annual runs per 112-day year. The y
 
 ## Work by milestone
 
-The calendar takes about 11–17 more days over six milestones, now that its art is drawn (unsourced estimate). Each task is in Implementation plan, tagged (Calendar).
+The calendar takes about 12–19 more days over six milestones, now that its art is drawn (unsourced estimate). Each task is in Implementation plan, tagged (Calendar).
 
 | Milestone | Work | Days |
 | --- | --- | --- |
 | M0 Pipeline | 1,440 ticks a day and 112 days a year recorded in `sim-protocol` (1); the calendar module with date maths and day-length tables (1) | 2 |
-| M1 Lab mode | Speed controls, shortcuts and per-tier caps (1–2); the HUD date (0.5–1); watch-only in the protocol (0.5) | 2–3.5 |
+| M1 Lab mode | Speed controls, shortcuts and per-tier caps (1–2); the HUD date (0.5–1); watch-only in the protocol (0.5); the five light periods, the ground tint and the period in the HUD (1–1.5) | 3–5 |
 | M2 Economy | Recalibrate to the 112-day year: daily wages, prices, interest and loan terms | 1–2 |
-| M3 City life | Seasons in the town: crop cycle, day length, palettes, snow and ambience (2–3); the seasonal art is already drawn | 2–3 |
+| M3 City life | Seasons in the town: crop cycle, day length, palettes, snow and ambience (2–3); the seasonal art is already drawn; lit windows and lamps at night, counted with round 3's light work | 2–3 |
 | M5 Society and policy | Ageing with real lifespans (1–2); the year-in-review card (1–2); branches in place of live policy changes (1–2) | 3–6 |
 | M7 Country of ledgers | The spin-up and country skip-ahead in 112-day years | 0.5 |
 
 **Exit checks:**
 
 - M0: every date round-trips through its tick count; a season is 28 days and 4 weeks, a year 112 days, and every season starts on a workday.
-- M1: while a run plays, the worker accepts only pause, speed, skip and read-only queries, and speed or skips never change the state hash at any date.
+- M1: while a run plays, the worker accepts only pause, speed, skip and read-only queries, and speed or skips never change the state hash at any date. The light period at every minute of all 112 days follows the sunrise table, every dot and body hue clears 3:1 against the ground in every period by its outline or its fill, and the tint never changes the state hash.
 - M2: over 50 paired seeds, food, housing and saving shares and the wealth Gini stay within their calibrated bands on the 112-day year.
-- M3: the harvest comes once a year in autumn, and stores carry the town through winter.
+- M3: the harvest comes once a year in autumn, and stores carry the town through winter; windows and lamps light only from dusk to dawn, and every body hue clears 3:1 against every walkable tile in every light period.
 - M5: the age pyramid stays within its band, no culture's festivals cluster in one season, and a branch replays identically from (seed, settings, fork day, change).
 
 ## Open questions
 
 - Should the year-in-review card pause the run, or appear without stopping it?
 - Do fast speeds need an auto-camera? The Gazette tab proposes an opt-in one that follows the front-page story; otherwise the player steers.
+- Should darkness change what people see, such as fewer witnesses at night (M4)? No sim rule reads the light yet; round 8's exposure lens already counts night outdoor hours.
 - Verify first: do round 6's calibrated targets still hold once daily wages and prices are rescaled?
