@@ -1,18 +1,43 @@
 import { ACTION_IDLE, ACTION_WALK } from './actions.ts';
 import { draw2 } from './draw.ts';
-import { walkableAt } from './ground.ts';
-import { SUBPIXELS } from './space.ts';
+import { tileOf, walkableAt } from './ground.ts';
 import type { AgentStore } from './store.ts';
 import { WANDER } from './streams.ts';
+import { WALK_SINE_Q8 } from './tables.ts';
 import { TICK, type World } from './world.ts';
 
-const WALK_Q8_PER_TICK = 4 * SUBPIXELS;
-// Each agent re-draws every 64 ticks, staggered by id, so only a 64th of them draw in any tick.
-const REDRAW_TICKS = 64;
+// Each agent redraws every 16 ticks, staggered by index, so only a 16th of them draw in any tick.
+const REDRAW_TICKS = 16;
 const REDRAW_MASK = REDRAW_TICKS - 1;
-// Unit steps for FACING_DOWN, LEFT, UP and RIGHT, with y growing down from the top-left origin.
-const STEP_X: readonly number[] = [0, -1, 0, 1];
-const STEP_Y: readonly number[] = [1, 0, -1, 0];
+// A walker stops on 1 roll in 16 and an idler starts on 3, so a quarter idle, in pauses of 85 ticks against walks of
+// 256 on average, as when agents idled on a quarter of their 64-tick redraws.
+const ROLL_MASK = 15;
+const STOP_ROLLS = 1;
+const START_ROLLS = 3;
+// Headings run clockwise on screen from down, as the facings do: 0 down, 64 left, 128 up and 192 right.
+const HEADINGS = 256;
+const HEADING_MASK = 255;
+const HALF_TURN = 128;
+const HALF_TURN_MASK = 127;
+const QUARTER_TURN = 64;
+const QUARTER_TURN_SHIFT = 6;
+const EIGHTH_TURN = 32;
+const FACING_MASK = 3;
+// A wall met through a row edge runs along x, so along heading 64, and one met through a column edge along y.
+const ALONG_X = 64;
+const ALONG_Y = 0;
+// The walking loop only lists a chunk's blocked agents, and meetWall turns them once the chunk has walked. Any wall
+// work inside the loop, even a call-free mirror, took move at 100k from 0.41 to 0.6-1.1 ms, against 0.8 (measured).
+const WALK_CHUNK = 1_024;
+const blocked = new Int32Array(WALK_CHUNK);
+
+// The step per tick on each heading, in Q8: -1,024 sin and 1,024 cos of 2πh / 256, so 4 px whichever way a blob walks.
+export const WALK_X_Q8 = new Int16Array(HEADINGS);
+export const WALK_Y_Q8 = new Int16Array(HEADINGS);
+for (let h = 0; h < HEADINGS; h++) {
+  WALK_X_Q8[h] = -sineQ8(h);
+  WALK_Y_Q8[h] = sineQ8(h + QUARTER_TURN);
+}
 
 export function move(world: World): void {
   const seed = world.seed;
@@ -24,24 +49,56 @@ export function move(world: World): void {
   const y = agents.y;
   const vx = agents.vx;
   const vy = agents.vy;
-  const facing = agents.facing;
-  // The walking loop keeps no call but walkableAt, its hottest: the draw has its own strided pass, and the turn is
-  // written out because V8 often left a turnAround call uninlined. That took move from 0.795 to 0.405 ms at 100k
-  // (budget 0.8 ms). Each agent still redraws before its own step, so no replay changes.
   for (let i = firstRedraw(tick); i < count; i += REDRAW_TICKS) redraw(agents, seed, i, tick);
-  for (let i = 0; i < count; i++) {
-    const nextX = x[i] + vx[i];
-    const nextY = y[i] + vy[i];
-    // A step off the map or onto a blocked cell turns the agent back, so agents stay on the open ground they spawn on.
-    if (walkableAt(ground, nextX, nextY)) {
-      x[i] = nextX;
-      y[i] = nextY;
-    } else {
-      facing[i] ^= 2;
-      vx[i] = -vx[i];
-      vy[i] = -vy[i];
+  for (let first = 0; first < count; first += WALK_CHUNK) {
+    const end = Math.min(count, first + WALK_CHUNK);
+    let stuck = 0;
+    for (let i = first; i < end; i++) {
+      const nextX = x[i] + vx[i];
+      const nextY = y[i] + vy[i];
+      if (walkableAt(ground, nextX, nextY)) {
+        x[i] = nextX;
+        y[i] = nextY;
+      } else {
+        blocked[stuck++] = i;
+      }
     }
+    for (let k = 0; k < stuck; k++) meetWall(agents, blocked[k]);
   }
+}
+
+// The blocked step left the agent's own tile, which is open, so the agent slides within it along the wall it met, or
+// stays put at a corner.
+function meetWall(agents: AgentStore, i: number): void {
+  const x = agents.x;
+  const y = agents.y;
+  const nextX = x[i] + agents.vx[i];
+  const nextY = y[i] + agents.vy[i];
+  let turned: number;
+  if (tileOf(nextX) === tileOf(x[i])) {
+    x[i] = nextX;
+    turned = offWall(agents.heading[i], ALONG_X);
+  } else {
+    if (tileOf(nextY) === tileOf(y[i])) y[i] = nextY;
+    turned = offWall(agents.heading[i], ALONG_Y);
+  }
+  agents.heading[i] = turned;
+  agents.vx[i] = WALK_X_Q8[turned];
+  agents.vy[i] = WALK_Y_Q8[turned];
+  agents.facing[i] = facingFor(turned);
+}
+
+// 1,024 sin(2πh / 256) from the generated quarter wave: read forwards, then backwards, then both again negated.
+function sineQ8(heading: number): number {
+  const k = heading & HALF_TURN_MASK;
+  const sine = WALK_SINE_Q8[k <= QUARTER_TURN ? k : HALF_TURN - k];
+  return (heading & HALF_TURN) === 0 ? sine : -sine;
+}
+
+// The facing nearest the heading, so its step's dominant axis: facings 0-3 point down, left, up and right, as headings
+// 0, 64, 128 and 192 do. The four exact diagonals round clockwise.
+export function facingFor(heading: number): number {
+  return ((heading + EIGHTH_TURN) >> QUARTER_TURN_SHIFT) & FACING_MASK;
 }
 
 // Agent i is due when (tick + i) & REDRAW_MASK is 0, so the first due agent is -tick modulo REDRAW_TICKS.
@@ -49,18 +106,38 @@ function firstRedraw(tick: number): number {
   return (REDRAW_TICKS - (tick & REDRAW_MASK)) & REDRAW_MASK;
 }
 
-// A quarter of the draws idle, and the next two bits pick the facing.
 function redraw(agents: AgentStore, seed: number, i: number, tick: number): void {
   const w = draw2(seed, WANDER, i, tick);
-  if ((w & 3) === 0) {
-    agents.action[i] = ACTION_IDLE;
-    agents.vx[i] = 0;
-    agents.vy[i] = 0;
-    return;
+  const roll = w & ROLL_MASK;
+  let turned: number;
+  if (agents.action[i] === ACTION_WALK) {
+    if (roll < STOP_ROLLS) {
+      agents.action[i] = ACTION_IDLE;
+      agents.vx[i] = 0;
+      agents.vy[i] = 0;
+      return;
+    }
+    turned = (agents.heading[i] + smallTurn(w)) & HEADING_MASK;
+  } else {
+    if (roll >= START_ROLLS) return;
+    agents.action[i] = ACTION_WALK;
+    turned = w >>> 24;
   }
-  const facing = (w >>> 2) & 3;
-  agents.action[i] = ACTION_WALK;
-  agents.facing[i] = facing;
-  agents.vx[i] = STEP_X[facing] * WALK_Q8_PER_TICK;
-  agents.vy[i] = STEP_Y[facing] * WALK_Q8_PER_TICK;
+  agents.heading[i] = turned;
+  agents.vx[i] = WALK_X_Q8[turned];
+  agents.vy[i] = WALK_Y_Q8[turned];
+  agents.facing[i] = facingFor(turned);
+}
+
+// -15 to +15 headings, the difference of two 4-bit draws, so small turns are likelier than big ones.
+function smallTurn(w: number): number {
+  return ((w >>> 4) & 15) - ((w >>> 8) & 15);
+}
+
+// Mirrors a heading across a wall that runs along the heading `along`, then halves its angle to the wall, rounded up
+// so it still points away. A blob so leaves a wall at half the angle it met it, and never zigzags down a narrow lane.
+function offWall(heading: number, along: number): number {
+  const mirrored = 2 * along - heading;
+  const fromWall = ((mirrored - along + QUARTER_TURN) & HALF_TURN_MASK) - QUARTER_TURN;
+  return (mirrored - ((fromWall / 2) | 0)) & HEADING_MASK;
 }

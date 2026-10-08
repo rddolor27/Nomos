@@ -1,10 +1,11 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { ACTION_IDLE, ACTION_WALK, FACING_DOWN, FACING_LEFT, FACING_RIGHT, FACING_UP } from '../src/actions.ts';
+import { ACTION_IDLE, ACTION_WALK, FACING_RIGHT, FACING_UP } from '../src/actions.ts';
 import { CASH_NOT_ZERO, OK, checkInvariants } from '../src/invariants.ts';
 import { HOUSEHOLDS, MINT, sectorAccount } from '../src/ledger.ts';
 import { SYSTEM_NAMES, step, type SystemTimer } from '../src/step.ts';
 import { TIER_AGENTS, TIER_MEMORY_BYTES, type Tier } from '../src/tiers.ts';
+import { WALK_X_Q8, WALK_Y_Q8, facingFor } from '../src/wander.ts';
 import {
   TICK,
   checkpoint,
@@ -23,12 +24,6 @@ const goldens: Goldens = JSON.parse(readFileSync(new URL('./fixtures/goldens.jso
 const TIERS: readonly Tier[] = ['phone', 'phone-plus', 'desktop'];
 const TILE_Q8 = 16 * 256;
 const WALK_Q8 = 1_024;
-const WALK_VELOCITY_Q8: Record<number, readonly [number, number]> = {
-  [FACING_DOWN]: [0, WALK_Q8],
-  [FACING_LEFT]: [-WALK_Q8, 0],
-  [FACING_UP]: [0, -WALK_Q8],
-  [FACING_RIGHT]: [WALK_Q8, 0],
-};
 
 function agentsOffMap(world: World): number[] {
   const { count, x, y } = world.agents;
@@ -41,14 +36,15 @@ function agentsOffMap(world: World): number[] {
   return ids;
 }
 
-// An idler stands still, and a walker moves at walking speed the way it faces.
+// An idler stands still, a walker takes its heading's step, and both face the way their heading points.
 function agentsMovingWrongly(world: World): number[] {
-  const { count, vx, vy, action, facing } = world.agents;
+  const { count, vx, vy, action, facing, heading } = world.agents;
   const ids: number[] = [];
   for (let i = 0; i < count[0]; i++) {
     const walking = action[i] === ACTION_WALK;
-    const [wantX, wantY] = walking ? WALK_VELOCITY_Q8[facing[i]] : [0, 0];
-    if (vx[i] !== wantX || vy[i] !== wantY || (!walking && action[i] !== ACTION_IDLE)) ids.push(i);
+    const [wantX, wantY] = walking ? [WALK_X_Q8[heading[i]], WALK_Y_Q8[heading[i]]] : [0, 0];
+    const wrongAction = !walking && action[i] !== ACTION_IDLE;
+    if (vx[i] !== wantX || vy[i] !== wantY || wrongAction || facing[i] !== facingFor(heading[i])) ids.push(i);
   }
   return ids;
 }
@@ -75,22 +71,24 @@ describe('the world step', () => {
     expect(walkerShare).toBeLessThanOrEqual(0.85);
   });
 
-  it('turns a walker around instead of stepping off the map', () => {
+  it('turns a walker off the map edge instead of stepping off it or straight back', () => {
     const world = layoutWorld(42, 'phone', 1, 1_048_576);
     populate(world);
-    const { x, vx, vy, action, facing } = world.agents;
+    const { x, y, vx, vy, action, facing, heading } = world.agents;
     const edgeQ8 = world.ground.width * TILE_Q8 - 1;
     action[0] = ACTION_WALK;
+    heading[0] = 192;
     facing[0] = FACING_RIGHT;
     vx[0] = WALK_Q8;
     vy[0] = 0;
     x[0] = edgeQ8;
-    world.globals[TICK] = 1; // agent 0 re-draws only on ticks divisible by 64
+    const y0 = y[0];
+    world.globals[TICK] = 1; // agent 0 redraws only on ticks divisible by 16
 
     step(world);
-    expect([x[0], facing[0], vx[0], vy[0]]).toEqual([edgeQ8, FACING_LEFT, -WALK_Q8, 0]);
+    expect([x[0], y[0], heading[0], facing[0], vx[0], vy[0]]).toEqual([edgeQ8, y0, 96, FACING_UP, -724, -724]);
     step(world);
-    expect(x[0]).toBe(edgeQ8 - WALK_Q8);
+    expect([x[0], y[0]]).toEqual([edgeQ8 - 724, y0 - 724]);
   });
 
   it('checks the money invariants every tick in development', () => {

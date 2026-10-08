@@ -4,7 +4,7 @@ import { draw2 } from '../src/draw.ts';
 import { log2Q16 } from '../src/log2.ts';
 import * as tables from '../src/tables.ts';
 
-const { BAND_SHARE_PPM, COPULA_Q16, FADE_0_35Y, FADE_1Y, FADE_2_6Y, INV_NORMAL_Q16, LOG2_Q16 } = tables;
+const { BAND_SHARE_PPM, COPULA_Q16, FADE_0_35Y, FADE_1Y, FADE_2_6Y, INV_NORMAL_Q16, LOG2_Q16, WALK_SINE_Q8 } = tables;
 
 function ranks(values: ArrayLike<number>): number[] {
   const order = Array.from(values, (_, k) => k).sort((a, b) => values[a] - values[b]);
@@ -56,6 +56,13 @@ describe('the build-time tables', () => {
     expect(COPULA_Q16).toBeInstanceOf(Uint16Array);
     expect(COPULA_Q16).toHaveLength(64 * 64);
     for (const fade of [FADE_0_35Y, FADE_1Y, FADE_2_6Y]) expect(fade).toBeInstanceOf(Uint16Array);
+    expect(WALK_SINE_Q8).toBeInstanceOf(Uint16Array);
+    expect(WALK_SINE_Q8).toHaveLength(65);
+  });
+
+  it("holds the walking step's sine over a quarter turn", () => {
+    expect([WALK_SINE_Q8[0], WALK_SINE_Q8[1], WALK_SINE_Q8[32], WALK_SINE_Q8[64]]).toEqual([0, 25, 724, 1_024]);
+    expect(WALK_SINE_Q8.every((value, k) => k === 0 || value >= WALK_SINE_Q8[k - 1])).toBe(true);
   });
 
   it('gives log2 in Q16 within the 8-bit mantissa bound', () => {

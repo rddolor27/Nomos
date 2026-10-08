@@ -20,6 +20,8 @@ export interface AgentStore {
   readonly vy: Int16Array;
   readonly action: Uint8Array;
   readonly facing: Uint8Array;
+  // One of 256 headings, clockwise on screen from down; vx, vy and facing follow it (wander.ts).
+  readonly heading: Uint8Array;
   readonly look: Uint8Array;
   readonly culture: Uint8Array;
   readonly birthCulture: Uint8Array;
@@ -35,6 +37,7 @@ export const AGENT_COLUMNS: readonly { name: string; bytes: number }[] = [
   { name: 'vy', bytes: 2 },
   { name: 'action', bytes: 1 },
   { name: 'facing', bytes: 1 },
+  { name: 'heading', bytes: 1 },
   { name: 'look', bytes: 1 },
   { name: 'culture', bytes: 1 },
   { name: 'birthCulture', bytes: 1 },
@@ -52,6 +55,7 @@ export function createAgentStore(arena: Arena, capacity: number): AgentStore {
     vy: take(arena, Int16Array, capacity, true),
     action: take(arena, Uint8Array, capacity, true),
     facing: take(arena, Uint8Array, capacity, true),
+    heading: take(arena, Uint8Array, capacity, true),
     look: take(arena, Uint8Array, capacity, true),
     culture: take(arena, Uint8Array, capacity, true),
     birthCulture: take(arena, Uint8Array, capacity, true),
