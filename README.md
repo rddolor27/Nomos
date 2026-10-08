@@ -11,7 +11,7 @@ A society simulation that runs entirely in the browser. Blob-shaped people work,
 
 **Status: planning done, building not started.** There is no game code yet. What exists today:
 - nine research rounds, in [`docs/research/`](docs/research/);
-- an eleven-milestone build plan split into 71 sub-milestones, each with its tasks and the checks that close it, in [`docs/plan/`](docs/plan/); the first milestone's six have step-by-step plans;
+- an eleven-milestone build plan split into 72 sub-milestones, each with its tasks and the checks that close it, in [`docs/plan/`](docs/plan/); the first milestone's six have step-by-step plans;
 - an original pixel-art sprite set of 1,342 sprites in 13 sheets, drawn as code, in [`tools/sprites/`](tools/sprites/), with seasons and snow;
 - 94 original chiptune sounds in 7 banks, written as data for the game's own synth, in [`tools/sounds/`](tools/sounds/);
 - a random world generator that previews worlds with that art, in [`tools/worldgen/`](tools/worldgen/).
