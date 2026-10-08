@@ -1,0 +1,16 @@
+{
+  "name": "@nomos/sim-worker",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./worker": "./src/worker.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@nomos/sim-core": "workspace:*",
+    "@nomos/sim-protocol": "workspace:*"
+  }
+}

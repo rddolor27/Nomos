@@ -69,6 +69,15 @@ importers:
         specifier: workspace:*
         version: link:../sim-core
 
+  packages/sim-worker:
+    dependencies:
+      '@nomos/sim-core':
+        specifier: workspace:*
+        version: link:../sim-core
+      '@nomos/sim-protocol':
+        specifier: workspace:*
+        version: link:../sim-protocol
+
   tools/cli:
     dependencies:
       '@nomos/sim-core':
