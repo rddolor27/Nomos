@@ -4,7 +4,7 @@
 
 **Task:** [task.md](task.md)
 
-CI exists before this: M0.1 starts `ci.yml`, M0.5 and M0.6 add its gates and `perf.yml`, and M1.5 adds the IP gate and a manual dev deploy. M1.6 adds the CD half the owner asked for on 8 October 2026: dev on every push, and releases on demand.
+CI exists before this: M0.1 starts `ci.yml`, M0.5 and M0.6 add its gates and `perf.yml`, and M1.5 adds the IP gate and a manual dev deploy. M1.6 adds the CD half the owner asked for on 8 October 2026, which the [CI/CD plan](../../../cicd.md) describes: dev on every push, and releases on demand.
 
 ## Approach
 

@@ -27,7 +27,7 @@
   - M0.5's `_headers`, with `Cache-Control: public, max-age=31536000, immutable` on hashed `/assets/*` and COOP and COEP;
   - no service worker yet, since M6.2 builds it, not M0.5.
 
-  A manual run deploys `main` to the dev URL, an unlisted address that playtesters open. M1.6 then deploys dev on every push and ships the public release (owner, 8 October 2026).
+  A manual run deploys `main` to the dev URL, an unlisted address that playtesters open. M1.6 then deploys dev on every push and ships the public release (CI/CD).
 
 ## Packages and files
 

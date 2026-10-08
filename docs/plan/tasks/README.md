@@ -20,7 +20,7 @@ Estimates are full-time days for one person coding by hand (unsourced estimates)
 | [M10 Weather](m10-weather/milestone.md) | 4 | 16–27 days |
 | **Everything** | | **372–586 days** |
 
-The plan's own effort lines sum to about 211–324 days before launch, but many tasks that rounds 2, 6, 8 and 9 added carry no estimate there. These breakdowns estimate every task, which is why their sum is larger.
+The plan's own effort lines sum to about 213–327 days before launch, but many tasks that rounds 2, 6, 8 and 9 added carry no estimate there. These breakdowns estimate every task, which is why their sum is larger.
 
 ## Sub-milestones in build order
 
