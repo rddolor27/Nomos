@@ -17,9 +17,10 @@ Estimates are full-time days for one person coding by hand (unsourced estimates)
 | [M8 Country map](m8-country-map/milestone.md) | 7 | 44–69 days |
 | **Before launch, M0–M8** | | **329–516 days** |
 | [M9 Zoom across scales](m9-zoom-across-scales/milestone.md) | 6 | 25–40 days |
-| **Everything** | | **354–556 days** |
+| [M10 Weather](m10-weather/milestone.md) | 4 | 16–27 days |
+| **Everything** | | **370–583 days** |
 
-The plan's own effort lines sum to about 210–322 days before launch, but many tasks that rounds 2, 6, 8 and 9 added carry no estimate there. These breakdowns estimate every task, which is why their sum is larger.
+The plan's own effort lines sum to about 211–324 days before launch, but many tasks that rounds 2, 6, 8 and 9 added carry no estimate there. These breakdowns estimate every task, which is why their sum is larger.
 
 ## Sub-milestones in build order
 
@@ -140,6 +141,15 @@ The plan's own effort lines sum to about 210–322 days before launch, but many 
 | [M9.5 Route strips and wonder views](m9-zoom-across-scales/m9.5-route-strips-and-wonder-views/task.md) | Roads drawn as strips whose caravans, bandits and patrols match the route ledger | 3–6 days | [brief](m9-zoom-across-scales/m9.5-route-strips-and-wonder-views/plan.md) |
 | [M9.6 Consequential focus](m9-zoom-across-scales/m9.6-consequential-focus/task.md) | The opt-in mode where watching changes history, and optional pinned live settlements | 3–5 days | [brief](m9-zoom-across-scales/m9.6-consequential-focus/plan.md) |
 
+### [M10 Weather](m10-weather/milestone.md)
+
+| Sub-milestone | Delivers | Estimate | How |
+| --- | --- | --- | --- |
+| [M10.1 Weather in the sim](m10-weather/m10.1-weather-in-the-sim/task.md) | Each region's daily weather from keyed draws, in wet and dry spells by season and biome, agreeing with the harvest | 3–5 days | [brief](m10-weather/m10.1-weather-in-the-sim/plan.md) |
+| [M10.2 Weather on screen and in sound](m10-weather/m10.2-weather-on-screen-and-in-sound/task.md) | Rain, snow, fog, storms and cloud shadows drawn calmly over the light periods, with their art, sounds and HUD icon | 7–11 days | [brief](m10-weather/m10.2-weather-on-screen-and-in-sound/plan.md) |
+| [M10.3 Weather in daily life](m10-weather/m10.3-weather-in-daily-life/task.md) | People shelter from rain and storms, if the owner chooses it, with crime changing only through who is out | 4–7 days | [brief](m10-weather/m10.3-weather-in-daily-life/plan.md) |
+| [M10.4 Weather across the country](m10-weather/m10.4-weather-across-the-country/task.md) | Each region's weather on the country map, the same as a zoom into it shows | 2–4 days | [brief](m10-weather/m10.4-weather-across-the-country/plan.md) |
+
 ## Ongoing
 
 These belong to no milestone and run until launch or beyond.
@@ -187,3 +197,7 @@ Each must be settled before its sub-milestone starts. The task files give the co
 | M8.3 | the Military tab asks what counts as a border with no neighbouring country: the map edge, mountain passes or region lines. Garrison and fort placement waits for it |
 | M9.2 | the proposed bar of \|z\| < 2 on at least 95% of flow-days |
 | M9.6 | whether pinned live settlements ship |
+| M10.1 | when research round 10 runs: just before M10, or before M3.5's step plan, so the harvest and the later weather share one design |
+| M10.1 | how runs from before M10 keep replaying: fit the daily weather to M3.5's harvest draw as it is, or let each run's version pick the rule |
+| M10.2 | whether snow cover follows snowfall instead of winter's fixed schedule from M3.8 |
+| M10.3 | whether weather changes what people do, or only how the world looks and sounds |
