@@ -12,13 +12,13 @@ Work top to bottom: each milestone lists what to build and the checks that close
 
 ## Roadmap
 
-![build order · 10 milestones, 3 after launch](images/roadmap.png)
+![build order · 11 milestones, launch after M8](images/roadmap.png)
 
-The drawing is round 1's seven milestones plus round 4's three country milestones, dashed because they come after launch; the sections below add each round's tasks without changing the order.
+The drawing shows all eleven milestones in build order: round 1's seven, round 4's three country milestones and the owner's M10. Its estimates come from the repo's task breakdowns, which estimate every task. The sections below add each round's tasks without changing the order.
 
 Round 9 moves launch after M8: M7 and M8 become pre-launch milestones and M9 stays after launch, so the drawing's launch line now falls after M8 (R9).
 
-The owner added M10 Weather on 8 October 2026. It follows M9 after launch, and the drawing has no box for it yet (Weather).
+The owner added M10 Weather on 8 October 2026. It follows M9 after launch (Weather).
 
 ## Visual styles
 
@@ -189,8 +189,8 @@ Goal: Primer-style lab cards in discrete days, drawn as Skin B blobs, with claim
 - [ ] Write the discrete-day engine with the thief/trader contest, Primer's ±1 market and animated day phases (R1).
 - [ ] Turn rules cards into bet cards that lock in a prediction before Run; hand-pick and label first seeds; use neutral names; unlock city sliders through lab cards (R2).
 - [ ] Tag every claim as an estimate, per-seed property or comparison: comparisons on 50 paired seeds per arm (Holds at p < 0.01 and A ≥ 0.64, Fails only if significantly reversed, otherwise Inconclusive), Wald's sequential test for properties, equivalence bands for estimates, nightly fresh seeds (R2).
-- [ ] Draw the blob sheet on 16×24 cells: south, north and west (east mirrored), idle, walk, sneak and carry frames, sit, sleep, cheer and wince, eight Primer face overlays, the navy police cap with badge, the teal merchant apron and headband, and four neutral citizen items (R3).
-- [ ] Draw the first 16×16 bubbles ("!", "?", coin, "Zz", bread), with Kenney's CC0 emotes as placeholders (R3).
+- [ ] Draw the blob sheet on an 18×22 canvas: stand and walk frames in four views, sit in three and sneak in two, six faces, the navy police cap with badge, a teal headband and sash for merchants, and builder, clinic, farmer and soldier job items; the carry and cheer frames are still to draw (R3).
+- [x] Draw the first bubbles as original 12×12 art: "!", "?", coin, "Zz" and bread, plus heart and sweat, so Kenney's CC0 emotes are not needed (R3).
 - [ ] Add the sprite pass: atlas cells from outfit, direction and frame; facing and walk frame from interpolated velocity; depth-test y-sorting; face overlays; staggered blinks (R3).
 - [ ] Add the bubble pass: one bubble per agent, four to six on screen, priority justice > crime > economy > needs > mood, overflow to a ticker and a log line per bubble (R3).
 - [ ] Stage Skin B on the flat zone map: up to 40 agents and at most four protagonists with Primer-style wallet and hunger bars that ride with the sprite; link charts to the animation (R1, R3).
@@ -204,7 +204,7 @@ Goal: Primer-style lab cards in discrete days, drawn as Skin B blobs, with claim
 - [ ] Allow scripted event timing only as logged inputs on lab and scenario cards, never as a state-driven director in the sim core (R6).
 - [ ] Add a bet card, "Evening events: are people out at night stopped more?", on paired seeds, framed by place and hour, never by culture. In the toy, evening festivals raised victimisation 8.7% and stops 1.3% against daytime ones, while the rate per outdoor hour stayed the same (R8).
 - [ ] Add speed controls: pause, 1×, 4×, 16× and skip to the next season or year, with Space and keys 1–4, per-tier speed caps, and a paused start under reduced motion (Calendar).
-- [ ] Show the date, time, light period, day type, season icon and year progress in the HUD, such as "Spring 12, Year 3 · 08:40 · morning · rest day" (Calendar).
+- [ ] Show the date, time, light period, day type, season icon and year progress in the HUD, such as "Spring 12, Year 3 · 08:40 · morning · workday" (Calendar).
 - [ ] Add five light periods from the sunrise table as a calendar function: dawn and dusk span 30 minutes either side of sunrise and sunset, morning runs to noon, afternoon from noon to dusk, and night the rest. The renderer tints only the ground, never people, with fades of at least 2 s and a tint-off toggle, and lab days take the periods with their phases (R3, Calendar).
 - [ ] Make runs watch-only: while a run plays, the worker accepts only pause, speed, skip and read-only queries, and lab cards set treatments before Run (Calendar).
 - [ ] Load the audio chunk after the first frame and start the audio context on the first click. Add master, music, ambience, effects and UI buses with ducking, `M` to mute, three sliders saved per device and never in share links, and a classroom mode that starts muted (Sound).
@@ -261,8 +261,8 @@ Goal: Lengnick's household–firm economy, calibrated to measured targets and li
 
 **Exit checks**
 
-- [ ] Over 50 seeds × 20k ticks: no NaN, exact money conservation, and household saving that averages zero under fixed money (R1, R2).
-- [ ] Known-answer tests pass: random exchange gives Gini ≈ 0.5, saving half gives ≈ 0.27, and Godley–Lavoie SIM goes 38.44 → 47.9 (R1).
+- [ ] Over 50 seeds × 20,000 sim days: no NaN, exact money conservation, and household saving that averages zero under fixed money (R1, R2).
+- [ ] Known-answer tests pass: random exchange gives Gini ≈ 0.5, saving half gives ≈ 0.27, and Godley–Lavoie SIM goes 38.46 → 47.9 (R1).
 - [ ] The economy targets hold: prices change in 9–12% of months, about 2% of job-stayers see a pay cut a year, about 26% of the unemployed find work each month, plus the BAM bands and the Mark-0 phase table (R2).
 - [ ] Every economy event maps to exactly one glyph across bubble, log, chart marker and legend, and price-chart ticks coincide with purchase bubbles in a replay (R3).
 - [ ] Spawn then fold returns the record exactly, in people and cents, for 1,000 random records, and the same (seed, record, time) gives a byte-identical city in Node, Bun and Deno (R4).
@@ -283,7 +283,7 @@ Goal: daily routines in a real town, drawn as the Skin C pixel-art town from one
 - [ ] Put homes, jobs and shops on a 128²–256² grid with flow fields, a timing wheel, needs plus utility scoring plus a state machine, and Huff shop choice (R1).
 - [ ] Build the inspector with a click-to-explain panel showing the top three scored actions (R1).
 - [ ] Optional: idle back-off, shop hours shifted by travel time, day plans made at dawn and one global witness pass (R2).
-- [ ] Re-download Ninja Adventure from its canonical page, confirm the CC0 text, drop culturally specific tiles and re-index to a 32-colour master palette (R3).
+- [ ] Use Ninja Adventure only as placeholders: re-download it from its canonical page, confirm the CC0 text and drop culturally specific tiles. The original sprites, on the sprite rules' master palette of at most 64 colours, replace round 3's 32-colour re-index (R3, R9).
 - [ ] Set up the LDtk project: IntGrid values for wall, water, road, sidewalk, grass and door; auto-layer rules; a roof and treetop layer; entities for homes, shops, workplaces and the market with capacity, owner and opening hours (R3).
 - [ ] Make the 256×256 default town a fixed seed of the place generator, with apartment blocks, house rows, shop rows, a market square and a park, hand-edited in the developer Build mode; hand-authoring it in LDtk is the fallback if the port slips (R3, R9).
 - [ ] Add the tile pass (a tile-index texture read with `texelFetch`, animated tiles) and the roof pass drawn over people (R3).
@@ -323,7 +323,7 @@ Goal: daily routines in a real town, drawn as the Skin C pixel-art town from one
 - [ ] Generate personal names in the UI from (seed, id, birth culture), from one shared invented sound set, with naming customs setting the structure: no gendered forms, no diacritics, site words kept separate. Show names only in the inspector and follow-cam (R8).
 - [ ] Add a name filter for people, places and festivals: distinctive Pokémon town and city names and species names (edit distance 1 up to 5 letters, 2 above), the "poke" and "-mon" bans, LDNOOBW Latin-script lists (exact for 3-letter entries, substring for 4+), real festival names and the real-world fixture (R8).
 - [ ] Screen the shared sound set at authoring time by trigram similarity to real name bases (below 0.26 pass, 0.26–0.40 review, above 0.40 fail) (R8).
-- [ ] Use one shared set of festival decorations, never in national-flag colours or the six body hues, and the culture emblems drafted in `assets/sprites/culture.png` on the unmerged `feat/pixel-sprites` branch. Banner and lens colours also avoid the job colours and the reds and oranges kept for crime (R8).
+- [ ] Use one shared set of festival decorations, never in national-flag colours or the six body hues, and the culture emblems in `assets/sprites/culture.png`. Banner and lens colours also avoid the job colours and the reds and oranges kept for crime (R8).
 - [ ] Port `place.py` to TypeScript, with plan-then-apply shore tidying, 64×64 districts, frontage lot packing and entity export (R9).
 - [ ] Build the minimal developer-flag Build mode as a lazy chunk, in 8–12 days: `WorldRenderer.patchTiles` over 32×32 chunks; terrain brush, rectangle and fill, with a 3-tile minimum land brush; prefab stamps; cell-diff undo; save and load in a versioned container; and a Play hand-off to the worker (R9).
 - [ ] Draw the two shore saddle keys (`1001`, `0110`) for both shores: 4 frames, or 8 with variants. Then the corner set is complete and tidying can drop its diagonal clause (R9).
@@ -334,7 +334,8 @@ Goal: daily routines in a real town, drawn as the Skin C pixel-art town from one
 - [ ] Play ambience by biome, time of day and season, crossfaded at dawn and dusk with the town's light periods (Sound).
 - [ ] Add the music player: title, lab, town day and town night, one track at a time with crossfades and variations keyed on (world seed, place, day). Music loads as its own chunk when first needed (Sound).
 - [ ] Play festival music in one of the four styles, which differ only in tempo, loudness and structure; culture music never plays in justice views (Sound).
-- [ ] Add the town gazette: one edition per settlement each dawn, built only from the record store at the day boundary, with town, market and calendar stories in plain templates, no personal names, and a HUD panel with back issues by date (Gazette).
+- [ ] Build the record store the gazette reads: append-only records, written only at the day boundary and read only through its read API; M4's justice records and M5's year-end edition extend it (Gazette).
+- [ ] Add the town gazette: one edition per settlement each morning at 06:00, built only from the record store at the day boundary, with town, market and calendar stories in plain templates, no personal names, and a HUD panel with back issues by date (Gazette).
 - [ ] Draw the gazette button icon at 16 and 8 px and the paper panel frame (Gazette).
 
 **Exit checks**
@@ -406,7 +407,7 @@ Goal: crime as an action any agent can take, calibrated policing, and the true-v
 - [ ] Audio audit: outside festival music, no sound parameter differs by hue, look, culture, wealth decile or offender status in the recorded view, and a wrongful stop matches an arrest in length and loudness (Sound).
 - [ ] No code path sends soldiers into a town to keep order; town stops and arrests come only from the police (Military).
 - [ ] Over 50 paired seeds, the gazette's justice counts equal the recorded counts, never the true ones (Gazette).
-- [ ] No justice story carries a name, culture, look or wealth term, and the culture flip test leaves every gazette story outside festivals unchanged (Gazette).
+- [ ] No justice story carries a name, culture, look or wealth term, a wrongful stop and an arrest get the same priority, and the culture flip test leaves every gazette story outside festivals unchanged (Gazette).
 
 ## M5 Society and policy
 
@@ -459,7 +460,7 @@ Goal: the social layer and policy sliders, set before Run and each with a predic
 - [ ] Without policy changes, wealth drift over 50 years stays within 0.03 Gini and 3 points of top-10% share; the wealth-tax Gini check runs from a spawned near-stationary state (R6).
 - [ ] The age pyramid stays within its band, no culture's festivals cluster in one season, and a branch replays identically from (seed, settings, fork day, change) (Calendar).
 - [ ] Recruitment and postings never read culture, region, looks or wealth, and the appearance and culture audits cover soldiers (Military).
-- [ ] The follow-the-news camera is off by default and never changes the state hash (Gazette).
+- [ ] The follow-the-news camera is off by default and never changes the state hash, and the year-end edition never breaks figures down by culture (Gazette).
 
 ## M6 Scale and sharing
 
@@ -473,12 +474,12 @@ Goal: 100k agents on desktop, share links that replay in any browser, and a clea
 - [ ] Extend the Canvas2D fallback to all three skins (R3).
 - [ ] Add saves and share URLs that encode seed, config, skin, zoom and camera, and replay identically across browsers (R1, R2, R3).
 - [ ] Prepare the launch kit: playable with no signup, a 1200×600 preview card per scenario drawn in Skin C with blobs and alt text, a share text that carries a bet, translation-ready text files (R2, R3).
-- [ ] Put the "What this toy leaves out" page live at launch, including why every agent looks the same (R2, R3).
+- [ ] Put the "What this toy leaves out" page live at launch, including why everyone shares one blob body and a random look that no sim rule reads (R2, R3, R8, R9).
 - [ ] Write ODD+D with purpose and patterns first, keep a TRACE notebook and submit to CoMSES (R2).
 - [ ] Ship THIRD\_PARTY\_NOTICES and an in-app credits screen covering every asset, and describe the look as "GBA-era top-down pixel art" in all launch copy (R2, R3).
 - [ ] Optional: LLM narration of a clicked agent, called rarely and asynchronously, with a deterministic fallback and every output logged (R1, R2).
 - [ ] Add country sections to the save format (settlement and route ledgers, regions and markets, per-settlement edit diffs, the notables cache, multi-resolution history, generator versions), gzipped with `CompressionStream` into OPFS or IndexedDB, and extend share URLs with `mode=country`, the world seed, generator versions and the focus log (R4).
-- [ ] Parameterise the city generator by a context record (tier, population, route-entry bearings, river, coast, biome, port, crossroads, walls) and seed it with hash(worldSeed, settlementId, generatorVersion) (R4).
+- [ ] Parameterise the city generator by a context record (tier, population, route-entry bearings, river, coast, biome, port and crossroads, without walls), and seed it by the world seed and the settlement's stable cell id, never by the generator version (R4, R9).
 - [ ] Port the exact neighbour query and the settlement model to Rust compiled to WASM SIMD, with raw pointer exports and no wasm-bindgen, keeping integer JS fallbacks (R5).
 - [ ] Run workers only when `crossOriginIsolated` is true and a phase carries at least 0.5 ms: fixed 1,024-agent chunks, chunk-ordered reductions, a spin of at most 50 µs before `Atomics.wait`, and at most min(hardwareConcurrency − 2, 3) helpers (R5).
 - [ ] Add a hand-written service worker for offline starts, and a `_headers` file with immutable caching for hashed assets plus COOP/COEP (R5).
@@ -543,6 +544,7 @@ Goal: every settlement in a country advances daily as an integer ledger, headles
 - [ ] Derive settlement demand shifts as Σ share × Δβ, recomputed only when counts change (R8).
 - [ ] Fit the culture hazards from M3–M5 agent runs and dock them on held-out runs, as round 4 does for other flows (R8).
 - [ ] Run the 50–100-year spin-up (5,600–11,200 days) and country skip-ahead in 112-day years (Calendar).
+- [ ] Build the route ledgers that patrols need and M8 draws: traffic, bandit pressure, patrols, and true and recorded incidents on each route (R4, Military).
 - [ ] Add garrison posts to settlement ledgers and give each route ledger a patrol intensity from nearby garrisons and the defence budget. Raids fall as patrols rise, true and recorded raids stay apart, and records follow reports and sightings (Military).
 
 **Exit checks**
@@ -570,7 +572,7 @@ Goal: country mode ships, with a generated, seeded map, Country and Region views
 
 - [ ] Build the terrain stage in the worker as the TypeScript port of tools/worldgen on a square grid, not a Voronoi mesh: template plus noise elevation, keyed mountain chains, priority-flood, flow accumulation, erosion-lite passes, climate, biomes and habitability, each stage proven against Python golden fingerprints and ported in pipeline order (R4, R9).
 - [ ] Place settlements on the mesh, capitals then towns then villages, with minimum spacing and P₁/k sizes (R4).
-- [ ] Build routes as Delaunay → spanning tree → spanner, routed by A\* with slope, bridge and road-reuse costs and sea lanes where no land path exists; add multi-source Dijkstra regions and market territories (R4).
+- [ ] Build routes as a spanning tree per landmass plus spanner shortcuts, routed by A\* with slope, bridge and road-reuse costs, with sea lanes where no land path exists; the Python reference generator skips round 4's Delaunay step. Add multi-source Dijkstra regions and market territories (R4, R9).
 - [ ] Add names: a seeded foswig chain on an original corpus, site suffixes, and a CI filter against Pokémon place names (a test fixture only) and a profanity list (R4).
 - [ ] Draw the Country and Region levels: the mesh in a small palette-quantised framebuffer or an 8-px tilemap, settlement icons and routes by tier, label bands by zoom (R4).
 - [ ] Implement map modes as (state, entity) → {base, stripe}: true crime as base and recorded as stripe, plus population, growth, clearance, police, prices, wages, trade and danger (R4).
