@@ -4,7 +4,7 @@ import { openCells, standInGround, tileCentreQ8, type Ground } from './ground.ts
 import { createInputLog, type InputLog } from './inputs.ts';
 import { HOUSEHOLDS, createLedger, issue, sectorAccount, type Ledger } from './ledger.ts';
 import { reserveArena, take, type Arena } from './memory.ts';
-import { addAgent, createAgentStore, type AgentStore } from './store.ts';
+import { MAX_CULTURES, addAgent, createAgentStore, type AgentStore } from './store.ts';
 import { SPAWN, STRIDE } from './streams.ts';
 import { STRIDE_DAYS, createStride, type Stride } from './stride.ts';
 import { TIER_AGENTS, TIER_MEMORY_BYTES, type Tier } from './tiers.ts';
@@ -40,6 +40,8 @@ export interface World {
   readonly record: Int32Array;
   readonly stride: Stride;
   readonly inputs: InputLog;
+  // c + 1 per culture and 0 when unused. Culture-level draws key on these stable uids, never on the index (R8).
+  readonly cultureUid: Uint8Array;
   // The watched settlement, or -1. Watching never writes canonical state (R4's shadow-canonical history).
   readonly focus: Int32Array;
   readonly ground: Ground;
@@ -72,6 +74,7 @@ export function layoutWorld(
   const record = take(arena, Int32Array, 2 * RECORD_FIELDS, true);
   const stride = createStride(arena, agents, STRIDE_DAYS, STRIDE);
   const inputs = createInputLog(arena);
+  const cultureUid = take(arena, Uint8Array, MAX_CULTURES, true);
   const focus = take(arena, Int32Array, 1, false);
   focus[0] = NO_FOCUS;
   return {
@@ -85,6 +88,7 @@ export function layoutWorld(
     record,
     stride,
     inputs,
+    cultureUid,
     focus,
     ground,
     checks: true,
@@ -98,6 +102,7 @@ export function populate(world: World): void {
   const width = world.ground.width;
   const open = openCells(world.ground);
   if (open.length === 0) throw new RangeError('the ground has no walkable cell to spawn on');
+  for (let c = 0; c < CULTURES; c++) world.cultureUid[c] = c + 1;
   for (let id = 0; id < people; id++) {
     const slot = addAgent(agents, seed, id, CULTURES, 0);
     const cell = open[below(open.length, seed, SPAWN, id, 0)];

@@ -28,3 +28,4 @@ export * from './stride.ts';
 export * from './slices.ts';
 export * from './warm.ts';
 export * from './ground.ts';
+export * from './consumption/stand-in.ts';
