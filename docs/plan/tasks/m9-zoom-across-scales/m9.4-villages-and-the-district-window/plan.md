@@ -46,3 +46,17 @@
 
 - **"Well below" needs a number.** Take it from round 4's village notes, or propose one and mark it for owner sign-off.
 - **The lattice crime model** must stay consistent with agent-level crime at the boundary. Check the exported and imported fields' top-5% share, as M4.3 does.
+
+## Open questions
+
+- **Owner:** What number makes "well below" testable? R4 gives none, though its snippet-only sources put own production at 20–43% of rural food value. Suggested: village money stock and transactions per head at most 80% of the city's, as a design value. Needed before: the step plan.
+- **Owner:** Does M8.5's "Open in City mode" then use the district window for places above the cap? It would lift M8.5's limit on capitals. Suggested: yes, through the same window code. Needed before: the step plan.
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** village rules on the village preset first, since they need no window, then the district tier, then switching the districts in view.
+- **Reuse:** M7.1's store layout for district rows, M7.2's hazards if M2.3 logs per district (as R4 planned), M9.1's switch tests and M4.3's export and import.
+- **Keep it simple:** step district rows with M7's country day step and hazards, rather than a second aggregate model.
+- **Pitfalls:** agents walking into a folded district cross as boundary flows at entry tiles, as in M9.2. Own production never creates cents (R4). Kin credit lives in the claims ledger and nets to zero each day.
+- **Hard and easy parts:** agents crossing between live and folded districts need the most care; the general shop and the market day are mechanical.

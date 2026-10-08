@@ -43,3 +43,18 @@
 
 - **Owner decision first:** the proposed bar of |z| < 2 on at least 95% of flow-days.
 - **Large nudges are a warning.** If alignment moves many agents daily, the emulator disagrees with the agents. That is M9.6's verify-first question, and the meter's log is the evidence.
+
+## Open questions
+
+- **Owner:** Is the bar of |z| < 2 on at least 95% of flow-days accepted, and over how many flow-days? If z is independent and standard normal, a perfect emulator fails 22% of runs over 1,000 flow-days and 1.6% over 10,000 (computed). Suggested: accept it, judged over at least 10,000 flow-days. Needed before: the step plan.
+- **Owner:** Does z compare the ledger with the agents' own counts before alignment, or with the aligned counts? Aligned counts match their targets by construction, apart from the carried shortfall, so only pre-alignment counts measure the nudges M9.6 needs (inference). Suggested: log both, and judge the bar on pre-alignment counts. Needed before: the step plan.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** the divergence log on one flow first, then alignment for the interior flows, then boundary flows at entry tiles, then the panel.
+- **Reuse:** M9.1's switch and micro-ledger, M2.3's columnar log, M7.2's fitter, and the keyed draw for selection scores.
+- **Keep it simple:** align every interior flow by sorting, and skip R4's alternative of a steered propensity multiplier.
+- **Pitfalls:** z from small daily counts misleads, so use the ledger's own variance; pooling village flows weekly would need the owner's leave, since the bar is daily. Score ties break by agent index, so Node and Chromium select alike. Selection buffers are preallocated, so nothing allocates per tick.
+- **Hard and easy parts:** boundary flows at entry tiles need the most care; the z log and the panel are mechanical.

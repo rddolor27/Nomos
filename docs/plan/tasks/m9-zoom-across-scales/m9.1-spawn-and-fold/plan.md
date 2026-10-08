@@ -58,3 +58,20 @@
 
 - **Two ledgers double the bookkeeping.** The reconciliation band's width is a design value; log every reconciliation.
 - **LRU size** decides how many notables survive long absences. Set it per tier by memory, and log evictions.
+
+## Open questions
+
+- **Owner:** What happens when the focused settlement is above the device cap before M9.4's district window lands? `tools/worldgen` capitals hold 150,000–500,000 people (R9), above even the desktop cap of 100,000. Suggested: M9.1 spawns only settlements within the tier's cap, and larger ones stay on the map view until M9.4. Needed before: the step plan.
+- **Measure:** What zoom threshold z and hysteresis factor f? R4 gives the rule but no values. Suggested: z at the Region-to-City step, and f between 0.1 and 0.2, both design values tuned with M9.2's oscillating-camera test. Needed before: building.
+- **Measure:** How wide is the households–firms reconciliation band? Too narrow a band reconciles every day, and too wide a band lets the split drift. Suggested: a design value, logged per use and judged by how often it fires. Needed before: building.
+- **Measure:** How many settlements does the notables cache keep? At R4's ~32 B per notable and 1–5% of people, a 10,000-person city costs about 5–18 KB with its 2 KB field (computed). Suggested: cap it by bytes within M8.5's ~3 MB save, not by city count. Needed before: building.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** the spawn-fold identity on a small village with no food, LS or culture blocks, then each block, the micro-ledger and hysteresis switching.
+- **Reuse:** M2.2's spawner and fold, M7's blocks, M2.5's balance sheets, and M0.2's ledger and its BigInt-exempt module.
+- **Keep it simple:** one spawn path serves zoom, M8.5's fork and M9.5's strips.
+- **Pitfalls:** apportioning cents can pass 2^53 when holdings × weight is large, and R4 switches to BigInt there. Keep that at the day boundary in M0.2's exempt module. Spawn draws keep their own salt, so a zoom never shifts country draws (R4 architecture notes, part 3.7).
+- **Hard and easy parts:** exact food lots and LS set points need the most care; the cache and the switch log are mechanical.

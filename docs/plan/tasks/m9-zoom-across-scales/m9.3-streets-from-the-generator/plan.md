@@ -63,3 +63,18 @@
 - **Verify first:** day-step, spawn and map-generation times in browser workers and on phones. They set the phone tier for country mode.
 - **Record version 2 changes the Python reference too.** Regenerate goldens and mockups in the same commits.
 - **Prefetch on hover** does nothing on touch screens. Use a tap-and-hold, or prefetch the nearest places to the camera.
+
+## Open questions
+
+- **Owner:** Does one prefetch trigger serve every device? Hover does nothing on touch screens. Suggested: prefetch the place nearest the camera centre once zoom passes a threshold, for mouse and touch alike. Needed before: the step plan.
+- **Measure:** What are district generation and spawn times on phones? The 60 ms and 10 ms budgets come from desktop Node, where generation took 59 ms warm (R4), so phones may need longer cross-fades. Suggested: time both on one mid-range Android phone and one iPhone, alongside M8.1's device runs. Needed before: the step plan.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** record version 2 and its goldens in Python, then the TypeScript record and zoom-consistency test, growth and reservations, and prefetch, cross-fade and sound last.
+- **Reuse:** M6.1's district generator, M8.1's place records, and M6.3's edit layers for reservations.
+- **Keep it simple:** regenerate a district on every visit, since generation is deterministic and within 60 ms, and cache nothing.
+- **Pitfalls:** quantised temperature and moisture bands must match the Python bands exactly, or the zoom-consistency test fails at band edges. A dormant reservation is listed to the player, never hidden.
+- **Hard and easy parts:** growth that never moves a street needs the most care; the crossfades and the record hash are mechanical.

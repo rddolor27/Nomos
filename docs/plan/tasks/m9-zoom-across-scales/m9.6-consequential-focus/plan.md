@@ -54,3 +54,19 @@
 - **Owner decision first:** whether pinned live settlements ship.
 - **Verify first:** alignment nudges with the real emulator, read on M9.2's divergence meter. They decide between shadow-canonical as the default and pinned live cities.
 - **The observer effect can confuse players.** The notice and a clear mode label in the HUD are required, and consequential focus stays off by default.
+
+## Open questions
+
+- **Owner:** Do pinned live settlements ship? They add a second canonical path to build and test. Suggested: no, unless M9.2's meter fails its bar on presets, and then at most one. Needed before: the step plan.
+- **Measure:** What is "the ledger's noise" in the hand-off twin test? Without a definition the test can't fail. Suggested: M7.2's 5–95% seed band of the always-aggregate twin, over the same seed count. Needed before: the step plan.
+- **Measure:** Does a long focus log fit R9's 32 KiB link cap? Each switch adds an entry. Suggested: delta-code the ticks and compress, with M6.3's `.nomos` file above 8,000 characters. Needed before: building.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** the shadow-canonical hash test over three focus logs, which should already pass, then consequential writes, the notice and links, and pinned settlements if approved.
+- **Reuse:** M9.1's switch log and fold, M9.2's meter and M6.3's links.
+- **Keep it simple:** under consequential focus, skip alignment; focused agents' own flows fold into the ledger at the day boundary, so no reconciliation path is needed.
+- **Pitfalls:** under consequential focus the focus log is canonical input, so it travels with every save and link, or replays diverge. The shadow hash test must include the focused settlement's own ledger, where a stray write-back would show.
+- **Hard and easy parts:** the consequential write path and its exact fold need care; the notice and the mode label are mechanical.

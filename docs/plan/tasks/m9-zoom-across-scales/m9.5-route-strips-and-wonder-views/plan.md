@@ -53,3 +53,18 @@ Its own tests:
 
 - **The plan sets no exit check here.** The proposed one needs the owner's sign-off.
 - **Bandits are people too:** crime is an act, never a costume, so bandits look like everyone else until they act, and are drawn with no mask or mark.
+
+## Open questions
+
+- **Owner:** Is the proposed exit check accepted: a strip's caravans, bandits and patrols match its route ledger's daily counts? The plan sets none here. Suggested: accept it, as exact daily counts on presets. Needed before: the step plan.
+- **Owner:** How long is a strip? R4 makes its length a compressed function of the route's real length but gives no function. Suggested: the length grows with the route's cell count up to a fixed cap, so one reserved map buffer fits every strip. Needed before: building.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** a strip from route cells, drawn by the town renderer, first, then aligned counts, then patrols and raids, then wonder views and their loops.
+- **Reuse:** M9.1's spawn and switch rules, M9.2's alignment, M7.7's route ledger, M6.1's place code and M8.3's wonder loops.
+- **Keep it simple:** strip agents are view-only, keyed by (route, day, event), never notables, and dropped on leave, since the route ledger holds only counts.
+- **Pitfalls:** raids show here, so strip agents show no culture (content rule 8). Bandits look like everyone else until they act (content rule 3). If M7.7 added road stops, wrongful stops are drawn as heavily as arrests (Military).
+- **Hard and easy parts:** fitting moving caravans to daily counts on a compressed strip needs care; wonder views reuse the place code.
