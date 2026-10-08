@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { DAYS_PER_YEAR, dayOfYear, yearOf } from '../src/calendar.ts';
+import { DAYS_PER_YEAR, TICKS_PER_DAY, TICKS_PER_YEAR, dayOfYear, yearOf } from '../src/calendar.ts';
+import { dayBoundary } from '../src/day.ts';
 import { draw2, mix } from '../src/draw.ts';
-import { reserveArena } from '../src/memory.ts';
+import { PHONE_MEMORY_BYTES, reserveArena } from '../src/memory.ts';
 import { STRIDE } from '../src/streams.ts';
 import {
   STRIDE_DAYS,
@@ -12,6 +13,7 @@ import {
   setChange,
   type Stride,
 } from '../src/stride.ts';
+import { TICK, layoutWorld } from '../src/world.ts';
 
 const ARENA_BYTES = 65_536;
 const TOY_AGENTS = 10_000;
@@ -132,6 +134,22 @@ describe('the stride scheduler', () => {
     expect(offsets).toEqual([19, 14, 7, 2, 8, 15, 14, 2, 12, 9, 11, 27, 27, 18, 26, 0, 1, 7, 24, 18]);
     expect(new Set(offsets).size).toBeGreaterThanOrEqual(10);
     expect(Array.from({ length: 5 }, (_, i) => offsetFor(43, i + 1))).toEqual([17, 27, 12, 16, 24]);
+  });
+
+  it('re-keys at the first day boundary of each year', () => {
+    const world = layoutWorld(42, 'phone', 1_024, PHONE_MEMORY_BYTES);
+    dayBoundary(world);
+    expect(world.stride.offset[0]).toBe(offsetFor(42, 1));
+
+    world.globals[TICK] = TICKS_PER_YEAR;
+    dayBoundary(world);
+    expect(world.stride.offset[0]).toBe(offsetFor(42, 2));
+    expect(offsetFor(42, 2)).not.toBe(offsetFor(42, 1));
+
+    world.stride.offset[0] = -1;
+    world.globals[TICK] = TICKS_PER_YEAR + TICKS_PER_DAY;
+    dayBoundary(world);
+    expect(world.stride.offset[0]).toBe(-1);
   });
 
   it('gives identical hashes in reversed visiting order', () => {

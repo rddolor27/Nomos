@@ -5,7 +5,8 @@ import { HOUSEHOLDS, createLedger, issue, sectorAccount, type Ledger } from './l
 import { reserveArena, take, type Arena } from './memory.ts';
 import { SUBPIXELS, TILE_PX } from './space.ts';
 import { addAgent, createAgentStore, type AgentStore } from './store.ts';
-import { SPAWN } from './streams.ts';
+import { SPAWN, STRIDE } from './streams.ts';
+import { STRIDE_DAYS, createStride, type Stride } from './stride.ts';
 import { TIER_AGENTS, TIER_MEMORY_BYTES, type Tier } from './tiers.ts';
 
 export const TICK = 0;
@@ -39,6 +40,7 @@ export interface World {
   readonly cash: Ledger;
   readonly claims: Claims;
   readonly record: Int32Array;
+  readonly stride: Stride;
   readonly inputs: InputLog;
   // The watched settlement, or -1. Watching never writes canonical state (R4's shadow-canonical history).
   readonly focus: Int32Array;
@@ -60,6 +62,7 @@ export function layoutWorld(seed: number, tier: Tier, agents: number, memoryByte
   const cash = createLedger(arena, SETTLEMENTS);
   const claims = createClaims(arena, cash, LOAN_CAPACITY);
   const record = take(arena, Int32Array, 2 * RECORD_FIELDS, true);
+  const stride = createStride(arena, agents, STRIDE_DAYS, STRIDE);
   const inputs = createInputLog(arena);
   const focus = take(arena, Int32Array, 1, false);
   focus[0] = NO_FOCUS;
@@ -72,6 +75,7 @@ export function layoutWorld(seed: number, tier: Tier, agents: number, memoryByte
     cash,
     claims,
     record,
+    stride,
     inputs,
     focus,
     extent: EXTENT_Q8,

@@ -1,5 +1,7 @@
+import { dayOf, dayOfYear, yearOf } from './calendar.ts';
 import { INPUT_CAPACITY, INPUT_FOCUS } from './inputs.ts';
 import { openDayWindow } from './slices.ts';
+import { rekeyStride } from './stride.ts';
 import { TICK, type World } from './world.ts';
 
 const LOGGED = 0;
@@ -29,5 +31,7 @@ export function dayBoundary(world: World): void {
     if (log.kind[n] === INPUT_FOCUS) world.focus[0] = log.a[n];
   }
   log.cursor[APPLIED] = logged;
+  const day = dayOf(world.globals[TICK]);
+  if (dayOfYear(day) === 0) rekeyStride(world.stride, world.seed, yearOf(day));
   openDayWindow(world);
 }
