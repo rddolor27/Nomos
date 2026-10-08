@@ -33,6 +33,19 @@ importers:
         specifier: ^5.0.3
         version: 5.0.3(@types/node@24.19.1)(vite@8.3.3(@types/node@24.19.1)(esbuild@0.28.2))
 
+  packages/render-gl:
+    dependencies:
+      '@nomos/sim-protocol':
+        specifier: workspace:*
+        version: link:../sim-protocol
+    devDependencies:
+      '@nomos/sim-worker':
+        specifier: workspace:*
+        version: link:../sim-worker
+      vite:
+        specifier: ^8.3.3
+        version: 8.3.3(@types/node@24.19.1)(esbuild@0.28.2)
+
   packages/sim-core:
     devDependencies:
       '@stdlib/math-base-special-cos':

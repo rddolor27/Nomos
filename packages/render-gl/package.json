@@ -1,0 +1,20 @@
+{
+  "name": "@nomos/render-gl",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "harness": "vite harness --port 5174 --strictPort",
+    "golden": "UPDATE_GOLDEN=1 playwright test -c ../../playwright.config.ts golden --project=chromium"
+  },
+  "dependencies": {
+    "@nomos/sim-protocol": "workspace:*"
+  },
+  "devDependencies": {
+    "@nomos/sim-worker": "workspace:*",
+    "vite": "^8.3.3"
+  }
+}
