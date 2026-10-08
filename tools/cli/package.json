@@ -1,0 +1,8 @@
+{
+  "name": "@nomos/cli",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@nomos/sim-core": "workspace:*"
+  }
+}
