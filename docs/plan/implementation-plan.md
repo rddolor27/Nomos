@@ -57,8 +57,10 @@ Budgets are in reference-machine (RM) milliseconds: a 4-vCPU Xeon cloud VM whose
 | Other agent systems (needs, jobs, inventory, social) | 1.2 | 3.0 | 1.4 | Not built yet |
 | Pathfinding and events | 1.0 | 2.8 | 0.8 | Not built yet |
 | Ledger transfers | 0.15 | 0.4 | 0.3 | ≈ 3.7 ns per transfer |
-| Snapshot to the render thread | 0.10 | 0.2 | 0.3 | ≈ 0.1 |
-| Slack for GC, jitter and spikes | 1.25 | 2.95 | 3.0 | — |
+| Snapshot to the render thread | 0.10 | 0.2 | 0.6 | ≈ 0.1 |
+| Slack for GC, jitter and spikes | 1.25 | 2.95 | 2.7 | — |
+
+On 8 October 2026 the owner raised the 100k snapshot row from 0.3 to 0.6 ms, taken from the slack, after M0.3's snapshot writer measured 0.40 ms at 100k agents on a desktop.
 
 **What the measurements settled**
 
@@ -70,7 +72,7 @@ Budgets are in reference-machine (RM) milliseconds: a 4-vCPU Xeon cloud VM whose
 - **Integers for anything replayed.** Integer kernels were bit-identical across JS, WASM scalar, WASM SIMD, V8 and JavaScriptCore. Plain JS f64 and WASM f32 diverged in 107 of 50,000 position words after 200 ticks. `BigInt64Array` was 115× slower than integer-valued `Float64Array` cents in JavaScriptCore.
 - **Sparse flows between settlements.** Dense all-pairs flows at 10k settlements cost 376–564 ms a day in JS and would need 400 MB, so flows use sparse CSR graphs with up to 24 neighbours. WebGPU is not worth it here: the CPU cost is a few milliseconds a day, and only integer kernels are reproducible.
 
-**Memory:** at most 256 bytes per agent plus a 24-byte render snapshot (2.8 MB at 10k, 28 MB at 100k), where the measured systems use 56 bytes. Each settlement gets at most 1 KB including its graph edges. One `WebAssembly.Memory` is reserved at start: 32 MB on phones and 64–128 MB on desktops.
+**Memory:** at most 256 bytes per agent plus 60 bytes of render snapshots, three pooled 12-byte buffers and the renderer's two copies (3.2 MB at 10k, 32 MB at 100k; corrected by the owner on 8 October 2026), where the measured systems use 56 bytes. Each settlement gets at most 1 KB including its graph edges. One `WebAssembly.Memory` is reserved at start: 32 MB on phones and 64–128 MB on desktops.
 
 **CI gates**
 
@@ -105,7 +107,7 @@ A cold first visit should draw its first frame within 1.5 s and be interactive w
 
 - [ ] **Bytes:** size-limit with brotli on every chunk, failing on any overrun: initial JS ≤ 12 KB for the stand-in and ≤ 35 KB in production, town map ≤ 40 KB, atlas ≤ 300 KB (R5).
 - [ ] **Startup:** a Playwright benchmark of 7 cold loads on throttled Fast 4G, with the CPU calibrated to a mid-tier phone (Lighthouse BenchmarkIndex ≈ 375). It fails when the median exceeds the budget, or regresses by more than 15% and 20 ms against `main`. Chrome's CPU throttling skips workers, so the worker gets a matching busy-wait (R5).
-- [ ] **Memory and frames:** `measureUserAgentSpecificMemory` in full Chromium against the tier budgets, with growth of at most 2 MB over 60 s, plus frame-time regression checks; there is no absolute frame-rate gate under software WebGL (R5).
+- [ ] **Memory and frames:** `measureUserAgentSpecificMemory` in full Chromium against the tier budgets, with growth of at most 2 MB over 60 s, plus frame-time regression checks; there is no absolute frame-rate gate under software WebGL (R5); the owner moved this gate to M6.2 on 8 October 2026, where 100k agents make it meaningful.
 - [ ] **Lighthouse CI (optional):** gate the first-frame and interactive user timings; it cannot throttle the worker (R5).
 
 All of these timings come from a stand-in app in headless Chromium with software WebGL, on a shared 4-vCPU machine with phone CPU emulated. Re-baseline them once the real sim and renderer exist, and check one mid-range Android phone and one 3–4 GB iPhone.
@@ -122,11 +124,11 @@ Goal: a deterministic core, the worker loop and the renderer contract, drawing S
 - [x] Lint-ban `Math` transcendental functions and `**` in `sim-core`; use @stdlib-built lookup tables in per-agent code and @stdlib calls elsewhere (R2).
 - [x] Build the worker loop: fixed timestep, MessageChannel yield, pause on `visibilitychange`, checkpoint on `pagehide`, resume without catching up (R1, R2).
 - [x] Define snapshot v1: float32 x and y plus a 32-bit visual word per agent (12 bytes) in pooled transferable buffers, with the bits documented in `sim-protocol` and no "wanted" bit; choose the eight action states the 3-bit field holds, since sneak and carry must displace two of the rendering research's list (R1, R3).
-- [ ] Build one WebGL2 `WorldRenderer` (`init`, `resize`, `setMap`, `pushSnapshot`, `draw`, `setSkin`, `setLod`, `dispose`) on one context, with context-loss handling, a Canvas2D fallback capped near 5,000 agents, and no PixiJS (R2, R3).
-- [ ] Draw Skin A: shape-coded dots at least 5 px across, in the sprite palette (it replaces round 2's Tol muted set, which vanishes on sand tiles), with dark outlines on light ground and light rims on dark ground (R3).
-- [ ] Load `town.ldtk` in the worker (IntGrid walkability and zone entities, quicktype types) and draw its zone colours as Skin A's minimap (R3).
-- [ ] Build the camera: integer device-pixel zoom, `devicePixelContentBoxSize` with a Safari fallback, texel and pixel snapping, no CSS scaling (R3).
-- [ ] Add the skin switch: `?skin=dots|blobs|town`, a toolbar toggle and an automatic policy; unbuilt skins fall back to dots (R3).
+- [x] Build one WebGL2 `WorldRenderer` (`init`, `resize`, `setMap`, `pushSnapshot`, `draw`, `setSkin`, `setLod`, `dispose`) on one context, with context-loss handling, a Canvas2D fallback capped near 5,000 agents, and no PixiJS (R2, R3).
+- [x] Draw Skin A: shape-coded dots at least 5 px across, in the sprite palette (it replaces round 2's Tol muted set, which vanishes on sand tiles), with dark outlines on light ground and light rims on dark ground (R3).
+- [x] Load `town.ldtk` in the worker (IntGrid walkability and zone entities, quicktype types) and draw its zone colours as Skin A's minimap (R3).
+- [x] Build the camera: integer device-pixel zoom, `devicePixelContentBoxSize` with a Safari fallback, texel and pixel snapping, no CSS scaling (R3).
+- [x] Add the skin switch: `?skin=dots|blobs|town`, a toolbar toggle and an automatic policy; unbuilt skins fall back to dots (R3).
 - [ ] Add uPlot charts and a per-system millisecond HUD (R1).
 - [ ] Set device tiers: phones 10k agents, 25k after a start-up check, 100k desktop only (R2).
 - [ ] Lay out `assets/` by licence family with `assets/LICENSES.md`, a git-ignored slot for paid packs and an atlas build stub (R3).
@@ -140,7 +142,7 @@ Goal: a deterministic core, the worker loop and the renderer contract, drawing S
 - [x] Store replay-relevant positions as Q8 or Q16 fixed-point Int32 with power-of-two grid cells, keep money as integer-valued `Float64Array` cents, and keep `BigInt` out of hot code (R5).
 - [ ] Set up the compute and load CI gates from the Performance budget section, recording `/proc/loadavg` beside every timing (R5).
 - [ ] Start the sim worker and the map fetch from an inline `<head>` script, and load uPlot and lil-gui only after the first frame (R5).
-- [ ] Convert `town.ldtk` at build time into a compact binary map, served with a compressible content type (R5).
+- [x] Convert `town.ldtk` at build time into a compact binary map, served with a compressible content type (R5).
 - [ ] Build the HUD in vanilla TypeScript and any richer UI (inspector, event log) in Solid, or Preact with signals; never React (R5).
 - [x] Record 1,440 ticks per sim day and 112 days per sim year (4 seasons of 28 days) in `sim-protocol`; convert every half-life and rate from them at build time (R6, Calendar).
 - [x] Add a claims ledger beside the cash ledger, one record per loan (lender, borrower, principal in cents, rate in ppm, payment), asserting Σ borrower debt = Σ lender loan assets every day (R6).
@@ -160,7 +162,7 @@ Goal: a deterministic core, the worker loop and the renderer contract, drawing S
 - [x] Split every flow of people by culture with keyed stochastic rounding, never flooring or plain largest remainder (R8).
 - [ ] Extend the name lint with a real-world fixture of countries, demonyms, languages, ethnonyms and religions, and add text lints that reject bare-plural generic sentences and hierarchy words in culture strings (R8).
 - [ ] Make worldgen's `draw(seed, stream, ...keys)`, with the seed hashed first, the sim's single keyed draw, with fixed-arity hot-path variants. Lint-ban bare `/` and `%` in generator code outside floor-division helpers (R9).
-- [ ] Define one binary map for generated and hand-made maps: terrain kinds, IntGrid walkability, and entities (homes with capacity, workplaces, shops with hours, civic buildings) (R9).
+- [x] Define one binary map for generated and hand-made maps: terrain kinds, IntGrid walkability, and entities (homes with capacity, workplaces, shops with hours, civic buildings) (R9).
 - [ ] Publish the sprite manifest as a versioned JSON Schema with generated TypeScript types. Maps name frames, never atlas indices (R9).
 - [x] Add a calendar module to sim-core: day = tick ÷ 1,440, year = day ÷ 112 + 1, season = day of the year ÷ 28, and weekday = day mod 7 (5 workdays, 2 rest days), plus a build-time table of sunrise and sunset minutes; integer maths only (Calendar).
 
@@ -168,7 +170,7 @@ Goal: a deterministic core, the worker loop and the renderer contract, drawing S
 
 - [ ] Seed 42 gives an identical state hash at tick 1,000 across runs, and identical replay hashes in Chromium, Firefox and WebKit (R1, R2).
 - [x] The ledger sums to zero on every tick (R1).
-- [ ] Skin A draws a 10k-agent replay in at most 1 ms of main-thread time per frame in CI, and golden-frame statistics agree at 1–4× zoom and device pixel ratios 1, 1.5 and 2 in all three engines (R3).
+- [x] Skin A draws a 10k-agent replay in at most 1 ms of main-thread time per frame in CI, and golden-frame statistics agree at 1–4× zoom and device pixel ratios 1, 1.5 and 2 in all three engines (R3).
 - [ ] CI passes context-loss recovery, pause on hide, outline contrast of at least 3:1, role colour difference of at least ΔE 20 under three simulated colour-blindness types, a name lint rejecting "pokemon" and "poké", and a library budget of about 45 KB gzip (R2, R3).
 - [x] The same (seed, entity, tick, stream) gives the same draw in any visiting order, and a 16-bucket χ² test over a million entities passes (R4).
 - [x] Apportionment sums exactly and matches a BigInt reference over 10,000 random cases, including totals above 2^53 ÷ 4,095; logging a focus change that touches nothing leaves the replay hash unchanged (R4).
