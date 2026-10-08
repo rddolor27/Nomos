@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest';
+import { draw2 } from '../src/draw.ts';
 import type { Ground } from '../src/ground.ts';
+import { PHONE_MEMORY_BYTES } from '../src/memory.ts';
 import { step } from '../src/step.ts';
-import { checkpoint, createWorld, layoutWorld, restoreWorld, stateHash, type World } from '../src/world.ts';
+import { SPAWN } from '../src/streams.ts';
+import { checkpoint, createWorld, layoutWorld, populate, restoreWorld, stateHash, type World } from '../src/world.ts';
 import { run } from './run.ts';
 
 const TILE_Q8 = 16 * 256;
@@ -26,11 +29,11 @@ function agentsOutsideRoom(world: World): number {
   return outside;
 }
 
-function agentsOffCentre(world: World): number {
+function agentsSharingASpot(world: World): number {
   const { count, x, y } = world.agents;
-  let offCentre = 0;
-  for (let i = 0; i < count[0]; i++) if (x[i] % TILE_Q8 !== TILE_Q8 / 2 || y[i] % TILE_Q8 !== TILE_Q8 / 2) offCentre++;
-  return offCentre;
+  const spots = new Set<string>();
+  for (let i = 0; i < count[0]; i++) spots.add(`${x[i]},${y[i]}`);
+  return count[0] - spots.size;
 }
 
 describe('the ground', () => {
@@ -39,7 +42,8 @@ describe('the ground', () => {
     const { count, x, y } = world.agents;
     expect(count[0]).toBe(10_000);
     expect(agentsOutsideRoom(world)).toBe(0);
-    expect(agentsOffCentre(world)).toBe(0);
+    // 139 agents a tile still spawn at keyed points of their own, so none stack.
+    expect(agentsSharingASpot(world)).toBe(0);
     const spawnX = x.slice();
     const spawnY = y.slice();
 
@@ -51,6 +55,20 @@ describe('the ground', () => {
     expect(mostOutside).toBe(0);
     const moved = spawnX.filter((spawn, i) => spawn !== x[i] || spawnY[i] !== y[i]).length;
     expect(moved).toBeGreaterThan(5_000);
+  });
+
+  it('spawns agents at keyed points spread over their tiles', () => {
+    const { x, y } = createWorld(42, 'phone').agents;
+    const d = draw2(42, SPAWN, 0, 1);
+    expect([x[0] % TILE_Q8, y[0] % TILE_Q8]).toEqual([d & 4_095, (d >>> 12) & 4_095]);
+    // 10,000 agents on 100 open tiles, ten times as crowded as the phone tier on the town's 958, never share a point.
+    const walk = new Uint8Array(32 * 32);
+    walk.fill(1, 0, 100);
+    const crowded = layoutWorld(42, 'phone', 10_000, PHONE_MEMORY_BYTES, { width: 32, height: 32, walk });
+    populate(crowded);
+    const offsets = new Set(Array.from(crowded.agents.x, (q8) => q8 % TILE_Q8));
+    expect(agentsSharingASpot(crowded)).toBe(0);
+    expect(offsets.size).toBeGreaterThan(3_500);
   });
 
   it('keeps the stand-in world', () => {

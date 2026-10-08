@@ -1,5 +1,3 @@
-import { SUBPIXELS, TILE_PX } from './space.ts';
-
 // The map's walkability in tiles, row-major from the top-left; a cell is walkable when its walk value is nonzero. A
 // MapV1 is a Ground, so sim-core never imports sim-protocol. It is an input, not state: it stays out of the arena and
 // the hash, and a restore takes it again.
@@ -12,6 +10,7 @@ export interface Ground {
 const STAND_IN_TILES = 256;
 // TILE_PX * SUBPIXELS = 2^12, so a shift turns a Q8 coordinate into its tile.
 const TILE_SHIFT = 12;
+const IN_TILE_MASK = (1 << TILE_SHIFT) - 1;
 
 // The all-open square that runs when no map is given, such as in the CLI.
 export function standInGround(): Ground {
@@ -26,8 +25,9 @@ export function tileOf(q8: number): number {
   return q8 >> TILE_SHIFT;
 }
 
-export function tileCentreQ8(tile: number): number {
-  return (tile * TILE_PX + TILE_PX / 2) * SUBPIXELS;
+// A point in the tile, its Q8 offset taken from 12 bits of a keyed draw, so blobs sharing a tile don't stack.
+export function pointInTileQ8(tile: number, bits: number): number {
+  return (tile << TILE_SHIFT) + (bits & IN_TILE_MASK);
 }
 
 export function walkableAt(ground: Ground, xQ8: number, yQ8: number): boolean {

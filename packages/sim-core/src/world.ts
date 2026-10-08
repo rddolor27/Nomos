@@ -1,6 +1,6 @@
 import { createClaims, type Claims } from './claims.ts';
-import { below, mix } from './draw.ts';
-import { openCells, standInGround, tileCentreQ8, type Ground } from './ground.ts';
+import { below, draw2, mix } from './draw.ts';
+import { openCells, pointInTileQ8, standInGround, type Ground } from './ground.ts';
 import { createInputLog, type InputLog } from './inputs.ts';
 import { HOUSEHOLDS, createLedger, issue, sectorAccount, type Ledger } from './ledger.ts';
 import { reserveArena, take, type Arena } from './memory.ts';
@@ -106,8 +106,9 @@ export function populate(world: World): void {
   for (let id = 0; id < people; id++) {
     const slot = addAgent(agents, seed, id, CULTURES, 0);
     const cell = open[below(open.length, seed, SPAWN, id, 0)];
-    agents.x[slot] = tileCentreQ8(cell % width);
-    agents.y[slot] = tileCentreQ8(Math.floor(cell / width));
+    const spot = draw2(seed, SPAWN, id, 1);
+    agents.x[slot] = pointInTileQ8(cell % width, spot);
+    agents.y[slot] = pointInTileQ8(Math.floor(cell / width), spot >>> 12);
   }
   issue(world.cash, sectorAccount(0, HOUSEHOLDS), STARTING_CENTS * people);
   // Nothing is committed before the first day's last slice.
