@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { ACTION_IDLE, ACTION_WALK, FACING_DOWN, FACING_LEFT, FACING_RIGHT, FACING_UP } from '../src/actions.ts';
 import { CASH_NOT_ZERO, OK, checkInvariants } from '../src/invariants.ts';
@@ -15,8 +16,10 @@ import {
   stateHash,
   type World,
 } from '../src/world.ts';
+import type { Goldens } from './engines/checks.ts';
 import { run } from './run.ts';
 
+const goldens: Goldens = JSON.parse(readFileSync(new URL('./fixtures/goldens.json', import.meta.url), 'utf8'));
 const TIERS: readonly Tier[] = ['phone', 'phone-plus', 'desktop'];
 const TILE_Q8 = 16 * 256;
 const WALK_Q8 = 1_024;
@@ -53,8 +56,8 @@ function agentsMovingWrongly(world: World): number[] {
 describe('the world step', () => {
   it('gives seed 42 the same state hash at tick 1,000 across runs', () => {
     const hash = stateHash(run(createWorld(42, 'phone'), 1_000));
-    // Pinned, because CI's two-run diff can't see a change in behaviour.
-    expect(hash).toBe(0xd9bc671b);
+    // Pinned in goldens.json, because CI's two-run diff can't see a change in behaviour.
+    expect(hash).toBe(Number.parseInt(goldens.hashes['42/phone'], 16));
     expect(stateHash(run(createWorld(42, 'phone'), 1_000))).toBe(hash);
     expect(stateHash(run(createWorld(43, 'phone'), 1_000))).not.toBe(hash);
   });

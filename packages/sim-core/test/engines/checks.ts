@@ -1,0 +1,103 @@
+// Free of Node imports, so the same file runs in Node, Bun and, bundled, in each browser.
+import { below, draw, draw1, mix } from '../../src/draw.ts';
+import { fade, fbm, value } from '../../src/noise.ts';
+import { step } from '../../src/step.ts';
+import { LOOKS } from '../../src/store.ts';
+import { LOOK } from '../../src/streams.ts';
+import type { Tier } from '../../src/tiers.ts';
+import { createWorld, stateHash } from '../../src/world.ts';
+
+interface DrawCase {
+  seed: number;
+  stream: number;
+  keys: number[];
+  out: number;
+}
+
+interface BelowCase extends DrawCase {
+  n: number;
+}
+
+interface NoiseCase {
+  seed: number;
+  stream: number;
+  x: number;
+  y: number;
+  cell: number;
+  out: number;
+}
+
+interface ValueCase extends NoiseCase {
+  octave: number;
+}
+
+interface FbmCase extends NoiseCase {
+  octaves: number;
+}
+
+interface LookCase {
+  seed: number;
+  id: number;
+  out: number;
+}
+
+// The cases of kernels.json; its streams table is checked once, in Node, by looks.test.ts.
+export interface KernelFixture {
+  mix: [number, number][];
+  draw: DrawCase[];
+  below: BelowCase[];
+  fade: [number, number][];
+  value: ValueCase[];
+  fbm: FbmCase[];
+  look: LookCase[];
+}
+
+export interface Goldens {
+  ticks: number;
+  hashes: Record<string, string>;
+}
+
+export interface EngineReport {
+  cases: number;
+  failures: string[];
+}
+
+function checkCase(
+  report: EngineReport,
+  kernel: string,
+  input: unknown,
+  got: number | string,
+  want: number | string,
+): void {
+  report.cases++;
+  if (got !== want) report.failures.push(`${kernel} ${JSON.stringify(input)}: got ${got}, want ${want}`);
+}
+
+export function checkKernels(fixture: KernelFixture): EngineReport {
+  const report: EngineReport = { cases: 0, failures: [] };
+  for (const [x, out] of fixture.mix) checkCase(report, 'mix', x, mix(x), out);
+  for (const c of fixture.draw) checkCase(report, 'draw', c, draw(c.seed, c.stream, ...c.keys), c.out);
+  for (const c of fixture.below) checkCase(report, 'below', c, below(c.n, c.seed, c.stream, ...c.keys), c.out);
+  for (const [t, out] of fixture.fade) checkCase(report, 'fade', t, fade(t), out);
+  for (const c of fixture.value) {
+    checkCase(report, 'value', c, value(c.seed, c.stream, c.x, c.y, c.cell, c.octave), c.out);
+  }
+  for (const c of fixture.fbm) checkCase(report, 'fbm', c, fbm(c.seed, c.stream, c.x, c.y, c.cell, c.octaves), c.out);
+  for (const c of fixture.look) checkCase(report, 'look', c, draw1(c.seed, LOOK, c.id) % LOOKS, c.out);
+  return report;
+}
+
+export function replayHash(seed: number, tier: Tier, ticks: number): string {
+  const world = createWorld(seed, tier);
+  for (let tick = 0; tick < ticks; tick++) step(world);
+  return stateHash(world).toString(16).padStart(8, '0');
+}
+
+export function checkGoldens(goldens: Goldens): EngineReport {
+  const report: EngineReport = { cases: 0, failures: [] };
+  for (const [key, want] of Object.entries(goldens.hashes)) {
+    const [seed, tier] = key.split('/');
+    checkCase(report, 'replay', key, replayHash(Number(seed), tier as Tier, goldens.ticks), want);
+  }
+  return report;
+}
