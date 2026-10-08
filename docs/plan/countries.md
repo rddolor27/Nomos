@@ -41,7 +41,7 @@ Each world holds 3–5 countries, picked by its seed. They differ only by map fa
 
 - **Build order:** M0 with M0.7, then M8.1 World generator, then M8.3 Country and Region views, then M1–M7, then the rest of M8, launch, M9 and M10.
 - **What moves ahead of M1:** the port of the world generator, the countries stage and names (M8.1), and the Country and Region views with pan, zoom, labels and countries (M8.3).
-- **What stays after M7:** military sites, the new coast, cliff and snow tiles, and country sound (M8.8); cultures across borders (M8.2); map modes, flows and papers; the fork into City mode and history; New country settings; god tools.
+- **What stays after M7:** military sites, the new coast and cliff tiles and the rest of the snow tiles, and country sound (M8.8); cultures across borders (M8.2); map modes, flows and papers; the fork into City mode and history; New country settings; god tools.
 - **What comes with it from earlier plans:** `packages/worldgen`, planned for M3.1; the tile pass and a map atlas page, planned for M3.3; and the trigram name screen, planned for M3.7. M0.7 already builds the shared sound set and the name filter.
 - **The town stays the first view.** The map loads on demand in a worker of its own, so the 100 KB before the first frame is untouched. Blobs stay in the 48×28 town until M9.
 
