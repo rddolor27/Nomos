@@ -50,6 +50,8 @@ function agentsMovingWrongly(world: World): number[] {
 describe('the world step', () => {
   it('gives seed 42 the same state hash at tick 1,000 across runs', () => {
     const hash = stateHash(run(createWorld(42, 'phone'), 1_000));
+    // Pinned, because CI's two-run diff can't see a change in behaviour; M0.4's map moves it.
+    expect(hash).toBe(0x014e7d71);
     expect(stateHash(run(createWorld(42, 'phone'), 1_000))).toBe(hash);
     expect(stateHash(run(createWorld(43, 'phone'), 1_000))).not.toBe(hash);
   });
