@@ -81,11 +81,14 @@ test('draws 10,000 dots within the frame budget', async ({ page, browser }) => {
   const sorted = [...times].sort((a, b) => a - b);
   const median = percentile(sorted, 0.5);
   const p95 = percentile(sorted, 0.95);
-  test.info().annotations.push(
+  const notes = [
     { type: 'push and draw', description: `median ${median.toFixed(2)} ms, p95 ${p95.toFixed(2)} ms at ${CPU_SLOWDOWN}x CPU` },
     { type: 'browser', description: `Chromium ${browser.version()}` },
     { type: 'load average', description: `${loadavg().map((load) => load.toFixed(2)).join(' ')} (${platform()})` },
-  );
+  ];
+  test.info().annotations.push(...notes);
+  // CI's dot reporter shows no annotations, so the numbers go to the log as well.
+  console.log(notes.map(({ type, description }) => `${type}: ${description}`).join('; '));
   expect(median).toBeLessThanOrEqual(MEDIAN_MS);
   expect(p95).toBeLessThanOrEqual(P95_MS);
 });

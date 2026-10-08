@@ -14,6 +14,7 @@ export default defineConfig({
   testDir: '.',
   testMatch: '**/test/browser/**/*.spec.ts',
   forbidOnly: !!process.env.CI,
+  reporter: process.env.CI ? [['dot'], ['html', { open: 'never' }]] : 'list',
   use: { baseURL: HARNESS },
   projects: [
     { name: 'chromium', testIgnore: FRAME_BUDGET, use: CHROMIUM },
