@@ -1,6 +1,7 @@
-import { SNAPSHOT_BYTES } from '@nomos/sim-protocol';
+import { SNAPSHOT_BYTES, TILE_PX, jobId } from '@nomos/sim-protocol';
+import { MAX_ZOOM, MIN_ZOOM } from './camera.ts';
 import { BACKGROUND, OUTLINE, RIM, rgbOf } from './colour.ts';
-import { MASK_FILL, MASK_GROUND, ROLE_SHAPE, dotFill, dotMask, roleOfJob, type Role } from './dots.ts';
+import { JUMP_PX, MASK_FILL, MASK_GROUND, ROLES, ROLE_SHAPE, dotFill, dotMask } from './dots.ts';
 import skinA from './skin-a.json';
 import type { Camera, Painter, Retained } from './types.ts';
 
@@ -19,9 +20,8 @@ const WORD_OFFSET = 8;
 const CUR = 0;
 const PREV = 1;
 const WORD = 2;
-// The shader's role indices, also the order of the baked masks.
-const ROLES: readonly Role[] = ['citizen', 'merchant', 'police'];
-const JOB_IDS = 256;
+// The shaders turn world pixels into tiles with a shift.
+const TILE_SHIFT = Math.log2(TILE_PX);
 
 // One triangle that covers the viewport: (-1, -1), (3, -1) and (-1, 3).
 const MAP_VERTEX = `#version 300 es
@@ -29,8 +29,8 @@ void main() {
   gl_Position = vec4(float((gl_VertexID & 1) << 2) - 1.0, float((gl_VertexID & 2) << 1) - 1.0, 0.0, 1.0);
 }`;
 
-// Each device pixel, counted from the top-left, shows world pixel floor((pixel + camDev) / zoom), and its tile
-// (world >> 4) is one texelFetch, so no colour is interpolated (R3 rendering notes §4). Off the map the clear shows.
+// Each device pixel, counted from the top-left, shows world pixel floor((pixel + camDev) / zoom), and its tile is one
+// texelFetch, so no colour is interpolated (R3 rendering notes §4). Off the map the clear shows.
 const MAP_FRAGMENT = `#version 300 es
 precision highp float;
 precision highp int;
@@ -48,8 +48,8 @@ int floorDiv(int a, int b) {
 void main() {
   ivec2 pixel = ivec2(int(gl_FragCoord.x), u_rows - 1 - int(gl_FragCoord.y));
   ivec2 world = ivec2(floorDiv(pixel.x + u_camDev.x, u_zoom), floorDiv(pixel.y + u_camDev.y, u_zoom));
-  if (any(lessThan(world, ivec2(0))) || any(greaterThanEqual(world >> 4, textureSize(u_minimap, 0)))) discard;
-  colour = vec4(texelFetch(u_minimap, world >> 4, 0).rgb, 1.0);
+  if (any(lessThan(world, ivec2(0))) || any(greaterThanEqual(world >> ${TILE_SHIFT}, textureSize(u_minimap, 0)))) discard;
+  colour = vec4(texelFetch(u_minimap, world >> ${TILE_SHIFT}, 0).rgb, 1.0);
 }`;
 
 // One instance per agent: a (fill + 2)-pixel square on the texel its interpolated position falls in.
@@ -83,14 +83,13 @@ int roleOf(uint word) {
 
 // The minimap's alpha flags the grounds that take the outline; elsewhere, and off the map, a dot takes the rim.
 vec3 edgeAt(ivec2 texel) {
-  ivec2 tile = texel >> 4;
+  ivec2 tile = texel >> ${TILE_SHIFT};
   if (any(lessThan(texel, ivec2(0))) || any(greaterThanEqual(tile, textureSize(u_minimap, 0)))) return u_rim;
   return texelFetch(u_minimap, tile, 0).a < 0.5 ? u_outline : u_rim;
 }
 
 void main() {
-  // The word has no teleport bit, so a jump of over 16 px shows at the new place instead of sliding there.
-  vec2 at = any(greaterThan(abs(a_cur - a_prev), vec2(16.0))) ? a_cur : mix(a_prev, a_cur, u_alpha);
+  vec2 at = any(greaterThan(abs(a_cur - a_prev), vec2(${JUMP_PX}.0))) ? a_cur : mix(a_prev, a_cur, u_alpha);
   ivec2 texel = ivec2(floor(at));
   v_centre = texel * u_zoom + (u_zoom >> 1) - u_camDev;
   v_role = roleOf(a_word);
@@ -202,10 +201,12 @@ function openMapPass(gl: WebGL2RenderingContext): MapPass {
   };
 }
 
-// Every fill dotFill gives: it grows with zoom up to its cap.
+// Every fill dotFill gives across the camera's zooms.
 function maskFills(): number[] {
   const fills: number[] = [];
-  for (let zoom = 1; !fills.includes(dotFill(zoom)); zoom++) fills.push(dotFill(zoom));
+  for (let zoom = MIN_ZOOM; zoom <= MAX_ZOOM; zoom++) {
+    if (!fills.includes(dotFill(zoom))) fills.push(dotFill(zoom));
+  }
   return fills;
 }
 
@@ -254,12 +255,6 @@ function snapshotVao(gl: WebGL2RenderingContext, current: WebGLBuffer, previous:
   return vao;
 }
 
-// The shader codes one job per role, found through roleOfJob so the job ids keep one home.
-function jobFor(role: Role): number {
-  for (let job = 0; job < JOB_IDS; job++) if (roleOfJob(job) === role) return job;
-  return -1;
-}
-
 function setColour(gl: WebGL2RenderingContext, location: WebGLUniformLocation | null, rgb: number): void {
   gl.uniform3f(location, ((rgb >> 16) & 255) / 255, ((rgb >> 8) & 255) / 255, (rgb & 255) / 255);
 }
@@ -268,8 +263,8 @@ function setConstants(gl: WebGL2RenderingContext, program: WebGLProgram): void {
   gl.useProgram(program);
   gl.uniform1i(gl.getUniformLocation(program, 'u_minimap'), MINIMAP_UNIT);
   gl.uniform1i(gl.getUniformLocation(program, 'u_masks'), MASKS_UNIT);
-  gl.uniform1i(gl.getUniformLocation(program, 'u_merchantJob'), jobFor('merchant'));
-  gl.uniform1i(gl.getUniformLocation(program, 'u_policeJob'), jobFor('police'));
+  gl.uniform1i(gl.getUniformLocation(program, 'u_merchantJob'), jobId('merchant'));
+  gl.uniform1i(gl.getUniformLocation(program, 'u_policeJob'), jobId('police'));
   ROLES.forEach((role, i) => setColour(gl, gl.getUniformLocation(program, `u_fills[${i}]`), rgbOf(skinA[role].rgb)));
   setColour(gl, gl.getUniformLocation(program, 'u_outline'), OUTLINE);
   setColour(gl, gl.getUniformLocation(program, 'u_rim'), RIM);
@@ -390,7 +385,6 @@ export function createGlPainter(canvas: HTMLCanvasElement, retained: Retained): 
   const g = openGl(canvas);
   if (!g) return null;
   const painter: Painter = {
-    backend: 'webgl2',
     mapChanged() {
       if (retained.map && retained.minimap) uploadMinimap(g, retained.map.width, retained.map.height, retained.minimap);
     },

@@ -1,9 +1,17 @@
-import { ACTION_WALK, FACING_DOWN, FACING_RIGHT, JOB_ITEMS, SNAPSHOT_BYTES, packVisual, type MapV1 } from '@nomos/sim-protocol';
+import {
+  ACTION_WALK,
+  FACING_DOWN,
+  FACING_RIGHT,
+  SNAPSHOT_BYTES,
+  TILE_PX,
+  jobId,
+  packVisual,
+  type MapV1,
+} from '@nomos/sim-protocol';
 
-const TILE = 16;
 const LOOKS = 96;
-const POLICE_JOB = JOB_ITEMS.indexOf('police') + 1;
-const MERCHANT_JOB = JOB_ITEMS.indexOf('merchant') + 1;
+const POLICE_JOB = jobId('police');
+const MERCHANT_JOB = jobId('merchant');
 
 // lowbias32, so every engine fills the same frame.
 function hash(x: number): number {
@@ -31,8 +39,8 @@ export function fillReplayFrame(map: MapV1, frame: number, count: number, out: A
     const cell = open[h % open.length];
     const step = ((frame + (h >>> 8)) & 15) - 8;
     const alongX = (h >>> 12) & 1;
-    const x = (cell % map.width) * TILE + TILE / 2 + alongX * step;
-    const y = Math.floor(cell / map.width) * TILE + TILE / 2 + (1 - alongX) * step;
+    const x = (cell % map.width) * TILE_PX + TILE_PX / 2 + alongX * step;
+    const y = Math.floor(cell / map.width) * TILE_PX + TILE_PX / 2 + (1 - alongX) * step;
     const word = packVisual(h % LOOKS, ACTION_WALK, 0, jobFor(hash(h) % 100), alongX ? FACING_RIGHT : FACING_DOWN, 0);
     view.setFloat32(i * SNAPSHOT_BYTES, x, true);
     view.setFloat32(i * SNAPSHOT_BYTES + 4, y, true);

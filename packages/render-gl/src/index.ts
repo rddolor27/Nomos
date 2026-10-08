@@ -7,15 +7,3 @@ export { MAX_ZOOM, MIN_ZOOM, cssPxPerTile, fitCamera, panBy, snapCamera, zoomAt 
 export { observeDeviceSize } from './device-size.ts';
 export { BUILT_SKINS, SKINS, autoSkin, builtSkin, skinFromQuery, type Skin } from './skin.ts';
 export { mountSkinToggle, type SkinRenderer } from './skin-toggle.ts';
-export {
-  MASK_EDGE,
-  MASK_FILL,
-  MASK_GROUND,
-  ROLE_SHAPE,
-  dotCentre,
-  dotFill,
-  dotMask,
-  roleOfJob,
-  type Role,
-  type Shape,
-} from './dots.ts';

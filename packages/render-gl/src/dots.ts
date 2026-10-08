@@ -1,7 +1,10 @@
-import { JOB_ITEMS } from '@nomos/sim-protocol';
+import { jobId } from '@nomos/sim-protocol';
 
 export type Role = 'citizen' | 'merchant' | 'police';
 export type Shape = 'circle' | 'square' | 'diamond';
+
+// Both painters number roles in this order: the shader's role indices and the baked dot images follow it.
+export const ROLES: readonly Role[] = ['citizen', 'merchant', 'police'];
 
 export const ROLE_SHAPE: Record<Role, Shape> = { citizen: 'circle', merchant: 'square', police: 'diamond' };
 
@@ -9,8 +12,11 @@ export const MASK_GROUND = 0;
 export const MASK_FILL = 1;
 export const MASK_EDGE = 2;
 
-const MERCHANT_JOB = JOB_ITEMS.indexOf('merchant') + 1;
-const POLICE_JOB = JOB_ITEMS.indexOf('police') + 1;
+// The word has no teleport bit, so a dot that moves further than this between snapshots shows at once at its new place.
+export const JUMP_PX = 16;
+
+const MERCHANT_JOB = jobId('merchant');
+const POLICE_JOB = jobId('police');
 
 export function roleOfJob(job: number): Role {
   if (job === MERCHANT_JOB) return 'merchant';

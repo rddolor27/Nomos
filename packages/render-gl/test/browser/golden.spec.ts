@@ -1,4 +1,5 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { TILE_PX } from '@nomos/sim-protocol';
 import type { Page } from 'playwright/test';
 import { snapCamera } from '../../src/camera.ts';
 import type { Camera } from '../../src/types.ts';
@@ -9,7 +10,6 @@ const UPDATE = process.env.UPDATE_GOLDEN === '1';
 const ZOOMS = [1, 2, 3, 4];
 const AGENTS = 10_000;
 const CSS = [320, 180];
-const TILE_PX = 16;
 // CANVAS2D_AGENT_CAP. The z1-d2 view holds about 6,000 agents, so there Canvas2D must draw exactly the cap instead.
 const CANVAS2D_CAP = 5_000;
 const CAPPED_VIEW = 'z1-d2';

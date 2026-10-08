@@ -1,18 +1,13 @@
-import { SNAPSHOT_BYTES, jobOf } from '@nomos/sim-protocol';
+import { SNAPSHOT_BYTES, TILE_PX, jobOf } from '@nomos/sim-protocol';
 import { BACKGROUND, OUTLINE, RIM, rgbOf } from './colour.ts';
-import { MASK_FILL, MASK_GROUND, ROLE_SHAPE, dotCentre, dotFill, dotMask, roleOfJob, type Role } from './dots.ts';
+import { JUMP_PX, MASK_FILL, MASK_GROUND, ROLES, ROLE_SHAPE, dotCentre, dotFill, dotMask, roleOfJob } from './dots.ts';
 import skinA from './skin-a.json';
 import type { Camera, Painter, Retained } from './types.ts';
 
 // Round 2's fallback budget: Canvas2D draws one image per agent, so it stops at this many in view.
 export const CANVAS2D_AGENT_CAP = 5000;
 
-// World pixels per tile (interfaces.md, snapshot v1).
-const TILE_PX = 16;
-// The word has no teleport bit, so a jump of over this shows at the new place, as in the WebGL2 shader.
-const JUMP_PX = 16;
 const FLOATS_PER_AGENT = SNAPSHOT_BYTES / 4;
-const ROLES: readonly Role[] = ['citizen', 'merchant', 'police'];
 // Dot images are ordered role by role, outline then rim, as the minimap's alpha flags them (0 outline, 255 rim).
 const EDGES = [OUTLINE, RIM];
 const OUTLINE_EDGE = 0;
@@ -103,7 +98,6 @@ export function createCanvas2dPainter(canvas: HTMLCanvasElement, retained: Retai
   // Baked on first use per fill: a zoom change, never a frame at a settled zoom.
   const dots: HTMLCanvasElement[][] = [];
   const painter: Painter = {
-    backend: 'canvas2d',
     mapChanged() {
       const map = retained.map;
       minimap = map && retained.minimap ? opaqueMinimap(map.width, map.height, retained.minimap) : null;

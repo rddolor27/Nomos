@@ -83,6 +83,45 @@ test('falls back when the context stays lost', async ({ page }) => {
   });
 });
 
+test('falls back when the shaders fail to link', async ({ page }) => {
+  const result = await page.evaluate(async () => {
+    const context = WebGL2RenderingContext.prototype;
+    const reported = context.getProgramParameter;
+    // Every program reports a failed link, as on a driver that rejects the shaders.
+    context.getProgramParameter = function (this: WebGL2RenderingContext, program: WebGLProgram, name: GLenum) {
+      return name === this.LINK_STATUS ? false : reported.call(this, program, name);
+    };
+    const harness = window.harness;
+    const backend = await harness.boot({ agents: 100 });
+    harness.push(0);
+    const stats = harness.draw();
+    const canvases = document.querySelectorAll('canvas');
+    return {
+      backend,
+      drawnBy: stats.backend,
+      canvases: canvases.length,
+      id: canvases[0]?.id,
+      drawnOn: canvases[0] === harness.renderer?.canvas,
+      dots: (stats.counts['#f7c948'] ?? 0) > 0,
+    };
+  });
+  expect(result).toEqual({ backend: 'canvas2d', drawnBy: 'canvas2d', canvases: 1, id: 'world', drawnOn: true, dots: true });
+});
+
+test('keeps reporting its backend after dispose', async ({ page }) => {
+  const backends = await page.evaluate(async () => {
+    const harness = window.harness;
+    const out = [];
+    for (const choice of ['auto', 'canvas2d'] as const) {
+      const booted = await harness.boot({ backend: choice });
+      harness.renderer?.dispose();
+      out.push({ booted, disposed: harness.renderer?.backend });
+    }
+    return out;
+  });
+  for (const { booted, disposed } of backends) expect(disposed, booted).toBe(booted);
+});
+
 test('matches WebGL2 pixel for pixel', async ({ page }) => {
   const results = await page.evaluate(async (agents) => {
     const harness = window.harness;

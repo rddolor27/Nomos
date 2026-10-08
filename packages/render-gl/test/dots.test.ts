@@ -1,20 +1,19 @@
-import { JOB_ITEMS } from '@nomos/sim-protocol';
+import { JOB_ITEMS, jobId } from '@nomos/sim-protocol';
 import { expect, test } from 'vitest';
 import {
   MASK_EDGE,
   MASK_FILL,
   MASK_GROUND,
+  ROLES,
   ROLE_SHAPE,
   dotCentre,
   dotFill,
   dotMask,
   roleOfJob,
-  type Role,
   type Shape,
 } from '../src/dots.ts';
 
 const SHAPES: Shape[] = ['circle', 'square', 'diamond'];
-const ROLES: Role[] = ['citizen', 'merchant', 'police'];
 
 function count(mask: Uint8Array, cell: number): number {
   return mask.filter((value) => value === cell).length;
@@ -60,8 +59,6 @@ test('rings each shape with an edge', () => {
 });
 
 test('maps jobs to roles', () => {
-  const jobId = (item: (typeof JOB_ITEMS)[number]): number => JOB_ITEMS.indexOf(item) + 1;
-
   const roles = Object.fromEntries(JOB_ITEMS.map((item) => [item, roleOfJob(jobId(item))]));
 
   expect(roles).toEqual({

@@ -1,8 +1,8 @@
-import { JOB_ITEMS } from '@nomos/sim-protocol';
+import { jobId } from '@nomos/sim-protocol';
 import { expect, test, type Page } from 'playwright/test';
 
-const MERCHANT_JOB = JOB_ITEMS.indexOf('merchant') + 1;
-const POLICE_JOB = JOB_ITEMS.indexOf('police') + 1;
+const MERCHANT_JOB = jobId('merchant');
+const POLICE_JOB = jobId('police');
 const CITIZEN = '#f7c948';
 const ROW = 100;
 

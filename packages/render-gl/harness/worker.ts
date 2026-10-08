@@ -1,5 +1,13 @@
 import SimWorker from '@nomos/sim-worker/worker?worker';
-import { MAP_CONTENT_TYPE, SNAPSHOT_BYTES, parseMap, type AppMessage, type MapV1, type WorkerMessage } from '@nomos/sim-protocol';
+import {
+  MAP_CONTENT_TYPE,
+  SNAPSHOT_BYTES,
+  TILE_PX,
+  parseMap,
+  type AppMessage,
+  type MapV1,
+  type WorkerMessage,
+} from '@nomos/sim-protocol';
 
 const TOWN = '/maps/town.nmap';
 const ERROR_WITHIN_MS = 2_000;
@@ -39,8 +47,8 @@ function agentsOffWalk(map: MapV1, buffer: ArrayBuffer, count: number): number {
   const floats = new Float32Array(buffer, 0, count * SNAPSHOT_FLOATS);
   let off = 0;
   for (let i = 0; i < count; i++) {
-    const tx = Math.floor(floats[i * SNAPSHOT_FLOATS] / 16);
-    const ty = Math.floor(floats[i * SNAPSHOT_FLOATS + 1] / 16);
+    const tx = Math.floor(floats[i * SNAPSHOT_FLOATS] / TILE_PX);
+    const ty = Math.floor(floats[i * SNAPSHOT_FLOATS + 1] / TILE_PX);
     const onMap = tx >= 0 && ty >= 0 && tx < map.width && ty < map.height;
     if (!onMap || map.walk[ty * map.width + tx] === 0) off++;
   }

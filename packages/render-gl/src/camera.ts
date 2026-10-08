@@ -1,9 +1,9 @@
+import { TILE_PX } from '@nomos/sim-protocol';
 import type { Camera } from './types.ts';
 
-// Device pixels per texel; the zoom is always whole, and a tile is 16 texels.
+// Device pixels per texel; the zoom is always whole.
 export const MIN_ZOOM = 1;
 export const MAX_ZOOM = 16;
-const TILE_PX = 16;
 
 function clampZoom(zoom: number): number {
   return Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, Math.round(zoom)));

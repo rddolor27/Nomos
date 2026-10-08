@@ -19,6 +19,7 @@ export interface RendererOptions {
 }
 
 export interface WorldRenderer {
+  // The requested backend until init settles it, and the last one used after dispose.
   readonly backend: Backend;
   // The canvas drawn on, which the Canvas2D fallback replaces.
   readonly canvas: HTMLCanvasElement;
@@ -26,6 +27,7 @@ export interface WorldRenderer {
   // The skin the last draw showed.
   readonly drawnSkin: Skin;
   init(): Backend;
+  // Fixes the canvas's CSS size at device / dpr, so callers observe the size of its container, never the canvas.
   resize(deviceWidth: number, deviceHeight: number, dpr: number): void;
   setMap(map: MapV1): void;
   // Copies the snapshot and hands the buffer to options.release before returning (interfaces.md).
@@ -53,7 +55,6 @@ export interface Retained {
 
 // One backend behind WorldRenderer. draw returns the agents it drew.
 export interface Painter {
-  readonly backend: Backend;
   mapChanged(): void;
   snapshotPushed(): void;
   draw(camera: Camera, alpha: number): number;

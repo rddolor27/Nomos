@@ -3,7 +3,7 @@ import { cssPxPerTile, mapShareInView } from './camera.ts';
 import { createCanvas2dPainter } from './canvas2d.ts';
 import { minimapPixels } from './minimap.ts';
 import { autoSkin, builtSkin, type Skin } from './skin.ts';
-import type { Camera, Painter, RendererOptions, Retained, WorldRenderer } from './types.ts';
+import type { Backend, Camera, Painter, RendererOptions, Retained, WorldRenderer } from './types.ts';
 import { createGlPainter } from './webgl.ts';
 
 const RESTORE_TIMEOUT_MS = 3000;
@@ -13,6 +13,7 @@ interface RendererState {
   readonly retained: Retained;
   canvas: HTMLCanvasElement;
   painter: Painter | null;
+  backend: Backend;
   // While a context is lost, nothing reaches the GPU; the retained data still updates.
   lost: boolean;
   timer: ReturnType<typeof setTimeout> | undefined;
@@ -71,11 +72,10 @@ function skinToDraw(state: RendererState, camera: Camera): Skin {
   return builtSkin(state.level);
 }
 
-// A canvas that held a WebGL context never gives a 2D one, so the fallback draws on a copy with every attribute,
-// id, class, ARIA and size included.
+// A canvas that held a WebGL context never gives a 2D one, so the fallback draws on a shallow clone: every attribute,
+// id, class, ARIA and size included, but no context.
 function replaceCanvas(old: HTMLCanvasElement): HTMLCanvasElement {
-  const next = document.createElement('canvas');
-  for (const { name, value } of Array.from(old.attributes)) next.setAttribute(name, value);
+  const next = old.cloneNode(false) as HTMLCanvasElement;
   old.replaceWith(next);
   return next;
 }
@@ -95,6 +95,7 @@ export function createWorldRenderer(canvas: HTMLCanvasElement, options: Renderer
     },
     canvas,
     painter: null,
+    backend: options.backend === 'canvas2d' ? 'canvas2d' : 'webgl2',
     lost: false,
     timer: undefined,
     drawn: 0,
@@ -134,12 +135,13 @@ export function createWorldRenderer(canvas: HTMLCanvasElement, options: Renderer
     unwatch();
     state.canvas = replaceCanvas(state.canvas);
     state.painter = canvas2d(state.canvas, state.retained);
+    state.backend = 'canvas2d';
     state.lost = false;
   }
 
   return {
     get backend() {
-      return state.painter ? state.painter.backend : 'webgl2';
+      return state.backend;
     },
     get canvas() {
       return state.canvas;
@@ -152,14 +154,20 @@ export function createWorldRenderer(canvas: HTMLCanvasElement, options: Renderer
     },
     init() {
       if (options.backend !== 'canvas2d') {
-        state.painter = createGlPainter(state.canvas, state.retained);
+        try {
+          state.painter = createGlPainter(state.canvas, state.retained);
+        } catch {
+          // The shaders did not link, and the canvas now holds a WebGL context, which never gives a 2D one.
+          state.canvas = replaceCanvas(state.canvas);
+        }
         if (state.painter) {
           watch();
           return 'webgl2';
         }
       }
-      // A failed WebGL2 request leaves the canvas free for a 2D context.
+      // A WebGL2 request that came back empty leaves the canvas free for a 2D context.
       state.painter = canvas2d(state.canvas, state.retained);
+      state.backend = 'canvas2d';
       return 'canvas2d';
     },
     // The CSS size is the device size over dpr, so a canvas never shows rescaled.
