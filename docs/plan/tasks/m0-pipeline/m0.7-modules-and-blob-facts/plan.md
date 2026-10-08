@@ -46,7 +46,7 @@
 - **Names (Structure, R8):**
   - `addAgent` draws `nameKey` at birth as `draw1(seed, PERSON_NAME, id)`. The sim stores it, never reads it, and hashes it with the other canonical columns.
   - `personName(nameKey)` in `sim-culture` turns it into "Given Family" from `NAME_WORDS`. M3.7 adds the naming custom's structure as a second argument.
-  - **One sound set, beside its filter.** `tools/names/src/sound-set/sound-set.ts` holds round 8's design H and draws its candidate words. M8.1's place-name parts and its trigram screen use the same module, so Nomos has one sound set.
+  - **One sound set, beside its filter.** `tools/names/src/sound-set/sound-set.ts` holds round 8's design H and draws its candidate words. M8.1's place-name table and its trigram screen use the same module, so Nomos has one sound set.
   - **The word table is built, not filtered at run time.** `tools/names/scripts/words.ts` draws candidates on a fixed build seed. It keeps a word only if it has 4–10 letters, is new and passes `rejectName`, and stops at 1,024 words. It writes them sorted to `sim-culture`'s generated `src/naming/words.ts`, and `--check` fails when that file is stale.
     - Round 8 proposed filtering on display, at about 0.5 ms a name. That would ship the franchise and real-world lists to every visitor, while content rules keep them "only as test fixtures".
     - A table ships only words that passed, and every name passes for every seed, which a sample of seeds can't promise.
@@ -179,7 +179,7 @@
 - **A new `NAME_WORDS` renames everyone.** No save exists before M6, which versions the generator with the save (M3.7's brief).
 - **Production builds stop asserting the ledger each tick.** CI's ledger gate and the tests still do, at every tier.
 - **Classes are new here.** The hot-path lint has never checked methods, so its planted tests must prove each new selector fires.
-- **M8.1's brief overlaps.** Written in parallel for the map-first work, it also plans "one shared invented sound set" and the same three fixtures. M0.7 comes first, so M8.1 should reuse this sound set, filter and fixtures, adding its place-name parts, blocked-pair bitmap and screen. The orchestrator reconciles the two briefs before either becomes a step plan.
+- **M8.1 reuses this sound set.** M0.7 comes first, so M8.1 reuses its sound set, filter and fixtures, and adds only a separate place-name table and its trigram screen (reconciled on 9 October 2026).
 
 ## Open questions
 
