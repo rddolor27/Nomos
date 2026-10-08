@@ -1,12 +1,12 @@
 # Docs
 
-This folder holds the research and planning behind Nomos; product code lives outside it. The plan was written in a shared Claude doc: https://claude.ai/code/artifact/599c64c6-a677-4b0e-8fb7-1b4c799dc152. The Markdown here was last exported from it on 7 October 2026. If the two differ, the doc is the live version.
+This folder holds the research and planning behind Nomos; product code lives outside it. The plan was written in a shared Claude doc: https://claude.ai/code/artifact/599c64c6-a677-4b0e-8fb7-1b4c799dc152. The Markdown here was last exported from it on 9 October 2026. If the two differ, the doc is the live version.
 
 ## Plan
 
 | File | What it holds |
 |---|---|
-| [plan/implementation-plan.md](plan/implementation-plan.md) | Milestones M0–M9 with build checklists and exit checks, the visual skins, the performance budget and CI gates, and the verify-first table |
+| [plan/implementation-plan.md](plan/implementation-plan.md) | Milestones M0–M10 with build checklists and exit checks, the visual skins, the performance budget and CI gates, and the verify-first table |
 | [plan/sound.md](plan/sound.md) | Chiptune sound as data: what plays when, the sound rules, the bank format, porting the synth, mixing and controls |
 | [plan/military.md](plan/military.md) | Soldiers who defend and patrol roads, never towns: rules, how patrols feed the route ledgers, and the finished art and sounds |
 | [plan/calendar.md](plan/calendar.md) | Watch-only runs and the 112-day year: date maths, seasons, day and night, speeds, branches and the rescaling rules |
