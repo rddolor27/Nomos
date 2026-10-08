@@ -179,7 +179,7 @@ git commit -m "feat(sim-core): add the cash ledger with MINT and reserved accoun
   - `CLAIMS_UNBALANCED = 3`, `checkClaims(claims): number` and `checkInvariants(cash, claims): number`, the first failing code, which M0.3 calls every tick in development;
   - `interface Registry`, canonical: `count`; per holding `owner`, `group`, `units` (`Int32Array`); per group `price` (cents per unit), `groupUnits`, `revaluation` (`Float64Array`). It serves homes (one 1-unit holding per map home, by district), titles and firm shares;
   - `createRegistry(arena, capacity, groups)`, `addHolding(reg, owner, group, units): number`, `transferHolding(reg, holding, owner): void` and `holdingValue(reg, holding): number`;
-  - `revalue(reg, group, price): number`, which sets the price and writes and returns `revaluation[group] = (price − old) × groupUnits[group]`, touching no ledger.
+  - `revalue(reg, group, price): number`, which sets the price and writes and returns `revaluation[group] = (price − old) × groupUnits[group]`, touching no ledger. M2 calls it from the day boundary once prices exist.
 
 - [ ] **Step 1: Write the failing tests:**
   - `floors cents times ppm exactly`: 100,000 keyed cases match a `BigInt` floor in the test, with cents up to ±(2^53 − 1) and ppm in 0..10^6. `mulPpm(±MAX_SAFE_CENTS, PPM)` returns its input, `mulPpm(-1, 1) === -1` and `mulPpm(120_000_000_000, 74_100) === 8_892_000_000` (round 6's $1.2B at 7.41%).
@@ -277,8 +277,8 @@ git commit -m "build(sim-core): allow BigInt only in the apportionment module"
   - `gives log2 in Q16 within the 8-bit mantissa bound`: `LOG2_Q16[128] === 38_336`; `log2Q16` gives 0, 65,536 and 103,872 for 1, 2 and 3; for 10,000 keyed x it lies within [t − 370, t + 1] of t = 65,536 × `Math.log2(x)` (R6 integration-cost §4).
   - `halves each fade table at its half-life`: each starts at 32,768, never rises and ends with its only 0; `FADE_1Y[112] === 16_384`, and `FADE_0_35Y[196]` and `FADE_2_6Y[1_456]` equal 1,024.
   - `centres the inverse-normal table`: `|INV[i] + INV[4095 − i]| ≤ 1`, entry 0 lies between −3.7 and −3.6 × 65,536, and the SD is 0.99–1.0 × 65,536.
-  - `sums every band-share row to a million ppm`: the top band never shrinks and the bottom never grows as the mean rises, and at mean 7.0 (row 140) bands 2 and 3 differ by at most 1 ppm.
-  - `correlates wealth with income rank at Spearman 0.6`: the copula rises along both axes, and the Spearman between income bin and value over its 4,096 cells is 0.60 ± 0.02.
+  - `sums every band-share row to a million ppm`. As the mean rises, the top band never falls, and the bottom never rises, by more than 1 ppm, the most rounding can move a share. At mean 7.0 (row 140), bands 2 and 3 differ by at most 1 ppm.
+  - `correlates wealth with income rank at Spearman 0.6`: the copula never falls along either axis, and the Spearman between income bin and value over its 4,096 cells is 0.60 ± 0.02.
 
   Run: `pnpm test -- tables`. Expected: FAIL.
 
