@@ -15,6 +15,8 @@ const FLOOR_DIV =
   'Generator port (R9 traps 3 and 4): / is float division and Python floors, so use floorDiv, or a shift for a power of two.';
 const FLOOR_MOD =
   "Generator port (R9 trap 1): % keeps the dividend's sign where Python's follows the divisor's, so use floorMod, or (x >>> 0) % n.";
+const NO_FRAMEWORKS =
+  'web rules, Rendering and Load order: one custom WebGL2 renderer, so no PixiJS or Phaser; the HUD is vanilla TypeScript and richer UI uses Solid or Preact, never React.';
 
 const TRANSCENDENTAL_MATH = [
   'sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'atan2', 'sinh', 'cosh', 'tanh', 'asinh', 'acosh', 'atanh',
@@ -119,6 +121,9 @@ const GEN_SYNTAX = [
   { selector: "AssignmentExpression[operator='%=']", message: FLOOR_MOD },
 ];
 
+// Each is banned bare and by subpath, such as react-dom/client; @pixi/* covers PixiJS v7's scoped packages.
+const FRAMEWORKS = ['react', 'react-dom', 'pixi.js', 'phaser'];
+
 export default defineConfig(
   // Round 7's prototypes under docs/ carry their own node_modules; .claude/ and .githooks/ hold CommonJS scripts outside
   // the workspace; .superpowers/ holds agents' scratch copies, which ESLint 10 would read as configs if named like one.
@@ -177,5 +182,17 @@ export default defineConfig(
     files: GENERATOR_FILES,
     plugins: { gen: { rules: { 'no-restricted-syntax': builtinRules.get('no-restricted-syntax') } } },
     rules: { 'gen/no-restricted-syntax': ['error', ...GEN_SYNTAX] },
+  },
+  {
+    files: ['apps/**/*.{ts,tsx}', 'packages/render-gl/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: FRAMEWORKS.map((name) => ({ name, message: NO_FRAMEWORKS })),
+          patterns: [{ group: [...FRAMEWORKS.map((name) => `${name}/*`), '@pixi/*'], message: NO_FRAMEWORKS }],
+        },
+      ],
+    },
   },
 );
