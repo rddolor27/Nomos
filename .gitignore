@@ -5,6 +5,7 @@ target/
 coverage/
 test-results/
 playwright-report/
+bench-results/
 
 # Environment and local overrides
 .env*
