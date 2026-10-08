@@ -11,7 +11,7 @@
   - COOP and COEP headers, so the page is cross-origin isolated and workers can share memory;
   - a hand-written service worker of about 0.5 KB for offline starts.
 
-  M1.5 may already ship these. If so, this step only checks them.
+  M0.5 writes the headers, and M1.6's smoke test already checks them on every deploy, so this step adds only the service worker. It names its cache after M1.6's deployed version, so each release replaces the last cache.
 - **Scale the algorithms before adding threads (R1, R5).** Extend M3's timing wheel and per-cell aggregates to 100k, with staggered decisions and dense awake lists.
 - **Workers only where they pay.** Use SharedArrayBuffer workers only when `crossOriginIsolated` is true and a phase carries at least 0.5 ms.
   - Work is split into fixed 1,024-agent chunks, and reductions run in chunk order.
@@ -81,7 +81,7 @@
 
 Suggestions for the step plan, which makes the final call.
 
-- **Build order:** headers and the service worker, or a check of M1.5's, first. Then the algorithms at 100k on one thread, semantic zoom, helpers, and WASM only if needed. Canvas2D and the sound profile come last.
+- **Build order:** the service worker first. Then the algorithms at 100k on one thread, semantic zoom, helpers, and WASM only if needed. Canvas2D and the sound profile come last.
 - **Reuse:** M3's timing wheel, per-cell aggregates and voice caps, M0.6's budget, allocation and size gates, and M0.3's snapshot pool.
 - **Keep it simple:** skip the optional 16-bit positions unless the 100k snapshot misses its 0.3 ms sub-budget, so snapshot v1 stays unchanged. The plan's ≈0.1 ms is an older figure at an unstated size (R5 compute notes), so measure it at 100k.
 - **Pitfalls:** reserve the shared memory for 100k at start, since `grow` detaches views. Reductions sum in chunk order even when a helper finishes early.
