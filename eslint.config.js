@@ -45,8 +45,11 @@ function syntaxBansWithout(exempt) {
 }
 
 export default defineConfig(
-  // Round 7's prototypes under docs/ carry their own node_modules; .claude/ and .githooks/ hold CommonJS scripts outside the workspace.
-  globalIgnores(['docs/**', 'graphify-out/**', '.claude/**', '.githooks/**', 'dist/**', 'coverage/**', 'assets/**']),
+  // Round 7's prototypes under docs/ carry their own node_modules; .claude/ and .githooks/ hold CommonJS scripts outside
+  // the workspace; .superpowers/ holds agents' scratch copies, which ESLint 10 would read as configs if named like one.
+  globalIgnores([
+    'docs/**', 'graphify-out/**', '.claude/**', '.githooks/**', '.superpowers/**', 'dist/**', 'coverage/**', 'assets/**',
+  ]),
   js.configs.recommended,
   tseslint.configs.recommended,
   {
