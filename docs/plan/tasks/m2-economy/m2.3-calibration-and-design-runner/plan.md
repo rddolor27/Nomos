@@ -88,3 +88,23 @@ All the targets come from the [R2 economy calibration notes](../../../../researc
   The last decides how big a grid the nightly job can afford.
 - **Targets may conflict.** Stickiness and labour flows pull on the same parameters. Record every trade-off in the preset file's "why" comments, and in the targets report.
 - **"Month" depends on M2.1's owner decision.** Targets stated per month must convert through the chosen month length.
+
+## Open questions
+
+- **Owner:** Does the `city` preset run closed or fiat money? It decides whether the suite checks zero mean saving or round 2's 4% fiat target ([R2 economy calibration](../../../../research/round-2-follow-up/notes/economy-calibration.md), Key Question 4). Suggested: closed, with fiat a scenario switch until M5's treasury. Needed before: the step plan.
+- **Owner:** Do round 2's yearly targets hold per 112-day year, as [calendar.md](../../../calendar.md)'s "Rescaling rules" ask for annual statistics? With 4 or 5⅓ months a year, "2% of stayers cut a year" then means 3× or 2.25× the data's cuts per wage decision (computed). Suggested: yes, yearly targets per game year and monthly ones per game month, accepting more cuts per decision. Needed before: the step plan.
+- **Measure:** How many sim days per second does a headless run reach at each city size? It sets how much of the grid the nightly job can afford. Suggested: measure once M2.2 spawns cities, then run a slice nightly and the full grid by hand. Needed before: the step plan.
+- **Measure:** What makes cycles "too mild" for the credit line? Without one, the feature has no trigger. Suggested: a numeric floor on output and unemployment volatility, fixed before tuning starts. Needed before: building.
+- **Research:** What are a typical price change's size and a direct monthly job-to-job rate? Round 2 found no job-to-job source and quits overstate it, yet the π rule needs a target (same notes, Key Question 2). Suggested: a short research round, logging both meanwhile, with JOLTS quits as an upper bound. Needed before: building.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** flow counters and their balance test first, as a cheap ledger check. Then the column writer and its thread-count check, `targets.py`, tuning, and the credit line last, if its threshold trips.
+- **Reuse:** M1.1's estimate claims; M2.1's MSER-5 and `params`; M2.2's spawn; M0.6's bench.
+- **Keep it simple:** treat each settlement as one district until M3.1's 64×64 districts exist, keeping the district column. Add Morris screening only if tuning stalls.
+- **Pitfalls:**
+  - Tuning and judging on the same 50 seeds overfits, so confirm the final preset on a fresh seed set.
+  - Name output files by grid cell, never by finish order, and keep timestamps and thread ids out of the columns.
+- **Hard and easy parts:** trading stickiness against labour flows is the hard part, with Mark-0's phases next. The runner and the logs are mechanical.

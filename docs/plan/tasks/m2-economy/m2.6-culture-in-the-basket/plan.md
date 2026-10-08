@@ -73,3 +73,21 @@
 - **Needs M0.6's wall first:** the `sim-culture` package and the guard rules must exist before any culture-reading code lands.
 - **The relabel and flip tests** (M0.6 and M4) must keep passing. Any culture-level draw here is keyed by the culture's stable uid, never its index.
 - **Festival demand is a stub until M3.** The stocking rule is tested now with a synthetic calendar, and re-checked with M3's real one.
+
+## Open questions
+
+- **Owner:** How many cultures does the default town start with, and in what shares? Spawn needs the counts, and M3.7 re-runs round 8's bands with similar shares rather than one 60% culture. Suggested: four cultures in near-equal shares, like M0.6's test world of uids 1–4. Needed before: the step plan.
+- **Measure:** At what city size and seed count do the culture checks pass on a run whose culture labels are shuffled after spawn? Under independence, Cramér's V across 10 wealth deciles is about 3/√n (computed), so 0.05 fails below about 3,600 households. Suggested: compute V per household, and size or pool runs until the shuffled run passes 95% of the time. Size round 8's proposed 0.9–1.1 ratio bands the same way. Needed before: building.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** preference rows and their build-time bounds check in `sim-culture` first, then the household shift and its unit tests, then β in `basket.ts`. Spawn, the reports, and festival stocking on a synthetic calendar come last.
+- **Reuse:** M0.6's `sim-culture` package, wall, relabel test and `World.cultureUid`; M0.2's culture columns and apportionment; M2.4's basket; M2.2's spawn streams.
+- **Keep it simple:** households and cultures never change before M3.7's adoption and M5's births. Compute shifts once at spawn, and add the recompute hook with M3.7.
+- **Pitfalls:**
+  - `Int16` holds ±32,767, but ±25% in ppm of a neutral share is ±250,000; use `Int32`, or basis points (±2,500).
+  - Relative shifts that sum to zero don't sum to zero in absolute share unless neutral shares are equal, so check the absolute sum.
+  - `spawn/culture.ts` writes culture columns, so no guarded folder may reach it, which dependency-cruiser checks transitively (M0.6); it must never read wealth rank.
+- **Hard and easy parts:** test power is the hard part, not code. The bounds check and largest-remainder rounding are mechanical.

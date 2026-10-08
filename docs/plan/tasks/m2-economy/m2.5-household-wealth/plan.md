@@ -70,3 +70,22 @@
 - **Housing costs arrive with M3's rents,** so "income above subsistence and housing" uses a zero housing cost until then. Re-run the saving checks after M3.
 - **The income habit column** belongs to M3's life-satisfaction block. Reserve it here so `AgentStore`'s layout doesn't shift later.
 - **Long runs are slow.** 400 years is 44,800 days per seed, so it stays in the nightly job.
+
+## Open questions
+
+- **Owner:** Which wealth preset does the `city` preset spawn, `euroLike` or `usLike`? It sets the spawned Gini, the top-10% share and M2.7's wealth band. Suggested: `euroLike` by default, with `usLike` as a scenario. Needed before: the step plan.
+- **Owner:** Who owns a new firm's shares on BAM entry? Round 6 covers only exit, where equity goes to zero as an "other volume change" moving no cents ([R6 wealth notes](../../../../research/round-6-goods-and-wellbeing/notes/wealth-assets.md), part d, inference). Suggested: a keyed draw among households able to fund the entry picks one owner of every share. Needed before: the step plan.
+- **Measure:** How long does one 44,800-day run take at the test city size? The nightly job must fit 50 of them. Suggested: run the identities at Lengnick's 1,000 households on M2.3's parallel runner. Needed before: building.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** the balance-sheet columns and identity checks first, then the earnings-only and Yard-Sale known answers, which need cash only. Then dividends, saving by quintile, debt, revaluation, and the spawn extension last.
+- **Reuse:** M0.2's claims ledger, firm-share registry, log2 and copula tables, and `apportion` for dividends; M0.3's histogram; M2.1's known-answer module; M2.2's spawn path.
+- **Keep it simple:** durables as one quantity per household; no secured loans until M3.6's mortgages; no inheritance until M5.
+- **Pitfalls:**
+  - Quintile cut-points need ranks, so read them from the day-boundary histogram that gives the median, never by sorting.
+  - Post a discharged debt's loss to both sides of the claims ledger on the same day, or debt and loans stop matching.
+  - Under closed money, saving from income must net to zero against the 5% drawdown from wealth. Otherwise firms slowly drain of cash, so watch firm cash in long runs.
+- **Hard and easy parts:** returns are the hard part, since emergent dividends plus a drawn persistent part must land near SD 6%. The known answers and the report are mechanical.

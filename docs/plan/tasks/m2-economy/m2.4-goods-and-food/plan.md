@@ -80,3 +80,23 @@
 - **Needs M0.3's slice ruling** on late spoilage (round 6 conflict e) before the day-boundary sweep can be final.
 - **Round 6 rates set for a 365-day year,** such as the 1.5–3% monthly carrying cost and the ≤ 7% pest loss a season, must be re-read as per day or per year before they are coded (M2.7 verifies them).
 - **Shelf capacity:** 32 lots per shelf may overflow in busy shops. If so, merge lots with the same expiry and grade before adding, never drop one.
+
+## Open questions
+
+- **Owner:** Keep `skip-expired` as M0.3's late-spoilage default, round 6's conflict (e)? The day-boundary sweep and its tests depend on it. Suggested: `skip-expired`, since the `one-pass-at-10k` option fails M0.6's 0.35 ms slice gate ([checkpoint 0005](../../../checkpoints/0005-m0-planned.md)). Needed before: the step plan.
+- **Owner:** Which development preset does the `city` preset use, with food at 45, 33, 19 or 9% of consumption? It sets every basket, M2.6's Engel check and M2.7's food-share band. Suggested: 19%, where food still weighs on budgets without dominating them; then check M3.5's 5–15% insecurity band against it. Needed before: the step plan.
+- **Owner:** Which sector supplies each of the six food categories? Two sectors must fill six categories, and round 6 says only that shop labour and markup stand in for milling and baking ([R6 resources notes](../../../../research/round-6-goods-and-wellbeing/notes/resources-production.md), part d). Suggested: grain gives grain and bread, fresh food gives produce, dairy and fresh protein, and preserved takes fresh food plus fuel. Needed before: the step plan.
+- **Measure:** How full do the busiest shop shelves get? Peak occupancy shows whether merging same-expiry lots is enough. Suggested: log peak lots per shelf in the city preset at 10k agents. Needed before: building.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** the lot word, FEFO and the price table first, as pure unit-tested code. Then the portion ledger on one good, the per-good auction loop, baskets, and the layout-swap hash test last.
+- **Reuse:** M2.1's auction and Stone–Geary code, extended rather than forked; M0.2's keyed stochastic rounding for staple losses; M0.3's day boundary for the sweep.
+- **Keep it simple:** imports, exports and in-transit stay zero until M7 but keep their place in the identity. Households buy final goods only; timber, stone and metal trade only at wholesale.
+- **Pitfalls:**
+  - If `exp:16` holds an absolute day, it wraps after 65,536 days, about 585 years of 112 days (computed). Longer-lived saves need a rebased epoch.
+  - Floor after each multiply in one fixed order, grade then freshness, since the order changes the cents.
+  - Clear the goods' auctions in the recipe table's fixed order, since one firm's cash spans several of them.
+- **Hard and easy parts:** keeping M2.3's targets once one good becomes eight is the hard part. Lots, FEFO and prices are mechanical.

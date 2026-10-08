@@ -64,3 +64,23 @@
 - **Verify first:** round 6's calibrated targets on the 112-day year, including the 1.5–3% monthly carrying cost and the ≤ 7% pest loss a season. They decide daily wages, prices and storage rates; the storage rates apply only in M3 and M7.
 - **The inspector arrives in M3.** Until then, follow-the-money lives in a developer panel; keep its API small so M3 only mounts it.
 - **The bubble cap hides some purchase bubbles.** The coincidence check therefore matches on event ids, which survive in the ticker, not on visible bubbles.
+
+## Open questions
+
+- **Owner:** What should a day's wage read as on screen? The currency is invented, so absolute levels are free ([calendar.md](../../../calendar.md), "Rescaling rules"), and every price, chart and story follows from this choice. Suggested: a mean daily wage of a round number of coins, such as 100, so everyday prices read as whole coins. Needed before: the step plan.
+- **Measure:** How many economy events does a busy day emit against M1.3's pooled event buffer? A dropped event breaks the match between price ticks and purchase bubbles. Suggested: count peak events per tick in the city preset at 10k agents, and size the pool with headroom. Needed before: building.
+- **Research:** Should round 6's 1.5–3% monthly carrying cost and ≤ 7% seasonal pest loss be read per day or per year? Both were set for a 365-day year, and they fix M3's and M7's storage rates. Suggested: physical losses per day, like spoilage, and the carrying cost per game year, like interest. Needed before: building.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** the rate tables and daily wage first, headless, with the 50-seed shares check. Then `ECONOMY_GLYPHS` and its totality test, the three sprites, the four surfaces, and follow-the-money last.
+- **Reuse:** M1.3's bubble pass and event buffer; M0.5's uPlot charts; the `tools/sprites` icon pipeline; M2.3's target suite and M2.5's presets for the bands.
+- **Keep it simple:** follow-the-money draws straight coin paths between counterparties, and the developer panel is one list.
+- **Pitfalls:**
+  - Interest compounds, so its daily rate is (1 + r)^(1/112) − 1, not the hazard formula. At 20% a year the hazard formula runs about 22% high (computed), so build one table per kind.
+  - Daily interest on small balances floors to 0 cents, so accrue monthly or carry a remainder.
+  - Event ids come from the sim in tick order, and the render side never mints them.
+  - Bankruptcy glyphs attach to the stall, never to a person (content rules 4 and 5).
+- **Hard and easy parts:** re-tuning the presets on the new time base is the hard part. The glyph table and its totality test are mechanical.

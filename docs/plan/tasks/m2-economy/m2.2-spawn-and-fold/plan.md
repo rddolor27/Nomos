@@ -66,3 +66,22 @@
 - **Deno is new to CI.** It needs its own setup step. If it cannot run the workspace's TypeScript as-is, run the CLI's bundled output.
 - **The 10 ms budget excludes map lookups and job matching,** as round 4 measured. Job matching by firm size may need a counting sort to stay inside it.
 - **Records from M7's country tier** must use the same layout. Keep `SettlementRecord` in `sim-protocol` and version it.
+
+## Open questions
+
+- **Owner:** Keep Deno in the cross-runtime check, or use M0.6's engine harness instead? Deno embeds V8, the engine Node already covers, so it adds a CI setup step but no new engine. Suggested: M0.6's five engines through its harness, with Deno dropped. Needed before: the step plan.
+- **Measure:** Does job matching fit inside the 10 ms spawn budget? The exit check excludes only map lookups, while round 4's roughly 7 ms (measured there) left matching out too. Suggested: count it in, using a counting sort by firm size, and report it on its own line if it still misses. Needed before: building.
+- **Measure:** What cash and price spreads keep a spawned city's burn-in no longer than the hand-built start's? The exit check compares the two, and neither spread is stated. Suggested: start narrow, with prices inside M2.1's band of 1.025–1.15 × w/63 and cash at M2.1's starting multiple, and widen only while the check holds. Needed before: building.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** fold first, on M2.1's hand-built city, since it is a pure sum. Then spawn from a trivial record, the identity test over 1,000 keyed records, and the timing and cross-runtime hashes last.
+- **Reuse:** M0.2's `apportion` and `apportionByStride`, which already give each entry 0 or 1 leftover cent; M0.4's `parseMap` for homes; M2.1's MSER-5.
+- **Keep it simple:** fold keeps only what the record holds; anything else, such as supplier links and reservation wages, is drawn afresh on the next spawn.
+- **Pitfalls:**
+  - The 6+ household bucket hides its people count, so derive it from `population` minus the smaller households, and split it by a fixed rule.
+  - Spawn must also draw each household's 7 supplier links, which the fill order above omits; key them like jobs.
+  - Spawn and fold are tier switches, so they run only at the day boundary, after every planned flow has applied.
+- **Hard and easy parts:** the 10 ms budget with matching inside is the hard part. Fold, the record type and the adjacency test are mechanical.

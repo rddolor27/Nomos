@@ -92,3 +92,22 @@
   These decide the presets and the sensitivity budget.
 - **Specification ambiguities.** Settle about 20 of them while porting, then record each ruling in the step plan and in `params.ts` comments, as "why" notes.
 - **Burn-in may be long.** If MSER-5 truncates after more than about 1,000 months, the browser starts from a precomputed snapshot or a hidden fast-forward (R2).
+
+## Open questions
+
+- **Owner:** Is a month the paper's 21 days, giving 5⅓ a year, or the 28-day season, giving 4? Firms decide monthly, so it sets every monthly rate and target. Suggested: the 28-day season, which lines up with weeks, seasons and years; known-answer tests keep 21 days. Needed before: the step plan.
+- **Owner:** Should households start with the replication's 2.2 months of wages, or the 8–9 months of spending an M2-like velocity implies? It sets velocity, prices and the burn-in ([R2 economy calibration](../../../../research/round-2-follow-up/notes/economy-calibration.md), Key Question 4). Suggested: 2.2 months for `lengnick`, and the M2-like level for `city` as a share of annual spending. Needed before: the step plan.
+- **Measure:** Does MSER-5 truncate in the first half of each 20,000-day run, as the [R2 validation notes](../../../../research/round-2-follow-up/notes/validation-methodology.md) require in part 5? Each run is about 952 of the paper's 21-day months (computed), shorter than its 1,000-month burn-in. Suggested: check per-push runs first; if it lands late, lengthen runs or start from a spun-up snapshot. Needed before: building.
+- **Research:** Which of Lengnick's published figures can the `lengnick` preset be tested against? The paper gives no initial values, so 3,100 / 25 / 1,428 are the replication's choices (R2 economy calibration, Key Question 6). Suggested: list the paper's reported moments with pages, and test only those. Needed before: the step plan.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** the three known-answer models first, which test the ledger and Gini code without Lengnick. Then one good in closed money, the rounding property test, the auction, BAM entry and exit, and fiat last.
+- **Reuse:** M0.2's ledger, `apportion` and `mulPpm`; M0.3's `step`, day boundary, `SYSTEM_NAMES` and CLI; M0.6's lint and allocation gate.
+- **Keep it simple:** one good until M2.4's loop over goods; MSER-5 in about 20 lines (R2); daily series as plain columns; no UI or credit line.
+- **Pitfalls:**
+  - Households ration firm stock in turn, so shop in a keyed per-day permutation, never index order, or low indices always buy first.
+  - A game month is 1/4 or 3/16 of a year, not 1/12 (computed), so state money and stock levels per day or per year.
+- **Hard and easy parts:** settling about 20 ambiguities while matching the paper is the hard part. The known answers, MSER-5 and the parameter file are mechanical.
