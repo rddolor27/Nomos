@@ -17,6 +17,10 @@ const FLOOR_MOD =
   "Generator port (R9 trap 1): % keeps the dividend's sign where Python's follows the divisor's, so use floorMod, or (x >>> 0) % n.";
 const NO_FRAMEWORKS =
   'web rules, Rendering and Load order: one custom WebGL2 renderer, so no PixiJS or Phaser; the HUD is vanilla TypeScript and richer UI uses Solid or Preact, never React.';
+const NO_CULTURE_IMPORT =
+  'content rules, Art direction 8 (R8): culture shapes demand and leisure only, so only consumption/ imports sim-culture.';
+const NO_CULTURE_READ =
+  'content rules, Art direction 8 (R8): culture shapes demand and leisure only, so only consumption/ reads a culture column or custom.';
 
 const TRANSCENDENTAL_MATH = [
   'sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'atan2', 'sinh', 'cosh', 'tanh', 'asinh', 'acosh', 'atanh',
@@ -121,6 +125,28 @@ const GEN_SYNTAX = [
   { selector: "AssignmentExpression[operator='%=']", message: FLOOR_MOD },
 ];
 
+// M0.2's culture columns and R8's names for what later code adds. M7's sim-country is guarded too.
+const CULTURE_NAMES = [
+  'culture', 'birthCulture', 'customs', 'homeRegion', 'culture2', 'cultureMix', 'festivalToday', 'nameKey', 'cultureUid',
+];
+const CULTURE_NAME = `/^(${CULTURE_NAMES.join('|')})$/`;
+const GUARDED = 'packages/sim-*/src/{crime,police,labour,wages,wealth,ability,housing,migration}/**/*.ts';
+// Property reads, including destructuring, are the no-restricted-properties copy's; these are the spellings it cannot see.
+const CULTURE_SYNTAX = [
+  { selector: `Literal[value=${CULTURE_NAME}]`, message: NO_CULTURE_READ },
+  {
+    selector: `TemplateLiteral[expressions.length=0] > TemplateElement[value.cooked=${CULTURE_NAME}]`,
+    message: NO_CULTURE_READ,
+  },
+  {
+    selector: 'Identifier[name=/^(customOf|withCustom|CUSTOM_[A-Z]+|CULTURE|FESTIVAL|MAX_CULTURES)$/]',
+    message: NO_CULTURE_READ,
+  },
+  { selector: 'ImportExpression[source.value=/sim-culture/]', message: NO_CULTURE_IMPORT },
+  // import('...') in a type position, which no-restricted-imports does not see.
+  { selector: 'TSImportType[source.value=/sim-culture/]', message: NO_CULTURE_IMPORT },
+];
+
 // Each is banned bare and by subpath, such as react-dom/client; @pixi/* covers PixiJS v7's scoped packages.
 const FRAMEWORKS = ['react', 'react-dom', 'pixi.js', 'phaser'];
 
@@ -182,6 +208,27 @@ export default defineConfig(
     files: GENERATOR_FILES,
     plugins: { gen: { rules: { 'no-restricted-syntax': builtinRules.get('no-restricted-syntax') } } },
     rules: { 'gen/no-restricted-syntax': ['error', ...GEN_SYNTAX] },
+  },
+  {
+    // Its own copies of three core rules, so these bans stack on the sim profile's. consumption/ is not guarded.
+    files: [GUARDED],
+    plugins: {
+      culture: {
+        rules: {
+          'no-restricted-imports': builtinRules.get('no-restricted-imports'),
+          'no-restricted-properties': builtinRules.get('no-restricted-properties'),
+          'no-restricted-syntax': builtinRules.get('no-restricted-syntax'),
+        },
+      },
+    },
+    rules: {
+      'culture/no-restricted-imports': [
+        'error',
+        { patterns: [{ regex: '^@nomos/sim-culture(/|$)|/sim-culture/', message: NO_CULTURE_IMPORT }] },
+      ],
+      'culture/no-restricted-properties': ['error', ...CULTURE_NAMES.map((property) => ({ property, message: NO_CULTURE_READ }))],
+      'culture/no-restricted-syntax': ['error', ...CULTURE_SYNTAX],
+    },
   },
   {
     files: ['apps/**/*.{ts,tsx}', 'packages/render-gl/**/*.{ts,tsx}'],
