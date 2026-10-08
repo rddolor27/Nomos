@@ -39,7 +39,7 @@ def bullets(path):
 
 def main(numbers):
     plan = PLAN.read_text(encoding='utf-8')
-    for n in numbers:
+    for n in numbers or re.findall(r'^## M(\d+) ', plan, re.M):
         path = folder(n)
         if path is None:
             print(f'M{n}: no milestone folder')
@@ -58,4 +58,4 @@ def main(numbers):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:] or [str(n) for n in range(10)])
+    main(sys.argv[1:])
