@@ -1,5 +1,6 @@
 import js from '@eslint/js';
 import { defineConfig, globalIgnores } from 'eslint/config';
+import { builtinRules } from 'eslint/use-at-your-own-risk';
 import tseslint from 'typescript-eslint';
 
 const EXACT_MATHS =
@@ -52,6 +53,58 @@ function syntaxBansWithout(exempt) {
   return ['error', ...SYNTAX_GROUPS.filter((group) => group !== exempt).flat()];
 }
 
+// The per-tick list's one home: M0.3's step and snapshot writer and the functions they call every tick, ground.ts
+// for move's walkableAt. draw.ts (its variadic draw and below serve non-tick code) and apportion.ts (BigInt) stay out.
+const HOT_FILES = [
+  'packages/sim-core/src/{world,wander,step,day,slices,stride,inputs,histogram}.ts',
+  'packages/sim-protocol/src/{snapshot,visual}.ts',
+  'packages/sim-core/src/{int,calendar,space,store,ledger,money,claims,registry,flows,split,log2,invariants,ground}.ts',
+];
+// Functions in hot files that run only at creation, restore or failure, or between ticks, so they may allocate.
+const COLD = '/^(create|layout|populate|restore|checkpoint|giveBack|fail|stateHash|openCells|standIn)/';
+const IN_HOT = `FunctionDeclaration:not([id.name=${COLD}])`;
+const ARRAY_METHODS =
+  '/^(map|filter|reduce|forEach|flatMap|some|every|find|slice|subarray|concat|splice|push|pop|shift|unshift|from|of|entries|keys|values|join|split)$/';
+const NO_ALLOCATION = 'sim-core rules, Hot paths: per-tick functions allocate nothing, so';
+const HOT_SYNTAX = [
+  { selector: `${IN_HOT} ArrayExpression`, message: `${NO_ALLOCATION} write into a preallocated typed array.` },
+  { selector: `${IN_HOT} ObjectExpression`, message: `${NO_ALLOCATION} write results into struct-of-arrays columns.` },
+  {
+    selector: `${IN_HOT} :matches(ArrowFunctionExpression, FunctionExpression, FunctionDeclaration)`,
+    message: `${NO_ALLOCATION} use a plain loop and module-level functions, never a closure.`,
+  },
+  {
+    selector: `${IN_HOT} NewExpression:not(ThrowStatement NewExpression)`,
+    message: `${NO_ALLOCATION} allocate at creation and pass buffers in; only a throw may construct.`,
+  },
+  { selector: `${IN_HOT} SpreadElement`, message: `${NO_ALLOCATION} pass values one by one, never spread.` },
+  {
+    selector: `${IN_HOT} TemplateLiteral:not(ThrowStatement TemplateLiteral)`,
+    message: `${NO_ALLOCATION} build no strings; only a throw may format one.`,
+  },
+  {
+    selector: `${IN_HOT} :matches(ForOfStatement, ForInStatement)`,
+    message: `${NO_ALLOCATION} use an indexed for loop, which needs no iterator.`,
+  },
+  {
+    selector: `${IN_HOT} CallExpression[callee.property.name=${ARRAY_METHODS}]`,
+    message: `${NO_ALLOCATION} use an indexed for loop, never an array callback or a copying method.`,
+  },
+  {
+    selector: `${IN_HOT} CallExpression[callee.name=/^(draw|below)$/]`,
+    message: `${NO_ALLOCATION} use draw1-draw4, never the variadic draw or below, whose keys allocate.`,
+  },
+  {
+    selector: `${IN_HOT} :matches(Identifier[name='Date'], MemberExpression[object.name='performance'][property.name='now'])`,
+    message: 'sim-core rules, Hot paths: per-tick functions read no clock; time is the tick counter.',
+  },
+  {
+    // Anywhere in a hot file, so that no per-tick function escapes the checks above.
+    selector: 'VariableDeclarator > :matches(ArrowFunctionExpression, FunctionExpression)',
+    message: 'sim-core rules, Hot paths: declare functions in hot files with function, so the hot-path lint sees them.',
+  },
+];
+
 export default defineConfig(
   // Round 7's prototypes under docs/ carry their own node_modules; .claude/ and .githooks/ hold CommonJS scripts outside
   // the workspace; .superpowers/ holds agents' scratch copies, which ESLint 10 would read as configs if named like one.
@@ -98,5 +151,11 @@ export default defineConfig(
     // Apportionment takes BigInt once total * weight reaches 2^53, and never runs per tick (R4).
     files: ['packages/sim-core/src/apportion.ts'],
     rules: { 'no-restricted-syntax': syntaxBansWithout(BIGINT_SYNTAX) },
+  },
+  {
+    // Its own copy of the core rule, so these bans stack on the sim profile's instead of replacing them.
+    files: HOT_FILES,
+    plugins: { hot: { rules: { 'no-restricted-syntax': builtinRules.get('no-restricted-syntax') } } },
+    rules: { 'hot/no-restricted-syntax': ['error', ...HOT_SYNTAX] },
   },
 );

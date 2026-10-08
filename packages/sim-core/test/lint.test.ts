@@ -3,11 +3,20 @@ import { ESLint } from 'eslint';
 import { describe, expect, it } from 'vitest';
 
 const eslint = new ESLint({ cwd: fileURLToPath(new URL('../../../', import.meta.url)) });
-const PROFILE_RULES = new Set<string | null>(['no-restricted-properties', 'no-restricted-syntax']);
+// Profiles run their own copies of the core rules, such as hot/no-restricted-syntax.
+const PROFILE_RULE = /no-restricted-(syntax|properties)$/;
+
+async function ruleIds(code: string, filePath: string): Promise<string[]> {
+  const [result] = await eslint.lintText(code, { filePath });
+  return result.messages.map((message) => message.ruleId ?? '');
+}
 
 async function profileMessageCount(code: string, filePath: string): Promise<number> {
-  const [result] = await eslint.lintText(code, { filePath });
-  return result.messages.filter((message) => PROFILE_RULES.has(message.ruleId)).length;
+  return (await ruleIds(code, filePath)).filter((id) => PROFILE_RULE.test(id)).length;
+}
+
+async function hotMessageCount(code: string, filePath: string): Promise<number> {
+  return (await ruleIds(code, filePath)).filter((id) => id.startsWith('hot/')).length;
 }
 
 // A fresh install's first ESLint load took 6.4 s, past Vitest's 5 s default, and CI always starts fresh.
@@ -86,6 +95,62 @@ describe('the sim-core lint profile', { timeout: 30_000 }, () => {
         expect(await profileMessageCount(code, filePath), `${filePath}: ${code}`).toBeGreaterThan(0);
       }
       expect(await profileMessageCount(code, 'packages/sim-core/scripts/planted.ts'), code).toBe(0);
+    }
+  });
+});
+
+const HOT_FILE = 'packages/sim-core/src/wander.ts';
+const HOT_PLANTS = [
+  'g([1])',
+  'g({ a: 1 })',
+  'g(() => 1)',
+  'function inner() {}',
+  'g(new Int32Array(4))',
+  'g(Math.max(...a))',
+  'g(`${a[0]}`)',
+  'for (const v of a) g(v)',
+  'for (const k in a) g(k)',
+  'a.forEach(g)',
+  'g(a.map(g))',
+  'g(a.slice(1))',
+  'g(a.subarray(1))',
+  'g(BigInt(1))',
+  'g(Math.random())',
+  'g(Math.exp(1))',
+  'g(Date.now())',
+  'g(performance.now())',
+  'g(draw(1, 2, 3))',
+];
+
+function inTick(statement: string): string {
+  return `export function tick(a: Int32Array): void {\n  ${statement};\n}\n`;
+}
+
+describe('the hot-path lint', { timeout: 30_000 }, () => {
+  it('rejects every allocation and clock in a hot function', async () => {
+    for (const plant of HOT_PLANTS) {
+      expect(await profileMessageCount(inTick(plant), HOT_FILE), plant).toBeGreaterThan(0);
+    }
+  });
+
+  it('allows creation, errors and constants', async () => {
+    const allowed = [
+      'export function createThing(): Int32Array {\n  return new Int32Array(4);\n}\n',
+      inTick('throw new RangeError(`bad ${a.length}`)'),
+      'export const TABLE = [1, 2, 3];\n',
+    ];
+    for (const code of allowed) {
+      expect(await profileMessageCount(code, HOT_FILE), code).toBe(0);
+    }
+  });
+
+  it('sees every hot function', async () => {
+    expect(await profileMessageCount('export const tick = (a) => a[0];\n', HOT_FILE)).toBeGreaterThan(0);
+  });
+
+  it('leaves other files alone', async () => {
+    for (const plant of HOT_PLANTS) {
+      expect(await hotMessageCount(inTick(plant), 'packages/sim-core/src/warm.ts'), plant).toBe(0);
     }
   });
 });
