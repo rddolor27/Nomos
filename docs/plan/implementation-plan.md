@@ -6,7 +6,7 @@ Oct 6, 2026 · @Rd
 
 Work top to bottom: each milestone lists what to build and the checks that close it, merged from every research round. Tick a box when it lands; a milestone is done when its exit checks pass in CI, not when the demo looks right.
 
-- **Where items come from:** round 1 is Findings & plan and Full report, round 2 is Follow-up research, round 3 is 2D game look & assets, round 4 is Villages, cities & countries, round 5 is the Performance budget section below, round 6 is Goods & wellbeing, round 8 is Cultures, round 9 is Maps and world builder, and (Sound), (Military), (Calendar) and (Gazette) mark the owner's plans of 7 October 2026, in the Sound, Military, Time & calendar and Gazette tabs, (Weather) marks the owner's Weather tab of 8 October 2026, and (CI/CD) marks the CI/CD tab of the same day.
+- **Where items come from:** round 1 is Findings & plan and Full report, round 2 is Follow-up research, round 3 is 2D game look & assets, round 4 is Villages, cities & countries, round 5 is the Performance budget section below, round 6 is Goods & wellbeing, round 8 is Cultures, round 9 is Maps and world builder, and (Sound), (Military), (Calendar) and (Gazette) mark the owner's plans of 7 October 2026, in the Sound, Military, Time & calendar and Gazette tabs, (Weather) marks the owner's Weather tab of 8 October 2026, and (CI/CD) marks the CI/CD tab of the same day. (Structure) and (Countries) mark the owner's Structure and Countries tabs of 9 October 2026.
 - **Effort:** rough full-time estimates for one developer; round 1 put the whole plan at 12–19 weeks, and an AI coding assistant shortens that.
 - **Something to look at from week one:** every milestone ships at least one of the three visual styles below, so the project is never just a test suite.
 
@@ -14,11 +14,13 @@ Work top to bottom: each milestone lists what to build and the checks that close
 
 ![build order · 11 milestones, launch after M8](images/roadmap.png)
 
-The drawing shows all eleven milestones in build order: round 1's seven, round 4's three country milestones and the owner's M10. Its estimates come from the repo's task breakdowns, which estimate every task. The sections below add each round's tasks without changing the order.
+The drawing shows all eleven milestones in build order: round 1's seven, round 4's three country milestones and the owner's M10. Its estimates come from the repo's task breakdowns, which estimate every task. The sections below add each round's tasks without changing the order, except where the owner moved work, as the paragraphs below say.
 
 Round 9 moves launch after M8: M7 and M8 become pre-launch milestones and M9 stays after launch, so the drawing's launch line now falls after M8 (R9).
 
 The owner added M10 Weather on 8 October 2026. It follows M9 after launch (Weather).
+
+On 9 October 2026 the owner put an explorable map ahead of M1. Right after M0 and its M0.7, M8.1 ports the world generator to TypeScript, and M8.3 draws its Country and Region views with pan and zoom. Each world now holds 3–5 countries. The rest of M8 keeps its place after M7 and before launch, and blobs stay in the town until M9 joins the map to the streets. The new build order is M0, M8.1, M8.3, M1–M7, the rest of M8, launch, M9 and M10 (Countries).
 
 ## Visual styles
 
@@ -72,13 +74,13 @@ On 8 October 2026 the owner raised the 100k snapshot row from 0.3 to 0.6 ms, tak
 - **Integers for anything replayed.** Integer kernels were bit-identical across JS, WASM scalar, WASM SIMD, V8 and JavaScriptCore. Plain JS f64 and WASM f32 diverged in 107 of 50,000 position words after 200 ticks. `BigInt64Array` was 115× slower than integer-valued `Float64Array` cents in JavaScriptCore.
 - **Sparse flows between settlements.** Dense all-pairs flows at 10k settlements cost 376–564 ms a day in JS and would need 400 MB, so flows use sparse CSR graphs with up to 24 neighbours. WebGPU is not worth it here: the CPU cost is a few milliseconds a day, and only integer kernels are reproducible.
 
-**Memory:** at most 256 bytes per agent plus 60 bytes of render snapshots, three pooled 12-byte buffers and the renderer's two copies (3.2 MB at 10k, 32 MB at 100k; corrected by the owner on 8 October 2026), where the measured systems use 56 bytes. Each settlement gets at most 1 KB including its graph edges. One `WebAssembly.Memory` is reserved at start: 32 MB on phones and 64–128 MB on desktops.
+**Memory:** at most 256 bytes per agent plus 60 bytes of render snapshots, three pooled 12-byte buffers and the renderer's two copies (3.2 MB at 10k, 32 MB at 100k; corrected by the owner on 8 October 2026), where the measured systems use 56 bytes. M0's arena held 22.9 bytes per agent at 100k agents (measured); each blob's name key, wallet and claims rows add 28, for about 51 (computed), and no tier's reservation changes (Structure). Each settlement gets at most 1 KB including its graph edges. One `WebAssembly.Memory` is reserved at start: 32 MB on phones and 64–128 MB on desktops.
 
 **CI gates**
 
 - [ ] **Budget:** Playwright with headless Chromium, plus Node, runs each system at 10k, 25k and 100k agents and the country at 1k and 10k settlements; fail if the fastest of at least 9 samples exceeds its sub-budget by more than 10%. Medians drifted 10.8% between runs at the 90th percentile on a shared machine, so they would flake (R5).
 - [ ] **Allocation:** zero scavenges over 1,000 ticks per system after warm-up, and heap growth under 64 KB a tick, read from Node's `perf_hooks` GC events (R5).
-- [ ] **Lint:** an ESLint `no-restricted-syntax` profile for hot files bans literals, closures, `new`, spread, `for…of`, array callbacks, `subarray`, `BigInt`, `Math.random`, transcendental `Math` and clocks; in testing it caught every violation (R5).
+- [ ] **Lint:** an ESLint `no-restricted-syntax` profile for hot folders, their class methods, getters and setters included, bans literals, closures, `new`, spread, `for…of`, array callbacks, `subarray`, `BigInt`, `Math.random`, transcendental `Math` and clocks; in testing it caught every violation (R5, Structure).
 - [ ] **Determinism:** golden state hashes for fixed seeds match across Node (V8), Bun (JavaScriptCore, a Safari proxy) and Chromium, and between JS and WASM for integer systems, tested on full-mantissa data (R5).
 - [ ] **Ledger and size:** total cents match exactly every tick, and the WASM core stays under 64 KB gzip (R5).
 
@@ -105,7 +107,7 @@ A cold first visit should draw its first frame within 1.5 s and be interactive w
 
 **Load CI gates**
 
-- [ ] **Bytes:** size-limit with brotli on every chunk, failing on any overrun: initial JS ≤ 12 KB for the stand-in and ≤ 35 KB in production, town map ≤ 40 KB, atlas ≤ 300 KB (R5).
+- [ ] **Bytes:** size-limit with brotli on every chunk, failing on any overrun: initial JS ≤ 17 KB for the stand-in (the owner raised it from 12 KB on 9 October 2026) and ≤ 35 KB in production, town map ≤ 40 KB, atlas ≤ 300 KB (R5).
 - [ ] **Startup:** a Playwright benchmark of 7 cold loads on throttled Fast 4G, with the CPU calibrated to a mid-tier phone (Lighthouse BenchmarkIndex ≈ 375). It fails when the median exceeds the budget, or regresses by more than 15% and 20 ms against `main`. Chrome's CPU throttling skips workers, so the worker gets a matching busy-wait (R5).
 - [ ] **Memory and frames:** `measureUserAgentSpecificMemory` in full Chromium against the tier budgets, with growth of at most 2 MB over 60 s, plus frame-time regression checks; there is no absolute frame-rate gate under software WebGL (R5); the owner moved this gate to M6.2 on 8 October 2026, where 100k agents make it meaningful.
 - [ ] **Lighthouse CI (optional):** gate the first-frame and interactive user timings; it cannot throttle the worker (R5).
@@ -114,7 +116,7 @@ All of these timings come from a stand-in app in headless Chromium with software
 
 ## M0 Pipeline
 
-Goal: a deterministic core, the worker loop and the renderer contract, drawing Skin A dots. Effort: about 1 week, plus 4–6 days for the visual layer. R1, R2 and R3 mark the round each item comes from.
+Goal: a deterministic core, the worker loop and the renderer contract, drawing Skin A dots, with a name and a wallet for every blob. Effort: about 1 week, plus 4–6 days for the visual layer, plus 5–8 days for the owner's Structure tab of 9 October 2026 (unsourced estimate). R1, R2 and R3 mark the round each item comes from.
 
 **Build**
 
@@ -165,6 +167,11 @@ Goal: a deterministic core, the worker loop and the renderer contract, drawing S
 - [x] Define one binary map for generated and hand-made maps: terrain kinds, IntGrid walkability, and entities (homes with capacity, workplaces, shops with hours, civic buildings) (R9).
 - [ ] Publish the sprite manifest as a versioned JSON Schema with generated TypeScript types. Maps name frames, never atlas indices (R9).
 - [x] Add a calendar module to sim-core: day = tick ÷ 1,440, year = day ÷ 112 + 1, season = day of the year ÷ 28, and weekday = day mod 7 (5 workdays, 2 rest days), plus a build-time table of sunrise and sunset minutes; integer maths only (Calendar).
+- [ ] Group every package's source into concern folders directly under `src/`, keeping only entry files at `src/` and changing no behaviour, and lint the layout, the hot folders and class methods (Structure).
+- [ ] Add the `Blob` handle: one per world, re-pointed to a row with `at(index)`, with accessors for position, velocity, action, facing, the name key and the wallet. Per-tick loops use its accessors or plain columns and call no method per blob (Structure, R5).
+- [ ] Give every blob a name: a 32-bit `nameKey` drawn at birth and never read by the sim, shown as "Given Family" from a generated table of 1,024 words of the shared sound set, round 8's design H, each passing a person-name filter pulled forward from M3's name filter (Structure, R8).
+- [ ] Give every blob a wallet: one cash account per blob in the cash ledger, opened at birth from MINT with 100,000 cents (1,000.00), the owner's opening balance, inside the invariant that all accounts plus MINT sum to zero. Production workers then skip the per-tick check, which tests, the CLI and development builds keep (Structure, R1, R4).
+- [ ] Show a clicked blob's name and wallet in the inspector's shell, a small panel loaded on demand, which M3's click-to-explain inspector grows from (Structure, R1).
 
 **Exit checks**
 
@@ -181,6 +188,9 @@ Goal: a deterministic core, the worker loop and the renderer contract, drawing S
 - [ ] The relabel test gives identical hashes for 3 seeds × 1 simulated year (R8).
 - [ ] The kernel fuzzer (draw, below, fade, value, fbm) matches the Python vectors in Node, Bun, Chromium, Firefox and WebKit (R9).
 - [x] Every date round-trips through its tick count; a season is 28 days and 4 weeks, a year is 112 days, and every season starts on a workday (Calendar).
+- [ ] After the move into concern folders, seed 42's replay hashes equal the goldens at every tier, and the layout lint rejects a planted file at `src/` (Structure).
+- [ ] `move` through the handle's accessors stays within 10% of the column loop at every tier with zero scavenges, and every word in the name table passes the full person-name filter (Structure, R5, R8).
+- [ ] With a wallet per blob, all accounts plus MINT sum to zero every tick at every tier, and clicking a blob shows its name and wallet in Chromium, Firefox and WebKit (Structure, R1).
 
 ## M1 Lab mode
 
@@ -325,8 +335,8 @@ Goal: daily routines in a real town, drawn as the Skin C pixel-art town from one
 - [ ] Count festival attendance as social contact that resets the isolation counter. Cap festival days per person per year at the culture total, with no wellbeing bonus by default (a knob, default 0) (R8).
 - [ ] Raise demand for a festival's favoured categories 2–4× on festival days (an unsourced estimate), funded from the festival budget within the month's discretionary spending, keeping the monthly food total within +5%, never from subsistence (R8).
 - [ ] Model music as an abstract preference (tempo, loudness, structure) with invented style names. Hold music events at the park or square, buying services; any services worker may perform any style (R8).
-- [ ] Generate personal names in the UI from (seed, id, birth culture), from one shared invented sound set, with naming customs setting the structure: no gendered forms, no diacritics, site words kept separate. Show names only in the inspector and follow-cam (R8).
-- [ ] Add a name filter for people, places and festivals: distinctive Pokémon town and city names and species names (edit distance 1 up to 5 letters, 2 above), the "poke" and "-mon" bans, LDNOOBW Latin-script lists (exact for 3-letter entries, substring for 4+), real festival names and the real-world fixture (R8).
+- [ ] Generate personal names in the UI from each blob's stored name key and its birth culture's naming custom, from M0's shared invented sound set, with naming customs setting the structure: no gendered forms, no diacritics, site words kept separate. Show names only in the inspector and follow-cam (R8).
+- [ ] Use M0's name filter for people, places and festivals, which M8.1 applies to place names first: distinctive Pokémon town and city names and species names (edit distance 1 up to 5 letters, 2 above), the "poke" and "-mon" bans, LDNOOBW Latin-script lists (exact for 3-letter entries, substring for 4+), real festival names and the real-world fixture (R8).
 - [ ] Screen the shared sound set at authoring time by trigram similarity to real name bases (below 0.26 pass, 0.26–0.40 review, above 0.40 fail) (R8).
 - [ ] Use one shared set of festival decorations, never in national-flag colours or the six body hues, and the culture emblems in `assets/sprites/culture.png`. Banner and lens colours also avoid the job colours and the reds and oranges kept for crime (R8).
 - [ ] Port `place.py` to TypeScript, with plan-then-apply shore tidying, 64×64 districts, frontage lot packing and entity export (R9).
@@ -524,7 +534,7 @@ Goal: every settlement in a country advances daily as an integer ledger, headles
 - [ ] Build the settlement store as typed arrays: people by state (employed, unemployed, merchants and owners, police, jailed), optionally in three age and three wealth bands; integer-cent accounts by sector; price and wage indices, inventory, vacancies and firm counts; true and recorded crime over a 21-day window, arrests, a top-5% concentration share and the police mode (R4).
 - [ ] Draw daily flows as integer stochastic draws: stochastic rounding below a mean of 8, otherwise a 4,096-entry inverse-normal table plus `sqrt`; price revisions as the share of firms repricing (R4).
 - [ ] Fit the emulator from the M2, M4 and M5 logs, each hazard a binned lookup table or a fixed-point GLM, and dock ledger trajectories against agent fold-ups on held-out runs (R4).
-- [ ] Add the national layer on Godley–Lavoie Model REG: one treasury, a central bank as the only issuer, a uniform national tax, services and police paid per settlement, Hamilton apportionment, an optional equalisation grant, local police with an optional national force (R4).
+- [ ] Add the national layer on Godley–Lavoie Model REG: one treasury, a central bank as the only issuer, a uniform national tax, services and police paid per settlement, Hamilton apportionment, an optional equalisation grant, local police with an optional national force; this one layer serves all 3–5 countries, since they differ only by map facts (R4, Countries).
 - [ ] Plan, then apply, the flows between settlements: margin-driven trade per good with losses and stock in transit; monthly migration by expected wage over a gravity or radiation kernel; commuting as cross-settlement wages within about 50–100 km; movers carry their cents (R4).
 - [ ] Add village rules to the ledger: own production outside the cent ledger, a market every 2–10 days by density, seasonal harvests into stores, a rural youth migration hazard; add the region tier for unlisted hamlets (R4).
 - [ ] Add a terrain-free generator for tests: Zipf sizes, hexagonal or Poisson-disc spacing by level, Gibrat growth with a reflecting floor, and a Delaunay → spanning tree → spanner route graph (R4).
@@ -571,14 +581,14 @@ Goal: every settlement in a country advances daily as an integer ledger, headles
 
 ## M8 Country map
 
-Goal: country mode ships, with a generated, seeded map, Country and Region views, map modes and flows, and a detached fork into City mode as the first and cheapest form of zoom. Effort: 13–20 days (3–4 weeks).
+Goal: country mode ships, with a generated, seeded map of 3–5 countries, Country and Region views, map modes and flows, and a detached fork into City mode as the first and cheapest form of zoom. Its world generator and the core of its Country and Region views are built first, right after M0 (Countries). Effort: 13–20 days (3–4 weeks), plus about 3.5–5.5 days for countries (Countries).
 
 **Build**
 
 - [ ] Build the terrain stage in the worker as the TypeScript port of tools/worldgen on a square grid, not a Voronoi mesh: template plus noise elevation, keyed mountain chains, priority-flood, flow accumulation, erosion-lite passes, climate, biomes and habitability, each stage proven against Python golden fingerprints and ported in pipeline order (R4, R9).
 - [ ] Place settlements on the mesh, capitals then towns then villages, with minimum spacing and P₁/k sizes (R4).
 - [ ] Build routes as a spanning tree per landmass plus spanner shortcuts, routed by A\* with slope, bridge and road-reuse costs, with sea lanes where no land path exists; the Python reference generator skips round 4's Delaunay step. Add multi-source Dijkstra regions and market territories (R4, R9).
-- [ ] Add names: a seeded foswig chain on an original corpus, site suffixes, and a CI filter against Pokémon place names (a test fixture only) and a profanity list (R4).
+- [ ] Add names: a place-name table built from the shared sound set, keeping only words that pass the full name filter, replaces round 4's seeded foswig chain on an original corpus and its site suffixes; the filter's Pokémon place names and profanity list stay a test fixture only (R4, Countries).
 - [ ] Draw the Country and Region levels: the mesh in a small palette-quantised framebuffer or an 8-px tilemap, settlement icons and routes by tier, label bands by zoom (R4).
 - [ ] Implement map modes as (state, entity) → {base, stripe}: true crime as base and recorded as stripe, plus population, growth, clearance, police, prices, wages, trade and danger (R4).
 - [ ] Draw flows as directed, side-offset bands along routes, aggregated per level, with capped particles for the selected flow only (R4).
@@ -601,9 +611,16 @@ Goal: country mode ships, with a generated, seeded map, Country and Region views
 - [ ] Validate on Play, on Share and on every open: every settlement reaches the capital by road or sea lane; food capacity per country; no pin in water; names through round 8's filter in ASCII; payload caps (R9).
 - [ ] Add god tools on the country: lock and re-roll with per-stage keyed counters; raise, lower and smooth brushes; biome paint; drawn rivers and roads; town and wonder placement; pins, tombstones that lower counts, a conflict list and one undo log. Every edit reruns from its first dirty stage, and the generator re-places cultures (R9).
 - [ ] Re-baseline M7's and M8's settlement counts to listed places plus a region tier, and fit Zipf on true ranks (R9).
-- [ ] Place garrisons in the capital and coastal or border towns, forts at road junctions near coasts and borders, and watchtowers along long roads, all in the world generator; draw their map icons and play the military sounds (Military).
+- [ ] Add a countries stage to the world generator, in `tools/worldgen` first: 3–5 countries per world, picked by the seed; capitals taken from the largest settlements, at least isqrt(land cells ÷ countries) cells apart; each country grown from its capital by multi-source Dijkstra over terrain costs, so its borders bend to mountains, lakes, rivers and coasts; every land cell and settlement in exactly one country (Countries).
+- [ ] Keep countries to map facts: they differ only by name, map colour, capital, borders and towns, while laws, money and cultures stay shared, so no sim rule reads a country id, and trade, migration and taxes cross borders freely (Countries).
+- [ ] Name countries and places from the place-name table, keyed on the capital's or the settlement's cell, with no name repeated in a world; country names never follow a culture's naming custom (Countries).
+- [ ] Give each country a map colour from a fixed table of five map-only colours outside the sprite palette, which the owner picks from a swatch sheet, kept apart from body hues, role and crime colours, black and the culture emblem colours, and used only on map overlays and the legend, never on a person, building or soldier (Countries).
+- [ ] Draw countries on the Country and Region views: border lines with a band of each side's map colour, country names at Country zoom, a legend of each country's name, colour, capital and towns, and a flat Countries view that draws before the atlas loads (Countries).
+- [ ] Open the map on demand in a worker of its own, so the page still opens on the town, its first frame and the sim worker stay as they are, and the town pauses while the map shows (Countries).
+- [ ] Keep cultures across borders: draw culture hearths near land borders, and check after spin-up that every culture keeps at least 15% of its people outside its main country and that no country is over two-thirds one culture, in at least 90 of 100 seeds; the home-regions mode shows borders only as neutral lines (R8, Countries).
+- [ ] Place garrisons in each country's capital and in coastal or border towns, forts at road junctions near coasts and borders, and watchtowers along long roads, all in the world generator; a border is the land boundary between two countries, and a border town or fort lies within 3 cells of one; draw their map icons and play the military sounds (Military, Countries).
 - [ ] Play country and region music and ambience, and the 11 wonder loops in wonder views (Sound).
-- [ ] In country mode, print each town's own paper from its ledger, one paper per town, and add the national gazette from the aggregate ledgers: harvests, prices, migration and recorded raids on the roads (Gazette).
+- [ ] In country mode, print each town's own paper from its ledger, one paper per town, and add a gazette for each country from that country's aggregate ledgers: harvests, prices, migration and recorded raids on its roads (Gazette, Countries).
 
 **Exit checks**
 
@@ -612,7 +629,10 @@ Goal: country mode ships, with a generated, seeded map, Country and Region views
 - [ ] Country and Region views take ≤ 2 ms of main-thread render time per frame in CI's software-GL Chromium, a proposed bar (R4).
 - [ ] A render-filter test checks that the recorded view never shows a true-only cue; a fork's fold at its first tick equals the source ledger; a save with ten years of history stays under about 3 MB gzip, since history alone came to about 1.9 MB on synthetic data (R4).
 - [ ] After spin-up, cultures' mean development stays within the set tolerance, and the share of development regions holding only one culture is reported (R8).
-- [ ] The national gazette's figures equal the ledgers' recorded figures (Gazette).
+- [ ] Every figure in each country's gazette equals that country's recorded ledger figure (Gazette, Countries).
+- [ ] Over 100 seeds of each size, every world has 3–5 countries, every land cell and settlement belongs to exactly one, each country holds at least 3 settlements, and the countries stage matches the Python goldens in Node, Bun, Chromium, Firefox and WebKit (Countries).
+- [ ] Place and country names pass the name filter over 1,000 seeds, and no name repeats within a world (Countries).
+- [ ] After spin-up, in at least 90 of 100 seeds, every culture keeps at least 15% of its people outside its main country, and no country is over two-thirds one culture (Countries).
 
 ## M9 Zoom across scales
 
@@ -686,6 +706,8 @@ Round 9 adds a full world builder and moves M7 and M8 before launch: about 178�
 
 The owner's plans of 7 and 8 October 2026 add about 34.5–55.5 days before launch (sound 11.5–18, military 4–7, calendar 11.5–18.5 now that its art is drawn, gazette 5.5–9, CI/CD 2–3), 1.5–2 days in M9 and 16–27 days for M10 Weather after launch. That puts launch at about 213–327 days (computed from unsourced estimates).
 
+The owner's decisions of 9 October 2026 add about 8.5–13.5 days before launch, 5–8 for the Structure tab and 3.5–5.5 for the Countries tab, and move M8.1 and the core of M8.3 ahead of M1 without changing their size. That puts launch at about 221.5–340.5 days by the plan's own lines (computed from unsourced estimates). The repo's task breakdowns, which estimate every task, come to 341–535 days before launch.
+
 **Ongoing**
 
 - [ ] Re-check economySim, SocSim and ndouglas/SugarScape weekly until launch, including ndouglas's announced "underworld" campaign (R2).
@@ -711,7 +733,7 @@ The owner's plans of 7 and 8 October 2026 add about 34.5–55.5 days before laun
 | Draw independence across neighbouring seeds once the seed is hashed first (the prototype's seed ^ entity shuffled draws between seeds that differ in low bits) | Whether two worlds are truly different | M0 |
 | FBI tables 16 and 70–74, BJS reporting by location, and Bettencourt 2007 with intervals | Crime, police and scaling bands for country mode | M7 |
 | Alignment nudges with the real emulator, read on the divergence meter | Shadow-canonical as the default, or pinned live cities | M7, M9 |
-| Day-step, spawn and map-generation times in browser workers and on phones | The phone tier for country mode | M8, M9 |
+| Day-step, spawn and map-generation times in browser workers and on phones | The phone tier for country mode, and for the map built before M1 | M8.1 before M1, then M8 and M9 |
 | Whether a stream of animated crime events, or the gazette's daily justice column, builds illusory correlation as static sentence lists do (round 8) | How strict the culture lens and justice-view rules must be | M4, M5 |
 | The culture audit's outcome band (0.9–1.1), equivalence margin (0.05) and power over 50 paired seeds | Whether the audit detects culture leaks | M4 |
 | Round 8's transmission bands re-run with similar culture shares, not one 60% culture | CI retention bands and the 0.5% inflow default | M3, M5 |
