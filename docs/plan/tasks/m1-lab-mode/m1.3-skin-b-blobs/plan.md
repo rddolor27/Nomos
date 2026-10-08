@@ -33,7 +33,7 @@
   - angry eyes on a refused price, happy on a purchase, and a wince with "?" on a victim;
   - a take is shown only as an act: the taker sneaks, and the item hops from victim to taker;
   - there is no taker bubble, sack, mask or colour, and nothing marks the taker afterwards;
-  - the sheet has six faces (angry, blink, happy, neutral, sleep and wince), not round 3's eight. They cover every lab rule, so M1 draws no surprise or sad face (checkpoint 0007).
+  - the sheet has six faces (angry, blink, happy, neutral, sleep and wince), not round 3's eight. They cover every lab rule, so M1 draws no surprise or sad face (the brief fact-check of 8 October 2026).
 - **Reduced motion:** no hops, bobs or pans, 150 ms fades, camera cuts and static rings (R3). Read `prefers-reduced-motion` and the app's own setting.
 - **Light periods (R3, Calendar):**
   - M1.2's ground tint covers Skin B's flat zone map, and the blob pass draws after it, untinted.

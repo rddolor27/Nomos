@@ -11,5 +11,5 @@ Needs M2's culture β shifts and the M3–M5 agent runs.
   - culture hazards fitted from M3–M5 agent runs and docked on held-out runs, as M7.2 does for other flows (R8).
 - **Exit checks:**
   - people by culture sum exactly to population every day, spawn and fold are exact per culture, and minority move rates stay within 5% of their population share over 30 years (R8);
-  - over 100 years, regional G\_ST stays at 0.3 or more with acculturation, at least 90% of settlements keep their dominant culture, and the capital's effective number of cultures exceeds the village median (R8);
+  - over 100 years, regional G\_ST stays at 0.3 or more with acculturation, at least 90% of settlements keep their dominant culture, and each capital's effective number of cultures exceeds the village median (R8, Countries);
   - culture is independent of settlement wealth bands within the audit's bands (R8).

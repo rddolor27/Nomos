@@ -74,7 +74,7 @@
 
 - **Owner:** Build the LDtk fallback town now, or only if the port slips? M3.4 already names it the fallback, and its auto-layer rules and roof layer go unused if the port lands. Suggested: only if the port slips. Needed before: the step plan.
 - **Owner:** Should capacity, hours, owner and sector be added to `place.py`, or derived in a TypeScript-only export stage? `place.py` exports none of these fields, but M0.4's `tools/worldgen/export_map.py` already derives home capacity and shop hours in Python, so goldens can cover those two; owner and sector have no Python source yet. Suggested: port `export_map.py`'s capacity and hours rules with the golden-checked stages, and add owner and sector in a TypeScript stage after them, from building-kind tables, with "owner" a kind (household, firm or town) that M2.2's spawn fills in. Needed before: the step plan.
-- **Measure:** How long does the town stage take in desktop Chromium and on a mid-range phone? Round 9's ≤ 100 ms covers a whole world in M8, so the town needs headroom. Suggested: track it in M0.6's bench, with no gate until M8. Needed before: launch.
+- **Measure:** How long does the town stage take in desktop Chromium and on a mid-range phone? Round 9's ≤ 100 ms covers a whole world in M8.1, built before M1, so the town needs headroom. Suggested: track it in M0.6's bench, with no gate until M8.1's world check covers it. Needed before: launch.
 
 ## Implementation notes
 

@@ -14,5 +14,6 @@ Needs: M8.1's `WorldMap` and names, M0.4's renderer, camera and skin switch, M0.
 - **Owner decided:** on 9 October 2026 the owner chose:
   - five map-only country colours outside the 64-colour sprite palette, each kept well apart from every reserved colour; the owner picks the five from a swatch sheet when M8.3 starts;
   - that the page still opens on the town, with the map a click away and loaded on demand.
+- **Owner decision first:** pick the five country map colours from the swatch sheet.
 - **Exit checks:**
   - Country and Region views take ≤ 2 ms of main-thread render time per frame in CI's software-GL Chromium, a proposed bar (R4).

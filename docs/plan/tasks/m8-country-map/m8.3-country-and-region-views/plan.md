@@ -74,7 +74,7 @@ All paths follow M0.7's layout: concern folders under `src/`, with entry files a
   - (b) raise the palette cap from 64 to 66 and add the five as palette entries;
   - (c) five existing palette tones, accepting closeness to terrain and emblem colours.
 
-  The owner chose (a), since no sprite ever uses a country colour. Still needed before building: the five picks from the swatch sheet.
+  The owner chose (a). No sprite ever uses a country colour, so the table can sit outside the palette. Still needed before building: the five picks from the swatch sheet.
 - **Owner, decided on 9 October 2026: the town,** with the map a click away. Does the page open on the town, with the map a click away, or on the map? Opening on the map puts the generator and map chunks before the first frame, likely past the 35 kB initial-JS limit: 16.2 kB today plus an estimated 15–25 kB (unsourced estimate). Suggested: the town, until the map links to the streets in M9. Needed before: the step plan.
 - **Owner:** Is the proposed bar of 2 ms main-thread render time per frame in software-GL Chromium accepted? It is the only exit check here. Suggested: accept it, timed while panning with labels on. Needed before: building.
 - **Design:** Labels as DOM elements or a pixel font in the atlas? DOM text is crisp, reads to screen readers and costs no atlas space. Suggested: a fixed pool of DOM labels moved by transforms, updated only when the camera moves. Needed before: the step plan.

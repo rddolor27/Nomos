@@ -7,7 +7,7 @@
 ## Approach
 
 - **Finish the Python reference, then port it.** Two phases, with an owner review between them:
-  1. **In `tools/worldgen`:** add the countries stage, the snow biome and the sea-cliff fix, and draw countries in the previews. The owner reviews about 10 large-world previews from `generate.py`. Then the generator freezes as version 1, and `goldens.py` writes its goldens.
+  1. **In `tools/worldgen`:** add the countries stage, the snow biome and the sea-cliff fix, and draw countries in the previews, in provisional colours until the owner picks the five at M8.3. The owner reviews about 10 large-world previews from `generate.py`. Then the generator freezes as version 1, and `goldens.py` writes its goldens.
   2. **In `packages/worldgen`:** port every stage in pipeline order. Commit each stage only when its golden fingerprints match Python in all five engines (R9).
 - **The countries stage (Countries).** It runs after `settle` and before `farm`, because a capital's tier sets its farmland, its clock tower and the wonder spacing.
   - **Count:** K = 3 + `below(3, seed, COUNTRY, COUNT)`, so 3–5, on both world sizes. The map uses the large size.
@@ -20,7 +20,7 @@
     - Water cells keep no country. Every land cell gets exactly one, since the sea reaches every landmass.
     - All costs are integers, tuned on previews.
   - **Towns:** each settlement belongs to its cell's country.
-  - **Colours:** a keyed shuffle of a fixed table of five colours gives each country a colour index. The generator stores only the index. One table of RGB values serves both `mapdraw.py` and `render-gl`, and M8.3's owner decision fills it.
+  - **Colours:** a keyed shuffle of a fixed table of five colours gives each country a colour index. The generator stores only the index. One table of RGB values serves both `mapdraw.py` and `render-gl`, M8.1's previews use provisional colours, and the owner's pick at M8.3 fills it.
 - **What a probe found** (measured here: a scratch probe on the Python generator, 20 large worlds, seeds `5eed0001`–`5eed0014`, Python 3.14.6):
   - These rules make sizeable countries. The smallest held 8–22% of the land, and every country held at least 3 settlements in 20 of 20 worlds.
   - Rivers here are mostly short streams that run to the coast, and capitals sit on rivers, since river cells score highest for habitability. So rivers seldom lie between two capitals. Borders touched a river on 9.9% of their edges, against 7.7% of all land edges, even with near-impassable river costs.
@@ -126,7 +126,7 @@
 
 - **Measure:** Does a large 192×128 world fit 400 ms with A\* routes and two Dijkstra passes? R9 timed only terrain, at about 8 ms at 96×64. Its 21–87 ms standard-world estimate becomes 84–348 ms at four times the cells (computed). Suggested: time each stage in Chromium in the first week, since A\* grows faster than the cell count. Needed before: building.
 - **Measure:** What are map-generation times in browser workers on phones? They set the map's phone tier. Suggested: one mid-range Android phone and one iPhone. Needed before: the step plan.
-- **Design:** How many regions does each country hold? R4's max(4, settlements ÷ 40) gives 4–6 regions on a large world, about one per country (computed from R9's 182–237 places). Suggested: regions as the market areas of each country's towns, about 4–6 per country, settled with M7.3's region tier. Needed before: the step plan.
+- **Design:** How many regions does each country hold? R4's max(4, settlements ÷ 40) gives 4–6 regions on a whole large world, about one per country (computed from R9's 182–237 places), while the market areas of each country's towns would give about 4–6 per country. Suggested: M8.1 sets a provisional count, which M7.3's region tier adopts or revises. Needed before: the step plan.
 - **Owner review:** 10 large-world previews and a sample of 100 generated names, before version 1 freezes, as the owner listens to every new sound. Needed before: the freeze.
 
 ## Implementation notes
@@ -139,5 +139,5 @@ Suggestions for the step plan, which makes the final call.
   3. The port: the elevation stage and its golden test in all five engines, proving the harness, then each stage in pipeline order, settlements, countries and routes last, then regions and names.
 - **Reuse:** `roads.COVER` for terrain costs, `grid.neighbours` for the fixed neighbour order, `rng.shuffled` for colours, M0.6's engine harness and lints, M0's keyed draw and integer noise.
 - **Keep it simple:** port the Python line for line, and optimise only a stage that misses the budget. One growth function serves countries and regions.
-- **Pitfalls:** A\* and Dijkstra must break ties exactly as the Python heap does, or routes, countries and regions drift from the goldens. Sort only with total orders, ties broken by cell index. Route lengths in kilometres use M7.1's cell scale.
+- **Pitfalls:** A\* and Dijkstra must break ties exactly as the Python heap does, or routes, countries and regions drift from the goldens. Sort only with total orders, ties broken by cell index. Route lengths in kilometres use a provisional cell scale set in M8.1, which M7.1 adopts or revises.
 - **Hard and easy parts:** routing, countries and regions need the most care, for speed and tie order; climate, biomes, colours and the wonder site rules are mechanical.

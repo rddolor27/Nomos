@@ -18,7 +18,7 @@
   - Players never place hearths: random user-placed hearths met the fairness bars in 0 of 723 layouts (R9).
 - **Cultures cross borders (Countries).** The owner ruled on 9 October 2026 that no country stands for a culture. Placement alone doesn't deliver that:
   - **The evidence** (measured here: a scratch probe on the Python generator, 20 large worlds, land-weighted, before any spin-up):
-    - with hearths placed independently of countries, every culture kept 15% or more of its land outside its main country in 1 of 20 worlds, and no country was over 67% one culture in 3 of 20;
+    - with hearths placed independently of countries, every culture kept 15% or more of its land outside its main country in 1 of 20 worlds, and no country was over 67% one culture, the probe's stand-in for two-thirds, in 3 of 20;
     - counted by people, it was worse: in a 10-world run, every world had a country over two-thirds one culture, because a capital holds most of its country's people and sits in one culture's region;
     - drawing hearths from settlements within 6 cells of a land border raised those counts to 8 of 20 and 8 of 20, but both held together in only 1 of 20;
     - growth costs barely mattered: letting rivers join cultures and making straits cheaper changed almost nothing.
@@ -58,7 +58,7 @@
 
 - `names pass the filter over 1,000 seeds`: every region and festival name passes.
 - `cultures develop alike`: after spin-up, cultures' mean development stays within the set tolerance. The share of development regions holding only one culture is reported.
-- `cultures cross borders`: after spin-up, over 100 seeds, every culture keeps at least the set share of its people outside its main country, and no country's largest culture passes the set share.
+- `cultures cross borders`: after spin-up, over 100 seeds, in at least 90 of 100 seeds, every culture keeps at least 15% of its people outside its main country, and no country's largest culture passes two-thirds.
 - `hearths keyed`: the same seed gives the same hearths and regions in Node and Chromium.
 - `site words separate`: no generated name ends in a site word; site words appear only as separate strings.
 

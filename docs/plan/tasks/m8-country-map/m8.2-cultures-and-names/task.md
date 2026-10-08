@@ -15,4 +15,4 @@ Needs: M7's culture block and spin-up, M8.1's countries, regions, place-name tab
 - **Exit checks:**
   - the name filter passes 1,000 seeds (R4);
   - after spin-up, cultures' mean development stays within the set tolerance, and the share of development regions holding only one culture is reported (R8);
-  - after spin-up, over 100 seeds, every culture and every country meet the crossing bars the owner sets (Countries).
+  - after spin-up, in at least 90 of 100 seeds, every culture keeps at least 15% of its people outside its main country, the one holding most of them, and no country is over two-thirds one culture (Countries).

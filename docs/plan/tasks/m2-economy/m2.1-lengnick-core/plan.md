@@ -95,6 +95,7 @@
 
 ## Open questions
 
+- **Design:** M0.7 gives every blob a wallet, a ledger account opened with 100,000 cents. How does household cash relate to its members' wallets: a household account beside them, or their sum? Needed before: the step plan.
 - **Owner:** Is a month the paper's 21 days, giving 5⅓ a year, or the 28-day season, giving 4? Firms decide monthly, so it sets every monthly rate and target. Suggested: the 28-day season, which lines up with weeks, seasons and years; known-answer tests keep 21 days. Needed before: the step plan.
 - **Owner:** Should households start with the replication's 2.2 months of wages, or the 8–9 months of spending an M2-like velocity implies? It sets velocity, prices and the burn-in ([R2 economy calibration](../../../../research/round-2-follow-up/notes/economy-calibration.md), Key Question 4). Suggested: 2.2 months for `lengnick`, and the M2-like level for `city` as a share of annual spending. Needed before: the step plan.
 - **Measure:** Does MSER-5 truncate in the first half of each 20,000-day run, as the [R2 validation notes](../../../../research/round-2-follow-up/notes/validation-methodology.md) advise in part 5 (inference)? Each run is about 952 of the paper's 21-day months (computed), shorter than its 1,000-month burn-in. Suggested: check per-push runs first; if it lands late, lengthen runs or start from a spun-up snapshot. Needed before: building.

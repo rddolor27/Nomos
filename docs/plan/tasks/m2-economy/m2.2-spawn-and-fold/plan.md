@@ -69,6 +69,7 @@
 
 ## Open questions
 
+- **Design:** M0.7 gives every blob a wallet, a ledger account opened with 100,000 cents. How does household cash relate to its members' wallets: a household account beside them, or their sum? Needed before: the step plan.
 - **Owner:** Keep Deno in the cross-runtime check, or use M0.6's engine harness instead? Deno embeds V8, the engine Node already covers, so it adds a CI setup step but no new engine. Suggested: M0.6's five engines through its harness, with Deno dropped. Needed before: the step plan.
 - **Measure:** Does job matching fit inside the 10 ms spawn budget? The exit check excludes only map lookups, while round 4's roughly 7 ms (measured there) left matching out too. Suggested: count it in, using a counting sort by firm size, and report it on its own line if it still misses. Needed before: building.
 - **Measure:** What cash and price spreads keep a spawned city's burn-in no longer than the hand-built start's? The exit check compares the two, and neither spread is stated. Suggested: start narrow, with prices inside M2.1's band of 1.025–1.15 × w/63 and cash at M2.1's starting multiple, and widen only while the check holds. Needed before: building.

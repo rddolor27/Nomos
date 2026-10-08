@@ -48,7 +48,7 @@
 - `regions stay distinct`: over 100 years:
   - regional G\_ST stays at 0.3 or more with acculturation;
   - at least 90% of settlements keep their dominant culture;
-  - the capital's effective number of cultures exceeds the village median.
+  - each capital's effective number of cultures exceeds the village median.
 - `culture independent of wealth`: settlement culture shares are independent of settlement wealth bands, within M4.5's audit bands.
 - `migration never reads culture`: M4.1's flip test covers migration decisions at the country tier.
 
