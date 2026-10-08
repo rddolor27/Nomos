@@ -2,7 +2,7 @@ import { SNAPSHOT_BYTES } from '@nomos/sim-protocol';
 import { BACKGROUND, OUTLINE, RIM, rgbOf } from './colour.ts';
 import { MASK_FILL, MASK_GROUND, ROLE_SHAPE, dotFill, dotMask, roleOfJob, type Role } from './dots.ts';
 import skinA from './skin-a.json';
-import type { Camera } from './types.ts';
+import type { Camera, Painter, Retained } from './types.ts';
 
 const CONTEXT: WebGLContextAttributes = {
   alpha: false,
@@ -148,7 +148,7 @@ interface DotsPass {
   capacityBytes: number;
 }
 
-export interface Gl {
+interface Gl {
   readonly gl: WebGL2RenderingContext;
   readonly map: MapPass;
   readonly dots: DotsPass;
@@ -296,14 +296,14 @@ function openDotsPass(gl: WebGL2RenderingContext): DotsPass {
   };
 }
 
-export function openGl(canvas: HTMLCanvasElement): Gl | null {
+function openGl(canvas: HTMLCanvasElement): Gl | null {
   const gl = canvas.getContext('webgl2', CONTEXT);
   if (!gl) return null;
   gl.clearColor(((BACKGROUND >> 16) & 255) / 255, ((BACKGROUND >> 8) & 255) / 255, (BACKGROUND & 255) / 255, 1);
   return { gl, map: openMapPass(gl), dots: openDotsPass(gl) };
 }
 
-export function uploadMinimap(g: Gl, width: number, height: number, pixels: Uint8Array): void {
+function uploadMinimap(g: Gl, width: number, height: number, pixels: Uint8Array): void {
   const gl = g.gl;
   gl.bindTexture(gl.TEXTURE_2D, g.map.minimap);
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
@@ -325,7 +325,7 @@ function ensureCapacity(g: Gl, bytes: number, previousSlot: number, previous: Ui
 }
 
 // current and previous are the retained copies, equal in size; count agents of current go to its slot.
-export function uploadSnapshot(g: Gl, slot: number, current: Uint8Array, previous: Uint8Array, count: number): void {
+function uploadSnapshot(g: Gl, slot: number, current: Uint8Array, previous: Uint8Array, count: number): void {
   ensureCapacity(g, current.byteLength, slot ^ 1, previous);
   if (count === 0) return;
   const gl = g.gl;
@@ -361,7 +361,7 @@ function drawDots(g: Gl, camX: number, camY: number, zoom: number, alpha: number
 }
 
 // Returns the agents drawn: the map pass covers the frame, then one instanced draw puts every agent on it.
-export function drawGl(g: Gl, camera: Camera, alpha: number, slot: number, count: number): number {
+function drawGl(g: Gl, camera: Camera, alpha: number, slot: number, count: number): number {
   const gl = g.gl;
   const camX = Math.round(camera.x * camera.zoom);
   const camY = Math.round(camera.y * camera.zoom);
@@ -373,7 +373,7 @@ export function drawGl(g: Gl, camera: Camera, alpha: number, slot: number, count
   return count;
 }
 
-export function closeGl(g: Gl): void {
+function closeGl(g: Gl): void {
   const gl = g.gl;
   gl.deleteProgram(g.map.program);
   gl.deleteVertexArray(g.map.noAttributes);
@@ -383,4 +383,29 @@ export function closeGl(g: Gl): void {
   for (const buffer of g.dots.snapshots) gl.deleteBuffer(buffer);
   gl.deleteTexture(g.dots.masks);
   gl.getExtension('WEBGL_lose_context')?.loseContext();
+}
+
+// Builds every GL object from the retained data, at init and again when a lost context comes back.
+export function createGlPainter(canvas: HTMLCanvasElement, retained: Retained): Painter | null {
+  const g = openGl(canvas);
+  if (!g) return null;
+  const painter: Painter = {
+    backend: 'webgl2',
+    mapChanged() {
+      if (retained.map && retained.minimap) uploadMinimap(g, retained.map.width, retained.map.height, retained.minimap);
+    },
+    snapshotPushed() {
+      const { copies, slot, count } = retained;
+      uploadSnapshot(g, slot, copies[slot], copies[slot ^ 1], count);
+    },
+    draw(camera, alpha) {
+      return drawGl(g, camera, alpha, retained.slot, retained.count);
+    },
+    dispose() {
+      closeGl(g);
+    },
+  };
+  painter.mapChanged();
+  painter.snapshotPushed();
+  return painter;
 }

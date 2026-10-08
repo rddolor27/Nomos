@@ -11,10 +11,16 @@ export interface Camera {
 
 export interface RendererOptions {
   release(buffer: ArrayBuffer): void;
+  // 'canvas2d' skips WebGL2, as M0.5's ?canvas asks; 'auto' is the default.
+  backend?: 'auto' | 'canvas2d';
+  // How long a lost WebGL2 context may stay lost before Canvas2D takes over; 3,000 ms by default.
+  restoreTimeoutMs?: number;
 }
 
 export interface WorldRenderer {
   readonly backend: Backend;
+  // The canvas drawn on, which the Canvas2D fallback replaces.
+  readonly canvas: HTMLCanvasElement;
   readonly drawnAgents: number;
   init(): Backend;
   resize(deviceWidth: number, deviceHeight: number, dpr: number): void;
@@ -22,5 +28,26 @@ export interface WorldRenderer {
   // Copies the snapshot and hands the buffer to options.release before returning (interfaces.md).
   pushSnapshot(frame: { tick: number; count: number; buffer: ArrayBuffer }): void;
   draw(camera: Camera, alpha: number): void;
+  dispose(): void;
+}
+
+// What the renderer keeps beyond any backend: both backends paint it, and a restored context is rebuilt from it.
+export interface Retained {
+  map: MapV1 | null;
+  minimap: Uint8Array | null;
+  // The last two snapshots, one per slot, with float and word views of each; slot holds the current one.
+  copies: Uint8Array[];
+  floats: Float32Array[];
+  words: Uint32Array[];
+  slot: number;
+  count: number;
+}
+
+// One backend behind WorldRenderer. draw returns the agents it drew.
+export interface Painter {
+  readonly backend: Backend;
+  mapChanged(): void;
+  snapshotPushed(): void;
+  draw(camera: Camera, alpha: number): number;
   dispose(): void;
 }
