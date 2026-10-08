@@ -14,12 +14,14 @@ M0's sub-milestones are planned in parallel, so the names and layouts they share
 | `@nomos/cli` | `tools/cli` | Headless runs and replay hashes in Node, through sim-core's world step | M0.3 |
 | `@nomos/bench` | `tools/bench` | The CI budget, allocation and startup gates | M0.6 |
 | `@nomos/sim-culture` | `packages/sim-culture` | Culture code, walled off from crime, police, labour, wage, wealth, ability, housing and migration code | M0.6 |
+| `@nomos/names` | `tools/names` | The name lint, its real-world fixture and the culture text lint; M3.7 extends it | M0.6 |
 
 Dependencies point one way:
 - `sim-core` ← `sim-protocol` ← `sim-worker`;
 - `render-gl` imports only `sim-protocol`;
 - `web` imports `sim-protocol` and `render-gl`, and `sim-worker` only for its `./worker` export, which it starts;
-- `cli` imports `sim-core` and `sim-protocol`.
+- `cli` imports `sim-core` and `sim-protocol`;
+- `sim-culture` imports values only from the `@nomos/sim-core/kernels` subpath (the draws, calendar constants and culture column helpers), whose modules never import it. `sim-core`'s `consumption/` and its orchestration call `sim-culture`, and dependency-cruiser keeps modules acyclic (M0.6).
 
 The world step lives in `sim-core`, so headless runs and the worker run the same code.
 
@@ -30,7 +32,8 @@ The world step lives in `sim-core`, so headless runs and the worker run the same
 - **Stepping:** `step(world: World, timer?: SystemTimer): void`, one tick per call.
   - `SystemTimer` is `{ lap(system: number): void }`, called after each system, so the worker and the benches time systems without clocks in `sim-core`.
   - `SYSTEM_NAMES` is `['day', 'move']` in M0.3, and later systems append to it.
-- `stateHash(world: World): number`: a 32-bit hash over every replay-relevant column and ledger, the value the determinism checks compare.
+- `stateHash(world: World): number`: a 32-bit hash over every replay-relevant column and ledger, the value the determinism checks compare. M0.6 adds `stateHashExcept(world, skip: readonly ArrayBufferView[]): number`, of which `stateHash` is the case with nothing skipped, so no golden moves; the relabel test skips the culture columns.
+- `World.cultureUid`: a canonical `Uint8Array(MAX_CULTURES)` of stable culture uids, c + 1 per culture and 0 when unused. Culture-level draws key on it, never on the index (M0.6, R8).
 - `Tier` is `'phone' | 'phone-plus' | 'desktop'`, with agent caps of 10,000, 25,000 and 100,000. `sim-protocol` re-exports `Tier` and `TIER_AGENTS` (M0.5).
 
 ## Snapshot v1 (owner: M0.3)
