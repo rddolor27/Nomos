@@ -7,7 +7,7 @@ Estimates are full-time days for one person coding by hand (unsourced estimates)
 | Milestone | Sub-milestones | Estimate |
 | --- | --- | --- |
 | [M0 Pipeline](m0-pipeline/milestone.md) | 6 | 18–27 days |
-| [M1 Lab mode](m1-lab-mode/milestone.md) | 5 | 21.5–35 days |
+| [M1 Lab mode](m1-lab-mode/milestone.md) | 6 | 23.5–38 days |
 | [M2 Economy](m2-economy/milestone.md) | 7 | 26.5–43 days |
 | [M3 City life](m3-city-life/milestone.md) | 8 | 69–106 days |
 | [M4 Crime and police](m4-crime-and-police/milestone.md) | 7 | 28–40 days |
@@ -15,10 +15,10 @@ Estimates are full-time days for one person coding by hand (unsourced estimates)
 | [M6 Scale and sharing](m6-scale-and-sharing/milestone.md) | 7 | 49–81 days |
 | [M7 Country of ledgers](m7-country-of-ledgers/milestone.md) | 7 | 37–59 days |
 | [M8 Country map](m8-country-map/milestone.md) | 7 | 44–69 days |
-| **Before launch, M0–M8** | | **329–516 days** |
+| **Before launch, M0–M8** | | **331–519 days** |
 | [M9 Zoom across scales](m9-zoom-across-scales/milestone.md) | 6 | 25–40 days |
 | [M10 Weather](m10-weather/milestone.md) | 4 | 16–27 days |
-| **Everything** | | **370–583 days** |
+| **Everything** | | **372–586 days** |
 
 The plan's own effort lines sum to about 211–324 days before launch, but many tasks that rounds 2, 6, 8 and 9 added carry no estimate there. These breakdowns estimate every task, which is why their sum is larger.
 
@@ -43,7 +43,8 @@ The plan's own effort lines sum to about 211–324 days before launch, but many 
 | [M1.2 Bet cards and watch-only runs](m1-lab-mode/m1.2-bet-cards-and-watch-only-runs/task.md) | Bet cards that lock a prediction before Run, runs the player can only pause, speed up or skip, and day and night on screen | 6–10.5 days | [brief](m1-lab-mode/m1.2-bet-cards-and-watch-only-runs/plan.md) |
 | [M1.3 Skin B blobs](m1-lab-mode/m1.3-skin-b-blobs/task.md) | The lab drawn as blobs, with faces, bubbles, takes shown as acts, and reduced motion | 4–6 days | [brief](m1-lab-mode/m1.3-skin-b-blobs/plan.md) |
 | [M1.4 Sound](m1-lab-mode/m1.4-sound/task.md) | The TypeScript synth, the audio controls and the UI sounds, silent until the first click | 4.5–6.5 days | [brief](m1-lab-mode/m1.4-sound/plan.md) |
-| [M1.5 Public lab](m1-lab-mode/m1.5-public-lab/task.md) | The IP gate, playtests with novices and a diverse panel, and lab mode in public | 2–4 days | [brief](m1-lab-mode/m1.5-public-lab/plan.md) |
+| [M1.5 IP gate and playtests](m1-lab-mode/m1.5-ip-gate-and-playtests/task.md) | The IP gate, and playtests with novices and a diverse panel on a dev build | 2–4 days | [brief](m1-lab-mode/m1.5-ip-gate-and-playtests/plan.md) |
+| [M1.6 Dev and release](m1-lab-mode/m1.6-dev-and-release/task.md) | GitHub Actions deploys to dev on every push and releases on demand, and lab mode's first release | 2–3 days | [brief](m1-lab-mode/m1.6-dev-and-release/plan.md) |
 
 ### [M2 Economy](m2-economy/milestone.md)
 
@@ -176,7 +177,7 @@ Each must be settled before its sub-milestone starts. The task files give the co
 | M1.2 | how long a lab day lasts at 1×. Round 1's engine runs discrete days with animated phases, while the calendar makes a day at 1× last 144 s |
 | M1.4 | whether the sounds pass a listen: the Sound tab asks the owner to play `dist/sounds/` before M1, above all the nine tracks against well-known jingles |
 | M1.4 | whether the synth renders at 22,050 Hz like the previews, or at the audio context's 44.1 or 48 kHz |
-| M1.5 | whether lab mode still goes public when M1 closes, as round 1 planned, now that launch waits for M8 (R9) |
+| M1.6 | whether lab mode still goes public when M1 closes, as round 1 planned, now that launch waits for M8 (R9), which decides whether `v0.1.0` is announced |
 | M2.1 | what a month is on the 112-day year. Lengnick's firms decide monthly, and round 2's targets count months. A 21-day month, as in the paper, gives 5⅓ months a year; a 28-day season gives 4 (computed) |
 | M3.2 | soldiers are paid from taxes, which arrive only with M5's treasury (R1); choose a stopgap, such as M0.2's local-government account |
 | M3.3 | whether the optional human sheet survives content rule 1's one shared blob body; round 3 tied it to M1's playtest of the blob cast |
