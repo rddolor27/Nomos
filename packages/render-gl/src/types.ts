@@ -15,9 +15,12 @@ export interface RendererOptions {
 
 export interface WorldRenderer {
   readonly backend: Backend;
+  readonly drawnAgents: number;
   init(): Backend;
   resize(deviceWidth: number, deviceHeight: number, dpr: number): void;
   setMap(map: MapV1): void;
+  // Copies the snapshot and hands the buffer to options.release before returning (interfaces.md).
+  pushSnapshot(frame: { tick: number; count: number; buffer: ArrayBuffer }): void;
   draw(camera: Camera, alpha: number): void;
   dispose(): void;
 }

@@ -1,5 +1,16 @@
-import { parseMap, type MapV1 } from '@nomos/sim-protocol';
+import {
+  SNAPSHOT_BYTES,
+  actionOf,
+  emoteOf,
+  facingOf,
+  jobOf,
+  lookOf,
+  packVisual,
+  parseMap,
+  type MapV1,
+} from '@nomos/sim-protocol';
 import { createWorldRenderer, type Backend, type Camera, type WorldRenderer } from '../src/index.ts';
+import { fillReplayFrame } from '../test/replay.ts';
 
 export interface FrameStats {
   backend: Backend;
@@ -8,11 +19,22 @@ export interface FrameStats {
   counts: Record<string, number>;
 }
 
+export interface PlacedAgent {
+  x: number;
+  y: number;
+  job: number;
+}
+
 export interface Harness {
   readonly renderer: WorldRenderer | null;
   readonly map: MapV1 | null;
-  boot(options?: { css?: [number, number] }): Promise<Backend>;
+  // Every buffer the renderer handed back, in order.
+  readonly released: ArrayBuffer[];
+  boot(options?: { css?: [number, number]; agents?: number }): Promise<Backend>;
   view(camera: Camera): void;
+  // Pushes replay frame `frame` of the booted agent count, or of options.agents of them.
+  push(frame: number, options?: { agents?: number; trueOnly?: boolean }): ArrayBuffer;
+  place(agents: PlacedAgent[]): ArrayBuffer;
   draw(alpha?: number): FrameStats;
   pixel(x: number, y: number): string;
 }
@@ -28,6 +50,9 @@ let canvas: HTMLCanvasElement | null = null;
 let map: MapV1 | null = null;
 let camera: Camera = { x: 0, y: 0, zoom: 1 };
 let frame = { width: 0, height: 0, rgba: new Uint8Array(0) };
+let agents = 0;
+let pool: ArrayBuffer[] = [];
+let released: ArrayBuffer[] = [];
 
 async function loadTown(): Promise<MapV1> {
   const response = await fetch('/maps/town.nmap');
@@ -60,6 +85,26 @@ function countColours(): Record<string, number> {
   return counts;
 }
 
+// Like the app, keep each returned buffer for the next snapshot.
+function release(buffer: ArrayBuffer): void {
+  released.push(buffer);
+  if (buffer.byteLength === agents * SNAPSHOT_BYTES) pool.push(buffer);
+}
+
+function markTrueOnly(buffer: ArrayBuffer, count: number): void {
+  const view = new DataView(buffer);
+  for (let i = 0; i < count; i++) {
+    const at = i * SNAPSHOT_BYTES + 8;
+    const word = view.getUint32(at, true);
+    view.setUint32(at, packVisual(lookOf(word), actionOf(word), emoteOf(word), jobOf(word), facingOf(word), 1), true);
+  }
+}
+
+function booted(): { renderer: WorldRenderer; map: MapV1 } {
+  if (!renderer || !map) throw new Error('boot the harness first');
+  return { renderer, map };
+}
+
 window.harness = {
   get renderer() {
     return renderer;
@@ -67,13 +112,19 @@ window.harness = {
   get map() {
     return map;
   },
-  async boot({ css = [320, 180] } = {}) {
+  get released() {
+    return released;
+  },
+  async boot({ css = [320, 180], agents: count = 0 } = {}) {
     map ??= await loadTown();
     renderer?.dispose();
     canvas?.remove();
     canvas = document.createElement('canvas');
     document.body.append(canvas);
-    renderer = createWorldRenderer(canvas, { release() {} });
+    agents = count;
+    pool = [];
+    released = [];
+    renderer = createWorldRenderer(canvas, { release });
     const backend = renderer.init();
     renderer.resize(Math.round(css[0] * devicePixelRatio), Math.round(css[1] * devicePixelRatio), devicePixelRatio);
     renderer.setMap(map);
@@ -82,11 +133,30 @@ window.harness = {
   view(next) {
     camera = next;
   },
+  push(replayFrame, { agents: count = agents, trueOnly = false } = {}) {
+    const run = booted();
+    const buffer = pool.pop() ?? new ArrayBuffer(agents * SNAPSHOT_BYTES);
+    fillReplayFrame(run.map, replayFrame, count, buffer);
+    if (trueOnly) markTrueOnly(buffer, count);
+    run.renderer.pushSnapshot({ tick: replayFrame, count, buffer });
+    return buffer;
+  },
+  place(placed) {
+    const buffer = new ArrayBuffer(placed.length * SNAPSHOT_BYTES);
+    const view = new DataView(buffer);
+    placed.forEach(({ x, y, job }, i) => {
+      view.setFloat32(i * SNAPSHOT_BYTES, x, true);
+      view.setFloat32(i * SNAPSHOT_BYTES + 4, y, true);
+      view.setUint32(i * SNAPSHOT_BYTES + 8, packVisual(0, 0, 0, job, 0, 0), true);
+    });
+    booted().renderer.pushSnapshot({ tick: 0, count: placed.length, buffer });
+    return buffer;
+  },
   draw(alpha = 1) {
-    if (!renderer) throw new Error('boot the harness first');
-    renderer.draw(camera, alpha);
+    const run = booted();
+    run.renderer.draw(camera, alpha);
     readFrame();
-    return { backend: renderer.backend, width: frame.width, height: frame.height, counts: countColours() };
+    return { backend: run.renderer.backend, width: frame.width, height: frame.height, counts: countColours() };
   },
   // Reads the frame the last draw read back, counting rows from the top as the camera does.
   pixel(x, y) {
