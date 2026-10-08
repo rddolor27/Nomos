@@ -32,7 +32,7 @@ The plan's own effort lines sum to about 210–322 days before launch, but many 
 | [M0.3 Loop and protocol](m0-pipeline/m0.3-loop-and-protocol/task.md) | The sim worker at 10 ticks a second, the day boundary and snapshots | 3–4 days | [step plan](m0-pipeline/m0.3-loop-and-protocol/plan.md) |
 | [M0.4 Renderer and Skin A](m0-pipeline/m0.4-renderer-and-skin-a/task.md) | One WebGL2 renderer drawing 10,000 agents as dots over a map | 4–6 days | [step plan](m0-pipeline/m0.4-renderer-and-skin-a/plan.md) |
 | [M0.5 Web app](m0-pipeline/m0.5-web-app/task.md) | The page a visitor opens: first frame, HUD, charts, tiers, accessibility | 3–4 days | [step plan](m0-pipeline/m0.5-web-app/plan.md) |
-| [M0.6 Gates and guards](m0-pipeline/m0.6-gates-and-guards/task.md) | CI gates that enforce every rule the plan relies on | 3–5 days | — |
+| [M0.6 Gates and guards](m0-pipeline/m0.6-gates-and-guards/task.md) | CI gates that enforce every rule the plan relies on | 3–5 days | [step plan](m0-pipeline/m0.6-gates-and-guards/plan.md) |
 
 ### [M1 Lab mode](m1-lab-mode/milestone.md)
 

@@ -1,6 +1,6 @@
 # M0 Pipeline: sub-milestones
 
-M0 holds 47 build tasks and 13 exit checks in the [implementation plan](../../implementation-plan.md#m0-pipeline), so it runs as six sub-milestones. Each one ends with software that runs and passes its own checks. Only M0.1 has a step-by-step plan so far; each later sub-milestone gets its plan when the one before it closes.
+M0 holds 47 build tasks and 13 exit checks in the [implementation plan](../../implementation-plan.md#m0-pipeline), so it runs as six sub-milestones. Each one ends with software that runs and passes its own checks. Every sub-milestone has a step-by-step plan in its `plan.md`, and [interfaces.md](interfaces.md) fixes the names they share.
 
 Estimates are full-time days for one person coding by hand (unsourced estimates). The Actual column records the real time, so after M0.1 the rest of the plan can be rescaled to the measured pace. The plan's own M0 effort line, about 1 week plus 4–6 days, predates rounds 4–9, which added most of these tasks.
 
