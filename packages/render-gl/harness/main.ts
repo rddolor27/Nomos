@@ -9,7 +9,14 @@ import {
   parseMap,
   type MapV1,
 } from '@nomos/sim-protocol';
-import { createWorldRenderer, type Backend, type Camera, type RendererOptions, type WorldRenderer } from '../src/index.ts';
+import {
+  createWorldRenderer,
+  observeDeviceSize,
+  type Backend,
+  type Camera,
+  type RendererOptions,
+  type WorldRenderer,
+} from '../src/index.ts';
 import { fillReplayFrame } from '../test/replay.ts';
 
 export interface FrameStats {
@@ -28,14 +35,23 @@ export interface PlacedAgent {
 export interface BootOptions extends Pick<RendererOptions, 'backend' | 'restoreTimeoutMs'> {
   css?: [number, number];
   agents?: number;
+  // Measures as Safari must, rounding the CSS size times devicePixelRatio.
+  forceFallback?: boolean;
 }
+
+// Device width, device height and devicePixelRatio, as observeDeviceSize reports them.
+export type DeviceSize = [number, number, number];
 
 export interface Harness {
   readonly renderer: WorldRenderer | null;
   readonly map: MapV1 | null;
   // Every buffer the renderer handed back, in order.
   readonly released: ArrayBuffer[];
+  readonly deviceSize: DeviceSize;
+  // Resolves once the canvas has its first device size.
   boot(options?: BootOptions): Promise<Backend>;
+  // Lays the canvas's stage out at a new CSS size and resolves with the device size it reports.
+  layout(css: [number, number]): Promise<DeviceSize>;
   view(camera: Camera): void;
   // Pushes replay frame `frame` of the booted agent count, or of options.agents of them.
   push(frame: number, options?: { agents?: number; trueOnly?: boolean }): ArrayBuffer;
@@ -52,6 +68,8 @@ declare global {
   }
 }
 
+const DEFAULT_CSS: [number, number] = [320, 180];
+
 let renderer: WorldRenderer | null = null;
 let map: MapV1 | null = null;
 let camera: Camera = { x: 0, y: 0, zoom: 1 };
@@ -59,6 +77,44 @@ let frame = { width: 0, height: 0, rgba: new Uint8Array(0) };
 let agents = 0;
 let pool: ArrayBuffer[] = [];
 let released: ArrayBuffer[] = [];
+// resize writes the canvas's CSS size, so the observer watches the stage that the page lays out, never the canvas.
+let stage: HTMLElement | null = null;
+let unobserve = (): void => {};
+let deviceSize: DeviceSize = [0, 0, 0];
+let reported: (() => void) | null = null;
+
+// A waiter resumed in this callback's microtasks could lay out again within the same delivery, which the spec skips
+// and WebKit reports as a ResizeObserver loop error, so it resumes in a task of its own.
+function onDeviceSize(width: number, height: number, dpr: number): void {
+  renderer?.resize(width, height, dpr);
+  deviceSize = [width, height, dpr];
+  if (reported) setTimeout(reported, 0);
+  reported = null;
+}
+
+// A size the stage already has reports nothing, so this waits only on a real change.
+function layOut(target: HTMLElement, [width, height]: [number, number]): Promise<DeviceSize> {
+  return new Promise((resolve) => {
+    reported = () => resolve(deviceSize);
+    target.style.width = `${width}px`;
+    target.style.height = `${height}px`;
+  });
+}
+
+function teardown(): void {
+  unobserve();
+  renderer?.dispose();
+  stage?.remove();
+}
+
+function newCanvas(): HTMLCanvasElement {
+  const canvas = document.createElement('canvas');
+  canvas.id = 'world';
+  canvas.className = 'view';
+  canvas.setAttribute('role', 'img');
+  canvas.setAttribute('aria-label', 'Town map with every agent as a dot');
+  return canvas;
+}
 
 async function loadTown(): Promise<MapV1> {
   const response = await fetch('/maps/town.nmap');
@@ -137,24 +193,30 @@ window.harness = {
   get released() {
     return released;
   },
-  async boot({ css = [320, 180], agents: count = 0, backend: choice, restoreTimeoutMs } = {}) {
+  get deviceSize() {
+    return deviceSize;
+  },
+  async boot({ css = DEFAULT_CSS, agents: count = 0, backend: choice, restoreTimeoutMs, forceFallback = false } = {}) {
     map ??= await loadTown();
-    renderer?.dispose();
-    renderer?.canvas.remove();
-    const canvas = document.createElement('canvas');
-    canvas.id = 'world';
-    canvas.className = 'view';
-    canvas.setAttribute('role', 'img');
-    canvas.setAttribute('aria-label', 'Town map with every agent as a dot');
-    document.body.append(canvas);
+    teardown();
+    const canvas = newCanvas();
+    stage = document.createElement('div');
+    stage.append(canvas);
+    document.body.append(stage);
     agents = count;
     pool = [];
     released = [];
     renderer = createWorldRenderer(canvas, { release, backend: choice, restoreTimeoutMs });
     const backend = renderer.init();
-    renderer.resize(Math.round(css[0] * devicePixelRatio), Math.round(css[1] * devicePixelRatio), devicePixelRatio);
     renderer.setMap(map);
+    const sized = layOut(stage, css);
+    unobserve = observeDeviceSize(stage, onDeviceSize, forceFallback);
+    await sized;
     return backend;
+  },
+  layout(css) {
+    if (!stage) throw new Error('boot the harness first');
+    return layOut(stage, css);
   },
   view(next) {
     camera = next;
