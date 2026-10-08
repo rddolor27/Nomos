@@ -1,0 +1,3 @@
+numpy>=2.1,<3
+pillow>=11,<13
+colorspacious==1.1.2
