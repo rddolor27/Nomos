@@ -1,0 +1,33 @@
+name: perf
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  # The compute budget in Node and Chromium, judged against the Performance budget's table with the load average beside it.
+  compute:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm --filter @nomos/bench budget
+      - if: ${{ !cancelled() }}
+        run: pnpm exec playwright test tools/bench/test/browser/budget.spec.ts --project=chromium
+        env:
+          BENCH: '1'
+      # Uploaded last: any later Playwright run would clear test-results/.
+      - if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: bench-results
+          path: |
+            tools/bench/bench-results/
+            test-results/budget-chromium.json
