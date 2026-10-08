@@ -27,7 +27,7 @@ jobs:
           BENCH: '1'
       # Uploaded last: any later Playwright run would clear test-results/.
       - if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: bench-results
           path: |
@@ -59,7 +59,7 @@ jobs:
       - run: pnpm --filter @nomos/web startup
       - run: node tools/bench/src/assert-startup.ts
       - if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: startup-results
           path: apps/web/test-results/startup.json
