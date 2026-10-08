@@ -7,7 +7,9 @@
     <link rel="icon" href="data:,">
     <style>
       html, body { margin: 0; background: #464c5e; color: #f6f0de; font: 15px/1.4 system-ui, sans-serif; }
-      body { display: grid; grid-template: 100vh / minmax(0, 1fr) 22rem; grid-template: 100dvh / minmax(0, 1fr) 22rem; }
+      body { display: grid; grid-template: 100vh / minmax(0, 1fr) 22rem; }
+      /* The minifier keeps only a rule's last grid-template, which would drop the vh fallback, so dvh gets its own rule. */
+      @supports (height: 100dvh) { body { grid-template: 100dvh / minmax(0, 1fr) 22rem; } }
       #hud, #view { grid-area: 1 / 1; }
       #hud { align-self: start; z-index: 1; display: flex; flex-wrap: wrap; align-items: center; gap: .3rem 1rem;
         padding: .4rem .75rem; background: rgb(26 28 36 / .88); }
@@ -23,7 +25,8 @@
       #charts { overflow: auto; padding: 4.5rem .75rem 1rem; }
       #charts figure { margin: 0 0 1rem; }
       @media (max-width: 50rem) {
-        body { grid-template: 80vh auto / 100%; grid-template: 80dvh auto / 100%; }
+        body { grid-template: 80vh auto / 100%; }
+        @supports (height: 100dvh) { body { grid-template: 80dvh auto / 100%; } }
         #charts { padding-top: 1rem; }
         .lil-gui.lil-auto-place { position: static; }
       }
