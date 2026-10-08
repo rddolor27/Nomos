@@ -76,3 +76,20 @@
 - **Verify first:** FBI tables 16 and 70–74, BJS reporting by location, and Bettencourt 2007 with intervals. They set the crime, police and scaling bands.
 - **12 ms at 10,000 settlements** was met only with WASM in some prototypes: 5.1–10.4 ms in JS and 4.7 ms in WASM. M7.5 ports the settlement model, and JS may need to fit at 1,000 first.
 - **Kernel choice** changes migration patterns. Pick by docking, never by eye.
+
+## Open questions
+
+- **Owner:** May M7.3 close on 1,000 settlements within 1.5 ms in JS, with the 10,000-settlement gate moved to M7.5's WASM port? JS took 8.4–10.4 ms at 10,000 on R5's reference machine (5.1 ms in R4's desktop Node), and M7.5's blocks come on top. Suggested: yes, recording the 10,000 time without gating on it. Needed before: the step plan.
+- **Owner:** Does the scaling check stay on the terrain-free generator after M8's re-baseline? Under P₁/k a world listing 61 places spans only 61× in size, under the three orders of magnitude the check needs (computed). Suggested: yes, as a model check that generated worlds can't show. Needed before: the step plan.
+- **Measure:** Does gravity alone dock migration and commuting decay? Building both kernels doubles the tests for a setting nobody uses yet. Suggested: gravity first, since the decay checks are power laws in distance (inference); add radiation only if gravity fails. Needed before: building.
+- **Research:** Do FBI tables 16 and 70–74, BJS reporting by location and Bettencourt 2007's intervals confirm the crime, police and scaling bands? They set the bands of two of the four exit checks. Suggested: a short research round. Needed before: the step plan.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** the CSR graph and round-robin schedule, then migration, commuting, trade, villages and regions, adding the CI suite one family at a time.
+- **Reuse:** M7.1's store, CSR arrays, integer draws and test generator, and M0.6's budget gate for the country rows.
+- **Keep it simple:** build one trade system, which M7.4's weekly market-day trade extends rather than duplicates.
+- **Pitfalls:** round-robin updates read the day-boundary snapshot and commit at the boundary, so slicing never changes results (R4 architecture notes, part 3.7). Goods in transit belong in the goods identity. Distances use the cell scale M7.1 asks the owner to fix.
+- **Hard and easy parts:** the suite's statistics, such as exponent intervals and decay fits, need the most care; CSR arrays and kernel tables are mechanical.

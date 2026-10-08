@@ -58,3 +58,20 @@
 - **Owner decision first:** with no neighbouring country, what counts as a border for garrison towns. Options are the map edge, mountain passes or region lines.
 - **Spin-up time at 10,000 settlements** is 67–134 s. Consider a precomputed day-0 state for preset worlds, and show the map forming meanwhile.
 - **Bandit pressure has no source in the research.** Its model is a design choice, so label its parameters as such.
+
+## Open questions
+
+- **Owner:** With no neighbouring country, what counts as a border for garrison towns? Garrison posts here and M8.3's forts both wait on it. Suggested: region lines, since M8.1 already grows regions and passes would need a new detector. Needed before: the step plan.
+- **Owner:** Do patrols stop travellers? Stops add stop counts to the route ledger, and wrongful stops must then be drawn as heavily as arrests (Military). Suggested: no stops; patrols only deter and sight raids. Needed before: the step plan.
+- **Owner:** Ship precomputed day-0 states for preset worlds? They add download bytes and must be rebuilt whenever the sim changes. Suggested: no, unless spin-up on M8's worlds proves slow; R9's 40–237 listed places plus a few dozen regions would take about 0.3–5 s at the 1.5 ms budget rate (computed). Needed before: launch.
+- **Measure:** How many years until the ledger's distributions stop drifting? That sets spin-up length and load time. Suggested: 50 years, unless Zipf's ζ, wealth shares or culture shares still drift in the last decade. Needed before: building.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** route columns on M7.1's CSR edges, then raids with patrols fixed by a scenario input, sightings and records, garrisons, and spin-up last.
+- **Reuse:** R4's robbery hazard per km, from bandit pressure, patrol, traffic, night share and cargo value, with Poisson incidents (R4 world-map notes, Q5). M4's reporting thinning and M5.1's defence budget also apply.
+- **Keep it simple:** spin-up is the normal day step in a loop that skips snapshots, with no separate fast model.
+- **Pitfalls:** key raid draws by (route, day, event), so patrols on one road never shift another road's raids (Military). Post progress between chunks of days, and check the hash is the same chunked or not. The `progress` message updates `interfaces.md` in the step plan's commit.
+- **Hard and easy parts:** giving the paired-seed test enough raids to Hold needs care; the posts column and the progress message are mechanical.

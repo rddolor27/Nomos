@@ -66,3 +66,20 @@
 - **Owner decision first:** whether people by state carry the optional three age and three wealth bands. M7.3's rural youth migration hazard and the calendar's age-based hazards would read an age split. Default: carry the age bands and skip the wealth bands until M7.5.
 - **Model REG's parameters** need choosing for a fictional country. Start from the textbook values and record each choice.
 - **This could start as soon as M0 lands,** so it may run in parallel with M1–M6, if the owner wants to.
+
+## Open questions
+
+- **Owner:** Do people by state carry the three age bands, the three wealth bands, both or neither? Each band set triples the people columns. Suggested: age bands only, since M7.3's youth hazard reads age and M7.5's wealth block holds the wealth groups. Needed before: the step plan.
+- **Owner:** Does the national layer keep REG's government bills and interest, or only cash, as Model SIM does? Bills add a portfolio rule per settlement (λ₀–λ₂, R = 2.5%) that no exit check needs (R4 economy notes, part 7). Suggested: cash only, with M0.2's MINT as the one issuer. Needed before: the step plan.
+- **Owner:** Do the optional equalisation grant and national police force ship now? R4 expects the uniform tax alone to move money toward a region in trouble, and could not source equalisation sizes. Suggested: defer both until a scenario uses them. Needed before: the step plan.
+- **Owner:** How many kilometres does a map cell span? Spacing, route lengths, M7.3's 50–100 km commuting and M7.4's 290 km grain check need a scale; R4 assumed a country about 200 km across. Suggested: about 5 km (inference), so a 96-cell world spans 480 km (computed). Needed before: the step plan.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** integer SIM with no settlements, then two-region REG, then the store and daily flows, then the test generator at 1,000 settlements.
+- **Reuse:** M0.2's ledger, account ranges, exact sum and stochastic rounding; M0.1's keyed draw; M0.6's lint profile and budget gate.
+- **Keep it simple:** if the levels nest on one hexagonal lattice, its Delaunay graph is each site's six neighbours, so test support needs no triangulation code (inference). Skip Poisson-disc spacing unless a test needs it.
+- **Pitfalls:** every rounded cent goes through an explicit rounding account, or Σ = 0 breaks (R4 economy notes, part 7). R4's integer SIM reached exactly 10,000 only from period 60, so the test runs to convergence. Reserve the store at start for the tier's settlement cap, since memory never grows.
+- **Hard and easy parts:** order-independent flows and the rounding account need care; the table script, CSR arrays, Zipf sizes and Hamilton apportionment are mechanical.

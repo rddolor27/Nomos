@@ -57,3 +57,20 @@
 - **Verify first (from M3.7):** round 8's transmission bands re-run with similar culture shares.
 - **Yearly steps are coarse.** Round 8 found checks every 30 days gave the same outcomes as daily, at 1/23 of the cost. Yearly is coarser still, so dock it before relying on it.
 - **G\_ST depends on the region definition.** Fix regions in M8 before the 100-year check is final.
+
+## Open questions
+
+- **Owner:** Is "within 5% of their population share" relative or in points, and national or per settlement? A relative bound per settlement would fail on count noise alone (inference). Suggested: relative, on national totals over 30 years. Needed before: the step plan.
+- **Owner:** Which regions does G\_ST use before M8 exists? The 100-year band depends on them. Suggested: the test generator's regions, with the check marked provisional until M8 fixes regions. Needed before: the step plan.
+- **Measure:** Does the yearly step dock against agent runs? R8's country results came from a yearly ledger step (`ledger.mjs`), but only its 30-day agent stride was compared with daily checks. Suggested: dock it in M7.2's harness, and fall back to a monthly step if it fails. Needed before: building.
+- **Research:** Do round 8's transmission bands hold with similar culture shares, not one 60% culture? They set the CI retention bands, as M3.7's verify-first notes. Suggested: take M3.7's re-run, and mark the bands provisional until then. Needed before: the step plan.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** the block and its "sums to population" invariant, then exact migration splits, then births and switching, then demand shifts, then docking.
+- **Reuse:** M0.6's `sim-culture` wall and relabel test, M0.2's keyed stochastic rounding, and R8's `ledger.mjs` as a reference, never imported.
+- **Keep it simple:** one exact-split routine serves migration now and M9.1's spawn and fold later.
+- **Pitfalls:** `sim-country`'s orchestration passes flow totals in and gets splits back, while its migration code never imports `sim-culture`; the split never reads wealth. Compute pop^1.5 as pop × `Math.sqrt(pop)`, since `**` and `Math.pow` are banned. The relabel test must still pass with every block in.
+- **Hard and easy parts:** exactness through births, switching, migration and spawn at once needs care; the block layout and demand shift are mechanical.

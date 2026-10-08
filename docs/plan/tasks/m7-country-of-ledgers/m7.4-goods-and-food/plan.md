@@ -69,3 +69,20 @@
 - **Needs M2's re-read** of round 6's carrying cost and pest loss on the 112-day year before coding the rates.
 - **The weekly step adds lag** to price signals. Check that it doesn't create artificial cycles against a daily-step reference on one preset.
 - **Per-settlement cost:** M7.5 holds the whole goods-and-wellbeing extension to ≤ 0.7 µs RM per settlement-day, so measure here as the blocks land.
+
+## Open questions
+
+- **Owner:** One national cold-chain factor, or one per settlement? R6 spans 0.75 (rich) to 1.73 (poor), and the storybook pre-industrial setting (owner, 7 October 2026) has no cold chain. Suggested: one national value of 1.73, which drops a column. Needed before: the step plan.
+- **Measure:** Does the weekly goods step make price cycles that a daily step would not? A daily goods layer would cost 17–21 ms at 10,000 settlements against the 12 ms budget (R6), so weekly has to hold up. Suggested: run one 100-settlement preset both ways, and accept weekly if both give the same price period and seasonal gaps. Needed before: building.
+- **Research:** Do R6's 1.5–3% monthly carrying cost and ≤ 7% seasonal pest loss hold on the 112-day year? They set the stocking drift and the harvest-store test. Suggested: take M2.7's re-read, or keep R6's values labelled provisional if it hasn't landed. Needed before: building.
+- **Research:** What sources fix grain density, decay rates for timber, fuel and wares, and weather correlation between nearby settlements? R6 lists all three as unsourced, and they drive the 290 km test, the decay step and the weather draw. Suggested: one short research round, with labelled design values until then. Needed before: building.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** the goods identity with its spoilage term, then the food ring and dated cohorts, the weekly step, and market-day trade with parity bands.
+- **Reuse:** M7.3's trade, graph and round-robin; M2.4's recipes; M7.1's stochastic rounding for portions.
+- **Keep it simple:** extend M7.3's margin trade with transport ratios and market days, rather than adding a second trade path.
+- **Pitfalls:** the 290 km check needs a country wider than 290 km, so it waits on M7.1's cell scale. Convert annual and monthly rates to weekly steps in build-time tables, since `**` is banned, and keep stock × Q24 rate below 2^53. Keep a byte tally per block against the 1 KB settlement cap; R6 computed 510–640 B before M7.6's culture block.
+- **Hard and easy parts:** dated cohorts and the ring-versus-exact-ring check need care; the price clamp and loss tables are mechanical.

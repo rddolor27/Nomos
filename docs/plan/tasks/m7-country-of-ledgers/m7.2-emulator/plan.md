@@ -49,3 +49,19 @@
 - **Verify first:** the size of the alignment nudges with the real emulator. It decides whether shadow-canonical stays the default or pinned live cities are needed. The docking test gives a first reading here, and M9's divergence meter the final one.
 - **Some flows may not dock** with a small binned table. Add inputs one at a time, judged by the docking test, and never add terms the logs can't support.
 - **Logs must already exist.** M2.3, M4.3 and M5.6 must have kept their flow logs, in the shared columnar format.
+
+## Open questions
+
+- **Owner:** How large may alignment nudges get before pinned live cities are needed? The verify-first can't decide anything without a bar. Suggested: one bar for this reading and M9.2's, |z| < 2 on at least 95% of flow-days, on agent counts before any alignment. Needed before: the step plan.
+- **Owner:** Can M7.2 close if a flow still fails to dock with every input the logs support? One stubborn flow would otherwise block M7. Suggested: no waiver for offences, arrests, hires, separations or migration, which later checks lean on; the owner may waive others on their docking report. Needed before: the step plan.
+- **Measure:** How many held-out seeds per city size keep the 5–95% band stable? Few seeds make the band itself noisy, and M2.3, M4.3 and M5.6 must log that many runs. Suggested: 50, as M7.7's paired claims use, checked by bootstrapping the band. Needed before: the step plan.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** the docking harness, then hires at a constant rate, which should fail, then one binned input at a time until it docks.
+- **Reuse:** M2.3's columnar logs, M7.1's integer draws to turn ppm hazards into counts, and M7.1's build-time table script as the pattern.
+- **Keep it simple:** fit binned means first, which are exact and byte-reproducible. Use the GLM form only where bins run out of data, and no neural networks in the core (R4 architecture notes, part 4).
+- **Pitfalls:** fitting and held-out seeds never overlap. Refits stop being byte-identical if the fitter's library versions float, so pin them and quantise to Q16 before writing. Before M2–M5 log, check they carry every hazard input R4 lists, such as vacancy rate, firm liquidity, unemployment and police per head.
+- **Hard and easy parts:** choosing inputs per flow under the docking test takes judgement; the table readers and the build-time conversion are mechanical.

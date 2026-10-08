@@ -57,3 +57,20 @@
 
 - **Rust and WASM must be in place** from M6.2. If M6.2 slipped, the JS path must meet 12 ms alone, which prototypes did not always manage.
 - **Fitted wealth transitions** need M5.6's logs at several city sizes. Check that the logs carry the wealth groups before fitting.
+
+## Open questions
+
+- **Owner:** Does the 10,000-settlement tier still gate M7, now that round 9's large world lists 182–237 places? R6 found nothing fits 10,000 in JS with every block, so this gate alone forces the WASM port before launch. Suggested: gate on 1,000, and port only when a world needs more records than JS can step. Needed before: the step plan.
+- **Measure:** Do 1,000 settlements still fit 1.5 ms in JS with every block in? R6 computed 1.11–1.15 ms from R5's 0.76 ms base before the wealth block, leaving about 0.35 ms for wealth, culture and route ledgers. Suggested: measure as each block lands, and extend the WASM port to phones if it misses. Needed before: building.
+- **Measure:** Do M5.6's sweep logs carry the wealth groups at several city sizes? Without them the transition hazards can't be fitted. Suggested: check M5.6's log columns before M5 closes. Needed before: the step plan.
+- **Research:** Does evidence support raising out-migration by up to 10% per point of mean LS? R6 labels it an inference. Suggested: keep it as a labelled design value, bounded by the 3.6–5.5% migration check. Needed before: building.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** the happiness block and band test, then the wealth block, the LS push with its migration check and the transition fit, with WASM last.
+- **Reuse:** M7.2's fitter and docking for wealth transitions; M6.2's Rust crate and WASM build; M7.1's per-settlement-day key for every band shift.
+- **Keep it simple:** use deterministic remainders, which R6 allows and which need no draw at all.
+- **Pitfalls:** JS and WASM must agree bit for bit, so keep the port integer-only and run the 100-seed agreement test in CI. Wealth groups stay apart from the crime top-5% share. Never key a draw per cell, which R6 found the main cost.
+- **Hard and easy parts:** JS–WASM agreement and the 1.5 ms fit need care; the block layouts are mechanical.
