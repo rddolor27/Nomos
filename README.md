@@ -9,8 +9,9 @@ A society simulation that runs entirely in the browser. Blob-shaped people work,
 
 *One random world, seed `09f02ffe`: the country map and its capital up close. Both were drawn by `tools/worldgen` from the original sprites; the game itself is not built yet.*
 
-**Status: planning and art.** There is no game code yet. What exists today:
-- eight research rounds and a ten-milestone build plan, in [`docs/`](docs/);
+**Status: planning done, building not started.** There is no game code yet. What exists today:
+- nine research rounds, in [`docs/research/`](docs/research/);
+- a ten-milestone build plan split into 67 sub-milestones, each with its tasks and the checks that close it, in [`docs/plan/`](docs/plan/); the first milestone's six have step-by-step plans;
 - an original pixel-art sprite set of 1,342 sprites in 13 sheets, drawn as code, in [`tools/sprites/`](tools/sprites/), with seasons and snow;
 - 94 original chiptune sounds in 7 banks, written as data for the game's own synth, in [`tools/sounds/`](tools/sounds/);
 - a random world generator that previews worlds with that art, in [`tools/worldgen/`](tools/worldgen/).
@@ -45,6 +46,27 @@ A society simulation that runs entirely in the browser. Blob-shaped people work,
 
 *The capital through one year, from a single season map: palette swaps, bare trees in winter and snow on the ground and roofs.*
 
+## The plan
+
+The build runs in ten milestones. Each one closes when its exit checks pass in CI, not when the demo looks right. Launch comes after M8.
+
+| Milestone | Delivers |
+| --- | --- |
+| M0 Pipeline | A deterministic core, the sim worker and one renderer, drawing people as dots |
+| M1 Lab mode | Primer-style experiment cards drawn as blobs, with claims judged on paired seeds |
+| M2 Economy | A calibrated economy of households and firms, with goods, food and wealth |
+| M3 City life | Daily routines in a generated town, drawn as the pixel-art town |
+| M4 Crime and police | Crime as an act anyone can choose, with true crime kept apart from recorded crime |
+| M5 Society and policy | The social layer, and policies set before a run |
+| M6 Scale and sharing | 100,000 people on desktop, and share links that replay in any browser |
+| M7 Country of ledgers | Every settlement in a country advancing daily as an exact ledger |
+| M8 Country map | Country mode, with a generated map and region views |
+| M9 Zoom across scales | Zooming from a region down to a street, after launch |
+
+The [roadmap](docs/plan/tasks/README.md) splits each milestone into sub-milestones. Each has a task file, saying what to build and the checks that close it, and a plan saying how. [Checkpoints](docs/plan/checkpoints/) record where the work stands.
+
+The planned stack is Node 24, pnpm workspaces, strict TypeScript, Vitest, ESLint, Playwright on Chromium, Firefox and WebKit, Vite and GitHub Actions.
+
 ## Try the tools
 
 You need Python 3.10 or newer, with Pillow and NumPy.
@@ -62,17 +84,20 @@ You need Python 3.10 or newer, with Pillow and NumPy.
 ## Layout
 
 ```
-docs/          Research, plans and mockups: everything that is not product code
-  plan/        Implementation plan: milestones M0–M9, the performance budget and CI gates
-  research/    Eight research rounds, each with a summary, report, notes and prototypes (round 7 is paused)
-  mockups/     Concept art, sprite showcases and world previews, with their sources
-assets/        Sprite sheets, sound banks and manifests; LICENSES.md records every file's provenance
-tools/
-  sprites/     The pixel-art sprite set, drawn as code
-  sounds/      The chiptune sound banks, written as data
-  worldgen/    The random world generator, a reference for the sim's own
-apps/          Planned for M0: the web app
-packages/      Planned for M0: sim-core, sim-protocol, sim-worker, render-gl
+docs/              Research, plans and mockups: everything that is not product code
+  plan/            The implementation plan, and the plans for sound, soldiers, the calendar and the gazette
+    tasks/         The roadmap: a folder per milestone and per sub-milestone, each with its task and plan
+    checkpoints/   Hand-off notes: where the work stands and what comes next
+  research/        Nine research rounds, each with a summary, report, notes and prototypes (round 7 is paused)
+  mockups/         Concept art, sprite showcases and world previews, with their sources
+assets/            Sprite sheets, sound banks and manifests; LICENSES.md records every file's provenance
+tools/             Python tools today; M0 adds the atlas builder, and cli, bench and names in TypeScript
+  sprites/         The pixel-art sprite set, drawn as code
+  sounds/          The chiptune sound banks, written as data
+  worldgen/        The random world generator, a reference for the sim's own
+  plan/            Scripts that build the roadmap and check that it covers the whole plan
+apps/web/          Planned for M0: the web app
+packages/          Planned for M0: sim-core, sim-protocol, sim-worker, sim-culture and render-gl
 ```
 
 Code under `docs/research/*/prototypes/` is throwaway benchmark code from the research rounds. Do not import it.
@@ -80,9 +105,11 @@ Code under `docs/research/*/prototypes/` is throwaway benchmark code from the re
 ## Where to start
 
 1. [Implementation plan](docs/plan/implementation-plan.md): what to build, in order, and the checks that close each milestone.
-2. [Docs index](docs/README.md): every research round and what each file holds.
-3. [Findings and plan](docs/research/round-1-baseline/findings-and-plan.md): the original research and architecture.
-4. The [sprite](tools/sprites/README.md), [sound](tools/sounds/README.md) and [world generator](tools/worldgen/README.md) READMEs: the art and sound rules, and how worlds are made.
+2. [Roadmap](docs/plan/tasks/README.md): every sub-milestone in build order, and the owner decisions each one waits for.
+3. [Checkpoints](docs/plan/checkpoints/): where the work stands; the highest number is current.
+4. [Docs index](docs/README.md): every research round and what each file holds.
+5. [Findings and plan](docs/research/round-1-baseline/findings-and-plan.md): the original research and architecture.
+6. The [sprite](tools/sprites/README.md), [sound](tools/sounds/README.md) and [world generator](tools/worldgen/README.md) READMEs: the art and sound rules, and how worlds are made.
 
 ## Commits
 
