@@ -57,6 +57,8 @@ export interface Harness {
   view(camera: Camera): void;
   // Pushes replay frame `frame` of the booted agent count, or of options.agents of them.
   push(frame: number, options?: { agents?: number; trueOnly?: boolean }): ArrayBuffer;
+  // A new buffer holding replay frame `frame` of the booted agents, for a caller to push itself.
+  replayFrame(frame: number): ArrayBuffer;
   place(agents: PlacedAgent[]): ArrayBuffer;
   draw(alpha?: number): FrameStats;
   pixel(x: number, y: number): string;
@@ -233,6 +235,11 @@ window.harness = {
     fillReplayFrame(run.map, replayFrame, count, buffer);
     if (trueOnly) markTrueOnly(buffer, count);
     run.renderer.pushSnapshot({ tick: replayFrame, count, buffer });
+    return buffer;
+  },
+  replayFrame(replayFrame) {
+    const buffer = new ArrayBuffer(agents * SNAPSHOT_BYTES);
+    fillReplayFrame(booted().map, replayFrame, agents, buffer);
     return buffer;
   },
   place(placed) {
