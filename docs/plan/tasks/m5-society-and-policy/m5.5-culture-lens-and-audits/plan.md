@@ -44,7 +44,7 @@
 ## Interfaces and data
 
 - **Lens availability:** the culture lens is never serialised into share links. A default replay starts with `lens: 'none'`.
-- **Exposure counters:** M4.5's per district and hour, reused, with culture stripped before display.
+- **Exposure counters:** M4.5's, which it keys by cell and period and enables only in audit builds; the lens needs them by district and hour in every build, with culture stripped before display.
 - **Audit outputs:** per attribute, the statistic (Spearman or Cramér's V), its interval over 50 seeds, and pass or fail.
 
 ## Method and sources

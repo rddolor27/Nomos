@@ -61,7 +61,7 @@
 
 ## Open questions
 
-- **Owner:** Must a link replay identically after the sim changes, or only reopen the same world? Identical replay across app versions means shipping old sim code, as M6.1 does for generators. Suggested: links pin a sim version, and a newer build reopens the world with a warning that the run may differ. Needed before: the step plan.
+- **Owner:** Must a link replay identically after the sim changes, or only reopen the same world? Identical replay across app versions means shipping old sim code, as M6.1 does for generators, and the [Weather plan](../../../weather.md) already promises it for links made before M10. Suggested: links pin a sim version, and a newer build reopens the world with a warning that the run may differ, except where the plan promises identical replay. Needed before: the step plan.
 - **Owner:** What is the oldest browser Nomos supports? `CompressionStream('deflate-raw')` needs Chrome 103, Firefox 113 or Safari 16.4 (R9 edits and saves notes). Suggested: that floor, so no inflate fallback ships. Needed before: building.
 
 ## Implementation notes

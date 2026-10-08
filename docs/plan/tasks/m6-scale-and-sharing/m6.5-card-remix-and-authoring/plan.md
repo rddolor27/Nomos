@@ -36,7 +36,7 @@
 ## Method and sources
 
 - **Remix, authoring, templates, stable ids and the "hand-picked setup" label:** the [R9 summary](../../../../research/round-9-maps-and-world-builder/summary.md), "Cards stay honest" and "Teaching uses paired arms on one world"; and [R9 builder scope notes](../../../../research/round-9-maps-and-world-builder/notes/builder-scope.md).
-- **Statistics and verdicts:** M1.1's brief and the [R2 summary](../../../../research/round-2-follow-up/summary.md), "Validation".
+- **Statistics and verdicts:** M1.1's brief and the [R2 summary](../../../../research/round-2-follow-up/summary.md), "Validation method".
 
 ## Tests for the exit checks
 

@@ -27,7 +27,7 @@
   - `analyse.py`: SALib analysis of `metrics.txt` → indices as JSON and Markdown;
   - `problem.json`: parameters, ranges and the size factor.
 - `tools/cli`: `design --samples samples.txt`, which runs each row with M2.3's columnar logs plus a `metrics.txt` row per run.
-- `requirements-tools.txt`, or the existing Python tooling: SALib, pinned.
+- `tools/requirements.txt`, from M0.4: SALib, pinned.
 
 ## Interfaces and data
 

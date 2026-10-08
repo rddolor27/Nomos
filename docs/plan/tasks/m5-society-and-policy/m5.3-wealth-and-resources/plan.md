@@ -32,7 +32,7 @@
   - `src/policy/resources.ts`: fishing, logging and fertiliser;
   - `src/policy/food.ts`: markdown, donation and the refrigeration subsidy;
   - `src/wealth/poverty-trap.ts`.
-- `src/economy/presets/development.ts`: the four productivity bands.
+- `packages/sim-core/src/economy/presets/development.ts`: the four productivity bands.
 - `tools/analysis/policy_sizes.py`: checks each policy's measured size against its prediction from the design runner's logs.
 
 ## Interfaces and data
@@ -59,20 +59,21 @@
 
 - **Verify first:** Sanders's 21% shop-waste figure, before the markdown policy predicts from it (R6).
 - **Fifty-year drift checks are long:** 5,600 days per seed. Keep them in the nightly job.
-- **Resource collapse thresholds** depend on the regrowth model in M3.5 and M7. Re-check once M7's country resources exist.
+- **Resource collapse thresholds** depend on a regrowth model that City mode lacks: M3.5 builds the harvest and soil fertility but no fish or forest stocks, and M7.4 builds logistic regrowth only for the country. Re-check once M7's country resources exist.
 
 ## Open questions
 
 - **Owner:** Is the wealth tax's default 0% or 3%? Round 2 called a 3% default aggressive, and a nonzero default may move the Gini during the 50-year no-drift check. Suggested: default 0%, with 3% offered and labelled as above Denmark's 2.2%. Needed before: the step plan.
 - **Measure:** How many seeds can the 50-year drift check afford? Each seed's 5,600 days are about 8.1 million ticks, or 12 hours at the 5.3 ms budget for 10k agents (computed). Suggested: measure ticks per second first, then choose seeds, size and cadence, weekly if needed. Needed before: the step plan.
 - **Research:** Does Sanders's 21% shop-waste figure hold when opened? The markdown policy's 20% cut predicts from it, and R6 saw it only in a search summary. Suggested: open the source, and label the prediction "search summary" until then. Needed before: building.
+- **Design:** City mode has no fish or forest stocks, so the fishing and logging limits have nothing to act on before M7.4. Suggested: build the R6 resources notes' logistic stocks (part b) for the town here, or move those two policies to M7. Needed before: the step plan.
 
 ## Implementation notes
 
 Suggestions for the step plan, which makes the final call.
 
 - **Build order:** the three taxes on M2.5's balance sheets first, with the Gini sweep. Then credit and the poverty-trap meter, presets, resource and food policies, and harvest shocks last.
-- **Reuse:** M0.2's `mulPpm` for every tax, M5.1's prediction table and claims, M2.5's wealth spawn, M2.6's Engel check, and M3.5's harvest and regrowth.
-- **Keep it simple:** each resource policy is one parameter of M3.5's harvest or regrowth model, with no new ecology.
+- **Reuse:** M0.2's `mulPpm` for every tax, M5.1's prediction table and claims, M2.5's wealth spawn, M2.6's Engel check, and M3.5's harvest and fertility floor.
+- **Keep it simple:** each resource policy is one parameter of a harvest or regrowth model, with no new ecology beyond the R6 resources notes, part b.
 - **Pitfalls:** take the 4× mean threshold from the day-boundary snapshot, then tax in a fixed order. A debtor who dies leaves a debt; write it off against the lender as a booked loss, or the claims ledger drifts.
 - **Hard and easy parts:** a monotone Gini across five tax steps on paired seeds needs the most care. The presets and the poverty-trap meter are mechanical.

@@ -9,4 +9,4 @@ Part of [M5 Society and policy](../milestone.md).
 - **Owner decision first:** whether the year-in-review card pauses the run or appears without stopping it.
 - **Exit checks:**
   - the follow-the-news camera is off by default and never changes the state hash (Gazette);
-  - the year-end edition never breaks figures down by culture; this half of the Gazette tab's check is missing from the implementation plan (Gazette).
+  - the year-end edition never breaks figures down by culture (Gazette).

@@ -40,8 +40,8 @@
 ## Method and sources
 
 - **Generated towns and cities, versions, goldens and rebuilds:** the [R9 report](../../../../research/round-9-maps-and-world-builder/report.md), and [R9 map pipeline notes](../../../../research/round-9-maps-and-world-builder/notes/map-pipeline.md) and [edits and saves notes](../../../../research/round-9-maps-and-world-builder/notes/edits-and-saves.md).
-- **Stable settlement ids and context records:** [R4 architecture notes](../../../../research/round-4-multi-scale/notes/architecture-lod.md), part 3, and `tools/worldgen/model.py`'s `PlaceContext`.
-- **No wave function collapse or prefabs:** [R3 rendering notes](../../../../research/round-3-2d-look/notes/rendering-tooling.md).
+- **Stable settlement ids and context records:** [R4 world map notes](../../../../research/round-4-multi-scale/notes/world-maps.md), Q3, and `tools/worldgen/model.py`'s `PlaceContext`.
+- **No wave function collapse or prefabs:** the [R9 report](../../../../research/round-9-maps-and-world-builder/report.md), which drops the prefab blocks and WFC filler that the [R3 rendering notes](../../../../research/round-3-2d-look/notes/rendering-tooling.md) proposed.
 
 ## Tests for the exit checks
 

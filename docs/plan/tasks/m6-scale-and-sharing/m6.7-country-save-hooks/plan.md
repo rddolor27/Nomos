@@ -12,7 +12,7 @@
   - regions and markets;
   - per-settlement edit diffs;
   - the notables cache;
-  - multi-resolution history: daily for the recent past, weekly and yearly further back;
+  - multi-resolution history: weekly for a year and monthly before that, as M8.5 keeps it;
   - generator versions.
 
   Each section is a set of typed-array columns, gzipped with `CompressionStream` into OPFS, or into IndexedDB where OPFS is missing. Writes are atomic, as in M6.3.
@@ -55,7 +55,7 @@
 ## Open questions
 
 - **Owner:** Must the culture block fit the 0.5 MB save cap, or does the cap rise to round 8's 0.55–0.62 MB? Round 8 measured +50 KB gzip (top-3 sparse) to +118 KB (dense, mixed counts) at 10,000 settlements, on different synthetic countries. Suggested: measure the whole save first, and raise the cap to 0.6 MB only if it overruns. Needed before: the step plan.
-- **Measure:** How many bytes does each history resolution add at 10,000 settlements? History decides most of the save's size. Suggested: measure daily, weekly and yearly layers on M7's ledgers, then fix the recent window. Needed before: the step plan.
+- **Measure:** How many bytes does each history resolution add at 10,000 settlements? History decides most of the save's size. Suggested: measure the weekly and monthly layers on M7's ledgers. Needed before: the step plan.
 
 ## Implementation notes
 
