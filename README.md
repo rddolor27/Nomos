@@ -143,7 +143,7 @@ Code under `docs/research/*/prototypes/` is throwaway benchmark code from the re
 
 ## Commits
 
-Commits go straight to `main`; there is one maintainer. Messages follow [Conventional Commits](https://www.conventionalcommits.org/): a short `type(scope): description` header of at most 72 characters. The types are `feat`, `fix`, `chore`, `refactor`, `perf`, `test`, `docs`, `style`, `build`, `ci` and `revert`. Run `git config core.hooksPath .githooks` once per clone so the `commit-msg` hook checks the header.
+Commits go straight to `main`; there is one maintainer. Messages follow [Conventional Commits](https://www.conventionalcommits.org/): a short `type(scope): description` header of at most 72 characters, then a body whose `Task:` line names the work by ID and title, such as `Task: M0.1 Workspace and kernels, task 2: The sim-core lint profile`. The types are `feat`, `fix`, `chore`, `refactor`, `perf`, `test`, `docs`, `style`, `build`, `ci` and `revert`. Run `git config core.hooksPath .githooks` once per clone so the `commit-msg` hook checks the header.
 
 ## Names
 
