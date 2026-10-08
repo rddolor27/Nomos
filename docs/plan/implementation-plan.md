@@ -52,14 +52,14 @@ Budgets are in reference-machine (RM) milliseconds: a 4-vCPU Xeon cloud VM whose
 
 | System | 10k | 25k | 100k | Measured, optimised JS (10k / 25k / 100k) |
 | --- | --- | --- | --- | --- |
-| Movement | 0.10 | 0.25 | 0.8 | 0.061 / 0.153 / 0.642 |
+| Movement | 0.10 | 0.25 | 0.8 | 0.054 / 0.135 / 0.546 as built, on 256 headings (M0.6's bench, Node 24.18.0, Windows desktop, not the RM; 9 October 2026); round 5's prototype: 0.061 / 0.153 / 0.642 |
 | Spatial grid rebuild | 0.30 | 0.70 | 2.8 | 0.203 / 0.471 / 2.48 |
 | Perception: cell aggregates, plus capped and staggered exact queries | 1.0 | 2.5 | 6.0 | ≈ 0.57 / 1.42 / 5.61 (exact every tick: 2.90 / 6.99 / 28.9) |
 | Decisions: timing wheel or at least 1/8 stagger | 0.20 | 0.50 | 0.6 | ≈ 0.03 / 0.082 / 0.40 |
 | Other agent systems (needs, jobs, inventory, social) | 1.2 | 3.0 | 1.4 | Not built yet |
 | Pathfinding and events | 1.0 | 2.8 | 0.8 | Not built yet |
 | Ledger transfers | 0.15 | 0.4 | 0.3 | ≈ 3.7 ns per transfer |
-| Snapshot to the render thread | 0.10 | 0.2 | 0.6 | ≈ 0.1 |
+| Snapshot to the render thread | 0.10 | 0.2 | 0.6 | 0.040 / 0.100 / 0.407 as built (the same bench) |
 | Slack for GC, jitter and spikes | 1.25 | 2.95 | 2.7 | — |
 
 On 8 October 2026 the owner raised the 100k snapshot row from 0.3 to 0.6 ms, taken from the slack, after M0.3's snapshot writer measured 0.40 ms at 100k agents on a desktop.
@@ -79,10 +79,10 @@ On 8 October 2026 the owner raised the 100k snapshot row from 0.3 to 0.6 ms, tak
 **CI gates**
 
 - [ ] **Budget:** Playwright with headless Chromium, plus Node, runs each system at 10k, 25k and 100k agents and the country at 1k and 10k settlements; fail if the fastest of at least 9 samples exceeds its sub-budget by more than 10%. Medians drifted 10.8% between runs at the 90th percentile on a shared machine, so they would flake (R5).
-- [ ] **Allocation:** zero scavenges over 1,000 ticks per system after warm-up, at most 16 KB allocated in the young generation over a day of ticks, read from V8's heap-space statistics so garbage too small to scavenge still fails (added after M0.6's review on 9 October 2026), and heap growth under 64 KB a tick, read from Node's `perf_hooks` GC events (R5).
+- [x] **Allocation:** zero scavenges over 1,000 ticks per system after warm-up, at most 16 KB allocated in the young generation over a day of ticks, read from V8's heap-space statistics so garbage too small to scavenge still fails (added after M0.6's review on 9 October 2026), and heap growth under 64 KB a tick, read from Node's `perf_hooks` GC events (R5).
 - [ ] **Lint:** an ESLint `no-restricted-syntax` profile for hot folders, their class methods, getters and setters included, bans literals, closures, `new`, spread, `for…of`, array callbacks, `subarray`, `BigInt`, `Math.random`, transcendental `Math` and clocks; in testing it caught every violation (R5, Structure).
 - [ ] **Determinism:** golden state hashes for fixed seeds match across Node (V8), Bun (JavaScriptCore, a Safari proxy) and Chromium, and between JS and WASM for integer systems, tested on full-mantissa data (R5).
-- [ ] **Ledger and size:** total cents match exactly every tick, and the WASM core stays under 64 KB gzip (R5).
+- [ ] **Ledger and size:** total cents match exactly every tick, and the WASM core stays under 64 KB gzip, a rule that arms with M6.2, when the first WASM core lands (R5).
 
 **Load, download and memory**
 
@@ -90,9 +90,9 @@ A cold first visit should draw its first frame within 1.5 s and be interactive w
 
 | Budget | Limit | Measured, stand-in build |
 | --- | --- | --- |
-| Bytes before the first frame (HTML, initial JS, map; brotli) | ≤ 100 KB, of which JS ≤ 35 KB | 42.5 KB |
-| First frame, cold Fast 4G with mid-tier phone CPU | ≤ 1.5 s | 1.06–1.21 s |
-| Interactive | ≤ 2.0 s | 1.55–1.66 s |
+| Bytes before the first frame (HTML, initial JS, map; brotli) | ≤ 100 KB, of which JS ≤ 35 KB | 19.0 KB as built, 16.7 KB of it JS (M0.6's startup gate, 9 October 2026); round 5's stand-in: 42.5 KB |
+| First frame, cold Fast 4G with mid-tier phone CPU | ≤ 1.5 s | 1.37 s here at CPU rate 8.5 (Chromium 156, Windows desktop) and 1.49 s on GitHub's runner at rate 7, medians of 7 cold loads (9 October 2026); round 5's stand-in: 1.06–1.21 s |
+| Interactive | ≤ 2.0 s | 1.72–1.77 s here and 1.90 s on GitHub's runner, in the same runs; round 5's stand-in: 1.55–1.66 s |
 | Repeat visit with a service worker, first frame | ≤ 0.6 s | 0.36–0.39 s |
 | Everything, including the town atlas | ≤ 450 KB | ≈ 363 KB |
 | App memory at 10k / 25k / 100k agents | ≤ 64 / 72 / 160 MB, plus any WASM reservation | 12.3 MB at 10k and 17.0 MB at 100k, plus a 16 MiB atlas |
@@ -107,8 +107,8 @@ A cold first visit should draw its first frame within 1.5 s and be interactive w
 
 **Load CI gates**
 
-- [ ] **Bytes:** size-limit with brotli on every chunk, failing on any overrun: initial JS ≤ 17 KB for the stand-in (the owner raised it from 12 KB on 9 October 2026) and ≤ 35 KB in production, town map ≤ 40 KB, atlas ≤ 300 KB (R5).
-- [ ] **Startup:** a Playwright benchmark of 7 cold loads on throttled Fast 4G, with the CPU calibrated to a mid-tier phone (Lighthouse BenchmarkIndex ≈ 375). It fails when the median exceeds the budget, or regresses by more than 15% and 20 ms against `main`. Chrome's CPU throttling skips workers, so the worker gets a matching busy-wait (R5).
+- [x] **Bytes:** size-limit with brotli on every chunk, failing on any overrun: initial JS ≤ 17 KB for the stand-in (the owner raised it from 12 KB on 9 October 2026) and ≤ 35 KB in production, town map ≤ 40 KB, atlas ≤ 300 KB (R5).
+- [x] **Startup:** a Playwright benchmark of 7 cold loads on throttled Fast 4G, with the CPU calibrated to a mid-tier phone (Lighthouse BenchmarkIndex ≈ 375). It fails when the median exceeds the budget, or regresses by more than 15% and 20 ms against `main`. Chrome's CPU throttling skips workers, so the worker gets a matching busy-wait (R5).
 - [ ] **Memory and frames:** `measureUserAgentSpecificMemory` in full Chromium against the tier budgets, with growth of at most 2 MB over 60 s, plus frame-time regression checks; there is no absolute frame-rate gate under software WebGL (R5); the owner moved this gate to M6.2 on 8 October 2026, where 100k agents make it meaningful.
 - [ ] **Lighthouse CI (optional):** gate the first-frame and interactive user timings; it cannot throttle the worker (R5).
 
@@ -120,7 +120,7 @@ Goal: a deterministic core, the worker loop and the renderer contract, drawing S
 
 **Build**
 
-- [ ] Set up the pnpm monorepo: `sim-core` (pure TypeScript, no DOM), `sim-protocol`, `sim-worker`, `render-gl`, `apps/web`, `tools/cli`, `tools/bench` (R1).
+- [x] Set up the pnpm monorepo: `sim-core` (pure TypeScript, no DOM), `sim-protocol`, `sim-worker`, `render-gl`, `apps/web`, `tools/cli`, `tools/bench` (R1).
 - [x] Write the `AgentStore` of typed columns and seeded sfc32 streams per subsystem, with every random draw keyed to a stable agent ID and tick (R1, R2).
 - [x] Write the integer-cent ledger with a MINT account, and run `checkInvariants` every tick in development (R1).
 - [x] Lint-ban `Math` transcendental functions and `**` in `sim-core`; use @stdlib-built lookup tables in per-agent code and @stdlib calls elsewhere (R2).
@@ -131,10 +131,10 @@ Goal: a deterministic core, the worker loop and the renderer contract, drawing S
 - [x] Load `town.ldtk` in the worker (IntGrid walkability and zone entities, quicktype types) and draw its zone colours as Skin A's minimap (R3).
 - [x] Build the camera: integer device-pixel zoom, `devicePixelContentBoxSize` with a Safari fallback, texel and pixel snapping, no CSS scaling (R3).
 - [x] Add the skin switch: `?skin=dots|blobs|town`, a toolbar toggle and an automatic policy; unbuilt skins fall back to dots (R3).
-- [ ] Add uPlot charts and a per-system millisecond HUD (R1).
+- [x] Add uPlot charts and a per-system millisecond HUD (R1).
 - [ ] Set device tiers: phones 10k agents, 25k after a start-up check, 100k desktop only (R2).
-- [ ] Lay out `assets/` by licence family with `assets/LICENSES.md`, a git-ignored slot for paid packs and an atlas build stub (R3).
-- [ ] Cover accessibility basics: Play/Pause first in tab order, start paused under reduced motion, a data table for each chart (R2).
+- [x] Lay out `assets/` by licence family with `assets/LICENSES.md`, a git-ignored slot for paid packs and an atlas build stub (R3).
+- [x] Cover accessibility basics: Play/Pause first in tab order, start paused under reduced motion, a data table for each chart (R2).
 - [x] Make every draw a counter-based hash, `draw(seed, entity, tick, stream)`, built from `Math.imul`, xor and shifts, with separate salts for agents and ledgers, so a focus change can never shift another draw (R4).
 - [x] Reserve ledger account ranges for MINT, a national treasury, per-settlement sector accounts (households, firms, local government, police budget) and a rounding account, keeping the one-line Σ = 0 invariant (R4).
 - [x] Add a day-boundary phase to the fixed-step loop where aggregate commits and any tier switch that writes canonical state take effect, and record focus changes as tick-stamped inputs (R4).
@@ -142,10 +142,10 @@ Goal: a deterministic core, the worker loop and the renderer contract, drawing S
 - [ ] Add a plan-then-apply helper for flows between entities, with a metamorphic test that shuffles iteration order, and extend the `Math` lint to world-generation and map code (R4).
 - [x] Allocate sim state as SoA typed arrays in one `WebAssembly.Memory` reserved at start for the device tier (32 MB on phones, 64–128 MB on desktops) and never grown; JS systems use views created once (R5).
 - [x] Store replay-relevant positions as Q8 or Q16 fixed-point Int32 with power-of-two grid cells, keep money as integer-valued `Float64Array` cents, and keep `BigInt` out of hot code (R5).
-- [ ] Set up the compute and load CI gates from the Performance budget section, recording `/proc/loadavg` beside every timing (R5).
-- [ ] Start the sim worker and the map fetch from an inline `<head>` script, and load uPlot and lil-gui only after the first frame (R5).
+- [x] Set up the compute and load CI gates from the Performance budget section, recording `/proc/loadavg` beside every timing (R5).
+- [x] Start the sim worker and the map fetch from an inline `<head>` script, and load uPlot and lil-gui only after the first frame (R5).
 - [x] Convert `town.ldtk` at build time into a compact binary map, served with a compressible content type (R5).
-- [ ] Build the HUD in vanilla TypeScript and any richer UI (inspector, event log) in Solid, or Preact with signals; never React (R5).
+- [x] Build the HUD in vanilla TypeScript and any richer UI (inspector, event log) in Solid, or Preact with signals; never React (R5).
 - [x] Record 1,440 ticks per sim day and 112 days per sim year (4 seasons of 28 days) in `sim-protocol`; convert every half-life and rate from them at build time (R6, Calendar).
 - [x] Add a claims ledger beside the cash ledger, one record per loan (lender, borrower, principal in cents, rate in ppm, payment), asserting Σ borrower debt = Σ lender loan assets every day (R6).
 - [x] Add `mulPpm`, an exact floor of cents × ppm through a 10⁶ split with a ±1 correction, and lint-ban raw `cents * rate` in `sim-core` (R6).
@@ -157,42 +157,42 @@ Goal: a deterministic core, the worker loop and the renderer contract, drawing S
 - [x] Add culture columns to `AgentStore`: `culture` and `birthCulture` (Uint8), `customs` (Uint16, four 4-bit culture-of-origin nibbles for food, festival, music and naming) and `homeRegion` (Uint16), at most 8 cultures per world, drawn on their own keyed stream; document the layout in `sim-protocol` (R8).
 - [ ] Put culture code in its own package, `sim-culture`: preference rows, festival calendar, naming rules, region ids, and the splits by culture of migration flows and spawned households, which act on totals from culture-blind code. Add a dependency-cruiser `reachable` rule and an ESLint profile so crime, police, labour, wage, wealth, ability, housing and migration code can neither import it nor read culture columns by property, destructuring or brackets (R8).
 - [x] Add a `hue` column (Uint8), now a one-byte look: one of 96 looks, a body hue (sun, lilac, rose, ice, mint, silver) × eye shape × pattern, drawn uniformly at birth from draw(seed, LOOK, id) and never inherited. Only the renderer reads it, drawing body, pattern, face, then job item; no sim rule ever does (content rule 1) (R8, R9).
-- [ ] Key culture-level draws, such as festival scheduling, by a stable culture uid, never its index. Never key a guarded decision's draw on culture, never let culture set a loop order that matters, and never index anything but custom tables by culture (R8).
-- [ ] Add the relabel test to every pull request: permuting culture ids together with their custom rows leaves every non-culture state hash identical (R8).
+- [x] Key culture-level draws, such as festival scheduling, by a stable culture uid, never its index. Never key a guarded decision's draw on culture, never let culture set a loop order that matters, and never index anything but custom tables by culture (R8).
+- [x] Add the relabel test to every pull request: permuting culture ids together with their custom rows leaves every non-culture state hash identical (R8).
 - [x] Add a stride scheduler for staggered checks: agent i is due on day d when i ≡ d − offset (mod P), with the offset re-keyed yearly. It reads a day-boundary snapshot, applies an ordered change list, and gives identical hashes in reversed visiting order (R8).
 - [x] Give the keyed draw a murmur3-style finaliser after every input, and extend the χ² test to cross-stream pairs (R8).
 - [x] Split every flow of people by culture with keyed stochastic rounding, never flooring or plain largest remainder (R8).
-- [ ] Extend the name lint with a real-world fixture of countries, demonyms, languages, ethnonyms and religions, and add text lints that reject bare-plural generic sentences and hierarchy words in culture strings (R8).
-- [ ] Make worldgen's `draw(seed, stream, ...keys)`, with the seed hashed first, the sim's single keyed draw, with fixed-arity hot-path variants. Lint-ban bare `/` and `%` in generator code outside floor-division helpers (R9).
+- [x] Extend the name lint with a real-world fixture of countries, demonyms, languages, ethnonyms and religions, and add text lints that reject bare-plural generic sentences and hierarchy words in culture strings (R8).
+- [x] Make worldgen's `draw(seed, stream, ...keys)`, with the seed hashed first, the sim's single keyed draw, with fixed-arity hot-path variants. Lint-ban bare `/` and `%` in generator code outside floor-division helpers (R9).
 - [x] Define one binary map for generated and hand-made maps: terrain kinds, IntGrid walkability, and entities (homes with capacity, workplaces, shops with hours, civic buildings) (R9).
-- [ ] Publish the sprite manifest as a versioned JSON Schema with generated TypeScript types. Maps name frames, never atlas indices (R9).
+- [x] Publish the sprite manifest as a versioned JSON Schema with generated TypeScript types. Maps name frames, never atlas indices (R9).
 - [x] Add a calendar module to sim-core: day = tick ÷ 1,440, year = day ÷ 112 + 1, season = day of the year ÷ 28, and weekday = day mod 7 (5 workdays, 2 rest days), plus a build-time table of sunrise and sunset minutes; integer maths only (Calendar).
 - [ ] Group every package's source into concern folders directly under `src/`, keeping only entry files at `src/` and changing no behaviour, and lint the layout, the hot folders and class methods (Structure).
 - [ ] Add the `Blob` handle: one per world, re-pointed to a row with `at(index)`, with accessors for position, velocity, heading, action, facing, the name key and the wallet. Per-tick loops use its accessors or plain columns and call no method per blob (Structure, R5).
 - [ ] Give every blob a name: a 32-bit `nameKey` drawn at birth and never read by the sim, shown as "Given Family" from a generated table of 1,024 words of the shared sound set, round 8's design H, each passing a person-name filter pulled forward from M3's name filter (Structure, R8).
 - [ ] Give every blob a wallet: one cash account per blob in the cash ledger, opened at birth from MINT with 100,000 cents (1,000.00), the owner's opening balance, inside the invariant that all accounts plus MINT sum to zero. Production workers then skip the per-tick check, which tests, the CLI and development builds keep (Structure, R1, R4).
 - [ ] Show a clicked blob's name and wallet in the inspector's shell, a small panel loaded on demand, which M3's click-to-explain inspector grows from (Structure, R1).
-- [ ] Let blobs walk in any direction instead of only up, down, left and right, an owner request built ahead of M0.7, with gentle turns and walls that slide the walker, keeping movement exact and within its budget (Structure).
+- [x] Let blobs walk in any direction instead of only up, down, left and right, an owner request built ahead of M0.7, with gentle turns and walls that slide the walker, keeping movement exact and within its budget (Structure).
 
 **Exit checks**
 
-- [ ] Seed 42 gives an identical state hash at tick 1,000 across runs, and identical replay hashes in Chromium, Firefox and WebKit (R1, R2).
+- [x] Seed 42 gives an identical state hash at tick 1,000 across runs, and identical replay hashes in Chromium, Firefox and WebKit (R1, R2).
 - [x] The ledger sums to zero on every tick (R1).
 - [x] Skin A draws a 10k-agent replay in at most 1 ms of main-thread time per frame in CI, and golden-frame statistics agree at 1–4× zoom and device pixel ratios 1, 1.5 and 2 in all three engines (R3).
-- [ ] CI passes context-loss recovery, pause on hide, outline contrast of at least 3:1, role colour difference of at least ΔE 20 under three simulated colour-blindness types, a name lint rejecting "pokemon" and "poké", and a library budget of about 45 KB gzip (R2, R3).
+- [x] CI passes context-loss recovery, pause on hide, outline contrast of at least 3:1, role colour difference of at least ΔE 20 under three simulated colour-blindness types, a name lint rejecting "pokemon" and "poké", and a library budget of about 45 KB gzip (R2, R3).
 - [x] The same (seed, entity, tick, stream) gives the same draw in any visiting order, and a 16-bucket χ² test over a million entities passes (R4).
 - [x] Apportionment sums exactly and matches a BigInt reference over 10,000 random cases, including totals above 2^53 ÷ 4,095; logging a focus change that touches nothing leaves the replay hash unchanged (R4).
-- [ ] The compute gates, size-limit and the startup benchmark run on every pull request, and the M0 pipeline passes all of them (R5).
-- [ ] The CI budget gate gains a day-slice row: worst slice ≤ 0.35 ms RM at every tier, with the zero-scavenge window covering a full day of slices (R6).
+- [x] The compute gates, size-limit and the startup benchmark run on every pull request, and the M0 pipeline passes all of them (R5).
+- [x] The CI budget gate gains a day-slice row: worst slice ≤ 0.35 ms RM at every tier, with the zero-scavenge window covering a full day of slices (R6).
 - [x] The claims and cash identities hold exactly every day, and no revaluation changes the MINT balance (R6).
-- [ ] The lint profile and dependency-cruiser catch planted direct, property, destructuring, bracket and transitive violations, and pass the consumption package (R8).
-- [ ] The relabel test gives identical hashes for 3 seeds × 1 simulated year (R8).
-- [ ] The kernel fuzzer (draw, below, fade, value, fbm) matches the Python vectors in Node, Bun, Chromium, Firefox and WebKit (R9).
+- [x] The lint profile and dependency-cruiser catch planted direct, property, destructuring, bracket and transitive violations, and pass the consumption package (R8).
+- [x] The relabel test gives identical hashes for 3 seeds × 1 simulated year (R8).
+- [x] The kernel fuzzer (draw, below, fade, value, fbm) matches the Python vectors in Node, Bun, Chromium, Firefox and WebKit (R9).
 - [x] Every date round-trips through its tick count; a season is 28 days and 4 weeks, a year is 112 days, and every season starts on a workday (Calendar).
 - [ ] After the move into concern folders, seed 42's replay hashes equal the goldens at every tier, and the layout lint rejects a planted file at `src/` (Structure).
 - [ ] `move` through the handle's accessors stays within 10% of the column loop at every tier with zero scavenges, and every word in the name table passes the full person-name filter (Structure, R5, R8).
 - [ ] With a wallet per blob, all accounts plus MINT sum to zero every tick at every tier, and clicking a blob shows its name and wallet in Chromium, Firefox and WebKit (Structure, R1).
-- [ ] Blobs walk in any direction, the replay goldens match in Node, Bun, Chromium, Firefox and WebKit, and `move` stays within its budget at every tier (Structure, R5).
+- [x] Blobs walk in any direction, the replay goldens match in Node, Bun, Chromium, Firefox and WebKit, and `move` stays within its budget at every tier (Structure, R5).
 
 ## M1 Lab mode
 
