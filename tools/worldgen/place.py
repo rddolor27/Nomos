@@ -1501,7 +1501,7 @@ def build_settlement(site):
     settlement_people(site)
 
 
-def build(ctx):
+def build_site(ctx):
     w, h = VISTA_SIZE if ctx.wonder else SIZES[ctx.tier]
     site = Site(ctx, w, h)
     lay_ground(site)
@@ -1509,7 +1509,11 @@ def build(ctx):
         build_vista(site)
     else:
         build_settlement(site)
-    return site.layout()
+    return site
+
+
+def build(ctx):
+    return build_site(ctx).layout()
 
 
 # --------------------------------------------------------------------------------- wonder sites
