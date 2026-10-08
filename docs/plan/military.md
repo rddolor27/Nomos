@@ -14,7 +14,7 @@ Soldiers defend and patrol roads; they never police towns. Content rule 6 carrie
 4. **Soldiers are a removable job,** like every role. The helmet and baldric come off at home, and nobody is born a soldier.
 5. **Soldiers carry no culture.** Recruitment and postings never read culture, region, looks or wealth, and no uniform colour matches a culture emblem.
 6. **Road stops are drawn like town stops.** If patrols stop travellers, wrongful stops show as prominently as arrests. Bandits are an act, never a costume.
-7. **There are no wars.** The military deters raids on the roads. There is no enemy country, siege or battle, and no battle sound.
+7. **There are no wars.** The military deters raids on the roads. A world holds 3–5 countries, but neighbours share laws and money and are never enemies (owner, 9 October 2026). There is no enemy country, siege or battle, no checkpoint, toll or stop at a border, and no battle sound.
 
 ## How it works in the sim
 
@@ -24,9 +24,9 @@ The military is a paid public job plus three placed structures. Its one effect o
 | --- | --- | --- | --- |
 | Soldier job | A public-sector job paid from taxes, with shifts like other jobs, home after work | M2 wages and taxes; M3 schedules | M3 |
 | Defence budget | A policy set before Run: the number of soldier posts and their pay, funded from taxes. Its predicted effect on raids and taxes shows before Run, and a new value forks a branch | M5 treasury and policy sliders | M5 |
-| Garrisons | Soldier posts in the capital and in coastal or border towns, sized by the budget; drawn as barracks | Settlement tiers and coasts from the generator | M7 ledger, M8 map |
+| Garrisons | Soldier posts in each country's capital and in coastal or border towns, sized by the budget; drawn as barracks | Settlement tiers, coasts and country borders from the generator | M7 ledger, M8 map |
 | Patrols | Each route ledger gets a patrol intensity from nearby garrisons and the budget. Raids fall as patrols rise, and a raid is recorded only when reported or seen | Round 4's route ledgers: traffic, bandit pressure, patrols, incidents | M7 |
-| Forts and watchtowers | Forts at road junctions near coasts and borders; watchtowers along long road stretches | The generator's road graph | M8 |
+| Forts and watchtowers | Forts at road junctions near coasts and borders; watchtowers along long road stretches | The generator's road graph and country borders | M8 |
 | Route strip view | Soldiers walk the road, aligned to the route ledger | Round 4's strip view | M9 |
 
 - **Money stays exact.** Soldier wages move from the treasury to soldiers' accounts in whole cents, like any public wage, so all accounts plus MINT still sum to zero.
@@ -34,9 +34,9 @@ The military is a paid public job plus three placed structures. Its one effect o
 - **True and recorded stay apart.** The route ledger counts true and recorded raids separately. The chance a raid is recorded rises with patrol intensity and traffic, so a quiet, unpatrolled stretch records few of its raids.
 - **Guarded decisions follow round 8:** each posting, patrol and stop is an integer threshold and one keyed draw, and the flip test covers them.
 - **Watch-only:** the defence budget is set before Run, like every policy. Trying another budget forks a branch.
-- **Placement reads the generator:** garrison towns from settlement tiers and coasts, forts from road junctions, watchtowers from long road segments. M8 tunes the spacing against generated previews.
+- **Placement reads the generator:** garrison towns from settlement tiers, coasts and borders, forts from road junctions near coasts and borders, watchtowers from long road segments. M8 tunes the spacing against generated previews.
 
-Open: with no neighbouring country, what counts as a border? The map edge, mountain passes or region lines?
+Borders: each world now holds 3–5 countries (owner, 9 October 2026), so a border is the land boundary between two of them, where neighbouring land cells belong to different countries. Coasts stay their own case, and neither the map edge nor region lines count. A border town or fort lies within 3 cells of a border, a proposed reach tuned on previews. A road that crosses a border is patrolled from garrisons on both sides, and no soldier, barracks or fort carries a country's colour, name or emblem.
 
 ## Art and sound (done)
 
@@ -70,7 +70,7 @@ With the art and sounds done, about 5–8 days of game code remain (unsourced es
 | M3 City life | The soldier job: wages from taxes, shifts, home after work; the job item comes off at home | 1 |
 | M5 Society and policy | The defence budget, set before Run, with its predicted effect on raids and taxes | 1–2 |
 | M7 Country of ledgers | Garrison posts, and patrol intensity on route ledgers, with true and recorded raids kept apart | 1–2 |
-| M8 Country map | Garrisons, forts and watchtowers placed by the generator; their map icons; the military sounds | 1–2 |
+| M8 Country map | Garrisons, forts and watchtowers placed by the generator, near coasts and country borders; their map icons; the military sounds | 1–2 |
 | M9 Zoom across scales | Patrols walking the route strip view | 1 |
 
 **Exit checks:**
