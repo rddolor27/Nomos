@@ -52,4 +52,15 @@ describe('the sim-core lint profile', { timeout: 30_000 }, () => {
     }
     expect(await profileMessageCount('c * ratePpm', 'packages/sim-core/src/money.ts')).toBe(0);
   });
+
+  it('allows BigInt only in the apportionment module', async () => {
+    const bigint = 'export const z = BigInt(1) + 2n';
+    expect(await profileMessageCount(bigint, 'packages/sim-core/src/apportion.ts')).toBe(0);
+    for (const filePath of ['src/split.ts', 'src/apportion-big.ts', 'src/apportion/inner.ts']) {
+      expect(await profileMessageCount(bigint, `packages/sim-core/${filePath}`), filePath).toBeGreaterThan(0);
+    }
+    for (const code of ['Math.exp(1)', 'c * ratePpm', 's.look[0]']) {
+      expect(await profileMessageCount(code, 'packages/sim-core/src/apportion.ts'), code).toBeGreaterThan(0);
+    }
+  });
 });

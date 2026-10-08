@@ -78,4 +78,9 @@ export default defineConfig(
     files: ['packages/sim-core/src/money.ts'],
     rules: { 'no-restricted-syntax': syntaxBansWithout(RATE_PRODUCTS) },
   },
+  {
+    // Apportionment takes BigInt once total * weight reaches 2^53, and never runs per tick (R4).
+    files: ['packages/sim-core/src/apportion.ts'],
+    rules: { 'no-restricted-syntax': syntaxBansWithout(BIGINT_SYNTAX) },
+  },
 );
