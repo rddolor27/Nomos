@@ -58,6 +58,10 @@ jobs:
           restore-keys: perf-baseline-
       - run: pnpm --filter @nomos/web startup
       - run: node tools/bench/src/assert-startup.ts
+      # The run's figures as an annotation, which anyone can read without signing in to the logs.
+      - if: always()
+        run: |
+          node -e "const fs = require('node:fs'); const p = 'apps/web/test-results/startup.json'; console.log(fs.existsSync(p) ? '::notice title=Startup::' + JSON.stringify(JSON.parse(fs.readFileSync(p, 'utf8'))) : '::warning title=Startup::no results file');"
       - if: always()
         uses: actions/upload-artifact@v7
         with:
