@@ -6,7 +6,7 @@
 
 ## Approach
 
-- **Bet cards, not rules cards.** Students who predict first learn more than those who only watch ([R2 summary](../../../../research/round-2-follow-up/summary.md), "Bet cards, not rules cards"). A card runs in five steps:
+- **Bet cards, not rules cards.** Students who predict first learn more than those who only watch (Crouch et al., search summary; [R2 summary](../../../../research/round-2-follow-up/summary.md), "Bet cards, not rules cards"). A card runs in five steps:
   1. state the question;
   2. lock a prediction;
   3. Run on the card's hand-picked first seed, labelled as picked;
@@ -40,7 +40,7 @@
   - At 100,000 agents this leaves only a few times normal speed while drawing ([calendar.md](../../../calendar.md), "Watching").
   - The cap reads only timings and never sim state, so it cannot change a result.
 - **HUD date:**
-  - It reads "Spring 12, Year 3 · 08:40 · morning · rest day", built from M0.1's calendar functions and the light period below.
+  - It reads "Spring 12, Year 3 · 08:40 · morning · workday", built from M0.1's calendar functions and the light period below.
   - The season icon is `season_{spring,summer,autumn,winter}_16` from `assets/sprites/seasons.json`, and a bar shows the year's progress (day of the year ÷ 112).
   - The art exists; wire it in.
 - **Light periods (R3, Calendar):**

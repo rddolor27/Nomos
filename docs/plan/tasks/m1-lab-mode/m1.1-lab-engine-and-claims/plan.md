@@ -6,7 +6,7 @@
 
 ## Approach
 
-- **Two modes, one engine.** Lab mode runs Primer-style scenarios in discrete days with small populations and answers worked out on paper. It doubles as the test oracle for city mode ([R1 full report](../../../../research/round-1-baseline/full-report.md), "Primer's blob simulations").
+- **Two modes, one engine.** Lab mode runs Primer-style scenarios in discrete days with small populations and answers worked out on paper. It doubles as the test oracle for city mode ([R1 full report](../../../../research/round-1-baseline/full-report.md), "Primer contributes a verification habit, not reusable code").
 - **A lab day resolves in one step, then plays as animation.** `labDay` settles the day's contests and trades at once. The worker then plays the day's phases as ticks, moving dots along keyed paths between phase keyframes, so speed controls, snapshots and the renderer work exactly as in city mode.
 - **Phases follow Primer:** morning stock, daytime contests and trade, evening home, night settlement. Primer's phase lengths are 0.5, 0.25, 4, 0.25 and 0.5 s ([R1](../../../../research/round-1-baseline/findings-and-plan.md), "Presentation patterns"). M1.2's owner decision sets how long a lab day lasts at 1×. Until then the phase lengths are one constant table.
 - **Two cards:**
@@ -61,7 +61,7 @@
   - Otherwise **Inconclusive**.
   - The two-stage variant keeps 20 seeds for speed: Holds at once if p < 0.001, stops if A < 0.55, and otherwise extends to 50.
   - Apply Holm's correction beyond about 20 claims.
-  - Source: [R2 summary](../../../../research/round-2-follow-up/summary.md), "Validation".
+  - Source: [R2 summary](../../../../research/round-2-follow-up/summary.md), "Validation method".
 - **Wilcoxon library:** use `@stdlib/stats-wilcoxon`, because `simple-statistics`' `wilcoxonRankSum` returns only the rank sum. Check it once against SciPy (R2).
 - **Properties:** Wald's sequential test of a 95% against an 85% pass rate. It accepts after 27 straight passes and rejects after 3 straight failures (R2).
 - **Estimates:** a claim passes when its confidence interval lies inside the target ± a stated margin, the equivalence logic of Axtell et al. (R2).

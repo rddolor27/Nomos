@@ -26,7 +26,7 @@
   - static files on Cloudflare Pages or Netlify;
   - `Cache-Control: public, max-age=31536000, immutable` on hashed `/assets/*` through `_headers`;
   - COOP and COEP headers;
-  - the hand-written service worker from M0.5.
+  - no service worker yet, since M6.2 builds it, not M0.5.
 
   Deploy only from `main`, after the M1 exit checks pass.
 
@@ -80,6 +80,7 @@
 - **Owner:** Cloudflare Pages or Netlify? The deploy workflow, its secret and the header checks depend on the host. Suggested: Cloudflare Pages, whose header, caching and compression docs R5 opened; it could not confirm Netlify's compression ([R5 load notes](../../../../research/round-5-performance/notes/load-memory.md), §5). Needed before: the step plan.
 - **Owner:** who takes the playtests, and how many? R3 sets 8 of about 10 novices but no panel sizes, and recruiting is the slowest step. Suggested: exactly 10 novices, about 3 colour-blind players and 5–8 panellists, all adults and unnamed (unsourced estimate). Needed before: building.
 - **Measure:** does the host compress the binary map once `_headers` gives it a compressible type? R5 could not verify it (§4), and its test map would ship at 593 KB instead of 33 KB. Suggested: check the response on the first preview deploy, and if it fails, pre-gzip the map and inflate it with `DecompressionStream`. Needed before: launch.
+- **Owner:** ship the public lab without offline play? M6.2 builds the service worker. Suggested: yes; lab mode needs no offline play, and M6.2 adds it before launch. Needed before: the step plan.
 
 ## Implementation notes
 

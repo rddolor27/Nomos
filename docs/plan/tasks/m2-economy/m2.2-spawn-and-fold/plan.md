@@ -45,7 +45,7 @@
 - **Spawn and fold, keyed draws, exactness and timings:**
   - [R4 architecture notes](../../../../research/round-4-multi-scale/notes/architecture-lod.md), part 3: "Own measurement: zoom-in and zoom-out", and 3.3–3.7 on zoom-in, fold, conservation and determinism;
   - prototype: [bench_spawn.mjs](../../../../research/round-4-multi-scale/prototypes/lod/bench_spawn.mjs). Its spawn took about 7 ms at 100k agents (measured there), and it is research code that must not be imported.
-- **Households adjacent in index:** [R6 wealth notes](../../../../research/round-6-goods-and-wellbeing/notes/wealth-assets.md), part e.
+- **Households adjacent in index:** [R6 integration-cost notes](../../../../research/round-6-goods-and-wellbeing/notes/integration-cost.md), part 2.
 - **Homes from the binary map:** [R9 summary](../../../../research/round-9-maps-and-world-builder/summary.md) and M0.4's `MapV1`.
 - **MSER-5 for the burn-in comparison:** M2.1.
 
@@ -64,7 +64,7 @@
 ## Risks and unknowns
 
 - **Deno is new to CI.** It needs its own setup step. If it cannot run the workspace's TypeScript as-is, run the CLI's bundled output.
-- **The 10 ms budget excludes map lookups and job matching,** as round 4 measured. Job matching by firm size may need a counting sort to stay inside it.
+- **Round 4's timing excluded map lookups and job matching,** but the 10 ms budget excludes only map lookups. Job matching by firm size may need a counting sort to stay inside it.
 - **Records from M7's country tier** must use the same layout. Keep `SettlementRecord` in `sim-protocol` and version it.
 
 ## Open questions

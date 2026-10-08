@@ -43,7 +43,7 @@
 - **Household columns:** `deposits`, `durables` and `illiquid` in cents (`Float64Array`); `debtClaim` (`Int32Array`, a claims-ledger index or −1); and `incomeHabitQ16` (`Int32Array`, in M3's life-satisfaction block, reserved here).
 - **Firm-share registry:** M0.2's quantity registry, keyed (firm, holder household).
 - **Revaluation line:** `{ day, asset, quantityTotal, indexPpm, valueCents }`, logged and never posted to MINT.
-- **Presets:** `euroLike` and `usLike`, each a quantile table of 64 points and a target Gini and top-10% share.
+- **Presets:** `euroLike` and `usLike`, each a quantile table of 64 points (R6 suggests 16–32 knots) and a target Gini and top-10% share.
 
 ## Method and sources
 

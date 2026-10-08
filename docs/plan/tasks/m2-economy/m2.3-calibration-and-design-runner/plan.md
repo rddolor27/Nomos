@@ -51,7 +51,7 @@
 
 ## Method and sources
 
-All the targets come from the [R2 economy calibration notes](../../../../research/round-2-follow-up/notes/economy-calibration.md):
+All the targets come from the [R2 economy calibration notes](../../../../research/round-2-follow-up/notes/economy-calibration.md), where every official statistic is a search summary:
 - **Price and wage stickiness:** prices change in 9–12% of months, and about 2% of job-stayers see a pay cut a year (Key Question 1).
 - **Labour flows:** about 26% of the unemployed find work each month, plus job-to-job moves (Key Question 2).
 - **Firm dynamics:** survival, markups and inventories (Key Question 3).

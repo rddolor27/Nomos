@@ -39,7 +39,7 @@
 
 - **Event record:** `{ id, tick, kind, from, to, cents }`, in M1.3's pooled event buffer. `kind` comes from a closed enum.
 - **`ECONOMY_GLYPHS`:** `Record<EconomyEventKind, FrameName>`. A test enumerates the enum to prove the table is total and one-to-one.
-- **Rate tables:** for each annual rate in ppm, the daily rate in ppm, as integer tables. They come from p\_day = 1 − (1 − p)^(1/112), computed in the build script.
+- **Rate tables:** for each annual rate in ppm, the daily rate in ppm, as integer tables. They come from p\_day = 1 − (1 − p)^(1/112) for hazards and (1 + r)^(1/112) − 1 for interest, computed in the build script.
 
 ## Method and sources
 

@@ -45,8 +45,8 @@
 
 ## Interfaces and data
 
-- **Preference row:** `Int16Array` of 7 entries per culture: six food categories plus the wares-against-services split, in ppm of the neutral share, summing to zero.
-- **Household shift:** `Int16Array` of 7 entries per household, written only on household or culture change. It sits in a `consumption`-owned block, so guarded code never sees it.
+- **Preference row:** `Int32Array` of 7 entries per culture: six food categories plus the wares-against-services split, in ppm of the neutral share, summing to zero.
+- **Household shift:** `Int32Array` of 7 entries per household, written only on household or culture change. It sits in a `consumption`-owned block, so guarded code never sees it.
 - **`spawnFromLedger`'s record** gains culture counts per settlement. `foldToLedger` returns them exactly.
 
 ## Method and sources
@@ -55,7 +55,7 @@
   - [R8 customs notes](../../../../research/round-8-cultures/notes/customs-preferences.md): part a for food and goods, part b for equal festival budgets, and part e for cost;
   - prototypes [`icp_taste.mjs`](../../../../research/round-8-cultures/prototypes/customs/icp_taste.mjs), [`welfare_bound.mjs`](../../../../research/round-8-cultures/prototypes/customs/welfare_bound.mjs) and [`cost.mjs`](../../../../research/round-8-cultures/prototypes/customs/cost.mjs).
 - **Guardrails and the four test layers:** the [R8 report](../../../../research/round-8-cultures/report.md), "Four test layers".
-- **Engel's law slope:** about 7.8 points per doubling, from the R8 customs notes' "Recommendation for the plan". It rests on part a's ICP anchors: food falls from 45.3% to 8.7% of consumption from low to high income.
+- **Engel's law slope:** about 7.8 points per doubling, from the R8 customs notes' "Recommendation for the plan". Round 6 computed it across 102 countries; part a's ICP anchors, food falling from 45.3% to 8.7% of consumption from low to high income, give 7.9.
 
 ## Tests for the exit checks
 
@@ -78,6 +78,7 @@
 
 - **Owner:** How many cultures does the default town start with, and in what shares? Spawn needs the counts, and M3.7 re-runs round 8's bands with similar shares rather than one 60% culture. Suggested: four cultures in near-equal shares, like M0.6's test world of uids 1–4. Needed before: the step plan.
 - **Measure:** At what city size and seed count do the culture checks pass on a run whose culture labels are shuffled after spawn? Under independence, Cramér's V across 10 wealth deciles is about 3/√n (computed), so 0.05 fails below about 3,600 households. Suggested: compute V per household, and size or pool runs until the shuffled run passes 95% of the time. Size round 8's proposed 0.9–1.1 ratio bands the same way. Needed before: building.
+- **Source:** R8's customs notes, part a, bound the wares-against-services split at ±20% of the services β, but this brief applies ±25% to all seven entries. Suggested: add the ±20% bound to the build-time shift check. Needed before: building.
 
 ## Implementation notes
 

@@ -32,11 +32,12 @@
 - **Faces from lab rules (R3):**
   - angry eyes on a refused price, happy on a purchase, and a wince with "?" on a victim;
   - a take is shown only as an act: the taker sneaks, and the item hops from victim to taker;
-  - there is no taker bubble, sack, mask or colour, and nothing marks the taker afterwards.
+  - there is no taker bubble, sack, mask or colour, and nothing marks the taker afterwards;
+  - the sheet has six faces (angry, blink, happy, neutral, sleep and wince), not round 3's eight. They cover every lab rule, so M1 draws no surprise or sad face (checkpoint 0007).
 - **Reduced motion:** no hops, bobs or pans, 150 ms fades, camera cuts and static rings (R3). Read `prefers-reduced-motion` and the app's own setting.
 - **Light periods (R3, Calendar):**
   - M1.2's ground tint covers Skin B's flat zone map, and the blob pass draws after it, untinted.
-  - Round 3's yellow body, now the sun hue, needs no outline at night. The other five hues have no night rule yet: compute each against the night-tinted ground, and add a night outline colour only where one fails.
+  - Round 3's yellow body, now the sun hue, needs no outline at night. Compute every hue against the ground in each light period, and add an outline colour only where one fails.
 
 ## Packages and files
 
@@ -96,8 +97,9 @@
 
 - **Owner:** on the Canvas2D fallback, do lab cards draw blobs or Skin A dots? M0.4's fallback copies the dots pixel for pixel, and a blob copy would be a second sprite pass held to that standard. Suggested: dots, so blobs keep one implementation. Needed before: the step plan.
 - **Owner:** should a few novices see the sprite previews before the passes are built? A glyph that fails in M1.5 loops back here, and a second formal playtest means recruiting again. Suggested: yes, an informal look, with M1.5's test still the gate. Needed before: building.
-- **Measure:** which of the five non-sun hues fall below 3:1 against the night-tinted ground? Round 3 set an outline rule by day only. Suggested: compute night contrast per hue, and add a night outline colour only where it fails. Needed before: building.
+- **Measure:** which hues fall below 3:1 against the ground in each light period? Round 3 measured only its yellow body at night, and all five other hues clear at least 4.65:1 against its night grounds (computed), so dawn and dusk's mid tones are the real risk. Suggested: compute every hue in every period, and add an outline colour only where one fails. Needed before: building.
 - **Measure:** do the navy cap and teal sash stay apart from all six body hues under simulated colour blindness? Round 3 cleared them only against the yellow body, at ΔE 33 or more in CAM02-UCS ([R3 report](../../../../research/round-3-2d-look/report.md), computed), and M0.4's palette test checks only that trio. Suggested: extend that colorspacious test to every hue against both item colours, at round 3's assumed ΔE ≥ 20. Needed before: building.
+- **Design:** sit has no up view, and sneak has no up or down view. Suggested: fall back to the nearest drawn view by facing, and draw the missing views only if M1.5's playtest asks. Needed before: building.
 
 ## Implementation notes
 
