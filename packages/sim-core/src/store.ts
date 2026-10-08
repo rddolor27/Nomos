@@ -15,6 +15,11 @@ export interface AgentStore {
   readonly count: Int32Array;
   readonly x: Int32Array;
   readonly y: Int32Array;
+  // Q8 sub-pixels per tick.
+  readonly vx: Int16Array;
+  readonly vy: Int16Array;
+  readonly action: Uint8Array;
+  readonly facing: Uint8Array;
   readonly look: Uint8Array;
   readonly culture: Uint8Array;
   readonly birthCulture: Uint8Array;
@@ -26,6 +31,10 @@ export interface AgentStore {
 export const AGENT_COLUMNS: readonly { name: string; bytes: number }[] = [
   { name: 'x', bytes: 4 },
   { name: 'y', bytes: 4 },
+  { name: 'vx', bytes: 2 },
+  { name: 'vy', bytes: 2 },
+  { name: 'action', bytes: 1 },
+  { name: 'facing', bytes: 1 },
   { name: 'look', bytes: 1 },
   { name: 'culture', bytes: 1 },
   { name: 'birthCulture', bytes: 1 },
@@ -39,6 +48,10 @@ export function createAgentStore(arena: Arena, capacity: number): AgentStore {
     count: take(arena, Int32Array, 1, true),
     x: take(arena, Int32Array, capacity, true),
     y: take(arena, Int32Array, capacity, true),
+    vx: take(arena, Int16Array, capacity, true),
+    vy: take(arena, Int16Array, capacity, true),
+    action: take(arena, Uint8Array, capacity, true),
+    facing: take(arena, Uint8Array, capacity, true),
     look: take(arena, Uint8Array, capacity, true),
     culture: take(arena, Uint8Array, capacity, true),
     birthCulture: take(arena, Uint8Array, capacity, true),

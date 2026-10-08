@@ -19,3 +19,6 @@ export * from './log2.ts';
 export * from './tiers.ts';
 export * from './actions.ts';
 export * from './histogram.ts';
+export * from './world.ts';
+export * from './wander.ts';
+export * from './step.ts';

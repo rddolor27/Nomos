@@ -46,3 +46,8 @@ export function checkInvariants(cash: Ledger, claims: Claims): number {
   const cashCode = checkCash(cash);
   return cashCode === OK ? checkClaims(claims) : cashCode;
 }
+
+// A separate cold function keeps the message string and the Error off the per-tick path.
+export function failInvariant(code: number): never {
+  throw new Error(`a money invariant failed with code ${code}`);
+}
