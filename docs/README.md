@@ -9,8 +9,9 @@ This folder holds the research and planning behind Nomos; product code lives out
 | [plan/implementation-plan.md](plan/implementation-plan.md) | Milestones M0–M9 with build checklists and exit checks, the visual skins, the performance budget and CI gates, and the verify-first table |
 | [plan/sound.md](plan/sound.md) | Chiptune sound as data: what plays when, the sound rules, the bank format, porting the synth, mixing and controls |
 | [plan/military.md](plan/military.md) | Soldiers who defend and patrol roads, never towns: rules, how patrols feed the route ledgers, and the finished art and sounds |
-| [plan/calendar.md](plan/calendar.md) | Watch-only runs and the 112-day year: date maths, seasons, speeds, branches and the rescaling rules |
+| [plan/calendar.md](plan/calendar.md) | Watch-only runs and the 112-day year: date maths, seasons, day and night, speeds, branches and the rescaling rules |
 | [plan/gazette.md](plan/gazette.md) | The daily town paper, printed only from records: its sections, rules, how editions are built, and the follow-the-news camera |
+| [plan/weather.md](plan/weather.md) | Weather after launch, in M10: six kinds in wet and dry spells by season and biome, how they look and sound, and whether they change daily life |
 | [plan/tasks/](plan/tasks/) | The roadmap, and a folder per milestone: its overview and progress, then a folder per sub-milestone with the task and its implementation plan |
 | [plan/checkpoints/](plan/checkpoints/) | Hand-off notes for agents and people: where the project stands, what is decided and what comes next; the highest number is current |
 
