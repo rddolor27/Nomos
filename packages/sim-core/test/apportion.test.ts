@@ -108,4 +108,12 @@ describe('exact apportionment', () => {
     }
     expect(emptyEntries.size).toBeGreaterThanOrEqual(50);
   });
+
+  it('never strides a leftover cent onto a zero weight', () => {
+    const cents = new Float64Array(4);
+    for (let word = 0; word < 100; word++) {
+      apportionByStride(7, [0, 5, 0, 5], 4, cents, word);
+      expect([cents[0], cents[2], cents[1] + cents[3]], `word ${word}`).toEqual([0, 0, 7]);
+    }
+  });
 });

@@ -35,8 +35,8 @@ export function apportion(
   }
 }
 
-// Floors, then each leftover cent (fewer than n) to one entry along a keyed stride coprime with n, for cash over
-// agents (R4 architecture §3.3).
+// Floors, then each leftover cent to one positive weight along a keyed stride coprime with n, for cash over agents
+// (R4 architecture §3.3). Fewer cents are left over than there are positive weights, so one lap pays them all.
 export function apportionByStride(
   total: number,
   weights: ArrayLike<number>,
@@ -46,9 +46,10 @@ export function apportionByStride(
 ): void {
   let leftover = floors(total, weights, n, out, null);
   const stride = coprimeStride(1 + (mix(word) % n), n);
-  for (let i = word % n; leftover > 0; leftover--) {
+  for (let i = word % n; leftover > 0; i = (i + stride) % n) {
+    if (weights[i] === 0) continue;
     out[i] += 1;
-    i = (i + stride) % n;
+    leftover--;
   }
 }
 
