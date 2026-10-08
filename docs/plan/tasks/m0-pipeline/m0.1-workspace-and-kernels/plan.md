@@ -57,7 +57,7 @@
   - `packages/sim-core/package.json`: `"name": "@nomos/sim-core"`, `"private": true`, `"type": "module"`, `"exports": { ".": "./src/index.ts" }`, `"scripts": { "typecheck": "tsc --noEmit" }`.
   - `packages/sim-core/tsconfig.json`: extends the base and includes `src`, `test` and `scripts`.
   - `vitest.config.ts`: `test.include` is `['packages/*/test/**/*.test.ts']`.
-  - `eslint.config.js`: `@eslint/js` recommended plus typescript-eslint recommended, ignoring `docs/**`, `graphify-out/**`, `dist/**`, `coverage/**` and `assets/**` (round 7's prototypes under `docs/` carry their own `node_modules`).
+  - `eslint.config.js`: `@eslint/js` recommended plus typescript-eslint recommended, ignoring `docs/**`, `graphify-out/**`, `.claude/**`, `dist/**`, `coverage/**` and `assets/**`. Round 7's prototypes under `docs/` carry their own `node_modules`, and the local-only `.claude/` holds scripts outside the workspace.
 
   Run: `pnpm install`. Expected: it succeeds and writes `pnpm-lock.yaml`.
 
