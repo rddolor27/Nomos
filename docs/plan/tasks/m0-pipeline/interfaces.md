@@ -131,8 +131,9 @@ Skin B and Skin C arrive as `blobs/` and `town/` beside `dots/` (M1.3, M3.3).
   - `SYSTEM_NAMES` is `['day', 'move']` in M0.3, and later systems append to it.
 - **Movement (owner, 9 October 2026):** `move`, in `wander.ts`, walks blobs on any of 256 headings, so paths curve instead of running along lines.
   - **Headings:** the new column `heading`, a 1-byte `Uint8Array` after `facing` in `AGENT_COLUMNS`, runs clockwise on screen from down: 0 walks down (+y), 64 left, 128 up and 192 right. It is needed because `vx` and `vy` can't give a heading back without trigonometry.
-  - **Steps:** the generated `tables.ts` gains `WALK_X_Q8` and `WALK_Y_Q8`, two `Int16Array`s of 256. They hold the step per tick on each heading in Q8 sub-pixels, −1,024 sin and 1,024 cos of 2πh / 256, rounded, from stdlib's `sin` and `cos`.
-    - Every step is 1,024 Q8 (4 px, today's walking speed) long to within 0.58 Q8, and mirrored or quarter-turned headings have exactly mirrored or turned steps (computed).
+  - **Steps:** `wander.ts` exports `WALK_X_Q8` and `WALK_Y_Q8`, two `Int16Array`s of 256. They hold the step per tick on each heading in Q8 sub-pixels, −1,024 sin and 1,024 cos of 2πh / 256, rounded.
+    - It builds them at load from the generated `WALK_SINE_Q8` in `tables.ts`: 1,024 sin(2πk / 256) for k = 0–64, from stdlib's `sin`, mirrored by integer symmetry. The worker so ships 65 numbers, not 512, for the byte budget.
+    - Every step is 1,024 Q8 (4 px, today's walking speed) long to within 0.58 Q8, and mirrored or quarter-turned headings have exactly mirrored or turned steps (computed). A test matches every heading to stdlib's `sin` and `cos`.
     - A walker's `vx` and `vy` are its heading's step, and an idler's are 0.
   - **Turns:** each blob redraws every 16 ticks, staggered by index, so a 16th of them draw in any tick. Blob i redraws when (tick + i) mod 16 is 0, from w = `draw2(seed, WANDER, i, tick)`.
     - A walker stops with chance 1/16, when w & 15 is 0. Otherwise it turns by ((w >>> 4) & 15) − ((w >>> 8) & 15) headings, a triangular −15 to +15 (up to 21°).
