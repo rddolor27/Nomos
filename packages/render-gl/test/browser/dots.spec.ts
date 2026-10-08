@@ -194,6 +194,12 @@ test('interpolates between snapshots', async ({ page }) => {
   expectCentres(tracks, [[100, ROW], [102, ROW], [104, ROW]]);
 });
 
+// Walkers take any of 256 headings and stop between pixels, so a step runs diagonally between fractional points.
+test('interpolates a diagonal step between pixels', async ({ page }) => {
+  const tracks = await track(page, [{ x: 100.75, y: 100.25 }, { x: 104.75, y: 108.25 }], [0, 0.5, 1]);
+  expectCentres(tracks, [[100, 100], [102, 104], [104, 108]]);
+});
+
 test('shows a jump of over 16 px at its new spot', async ({ page }) => {
   const tracks = await track(page, [{ x: 100 }, { x: 120 }], [0, 0.5]);
   expectCentres(tracks, [[120, ROW], [120, ROW]]);
