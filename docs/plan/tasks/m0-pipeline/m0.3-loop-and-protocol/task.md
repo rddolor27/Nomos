@@ -8,7 +8,7 @@ Part of [M0 Pipeline](../milestone.md).
   - the day-boundary phase, where aggregate commits and any tier switch that writes canonical state take effect, with focus changes recorded as tick-stamped inputs (R4);
   - day work in fixed 1,024-entity slices on the same schedule for every device and worker count, committing the settlement record when the last slice ends; the warm-up on a 1,024-agent dummy world (about 20–30 ms); and the stride scheduler, with its offset re-keyed yearly, giving identical hashes in reversed visiting order (R6, R8);
   - the lint ban on sorting views of shared memory in hot and day-boundary code, with top shares taken from a 16-bins-per-octave histogram (R6).
-- **Owner decision first:** round 6 left open how late spoilage may land within sliced day work; the slice task waits for it.
+- **Owner decided:** round 6 left open how late spoilage may land within sliced day work. On 8 October 2026 the owner chose `skip-expired`: day slices keep R6's measured order, and M2's meals skip a head lot past its expiry.
 - **Exit checks:**
   - seed 42 gives an identical state hash at tick 1,000 across runs (R1);
   - the worker pauses while the page is hidden (R2);

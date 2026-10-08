@@ -75,7 +75,7 @@
   - `stateHash` folds every canonical region's words through `h = mix(h ^ word)`.
   - `checkpoint` copies the arena's bytes [0, `top`); `restoreWorld` lays out the same world and copies them back.
 
-- [ ] **Step 3: Add the CLI.** `@nomos/cli` depends on `@nomos/sim-core`. `node tools/cli/src/main.ts --seed 42 --tier phone --ticks 1000` prints `seed=42 tier=phone tick=1000 hash=<8 hex digits>`; `--tier` defaults to `phone` and `--ticks` to 1,000. CI runs it twice and `diff`s the two outputs.
+- [ ] **Step 3: Add the CLI.** `tools/cli/package.json` is `"name": "@nomos/cli"`, `"private": true` and `"type": "module"`, depends on `"@nomos/sim-core": "workspace:*"`, and has `"scripts": { "typecheck": "tsc --noEmit" }`, so the root `typecheck` covers it; `tools/cli/tsconfig.json` extends the base with `"types": ["node"]` and includes `src`. `node tools/cli/src/main.ts --seed 42 --tier phone --ticks 1000` prints `seed=42 tier=phone tick=1000 hash=<8 hex digits>`; `--tier` defaults to `phone` and `--ticks` to 1,000. CI runs it twice and `diff`s the two outputs.
 
 - [ ] **Step 4: Run and commit.** Run: `pnpm install && pnpm test && pnpm lint && pnpm typecheck && node tools/cli/src/main.ts --seed 42`. Expected: PASS, then one hash line.
 
@@ -193,29 +193,29 @@ git -c user.name=rddolor27 -c user.email=80044625+rddolor27@users.noreply.github
 **Interfaces:**
 - Consumes: Tasks 1 and 4.
 - Produces (R6 integration-cost §2):
-  - **The decision point.** `type SpoilageRule = 'accept-lateness' | 'households-first' | 'skip-expired' | 'one-pass-at-10k'` and `SPOILAGE_RULE: SpoilageRule = 'skip-expired'`, marked `OWNER DECISION: R6 conflict (e)`. These are R6's four options:
+  - **The decision point.** `type SpoilageRule = 'accept-lateness' | 'households-first' | 'skip-expired' | 'one-pass-at-10k'` and `SPOILAGE_RULE: SpoilageRule = 'skip-expired'`, marked `OWNER DECISION: R6 conflict (e)`. The owner chose `skip-expired` on 8 October 2026. These are R6's four options:
     - `accept-lateness` runs agent slices, then household slices, as R6 measured them;
     - `households-first` runs household slices first;
     - `skip-expired` keeps R6's order, and M2's meals skip a head lot past its expiry;
-    - `one-pass-at-10k` gives phones one slice per kind, households first, and works as `accept-lateness` elsewhere. R6 measured one pass at 10k at 1.19 ms RM, so this option fails M0.6's 0.35 ms day-slice gate unless the owner relaxes it.
+    - `one-pass-at-10k` gives the `'phone'` tier, R6's 10k case, one slice per kind, households first, and works as `accept-lateness` on the other tiers. R6 measured one pass at 10k at 1.19 ms RM, so this option fails M0.6's 0.35 ms day-slice gate unless the owner relaxes it.
 
     Nothing else reads the rule until M2 adds food, so another choice changes only this constant. The default keeps the measured order, and so the measured cost, and stops expired food being eaten.
   - `SLICE = 1024`, `KIND_AGENTS = 0` and `KIND_HOUSEHOLDS = 1`.
   - `daySliceCount(agents: number, households: number, rule: SpoilageRule, tier: Tier): number` and `daySlice(k: number, agents: number, households: number, rule: SpoilageRule, tier: Tier, out: Int32Array): void`, which writes `[kind, from, to]`. A kind with no entities gets no slice. The schedule is a pure function of these inputs, so it is the same on every device and for every worker count.
   - The settlement record: `RECORD_DAY = 0`, `RECORD_POPULATION = 1` and `RECORD_WALKING = 2`, with `RECORD_FIELDS = 3`. `World.record` is a canonical `Int32Array(2 * RECORD_FIELDS)` holding a front and a back record. `committed(world, field): number` reads the front, and `populate` sets its day to −1.
   - The `globals` slots `RECORD_FRONT = 1`, `DAY_AGENTS = 2` and `DAY_HOUSEHOLDS = 3`, fixed by `dayBoundary`. There are no households until M2.
-  - `runDaySlice(world): void`. `step` runs slice k = tick % 1,440 while k is below the day's count. `dayBoundary` clears the back record; agent slices fold population and walkers into it. The last slice stamps the day and flips `RECORD_FRONT`, which commits the record.
-  - `warmUp(): void`. It lays out a phone world of `WARM_AGENTS = 1024` in `WARM_MEMORY_BYTES = 1_048_576`, runs `dayBoundary` and every slice of the day `WARM_DAYS = 40` times, then steps it `WARM_TICKS = 2000` times, and discards it. These are R6's pre-warm figures (integration-cost §2).
+  - `runDaySlice(world: World, k: number): void`. `step` runs slice k = tick % 1,440 while k is below the day's count; `warmUp` passes each k directly. `dayBoundary` clears the back record; agent slices fold population and walkers into it. The last slice stamps the day and flips `RECORD_FRONT`, which commits the record.
+  - `warmUp(): void`. It lays out and populates a phone world (an empty one has no slices to run) of `WARM_AGENTS = 1024` in `WARM_MEMORY_BYTES = 1_048_576`, runs `dayBoundary` and every slice of the day `WARM_DAYS = 40` times, then steps it `WARM_TICKS = 2000` times, and discards it. These are R6's pre-warm figures (integration-cost §2).
 
-- [ ] **Step 1: Check the decision.** If the owner has settled R6 conflict (e), set `SPOILAGE_RULE` to that option; otherwise keep the default.
+- [x] **Step 1: Check the decision.** Done: on 8 October 2026 the owner chose `skip-expired`, the default, so `SPOILAGE_RULE` stays as written.
 
 - [ ] **Step 2: Write the failing tests:**
   - `slices 10k, 25k and 100k agents into 10, 25 and 98 slices`.
-  - `covers every entity once a day under every rule`. Take agent and household counts of 10,000 and 4,079, 25,000 and 10,184, and 100,000 and 40,582. Under every rule and tier, each entity falls in exactly one slice, and no slice exceeds 1,024 except under `one-pass-at-10k` on phones.
+  - `covers every entity once a day under every rule`. Take agent and household counts of 10,000 and 4,079, 25,000 and 10,184, and 100,000 and 40,582. Under every rule and tier, each entity falls in exactly one slice, and no slice exceeds 1,024 except under `one-pass-at-10k` on the `'phone'` tier.
   - `orders slices by the spoilage rule`. On desktop, with 100,000 agents and 40,582 households:
     - under `accept-lateness` and `skip-expired`, household slices are k = 98–137 of 138;
     - under `households-first`, they are k = 0–39;
-    - under `one-pass-at-10k`, desktop keeps the `accept-lateness` order, and phones, with 10,000 agents and 4,079 households, get 2 slices, households first.
+    - under `one-pass-at-10k`, desktop and `'phone-plus'` keep the `accept-lateness` order, and the `'phone'` tier, with 10,000 agents and 4,079 households, gets 2 slices, households first.
   - `commits the settlement record when the last slice ends`. In a phone world, with n = `daySliceCount(10_000, 0, SPOILAGE_RULE, 'phone')` (10 under the default), the committed day is −1 before tick n − 1's step and 0 after it, with population 10,000. Day 1 commits in tick 1,440 + n − 1's step.
   - `restores a checkpoint taken mid-window`: a world checkpointed after tick 5 and restored matches the original's hash at tick 1,000.
   - `warms up without changing any replay`: seed 42's hash at tick 1,000 is the same before and after `warmUp()`.
@@ -248,8 +248,8 @@ git -c user.name=rddolor27 -c user.email=80044625+rddolor27@users.noreply.github
 
 - [ ] **Step 1: Write the failing tests:**
   - `makes each agent due 3 or 4 times a year`: with a 30-day period and 1,000 agents, re-keyed for years 1–5, every agent is due 3 or 4 times in each year. With the offset at 17, `firstDue` on day 0 is 13, folded up from −17.
-  - `re-keys the offset yearly from the seed`. A given seed and year always give the same offset, and years 1–20 give at least 10 distinct offsets. `dayBoundary` at tick 161,280 switches to year 2's offset.
-  - `gives identical hashes in reversed visiting order` (R8), on a 10,000-agent toy over 224 days.
+  - `re-keys the offset yearly from the seed`. A given seed and year always give the same offset, and years 1–20 give at least 10 distinct offsets. `dayBoundary` at tick 161,280 switches to year 2's offset: set `globals[TICK]` to 161,280 on a 1,024-agent world from `layoutWorld` and call `dayBoundary`, because stepping a phone world that far takes far longer than a unit test should.
+  - `gives identical hashes in reversed visiting order` (R8), on a 10,000-agent toy over 224 days, with agents 0–4,999 starting in state 1: from all zeros the count stays 0, and no order could differ.
     - Each day, read the boundary count of agents in state 1. Each due agent i sets 1 if `draw3(42, 0x1F0, i, day) % 10_000` is below that count, else 0, through `setChange`.
     - Forward, reversed and keyed-shuffled visits all hash alike.
     - Writing directly, with a live count, makes forward and reversed differ.
@@ -297,7 +297,7 @@ git -c user.name=rddolor27 -c user.email=80044625+rddolor27@users.noreply.github
 ### Task 8: The worker loop and the page lifecycle
 
 **Files:**
-- Create: `packages/sim-worker/package.json`, `tsconfig.json` (`"lib": ["ES2022", "WebWorker"]`), `src/{loop,worker,index}.ts`; `packages/sim-protocol/src/lifecycle.ts`
+- Create: `packages/sim-worker/package.json`, `tsconfig.json`, `src/{loop,worker,index}.ts`; `packages/sim-protocol/src/lifecycle.ts`. The package is `@nomos/sim-worker`, depending on `@nomos/sim-core` and `@nomos/sim-protocol` (`workspace:*`), with `"exports": { ".": "./src/index.ts", "./worker": "./src/worker.ts" }` for M0.5's `@nomos/sim-worker/worker`, a `typecheck` script, and no `sideEffects` flag, since `worker.ts` binds `self.onmessage`. Its `tsconfig.json` matches `sim-core`'s; the base already sets the `WebWorker` lib.
 - Modify: `packages/sim-protocol/src/index.ts`
 - Test: `packages/sim-worker/test/loop.test.ts`, `packages/sim-protocol/test/lifecycle.test.ts`
 
@@ -313,7 +313,7 @@ git -c user.name=rddolor27 -c user.email=80044625+rddolor27@users.noreply.github
   - `resume` sets `last = now()` and `acc = 0`, so nothing is caught up.
   - Each turn adds the elapsed time to `acc`, caps `acc` at `MAX_GAP_MS`, and runs due ticks until `MAX_TURN_MS` has passed in the turn. The cap means a stall of any length runs at most 2 ticks (R2 §2).
     - If ticks ran and a view is free, the turn posts a snapshot.
-    - At most every `STATS_MS`, it posts the mean milliseconds of each system per tick, and of `snapshot` per snapshot.
+    - At most every `STATS_MS`, it posts the mean milliseconds of each system per tick, and of `snapshot` per snapshot. **This refines interfaces.md:** `systemMs` holds a `snapshot` key beside `SYSTEM_NAMES`.
     - One reused message object and transfer array per kind keep turns allocation-free.
   - The loop sleeps with `setTimeout` when the next tick is at least `SLEEP_MIN_MS` away, and otherwise yields through the `MessageChannel`, which avoids the nested-timer clamp (R2 §2). Sleeping through the 100 ms between ticks keeps 1× from spinning a core (inference).
   - `checkpoint` posts `{ type: 'checkpoint', tick, state }`, transferring the state. `return` gives the buffer to the pool. Messages before `init` are ignored.
@@ -353,7 +353,7 @@ git -c user.name=rddolor27 -c user.email=80044625+rddolor27@users.noreply.github
   - the day-boundary phase (R4);
   - the calendar in `sim-protocol` (R6, Calendar);
   - the sort ban (R6);
-  - day slices and the warm-up (R6), noting `SPOILAGE_RULE` and whether the owner chose it;
+  - day slices and the warm-up (R6), noting `SPOILAGE_RULE = 'skip-expired'`, the owner's choice of 8 October 2026;
   - the stride scheduler (R8), and the culture layout in `sim-protocol` (R8);
   - M0.2's every-tick invariant check;
   - the exit checks: the ledger every tick (R1); apportionment and focus (R4); and seed 42 across runs (R1), whose browser half waits for M0.6. Note pause on hide (R2) as passing in Node; the CI check that lists it with context loss and contrast waits for M0.4 and M0.5.

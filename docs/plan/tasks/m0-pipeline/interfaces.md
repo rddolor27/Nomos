@@ -68,7 +68,7 @@ The world step lives in `sim-core`, so headless runs and the worker run the same
 - Worker to app:
   - `{ type: 'ready', agents }`. A tick-0 snapshot follows (M0.4), then the worker waits for `resume`. Under reduced motion the app withholds `resume` (M0.5).
   - `{ type: 'snapshot', tick, count, buffer: ArrayBuffer }`
-  - `{ type: 'stats', tick, systemMs: Record<string, number> }`, keyed by `SYSTEM_NAMES`
+  - `{ type: 'stats', tick, systemMs: Record<string, number> }`, keyed by `SYSTEM_NAMES` plus `snapshot`, the mean milliseconds per snapshot (M0.3)
   - `{ type: 'checkpoint', tick, state: ArrayBuffer }`, the answer to the app's `checkpoint`
 - `sim-protocol`'s `bindPageLifecycle(doc, win, post): void` sends `pause` and `resume` on `visibilitychange`, and `checkpoint` on `pagehide`. M0.5 wraps it.
 - Speed controls and skip arrive in M1 (Calendar); the worker refuses settings messages while a run plays.

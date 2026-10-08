@@ -173,7 +173,6 @@ Each must be settled before its sub-milestone starts. The task files give the co
 
 | Before | Decision |
 | --- | --- |
-| M0.3 | round 6 left open how late spoilage may land within sliced day work; the slice task waits for it |
 | M1.2 | how long a lab day lasts at 1×. Round 1's engine runs discrete days with animated phases, while the calendar makes a day at 1× last 144 s |
 | M1.4 | whether the sounds pass a listen: the Sound tab asks the owner to play `dist/sounds/` before M1, above all the nine tracks against well-known jingles |
 | M1.4 | whether the synth renders at 22,050 Hz like the previews, or at the audio context's 44.1 or 48 kHz |
