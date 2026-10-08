@@ -20,7 +20,7 @@ Estimates are full-time days for one person coding by hand (unsourced estimates)
 | [M10 Weather](m10-weather/milestone.md) | 4 | 16–27 days |
 | **Everything** | | **382–602 days** |
 
-The plan's own effort lines sum to about 213–327 days before launch, but many tasks that rounds 2, 6, 8 and 9 added carry no estimate there. These breakdowns estimate every task, which is why their sum is larger.
+The plan's own effort lines sum to about 221.5–340.5 days before launch, but many tasks that rounds 2, 6, 8 and 9 added carry no estimate there. These breakdowns estimate every task, which is why their sum is larger.
 
 ## Sub-milestones in build order
 
@@ -34,7 +34,7 @@ The plan's own effort lines sum to about 213–327 days before launch, but many 
 | [M0.4 Renderer and Skin A](m0-pipeline/m0.4-renderer-and-skin-a/task.md) | One WebGL2 renderer drawing 10,000 agents as dots over a map | 4–6 days | [step plan](m0-pipeline/m0.4-renderer-and-skin-a/plan.md) |
 | [M0.5 Web app](m0-pipeline/m0.5-web-app/task.md) | The page a visitor opens: first frame, HUD, charts, tiers, accessibility | 3–4 days | [step plan](m0-pipeline/m0.5-web-app/plan.md) |
 | [M0.6 Gates and guards](m0-pipeline/m0.6-gates-and-guards/task.md) | CI gates that enforce every rule the plan relies on | 3–5 days | [step plan](m0-pipeline/m0.6-gates-and-guards/plan.md) |
-| [M0.7 Modules and blob facts](m0-pipeline/m0.7-modules-and-blob-facts/task.md) | Module folders in every package, the `Blob` handle, and a name and a wallet for every blob, shown on click | 5–8 days | [brief](m0-pipeline/m0.7-modules-and-blob-facts/plan.md) |
+| [M0.7 Modules and blob facts](m0-pipeline/m0.7-modules-and-blob-facts/task.md) | Module folders in every package, the `Blob` handle, and a name and a wallet for every blob, shown on click; walking in any direction, built first on 9 October 2026, falls outside this estimate | 5–8 days | [brief](m0-pipeline/m0.7-modules-and-blob-facts/plan.md) |
 
 ### Map first: M8.1 and M8.3, after M0 and before M1
 
@@ -182,6 +182,7 @@ Each must be settled before its sub-milestone starts. The task files give the co
 
 | Before | Decision |
 | --- | --- |
+| M8.3 | pick the five country map colours from the swatch sheet |
 | M1.2 | how long a lab day lasts at 1×. Round 1's engine runs discrete days with animated phases, while the calendar makes a day at 1× last 144 s |
 | M1.4 | whether the sounds pass a listen: the Sound tab asks the owner to play `dist/sounds/` before M1, above all the nine tracks against well-known jingles |
 | M1.4 | whether the synth renders at 22,050 Hz like the previews, or at the audio context's 44.1 or 48 kHz |
