@@ -7,12 +7,14 @@ import { MAP_CONTENT_TYPE } from '@nomos/sim-protocol';
 import { headersFor, parseHeaders } from '../vite/headers.ts';
 
 // Chrome DevTools' Fast 4G: 165 ms latency and 1,012,500 bytes a second down, with 3 round trips of DNS, TCP and TLS
-// before each navigation's first byte. M0.6 adds options here, such as a slowed worker.
+// before each navigation's first byte. CDP's CPU throttling skips workers, so workerSlowdown tells the sim worker to
+// wait as a CPU that many times slower would (R5 load notes §2).
 export interface ServeOptions {
   root: string;
   latencyMs?: number;
   bytesPerSecond?: number;
   setupRtts?: number;
+  workerSlowdown?: number;
 }
 
 export interface Served {
@@ -34,12 +36,19 @@ const TYPES: Record<string, string> = {
   '.webp': 'image/webp',
 };
 
+const WORKER_CHUNK = /^\/assets\/worker-[^/]+\.js$/;
+
 function compressible(type: string): boolean {
   return type.startsWith('text/') || type.startsWith('application/json') || type === MAP_CONTENT_TYPE;
 }
 
+// The worker module reads the global when it creates its loop, after this line has run.
+function slowedWorker(body: Buffer<ArrayBuffer>, workerSlowdown: number): Buffer<ArrayBuffer> {
+  return Buffer.concat([Buffer.from(`globalThis.__nomosCpuSlowdown=${workerSlowdown};`), body]);
+}
+
 // Everything is read and compressed up front, so no request spends brotli-11's CPU while a load is timed.
-function loadFiles(root: string): Map<string, File> {
+function loadFiles(root: string, workerSlowdown: number): Map<string, File> {
   const rules = parseHeaders(readFileSync(join(root, '_headers'), 'utf8'));
   const files = new Map<string, File>();
   for (const entry of readdirSync(root, { recursive: true, withFileTypes: true })) {
@@ -50,6 +59,7 @@ function loadFiles(root: string): Map<string, File> {
       ...headersFor(path, rules),
     };
     let body = readFileSync(join(entry.parentPath, entry.name));
+    if (workerSlowdown !== 1 && WORKER_CHUNK.test(path)) body = slowedWorker(body, workerSlowdown);
     if (compressible(headers['Content-Type'])) {
       body = brotliCompressSync(body, { params: { [constants.BROTLI_PARAM_QUALITY]: 11 } });
       headers['Content-Encoding'] = 'br';
@@ -69,8 +79,9 @@ export async function startServer({
   latencyMs = 165,
   bytesPerSecond = 1_012_500,
   setupRtts = 3,
+  workerSlowdown = 1,
 }: ServeOptions): Promise<Served> {
-  const files = loadFiles(root);
+  const files = loadFiles(root, workerSlowdown);
   // One link shared by every response, as on a phone: each waits its turn, then takes its bytes' time.
   let linkFreeAtMs = 0;
 

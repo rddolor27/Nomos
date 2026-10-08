@@ -6,7 +6,7 @@ import { BENCH_WARM_DAYS, createBenchWorld } from './sample.ts';
 
 interface TierAllocation {
   readonly tier: Tier;
-  readonly loadavg: { readonly before: string; readonly after: string };
+  readonly loadavg: { readonly before: string | null; readonly after: string | null };
   readonly ticks: number;
   readonly scavenges: number;
   readonly heapGrowthPerTick: number;

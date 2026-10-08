@@ -19,7 +19,7 @@ interface WorkerRun {
 
 interface TierReport {
   readonly tier: Tier;
-  readonly loadavg: { readonly before: string; readonly after: string };
+  readonly loadavg: { readonly before: string | null; readonly after: string | null };
   readonly verdicts: Verdict[];
   readonly samples: Record<string, number[]>;
 }

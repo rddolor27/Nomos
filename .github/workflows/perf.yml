@@ -33,3 +33,41 @@ jobs:
           path: |
             tools/bench/bench-results/
             test-results/budget-chromium.json
+
+  # Seven cold loads on Fast 4G, with page and worker CPU calibrated to a mid-tier phone (BenchmarkIndex ≈ 375), gated on
+  # the absolute budgets and on regressions against main's last passing run (R5).
+  load:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm --filter @nomos/web build
+      # Sets BENCHMARK_INDEX and CPU_RATE for the steps below. shell: bash adds pipefail, so a failed calibration fails.
+      - run: node tools/bench/src/calibrate.ts | tee -a "$GITHUB_ENV"
+        shell: bash
+      - uses: actions/cache/restore@v6
+        with:
+          path: perf-baseline
+          key: perf-baseline-${{ github.sha }}
+          restore-keys: perf-baseline-
+      - run: pnpm --filter @nomos/web startup
+      - run: node tools/bench/src/assert-startup.ts
+      - if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: startup-results
+          path: apps/web/test-results/startup.json
+      # Only a passing run on main becomes the next baseline.
+      - if: github.ref == 'refs/heads/main'
+        run: mkdir -p perf-baseline && cp apps/web/test-results/startup.json perf-baseline/
+      - if: github.ref == 'refs/heads/main'
+        uses: actions/cache/save@v6
+        with:
+          path: perf-baseline
+          key: perf-baseline-${{ github.sha }}

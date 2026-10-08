@@ -1,7 +1,7 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
-import { loadavg } from 'node:os';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { readLoadavg } from '@nomos/bench/src/loadavg.ts';
 import { expect, test, type Browser } from 'playwright/test';
 import { startServer } from '../serve.ts';
 
@@ -11,8 +11,10 @@ test.skip(
 );
 
 const LOADS = 7;
-// Round 5's calibration to Lighthouse BenchmarkIndex ≈ 375 on its VM; M0.6 calibrates per runner.
-const CPU_RATE = 4;
+// tools/bench/src/calibrate.ts sets both, so the page and the worker run at Lighthouse BenchmarkIndex ≈ 375 on any
+// runner. Without them, 4 is round 5's calibration of its VM.
+const CPU_RATE = Number(process.env.CPU_RATE ?? 4);
+const BENCHMARK_INDEX = process.env.BENCHMARK_INDEX ? Number(process.env.BENCHMARK_INDEX) : null;
 // Long enough after app:interactive for a few stats messages, which come about every 300 ms.
 const STATS_WINDOW_MS = 1500;
 const DIST = fileURLToPath(new URL('../../dist/', import.meta.url));
@@ -79,7 +81,7 @@ async function coldLoad(browser: Browser, url: string): Promise<Load> {
 
 test('meets the first-frame and byte budgets on cold Fast 4G', async ({ browser }) => {
   test.setTimeout(240_000);
-  const server = await startServer({ root: DIST });
+  const server = await startServer({ root: DIST, workerSlowdown: CPU_RATE });
   const loads: Load[] = [];
   try {
     for (let load = 0; load < LOADS; load++) loads.push(await coldLoad(browser, server.url));
@@ -89,14 +91,15 @@ test('meets the first-frame and byte budgets on cold Fast 4G', async ({ browser 
   const result = {
     loads: LOADS,
     cpuRate: CPU_RATE,
+    benchmarkIndex: BENCHMARK_INDEX,
     firstFrameMs: summary(loads.map((load) => load.firstFrameMs)),
     interactiveMs: summary(loads.map((load) => load.interactiveMs)),
     bytes: summary(loads.map((load) => load.bytes)),
     jsBytes: summary(loads.map((load) => load.jsBytes)),
-    // The worker runs unthrottled, so the timings above are optimistic by its CPU time.
+    // The sim's own cost, as its stats report it: the slowed worker's waits fall outside the timed systems.
     systemMsSum: median(loads.flatMap((load) => load.systemMsSums)),
     chromium: browser.version(),
-    loadavg: loadavg(),
+    loadavg: readLoadavg(),
   };
   mkdirSync(dirname(RESULTS), { recursive: true });
   writeFileSync(RESULTS, `${JSON.stringify(result, null, 2)}\n`);
