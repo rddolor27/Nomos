@@ -168,10 +168,11 @@ Goal: a deterministic core, the worker loop and the renderer contract, drawing S
 - [ ] Publish the sprite manifest as a versioned JSON Schema with generated TypeScript types. Maps name frames, never atlas indices (R9).
 - [x] Add a calendar module to sim-core: day = tick ÷ 1,440, year = day ÷ 112 + 1, season = day of the year ÷ 28, and weekday = day mod 7 (5 workdays, 2 rest days), plus a build-time table of sunrise and sunset minutes; integer maths only (Calendar).
 - [ ] Group every package's source into concern folders directly under `src/`, keeping only entry files at `src/` and changing no behaviour, and lint the layout, the hot folders and class methods (Structure).
-- [ ] Add the `Blob` handle: one per world, re-pointed to a row with `at(index)`, with accessors for position, velocity, action, facing, the name key and the wallet. Per-tick loops use its accessors or plain columns and call no method per blob (Structure, R5).
+- [ ] Add the `Blob` handle: one per world, re-pointed to a row with `at(index)`, with accessors for position, velocity, heading, action, facing, the name key and the wallet. Per-tick loops use its accessors or plain columns and call no method per blob (Structure, R5).
 - [ ] Give every blob a name: a 32-bit `nameKey` drawn at birth and never read by the sim, shown as "Given Family" from a generated table of 1,024 words of the shared sound set, round 8's design H, each passing a person-name filter pulled forward from M3's name filter (Structure, R8).
 - [ ] Give every blob a wallet: one cash account per blob in the cash ledger, opened at birth from MINT with 100,000 cents (1,000.00), the owner's opening balance, inside the invariant that all accounts plus MINT sum to zero. Production workers then skip the per-tick check, which tests, the CLI and development builds keep (Structure, R1, R4).
 - [ ] Show a clicked blob's name and wallet in the inspector's shell, a small panel loaded on demand, which M3's click-to-explain inspector grows from (Structure, R1).
+- [ ] Let blobs walk in any direction instead of only up, down, left and right, an owner request built ahead of M0.7, with gentle turns and walls that slide the walker, keeping movement exact and within its budget (Structure).
 
 **Exit checks**
 
@@ -191,6 +192,7 @@ Goal: a deterministic core, the worker loop and the renderer contract, drawing S
 - [ ] After the move into concern folders, seed 42's replay hashes equal the goldens at every tier, and the layout lint rejects a planted file at `src/` (Structure).
 - [ ] `move` through the handle's accessors stays within 10% of the column loop at every tier with zero scavenges, and every word in the name table passes the full person-name filter (Structure, R5, R8).
 - [ ] With a wallet per blob, all accounts plus MINT sum to zero every tick at every tier, and clicking a blob shows its name and wallet in Chromium, Firefox and WebKit (Structure, R1).
+- [ ] Blobs walk in any direction, the replay goldens match in Node, Bun, Chromium, Firefox and WebKit, and `move` stays within its budget at every tier (Structure, R5).
 
 ## M1 Lab mode
 
@@ -575,7 +577,7 @@ Goal: every settlement in a country advances daily as an integer ledger, headles
 - [ ] Seasonal price gaps run 17–33% in isolated villages and 2.5–3 times lower in integrated markets; grain's price doubles at about 290 km by road (R6).
 - [ ] Total migration stays at 3.6–5.5% a year with the LS push on, and 10,000 settlements meet the 12 ms budget with every block in (R6).
 - [ ] People by culture sum exactly to population every day, spawn and fold are exact per culture, and minority move rates stay within 5% of their population share over 30 years (R8).
-- [ ] Over 100 years, regional G\_ST stays at 0.3 or more with acculturation, at least 90% of settlements keep their dominant culture, and the capital's effective number of cultures exceeds the village median (R8).
+- [ ] Over 100 years, regional G\_ST stays at 0.3 or more with acculturation, at least 90% of settlements keep their dominant culture, and each capital's effective number of cultures exceeds the village median (R8).
 - [ ] Culture is independent of settlement wealth bands within the audit's bands (R8).
 - [ ] On paired seeds, more patrols cut true raids, and recorded raids rise or fall with sightings (Military).
 
@@ -608,7 +610,7 @@ Goal: country mode ships, with a generated, seeded map of 3–5 countries, Count
 - [ ] Add a snow biome for cold lowland (R9).
 - [ ] Draw about 55–81 tiles: map-scale coast and cliff-coast overlays, snow at map and street scale, cliff faces for east, west and north, rock ground and sand variants (R9).
 - [ ] Add a "New country" settings panel: about 10 overrides, grouped by stage and badged ("keeps coastline", "new world"); standard or large size; a culture count and a single-culture switch; presets, a live preview, and validation (R9).
-- [ ] Validate on Play, on Share and on every open: every settlement reaches the capital by road or sea lane; food capacity per country; no pin in water; names through round 8's filter in ASCII; payload caps (R9).
+- [ ] Validate on Play, on Share and on every open: every settlement reaches its own country's capital by road or sea lane; food capacity over the whole world, since trade crosses borders; no pin in water; names through round 8's filter in ASCII; payload caps (R9, Countries).
 - [ ] Add god tools on the country: lock and re-roll with per-stage keyed counters; raise, lower and smooth brushes; biome paint; drawn rivers and roads; town and wonder placement; pins, tombstones that lower counts, a conflict list and one undo log. Every edit reruns from its first dirty stage, and the generator re-places cultures (R9).
 - [ ] Re-baseline M7's and M8's settlement counts to listed places plus a region tier, and fit Zipf on true ranks (R9).
 - [ ] Add a countries stage to the world generator, in `tools/worldgen` first: 3–5 countries per world, picked by the seed; capitals taken from the largest settlements, at least isqrt(land cells ÷ countries) cells apart; each country grown from its capital by multi-source Dijkstra over terrain costs, so its borders bend to mountains, lakes, rivers and coasts; every land cell and settlement in exactly one country (Countries).
@@ -744,3 +746,4 @@ The owner's decisions of 9 October 2026 add about 8.5–13.5 days before launch,
 | WCAG 2.2's audio-control rule and browser autoplay rules | Sound controls and the first-click start | M1 |
 | Whether a Cloudflare direct upload to the production branch goes live as production, and whether dashboard rollback covers direct uploads | The release deploy and its rollback | M1 |
 | Season and biome odds for each weather kind, the length of wet and dry spells, and the evidence on weather, time outdoors and crime (research round 10) | Weather odds, and whether weather changes routines | M10 |
+| A source for distinctive Pokémon town, city and species names other than the pret decompilations, and each new name fixture's licence | What the name fixtures folder may hold | M0.7 |
