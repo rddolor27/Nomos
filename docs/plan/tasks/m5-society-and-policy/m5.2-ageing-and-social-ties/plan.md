@@ -67,3 +67,19 @@
 - **Real lifespans need long runs** to show generations: 18 years is about 2,000 days. Use skip-ahead for demographic checks.
 - **Network memory:** 8 friends × 4 bytes × 100k agents is 3.2 MB. Measure it against the 256-bytes-per-agent budget.
 - **Schelling moves can cluster by culture through place** even when blind. The dissimilarity flag and disparity monitor report it; never fix it by making moves culture-aware.
+
+## Open questions
+
+- **Measure:** How many of the 256 bytes per agent remain after M4 and M5? Round 8 counted about 176 B with culture, and 8 friends add 32 B, with partner and birth columns 9 B more (computed). Suggested: a test that sums every agent column and fails above 256 B. Needed before: the step plan.
+- **Measure:** Can 20 seeds × 100 years run nightly? A century is about 16.1 million ticks per seed, or 24 hours at the 5.3 ms budget for 10k agents (computed). Suggested: if deaths read only age hazards, run the pyramid on the day-boundary demography alone, 11,200 steps a century. Needed before: the step plan.
+- **Research:** Do the prototype's exogamy bands hold with similar culture shares, not one 60% culture? M5.5 re-runs round 8's transmission bands for that reason, and these bands come from the same runs (inference). Suggested: re-run the prototype with equal shares before fixing the band. Needed before: building.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** ageing and the hazard tables first, so the pyramid check runs alone. Then births with real transmission, partners, the friend network, rumours and fear, and Schelling moves last.
+- **Reuse:** M5.1's fork identity, M3.7's transmission, M4's crime events as rumour sources, and M4.4's LS and trust checks, re-run on the real network.
+- **Keep it simple:** no tie strengths, weights or decay until a check needs them; a tie exists or it does not.
+- **Pitfalls:** form ties and partners plan-then-apply, proposing from a snapshot and settling clashes in keyed order, so results match for 1–4 workers. Commit the generated hazard tables with a hash test. The household move after a match stays culture-blind; only the candidate weight reads customs.
+- **Hard and easy parts:** order-free tie formation under a fixed degree needs the most care. Ageing and the tables are mechanical.

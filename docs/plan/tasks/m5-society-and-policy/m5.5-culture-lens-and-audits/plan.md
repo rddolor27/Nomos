@@ -69,3 +69,20 @@
   - round 8's transmission bands re-run with similar culture shares;
   - lens and emblem colours against body-hue shade tones (CIEDE2000 6.0–9.1), so no lens colour reads as a body colour.
 - **Inflow changes outcomes** over long runs. Report it in the audit with its rate.
+
+## Open questions
+
+- **Owner:** Is the panel's bar at least 8 in 10 naming no real people and seeing no crime difference, and who recruits it? The answer decides whether customs and names ship or are rewritten. Suggested: round 8's 8 in 10, over at least 10 people recruited before M5.5 starts. Needed before: building.
+- **Measure:** How far must lens and emblem colours sit from body-hue shades? Today's sit only 6.0–9.1 CIEDE2000 from the ice, sun, lilac and silver shades (R8 report, computed in its fact-check). Suggested: a palette test with a floor of 10 (unsourced estimate), and an icon or pattern on every lens colour. Needed before: building.
+- **Research:** Do round 8's transmission bands hold with similar culture shares, not one 60% culture? They set the CI retention bands and the 0.5% inflow default. Suggested: re-run the transmission prototype with equal shares. Needed before: building.
+- **Research:** Does a stream of animated crime events build illusory correlation? It sets how strict the lens rules must be. Suggested: reuse M4.6's playtest result. Needed before: building.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** the audit rows first, since they guard everything drawn later; then the Exposure lens; then the culture lens and panel.
+- **Reuse:** M4.5's exposure counters, M4.1's flip test for soldiers, M4.6's appearance audit, M5.4's overlay renderer, and the M1.5 playtest records.
+- **Keep it simple:** run the hue, eye and pattern × culture tests through the real birth function with synthetic parents, 10⁶ calls without stepping a world.
+- **Pitfalls:** keep the culture lens out of links, saves and share cards by type, with a test. The culture panel shows customs only, and no justice figure shares its screen (R8 summary, "Never shown together").
+- **Hard and easy parts:** the Spearman and Cramér's V rows over 50 seeds need care; drawing the lenses is routine.

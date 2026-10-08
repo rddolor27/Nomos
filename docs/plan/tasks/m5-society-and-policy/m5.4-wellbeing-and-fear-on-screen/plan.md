@@ -57,3 +57,19 @@ This sub-milestone has no exit check of its own; M5.5's appearance audits cover 
 - **Owner decision first:** whether the optional happiness-affects-productivity switch ships at all, off by default.
 - **Lenses can leak wealth** through district averages in small districts. M5.5's audit checks lens-off frames only; lens-on frames are opt-in by design.
 - **Meters invite over-reading.** Label each with its source and "model output, not a measurement".
+
+## Open questions
+
+- **Owner:** Should the happiness-affects-productivity switch ship at all? LS carries custom-shaped terms, since festival attendance counts as social contact (R8 summary), so the switch opens a path from customs to work (inference). Suggested: don't ship it; if kept, M4.5's audit must cover it, since M4.1's flip test holds attendance fixed (inference). Needed before: the step plan.
+- **Owner:** Should lenses hide districts with few residents? There a district value describes one or two people, which marks a person. Suggested: hide any district under 20 residents (unsourced estimate). Needed before: building.
+- **Measure:** How many sweat and heart bubbles per agent per day keep a 10k screen readable? The brief leaves the cap to the step plan. Suggested: start at one of each per agent per day, under M1.3's limit of four to six bubbles on screen. Needed before: building.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** the settlement terms and district aggregates first, testable headless; then the lenses one at a time; then bubbles and meters; the policy overlays last.
+- **Reuse:** M3.6's LS drivers, M4.4's fear and trust values, M1.3's bubble scheduler, the existing bubble art, and M5.1's prediction table.
+- **Keep it simple:** one district-overlay renderer fed a value array and a palette per lens, rather than four lens modules.
+- **Pitfalls:** lenses read only the day-boundary aggregates, never live agent columns, which makes the one-agent test pass by construction. Nothing in the sim reads the approval readout.
+- **Hard and easy parts:** the district aggregates need care; the meters and overlays are routine.

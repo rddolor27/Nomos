@@ -60,3 +60,19 @@
 - **Verify first:** Sanders's 21% shop-waste figure, before the markdown policy predicts from it (R6).
 - **Fifty-year drift checks are long:** 5,600 days per seed. Keep them in the nightly job.
 - **Resource collapse thresholds** depend on the regrowth model in M3.5 and M7. Re-check once M7's country resources exist.
+
+## Open questions
+
+- **Owner:** Is the wealth tax's default 0% or 3%? Round 2 called a 3% default aggressive, and a nonzero default may move the Gini during the 50-year no-drift check. Suggested: default 0%, with 3% offered and labelled as above Denmark's 2.2%. Needed before: the step plan.
+- **Measure:** How many seeds can the 50-year drift check afford? Each seed's 5,600 days are about 8.1 million ticks, or 12 hours at the 5.3 ms budget for 10k agents (computed). Suggested: measure ticks per second first, then choose seeds, size and cadence, weekly if needed. Needed before: the step plan.
+- **Research:** Does Sanders's 21% shop-waste figure hold when opened? The markdown policy's 20% cut predicts from it, and R6 saw it only in a search summary. Suggested: open the source, and label the prediction "search summary" until then. Needed before: building.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** the three taxes on M2.5's balance sheets first, with the Gini sweep. Then credit and the poverty-trap meter, presets, resource and food policies, and harvest shocks last.
+- **Reuse:** M0.2's `mulPpm` for every tax, M5.1's prediction table and claims, M2.5's wealth spawn, M2.6's Engel check, and M3.5's harvest and regrowth.
+- **Keep it simple:** each resource policy is one parameter of M3.5's harvest or regrowth model, with no new ecology.
+- **Pitfalls:** take the 4× mean threshold from the day-boundary snapshot, then tax in a fixed order. A debtor who dies leaves a debt; write it off against the lender as a booked loss, or the claims ledger drifts.
+- **Hard and easy parts:** a monotone Gini across five tax steps on paired seeds needs the most care. The presets and the poverty-trap meter are mechanical.

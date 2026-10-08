@@ -65,3 +65,19 @@
 - **Two worlds at once** double memory. At 100k agents that may not fit, so the desktop tier may need to run a branch alone, or replay to the fork day on switch. Decide by measurement.
 - **The wealth tax default** of 3% is above Denmark's historical 2.2%. Keep the aggressive flag in the panel (R2, R6).
 - **Role floors** are a guardrail that can hide a broken economy. Log every floor activation.
+
+## Open questions
+
+- **Owner:** Does the branch off screen keep advancing, or wait until shown? The Calendar tab says the original keeps running, but advancing both in one worker halves the top speed and holds two worlds in memory. Suggested: only the branch on screen runs, and the other waits at its tick. Needed before: the step plan.
+- **Owner:** Do role floors count in the extinction check? With floors on, police, merchants and producers cannot go extinct, so the check says little about them. Suggested: run the check with floors off, keep floors on in play, and log every activation. Needed before: the step plan.
+- **Measure:** How large is a 100k checkpoint, and how long does `restoreWorld` take? Agent columns alone reach 25.6 MB at the 256 B cap (computed), and the restore time decides whether a branch switch feels instant. Suggested: measure both in the first step. Needed before: the step plan.
+- **Measure:** Can the extinction check afford 50 seeds × 20 years per setting? The defaults alone are about 161 million ticks (computed), before each policy's two extremes. Suggested: full depth on defaults and fewer seeds per extreme, sized from measured ticks per second. Needed before: the step plan.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** the policy record and treasury transfers first, with Σ = 0 asserted; then role transitions; then the fork and its replay test; the panel last.
+- **Reuse:** M0.2's `mulPpm`, whose lint already bans raw rate products, and `apportion` for budget splits; M1.2's watch-only protocol; M1.1's claims judge; M0.3's checkpoint and `restoreWorld`.
+- **Keep it simple:** if only one branch runs, keep one live world and hold the other as a checkpoint buffer, restored on switch. That needs no second worker.
+- **Pitfalls:** the fork applies after that day's commit, so test that the original's hash never moves. Moving soldier pay off M3.2's stopgap shifts goldens once.

@@ -51,3 +51,18 @@
 - **Cost.** Sobol needs N × (2k + 2) runs. Screening with Morris first keeps k small, and the step plan sets N from measured runs per second.
 - **Python in CI:** the sweeps run in the nightly job or by hand, never per push.
 - **The size factor multiplies cost.** Use the smallest sizes for screening, and all four only for the final Sobol run.
+
+## Open questions
+
+- **Owner:** Which one or two patterns are held out of the fit? Choosing them after seeing results would bias the check. Suggested: fix them in `problem.json` before the first sweep, such as M4.3's 10-year re-arrest rate. Needed before: the step plan.
+- **Measure:** How many design-runner runs per hour does a CI runner manage at each city size? Sobol needs N × (2k + 2) runs, so N, k and the sizes used in screening follow from it. Suggested: time one run per size before writing `problem.json`. Needed before: the step plan.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** the samples, runs and metrics loop on two parameters first. Then Morris over all, Sobol on the few that matter, and the size factor last.
+- **Reuse:** M2.3's design runner and columnar logs, M1.1's claims for the held-out checks, and M0.4's `tools/requirements.txt` for pinning SALib.
+- **Keep it simple:** no Python bindings into the sim and no sweep service; the CLI command and two scripts are the whole tool.
+- **Pitfalls:** convert each sampled decimal to the sim's integer units with one rounding rule. Log the integer used, so each run records what actually ran. Parameter order lives in `problem.json` only.
+- **Hard and easy parts:** choosing parameter ranges for Morris needs judgement; the file plumbing is mechanical.

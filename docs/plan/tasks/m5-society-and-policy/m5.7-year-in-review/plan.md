@@ -55,3 +55,18 @@
 
 - **Owner decision first:** whether the year-in-review card pauses the run or appears without stopping it.
 - **Wealth shifts are sensitive.** Show them as Gini and top-share changes only, never by person or group.
+
+## Open questions
+
+- **Owner:** Does the year card pause the run? The Calendar tab leaves it open. Suggested: the card appears without stopping the run and closes on its own; during a skip, it waits for the skip to end. Needed before: building.
+- **Owner:** May the card show festivals held beside true and recorded crime? Round 8 keeps culture off every surface that shows crime (R8 summary, "Never shown together"). Suggested: festivals held as one total, with no festival or culture names, in a block apart from the crime figures. Needed before: building.
+
+## Implementation notes
+
+Suggestions for the step plan, which makes the final call.
+
+- **Build order:** the yearly aggregates first, then the year-end edition from them, then the card and year-axis charts; the camera last.
+- **Reuse:** M3.8's gazette core and record store, M4.7's justice column, M5.2's births and deaths, M5.3's Gini and top-10% share, and uPlot from M0.5.
+- **Keep it simple:** check the year record against a fixed allow-list of fields; a scan for "culture" in field names misses names like "customs".
+- **Pitfalls:** the yearly aggregates belong in saves, or a restored run shows an empty card. The camera reads only published editions, so the worker protocol gains no message for it.
+- **Hard and easy parts:** nothing here is deep; the content review of the card's layout needs the most care.
