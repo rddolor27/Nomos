@@ -8,3 +8,6 @@ export * from './store.ts';
 export * from './streams.ts';
 export * from './ledger.ts';
 export * from './invariants.ts';
+export * from './money.ts';
+export * from './claims.ts';
+export * from './registry.ts';
