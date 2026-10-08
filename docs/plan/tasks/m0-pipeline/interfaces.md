@@ -1,6 +1,6 @@
 # M0 interfaces: the contract between sub-milestones
 
-M0's sub-milestones are planned in parallel, so the names and layouts they share are fixed here first. Each item has one owner, the sub-milestone that builds it. A plan may refine an item it owns, but must update this file in the same commit; plans that consume an item use it exactly as written.
+M0's sub-milestones are planned in parallel, so the names and layouts they share are fixed here first. Each item has one owner, the sub-milestone that builds it, and plans that consume an item use it exactly as written. A plan that refines an item updates this file in the same commit. If code later changes an interface, a separate docs commit next to the code commit updates it, since code and docs never share a commit.
 
 ## Packages
 
@@ -15,13 +15,23 @@ M0's sub-milestones are planned in parallel, so the names and layouts they share
 | `@nomos/bench` | `tools/bench` | The CI budget, allocation and startup gates | M0.6 |
 | `@nomos/sim-culture` | `packages/sim-culture` | Culture code, walled off from crime, police, labour, wage, wealth, ability, housing and migration code | M0.6 |
 
-Dependencies point one way: `sim-core` ← `sim-protocol` ← `sim-worker`; `render-gl` imports only `sim-protocol`; `web` imports `sim-protocol` and `render-gl` and starts the worker; `cli` imports `sim-core` and `sim-protocol`. The world step lives in `sim-core`, so headless runs and the worker run the same code.
+Dependencies point one way:
+- `sim-core` ← `sim-protocol` ← `sim-worker`;
+- `render-gl` imports only `sim-protocol`;
+- `web` imports `sim-protocol` and `render-gl`, and `sim-worker` only for its `./worker` export, which it starts;
+- `cli` imports `sim-core` and `sim-protocol`.
+
+The world step lives in `sim-core`, so headless runs and the worker run the same code.
 
 ## The world step (owner: M0.3)
 
-- `createWorld(seed: number, tier: Tier): World` and `step(world: World): void`, one tick per call, in `sim-core`. A `World` holds the agent store, the ledgers and the tick counter.
+- **Creation:** `createWorld(seed: number, tier: Tier, ground?: Ground): World`, and `restoreWorld(seed, tier, state: ArrayBuffer, ground?: Ground): World` for checkpoints. A `World` holds the agent store, the ledgers, the tick counter and `world.ground`.
+- **Ground:** `{ width, height, walk: Uint8Array }` in `sim-core`, where nonzero means walkable. M0.4 adds it and builds it from the map.
+- **Stepping:** `step(world: World, timer?: SystemTimer): void`, one tick per call.
+  - `SystemTimer` is `{ lap(system: number): void }`, called after each system, so the worker and the benches time systems without clocks in `sim-core`.
+  - `SYSTEM_NAMES` is `['day', 'move']` in M0.3, and later systems append to it.
 - `stateHash(world: World): number`: a 32-bit hash over every replay-relevant column and ledger, the value the determinism checks compare.
-- `Tier` is `'phone' | 'phone-plus' | 'desktop'`, with agent caps of 10,000, 25,000 and 100,000.
+- `Tier` is `'phone' | 'phone-plus' | 'desktop'`, with agent caps of 10,000, 25,000 and 100,000. `sim-protocol` re-exports `Tier` and `TIER_AGENTS` (M0.5).
 
 ## Snapshot v1 (owner: M0.3)
 
@@ -42,6 +52,8 @@ Dependencies point one way: `sim-core` ← `sim-protocol` ← `sim-worker`; `ren
 
 - There is no "wanted" bit (R1, R3).
 - Helpers: `packVisual(look, action, emote, job, facing, trueOnly): number`, and `lookOf`, `actionOf`, `emoteOf`, `jobOf`, `facingOf` and `isTrueOnly`, each taking `(word: number): number`.
+- `ACTION_NAMES` lists the eight actions in bit order.
+- `JOB_ITEMS` is `['builder', 'clinic', 'farmer', 'merchant', 'police', 'soldier']`, with job id = index + 1 and 0 for none. M0.4 owns it and tests it against the sprite manifests.
 
 ## Worker messages (owner: M0.3)
 
@@ -49,11 +61,13 @@ Dependencies point one way: `sim-core` ← `sim-protocol` ← `sim-worker`; `ren
   - `{ type: 'init', seed, tier, map: ArrayBuffer }`
   - `{ type: 'pause' }` and `{ type: 'resume' }`
   - `{ type: 'return', buffer: ArrayBuffer }`
+  - `{ type: 'checkpoint' }`, which the app sends on `pagehide`
 - Worker to app:
-  - `{ type: 'ready', agents }`
+  - `{ type: 'ready', agents }`. A tick-0 snapshot follows (M0.4), then the worker waits for `resume`. Under reduced motion the app withholds `resume` (M0.5).
   - `{ type: 'snapshot', tick, count, buffer: ArrayBuffer }`
-  - `{ type: 'stats', tick, systemMs: Record<string, number> }`
-  - `{ type: 'checkpoint', tick, state: ArrayBuffer }` on `pagehide`
+  - `{ type: 'stats', tick, systemMs: Record<string, number> }`, keyed by `SYSTEM_NAMES`
+  - `{ type: 'checkpoint', tick, state: ArrayBuffer }`, the answer to the app's `checkpoint`
+- `sim-protocol`'s `bindPageLifecycle(doc, win, post): void` sends `pause` and `resume` on `visibilitychange`, and `checkpoint` on `pagehide`. M0.5 wraps it.
 - Speed controls and skip arrive in M1 (Calendar); the worker refuses settings messages while a run plays.
 
 ## The binary map, version 1 (owner: M0.4)
@@ -66,5 +80,5 @@ Dependencies point one way: `sim-core` ← `sim-protocol` ← `sim-worker`; `ren
 ## WorldRenderer (owner: M0.4)
 
 - In `render-gl`, with the method names from the plan: `init`, `resize`, `setMap`, `pushSnapshot`, `draw`, `setSkin`, `setLod` and `dispose`.
-- `pushSnapshot` takes `{ tick, count, buffer }`, exactly as the worker sends it, and returns the buffer to the app once drawn.
+- `pushSnapshot` takes `{ tick, count, buffer }`, exactly as the worker sends it. It copies what it needs and releases the buffer back to the app before returning.
 - `setSkin` takes `'dots' | 'blobs' | 'town'`; skins not built yet fall back to dots (R3).
