@@ -33,7 +33,7 @@
 
 ## Packages and files
 
-- `packages/sim-country` (`@nomos/sim-country`), new, under the sim rules and lints:
+- `packages/sim-country` (`@nomos/sim-country`), new, under the sim rules and lints, with crime, police, labour, wages, wealth and migration code in folders of those names, which M0.6's culture wall guards:
   - `src/store.ts`: the settlement store and its column layout, documented in `sim-protocol`;
   - `src/flows.ts`: stochastic rounding and the inverse-normal path;
   - `src/national.ts`: treasury, central bank, tax, grants and police funding;
@@ -73,6 +73,7 @@
 - **Owner:** Does the national layer keep REG's government bills and interest, or only cash, as Model SIM does? Bills add a portfolio rule per settlement (λ₀–λ₂, R = 2.5%) that no exit check needs (R4 economy notes, part 7). Suggested: cash only, with M0.2's MINT as the one issuer. Needed before: the step plan.
 - **Owner:** Do the optional equalisation grant and national police force ship now? R4 expects the uniform tax alone to move money toward a region in trouble, and could not source equalisation sizes. Suggested: defer both until a scenario uses them. Needed before: the step plan.
 - **Owner:** How many kilometres does a map cell span? Spacing, route lengths, M7.3's 50–100 km commuting and M7.4's 290 km grain check need a scale; R4 assumed a country about 200 km across. Suggested: about 5 km (inference), so a 96-cell world spans 480 km (computed). Needed before: the step plan.
+- **Design:** should the culture wall guard all of `packages/sim-country/src/**`? M7.2's hazards for offences, arrests, hires and migration, M7.7's `routes/patrols.ts`, M9.4's `villages/own-farm.ts` and this brief's police funding sit outside M0.6's named folders. Suggested: yes, guard the whole package except the culture block. Needed before: the step plan.
 
 ## Implementation notes
 

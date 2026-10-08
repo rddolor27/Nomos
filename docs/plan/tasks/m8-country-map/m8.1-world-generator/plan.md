@@ -14,7 +14,7 @@
   5. erosion-lite passes;
   6. climate;
   7. biomes and habitability, with a snow biome for cold lowland.
-- **Round 9's four porting traps** apply throughout, and M0.6's generator lints guard them:
+- **Round 9's four porting traps** apply throughout. M0.6's ban on bare `/` and `%` catches three once its generator glob covers `packages/worldgen`, and only the goldens catch `>>` for `>>>`:
   - a signed draw before `%`;
   - `>> 16` for `>>> 16`;
   - truncating division;
@@ -35,7 +35,7 @@
 
 ## Packages and files
 
-- `packages/worldgen/src/country/`: `template.ts`, `elevation.ts`, `chains.ts`, `flood.ts`, `flow.ts`, `erosion.ts`, `climate.ts`, `biomes.ts`, `settle.ts`, `routes.ts`, `regions.ts` and `features.ts`, mirroring `tools/worldgen`'s modules one to one.
+- `packages/worldgen/src/country/`: `template.ts`, `elevation.ts`, `chains.ts`, `flood.ts`, `flow.ts`, `erosion.ts`, `climate.ts`, `biomes.ts`, `settle.ts`, `routes.ts`, `regions.ts` and `features.ts`, one file per stage of `tools/worldgen`'s modules. Python has no regions stage, so `regions.ts` gets goldens frozen per generator version.
 - `tools/worldgen/goldens.py`, extended from M3.1: per-stage fingerprints for the country stages.
 - `packages/worldgen/test/country-goldens.test.ts`: runs in Node, and in Bun and three browsers through M0.6's engine harness.
 

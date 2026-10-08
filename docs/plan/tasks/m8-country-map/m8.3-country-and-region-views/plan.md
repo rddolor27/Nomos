@@ -25,7 +25,7 @@
   - forts at road junctions near coasts and borders;
   - watchtowers along long roads.
 
-  Their map icons, and the military sounds near barracks and forts, exist; wire them in.
+  The fort and watchtower map icons, and the military sounds near barracks and forts, exist; wire them in. Garrisons have only the street-scale barracks, with no map icon yet.
 - **Sound (Sound):**
   - country and region music and ambience;
   - the 11 wonder loops, faint near wonders on the map, and full in wonder views once M9 builds them.
@@ -69,6 +69,7 @@
 
 - **Owner:** With no neighbouring country, what counts as a border: the map edge, mountain passes or region lines? Garrison and fort placement waits for it, as M7.7's posts do. Suggested: region lines, which M8.1 already grows. Needed before: the step plan.
 - **Owner:** Do shore tiles and landmarks get snow variants in this batch? M8.1's snow biome can reach cold coasts, where plain shore tiles would show seams (inference). Suggested: snowy shore tiles now, with landmarks left snow-free. Needed before: building.
+- **Owner:** How does the map show a garrison? The plan asks for map icons, but [military.md](../../../military.md) drew them only for forts and watchtowers. Suggested: 8- and 16-px barracks icons, drawn as code under the art rules. Needed before: building.
 - **Owner:** Is the proposed bar of 2 ms main-thread render time per frame in software-GL Chromium accepted? It is the only exit check here. Suggested: accept it, timed while panning with labels on. Needed before: building.
 
 ## Implementation notes

@@ -52,7 +52,7 @@
 
 ## Open questions
 
-- **Owner:** What does "Open in City mode" do for a settlement above the device's agent cap? `tools/worldgen` sizes capitals at 150,000–500,000 people (R9 builder notes), above even the desktop cap of 100,000. Suggested: offer it only for settlements within the tier's cap, with a notice, until M9.4's district window can host larger ones. Needed before: the step plan.
+- **Owner:** What does "Open in City mode" do for a settlement above the device's agent cap? `tools/worldgen` sizes capitals at 150,000–500,000 people, ±25% (R9 builder notes; `settle.py`), above even the desktop cap of 100,000. Suggested: offer it only for settlements within the tier's cap, with a notice, until M9.4's district window can host larger ones. Needed before: the step plan.
 - **Owner:** Is a what-if fork saved with the country? A saved fork needs its own save section. Suggested: no; a fork reopens from the ledger. Needed before: the step plan.
 - **Measure:** Which metrics keep history? R4's 1.9 MB came from 1,000 settlements × 8 metrics, so M8's 40–237 places would take 0.08–0.45 MB if size scales with count (computed). Suggested: R4's 8 metrics, with the 3 MB check run on the 1,000-settlement test country as the worst case. Needed before: the step plan.
 

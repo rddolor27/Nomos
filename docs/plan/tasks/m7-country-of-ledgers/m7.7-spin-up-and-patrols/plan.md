@@ -31,7 +31,7 @@
   - `src/spin-up.ts`: the fast path, with progress messages through the worker;
   - `src/routes/ledger.ts`: route edge columns;
   - `src/routes/patrols.ts`: garrison reach and the budget;
-  - `src/routes/raids.ts`: true raids, then sightings and reports, then records.
+  - `src/crime/raids.ts`, in M0.6's guarded `crime/` folder: true raids, then sightings and reports, then records.
 - `packages/sim-protocol`: `{ type: 'progress', phase: 'spin-up', day, of }`. Update [interfaces.md](../../m0-pipeline/interfaces.md).
 
 ## Interfaces and data

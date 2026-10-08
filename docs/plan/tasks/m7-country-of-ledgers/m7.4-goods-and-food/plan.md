@@ -76,6 +76,7 @@
 - **Measure:** Does the weekly goods step make price cycles that a daily step would not? A daily goods layer would cost 17–21 ms at 10,000 settlements against the 12 ms budget (R6), so weekly has to hold up. Suggested: run one 100-settlement preset both ways, and accept weekly if both give the same price period and seasonal gaps. Needed before: building.
 - **Research:** Do R6's 1.5–3% monthly carrying cost and ≤ 7% seasonal pest loss hold on the 112-day year? They set the stocking drift and the harvest-store test. Suggested: take M2.7's re-read, or keep R6's values labelled provisional if it hasn't landed. Needed before: building.
 - **Research:** What sources fix grain density, decay rates for timber, fuel and wares, and weather correlation between nearby settlements? R6 lists all three as unsourced, and they drive the 290 km test, the decay step and the weather draw. Suggested: one short research round, with labelled design values until then. Needed before: building.
+- **Design:** M10 needs a daily weather per region, but this weather is a Q16 yield factor drawn once per settlement-year, with regional and local parts. Suggested: key the regional part on (region, year), so M10.1 can fit its daily weather to it. Needed before: the step plan.
 
 ## Implementation notes
 

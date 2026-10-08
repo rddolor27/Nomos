@@ -61,7 +61,7 @@
 
 ## Open questions
 
-- **Owner:** What happens when the focused settlement is above the device cap before M9.4's district window lands? `tools/worldgen` capitals hold 150,000–500,000 people (R9), above even the desktop cap of 100,000. Suggested: M9.1 spawns only settlements within the tier's cap, and larger ones stay on the map view until M9.4. Needed before: the step plan.
+- **Owner:** What happens when the focused settlement is above the device cap before M9.4's district window lands? `tools/worldgen` capitals hold 150,000–500,000 people, ±25% (R9; `settle.py`), above even the desktop cap of 100,000. Suggested: M9.1 spawns only settlements within the tier's cap, and larger ones stay on the map view until M9.4. Needed before: the step plan.
 - **Measure:** What zoom threshold z and hysteresis factor f? R4 gives the rule but no values. Suggested: z at the Region-to-City step, and f between 0.1 and 0.2, both design values tuned with M9.2's oscillating-camera test. Needed before: building.
 - **Measure:** How wide is the households–firms reconciliation band? Too narrow a band reconciles every day, and too wide a band lets the split drift. Suggested: a design value, logged per use and judged by how often it fires. Needed before: building.
 - **Measure:** How many settlements does the notables cache keep? At R4's ~32 B per notable and 1–5% of people, a 10,000-person city costs about 5–18 KB with its 2 KB field (computed). Suggested: cap it by bytes within M8.5's ~3 MB save, not by city count. Needed before: building.

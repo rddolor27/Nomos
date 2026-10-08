@@ -14,7 +14,7 @@
 
   It is kept separate from the crime top-5% share.
 - **Country-level happiness and migration:**
-  - +150 LS per doubling of settlement median income over the national median;
+  - +150 milli-ladder points of LS (0.15 ladder steps) per doubling of settlement median income over the national median;
   - out-migration rises by up to 10% per point of mean LS below the national mean.
 - **Wealth group transitions** use hazards fitted from M5.6's sweep logs, as M7.2 fits the other flows. Spawn and fold reproduce group totals exactly in cents.
 - **Cheap randomness:** aggregate band shifts come from one keyed draw per settlement-day, plus one hash round per rounding decision, or from deterministic remainders. Never use a full keyed draw per cell.
@@ -26,9 +26,9 @@
 ## Packages and files
 
 - `packages/sim-country`:
-  - `src/blocks/happiness.ts` and `src/blocks/wealth.ts`;
-  - `src/migration.ts`, extended with the LS push;
-  - `src/emulator/wealth-transitions.ts`.
+  - `src/blocks/happiness.ts`, and `src/wealth/block.ts` in M0.6's guarded `wealth/` folder;
+  - `src/migration/flows.ts`, extended with the LS push;
+  - `src/wealth/transitions.ts`.
 - `packages/sim-wasm/rust/src/settlement.rs`: the settlement day step, with raw pointer exports and no wasm-bindgen.
 - `tools/emulator/fit.py`: extended to wealth group transitions.
 

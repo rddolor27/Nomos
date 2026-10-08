@@ -24,7 +24,7 @@
 - `packages/sim-country/src/focus/district-window.ts`: which districts run agents, and switching.
 - `packages/sim-core/src/crime/lattice.ts`: the 16×16 district-tier lattice.
 - `packages/sim-core/src/villages/`: `shop.ts`, `own-farm.ts`, `kin-credit.ts` and `market-day.ts`.
-- A village preset in `src/economy/presets/village.ts`.
+- A village preset in `packages/sim-core/src/economy/presets/village.ts`, beside M2.3's presets.
 
 ## Interfaces and data
 
@@ -51,6 +51,7 @@
 
 - **Owner:** What number makes "well below" testable? R4 gives none, though its snippet-only sources put own production at 20–43% of rural food value. Suggested: village money stock and transactions per head at most 80% of the city's, as a design value. Needed before: the step plan.
 - **Owner:** Does M8.5's "Open in City mode" then use the district window for places above the cap? It would lift M8.5's limit on capitals. Suggested: yes, through the same window code. Needed before: the step plan.
+
 ## Implementation notes
 
 Suggestions for the step plan, which makes the final call.

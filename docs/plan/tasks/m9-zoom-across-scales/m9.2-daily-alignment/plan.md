@@ -56,5 +56,5 @@ Suggestions for the step plan, which makes the final call.
 - **Build order:** the divergence log on one flow first, then alignment for the interior flows, then boundary flows at entry tiles, then the panel.
 - **Reuse:** M9.1's switch and micro-ledger, M2.3's columnar log, M7.2's fitter, and the keyed draw for selection scores.
 - **Keep it simple:** align every interior flow by sorting, and skip R4's alternative of a steered propensity multiplier.
-- **Pitfalls:** z from small daily counts misleads, so use the ledger's own variance; pooling village flows weekly would need the owner's leave, since the bar is daily. Score ties break by agent index, so Node and Chromium select alike. Selection buffers are preallocated, so nothing allocates per tick.
+- **Pitfalls:** z from small daily counts misleads, so use the ledger's own variance; pooling village flows weekly would need the owner's leave, since the bar is daily. Score ties break by agent index, so Node and Chromium select alike. Selection uses a preallocated heap, as M0.2's apportionment does, since the sim lint bans `sort`, and nothing allocates per tick.
 - **Hard and easy parts:** boundary flows at entry tiles need the most care; the z log and the panel are mechanical.

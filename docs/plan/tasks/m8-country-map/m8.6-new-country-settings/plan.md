@@ -30,7 +30,7 @@
 
 ## Interfaces and data
 
-- **Override:** `{ stage, key, value }`, with the key from a fixed list of about 10 (sea level, mountain count, climate, river density, settlement density, culture count, single culture and so on), set in the step plan from round 9's list.
+- **Override:** `{ stage, key, value }`, with the key from a fixed list of about 10 (template, land share, mountain chains, wetness, cold edge, settlement density, wonder count, culture count, single culture and so on), set in the step plan from round 9's list.
 - **Validation result:** `{ ok, problems: { kind, cell?, settlement? }[] }`.
 
 ## Method and sources

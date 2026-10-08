@@ -36,7 +36,7 @@
 
 - `packages/sim-country`:
   - `src/graph.ts`: the CSR graph and round-robin scheduling;
-  - `src/trade.ts`, `src/migration.ts` and `src/commuting.ts`;
+  - `src/trade.ts`, and `src/migration/flows.ts` and `src/labour/commuting.ts` in M0.6's guarded folders;
   - `src/villages.ts`: markets, harvests and own production;
   - `src/regions.ts`: the region tier and dense region matrices.
 - `packages/sim-country/test/country-suite/`: one test file per family of checks.
@@ -56,7 +56,7 @@
 
 ## Tests for the exit checks
 
-- `country day within budget`: 10,000 settlements advance one day within 12 ms RM, and 1,000 within 1.5 ms. M0.6's budget gate has the country rows.
+- `country day within budget`: 10,000 settlements advance one day within 12 ms RM, and 1,000 within 1.5 ms. This adds the `1k` and `10k` country rows to M0.6's budget gate.
 - `identities hold for 50 years`: every identity holds exactly every day over 20 seeds × 50 years. This runs nightly.
 - `scaling`: on at least 30 settlements spanning three orders of magnitude:
   - the GDP-like exponent's interval overlaps 1.08–1.15 and rejects 1;
@@ -80,9 +80,10 @@
 ## Open questions
 
 - **Owner:** May M7.3 close on 1,000 settlements within 1.5 ms in JS, with the 10,000-settlement gate moved to M7.5's WASM port? JS took 8.4–10.4 ms at 10,000 on R5's reference machine (5.1 ms in R4's desktop Node), and M7.5's blocks come on top. Suggested: yes, recording the 10,000 time without gating on it. Needed before: the step plan.
-- **Owner:** Does the scaling check stay on the terrain-free generator after M8's re-baseline? Under P₁/k a world listing 61 places spans only 61× in size, under the three orders of magnitude the check needs (computed). Suggested: yes, as a model check that generated worlds can't show. Needed before: the step plan.
+- **Owner:** Does the scaling check stay on the terrain-free generator after M8's re-baseline? `tools/worldgen` keeps P₁/k only for its top six places and steepens below, so a standard world's 40–61 listed places reach true rank 618–1,573, close to the three orders of magnitude the check needs (R9 map pipeline notes, computed). Suggested: yes, as a model check whose sizes the test controls. Needed before: the step plan.
 - **Measure:** Does gravity alone dock migration and commuting decay? Building both kernels doubles the tests for a setting nobody uses yet. Suggested: gravity first, since the decay checks are power laws in distance (inference); add radiation only if gravity fails. Needed before: building.
 - **Research:** Do FBI tables 16 and 70–74, BJS reporting by location and Bettencourt 2007's intervals confirm the crime, police and scaling bands? They set the bands of two of the four exit checks. Suggested: a short research round. Needed before: the step plan.
+- **Design:** the store has no geographic region per settlement, since M7.6's region id is the culture home region (R8), and M10 needs the geographic one. Suggested: a `Uint16` region column, filled from M8.1's settlement record. Needed before: the step plan.
 
 ## Implementation notes
 

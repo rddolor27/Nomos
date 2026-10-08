@@ -36,7 +36,8 @@
 
 ## Method and sources
 
-- **Detail levels, the determinism decision, consequential focus and the hand-off twin test:** [R4 architecture notes](../../../../research/round-4-multi-scale/notes/architecture-lod.md), parts 3.1, 3.2, 3.7 and 3.8.
+- **Detail levels, the determinism decision and consequential focus:** [R4 architecture notes](../../../../research/round-4-multi-scale/notes/architecture-lod.md), parts 3.1, 3.2, 3.7 and 3.8.
+- **The hand-off twin test:** [R4 economy and demography notes](../../../../research/round-4-multi-scale/notes/economy-demography.md), part 7.
 - **Divergence evidence:** M9.2's meter.
 
 ## Tests for the exit checks
