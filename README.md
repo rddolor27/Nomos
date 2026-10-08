@@ -151,7 +151,7 @@ During research the project was called "Dot Society" (codename) and "Civilizatio
 
 ## Licences
 
-No licence has been chosen for this repository yet; the plan assumes MIT for code. The sprites in `assets/sprites/` and the sounds in `assets/sounds/` are original, drawn and composed as code, and [`assets/LICENSES.md`](assets/LICENSES.md) records each file's checksum. The concept art in `docs/mockups/` is original, with two exceptions:
+The code is under the [MIT licence](LICENSE). It does not yet cover the original sprites in `assets/sprites/`, the sounds in `assets/sounds/` or the concept art in `docs/mockups/`, which stay the owner's until a licence is chosen for them. The sprites and sounds are drawn and composed as code, and [`assets/LICENSES.md`](assets/LICENSES.md) records each file's checksum. The concept art is original, with two exceptions:
 - the town mockups use CC0 tiles from the Ninja Adventure pack;
 - `docs/mockups/previews/` holds unmodified CC0 images, each with its licence file.
 
