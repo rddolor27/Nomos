@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "budget": "node src/budget.ts",
-    "alloc": "node --expose-gc src/alloc.ts"
+    "alloc": "node --expose-gc src/alloc.ts",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@nomos/sim-core": "workspace:*",
