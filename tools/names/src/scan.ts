@@ -1,6 +1,7 @@
 import { execFileSync } from 'node:child_process';
 import { lstatSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { cultureTableHits } from './culture-text.ts';
 import { franchiseHits } from './franchise.ts';
 
 // line is 1-based for a hit in a file's text, and 0 for a hit in its path.
@@ -11,6 +12,7 @@ export interface Finding {
 }
 
 const CODE_FOLDERS = ['apps/', 'packages/', 'tools/'];
+const CULTURE_TABLE = /^(apps|packages)\/.*\.culture\.json$/;
 const SNIFF_BYTES = 8192;
 const QUOTE_CHARS = 160;
 const MAX_LISTING_BYTES = 64 * 1024 * 1024;
@@ -42,12 +44,17 @@ function lineFindings(path: string, text: string): Finding[] {
   return found;
 }
 
+function cultureFindings(path: string, text: string): Finding[] {
+  if (!CULTURE_TABLE.test(path)) return [];
+  return cultureTableHits(text).map((hit) => ({ path, ...hit }));
+}
+
 export function scanPaths(root: string, paths: readonly string[]): Finding[] {
   const found: Finding[] = [];
   for (const path of paths) {
     if (franchiseHits(path).length > 0) found.push({ path, line: 0, text: path });
     const text = readsContent(path) ? readText(join(root, path)) : null;
-    if (text !== null) found.push(...lineFindings(path, text));
+    if (text !== null) found.push(...lineFindings(path, text), ...cultureFindings(path, text));
   }
   return found;
 }
