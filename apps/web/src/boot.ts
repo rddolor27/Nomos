@@ -4,6 +4,8 @@ import townMapUrl from '../../../assets/maps/town.nmap?url';
 export interface Boot {
   worker: Worker;
   map: Promise<ArrayBuffer>;
+  // Set by a worker error that fired before the app listened for one.
+  failed?: boolean;
 }
 
 declare global {
@@ -25,7 +27,10 @@ async function fetchMap(url: string): Promise<ArrayBuffer> {
 // these two imports are also what puts the worker and the map in the build.
 export function takeBoot(): Boot {
   if (window.__boot) return window.__boot;
-  const worker = new Worker(workerUrl, { type: 'module', name: 'sim' });
+  const boot: Boot = { worker: new Worker(workerUrl, { type: 'module', name: 'sim' }), map: fetchMap(townMapUrl) };
+  boot.worker.addEventListener('error', () => {
+    boot.failed = true;
+  });
   performance.mark('worker:new');
-  return { worker, map: fetchMap(townMapUrl) };
+  return boot;
 }

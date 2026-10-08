@@ -42,3 +42,15 @@ test('says when the map is missing', async ({ page }) => {
   await page.goto(TOWN);
   await expect(page.locator('#status')).toContainText('map');
 });
+
+test('says when the worker fails before the app listens', async ({ page }) => {
+  await page.route('**/assets/worker-*.js', (route) => route.fulfill({ status: 404 }));
+  // The entry chunk arrives only after the worker has failed, so the app's own error listener comes too late for it.
+  await page.route('**/assets/index-*.js', async (route) => {
+    await page.waitForFunction(() => window.__boot?.failed === true);
+    await route.continue();
+  });
+  await page.goto(TOWN);
+  await expect(page.locator('#status')).toContainText('its worker did not start');
+  await expect(page.locator('#play')).toBeDisabled();
+});

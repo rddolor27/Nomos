@@ -14,6 +14,24 @@ describe('the early boot', () => {
     expect(() => new Function(script)).not.toThrow();
   });
 
+  // The app's own listener attaches only once the entry chunk runs, which can be after the worker has already failed.
+  it('flags a worker that fails before the app listens', () => {
+    const worker: { onerror?: () => void } = {};
+    const win: { __boot?: { failed?: boolean } } = {};
+    const run = new Function('window', 'Worker', 'fetch', 'performance', String(bootTag(BUNDLE).children));
+    run(
+      win,
+      function Worker() {
+        return worker;
+      },
+      () => new Promise(() => {}),
+      { mark() {} },
+    );
+    expect(win.__boot?.failed).toBeUndefined();
+    worker.onerror?.();
+    expect(win.__boot?.failed).toBe(true);
+  });
+
   it('throws without a worker or map', () => {
     expect(() => bootTag(['assets/maps/town-b2.nmap'])).toThrow(/worker/);
     expect(() => bootTag(['assets/worker-a1.js'])).toThrow(/map/);

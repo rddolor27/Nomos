@@ -196,10 +196,15 @@ export async function startApp(boot: Boot, doc: Document, start: Start): Promise
     else if (data.type === 'stats') listeners.forEach((listener) => listener(data.tick, data.systemMs));
     else if (data.type === 'ready') onReady(data.agents);
   });
+  const workerStopped = (detail?: string): void => {
+    status.textContent = `The simulation stopped: ${detail || 'its worker did not start'}`;
+  };
   worker.addEventListener('error', (event) => {
     event.preventDefault();
-    status.textContent = `The simulation stopped: ${event.message || 'its worker did not start'}`;
+    workerStopped(event.message);
   });
+  // The boot script keeps an error that fired before this listener existed, as one can while the entry chunk loads.
+  if (boot.failed) workerStopped();
 
   // Drawn at once, inside the observer, so a resized canvas never shows a blank frame before the next one.
   observeDeviceSize(element<HTMLElement>(doc, '#view'), (width, height, dpr) => {

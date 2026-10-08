@@ -10,13 +10,15 @@ function find(fileNames: readonly string[], pattern: RegExp, what: string): stri
 }
 
 // Starts the sim worker and the map fetch while the HTML still parses, before the entry module loads (R5). The
-// no-op catch marks a failed fetch as handled, so it never reads as uncaught before the app awaits it and says why.
+// no-op catch marks a failed fetch as handled, so it never reads as uncaught before the app awaits it and says why;
+// the failed flag keeps a worker error that fires before the app listens, so the app can still say so.
 export function bootTag(fileNames: readonly string[]): HtmlTagDescriptor {
   const worker = find(fileNames, WORKER, 'sim worker');
   const map = find(fileNames, TOWN_MAP, 'town map');
   const children =
     `window.__boot={worker:new Worker('/${worker}',{type:'module',name:'sim'}),` +
     `map:fetch('/${map}').then(function(r){if(!r.ok)throw new Error('map '+r.status);return r.arrayBuffer()})};` +
+    `window.__boot.worker.onerror=function(){window.__boot.failed=true};` +
     `window.__boot.map.catch(function(){});performance.mark('worker:new')`;
   return { tag: 'script', children, injectTo: 'head-prepend' };
 }
