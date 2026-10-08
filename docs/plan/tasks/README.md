@@ -68,7 +68,7 @@ The plan's own effort lines sum to about 211–324 days before launch, but many 
 | [M3.5 Food and harvest](m3-city-life/m3.5-food-and-harvest/task.md) | Pantries, shelf lives, a food-insecurity tally and one grain harvest a year | 6–9 days | [brief](m3-city-life/m3.5-food-and-harvest/plan.md) |
 | [M3.6 Wellbeing and housing](m3-city-life/m3.6-wellbeing-and-housing/task.md) | Life satisfaction with named drivers, and homes that are owned, rented or mortgaged | 8–12 days | [brief](m3-city-life/m3.6-wellbeing-and-housing/plan.md) |
 | [M3.7 Cultures and festivals](m3-city-life/m3.7-cultures-and-festivals/task.md) | Customs passed on and adopted, festivals, music events and personal names | 9–14 days | [brief](m3-city-life/m3.7-cultures-and-festivals/plan.md) |
-| [M3.8 Seasons, sound and gazette](m3-city-life/m3.8-seasons-sound-and-gazette/task.md) | Seasons in the town, its sounds and music, and a paper every dawn | 9–15 days | [brief](m3-city-life/m3.8-seasons-sound-and-gazette/plan.md) |
+| [M3.8 Seasons, sound and gazette](m3-city-life/m3.8-seasons-sound-and-gazette/task.md) | Seasons in the town, its sounds and music, and a paper every morning | 9–15 days | [brief](m3-city-life/m3.8-seasons-sound-and-gazette/plan.md) |
 
 ### [M4 Crime and police](m4-crime-and-police/milestone.md)
 
@@ -185,6 +185,7 @@ Each must be settled before its sub-milestone starts. The task files give the co
 | M3.8 | whether music stays chiptune or adds soft sampled instruments, which would also need a file format that plays in Safari ([Sound](../sound.md)) |
 | M3.8 | whether street and district names come from a culture's naming custom; if so, the gazette names districts by number ([Gazette](../gazette.md)) |
 | M4.2 | police near 0.25% of the population, or police dots labelled as patrol units; round 2 allows either |
+| M4.2 | whether darkness lowers the chance that a crime is witnessed; the calendar plan leaves it open, and no sim rule reads the light yet |
 | M4.7 | whether the true view's margin note exists, or players find unrecorded crime only on the true-view map ([Gazette](../gazette.md)) |
 | M5.4 | whether the optional happiness-affects-productivity switch ships at all, off by default |
 | M5.5 | the playtest panel's bar, proposed as at least 8 in 10 naming no real people and seeing no difference |
@@ -198,6 +199,6 @@ Each must be settled before its sub-milestone starts. The task files give the co
 | M9.2 | the proposed bar of \|z\| < 2 on at least 95% of flow-days |
 | M9.6 | whether pinned live settlements ship |
 | M10.1 | when research round 10 runs: just before M10, or before M3.5's step plan, so the harvest and the later weather share one design |
-| M10.1 | how runs from before M10 keep replaying: fit the daily weather to M3.5's harvest draw as it is, or let each run's version pick the rule |
+| M10.1 | whether the daily weather fits M3.5's harvest draw as it is, so every harvest stays as it was, or the harvest follows the weather days; either way, a link made before M10 replays through its version |
 | M10.2 | whether snow cover follows snowfall instead of winter's fixed schedule from M3.8 |
 | M10.3 | whether weather changes what people do, or only how the world looks and sounds |

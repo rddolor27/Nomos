@@ -7,17 +7,17 @@
 ## Approach
 
 - **Every region steps its chain in the country day.** M10.1's chain runs per region inside M7's daily step, a few integer operations each, and settlements take their region's weather.
-- **One weather at every scale.** The settlement store's weather (M7.4), the map's icon and a zoom into the region (M9) all read the same value, so the sky never changes on zoom.
+- **One weather at every scale.** The map's icon and a zoom into the region (M9) read the same daily weather, so the sky never changes on zoom. M7.4's settlement weather stays a yearly yield factor, and M10.1 fits the daily weather to its regional part.
 - **On the map:** a weather map mode, with one icon per region, at its centre in the Country view and over its settlements in the Region view, reusing M10.2's HUD icons.
 
 ## Packages and files
 
 - `packages/sim-country/src/weather.ts`: stepping every region's chain in the country day, beside M7.3's region tier.
-- `packages/render-gl/src/country/weather.ts`: the map mode and the icons.
+- `packages/render-gl/src/map-modes/weather.ts`: the map mode and the icons, registered in M8.4's map-mode table.
 
 ## Interfaces and data
 
-- **Region weather:** M10.1's kind and minutes, one record per region per day in M7.3's region tier.
+- **Region weather:** M10.1's kind and minutes, one record per region per day in M7.3's region tier. Settlements find their region through the geographic region column that M7.3's brief proposes.
 
 ## Method and sources
 
@@ -26,7 +26,7 @@
 
 ## Tests for the exit checks
 
-- `the map matches the zoom`: on every day of 3 seeds × 1 year, each region's map icon, its settlements' ledger weather and the weather in a zoomed-in town agree.
+- `the map matches the zoom`: on every day of 3 seeds × 1 year, each region's map icon and the weather in a zoomed-in town agree.
 - `the country day stays in budget`: the day-step gate passes at 1,000 and 10,000 settlements with weather on.
 
 ## Risks and unknowns

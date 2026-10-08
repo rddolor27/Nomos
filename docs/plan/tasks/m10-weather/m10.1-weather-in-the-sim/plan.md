@@ -11,8 +11,8 @@
   - Showers, storms and fog also draw a start and an end minute, from the same key with a second salt.
   - City mode is one region, so the whole town shares its weather.
 - **Odds by season and biome.** The tables are indexed by season and by a biome class read from the place's temperature and moisture. Until research round 10 sets them, they are labelled design values from the [Weather plan](../../../weather.md).
-- **One source (Weather).** M3.5's yield factor and M7.4's settlement weather must agree with the days on screen. There are two designs, and the owner picks one:
-  - **fit:** keep M3.5's yearly draw as it is, and bias each season's chain by it, so a poor harvest year draws more bad days. Old runs replay unchanged.
+- **One source (Weather).** M3.5's yearly yield draw and M7.4's settlement-year yield factor must agree with the days on screen. M7.4's brief asks to key its regional part on (region, year), so the daily weather can fit it. There are two designs, and the owner picks one:
+  - **fit:** keep M3.5's yearly draw as it is, and bias each season's chain by it, so a poor harvest year draws more bad days. Old runs keep their harvests.
   - **derive:** compute the yield factor from the season's weather days, and let each run's version pick the rule, so old links replay with the old one.
 - **Canonical and cheap.** Weather is written only at the day boundary and enters the state hash. It costs a few integer operations per region a day, and a skip steps the chain every day.
 
@@ -23,7 +23,7 @@
   - `tables.ts`: odds by season and biome class, as integer thresholds generated at build time;
   - `minutes.ts`: start and end minutes.
 - `packages/sim-protocol`: `WEATHER_KINDS`, and the day's weather sent to the app.
-- `tools/worldgen/weather.py`: the Python reference of the chain, so the kernel fuzzer checks the port, as M0.6 does for the other kernels.
+- `tools/worldgen/weather.py`: the Python reference of the chain, whose test vectors check the port in every engine, as M0.1 and M0.6 do for the other kernels.
 
 ## Interfaces and data
 
@@ -48,11 +48,12 @@
 - **Owner decision first:** when round 10 runs, and fit or derive.
 - **Verify first:** round 10's odds and spell lengths.
 - **Skips must step every day.** A chain sampled only at the end of a skip would diverge from a played run.
+- **Old links need their version under either design.** Weather enters the state hash, and M10.3 may change routines, so a link made before M10 replays to its recorded hash only if its version leaves both out.
 
 ## Open questions
 
 - **Owner:** When does research round 10 run? If it runs before M3.5, the harvest draw can be built from the weather design, and no fit is needed. Suggested: before M3.5's step plan. Needed before: M3.5's step plan, or this step plan at the latest.
-- **Owner:** Fit or derive? Fit leaves every old run unchanged; derive reads more simply but needs each run's version to pick the rule. Suggested: fit, unless round 10 runs before M3.5. Needed before: the step plan.
+- **Owner:** Fit or derive? Fit leaves old runs' harvests unchanged; derive reads more simply but needs each run's version to pick the rule. Suggested: fit, unless round 10 runs before M3.5. Needed before: the step plan.
 - **Research:** What odds by season and biome, and how long are wet and dry spells? Suggested: round 10, with labelled design values until then. Needed before: building.
 
 ## Implementation notes
@@ -61,5 +62,5 @@ Suggestions for the step plan, which makes the final call.
 
 - **Build order:** the Python reference and its golden vectors first, then the TypeScript port against them, then the tables and minutes, then the agreement with the harvest.
 - **Keep it simple:** a 6 × 6 table of integer thresholds per season and biome class, and no continuous weather fields.
-- **Pitfalls:** key each draw on (seed, WEATHER, region, day) alone; yesterday's kind picks the table row, never the key. Then regions can step in any order.
+- **Pitfalls:** key each draw on (seed, WEATHER, region, day) alone; yesterday's kind picks the table row, never the key. Then regions can step in any order. Key each region by a stable id, such as its cell, as round 9 keys places, so an M8.7 edit cannot reshuffle the weather.
 - **Hard and easy parts:** agreeing with the harvest without breaking old runs needs care; the chain and its tables are mechanical.

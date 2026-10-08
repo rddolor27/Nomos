@@ -16,7 +16,7 @@
 
 ## Packages and files
 
-- `packages/sim-core/src/routines/`: the weather factor in M3.2's utility scoring.
+- `packages/sim-core/src/agents/utility.ts`: the weather factor in M3.2's utility scoring.
 - `packages/sim-core/src/movement/`: travel speed by weather.
 - `packages/sim-lab/src/cards/rain.ts`: the bet card and its claims.
 - `tools/analysis/`: outdoor hours, and true against recorded crime, by weather kind.

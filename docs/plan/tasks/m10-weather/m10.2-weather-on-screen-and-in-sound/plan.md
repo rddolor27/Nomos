@@ -10,7 +10,7 @@
 - **Fog and cloud shadows** are one full-screen pass each: fog a soft white veil, and cloud shadows a slow-scrolling, low-frequency mask. Like the light tint, they touch only ground and buildings.
 - **Wet ground** is a palette swap on ground tiles while it rains and for a time after, with puddle tiles on paving and dirt that dry in steps.
 - **Weather tints stack on the light:** the light period's colour times a weather colour, so a rainy afternoon is greyer and a stormy night darker. People stay untinted.
-- **Calm lightning.** A storm brightens the sky tint softly, at most once every few seconds, keyed on (seed, region, day, minute). It never fills the screen, so no sequence passes WCAG's three flashes a second. Under reduced motion lightning is off, and rain and snow draw as still overlays.
+- **Calm lightning.** A storm brightens the sky tint softly, at most once every few seconds, keyed on (seed, region, day, minute) and capped on the render side to one glow every few seconds of real time, so 16× does not bring them sixteen times as fast. It never fills the screen, so no sequence passes WCAG's three flashes a second. Under reduced motion lightning is off, and rain and snow draw as still overlays.
 - **Sounds.** Light rain, heavy rain and storm loops join the ambience bank, and a thunder event joins the event bank, all made in `tools/sounds` as synth data.
   - They layer over the biome loops on the ambience bus, and thunder counts toward M3.8's voice caps.
   - Each has a visual twin: rain with its particles, thunder with the glow.
@@ -43,6 +43,7 @@
 - `reduced motion has no falling particles`: a Playwright golden under reduced motion shows the still overlay identical from frame to frame.
 - `storms fit the frame budget`: the town at 3×, in heavy rain with fog, stays within its frame budget in CI and on the reference phones.
 - `every sound has a twin`: a table maps each new bank entry to its visual cue, and a test fails on any entry without one. The owner's listening is recorded before the sounds are committed.
+- `hues clear 3:1 under weather`: every body hue clears 3:1 against every walkable tile in every light period under every weather tint, by its outline or its fill, extending M1.3's and M3.3's checks.
 
 ## Risks and unknowns
 
@@ -61,5 +62,5 @@ Suggestions for the step plan, which makes the final call.
 
 - **Build order:** the art and the weather tint first, as still frames, then particles and fog, then wet ground, then the sounds, the HUD icon and the gazette line.
 - **Keep it simple:** one particle pass for rain and snow, switched by a uniform, with no physics or collisions.
-- **Pitfalls:** particles use render-side hashes, never sim draws, so golden frames stay reproducible. Keep every weather tint off people, or M1.3's contrast checks fail.
+- **Pitfalls:** particles use render-side hashes, never sim draws, so golden frames stay reproducible. Keep every weather tint off people, or M1.3's contrast checks fail. Weather icons follow the season icons' rule: never a sun, leaf or flower, which are culture emblems ([sprite README](../../../../../tools/sprites/README.md)), so clear skies need another mark.
 - **Hard and easy parts:** calm lightning, phone fill rate and the sound design need the most care; the HUD icon and manifest entries are mechanical.

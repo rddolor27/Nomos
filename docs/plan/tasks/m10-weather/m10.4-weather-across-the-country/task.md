@@ -6,6 +6,6 @@ Builds on M10.1's weather per region and M10.2's icons. The plan gives this task
 
 - **Builds:**
   - each region's weather on the country map, the same weather that zooming into it shows (Weather).
-- **Needs:** M10.1's weather per region; M10.2's weather icons; M7.3's region tier and M7.4's settlement store; M8.3's Country and Region views; M9.1's spawn on zoom.
+- **Needs:** M10.1's weather per region; M10.2's weather icons; M7.3's region tier and M7.4's settlement weather; M8.3's Country and Region views and M8.4's map modes; M9.1's spawn on zoom.
 - **Exit checks:**
-  - on every day of 3 seeds × 1 year, each region's weather is the same on the map, in its settlements' ledgers and in any zoom into it (Weather).
+  - on every day of 3 seeds × 1 year, each region's weather is the same on the map and in any zoom into it (Weather).
