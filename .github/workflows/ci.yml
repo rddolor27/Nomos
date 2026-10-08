@@ -22,3 +22,8 @@ jobs:
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm test
+      - run: |
+          node tools/cli/src/main.ts --seed 42 --tier phone --ticks 1000 > "$RUNNER_TEMP/replay-1.txt"
+          node tools/cli/src/main.ts --seed 42 --tier phone --ticks 1000 > "$RUNNER_TEMP/replay-2.txt"
+          cat "$RUNNER_TEMP/replay-1.txt"
+          diff "$RUNNER_TEMP/replay-1.txt" "$RUNNER_TEMP/replay-2.txt"

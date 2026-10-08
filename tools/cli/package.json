@@ -2,6 +2,9 @@
   "name": "@nomos/cli",
   "private": true,
   "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
   "dependencies": {
     "@nomos/sim-core": "workspace:*"
   }
