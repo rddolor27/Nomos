@@ -95,7 +95,7 @@ def main():
         if n == LAST_BEFORE_LAUNCH:
             out.append(f'| **Before launch, M0–M{n}** | | **{fmt(before[0])}–{fmt(before[1])} days** |')
     out.append(f'| **Everything** | | **{fmt(before[0] + after[0])}–{fmt(before[1] + after[1])} days** |')
-    out += ['', 'The plan\'s own effort lines sum to about 210–322 days before launch, but many tasks that rounds 2, 6, 8 and 9 added carry no estimate there. These breakdowns estimate every task, which is why their sum is larger.', '',
+    out += ['', 'The plan\'s own effort lines sum to about 211–324 days before launch, but many tasks that rounds 2, 6, 8 and 9 added carry no estimate there. These breakdowns estimate every task, which is why their sum is larger.', '',
             '## Sub-milestones in build order', '']
     for title, name, rows, _, _ in milestones:
         out += [f'### [{title}]({name}/milestone.md)', '', '| Sub-milestone | Delivers | Estimate | How |', '| --- | --- | --- | --- |']
