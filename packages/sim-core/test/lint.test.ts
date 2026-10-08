@@ -42,4 +42,14 @@ describe('the sim-core lint profile', { timeout: 30_000 }, () => {
       expect(await profileMessageCount(code, 'packages/sim-core/src/store.ts'), code).toBeGreaterThan(0);
     }
   });
+
+  it('rejects multiplying by a raw rate outside money.ts', async () => {
+    for (const code of ['c * ratePpm', 'c * l.ratePpm[0]', 'c *= dailyRate']) {
+      expect(await profileMessageCount(code, 'packages/sim-core/src/planted.ts'), code).toBeGreaterThan(0);
+    }
+    for (const code of ['units * price', 'mulPpm(a, b) * 2']) {
+      expect(await profileMessageCount(code, 'packages/sim-core/src/planted.ts'), code).toBe(0);
+    }
+    expect(await profileMessageCount('c * ratePpm', 'packages/sim-core/src/money.ts')).toBe(0);
+  });
 });
