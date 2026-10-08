@@ -14,7 +14,7 @@ const TRANSCENDENTAL_MATH = [
   'exp', 'expm1', 'log', 'log1p', 'log2', 'log10', 'pow', 'hypot', 'cbrt',
 ];
 
-// no-restricted-syntax groups for sim-core source.
+// no-restricted-syntax groups for sim source; LOOK_READS applies to sim-core alone.
 const MATH_SYNTAX = [
   { selector: "BinaryExpression[operator='**']", message: EXACT_MATHS },
   { selector: "AssignmentExpression[operator='**=']", message: EXACT_MATHS },
@@ -62,15 +62,20 @@ export default defineConfig(
   },
   {
     // Build scripts under scripts/ may use any maths: they write tables that src/ reads.
-    files: ['packages/sim-core/src/**/*.ts'],
+    files: ['packages/{sim-core,sim-protocol,sim-worker}/src/**/*.ts'],
     rules: {
       'no-restricted-properties': [
         'error',
         ...TRANSCENDENTAL_MATH.map((property) => ({ object: 'Math', property, message: EXACT_MATHS })),
         { object: 'Math', property: 'random', message: KEYED_DRAW },
       ],
-      'no-restricted-syntax': ['error', ...SYNTAX_GROUPS.flat()],
+      'no-restricted-syntax': syntaxBansWithout(LOOK_READS),
     },
+  },
+  {
+    // The snapshot writer in sim-protocol reads looks, so only sim-core bans reading them.
+    files: ['packages/sim-core/src/**/*.ts'],
+    rules: { 'no-restricted-syntax': ['error', ...SYNTAX_GROUPS.flat()] },
   },
   {
     files: ['packages/sim-core/src/store.ts'],

@@ -63,4 +63,13 @@ describe('the sim-core lint profile', { timeout: 30_000 }, () => {
       expect(await profileMessageCount(code, 'packages/sim-core/src/apportion.ts'), code).toBeGreaterThan(0);
     }
   });
+
+  it('applies the sim profile to sim-protocol and sim-worker', async () => {
+    for (const pkg of ['sim-protocol', 'sim-worker']) {
+      for (const code of ['Math.sin(1)', '2 ** 3', 'BigInt(1)', 'c * ratePpm']) {
+        expect(await profileMessageCount(code, `packages/${pkg}/src/planted.ts`), `${pkg}: ${code}`).toBeGreaterThan(0);
+      }
+    }
+    expect(await profileMessageCount('s.look[0]', 'packages/sim-protocol/src/planted.ts')).toBe(0);
+  });
 });
