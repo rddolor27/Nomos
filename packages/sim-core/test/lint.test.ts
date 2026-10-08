@@ -72,4 +72,20 @@ describe('the sim-core lint profile', { timeout: 30_000 }, () => {
     }
     expect(await profileMessageCount('s.look[0]', 'packages/sim-protocol/src/planted.ts')).toBe(0);
   });
+
+  it('rejects sorting in sim code', async () => {
+    const simFiles = [
+      'packages/sim-core/src/planted.ts',
+      'packages/sim-worker/src/planted.ts',
+      'packages/sim-core/src/store.ts',
+      'packages/sim-core/src/money.ts',
+      'packages/sim-core/src/apportion.ts',
+    ];
+    for (const code of ['v.sort()', 'v.toSorted()']) {
+      for (const filePath of simFiles) {
+        expect(await profileMessageCount(code, filePath), `${filePath}: ${code}`).toBeGreaterThan(0);
+      }
+      expect(await profileMessageCount(code, 'packages/sim-core/scripts/planted.ts'), code).toBe(0);
+    }
+  });
 });

@@ -8,6 +8,8 @@ const KEYED_DRAW = 'sim-core rules, Determinism: take every random number from t
 const NO_BIGINT = 'sim-core rules, Determinism: no BigInt in hot code; it is 115x slower in JavaScriptCore.';
 const UNREAD_LOOK = 'content rules, Art direction 1: no sim rule ever reads a look; only src/store.ts writes it.';
 const MUL_PPM = 'Non-negotiables, Money: rates go through mulPpm, never a raw cents * rate (R6).';
+const NO_SORT =
+  'sim-core rules, Hot paths: TypedArray.prototype.sort copies shared memory, so sim code never sorts; use a histogram or slot order (R6).';
 
 const TRANSCENDENTAL_MATH = [
   'sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'atan2', 'sinh', 'cosh', 'tanh', 'asinh', 'acosh', 'atanh',
@@ -39,7 +41,11 @@ const RATE_PRODUCTS = [
   { selector: `${PRODUCT} > MemberExpression[object.name=${RATE}]`, message: MUL_PPM },
   { selector: `${PRODUCT} > MemberExpression > MemberExpression[property.name=${RATE}]`, message: MUL_PPM },
 ];
-const SYNTAX_GROUPS = [MATH_SYNTAX, BIGINT_SYNTAX, LOOK_READS, RATE_PRODUCTS];
+// ESLint cannot tell which views sit on shared memory, so every sort call goes.
+const SORT_CALLS = [
+  { selector: 'CallExpression[callee.property.name=/^(sort|toSorted)$/]', message: NO_SORT },
+];
+const SYNTAX_GROUPS = [MATH_SYNTAX, BIGINT_SYNTAX, LOOK_READS, RATE_PRODUCTS, SORT_CALLS];
 
 // Flat config replaces a rule's options block by block, so a block exempting a file from one group restates the rest.
 function syntaxBansWithout(exempt) {
