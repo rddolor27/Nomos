@@ -116,7 +116,7 @@ Skin B and Skin C arrive as `blobs/` and `town/` beside `dots/` (M1.3, M3.3).
 | `sound-set/` | `sound-set.ts` (new) | The one shared invented sound set: round 8's design H and its candidate words |
 | `lints/` | `culture-text.ts`, `scan.ts` | The culture text lint and the repo scan |
 
-`tools/names/scripts/` gains `words.ts`, which writes the person-name table into `sim-culture` and checks it with `--check`. M8.1's place-name parts come from the same `sound-set/`.
+`tools/names/scripts/` gains `words.ts`, which writes the person-name table into `sim-culture` and checks it with `--check`. M8.1's place-name table comes from the same `sound-set/`, as a second output of `words.ts`.
 
 ## The world step (owner: M0.3)
 
@@ -129,7 +129,7 @@ Skin B and Skin C arrive as `blobs/` and `town/` beside `dots/` (M1.3, M3.3).
 - **Stepping:** `step(world: World, timer?: SystemTimer): void`, one tick per call.
   - `SystemTimer` is `{ lap(system: number): void }`, called after each system, so the worker and the benches time systems without clocks in `sim-core`.
   - `SYSTEM_NAMES` is `['day', 'move']` in M0.3, and later systems append to it.
-- **Movement (owner, 9 October 2026):** `move`, in `wander.ts`, walks blobs on any of 256 headings, so paths curve instead of running along lines.
+- **Movement:** the owner asked on 9 October 2026 that blobs walk in any direction, and the design below is the sim engineer's. `move`, in `wander.ts`, walks blobs on any of 256 headings, so paths curve instead of running along lines.
   - **Headings:** the new column `heading`, a 1-byte `Uint8Array` after `facing` in `AGENT_COLUMNS`, runs clockwise on screen from down: 0 walks down (+y), 64 left, 128 up and 192 right. It is needed because `vx` and `vy` can't give a heading back without trigonometry.
   - **Steps:** `wander.ts` exports `WALK_X_Q8` and `WALK_Y_Q8`, two `Int16Array`s of 256. They hold the step per tick on each heading in Q8 sub-pixels, −1,024 sin and 1,024 cos of 2πh / 256, rounded.
     - It builds them at load from the generated `WALK_SINE_Q8` in `tables.ts`: 1,024 sin(2πk / 256) for k = 0–64, from stdlib's `sin`, mirrored by integer symmetry. The worker so ships 65 numbers, not 512, for the byte budget.
@@ -160,17 +160,17 @@ Skin B and Skin C arrive as `blobs/` and `town/` beside `dots/` (M1.3, M3.3).
   - `new Blob(agents: AgentStore, cash: Ledger)` copies the column references it needs. `layoutWorld` makes `world.blob`, and code that needs two rows at once makes its own second handle at world creation, the only other time a `Blob` is made;
   - `at(index: number): void` re-points it. It returns nothing, so a handle is never held under two names;
   - `index` (read-only) is the current row;
-  - `x` and `y` (Q8 sub-pixels), `vx` and `vy` (Q8 a tick), `action` and `facing` read and write their columns;
+  - `x` and `y` (Q8 sub-pixels), `vx` and `vy` (Q8 a tick), `heading`, `action` and `facing` read and write their columns, and code that sets `heading` also sets `vx`, `vy` and `facing`, which follow it;
   - `nameKey` (read-only), `wallet` (read-only, the row's account in `world.cash`) and `cash` (read-only, that account's balance in cents). Money moves only through `transfer`, `issue` and `retire`.
 - Column accessors carry their column's exact name, so the look and culture lints see every read. `Blob` has no `look` accessor, since no sim rule reads a look, and no culture accessors until a consumption system needs one.
-- **Per-tick loops** use the accessors or plain columns, and call no method per blob. A method per blob made `move` 2.0–2.7× slower, while accessors cost 7% (M0.7's brief, measured).
+- **Per-tick loops** use the accessors or plain columns, and call no method per blob. A method per blob made the four-way `move` 2.0–2.8× slower, while accessors cost 7% (M0.7's brief, measured here in Node 24.18.0, V8 only); M0.7's A/B check re-measures on the free-heading `move`.
 - `nearestAgent(agents: AgentStore, xQ8: number, yQ8: number, radiusQ8: number): number`, in `agents/nearest.ts`: the nearest blob by squared distance within the radius, ties to the lower index, or −1. It serves the inspector between ticks.
 
 ## Wallets (owner: M0.7)
 
 - **One cash account per blob** in `world.cash`, after the settlement accounts: national accounts 0–15, then 4 sector accounts per settlement, then one wallet per agent slot.
 - `createLedger(arena, settlements: number, wallets: number): Ledger`. `Ledger` gains `firstWallet`, and `walletAccount(ledger: Ledger, slot: number): number` returns `firstWallet + slot`. `layoutWorld` passes the tier's agent cap.
-- **Opening balance:** `populate` issues `OPENING_CENTS` from MINT into each new blob's wallet, and no longer funds the households sector account. The owner sets the amount; the stand-in is 100,000 cents (1,000.00), as today's per-agent issue.
+- **Opening balance:** `populate` issues `OPENING_CENTS` from MINT into each new blob's wallet, and no longer funds the households sector account. The owner set it on 9 October 2026 to 100,000 cents (1,000.00), today's per-agent issue.
 - **Invariants:** wallets are ledger accounts, so `checkCash` covers them, and all accounts plus MINT still sum to zero. The claims rows `debt` and `lent` are sized by `cash.accounts`, so they cover wallets too.
 - **Bytes:** 4 for `nameKey`, 8 for the wallet and 16 for its claims rows, so 28 bytes per agent; at 100k agents the arena grows from 2.39 MB, with the movement column `heading`, to about 5.19 MB of its 64 MiB (computed). `TIER_MEMORY_BYTES` and snapshot v1 are unchanged; neither fact is drawn.
 
