@@ -12,6 +12,9 @@ declare global {
   }
 }
 
+// The worker's URL, hashed in production, so it names the sim build: a stored tier verdict lapses when it changes.
+export const SIM_BUILD = workerUrl;
+
 async function fetchMap(url: string): Promise<ArrayBuffer> {
   const response = await fetch(url);
   if (!response.ok) throw new Error(`map ${response.status}`);

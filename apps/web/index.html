@@ -7,20 +7,32 @@
     <link rel="icon" href="data:,">
     <style>
       html, body { margin: 0; background: #464c5e; color: #f6f0de; font: 15px/1.4 system-ui, sans-serif; }
-      #hud { position: absolute; top: 0; left: 0; right: 0; z-index: 1; display: flex; flex-wrap: wrap; align-items: center;
-        gap: .25rem 1rem; padding: .4rem .75rem; background: rgb(26 28 36 / .88); }
+      body { display: grid; grid-template: 100vh / minmax(0, 1fr) 22rem; grid-template: 100dvh / minmax(0, 1fr) 22rem; }
+      #hud, #view { grid-area: 1 / 1; }
+      #hud { align-self: start; z-index: 1; display: flex; flex-wrap: wrap; align-items: center; gap: .3rem 1rem;
+        padding: .4rem .75rem; background: rgb(26 28 36 / .88); }
       #hud button { font: inherit; min-width: 5.5em; padding: .2rem .8rem; }
-      #status { margin: 0; }
-      #view { position: relative; height: 100vh; height: 100dvh; overflow: hidden; }
+      #hud p, #hud fieldset, #hud dl, #hud dd { margin: 0; border: 0; padding: 0; }
+      #hud legend { float: left; padding: 0; }
+      #hud legend, #hud label { margin-right: .5rem; }
+      #hud dl, #hud dl div { display: flex; flex-wrap: wrap; gap: .2rem 1rem; }
+      #hud dl div { column-gap: .4rem; }
+      #view { position: relative; overflow: hidden; touch-action: none; }
       #view:focus-visible { outline: 3px solid #f7c948; outline-offset: -3px; }
       #world { position: absolute; top: 0; left: 0; }
-      #charts { padding: 1rem .75rem; }
+      #charts { overflow: auto; padding: 4.5rem .75rem 1rem; }
+      #charts figure { margin: 0 0 1rem; }
+      @media (max-width: 50rem) {
+        body { grid-template: 80vh auto / 100%; grid-template: 80dvh auto / 100%; }
+        #charts { padding-top: 1rem; }
+        .lil-gui.lil-auto-place { position: static; }
+      }
     </style>
     <script type="module" src="/src/main.ts"></script>
   </head>
   <body>
     <header id="hud">
-      <button id="play" type="button">Pause</button>
+      <button id="play" type="button" disabled>Pause</button>
       <p id="status" role="alert"></p>
     </header>
     <main id="view" tabindex="0">

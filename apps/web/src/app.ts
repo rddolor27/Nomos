@@ -29,6 +29,8 @@ export interface App {
   firstFrame: Promise<void>;
   setPaused(paused: boolean, byUser: boolean): void;
   onStats(listener: StatsListener): void;
+  // Asks for a draw on the next frame, for a change the camera does not show, such as the skin.
+  redraw(): void;
 }
 
 declare global {
@@ -54,7 +56,7 @@ interface Scene {
   firstFrameDrawn: (() => void) | null;
 }
 
-function element<T extends Element>(doc: Document, selector: string): T {
+export function element<T extends Element>(doc: Document, selector: string): T {
   const found = doc.querySelector<T>(selector);
   if (!found) throw new Error(`the page has no ${selector}`);
   return found;
@@ -174,6 +176,9 @@ export async function startApp(boot: Boot, doc: Document, start: Start): Promise
     },
     onStats(listener) {
       listeners.push(listener);
+    },
+    redraw() {
+      scene.dirty = true;
     },
   };
 
