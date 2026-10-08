@@ -73,6 +73,35 @@ test('shows the tier the device gets', async ({ page }) => {
   await expect(page.locator('#hud-agents')).toHaveText('5,000 of 100,000 agents shown (no WebGL2)');
 });
 
+test.describe('on a phone whose storage throws', () => {
+  test.use({
+    userAgent:
+      'Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Mobile Safari/537.36',
+  });
+
+  // As in Safari's private mode, where reading localStorage at all can throw.
+  test('starts at the phone tier', async ({ page }) => {
+    await page.addInitScript(() => {
+      Object.defineProperty(window, 'localStorage', {
+        get() {
+          throw new DOMException('The operation is insecure.', 'SecurityError');
+        },
+      });
+    });
+    await open(page, '/');
+    const read = await page.evaluate(() => {
+      try {
+        return window.localStorage ? 'read' : 'empty';
+      } catch {
+        return 'threw';
+      }
+    });
+    expect(read).toBe('threw');
+    await expect(page.locator('#hud-tier')).toHaveText('Phone tier');
+    await expect(page.locator('#hud-agents')).toContainText('10,000 agents');
+  });
+});
+
 test('pauses while hidden', async ({ page }) => {
   await open(page);
   await expect.poll(() => tick(page)).toBeGreaterThan(0);
