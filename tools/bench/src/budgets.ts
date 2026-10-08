@@ -21,3 +21,6 @@ export const TIERS: readonly Tier[] = ['phone', 'phone-plus', 'desktop'];
 // Medians drifted 10.8% between runs on a shared machine, so the gate judges the fastest of at least 9 samples (R5).
 export const MIN_SAMPLES = 9;
 export const TOLERANCE = 0.1;
+
+// The allocation gate's limit beside its zero scavenges (R5).
+export const MAX_HEAP_GROWTH_BYTES_PER_TICK = 65_536;

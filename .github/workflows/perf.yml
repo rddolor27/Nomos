@@ -20,6 +20,8 @@ jobs:
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm --filter @nomos/bench budget
       - if: ${{ !cancelled() }}
+        run: pnpm --filter @nomos/bench alloc
+      - if: ${{ !cancelled() }}
         run: pnpm exec playwright test tools/bench/test/browser/budget.spec.ts --project=chromium
         env:
           BENCH: '1'

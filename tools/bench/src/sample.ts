@@ -1,4 +1,13 @@
-import { SYSTEM_NAMES, TICKS_PER_DAY, createWorld, step, warmUp, type SystemTimer, type Tier } from '@nomos/sim-core';
+import {
+  SYSTEM_NAMES,
+  TICKS_PER_DAY,
+  createWorld,
+  step,
+  warmUp,
+  type SystemTimer,
+  type Tier,
+  type World,
+} from '@nomos/sim-core';
 import { createSnapshotPool, takeView, writeSnapshot } from '@nomos/sim-protocol';
 import { BUDGET_ROWS } from './budgets.ts';
 
@@ -11,14 +20,25 @@ export const SAMPLE_DAYS = 9;
 const SLOTS: readonly string[] = [...SYSTEM_NAMES, 'snapshot'];
 const SNAPSHOT_SLOT = SYSTEM_NAMES.length;
 
-// One value per day for each budget row: the day's mean tick, or its worst tick for a max row, so a row's fastest
-// sample is its best day.
-export function sampleTier(tier: Tier, days: number, now: () => number): Record<string, Float64Array> {
+export interface BenchWorld {
+  readonly world: World;
+  readonly view: Uint32Array;
+}
+
+// The world every gate measures: the sim's code warmed up, BENCH_SEED, checks off and one snapshot view to write.
+export function createBenchWorld(tier: Tier): BenchWorld {
   warmUp();
   const world = createWorld(BENCH_SEED, tier);
   world.checks = false;
   const view = takeView(createSnapshotPool(world.agents.capacity));
   if (view === null) throw new Error('a new snapshot pool has no free view');
+  return { world, view };
+}
+
+// One value per day for each budget row: the day's mean tick, or its worst tick for a max row, so a row's fastest
+// sample is its best day.
+export function sampleTier(tier: Tier, days: number, now: () => number): Record<string, Float64Array> {
+  const { world, view } = createBenchWorld(tier);
   const totalMs = new Float64Array(SLOTS.length);
   const worstMs = new Float64Array(SLOTS.length);
   let lapStartMs = 0;
