@@ -66,7 +66,7 @@ function syntaxBansWithout(exempt) {
 // The per-tick list's one home: M0.3's step and snapshot writer and the functions they call every tick, ground.ts
 // for move's walkableAt. draw.ts (its variadic draw and below serve non-tick code) and apportion.ts (BigInt) stay out.
 const HOT_FILES = [
-  'packages/sim-core/src/{world,wander,step,day,slices,stride,inputs,histogram}.ts',
+  'packages/sim-core/src/{world,wander,walk,step,day,slices,stride,inputs,histogram}.ts',
   'packages/sim-protocol/src/{snapshot,visual}.ts',
   'packages/sim-core/src/{int,calendar,space,store,ledger,money,claims,registry,flows,split,log2,invariants,ground}.ts',
 ];
