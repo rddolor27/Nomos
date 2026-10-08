@@ -28,5 +28,8 @@ graphify-out/
 # Sprite previews are review-only; regenerate them with tools/sprites
 assets/sprites/previews/
 
+# Paid packs stay on this machine; the licence ledger skips them
+assets/paid/
+
 # Python caches
 __pycache__/
