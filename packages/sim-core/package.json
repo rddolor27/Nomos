@@ -8,5 +8,16 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "tables": "node scripts/day-length.ts"
+  },
+  "devDependencies": {
+    "@stdlib/math-base-special-cos": "^0.3.1",
+    "@stdlib/math-base-special-erf": "^0.2.6",
+    "@stdlib/math-base-special-exp": "^0.2.5",
+    "@stdlib/math-base-special-ln": "^0.2.5",
+    "@stdlib/math-base-special-log2": "^0.3.1",
+    "@stdlib/math-base-special-pow": "^0.3.1",
+    "@stdlib/math-base-special-sin": "^0.3.1",
+    "@stdlib/stats-base-dists-normal-cdf": "^0.3.1",
+    "@stdlib/stats-base-dists-normal-quantile": "^0.3.1"
   }
 }
