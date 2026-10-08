@@ -30,5 +30,46 @@
     "name": "Town map",
     "path": ["dist/assets/maps/town-*.nmap"],
     "limit": "40 kB"
+  },
+  {
+    "name": "Entry chunk",
+    "path": ["dist/assets/index-*.js"],
+    "limit": "10 kB"
+  },
+  {
+    "name": "Renderer chunk",
+    "path": ["dist/assets/render-gl-*.js"],
+    "limit": "10 kB"
+  },
+  {
+    "name": "Sim worker chunk",
+    "path": ["dist/assets/worker-*.js"],
+    "limit": "15 kB"
+  },
+  {
+    "name": "Charts chunk",
+    "path": ["dist/assets/charts-*.js", "dist/assets/charts-*.css"],
+    "limit": "22 kB"
+  },
+  {
+    "name": "Controls chunk",
+    "path": ["dist/assets/controls-*.js"],
+    "limit": "8 kB"
+  },
+  {
+    "name": "index.html",
+    "path": ["dist/index.html"],
+    "limit": "1.5 kB"
+  },
+  {
+    "name": "Initial JS, M0 stand-in",
+    "path": ["dist/assets/index-*.js", "dist/assets/render-gl-*.js", "dist/assets/worker-*.js"],
+    "limit": "17 kB"
+  },
+  {
+    "name": "Atlas",
+    "path": ["dist/atlas/atlas.webp"],
+    "brotli": false,
+    "limit": "300 kB"
   }
 ]

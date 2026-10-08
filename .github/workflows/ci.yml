@@ -33,6 +33,11 @@ jobs:
       - run: pnpm test
       # The ledger gate: two days per tier with the money invariants checked every tick, so a lost cent exits non-zero.
       - run: for tier in phone phone-plus desktop; do node tools/cli/src/main.ts --seed 7 --tier "$tier" --ticks 2880; done
+      # In this order: a Vite build empties dist/, so the atlas goes in after it, then every chunk is measured.
+      - run: pnpm --filter @nomos/web build
+      - run: python tools/atlas/build_atlas.py --out apps/web/dist/atlas
+      - run: pnpm --filter @nomos/web size
+      - run: node tools/bench/src/chunks.ts
       - run: |
           node tools/cli/src/main.ts --seed 42 --tier phone --ticks 1000 > "$RUNNER_TEMP/replay-1.txt"
           node tools/cli/src/main.ts --seed 42 --tier phone --ticks 1000 > "$RUNNER_TEMP/replay-2.txt"
