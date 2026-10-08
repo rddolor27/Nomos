@@ -1,8 +1,8 @@
 """Write the kernel test vectors for the TypeScript port: python tools/worldgen/vectors.py [--check]
 
-Runs rng.py and noise.py over fixed inputs, with negative keys and coordinates and values at and above
-2**31 on purpose, and writes packages/sim-core/test/fixtures/kernels.json. With --check it compares that
-file with a fresh run instead of writing it, and exits 1 on any difference.
+Runs rng.py, noise.py and looks.py over fixed inputs, with negative keys and coordinates and values at and
+above 2**31 on purpose, records rng.py's stream constants, and writes packages/sim-core/test/fixtures/kernels.json.
+With --check it compares that file with a fresh run instead of writing it, and exits 1 on any difference.
 """
 import argparse
 import json
@@ -13,6 +13,8 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
+import rng  # noqa: E402
+from looks import look_for  # noqa: E402
 from noise import fade, fbm, value  # noqa: E402
 from rng import below, draw, mix  # noqa: E402
 
@@ -25,6 +27,8 @@ STREAMS = (0, 1, 12, 255)
 KEYS = ((), (0,), (-1,), (7, -37), (2**31, 5, 9), (0xFFFFFFFF, 1, 2, 3))
 BELOW_N = (1, 2, 3, 1000, 65536, 0x7FFFFFFF)
 FADE_INPUTS = (*range(0, 32769, 1024), 1, 32767)
+LOOK_SEEDS = (0, 42, 0xFFFFFFFF)
+LOOK_IDS = (0, 1, 2, 1000, 65535, 2**31 - 1)
 
 
 def build():
@@ -51,6 +55,12 @@ def build():
              'out': fbm(seed, stream, x, y, cell, octaves)}
             for seed, stream, (x, y), cell, octaves in product(
                 (42,), (5,), ((-50, 3), (0, 0), (15, 77), (1000, 999)), (1, 3, 32, 96), (1, 3, 5))
+        ],
+        # Every upper-case constant in rng.py but MASK is a world stream, so an appended stream lands here too.
+        'streams': {name: number for name, number in vars(rng).items() if name.isupper() and name != 'MASK'},
+        'look': [
+            {'seed': seed, 'id': person_id, 'out': look_for(seed, person_id)}
+            for seed, person_id in product(LOOK_SEEDS, LOOK_IDS)
         ],
     }
 
