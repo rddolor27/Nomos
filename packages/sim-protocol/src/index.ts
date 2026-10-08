@@ -6,3 +6,4 @@ export * from './columns.ts';
 export * from './messages.ts';
 export * from './lifecycle.ts';
 export * from './snapshot.ts';
+export * from './sprite-manifest.ts';

@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:nomos:sprite-manifest:1",
+  "title": "SpriteManifest",
+  "description": "One sprite sheet's manifest, as tools/sprites writes it to assets/sprites/<category>.json. Frames are named; the atlas build gives them places, so a manifest never holds an atlas index.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["image", "size", "tile", "frames"],
+  "properties": {
+    "image": { "type": "string", "pattern": "^[a-z0-9_-]+\\.png$" },
+    "size": { "type": "array", "items": { "type": "integer", "minimum": 1 }, "minItems": 2, "maxItems": 2 },
+    "tile": { "type": "integer", "const": 16 },
+    "frames": {
+      "type": "object",
+      "propertyNames": { "pattern": "^[a-z0-9]+(?:[_-][a-z0-9]+)*$" },
+      "additionalProperties": {
+        "title": "SpriteFrame",
+        "description": "One sprite on its sheet: its pixels, the point it stands on, and what the renderer and map tools read from it.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["x", "y", "w", "h", "anchor"],
+        "properties": {
+          "x": { "type": "integer" },
+          "y": { "type": "integer" },
+          "w": { "type": "integer" },
+          "h": { "type": "integer" },
+          "anchor": { "type": "array", "items": { "type": "integer" }, "minItems": 2, "maxItems": 2 },
+          "footprint": { "type": "array", "items": { "type": "integer" }, "minItems": 2, "maxItems": 2 },
+          "door": { "type": "array", "items": { "type": "integer" }, "minItems": 2, "maxItems": 2 },
+          "face": { "type": "array", "items": { "type": "integer" }, "minItems": 2, "maxItems": 2 },
+          "hitch": { "type": "array", "items": { "type": "integer" }, "minItems": 2, "maxItems": 2 },
+          "joins": { "enum": ["", "l", "lr", "r", "u", "ul", "ur"] },
+          "layer": { "enum": ["body", "face", "ground", "job", "night", "pattern", "snow"] },
+          "night": { "type": "string", "pattern": "^[a-z0-9]+(?:[_-][a-z0-9]+)*$" },
+          "snow": { "type": "string", "pattern": "^[a-z0-9]+(?:[_-][a-z0-9]+)*$" },
+          "target": { "type": "string", "pattern": "^[a-z0-9]+(?:[_-][a-z0-9]+)*$" },
+          "overlay": { "type": "boolean" },
+          "review_only": { "type": "boolean" },
+          "view": { "const": "true" },
+          "colour": { "type": "string", "pattern": "^[A-Z_]+$" },
+          "corners": { "type": "string", "pattern": "^[01]{4}$" },
+          "cord_row": { "type": "integer" },
+          "frame": { "type": "integer" },
+          "hue": { "enum": ["ice", "lilac", "mint", "rose", "silver", "sun"] },
+          "pose": { "enum": ["sit", "sneak", "stand", "walk"] },
+          "facing": { "enum": ["down", "left", "right", "up"] },
+          "job": { "enum": ["builder", "clinic", "farmer", "merchant", "police", "soldier"] },
+          "eyes": { "enum": ["dot", "round", "tall", "wide"] },
+          "pattern": { "enum": ["patch", "speckle", "spots"] }
+        }
+      }
+    }
+  }
+}
