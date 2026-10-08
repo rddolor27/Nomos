@@ -173,7 +173,6 @@ Each must be settled before its sub-milestone starts. The task files give the co
 
 | Before | Decision |
 | --- | --- |
-| M0.6 | whether the 100k-agent snapshot budget rises from 0.3 ms to 0.6 ms, taken from the tick's 3.0 ms slack, or a maintained visual-word column is built. M0.3's `writeSnapshot` measured 0.40 ms on a desktop, 0.35 ms with a paired `Float32Array` view and 0.21 ms with the column (M0.3 review, 8 October 2026) |
 | M1.2 | how long a lab day lasts at 1×. Round 1's engine runs discrete days with animated phases, while the calendar makes a day at 1× last 144 s |
 | M1.4 | whether the sounds pass a listen: the Sound tab asks the owner to play `dist/sounds/` before M1, above all the nine tracks against well-known jingles |
 | M1.4 | whether the synth renders at 22,050 Hz like the previews, or at the audio context's 44.1 or 48 kHz |

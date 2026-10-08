@@ -8,7 +8,7 @@ Part of [M0 Pipeline](../milestone.md).
   - culture-level draws keyed by a stable culture uid, never its index; no guarded decision's draw keyed on culture, no loop order that matters set by culture, and no indexing by culture except custom tables; and the relabel test (R8);
   - the name lint with its real-world fixture, the text lints, the `Math` ban extended to generator and map code, and the lint on bare `/` and `%` in generator code (R2, R3, R4, R8, R9);
   - the kernel vectors in Bun, Chromium, Firefox and WebKit (R9).
-- **Owner decision first:** whether the 100k-agent snapshot budget rises from 0.3 ms to 0.6 ms, taken from the tick's 3.0 ms slack, or a maintained visual-word column is built. M0.3's `writeSnapshot` measured 0.40 ms on a desktop, 0.35 ms with a paired `Float32Array` view and 0.21 ms with the column (M0.3 review, 8 October 2026).
+- **Owner decided:** on 8 October 2026 the owner raised the 100k-agent snapshot budget from 0.3 ms to 0.6 ms, taken from the tick's 3.0 ms slack, which falls to 2.7 ms. M0.3's `writeSnapshot` measured 0.40 ms on a desktop. A maintained visual-word column (0.21 ms measured) comes only if the reference machine still misses 0.6 ms.
 - **Exit checks:**
   - the compute gates, size-limit and the startup benchmark run on every push to `main`, and the M0 pipeline passes all of them; the worst day slice stays within 0.35 ms RM at every tier, with the zero-scavenge window covering a full day of slices (R5, R6);
   - seed 42 gives identical replay hashes in Chromium, Firefox and WebKit (R1, R2);
