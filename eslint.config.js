@@ -29,12 +29,14 @@ const LOOK_READS = [
   { selector: "MemberExpression[property.value='look']", message: UNREAD_LOOK },
   { selector: "ObjectPattern > Property[key.name='look']", message: UNREAD_LOOK },
 ];
-// A rate is named rate or ppm, or ends in Rate or Ppm, as a direct operand of * or *=, or the array indexed there.
+// A rate is named rate or ppm, or ends in Rate or Ppm, as a direct operand of * or *=, or the array indexed there,
+// whether read off a struct or copied into a local first.
 const RATE = '/^(rate|ppm)$|(Rate|Ppm)$/';
 const PRODUCT = ":matches(BinaryExpression[operator='*'], AssignmentExpression[operator='*='])";
 const RATE_PRODUCTS = [
   { selector: `${PRODUCT} > Identifier[name=${RATE}]`, message: MUL_PPM },
   { selector: `${PRODUCT} > MemberExpression[property.name=${RATE}]`, message: MUL_PPM },
+  { selector: `${PRODUCT} > MemberExpression[object.name=${RATE}]`, message: MUL_PPM },
   { selector: `${PRODUCT} > MemberExpression > MemberExpression[property.name=${RATE}]`, message: MUL_PPM },
 ];
 const SYNTAX_GROUPS = [MATH_SYNTAX, BIGINT_SYNTAX, LOOK_READS, RATE_PRODUCTS];

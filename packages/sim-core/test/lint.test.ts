@@ -44,7 +44,7 @@ describe('the sim-core lint profile', { timeout: 30_000 }, () => {
   });
 
   it('rejects multiplying by a raw rate outside money.ts', async () => {
-    for (const code of ['c * ratePpm', 'c * l.ratePpm[0]', 'c *= dailyRate']) {
+    for (const code of ['c * ratePpm', 'c * l.ratePpm[0]', 'c * ratePpm[i]', 'c *= dailyRate']) {
       expect(await profileMessageCount(code, 'packages/sim-core/src/planted.ts'), code).toBeGreaterThan(0);
     }
     for (const code of ['units * price', 'mulPpm(a, b) * 2']) {
