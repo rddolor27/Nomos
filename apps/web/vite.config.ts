@@ -16,8 +16,9 @@ export default defineConfig({
       output: {
         assetFileNames: ({ names }) =>
           names.some((name) => MAP_FILE.test(name)) ? 'assets/maps/[name]-[hash][extname]' : 'assets/[name]-[hash][extname]',
-        // Its own chunk, so size-limit can gate the renderer apart from the HUD. [\\/] matches Windows paths too.
-        codeSplitting: { groups: [{ name: 'render-gl', test: /[\\/]packages[\\/]render-gl[\\/]/ }] },
+        // Its own chunk, so size-limit can gate the renderer apart from the HUD. [\\/] matches Windows paths too. The map
+        // scene stays out, so it joins the map view's lazy chunk and the renderer chunk keeps its bytes (M8.3).
+        codeSplitting: { groups: [{ name: 'render-gl', test: /[\\/]packages[\\/]render-gl[\\/](?!src[\\/]map)/ }] },
       },
     },
   },
