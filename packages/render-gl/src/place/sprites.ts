@@ -115,6 +115,9 @@ function sortByRow(order: Int32Array, keys: Int32Array): void {
 // change, then the standing sprites and people together by y and then index, standing sprites first. People move, so
 // pack() sorts and rewrites that last part in place.
 export class PlaceSprites {
+  // The place's size in art px.
+  readonly width: number;
+  readonly height: number;
   // INSTANCE_SHORTS shorts a sprite, room for every person wearing all five layers.
   readonly data: Int16Array;
   // The tiles and ground sprites at the front of data.
@@ -130,6 +133,8 @@ export class PlaceSprites {
   private readonly keys: Int32Array;
 
   constructor(layout: PlaceLayout, frames: Frames, people: PersonFrames) {
+    this.width = layout.width * PLACE_TILE_PX;
+    this.height = layout.height * PLACE_TILE_PX;
     this.firstPerson = layout.standing.length / 3;
     const items = this.firstPerson + layout.people.y.length;
     this.records = frameRecords(layout.frames, frames);
