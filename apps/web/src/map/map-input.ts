@@ -1,16 +1,17 @@
-import { panMapBy, zoomMapAt, type MapCamera } from '@nomos/render-gl/map';
-
+// The map's view and the town view both take these gestures, and each moves its own camera.
 export interface MapInputTarget {
-  camera(): MapCamera;
-  setCamera(camera: MapCamera): void;
+  // Zooms steps about a device point in the view; each view decides what a step past its last does.
+  zoom(steps: number, deviceX: number, deviceY: number): void;
+  // Moves the view right or down for a positive delta, in device px.
+  pan(dxDevice: number, dyDevice: number): void;
+  // How far one arrow press pans, in device px.
+  arrowPx(): number;
   fit(): void;
   close(): void;
   // A press that lifted without a drag, at its device point in the view.
   tap(deviceX: number, deviceY: number): void;
 }
 
-// An arrow press moves four cells, so a large world takes about 50 presses to cross.
-const PAN_CELLS = 4;
 // A press that moves less than this, in CSS px, is a tap, and the map holds still until a drag passes it.
 const TAP_SLOP_PX = 5;
 // As the town's input: a mouse notch is 100 px in Chromium and 3 lines in Firefox, and a trackpad sends many small
@@ -43,21 +44,17 @@ function spread(pointers: Map<number, [number, number]>): [number, number, numbe
   return [Math.hypot(a[0] - b[0], a[1] - b[1]), (a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
 }
 
-// The zoom keys and the map's zoom buttons both zoom about the view's centre.
+// The zoom keys and the zoom buttons both zoom about the view's centre.
 export function zoomAtCentre(view: HTMLElement, target: MapInputTarget, steps: number): void {
-  const centreX = (view.clientWidth * devicePixelRatio) / 2;
-  const centreY = (view.clientHeight * devicePixelRatio) / 2;
-  target.setCamera(zoomMapAt(target.camera(), steps, centreX, centreY));
+  target.zoom(steps, (view.clientWidth * devicePixelRatio) / 2, (view.clientHeight * devicePixelRatio) / 2);
 }
 
 function onKey(view: HTMLElement, target: MapInputTarget, event: KeyboardEvent): void {
   // Ctrl or Cmd with plus and minus zooms the browser, which stays the browser's.
   if (event.ctrlKey || event.metaKey || event.altKey) return;
-  const camera = target.camera();
   const pan = PAN_KEYS.get(event.key);
   const zoom = ZOOM_KEYS.get(event.key);
-  const step = PAN_CELLS * camera.cellPx;
-  if (pan) target.setCamera(panMapBy(camera, pan[0] * step, pan[1] * step));
+  if (pan) target.pan(pan[0] * target.arrowPx(), pan[1] * target.arrowPx());
   else if (zoom) zoomAtCentre(view, target, zoom);
   else if (event.key === 'Home') target.fit();
   else if (event.key === 'Escape') target.close();
@@ -84,7 +81,7 @@ export function bindMapInput(view: HTMLElement, target: MapInputTarget): void {
     wheelAtMs = event.timeStamp;
     if (Math.abs(wheelPx) < WHEEL_STEP_PX) return;
     const [x, y] = devicePoint(view, event.clientX, event.clientY);
-    target.setCamera(zoomMapAt(target.camera(), -Math.sign(wheelPx), x, y));
+    target.zoom(-Math.sign(wheelPx), x, y);
     wheelPx = 0;
   };
   const onPinch = (): void => {
@@ -92,7 +89,7 @@ export function bindMapInput(view: HTMLElement, target: MapInputTarget): void {
     const ratio = distance / pinchAt;
     if (ratio < PINCH_STEP && ratio > 1 / PINCH_STEP) return;
     const [x, y] = devicePoint(view, midX, midY);
-    target.setCamera(zoomMapAt(target.camera(), ratio > 1 ? 1 : -1, x, y));
+    target.zoom(ratio > 1 ? 1 : -1, x, y);
     pinchAt = distance;
   };
   const onDown = (event: PointerEvent): void => {
@@ -121,7 +118,7 @@ export function bindMapInput(view: HTMLElement, target: MapInputTarget): void {
       return;
     }
     const dpr = devicePixelRatio;
-    target.setCamera(panMapBy(target.camera(), (last[0] - event.clientX) * dpr, (last[1] - event.clientY) * dpr));
+    target.pan((last[0] - event.clientX) * dpr, (last[1] - event.clientY) * dpr);
   };
   const onUp = (event: PointerEvent): void => {
     const tapped = !dragged && pointers.size === 1 && pointers.has(event.pointerId);

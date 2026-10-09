@@ -1,5 +1,18 @@
 import { MAP_CELL_PX, type MapCamera } from '@nomos/render-gl/map';
-import type { WorldMap } from '@nomos/sim-protocol/world-map';
+import { TIER_NAMES, WONDER_NAMES, type WorldMap } from '@nomos/sim-protocol/world-map';
+
+// What the town view tells of a place. A place is settlement p, or wonder p minus the settlement count, as the map
+// worker numbers them.
+export interface PlaceInfo {
+  place: number;
+  name: string;
+  // A tier name, or 'wonder'.
+  kind: string;
+  // 0 for a wonder.
+  population: number;
+  // The country's name, or '' where no country holds the cell.
+  country: string;
+}
 
 export interface GoToGroup {
   country: string;
@@ -55,31 +68,67 @@ function closeStep(dpr: number): number {
   return best;
 }
 
-// The view centred on a settlement's cell, at the close step.
-export function cameraOn(map: WorldMap, id: number, deviceWidth: number, deviceHeight: number, dpr: number): MapCamera {
+export function placeCount(map: WorldMap): number {
+  return map.settlements.cell.length + map.wonders.cell.length;
+}
+
+function placeCell(map: WorldMap, place: number): number {
+  const settlements = map.settlements.cell.length;
+  return place < settlements ? map.settlements.cell[place] : map.wonders.cell[place - settlements];
+}
+
+// The view centred on a place's cell, at the close step.
+export function cameraOn(map: WorldMap, place: number, deviceWidth: number, deviceHeight: number, dpr: number): MapCamera {
   const cellPx = closeStep(dpr);
-  const cell = map.settlements.cell[id];
+  const cell = placeCell(map, place);
   const x = (cell % map.width) + 0.5 - deviceWidth / cellPx / 2;
   const y = Math.floor(cell / map.width) + 0.5 - deviceHeight / cellPx / 2;
   return { x, y, cellPx };
 }
 
-// The settlement whose cell centre lies nearest the tapped device point, within the tap's reach, or -1. A tie goes to the
-// lower id, the larger place.
-export function settlementUnder(map: WorldMap, camera: MapCamera, deviceX: number, deviceY: number, dpr: number): number {
+// The place whose cell centre lies nearest the device point, within the tap's reach, or -1. A tie goes to the lower
+// place, a settlement before a wonder and the larger settlement first.
+export function placeUnder(map: WorldMap, camera: MapCamera, deviceX: number, deviceY: number, dpr: number): number {
   const reach = Math.max(TAP_CELLS, (TAP_CSS_PX * dpr) / camera.cellPx);
   const x = camera.x + deviceX / camera.cellPx;
   const y = camera.y + deviceY / camera.cellPx;
-  const { cell } = map.settlements;
   let best = -1;
   let bestSquared = reach * reach;
-  for (let id = 0; id < cell.length; id++) {
-    const dx = (cell[id] % map.width) + 0.5 - x;
-    const dy = Math.floor(cell[id] / map.width) + 0.5 - y;
+  for (let place = 0; place < placeCount(map); place++) {
+    const cell = placeCell(map, place);
+    const dx = (cell % map.width) + 0.5 - x;
+    const dy = Math.floor(cell / map.width) + 0.5 - y;
     if (dx * dx + dy * dy < bestSquared) {
-      best = id;
+      best = place;
       bestSquared = dx * dx + dy * dy;
     }
   }
   return best;
+}
+
+// The place at the view's centre, which a tap on it or the Enter button opens.
+export function placeInFocus(map: WorldMap, camera: MapCamera, deviceWidth: number, deviceHeight: number, dpr: number): number {
+  return placeUnder(map, camera, deviceWidth / 2, deviceHeight / 2, dpr);
+}
+
+function countryName(names: readonly string[], country: number): string {
+  return country > 0 ? names[country - 1] : '';
+}
+
+// A wonder goes by its kind, such as "Giant tree"; names holds placeNames' countries, then settlements.
+export function placeInfo(map: WorldMap, names: readonly string[], place: number): PlaceInfo {
+  const { settlements, wonders } = map;
+  if (place < settlements.cell.length) {
+    return {
+      place,
+      name: names[map.countries.capital.length + place],
+      kind: TIER_NAMES[settlements.tier[place]],
+      population: settlements.population[place],
+      country: countryName(names, settlements.country[place]),
+    };
+  }
+  const k = place - settlements.cell.length;
+  const wonder = WONDER_NAMES[wonders.kind[k]].replaceAll('-', ' ');
+  const name = wonder[0].toUpperCase() + wonder.slice(1);
+  return { place, name, kind: 'wonder', population: 0, country: countryName(names, map.country[wonders.cell[k]]) };
 }
