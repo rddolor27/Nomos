@@ -11,6 +11,7 @@ a 2-px roof overhang, so a 4-tile building is 64x48 and eaves line up along a st
 Every building also gets a snow overlay: it is drawn a second time under snowfall(), where the
 roof helpers lay snow on every roof, and the pixels that change become `<name>_snow`.
 """
+import math
 from contextlib import contextmanager
 
 from spritekit import TILE, Sheet, add_outline, cmap, from_ascii, overlay
@@ -1606,6 +1607,181 @@ def stable():
     return b
 
 
+# ------------------------------------------------------------------ farm buildings
+VENT = ['OOOO', 'OnnO', 'OnnO', 'OnnO', 'OnnO', 'OOOO']
+
+LOFT = ['OOOOOOOOO', 'OdddddddO', 'OdSSCSSdO', 'OSSCSSSsO', 'OOOOOOOOO']     # a loft opening on the hay
+
+STADDLE = [             # a staddle stone: a cap on a post, so damp and mice stay out of the store
+    'OOOOOOOO',
+    'OKKKKKkO',
+    'OkkkkkxO',
+    '.OOkxOO.',
+    '..OKxO..',
+    '..OKxO..',
+    '.OOkxOO.',
+    '.OOOOOO.',
+]
+
+SMALL_DOOR = ['OOOOOOOO', 'OddddddO', 'OdLwwwdO', 'OdLwwwdO', 'OdLwYwdO', 'OdLwwwdO', 'OdLwwwdO', 'OddddddO',
+              'OOOOOOOO']
+
+LOFT_DOOR = ['OOOOOOOOOO', 'OddddddddO', 'OdLwwwwddO', 'OdLwwwwddO', 'OdLwwwwddO', 'OdLwwwwddO',
+             'OdLwwwwddO', 'OddddddddO', 'OOOOOOOOOO']
+
+HOIST = ['OOOOOOOO', 'OLLLLLwO', 'OwwwwwdO', 'OOOOOOOO']
+
+FLUME = [               # a plank channel bringing water onto the wheel's top
+    'OOOOOOOOOOOOOOOOOOOO',
+    'OLLLLLLLLLLLLLLLLLwO',
+    'OAAAAAAAAAAAAAAAAAWO',
+    'OwwwwwwwwwwwwwwwwwdO',
+    'OOOOOOOOOOOOOOOOOOOO',
+]
+
+
+def tall_doors(c, x0, y_ground, w, h):
+    """Wagon doors h rows tall: two planked leaves with X braces and a middle rail."""
+    top = y_ground - h + 1
+    c.rect(x0, top, x0 + w - 1, y_ground, 'O')
+    c.rect(x0 + 1, top + 1, x0 + w - 2, y_ground, 'w')
+    mid = x0 + w // 2
+    c.vline(mid, top + 1, y_ground, 'O')
+    for a, b in ((x0 + 1, mid - 1), (mid + 1, x0 + w - 2)):
+        c.hline(a, b, top + 1, 'd')
+        c.vline(a, top + 2, y_ground, 'L')
+        for x in range(a + 3, b, 4):
+            c.vline(x, top + 2, y_ground, 'd')
+        c.hline(a, b, y_ground - h // 2, 'd')
+        span = b - a
+        for i in range(h - 3):
+            t = i / (h - 4)
+            c.put(a + round(t * span), top + 2 + i, 'L')
+            c.put(b - round(t * span), top + 2 + i, 'L')
+
+
+def barn():
+    """A stone threshing barn under thatch, with a timber wagon porch in the middle."""
+    b = Building(5, top=8, door=True)
+    c = b.c
+    W, E, g = b.W, b.E, b.g
+    b.roof('thatch', 'thatch')
+    b.wall('stone', 'stone', plinth=None)
+    px0, px1 = W // 2 - 16, W // 2 + 15
+    xm, trim_row = roof_gable(c, px0, px1, E + 2, 12, 4, 'thatch', trim='L')
+    for x in range(px0 + 2, px1 - 1):
+        c.vline(x, trim_row(x) + 1, g, 'w' if (x - px0) % 4 else 'd')
+        c.put(x, trim_row(x) + 1, 'd')
+    c.vline(px0 + 1, trim_row(px0 + 1) + 1, g, 'L')
+    c.vline(px1 - 1, trim_row(px1 - 1) + 1, g, 'd')
+    c.stamp(xm - 4, E - 6, LOFT)
+    tall_doors(c, px0 + 3, g, px1 - px0 - 5, 22)
+    for x in (b.wx0 + 7, b.wx1 - 10):                         # slit vents in the stone
+        c.stamp(x, E + 4, VENT)
+        c.hline(x, x + 3, E + 10, 'K')
+    c.ground(b.wx0 + 2, HAY)
+    c.prop(b.wx0 + 6, b.H - 15, HAY)
+    c.ground(b.wx1 - 11, SACK)
+    return b
+
+
+def granary():
+    """A small timber store on staddle stones, its door above the reach of mice."""
+    W, H = 32, 48
+    c = Canvas(W, H)
+    g = H - 2
+    E, floor = 19, g - 8
+    roof_hip(c, 1, W - 2, 1, E - 1, 'thatch', 'thatch')
+    c.hline(3, W - 4, E, 'O')
+    wall(c, 3, W - 4, E + 1, floor - 2, 'wood', 'vboard', plinth=None)
+    for row, ch in enumerate('OLdO'):                         # the floor beam
+        c.hline(2, W - 3, floor - 1 + row, ch)
+    for x in (2, W // 2 - 4, W - 10):
+        c.prop(x, floor + 2, STADDLE)
+    c.stamp(W // 2 - 4, E + 2, SMALL_DOOR)
+    return Sprite(c, [2, 2], door=[W // 2, g])
+
+
+def shed():
+    """A small tool shed with a water butt and a stack of logs."""
+    W, H = 32, 32
+    c = Canvas(W, H)
+    g = H - 2
+    E = 12
+    roof_hip(c, 1, W - 2, 1, E - 1, 'shingle', 'shingle')
+    c.hline(3, W - 4, E, 'O')
+    wall(c, 3, W - 4, E + 1, g, 'wood', 'vboard', plinth=None)
+    door = [list('OOOOOOOOOO')] + [list('OLwwwwwwdO') for _ in range(14)]
+    for i in range(6):                                        # a Z brace and a latch
+        door[2 + i][2 + i] = 'd'
+    door[10][6] = 'Y'
+    c.stamp(W // 2 - 7, g - 14, [''.join(r) for r in door])
+    c.stamp(W - 11, E + 3, ['OOOOOO', 'OAAWAO', 'OaaaaO', 'OOOOOO'])
+    c.ground(2, TUB)
+    c.ground(W - 12, log_pile([2, 1]))
+    return Sprite(c, [2, 1], door=[W // 2 - 2, g])
+
+
+def paddle_wheel(r):
+    """A paddle wheel of radius r seen face on: lit rim, eight spokes, twelve paddles and a hub."""
+    size = 2 * r + 3
+    c0 = size / 2
+    rows = [['.'] * size for _ in range(size)]
+    for y in range(size):
+        for x in range(size):
+            dx, dy = x + 0.5 - c0, y + 0.5 - c0
+            d = math.hypot(dx, dy)
+            ang = math.degrees(math.atan2(dy, dx)) % 360
+            if d <= 2.2:
+                rows[y][x] = 'L' if dx + dy < 0 else 'd'
+            elif r - 2.6 <= d <= r - 1.2:
+                rows[y][x] = 'L' if dy < -abs(dx) * 0.3 else 'w'
+            elif d < r - 2.6 and min(ang % 45, 45 - ang % 45) * math.pi / 180 * d < 0.8:
+                rows[y][x] = 'w'
+            elif r - 1.2 < d <= r + 1.4 and min(ang % 30, 30 - ang % 30) * math.pi / 180 * d < 1.4:
+                rows[y][x] = 'd' if dy > 0 else 'w'
+    return [''.join(r) for r in rows]
+
+
+def watermill():
+    """A mill house on the bank with its overshot wheel on the river to the right (east). The
+    footprint is the house alone; the wheel, flume and foam stand on the water tiles beside it, the
+    foam unringed so it merges with the river."""
+    W, H = 92, 60
+    c = Canvas(W, H)
+    top, bw = 2, 64
+    E, g = top + 1 + ROOF, H - 2
+    roof_hip(c, 1, bw - 2, top + 1, E - 1, 'slate', 'slate')
+    c.hline(3, bw - 4, E, 'O')
+    wall(c, 3, bw - 4, E + 1, E + 12, 'wood', 'vboard', plinth=None)
+    wall(c, 3, bw - 4, E + 13, g, 'stone', 'stone', plinth=None)
+    c.hline(3, bw - 4, E + 13, 'K')
+    dx = (bw - 18) // 2
+    c.stamp(dx, g - DOOR_H + 1, doorway())
+    for x in (7, bw - 17):
+        c.stamp(x, E + 2, window('w'))
+    c.stamp(dx + 4, E + 2, LOFT_DOOR)                         # sack loft with its hoist
+    c.prop(dx + 6, E - 3, HOIST)
+    c.vline(dx + 10, E + 1, E + 3, 'S')
+    c.prop(dx + 7, E + 4, SACK)
+    c.ground(5, SACK)
+    c.ground(11, SACK)
+    r, cx = 15, bw + 9
+    wy = g - 2 * r - 2
+    c.prop(cx - r - 1, wy, paddle_wheel(r))
+    fy = wy - 3
+    c.prop(bw - 9, fy, FLUME)
+    spill = []                                                # water falling behind the paddles, foam below
+    for y in range(fy + 3, H):
+        row = ['.'] * W
+        falling = y < g - 3
+        for x in (range(cx + 1, cx + 5) if falling else range(cx - r - 3, cx + r + 3)):
+            row[x] = ('W' if (x + y) % 3 == 0 else 'A') if falling else ('W' if (x * 3 + y) % 4 else 'A')
+        spill.append(''.join(row))
+    c.under.append((0, fy + 3, spill))
+    return Sprite(c, [4, 2], anchor=(bw // 2, H - 1), door=[bw // 2, g])
+
+
 SPRITES = [
     ('civic_clinic', clinic),
     ('civic_police-station', police),
@@ -1630,6 +1806,10 @@ SPRITES = [
     ('shop_bakery', bakery),
     ('work_smithy', smithy),
     ('work_stable', stable),
+    ('farm_barn', barn),
+    ('farm_granary', granary),
+    ('farm_shed', shed),
+    ('work_watermill', watermill),
 ]
 
 

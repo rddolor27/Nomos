@@ -2,13 +2,13 @@
   "image": "buildings.png",
   "size": [
     256,
-    759
+    873
   ],
   "tile": 16,
   "frames": {
     "civic_clinic": {
-      "x": 65,
-      "y": 372,
+      "x": 0,
+      "y": 488,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -22,8 +22,8 @@
       ]
     },
     "civic_clinic_snow": {
-      "x": 130,
-      "y": 372,
+      "x": 65,
+      "y": 488,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -37,8 +37,8 @@
       ]
     },
     "civic_courthouse": {
-      "x": 0,
-      "y": 423,
+      "x": 130,
+      "y": 488,
       "w": 80,
       "h": 48,
       "anchor": [
@@ -52,8 +52,8 @@
       ]
     },
     "civic_courthouse_snow": {
-      "x": 81,
-      "y": 423,
+      "x": 0,
+      "y": 537,
       "w": 80,
       "h": 48,
       "anchor": [
@@ -67,8 +67,8 @@
       ]
     },
     "civic_jail": {
-      "x": 162,
-      "y": 423,
+      "x": 81,
+      "y": 537,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -82,8 +82,8 @@
       ]
     },
     "civic_jail_snow": {
-      "x": 0,
-      "y": 472,
+      "x": 146,
+      "y": 537,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -97,8 +97,8 @@
       ]
     },
     "civic_police-station": {
-      "x": 65,
-      "y": 472,
+      "x": 0,
+      "y": 586,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -112,8 +112,8 @@
       ]
     },
     "civic_police-station_snow": {
-      "x": 130,
-      "y": 472,
+      "x": 65,
+      "y": 586,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -127,8 +127,8 @@
       ]
     },
     "civic_records-office": {
-      "x": 0,
-      "y": 521,
+      "x": 130,
+      "y": 586,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -142,8 +142,8 @@
       ]
     },
     "civic_records-office_snow": {
-      "x": 65,
-      "y": 521,
+      "x": 0,
+      "y": 635,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -216,9 +216,111 @@
         2
       ]
     },
+    "farm_barn": {
+      "x": 65,
+      "y": 375,
+      "w": 80,
+      "h": 56,
+      "anchor": [
+        40,
+        55
+      ],
+      "snow": "farm_barn_snow",
+      "footprint": [
+        5,
+        2
+      ],
+      "door": [
+        40,
+        54
+      ]
+    },
+    "farm_barn_snow": {
+      "x": 146,
+      "y": 375,
+      "w": 80,
+      "h": 56,
+      "anchor": [
+        40,
+        55
+      ],
+      "layer": "snow",
+      "footprint": [
+        5,
+        2
+      ]
+    },
+    "farm_granary": {
+      "x": 65,
+      "y": 635,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "snow": "farm_granary_snow",
+      "footprint": [
+        2,
+        2
+      ],
+      "door": [
+        16,
+        46
+      ]
+    },
+    "farm_granary_snow": {
+      "x": 98,
+      "y": 635,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "layer": "snow",
+      "footprint": [
+        2,
+        2
+      ]
+    },
+    "farm_shed": {
+      "x": 65,
+      "y": 829,
+      "w": 32,
+      "h": 32,
+      "anchor": [
+        16,
+        31
+      ],
+      "snow": "farm_shed_snow",
+      "footprint": [
+        2,
+        1
+      ],
+      "door": [
+        14,
+        30
+      ]
+    },
+    "farm_shed_snow": {
+      "x": 98,
+      "y": 829,
+      "w": 32,
+      "h": 32,
+      "anchor": [
+        16,
+        31
+      ],
+      "layer": "snow",
+      "footprint": [
+        2,
+        1
+      ]
+    },
     "shop_bakery": {
-      "x": 81,
-      "y": 195,
+      "x": 93,
+      "y": 256,
       "w": 64,
       "h": 58,
       "anchor": [
@@ -236,8 +338,8 @@
       ]
     },
     "shop_bakery_snow": {
-      "x": 146,
-      "y": 195,
+      "x": 158,
+      "y": 256,
       "w": 64,
       "h": 58,
       "anchor": [
@@ -251,8 +353,8 @@
       ]
     },
     "shop_general": {
-      "x": 130,
-      "y": 521,
+      "x": 131,
+      "y": 635,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -267,7 +369,7 @@
     },
     "shop_general_snow": {
       "x": 0,
-      "y": 570,
+      "y": 684,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -316,7 +418,7 @@
     },
     "shop_market-stall": {
       "x": 65,
-      "y": 570,
+      "y": 684,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -330,7 +432,7 @@
     },
     "shop_market-stall_closed": {
       "x": 114,
-      "y": 570,
+      "y": 684,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -344,7 +446,7 @@
     },
     "shop_warehouse": {
       "x": 163,
-      "y": 570,
+      "y": 684,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -359,7 +461,7 @@
     },
     "shop_warehouse_snow": {
       "x": 0,
-      "y": 619,
+      "y": 733,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -434,7 +536,7 @@
     },
     "work_fuel-works": {
       "x": 65,
-      "y": 619,
+      "y": 733,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -448,7 +550,7 @@
     },
     "work_lumber-camp": {
       "x": 130,
-      "y": 619,
+      "y": 733,
       "w": 80,
       "h": 46,
       "anchor": [
@@ -463,7 +565,7 @@
     },
     "work_lumber-camp_snow": {
       "x": 0,
-      "y": 668,
+      "y": 782,
       "w": 80,
       "h": 46,
       "anchor": [
@@ -477,8 +579,8 @@
       ]
     },
     "work_mine": {
-      "x": 0,
-      "y": 372,
+      "x": 162,
+      "y": 433,
       "w": 64,
       "h": 50,
       "anchor": [
@@ -492,7 +594,7 @@
     },
     "work_pasture": {
       "x": 146,
-      "y": 668,
+      "y": 782,
       "w": 64,
       "h": 44,
       "anchor": [
@@ -507,7 +609,7 @@
     },
     "work_pasture_snow": {
       "x": 0,
-      "y": 715,
+      "y": 829,
       "w": 64,
       "h": 44,
       "anchor": [
@@ -522,7 +624,7 @@
     },
     "work_quarry": {
       "x": 81,
-      "y": 668,
+      "y": 782,
       "w": 64,
       "h": 46,
       "anchor": [
@@ -536,7 +638,7 @@
     },
     "work_smithy": {
       "x": 0,
-      "y": 256,
+      "y": 317,
       "w": 64,
       "h": 57,
       "anchor": [
@@ -555,7 +657,7 @@
     },
     "work_smithy_snow": {
       "x": 65,
-      "y": 256,
+      "y": 317,
       "w": 64,
       "h": 57,
       "anchor": [
@@ -569,8 +671,8 @@
       ]
     },
     "work_stable": {
-      "x": 65,
-      "y": 314,
+      "x": 0,
+      "y": 433,
       "w": 80,
       "h": 54,
       "anchor": [
@@ -588,8 +690,8 @@
       ]
     },
     "work_stable_snow": {
-      "x": 146,
-      "y": 314,
+      "x": 81,
+      "y": 433,
       "w": 80,
       "h": 54,
       "anchor": [
@@ -602,9 +704,43 @@
         2
       ]
     },
+    "work_watermill": {
+      "x": 81,
+      "y": 195,
+      "w": 92,
+      "h": 60,
+      "anchor": [
+        32,
+        59
+      ],
+      "snow": "work_watermill_snow",
+      "footprint": [
+        4,
+        2
+      ],
+      "door": [
+        32,
+        58
+      ]
+    },
+    "work_watermill_snow": {
+      "x": 0,
+      "y": 256,
+      "w": 92,
+      "h": 60,
+      "anchor": [
+        32,
+        59
+      ],
+      "layer": "snow",
+      "footprint": [
+        4,
+        2
+      ]
+    },
     "work_workshop": {
       "x": 130,
-      "y": 256,
+      "y": 317,
       "w": 64,
       "h": 57,
       "anchor": [
@@ -619,7 +755,7 @@
     },
     "work_workshop_snow": {
       "x": 0,
-      "y": 314,
+      "y": 375,
       "w": 64,
       "h": 57,
       "anchor": [
