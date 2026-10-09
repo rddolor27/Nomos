@@ -1,5 +1,5 @@
 import { panBy, zoomAt } from '@nomos/render-gl';
-import type { App } from './app.ts';
+import type { App } from '../app/app.ts';
 
 // One tile per arrow press.
 const PAN_WORLD_PX = 16;

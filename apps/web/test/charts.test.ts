@@ -1,6 +1,6 @@
 import { contrastRatio } from '@nomos/render-gl';
 import { expect, test } from 'vitest';
-import { addSample, chartData, seriesOptions, tableCells, type Plot } from '../src/charts.ts';
+import { addSample, chartData, seriesOptions, tableCells, type Plot } from '../src/panels/charts.ts';
 
 // The page background in index.html, which is Skin A's STONE_D.
 const PAGE = 0x464c5e;

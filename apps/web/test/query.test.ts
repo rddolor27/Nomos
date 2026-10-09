@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { backendFrom, seedFrom } from '../src/query.ts';
+import { backendFrom, seedFrom } from '../src/app/query.ts';
 
 const random = () => 777;
 

@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
-import type { App } from '../src/app.ts';
-import { zoomView } from '../src/controls.ts';
+import type { App } from '../src/app/app.ts';
+import { zoomView } from '../src/panels/controls.ts';
 
 function appAt(zoom: number): App {
   return { camera: { x: 10, y: 20, zoom }, renderer: { canvas: { width: 800, height: 600 } } } as unknown as App;

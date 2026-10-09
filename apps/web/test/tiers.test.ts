@@ -1,6 +1,6 @@
 import type { Tier } from '@nomos/sim-protocol';
 import { expect, test } from 'vitest';
-import { VERDICT_KEY, chooseTier, deviceClass, loadVerdict, saveVerdict, tierFromQuery, tierVerdict } from '../src/tiers.ts';
+import { VERDICT_KEY, chooseTier, deviceClass, loadVerdict, saveVerdict, tierFromQuery, tierVerdict } from '../src/app/tiers.ts';
 
 type Nav = Parameters<typeof deviceClass>[0];
 type Device = 'phone' | 'desktop';

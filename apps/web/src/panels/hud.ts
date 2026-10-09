@@ -1,6 +1,6 @@
 import { CANVAS2D_AGENT_CAP, mountSkinToggle, skinFromQuery, type SkinRenderer } from '@nomos/render-gl';
 import type { Tier } from '@nomos/sim-protocol';
-import { element, type App } from './app.ts';
+import { element, type App } from '../app/app.ts';
 
 const REFRESH_MS = 250;
 const TIER_LABELS: Record<Tier, string> = { phone: 'Phone tier', 'phone-plus': 'Phone-plus tier', desktop: 'Desktop tier' };

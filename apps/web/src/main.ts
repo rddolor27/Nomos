@@ -1,10 +1,10 @@
-import { element, startApp, type App } from './app.ts';
-import { SIM_BUILD, takeBoot } from './boot.ts';
-import { bindCameraInput } from './camera-input.ts';
-import { frameMedianMs, mountHud } from './hud.ts';
-import { bindLifecycle } from './lifecycle.ts';
-import { backendFrom, seedFrom } from './query.ts';
-import { chooseTier, deviceClass, loadVerdict, saveVerdict, tierFromQuery, tierVerdict } from './tiers.ts';
+import { element, startApp, type App } from './app/app.ts';
+import { SIM_BUILD, takeBoot } from './app/boot.ts';
+import { bindCameraInput } from './view/camera-input.ts';
+import { frameMedianMs, mountHud } from './panels/hud.ts';
+import { bindLifecycle } from './app/lifecycle.ts';
+import { backendFrom, seedFrom } from './app/query.ts';
+import { chooseTier, deviceClass, loadVerdict, saveVerdict, tierFromQuery, tierVerdict } from './app/tiers.ts';
 
 performance.mark('main:eval');
 
@@ -51,8 +51,8 @@ async function afterFirstFrame(app: App): Promise<void> {
   await app.firstFrame;
   mountHud(element(document, '#hud'), app);
   bindCameraInput(element(document, '#view'), app);
-  const chartsModule = import('./charts.ts');
-  const controlsModule = import('./controls.ts');
+  const chartsModule = import('./panels/charts.ts');
+  const controlsModule = import('./panels/controls.ts');
   await nextTask();
   const { mountCharts } = await chartsModule;
   const charts = mountCharts(element(document, '#charts'));

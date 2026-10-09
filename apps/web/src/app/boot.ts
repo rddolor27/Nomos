@@ -1,5 +1,5 @@
 import workerUrl from '@nomos/sim-worker/worker?worker&url';
-import townMapUrl from '../../../assets/maps/town.nmap?url';
+import townMapUrl from '../../../../assets/maps/town.nmap?url';
 
 export interface Boot {
   worker: Worker;
