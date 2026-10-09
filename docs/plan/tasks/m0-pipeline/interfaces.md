@@ -411,7 +411,7 @@ The owner asked on 9 October 2026 to see each country's people on the map, as a 
 ### Map worker messages
 
 - Page to map worker, `MapAppMessage`: `{ type: 'generate', seed: number, size: WorldSize }`.
-- Map worker to page, `MapWorkerMessage`: `{ type: 'world', map: WorldMap, names: string[], stageMs: Record<string, number> }`, with every buffer transferred. `stageMs` holds each `StageTimer` stage's milliseconds, plus `names`. M8.3's Task 18 adds `crowd: MapCrowd`, timed as `crowd`, with its buffers transferred too.
+- Map worker to page, `MapWorkerMessage`: `{ type: 'world', map: WorldMap, names: string[], crowd: MapCrowd, stageMs: Record<string, number> }`, with every buffer transferred, the crowd's included. `stageMs` holds each `StageTimer` stage's milliseconds, plus `names` and `crowd`.
 - A throw in the generator reaches the page as the Worker's `error` event, as the sim worker's do.
 - Both types live in `world-map.ts`.
 

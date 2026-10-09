@@ -1873,11 +1873,10 @@ Every draw is `draw(map.seed, CROWD, …)`, with first keys from 0x100, clear of
 
 **Files:**
 - create `apps/web/src/map/crowd-motion.ts` and `apps/web/test/crowd-motion.test.ts`;
-- modify `apps/web/src/map/generate.ts`, `apps/web/test/map-worker.test.ts` and `apps/web/src/map/map-view.ts`;
-- modify `packages/sim-protocol/src/world-map/world-map.ts` and `packages/worldgen/src/index.ts`;
-- add a case to `apps/web/test/browser/map.spec.ts`.
+- modify `apps/web/src/map/map-view.ts`;
+- create `apps/web/test/browser/map-crowd.spec.ts`, apart from Task 12's `map.spec.ts`.
 
-- **The worker answers with the crowd too:**
+- **The worker answers with the crowd too.** This part landed with M8.1 Task 30 (05bd29a), to save a round trip:
   - `MapWorkerMessage` gains `crowd: MapCrowd`;
   - `answerGenerate` calls `crowdOf(map)` after the names, and laps it as `crowd`;
   - it transfers `crowdBuffers(crowd)` with the world's buffers;
@@ -1894,8 +1893,8 @@ Every draw is `draw(map.seed, CROWD, …)`, with first keys from 0x100, clear of
   - `window.__map` reports the crowd's dot count and whether the last frame drew it, for the tests.
 - **Checks:**
   - `crowd-motion.test.ts` checks exact positions at chosen times for a hand-made crowd of two dots: standing, walking, and the wrap back to stop 0;
-  - `map-worker.test.ts`: the stage list gains `crowd`, and every buffer, the crowd's included, is listed once;
-  - `map.spec.ts`: the Country view draws no crowd. At a Region step it draws one, and a dot moves within a second. Under reduced motion, no dot moves.
+  - `map-worker.test.ts`: the stage list gains `crowd`, and every buffer, the crowd's included, is listed once (M8.1 Task 30);
+  - `map-crowd.spec.ts`: the Country view draws no crowd. At a Region step it draws one, and a dot moves within a second. Under reduced motion, no dot moves.
 - **The bytes after:** Task 10's first-load chunks keep their exact sizes.
 - **Commits:** `feat(web): walk the map crowd near home from the Region view in`, then the tests.
 
