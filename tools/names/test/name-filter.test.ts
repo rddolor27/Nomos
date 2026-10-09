@@ -8,7 +8,7 @@ interface SourceNote {
   readonly count: number;
 }
 
-const LISTS = ['avoid-places', 'avoid-species', 'profanity'];
+const LISTS = ['avoid-places', 'avoid-species', 'profanity', 'denied'];
 
 function lines(file: string): string[] {
   return readFileSync(new URL(file, FIXTURES), 'utf8')
@@ -51,6 +51,14 @@ describe('the person-name filter', { timeout: 30_000 }, () => {
 
   it('passes a clean word', () => {
     expect(rejectName('quvexil')).toBeNull();
+  });
+
+  // Every denied word passed the other rules when it was reviewed, so the list holds no word they already catch.
+  it('rejects each reviewed word whole, and no longer word that holds one', () => {
+    for (const word of lines('denied.txt')) {
+      expect(rejectName(word), word).toBe('denied');
+      expect(rejectName(`${word}q`), word).not.toBe('denied');
+    }
   });
 
   it('keeps each list folded, sorted and unique, as counted in its note', () => {
