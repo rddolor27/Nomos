@@ -33,7 +33,7 @@ function checkTier(app: App, storage: Storage | null): void {
   app.onStats((_tick, systemMs) => {
     if (judged) return;
     tickMs.push(Object.values(systemMs).reduce((sum, ms) => sum + ms, 0));
-    const verdict = tierVerdict(tickMs);
+    const verdict = tierVerdict(tickMs, app.agents);
     if (verdict === null) return;
     saveVerdict(storage, SIM_BUILD, verdict);
     judged = true;
@@ -69,11 +69,13 @@ const search = location.search;
 const storage = readStorage();
 const device = deviceClass(navigator, matchMedia('(pointer: coarse) and (hover: none)').matches);
 const verdict = loadVerdict(storage, SIM_BUILD);
-const tier = chooseTier(device, verdict, tierFromQuery(search));
+const tierAsked = tierFromQuery(search);
+const tier = chooseTier(device, verdict, tierAsked);
 
 const start = {
   seed: seedFrom(search, randomSeed),
   tier,
+  tierNamed: tierAsked !== null,
   backend: backendFrom(search),
   paused: prefersReducedMotion(window),
 };

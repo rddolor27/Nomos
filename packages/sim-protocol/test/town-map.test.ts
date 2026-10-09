@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { brotliCompressSync, constants } from 'node:zlib';
+import { createWorld, currentTick, stateHash, step, townAgents } from '@nomos/sim-core';
 import { describe, expect, it } from 'vitest';
 import {
   ENTITY_CIVIC,
@@ -80,6 +81,18 @@ describe('the town map', () => {
     expect(homes.length).toBeGreaterThanOrEqual(20);
     expect(shops.length).toBeGreaterThanOrEqual(1);
     expect(civicFrames).toEqual(expect.arrayContaining(['buildings/civic_police-station', 'buildings/civic_town-hall']));
+  });
+
+  it('replays seed 42 on the first screen to a fixed hash', () => {
+    const town = loadTown();
+    const hashes: Record<string, string> = {};
+    for (const tier of ['phone', 'desktop'] as const) {
+      const world = createWorld(42, tier, town, townAgents(tier, town));
+      while (currentTick(world) < 1_000) step(world);
+      hashes[tier] = stateHash(world).toString(16).padStart(8, '0');
+    }
+
+    expect(hashes).toEqual({ phone: '83e5b191', desktop: '4099e61d' });
   });
 
   it('fits the map budget', () => {

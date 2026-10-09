@@ -1,11 +1,10 @@
-import { TIER_AGENTS, type Tier } from '@nomos/sim-protocol';
+import { TIER_AGENTS, townAgents, type MapV1, type Tier } from '@nomos/sim-protocol';
 
 export const VERDICT_SAMPLES = 120;
 export const PHONE_PLUS_MAX_MS = 13.3;
 export const VERDICT_KEY = 'nomos.tier-check.v1';
 
 const VERDICT_PERCENTILE = 0.95;
-const PHONE_PLUS_SCALE = TIER_AGENTS['phone-plus'] / TIER_AGENTS.phone;
 
 function isTier(value: unknown): value is Tier {
   return typeof value === 'string' && Object.hasOwn(TIER_AGENTS, value);
@@ -34,12 +33,19 @@ export function chooseTier(device: 'phone' | 'desktop', verdict: Tier | null, ov
   return isPhoneTier(verdict) ? verdict : 'phone';
 }
 
-// The check runs at the phone tier, so its 95th-percentile tick is scaled to phone-plus's agent count (M0.5 plan, Task 7).
-export function tierVerdict(tickMs: number[]): 'phone' | 'phone-plus' | null {
+// Only a page that names its tier with ?tier= runs the tier's whole count, which the perf specs measure; every other
+// start fills the town.
+export function startAgents(tier: Tier, map: MapV1, tierNamed: boolean): number {
+  return tierNamed ? TIER_AGENTS[tier] : townAgents(tier, map);
+}
+
+// The check runs at the phone tier with the agents the town gave it, so its 95th-percentile tick is scaled to
+// phone-plus's whole count (M0.5 plan, Task 7).
+export function tierVerdict(tickMs: number[], agents: number = TIER_AGENTS.phone): 'phone' | 'phone-plus' | null {
   if (tickMs.length < VERDICT_SAMPLES) return null;
   const sorted = [...tickMs].sort((a, b) => a - b);
   const percentile = sorted[Math.ceil(VERDICT_PERCENTILE * sorted.length) - 1];
-  return percentile * PHONE_PLUS_SCALE <= PHONE_PLUS_MAX_MS ? 'phone-plus' : 'phone';
+  return percentile * (TIER_AGENTS['phone-plus'] / agents) <= PHONE_PLUS_MAX_MS ? 'phone-plus' : 'phone';
 }
 
 export function loadVerdict(storage: Storage | null, build: string): Tier | null {

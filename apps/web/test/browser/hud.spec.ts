@@ -67,10 +67,10 @@ test('says when Canvas2D caps the agents', async ({ page }) => {
 test('shows the tier the device gets', async ({ page }) => {
   await open(page, `${TOWN}&canvas`);
   await expect(page.locator('#hud-tier')).toHaveText('Phone tier');
-  // Without ?tier=, a desktop gets 100,000 agents (Task 7).
+  // Without ?tier=, a desktop fills Highcourt's 6,763 walkable tiles at one blob to two, under Canvas2D's cap.
   await open(page, '/?canvas');
   await expect(page.locator('#hud-tier')).toHaveText('Desktop tier');
-  await expect(page.locator('#hud-agents')).toHaveText('5,000 of 100,000 agents shown (no WebGL2)');
+  await expect(page.locator('#hud-agents')).toHaveText('3,381 of 3,381 agents shown (no WebGL2)');
 });
 
 test.describe('on a phone whose storage throws', () => {
@@ -98,7 +98,7 @@ test.describe('on a phone whose storage throws', () => {
     });
     expect(read).toBe('threw');
     await expect(page.locator('#hud-tier')).toHaveText('Phone tier');
-    await expect(page.locator('#hud-agents')).toContainText('10,000 agents');
+    await expect(page.locator('#hud-agents')).toContainText('1,690 agents');
   });
 });
 

@@ -1,6 +1,7 @@
 import { createWorldRenderer, fitCamera, observeDeviceSize, type Camera, type WorldRenderer } from '@nomos/render-gl';
 import { TICK_MS, parseMap, type AppMessage, type MapV1, type Tier, type WorkerMessage } from '@nomos/sim-protocol';
 import type { Boot } from './boot.ts';
+import { startAgents } from './tiers.ts';
 
 // The HUD's frame row is the median of this many frames.
 const FRAME_SAMPLES = 60;
@@ -10,6 +11,8 @@ export type StatsListener = (tick: number, systemMs: Record<string, number>) => 
 export interface Start {
   seed: number;
   tier: Tier;
+  // The URL named the tier, so it runs its whole count instead of filling the town.
+  tierNamed: boolean;
   backend: 'auto' | 'canvas2d';
   // Starts as if the user had paused: no tick runs until Play, and the first frame shows the tick-0 snapshot.
   paused: boolean;
@@ -149,7 +152,8 @@ export async function startApp(boot: Boot, doc: Document, start: Start): Promise
   // keeps, so the bytes can go to the worker. Nothing may await between the post and the listeners below, or a fast
   // worker's ready and spawn would arrive to find none.
   const { bytes, map } = await loadMap(boot, status);
-  post({ type: 'init', seed: start.seed, tier: start.tier, map: bytes, checks: import.meta.env.DEV }, [bytes]);
+  const agents = startAgents(start.tier, map, start.tierNamed);
+  post({ type: 'init', seed: start.seed, tier: start.tier, map: bytes, checks: import.meta.env.DEV, agents }, [bytes]);
   const renderer = createWorldRenderer(element<HTMLCanvasElement>(doc, '#world'), {
     backend: start.backend,
     release: (buffer) => post({ type: 'return', buffer }, [buffer]),

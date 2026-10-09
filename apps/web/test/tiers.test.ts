@@ -1,6 +1,16 @@
-import type { Tier } from '@nomos/sim-protocol';
+import { readFileSync } from 'node:fs';
+import { parseMap, type Tier } from '@nomos/sim-protocol';
 import { expect, test } from 'vitest';
-import { VERDICT_KEY, chooseTier, deviceClass, loadVerdict, saveVerdict, tierFromQuery, tierVerdict } from '../src/app/tiers.ts';
+import {
+  VERDICT_KEY,
+  chooseTier,
+  deviceClass,
+  loadVerdict,
+  saveVerdict,
+  startAgents,
+  tierFromQuery,
+  tierVerdict,
+} from '../src/app/tiers.ts';
 
 type Nav = Parameters<typeof deviceClass>[0];
 type Device = 'phone' | 'desktop';
@@ -104,6 +114,21 @@ test('judges the start-up check by the nearest rank', () => {
   // 125 samples: the 119th smallest, the ceiling of 0.95 x 125, decides.
   expect(tierVerdict([...samples(118, 1), ...samples(7, 6)])).toBe('phone');
   expect(tierVerdict([...samples(119, 1), ...samples(6, 6)])).toBe('phone-plus');
+});
+
+test('judges the start-up check by the agents it ran', () => {
+  // 5,000 agents in 2.6 ms put phone-plus's 25,000 at 13.0 ms, inside its 13.3.
+  expect(tierVerdict(samples(120, 2.6), 5_000)).toBe('phone-plus');
+  expect(tierVerdict(samples(120, 2.7), 5_000)).toBe('phone');
+  expect(tierVerdict(samples(120, 5.3), 10_000)).toBe('phone-plus');
+});
+
+test('starts the town at its tier\'s crowd, and a tier asked for by name in full', () => {
+  const tiers: Tier[] = ['phone', 'phone-plus', 'desktop'];
+  const town = parseMap(new Uint8Array(readFileSync(new URL('../../../assets/maps/town.nmap', import.meta.url))).buffer);
+
+  expect(tiers.map((tier) => startAgents(tier, town, false))).toEqual([1_690, 2_254, 3_381]);
+  expect(tiers.map((tier) => startAgents(tier, town, true))).toEqual([10_000, 25_000, 100_000]);
 });
 
 test('judges the start-up check whatever order the samples came in', () => {
