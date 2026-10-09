@@ -20,7 +20,10 @@
       #hud dl, #hud dl div { display: flex; flex-wrap: wrap; gap: .2rem 1rem; }
       #hud dl div { column-gap: .4rem; }
       #view { position: relative; overflow: hidden; touch-action: none; }
-      #view:focus-visible { outline: 3px solid #f7c948; outline-offset: -3px; }
+      /* The canvas covers #view's own outline and the HUD its top edge, so the focus ring is an overlay above both. */
+      #view:focus-visible { outline: none; }
+      #view:focus-visible::after { content: ""; position: absolute; inset: 0; z-index: 2; border: 3px solid #f7c948;
+        pointer-events: none; }
       #world { position: absolute; top: 0; left: 0; }
       #charts { overflow: auto; padding: 4.5rem .75rem 1rem; }
       #charts figure { margin: 0 0 1rem; }
