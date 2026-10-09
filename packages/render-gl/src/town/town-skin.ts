@@ -21,6 +21,8 @@ export class TownSkin implements TownPainter {
   private height: number;
   private dpr: number;
   private shown: boolean;
+  // redraw, bound once for requestAnimationFrame.
+  private readonly redrawSoon: FrameRequestCallback;
 
   constructor(canvas: HTMLCanvasElement, layout: PlaceLayout, page: AtlasPage, options: LifecycleOptions = {}) {
     this.place = createPlaceRenderer(canvas, options);
@@ -32,6 +34,7 @@ export class TownSkin implements TownPainter {
     this.height = 0;
     this.dpr = 0;
     this.shown = false;
+    this.redrawSoon = this.redraw.bind(this);
     this.place.init();
     this.place.setAtlas(page);
     // Before any agent, so a frame the atlas cannot draw throws here, while the town loads, never in a draw.
@@ -48,6 +51,7 @@ export class TownSkin implements TownPainter {
       this.show(false, view.canvas);
       return undefined;
     }
+    this.show(true, view.canvas);
     const { retained } = view;
     this.fit(view);
     if (this.people.fit(retained.count)) this.setPeople();
@@ -57,7 +61,6 @@ export class TownSkin implements TownPainter {
       this.placeCamera = { x: camera.x, y: camera.y, scale: camera.zoom };
     }
     this.place.draw(this.placeCamera);
-    this.show(true, view.canvas);
     return retained.count;
   }
 
@@ -69,8 +72,14 @@ export class TownSkin implements TownPainter {
     this.place.setPlace({ ...this.layout, people: this.people.columns });
   }
 
+  private redraw(): void {
+    this.place.draw(this.placeCamera);
+  }
+
   // The dots' canvas's device size and dpr, taken on the draw that first sees them, which then draws at once, so a
-  // resize never shows a cleared canvas.
+  // resize never shows a cleared canvas. WebKit shows black for a WebGL frame drawn just after its canvas resized, until
+  // the next draw, and a paused town makes none, so the town draws once more on the next frame. Playwright's WebKit
+  // does so on Windows, for the dots too (10 October 2026).
   private fit(view: TownView): void {
     const { width, height } = view.canvas;
     if (width === this.width && height === this.height && view.dpr === this.dpr) return;
@@ -78,6 +87,7 @@ export class TownSkin implements TownPainter {
     this.height = height;
     this.dpr = view.dpr;
     this.place.resize(width, height, view.dpr);
+    requestAnimationFrame(this.redrawSoon);
   }
 
   private show(shown: boolean, dots: HTMLCanvasElement): void {
