@@ -9,7 +9,7 @@ from math import isqrt
 from climate import LAKE, OCEAN
 from grid import dist2, neighbours
 from roads import COVER, DIAGONAL, STRAIGHT
-from rng import below
+from rng import below, shuffled
 
 # The countries' world stream. It joins rng.py's list with the TypeScript port, because vectors.py
 # records every stream there into sim-core's kernel fixtures (M8.1 plan, Ruling 1).
@@ -29,6 +29,18 @@ class Country:
     id: int         # 1..K, its value in World.country
     capital: int    # settlement id
     colour: int     # index into the map colour table
+
+
+def found(seed, width, height, biome, river, receiver, settlements, land):
+    """(each cell's country, 0 for water; the countries in id order). Each capital takes the capital
+    tier; nothing else on a settlement changes."""
+    ids = capitals(settlements, count(seed), land)
+    label = grow(width, height, biome, river, receiver, [settlements[i].uid for i in ids])
+    country = bytearray(0 if b in (OCEAN, LAKE) else label[i] for i, b in enumerate(biome))
+    colours = shuffled(range(COLOURS), seed, COUNTRY, COLOUR)
+    for i in ids:
+        settlements[i].tier = 'capital'
+    return country, [Country(k, sid, colours[k - 1]) for k, sid in enumerate(ids, 1)]
 
 
 def count(seed):

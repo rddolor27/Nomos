@@ -6,6 +6,8 @@ sample through them a world at a time, so a sweep of 100 large worlds never hold
 """
 import argparse
 import sys
+from collections import Counter
+from dataclasses import replace
 from functools import lru_cache
 from pathlib import Path
 
@@ -13,12 +15,13 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
 import place  # noqa: E402
-from climate import GRASSLAND, HILLS, HILLS_AT, MOUNTAIN, OCEAN, SNOW, SNOW_BELOW, biomes  # noqa: E402
+import settle  # noqa: E402
+from climate import GRASSLAND, HILLS, HILLS_AT, LAKE, MOUNTAIN, OCEAN, SNOW, SNOW_BELOW, biomes  # noqa: E402
 from countries import capitals, count, grow  # noqa: E402
 from grid import neighbours  # noqa: E402
 from model import PlaceContext  # noqa: E402
 from settle import Settlement, habitability  # noqa: E402
-from world import SIZES, generate  # noqa: E402
+from world import SIZES, fingerprint, generate  # noqa: E402
 
 FIRST = 0x5EED0001
 SNOWY = ('standard', 0x5EED000A)
@@ -124,6 +127,58 @@ def diagonal_never_slips():
     return [f'{name}: cell 4 joins {labels[4]}, want {want}' for name, labels, want in cases if labels[4] != want]
 
 
+def fingerprint_covers_countries():
+    w = world('standard', FIRST)
+    first = fingerprint(w)
+    problems = [] if fingerprint(generate(FIRST, *SIZES['standard'])) == first else ['one seed, two fingerprints']
+    moved = bytearray(w.country)
+    cell = next(i for i, c in enumerate(moved) if c)
+    moved[cell] = moved[cell] % len(w.countries) + 1
+    if fingerprint(replace(w, country=moved)) == first:
+        problems.append('moving a cell to another country keeps the fingerprint')
+    recoloured = [replace(c, colour=(c.colour + 1) % 5) if c.id == 1 else c for c in w.countries]
+    if fingerprint(replace(w, countries=recoloured)) == first:
+        problems.append('recolouring a country keeps the fingerprint')
+    return problems
+
+
+def countries_cover_the_land(w):
+    k = len(w.countries)
+    problems = [] if 3 <= k <= 5 and [c.id for c in w.countries] == list(range(1, k + 1)) else [
+        f'country ids {[c.id for c in w.countries]}']
+    stray = [i for i, (b, c) in enumerate(zip(w.biome, w.country))
+             if (c != 0 if b in (OCEAN, LAKE) else not 1 <= c <= k)]
+    if stray:
+        problems.append(f'{len(stray)} cells hold the wrong country, the first at {stray[0]}')
+    firsts = [c.capital for c in w.countries]
+    if firsts[:1] != [0] or len(set(firsts)) != k:
+        problems.append(f'capitals {firsts}')
+    for c in w.countries:
+        s = w.settlements[c.capital]
+        if w.country[s.uid] != c.id or s.tier != 'capital' or s.population < 5_000:
+            problems.append(f'capital {s.id} of country {c.id}: in {w.country[s.uid]}, {s.tier}, {s.population:,}')
+    held = Counter(w.country[s.uid] for s in w.settlements)
+    small = {c.id: held[c.id] for c in w.countries if held[c.id] < 3}
+    if small or held[0]:
+        problems.append(f'settlements by country {dict(held)}')
+    colours = [c.colour for c in w.countries]
+    if len(set(colours)) != k or not set(colours) <= set(range(5)):
+        problems.append(f'colours {colours}')
+    return problems
+
+
+def stage_only_retiers_capitals(w):
+    chosen = {c.capital for c in w.countries}
+    people = [s.population for s in w.settlements]
+    problems = [] if [s.id for s in w.settlements] == list(range(len(people))) else ['settlement ids out of order']
+    if people != sorted(people, reverse=True):
+        problems.append('populations rise with id')
+    for s in w.settlements:
+        if s.id not in chosen and s.tier != settle._tier(s.id, s.population):
+            problems.append(f'settlement {s.id} turned {s.tier}')
+    return problems
+
+
 def snow_lies_on_cold_lowland(w):
     """Snow is lowland, and it or a neighbour is colder than SNOW_BELOW, since despeckling lets a lone
     cell a little warmer join the snow around it."""
@@ -136,8 +191,9 @@ def snow_lies_on_cold_lowland(w):
 
 CHECKS = [snow_on_cold_lowland, lone_snow_melts, snow_is_uninhabitable, snow_places_build, snow_falls_on_a_cold_world,
           count_is_three_to_five, capitals_spaced_in_population_order, grow_breaks_ties_by_cost_then_cell,
-          grow_bends_to_mountains, island_joins_the_cheaper_crossing, diagonal_never_slips]
-WORLD_CHECKS = [snow_lies_on_cold_lowland]
+          grow_bends_to_mountains, island_joins_the_cheaper_crossing, diagonal_never_slips,
+          fingerprint_covers_countries]
+WORLD_CHECKS = [snow_lies_on_cold_lowland, countries_cover_the_land, stage_only_retiers_capitals]
 
 
 def main():

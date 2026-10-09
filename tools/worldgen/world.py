@@ -1,7 +1,7 @@
 """The country generator: one seed in, one World out, the same World for the same seed.
 
-`generate` runs the stages in order (shape, rain, drainage, climate, biomes, settlements, roads,
-wonders, landmarks); `place_contexts` hands each settlement and wonder to the place generator;
+`generate` runs the stages in order (shape, rain, drainage, climate, biomes, settlements, countries,
+roads, wonders, landmarks); `place_contexts` hands each settlement and wonder to the place generator;
 `fingerprint` hashes everything for determinism tests. Run as a script to draw a new world.
 """
 import argparse
@@ -15,6 +15,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
 import climate  # noqa: E402
+import countries  # noqa: E402
 import drainage  # noqa: E402
 import features  # noqa: E402
 import roads  # noqa: E402
@@ -52,6 +53,8 @@ class World:
     lanes: list = field(default_factory=list)            # sea lanes between landmasses, port to port
     wonders: list = field(default_factory=list)
     landmarks: list = field(default_factory=list)
+    country: bytearray = field(default_factory=bytearray)   # per cell: 0 for water, 1..K on land
+    countries: list = field(default_factory=list)          # countries.Country, in id order
 
 
 def generate(seed, width=96, height=64):
@@ -66,7 +69,9 @@ def generate(seed, width=96, height=64):
     w.biome = climate.biomes(seed, width, height, w.elevation, w.temperature, w.moisture, ocean, lake, w.river, w.coast)
     slope = climate.slopes(width, height, w.elevation, water)
     score = settle.habitability(width, height, w.biome, w.elevation, w.river, w.coast, w.temperature, w.moisture, slope)
-    w.settlements = settle.settle(seed, width, height, score, len(water) - sum(water))
+    land = len(water) - sum(water)
+    w.settlements = settle.settle(seed, width, height, score, land)
+    w.country, w.countries = countries.found(seed, width, height, w.biome, w.river, w.receiver, w.settlements, land)
     w.biome = settle.farm(seed, width, w.biome, w.settlements)
     w.roads, w.bridges = roads.build(width, height, w.biome, w.elevation, w.river, w.receiver, w.settlements)
     w.lanes = roads.lanes(width, height, w.biome, w.settlements)
@@ -136,7 +141,20 @@ def fingerprint(world):
     feed(len(world.bridges), *world.bridges)
     feed(len(world.wonders), *(v for p in world.wonders for v in (WONDERS.index(p.kind), p.x, p.y)))
     feed(len(world.landmarks), *(v for p in world.landmarks for v in (LANDMARKS.index(p.kind), p.x, p.y)))
+    feed(len(world.countries), *(v for c in world.countries for v in (c.capital, c.colour)))
+    feed(len(world.country), *world.country)
     return h
+
+
+def _country_lines(world, land):
+    cells = Counter(world.country)
+    held = Counter(world.country[s.uid] for s in world.settlements)
+    out = []
+    for c in world.countries:
+        s = world.settlements[c.capital]
+        out.append(f'country {c.id}: {s.tier}-{s.id} at ({s.x},{s.y}), colour {c.colour}, '
+                   f'{cells[c.id]:,} land cells ({cells[c.id] * 100 // land}%), {held[c.id]} settlements')
+    return out
 
 
 def summary(world, seconds):
@@ -151,7 +169,8 @@ def summary(world, seconds):
         f'cold {world.cold}  {seconds:.2f}s  fingerprint {fingerprint(world):08x}',
         'biomes: ' + ', '.join(f'{BIOMES[b]} {counts[b]}' for b in range(len(BIOMES)) if counts[b]),
         'settlements: ' + ', '.join(f'{t} {tiers[t]}' for t in TIERS if tiers[t])
-        + f'  (capital {world.settlements[0].population:,})',
+        + f'  (largest {world.settlements[0].population:,})',
+        *_country_lines(world, land),
         f'roads: {len(world.roads)} routes over {len({c for p in world.roads for c in p})} cells, '
         f'{len(world.bridges)} bridges, {len(world.lanes)} sea lanes',
         'wonders: ' + (', '.join(f'{p.kind} ({p.x},{p.y})' for p in world.wonders) or 'none'),
