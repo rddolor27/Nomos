@@ -151,6 +151,9 @@ describe('the economy parameters', () => {
     accepts({ openingPrice: 2_606 });
     refuses({ openingPrice: 2_323 }, 'openingPrice');
     refuses({ openingPrice: 2_607 }, 'openingPrice');
+    expect(() => checkParams({ ...LENGNICK, openingPrice: 2_323 }, 'phone')).toThrow(
+      "openingPrice prices a month's output at 146349 cents, outside the band 146370 to 164220",
+    );
   });
 });
 
