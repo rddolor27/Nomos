@@ -77,3 +77,20 @@ export function topShare(h: Histogram, topPpm: number): number {
   }
   return Math.floor((top / total) * PPM);
 }
+
+// 1 - 2 x the Lorenz area, with each bin's members holding equal shares, so a bin adds the trapezoid
+// count x (cash below it + cash through it), scaled by entries x total. Rounded, not floored like topShare, because
+// floats put a Gini of 1 - 9/10 at 0.09999999999999998.
+export function giniPpm(h: Histogram): number {
+  let entries = 0;
+  let total = 0;
+  let trapezoids = 0;
+  for (let bin = 0; bin < HISTOGRAM_BINS; bin++) {
+    const below = total;
+    entries += h.count[bin];
+    total += h.sum[bin];
+    trapezoids += h.count[bin] * (below + total);
+  }
+  if (total === 0) return 0;
+  return Math.round((1 - trapezoids / (entries * total)) * PPM);
+}

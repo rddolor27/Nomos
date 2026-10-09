@@ -7,6 +7,7 @@ import {
   binOf,
   clearHistogram,
   createHistogram,
+  giniPpm,
   topShare,
 } from '../src/money/histogram.ts';
 import { reserveArena } from '../src/memory/arena.ts';
@@ -34,6 +35,19 @@ function sortedSharePpm(values: number[], topPpm: number): number {
   const topCount = Math.floor((values.length * topPpm) / 1_000_000);
   const sum = (part: number[]) => part.reduce((total, v) => total + v, 0);
   return (sum(sorted.slice(0, topCount)) / sum(sorted)) * 1_000_000;
+}
+
+function giniOf(values: number[]): number {
+  const histogram = createHistogram(reserveArena(65_536));
+  for (const v of values) addValue(histogram, v);
+  return giniPpm(histogram);
+}
+
+// One holder among N, padded with N - 1 zeros.
+function oneHolderAmong(n: number): number[] {
+  const values = new Array<number>(n).fill(0);
+  values[n - 1] = 100_000;
+  return values;
 }
 
 // The bin read straight from the binary digits: the leading one's place, then the four digits below it.
@@ -94,5 +108,23 @@ describe('the log2 histogram', () => {
       const gap = Math.abs(topShare(histogram, TOP_TENTH_PPM) - sortedSharePpm(values, TOP_TENTH_PPM));
       expect(gap, make.name).toBeLessThanOrEqual(300);
     }
+  });
+
+  it('gives a Gini of 0 for no holdings, all zeros or equal holdings', () => {
+    expect(giniOf([])).toBe(0);
+    expect(giniOf([0, 0, 0])).toBe(0);
+    expect(giniOf(new Array<number>(1_000).fill(12_345))).toBe(0);
+  });
+
+  it('gives (N - 1) / N when one holder among N has everything', () => {
+    expect(giniOf(oneHolderAmong(2))).toBe(500_000);
+    expect(giniOf(oneHolderAmong(10))).toBe(900_000);
+    expect(giniOf(oneHolderAmong(10_000))).toBe(999_900);
+  });
+
+  it('gives the exact Gini, to the nearest ppm, when no two holdings share a bin', () => {
+    // 2 and 3 give 1 - 9/10, which floats put at 0.09999999999999998.
+    expect(giniOf([2, 3])).toBe(100_000);
+    expect(giniOf([0, 1, 2, 4, 8])).toBe(506_667);
   });
 });
