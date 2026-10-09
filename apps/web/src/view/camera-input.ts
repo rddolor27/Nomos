@@ -98,11 +98,12 @@ export function bindCameraInput(view: HTMLElement, app: App): void {
     app.camera = panBy(app.camera, (drag.x - event.clientX) * dpr, (drag.y - event.clientY) * dpr);
     drag.x = event.clientX;
     drag.y = event.clientY;
-    if (!isClick(event.clientX - drag.downX, event.clientY - drag.downY)) drag.clickable = false;
+    // A second button pressed or released during the press arrives as a move, so it ends the click here.
+    if (event.buttons !== 1 || !isClick(event.clientX - drag.downX, event.clientY - drag.downY)) drag.clickable = false;
   };
   const onPointerUp = (event: PointerEvent): void => {
     if (drag?.pointer !== event.pointerId) return;
-    if (drag.clickable) {
+    if (drag.clickable && event.button === 0) {
       const [x, y] = devicePoint(view, event);
       inspectAt(app, x, y);
     }

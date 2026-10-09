@@ -155,4 +155,7 @@ test('zooms and pans', async ({ page }) => {
   await page.mouse.up();
   const after = await camera(page);
   expect([after.x, after.y]).toEqual([at.x - 40, at.y - 20]);
+  // A drag is never a click: given time to load, no inspector appears.
+  await page.waitForTimeout(500);
+  await expect(page.locator('#inspector')).toHaveCount(0);
 });

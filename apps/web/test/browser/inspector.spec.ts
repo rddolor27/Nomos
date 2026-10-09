@@ -12,6 +12,14 @@ const TILE_Q8 = TILE_PX * SUBPIXELS;
 const NO_BLOB = 'No blob here';
 // Keeps a click off the view's edges and the HUD laid over its top.
 const MARGIN_CSS_PX = 8;
+// Time enough for a wrongly sent inspect to load the panel and show its answer.
+const QUIET_MS = 500;
+
+type Button = 'left' | 'right';
+const CHORDS: [string, Button, Button][] = [
+  ['right released first', 'right', 'left'],
+  ['left released first', 'left', 'right'],
+];
 
 // The world the page builds for this URL, held at tick 0 by reduced motion.
 const town = new Uint8Array(readFileSync(new URL('../../../../assets/maps/town.nmap', import.meta.url)));
@@ -75,6 +83,16 @@ function blobPoint(view: View): [number, number] {
   throw new Error('no blob is drawn clear of the HUD');
 }
 
+async function expectNoInspector(page: Page): Promise<void> {
+  await page.waitForTimeout(QUIET_MS);
+  await expect(page.locator('#inspector')).toHaveCount(0);
+}
+
+async function pressOver(page: Page, clientX: number, clientY: number): Promise<void> {
+  await page.mouse.move(clientX, clientY);
+  await page.mouse.down();
+}
+
 test('shows the name and wallet of the blob under a click', async ({ page }) => {
   await openPaused(page);
   const view = await viewOf(page);
@@ -100,9 +118,42 @@ test('ignores a right-button click', async ({ page }) => {
   await openPaused(page);
   const [clientX, clientY] = blobPoint(await viewOf(page));
   await page.mouse.click(clientX, clientY, { button: 'right' });
-  await page.waitForTimeout(500);
-  await expect(page.locator('#inspector')).toHaveCount(0);
+  await expectNoInspector(page);
 });
+
+test('inspects where a press that moved 3 px is released', async ({ page }) => {
+  await openPaused(page);
+  const [clientX, clientY] = blobPoint(await viewOf(page));
+  await pressOver(page, clientX, clientY);
+  await page.mouse.move(clientX + 3, clientY);
+  await page.mouse.up();
+  // The press panned the view with it, so the release point lies over the blob the press went down on.
+  const view = await viewOf(page);
+  const answer = answerAt(view, (clientX + 3) * view.dpr, clientY * view.dpr);
+  expect(answer).not.toBe(NO_BLOB);
+  await expect(page.locator('#inspector')).toHaveText(answer);
+});
+
+test('never inspects after a 6 px drag', async ({ page }) => {
+  await openPaused(page);
+  const [clientX, clientY] = blobPoint(await viewOf(page));
+  await pressOver(page, clientX, clientY);
+  await page.mouse.move(clientX + 6, clientY);
+  await page.mouse.up();
+  await expectNoInspector(page);
+});
+
+for (const [order, first, second] of CHORDS) {
+  test(`never inspects a press chorded with the right button, ${order}`, async ({ page }) => {
+    await openPaused(page);
+    const [clientX, clientY] = blobPoint(await viewOf(page));
+    await pressOver(page, clientX, clientY);
+    await page.mouse.down({ button: 'right' });
+    await page.mouse.up({ button: first });
+    await page.mouse.up({ button: second });
+    await expectNoInspector(page);
+  });
+}
 
 test('shows the blob at the centre on Enter', async ({ page }) => {
   await openPaused(page);
@@ -123,5 +174,18 @@ test.describe('on a 2x screen', () => {
     const [clientX, clientY] = blobPoint(view);
     await page.mouse.click(clientX, clientY);
     await expect(page.locator('#inspector')).toHaveText(answerAt(view, clientX * view.dpr, clientY * view.dpr));
+  });
+});
+
+test.describe('with a touch screen', () => {
+  test.use({ hasTouch: true });
+
+  test('never inspects when a second pointer joins the press', async ({ page }) => {
+    await openPaused(page);
+    const [clientX, clientY] = blobPoint(await viewOf(page));
+    await pressOver(page, clientX, clientY);
+    await page.touchscreen.tap(clientX, clientY);
+    await page.mouse.up();
+    await expectNoInspector(page);
   });
 });
