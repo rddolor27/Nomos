@@ -19,7 +19,7 @@ from build_atlas import ATLAS_WIDTH, MAP_PAGE_WIDTH, MAP_PREFIXES, MAX_HEIGHT, p
 
 SPRITES = HERE.parents[1] / 'assets' / 'sprites'
 # Pinned here, apart from build_atlas's MAP_PREFIXES, so a wrong prefix list can't pass on both sides (M8.3 Task 1).
-MAP_FRAMES = 81
+MAP_FRAMES = 93
 NOT_A_MANIFEST = 'season_map.json'
 SAMPLE_EVERY = 37
 IMAGES = ('atlas.webp', 'atlas.png')
