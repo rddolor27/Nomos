@@ -20,6 +20,7 @@ import { regions } from '../../src/regions/regions.ts';
 import { farm } from '../../src/settle/farm.ts';
 import { landmasses, routeGraph } from '../../src/routes/graph.ts';
 import { buildRoads } from '../../src/routes/roads.ts';
+import { lanes } from '../../src/routes/lanes.ts';
 
 export function stagePrints(seed: number, size: WorldSize): Map<string, number> {
   const [width, height] = WORLD_SIZES[size];
@@ -113,6 +114,8 @@ export function stagePrints(seed: number, size: WorldSize): Map<string, number> 
   prints.set('routes', fold(rows(routeGraph(settlements, settlements.map((s) => mass[s.uid])))));
   const built = buildRoads(width, height, farmed, drained.elevation, drained.river, drained.receiver, settlements);
   prints.set('roads', fold(paths(built.roads), built.bridges));
+  const sailed = lanes(width, height, farmed, settlements);
+  prints.set('lanes', fold(paths(sailed)));
 
   return prints;
 }
