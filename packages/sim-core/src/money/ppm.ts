@@ -8,3 +8,8 @@ export function mulPpm(cents: number, ppm: number): number {
   const lo = cents - hi * PPM;
   return hi * ppm + Math.floor((lo * ppm) / PPM);
 }
+
+// Ceiling of cents * ppm / PPM, on mulPpm's domain. 0 - x, not -x, so a zero result is +0: -0 would change the state hash.
+export function mulPpmUp(cents: number, ppm: number): number {
+  return 0 - mulPpm(-cents, ppm);
+}

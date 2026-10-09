@@ -4,7 +4,8 @@ import { draw2 } from '../src/random/draw.ts';
 import { log2Q16 } from '../src/maths/log2.ts';
 import * as tables from '../src/maths/tables.ts';
 
-const { BAND_SHARE_PPM, COPULA_Q16, FADE_0_35Y, FADE_1Y, FADE_2_6Y, INV_NORMAL_Q16, LOG2_Q16, WALK_SINE_Q8 } = tables;
+const { BAND_SHARE_PPM, COPULA_Q16, EXP2_Q30, FADE_0_35Y, FADE_1Y, FADE_2_6Y, INV_NORMAL_Q16, LOG2_Q16, WALK_SINE_Q8 } =
+  tables;
 
 function ranks(values: ArrayLike<number>): number[] {
   const order = Array.from(values, (_, k) => k).sort((a, b) => values[a] - values[b]);
@@ -58,6 +59,14 @@ describe('the build-time tables', () => {
     for (const fade of [FADE_0_35Y, FADE_1Y, FADE_2_6Y]) expect(fade).toBeInstanceOf(Uint16Array);
     expect(WALK_SINE_Q8).toBeInstanceOf(Uint16Array);
     expect(WALK_SINE_Q8).toHaveLength(65);
+    // 2^31 is its last entry, one past Int32Array.
+    expect(EXP2_Q30).toBeInstanceOf(Uint32Array);
+    expect(EXP2_Q30).toHaveLength(65);
+  });
+
+  it("holds exp2's 2^(k / 64) in Q30, from 1 to 2", () => {
+    expect([EXP2_Q30[0], EXP2_Q30[32], EXP2_Q30[64]]).toEqual([1_073_741_824, 1_518_500_250, 2_147_483_648]);
+    expect(EXP2_Q30.every((value, k) => k === 0 || value > EXP2_Q30[k - 1])).toBe(true);
   });
 
   it("holds the walking step's sine over a quarter turn", () => {

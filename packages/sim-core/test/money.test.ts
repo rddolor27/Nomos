@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { draw2 } from '../src/random/draw.ts';
 import { MAX_SAFE_CENTS } from '../src/money/invariants.ts';
-import { PPM, mulPpm } from '../src/money/ppm.ts';
+import { PPM, mulPpm, mulPpmUp } from '../src/money/ppm.ts';
 
 const TWO_TO = [1];
 for (let bits = 1; bits <= 53; bits++) TWO_TO.push(TWO_TO[bits - 1] * 2);
@@ -11,6 +11,13 @@ function referenceMulPpm(cents: number, ppm: number): number {
   const product = BigInt(cents) * BigInt(ppm);
   const quotient = product / BigInt(PPM);
   return Number(product % BigInt(PPM) < 0n ? quotient - 1n : quotient);
+}
+
+// BigInt division truncates toward zero, which is already the ceiling of a negative quotient.
+function referenceMulPpmUp(cents: number, ppm: number): number {
+  const product = BigInt(cents) * BigInt(ppm);
+  const quotient = product / BigInt(PPM);
+  return Number(product % BigInt(PPM) > 0n ? quotient + 1n : quotient);
 }
 
 // Magnitudes of 1 to 53 bits, so small balances and balances near 2^53 both appear.
@@ -48,5 +55,46 @@ describe('mulPpm', () => {
         }
       }
     }
+  });
+});
+
+describe('mulPpmUp', () => {
+  it('ceils cents times ppm exactly', () => {
+    for (let i = 0; i < 100_000; i++) {
+      const cents = keyedCents(i);
+      const ppm = draw2(7, 2, i, 0) % (PPM + 1);
+      expect(mulPpmUp(cents, ppm), `mulPpmUp(${cents}, ${ppm})`).toBe(referenceMulPpmUp(cents, ppm));
+    }
+    expect(mulPpmUp(MAX_SAFE_CENTS, PPM)).toBe(MAX_SAFE_CENTS);
+    expect(mulPpmUp(-MAX_SAFE_CENTS, PPM)).toBe(-MAX_SAFE_CENTS);
+    expect(mulPpmUp(1, 1)).toBe(1);
+    expect(mulPpmUp(-1, 1)).toBe(0);
+    expect(mulPpmUp(120_000_000_001, 74_100)).toBe(8_892_000_001);
+  });
+
+  it('stays exact at the ends of its domain and on whole quotients', () => {
+    const magnitudes = [0, 1, PPM - 1, PPM, PPM + 1, 2 * PPM, MAX_SAFE_CENTS - 1, MAX_SAFE_CENTS, TWO_TO[52]];
+    for (const magnitude of magnitudes) {
+      for (const cents of [magnitude, 0 - magnitude]) {
+        for (const ppm of [0, 1, 74_100, PPM / 2, PPM - 1, PPM]) {
+          expect(mulPpmUp(cents, ppm), `mulPpmUp(${cents}, ${ppm})`).toBe(referenceMulPpmUp(cents, ppm));
+        }
+      }
+    }
+  });
+
+  it('is the floor, or one above when the quotient is not whole', () => {
+    expect(mulPpmUp(1_000_000, 500_000)).toBe(mulPpm(1_000_000, 500_000));
+    expect(mulPpmUp(1_000_001, 500_000)).toBe(mulPpm(1_000_001, 500_000) + 1);
+    expect(mulPpmUp(-1_000_001, 500_000)).toBe(mulPpm(-1_000_001, 500_000) + 1);
+  });
+
+  it('never returns -0, which would change the state hash', () => {
+    expect(Object.is(mulPpmUp(0, 5), 0)).toBe(true);
+    expect(Object.is(mulPpmUp(-0, 5), 0)).toBe(true);
+    expect(Object.is(mulPpmUp(-1, 1), 0)).toBe(true);
+    expect(Object.is(mulPpmUp(-999_999, 1), 0)).toBe(true);
+    expect(Object.is(mulPpmUp(5, 0), 0)).toBe(true);
+    expect(Object.is(mulPpmUp(-5, 0), 0)).toBe(true);
   });
 });
