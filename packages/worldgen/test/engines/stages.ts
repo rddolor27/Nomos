@@ -15,6 +15,7 @@ import { coasts, moisture, slopes, temperature } from '../../src/climate/climate
 import { biomes } from '../../src/climate/biomes.ts';
 import { habitability } from '../../src/settle/habitability.ts';
 import { settle } from '../../src/settle/settle.ts';
+import { found } from '../../src/countries/countries.ts';
 
 export function stagePrints(seed: number, size: WorldSize): Map<string, number> {
   const [width, height] = WORLD_SIZES[size];
@@ -93,6 +94,10 @@ export function stagePrints(seed: number, size: WorldSize): Map<string, number> 
   const landCells = water.length - sum(water);
   const settlements = settle(seed, width, height, score, landCells);
   prints.set('settle', fold(rows(settlements.map((s) => [s.id, s.x, s.y, s.tier, s.population, s.uid]))));
+
+  const founded = found(seed, width, height, biome, drained.river, drained.receiver, settlements, landCells);
+  const nations = rows(founded.countries.map((c) => [c.id, c.capital, c.colour]));
+  prints.set('countries', fold(founded.country, nations, settlements.map((s) => s.tier)));
 
   return prints;
 }
