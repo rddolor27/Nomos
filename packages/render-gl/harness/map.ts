@@ -92,6 +92,8 @@ let namesAt = new Map<number, string>();
 let names: string[] = [];
 let solid = new Set<string>();
 let frame = new Uint8Array(0);
+let frameWidth = 0;
+let loser: WEBGL_lose_context | null = null;
 
 function hex(colour: number): string {
   return `#${colour.toString(16).padStart(6, '0')}`;
@@ -244,6 +246,7 @@ function readBack(context: WebGL2RenderingContext): void {
   const bottomUp = new Uint8Array(width * height * 4);
   context.readPixels(0, 0, width, height, context.RGBA, context.UNSIGNED_BYTE, bottomUp);
   frame = new Uint8Array(bottomUp.length);
+  frameWidth = width;
   for (let y = 0; y < height; y++) frame.set(bottomUp.subarray((height - 1 - y) * width * 4, (height - y) * width * 4), y * width * 4);
 }
 
@@ -251,6 +254,7 @@ function read2d(canvas: HTMLCanvasElement): void {
   const context = canvas.getContext('2d');
   if (!context) throw new Error('no Canvas2D frame to read');
   frame = new Uint8Array(context.getImageData(0, 0, canvas.width, canvas.height).data.buffer);
+  frameWidth = canvas.width;
 }
 
 function booted(): { context: WebGL2RenderingContext; map: WorldMap } {
@@ -286,7 +290,15 @@ function canvasWant(map: WorldMap, view: MapView): (ax: number, ay: number) => n
   };
 }
 
-function mismatches(width: number, camera: MapCamera, view: MapView, want: (ax: number, ay: number) => number): string[] {
+// A lost context reads back no pixels at all, which would otherwise match any reference.
+function mismatches(
+  width: number,
+  height: number,
+  camera: MapCamera,
+  view: MapView,
+  want: (ax: number, ay: number) => number,
+): string[] {
+  if (frame.length !== 4 * width * height) return [`read ${frame.length / 4} pixels of a ${width} x ${height} frame`];
   const scale = camera.cellPx / (view === 'region' ? 16 : 8);
   const camX = Math.round(camera.x * camera.cellPx);
   const camY = Math.round(camera.y * camera.cellPx);
@@ -359,7 +371,8 @@ window.mapHarness = {
     base?.draw(camera, view, flat);
     icons?.draw(camera, view, flat);
     readBack(context);
-    return mismatches(context.drawingBufferWidth, camera, view, glWant(map, view, flat));
+    const { drawingBufferWidth: width, drawingBufferHeight: height } = context;
+    return mismatches(width, height, camera, view, glWant(map, view, flat));
   },
   bootRenderer(width, height, options) {
     renderer?.dispose();
@@ -380,32 +393,31 @@ window.mapHarness = {
     drawn.draw(camera);
     readRenderer(drawn);
     const want = drawn.backend === 'webgl2' ? glWant(map, drawn.view, flat) : canvasWant(map, drawn.view);
-    const wrong = mismatches(drawn.canvas.width, camera, drawn.view, want);
+    const wrong = mismatches(drawn.canvas.width, drawn.canvas.height, camera, drawn.view, want);
     return { backend: drawn.backend, view: drawn.view, swapped: drawn.canvas !== bootCanvas, wrong };
   },
   // Chromium and WebKit mark a context restorable only after the lost event's listeners return, so wait a task.
   async loseContext() {
     const canvas = renderer?.canvas;
-    const lose = webglOf(canvas)?.getExtension('WEBGL_lose_context');
-    if (!canvas || !lose) return false;
+    loser = webglOf(canvas)?.getExtension('WEBGL_lose_context') ?? null;
+    if (!canvas || !loser) return false;
     const lost = new Promise((resolve) => {
       canvas.addEventListener('webglcontextlost', () => setTimeout(resolve, 0), { once: true });
     });
-    lose.loseContext();
+    loser.loseContext();
     await lost;
     return true;
   },
+  // A lost context hands out no extensions, so the restore takes the one the loss used.
   async restoreContext() {
     const canvas = renderer?.canvas;
-    const lose = webglOf(canvas)?.getExtension('WEBGL_lose_context');
-    if (!canvas || !lose) return;
+    if (!canvas || !loser) return;
     const restored = new Promise((resolve) => canvas.addEventListener('webglcontextrestored', resolve, { once: true }));
-    lose.restoreContext();
+    loser.restoreContext();
     await restored;
   },
   pixel(x, y) {
-    const width = gl?.drawingBufferWidth ?? 0;
-    const at = 4 * (y * width + x);
+    const at = 4 * (y * frameWidth + x);
     return hex((frame[at] << 16) | (frame[at + 1] << 8) | frame[at + 2]);
   },
   get colours() {
