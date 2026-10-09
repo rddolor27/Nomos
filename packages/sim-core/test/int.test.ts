@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { floorDiv, floorMod } from '../src/int.ts';
+import { floorDiv, floorMod } from '../src/maths/int.ts';
 
 describe('the integer helpers', () => {
   it('floors like Python', () => {

@@ -1,4 +1,4 @@
-import { take, type Arena } from './memory.ts';
+import { take, type Arena } from '../memory/arena.ts';
 
 // Whole-unit holdings of homes, titles and firm shares. Revaluing a group changes its price, never a cash balance.
 export interface Registry {

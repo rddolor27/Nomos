@@ -1,6 +1,6 @@
 // Rewrites test/fixtures/goldens.json: run it in any commit that moves the sim on purpose, and commit the result.
 import { writeFileSync } from 'node:fs';
-import { TIER_AGENTS, type Tier } from '../src/tiers.ts';
+import { TIER_AGENTS, type Tier } from '../src/memory/tiers.ts';
 import { replayHash, type Goldens } from '../test/engines/checks.ts';
 
 const SEED = 42;

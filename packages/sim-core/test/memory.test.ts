@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { PHONE_MEMORY_BYTES, reserveArena, take } from '../src/memory.ts';
+import { PHONE_MEMORY_BYTES, reserveArena, take } from '../src/memory/arena.ts';
 
 describe('the arena', () => {
   it("reserves the tier's memory once and refuses to grow it", () => {

@@ -1,4 +1,4 @@
-import { take, type Arena } from './memory.ts';
+import { take, type Arena } from '../memory/arena.ts';
 
 // Accounts 3-15 stay reserved, so adding a national account never moves a settlement's accounts.
 export const MINT = 0;

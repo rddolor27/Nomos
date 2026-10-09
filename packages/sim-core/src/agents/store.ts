@@ -1,6 +1,6 @@
-import { draw1 } from './draw.ts';
-import { take, type Arena } from './memory.ts';
-import { CULTURE, LOOK } from './streams.ts';
+import { draw1 } from '../random/draw.ts';
+import { take, type Arena } from '../memory/arena.ts';
+import { CULTURE, LOOK } from '../random/streams.ts';
 
 export const LOOKS = 96;
 export const MAX_CULTURES = 8;

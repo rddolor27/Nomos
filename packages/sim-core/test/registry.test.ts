@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { draw3 } from '../src/draw.ts';
-import { OK, checkCash } from '../src/invariants.ts';
-import { MINT, NATIONAL_ACCOUNTS, createLedger, issue } from '../src/ledger.ts';
-import { reserveArena } from '../src/memory.ts';
-import { mulPpm } from '../src/money.ts';
-import { addHolding, createRegistry, holdingValue, revalue, transferHolding, type Registry } from '../src/registry.ts';
+import { draw3 } from '../src/random/draw.ts';
+import { OK, checkCash } from '../src/money/invariants.ts';
+import { MINT, NATIONAL_ACCOUNTS, createLedger, issue } from '../src/money/ledger.ts';
+import { reserveArena } from '../src/memory/arena.ts';
+import { mulPpm } from '../src/money/ppm.ts';
+import { addHolding, createRegistry, holdingValue, revalue, transferHolding, type Registry } from '../src/money/registry.ts';
 
 const GROUPS = 3;
 

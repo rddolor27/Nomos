@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { fade, fbm, value } from '../src/noise.ts';
+import { fade, fbm, value } from '../src/random/noise.ts';
 
 interface NoiseCase {
   seed: number;

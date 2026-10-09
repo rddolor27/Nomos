@@ -1,13 +1,13 @@
 import cos from '@stdlib/math-base-special-cos';
 import sin from '@stdlib/math-base-special-sin';
 import { describe, expect, it } from 'vitest';
-import { ACTION_IDLE, ACTION_WALK, FACING_DOWN, FACING_LEFT, FACING_RIGHT, FACING_UP } from '../src/actions.ts';
-import { draw2 } from '../src/draw.ts';
-import { walkableAt, type Ground } from '../src/ground.ts';
-import { step } from '../src/step.ts';
-import { WANDER } from '../src/streams.ts';
-import { WALK_X_Q8, WALK_Y_Q8, facingFor } from '../src/walk.ts';
-import { TICK, layoutWorld, populate, type World } from '../src/world.ts';
+import { ACTION_IDLE, ACTION_WALK, FACING_DOWN, FACING_LEFT, FACING_RIGHT, FACING_UP } from '../src/agents/actions.ts';
+import { draw2 } from '../src/random/draw.ts';
+import { walkableAt, type Ground } from '../src/world/ground.ts';
+import { step } from '../src/step/step.ts';
+import { WANDER } from '../src/random/streams.ts';
+import { WALK_X_Q8, WALK_Y_Q8, facingFor } from '../src/movement/walk.ts';
+import { TICK, layoutWorld, populate, type World } from '../src/world/world.ts';
 
 const TILE_Q8 = 4_096;
 const SIDE = 8;

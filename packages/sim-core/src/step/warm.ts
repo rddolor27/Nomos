@@ -1,7 +1,7 @@
-import { dayBoundary } from './day.ts';
-import { SPOILAGE_RULE, daySliceCount, runDaySlice } from './slices.ts';
+import { dayBoundary } from '../day/day.ts';
+import { SPOILAGE_RULE, daySliceCount, runDaySlice } from '../day/slices.ts';
 import { step } from './step.ts';
-import { DAY_AGENTS, DAY_HOUSEHOLDS, layoutWorld, populate } from './world.ts';
+import { DAY_AGENTS, DAY_HOUSEHOLDS, layoutWorld, populate } from '../world/world.ts';
 
 export const WARM_AGENTS = 1024;
 export const WARM_MEMORY_BYTES = 1_048_576;

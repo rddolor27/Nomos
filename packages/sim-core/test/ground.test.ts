@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { draw2 } from '../src/draw.ts';
-import type { Ground } from '../src/ground.ts';
-import { PHONE_MEMORY_BYTES } from '../src/memory.ts';
-import { step } from '../src/step.ts';
-import { SPAWN } from '../src/streams.ts';
-import { checkpoint, createWorld, layoutWorld, populate, restoreWorld, stateHash, type World } from '../src/world.ts';
+import { draw2 } from '../src/random/draw.ts';
+import type { Ground } from '../src/world/ground.ts';
+import { PHONE_MEMORY_BYTES } from '../src/memory/arena.ts';
+import { step } from '../src/step/step.ts';
+import { SPAWN } from '../src/random/streams.ts';
+import { checkpoint, createWorld, layoutWorld, populate, restoreWorld, stateHash, type World } from '../src/world/world.ts';
 import { run } from './run.ts';
 
 const TILE_Q8 = 16 * 256;

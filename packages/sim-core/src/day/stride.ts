@@ -1,6 +1,6 @@
-import { draw2 } from './draw.ts';
-import { floorDiv, floorMod } from './int.ts';
-import { take, type Arena } from './memory.ts';
+import { draw2 } from '../random/draw.ts';
+import { floorDiv, floorMod } from '../maths/int.ts';
+import { take, type Arena } from '../memory/arena.ts';
 
 export const STRIDE_DAYS = 30;
 

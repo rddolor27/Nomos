@@ -14,7 +14,7 @@ import {
   tickAt,
   weekdayOf,
   yearOf,
-} from '../src/calendar.ts';
+} from '../src/time/calendar.ts';
 import { dayLengthTable } from '../scripts/day-length.ts';
 
 function dateOf(tick: number): number[] {

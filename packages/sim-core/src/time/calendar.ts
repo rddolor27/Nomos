@@ -1,4 +1,4 @@
-import { floorDiv, floorMod } from './int.ts';
+import { floorDiv, floorMod } from '../maths/int.ts';
 
 export { SUNRISE, SUNSET } from './day-length.ts';
 

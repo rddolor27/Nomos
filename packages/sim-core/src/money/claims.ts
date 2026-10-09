@@ -1,6 +1,6 @@
 import { transfer, type Ledger } from './ledger.ts';
-import { take, type Arena } from './memory.ts';
-import { mulPpm } from './money.ts';
+import { take, type Arena } from '../memory/arena.ts';
+import { mulPpm } from './ppm.ts';
 
 export interface Claims {
   readonly capacity: number;

@@ -83,7 +83,7 @@ describe('the culture wall', { timeout: 30_000 }, () => {
 
   it('leaves other folders, other files and tests alone', async () => {
     const files = [
-      'packages/sim-core/src/store.ts',
+      'packages/sim-core/src/agents/store.ts',
       'packages/sim-core/src/crimes/planted.ts',
       'packages/sim-culture/src/planted.ts',
       'packages/sim-core/test/crime/planted.ts',

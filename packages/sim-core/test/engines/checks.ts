@@ -1,11 +1,11 @@
 // Free of Node imports, so the same file runs in Node, Bun and, bundled, in each browser.
-import { below, draw, draw1, mix } from '../../src/draw.ts';
-import { fade, fbm, value } from '../../src/noise.ts';
-import { step } from '../../src/step.ts';
-import { LOOKS } from '../../src/store.ts';
-import { LOOK } from '../../src/streams.ts';
-import type { Tier } from '../../src/tiers.ts';
-import { createWorld, stateHash } from '../../src/world.ts';
+import { below, draw, draw1, mix } from '../../src/random/draw.ts';
+import { fade, fbm, value } from '../../src/random/noise.ts';
+import { step } from '../../src/step/step.ts';
+import { LOOKS } from '../../src/agents/store.ts';
+import { LOOK } from '../../src/random/streams.ts';
+import type { Tier } from '../../src/memory/tiers.ts';
+import { createWorld, stateHash } from '../../src/world/world.ts';
 
 interface DrawCase {
   seed: number;

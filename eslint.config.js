@@ -7,7 +7,7 @@ const EXACT_MATHS =
   'sim-core rules, Determinism: use only + - * /, Math.sqrt, Math.floor, Math.imul, Math.max, Math.min, Math.abs, Math.round and bit operations; build tables at build time.';
 const KEYED_DRAW = 'sim-core rules, Determinism: take every random number from the keyed draw.';
 const NO_BIGINT = 'sim-core rules, Determinism: no BigInt in hot code; it is 115x slower in JavaScriptCore.';
-const UNREAD_LOOK = 'content rules, Art direction 1: no sim rule ever reads a look; only src/store.ts writes it.';
+const UNREAD_LOOK = 'content rules, Art direction 1: no sim rule ever reads a look; only agents/store.ts writes it.';
 const MUL_PPM = 'Non-negotiables, Money: rates go through mulPpm, never a raw cents * rate (R6).';
 const NO_SORT =
   'sim-core rules, Hot paths: TypedArray.prototype.sort copies shared memory, so sim code never sorts; use a histogram or slot order (R6).';
@@ -66,9 +66,15 @@ function syntaxBansWithout(exempt) {
 // The per-tick list's one home: M0.3's step and snapshot writer and the functions they call every tick, ground.ts
 // for move's walkableAt. draw.ts (its variadic draw and below serve non-tick code) and apportion.ts (BigInt) stay out.
 const HOT_FILES = [
-  'packages/sim-core/src/{world,wander,walk,step,day,slices,stride,inputs,histogram}.ts',
+  'packages/sim-core/src/world/{world,ground,inputs,space}.ts',
+  'packages/sim-core/src/movement/{wander,walk}.ts',
+  'packages/sim-core/src/step/step.ts',
+  'packages/sim-core/src/day/{day,slices,stride}.ts',
+  'packages/sim-core/src/money/{ledger,ppm,claims,registry,flows,invariants,histogram}.ts',
+  'packages/sim-core/src/maths/{int,split,log2}.ts',
+  'packages/sim-core/src/time/calendar.ts',
+  'packages/sim-core/src/agents/store.ts',
   'packages/sim-protocol/src/{snapshot,visual}.ts',
-  'packages/sim-core/src/{int,calendar,space,store,ledger,money,claims,registry,flows,split,log2,invariants,ground}.ts',
 ];
 // Functions in hot files that run only at creation, restore or failure, or between ticks, so they may allocate. A name
 // matches whole, so one that only starts with a cold word, such as createdToday or failures, stays hot.
@@ -131,7 +137,7 @@ const HOT_SYNTAX = [
 
 // The generator code that exists: the keyed draw, value noise and the map parser. M8.1 adds packages/worldgen/src,
 // built before M1 (owner, 9 October 2026).
-const GENERATOR_FILES = ['packages/sim-core/src/{draw,noise}.ts', 'packages/sim-protocol/src/map.ts'];
+const GENERATOR_FILES = ['packages/sim-core/src/random/{draw,noise}.ts', 'packages/sim-protocol/src/map.ts'];
 // % is allowed on an unsigned left operand, where JS and Python agree.
 const GEN_SYNTAX = [
   { selector: "BinaryExpression[operator='/']", message: FLOOR_DIV },
@@ -199,17 +205,17 @@ export default defineConfig(
     rules: { 'no-restricted-syntax': ['error', ...SYNTAX_GROUPS.flat()] },
   },
   {
-    files: ['packages/sim-core/src/store.ts'],
+    files: ['packages/sim-core/src/agents/store.ts'],
     rules: { 'no-restricted-syntax': syntaxBansWithout(LOOK_READS) },
   },
   {
     // mulPpm's own exact split multiplies cents by ppm.
-    files: ['packages/sim-core/src/money.ts'],
+    files: ['packages/sim-core/src/money/ppm.ts'],
     rules: { 'no-restricted-syntax': syntaxBansWithout(RATE_PRODUCTS) },
   },
   {
     // Apportionment takes BigInt once total * weight reaches 2^53, and never runs per tick (R4).
-    files: ['packages/sim-core/src/apportion.ts'],
+    files: ['packages/sim-core/src/maths/apportion.ts'],
     rules: { 'no-restricted-syntax': syntaxBansWithout(BIGINT_SYNTAX) },
   },
   {

@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { DAYS_PER_YEAR, TICKS_PER_DAY, TICKS_PER_YEAR, dayOfYear, yearOf } from '../src/calendar.ts';
-import { dayBoundary } from '../src/day.ts';
-import { draw2, mix } from '../src/draw.ts';
-import { PHONE_MEMORY_BYTES, reserveArena } from '../src/memory.ts';
-import { STRIDE } from '../src/streams.ts';
+import { DAYS_PER_YEAR, TICKS_PER_DAY, TICKS_PER_YEAR, dayOfYear, yearOf } from '../src/time/calendar.ts';
+import { dayBoundary } from '../src/day/day.ts';
+import { draw2, mix } from '../src/random/draw.ts';
+import { PHONE_MEMORY_BYTES, reserveArena } from '../src/memory/arena.ts';
+import { STRIDE } from '../src/random/streams.ts';
 import {
   STRIDE_DAYS,
   applyChanges,
@@ -12,8 +12,8 @@ import {
   rekeyStride,
   setChange,
   type Stride,
-} from '../src/stride.ts';
-import { TICK, layoutWorld } from '../src/world.ts';
+} from '../src/day/stride.ts';
+import { TICK, layoutWorld } from '../src/world/world.ts';
 
 const ARENA_BYTES = 65_536;
 const TOY_AGENTS = 10_000;

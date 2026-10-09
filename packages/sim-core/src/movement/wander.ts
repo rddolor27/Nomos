@@ -1,10 +1,10 @@
-import { ACTION_IDLE, ACTION_WALK } from './actions.ts';
-import { draw2 } from './draw.ts';
-import { tileOf, walkableAt } from './ground.ts';
-import type { AgentStore } from './store.ts';
-import { WANDER } from './streams.ts';
+import { ACTION_IDLE, ACTION_WALK } from '../agents/actions.ts';
+import { draw2 } from '../random/draw.ts';
+import { tileOf, walkableAt } from '../world/ground.ts';
+import type { AgentStore } from '../agents/store.ts';
+import { WANDER } from '../random/streams.ts';
 import { HALF_TURN_MASK, HEADING_MASK, QUARTER_TURN, setHeading } from './walk.ts';
-import { TICK, type World } from './world.ts';
+import { TICK, type World } from '../world/world.ts';
 
 // Each agent redraws every 16 ticks, staggered by index, so only a 16th of them draw in any tick.
 const REDRAW_TICKS = 16;

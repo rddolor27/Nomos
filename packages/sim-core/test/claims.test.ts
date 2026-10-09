@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { accrue, createClaims, openLoan, payInstalment } from '../src/claims.ts';
-import { draw3 } from '../src/draw.ts';
-import { CENTS_NOT_EXACT, CLAIMS_UNBALANCED, MAX_SAFE_CENTS, OK, checkInvariants } from '../src/invariants.ts';
-import { NATIONAL_ACCOUNTS, createLedger, issue } from '../src/ledger.ts';
-import { reserveArena } from '../src/memory.ts';
+import { accrue, createClaims, openLoan, payInstalment } from '../src/money/claims.ts';
+import { draw3 } from '../src/random/draw.ts';
+import { CENTS_NOT_EXACT, CLAIMS_UNBALANCED, MAX_SAFE_CENTS, OK, checkInvariants } from '../src/money/invariants.ts';
+import { NATIONAL_ACCOUNTS, createLedger, issue } from '../src/money/ledger.ts';
+import { reserveArena } from '../src/memory/arena.ts';
 
 function exactSum(values: Float64Array): bigint {
   return values.reduce((total, cents) => total + BigInt(cents), 0n);

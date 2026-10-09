@@ -1,6 +1,6 @@
-import { ACTION_WALK } from './actions.ts';
-import { dayOf } from './calendar.ts';
-import type { Tier } from './tiers.ts';
+import { ACTION_WALK } from '../agents/actions.ts';
+import { dayOf } from '../time/calendar.ts';
+import type { Tier } from '../memory/tiers.ts';
 import {
   DAY_AGENTS,
   DAY_HOUSEHOLDS,
@@ -11,7 +11,7 @@ import {
   RECORD_WALKING,
   TICK,
   type World,
-} from './world.ts';
+} from '../world/world.ts';
 
 export type SpoilageRule = 'accept-lateness' | 'households-first' | 'skip-expired' | 'one-pass-at-10k';
 

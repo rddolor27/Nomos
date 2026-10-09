@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { apportion, createApportionScratch } from '../src/apportion.ts';
-import { draw2 } from '../src/draw.ts';
-import { reserveArena } from '../src/memory.ts';
-import { splitByCounts } from '../src/split.ts';
+import { apportion, createApportionScratch } from '../src/maths/apportion.ts';
+import { draw2 } from '../src/random/draw.ts';
+import { reserveArena } from '../src/memory/arena.ts';
+import { splitByCounts } from '../src/maths/split.ts';
 
 const STREAM = 0x7f4;
 

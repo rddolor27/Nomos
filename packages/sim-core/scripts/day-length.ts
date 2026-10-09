@@ -1,6 +1,6 @@
 import { writeFileSync } from 'node:fs';
 
-// src/calendar.ts imports the file this script writes, so the script cannot import calendar.ts.
+// src/time/calendar.ts imports the file this script writes, so the script cannot import calendar.ts.
 const DAYS_PER_YEAR = 112;
 const MIDSUMMER_DAY = 42;
 const NOON_MINUTE = 720;
@@ -35,5 +35,5 @@ function moduleSource(): string {
 }
 
 if (import.meta.main) {
-  writeFileSync(new URL('../src/day-length.ts', import.meta.url), moduleSource());
+  writeFileSync(new URL('../src/time/day-length.ts', import.meta.url), moduleSource());
 }

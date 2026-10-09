@@ -1,15 +1,15 @@
-import { ACTION_WALK } from './actions.ts';
-import { createClaims, type Claims } from './claims.ts';
-import { below, draw2, mix } from './draw.ts';
+import { ACTION_WALK } from '../agents/actions.ts';
+import { createClaims, type Claims } from '../money/claims.ts';
+import { below, draw2, mix } from '../random/draw.ts';
 import { openCells, pointInTileQ8, standInGround, type Ground } from './ground.ts';
 import { createInputLog, type InputLog } from './inputs.ts';
-import { HOUSEHOLDS, createLedger, issue, sectorAccount, type Ledger } from './ledger.ts';
-import { reserveArena, take, type Arena } from './memory.ts';
-import { MAX_CULTURES, addAgent, createAgentStore, type AgentStore } from './store.ts';
-import { SPAWN, STRIDE } from './streams.ts';
-import { STRIDE_DAYS, createStride, type Stride } from './stride.ts';
-import { TIER_AGENTS, TIER_MEMORY_BYTES, type Tier } from './tiers.ts';
-import { setHeading } from './walk.ts';
+import { HOUSEHOLDS, createLedger, issue, sectorAccount, type Ledger } from '../money/ledger.ts';
+import { reserveArena, take, type Arena } from '../memory/arena.ts';
+import { MAX_CULTURES, addAgent, createAgentStore, type AgentStore } from '../agents/store.ts';
+import { SPAWN, STRIDE } from '../random/streams.ts';
+import { STRIDE_DAYS, createStride, type Stride } from '../day/stride.ts';
+import { TIER_AGENTS, TIER_MEMORY_BYTES, type Tier } from '../memory/tiers.ts';
+import { setHeading } from '../movement/walk.ts';
 
 export const TICK = 0;
 export const RECORD_FRONT = 1;

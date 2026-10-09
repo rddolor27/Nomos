@@ -4,10 +4,10 @@ import pow from '@stdlib/math-base-special-pow';
 import sin from '@stdlib/math-base-special-sin';
 import cdf from '@stdlib/stats-base-dists-normal-cdf';
 import quantile from '@stdlib/stats-base-dists-normal-quantile';
-import { apportion, createApportionScratch } from '../src/apportion.ts';
-import { DAYS_PER_YEAR } from '../src/calendar.ts';
-import { reserveArena } from '../src/memory.ts';
-import { SUBPIXELS } from '../src/space.ts';
+import { apportion, createApportionScratch } from '../src/maths/apportion.ts';
+import { DAYS_PER_YEAR } from '../src/time/calendar.ts';
+import { reserveArena } from '../src/memory/arena.ts';
+import { SUBPIXELS } from '../src/world/space.ts';
 
 const Q15 = 32768;
 const Q16 = 65536;
@@ -140,5 +140,5 @@ function moduleSource(): string {
 }
 
 if (import.meta.main) {
-  writeFileSync(new URL('../src/tables.ts', import.meta.url), moduleSource());
+  writeFileSync(new URL('../src/maths/tables.ts', import.meta.url), moduleSource());
 }

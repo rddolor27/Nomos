@@ -1,6 +1,6 @@
 import { festivalToday } from '@nomos/sim-culture';
-import { CUSTOM_FESTIVAL, MAX_CULTURES, customOf } from '../store.ts';
-import type { World } from '../world.ts';
+import { CUSTOM_FESTIVAL, MAX_CULTURES, customOf } from '../agents/store.ts';
+import type { World } from '../world/world.ts';
 
 // Module-level, so a daily count allocates nothing.
 const festiveToday = new Uint8Array(MAX_CULTURES);

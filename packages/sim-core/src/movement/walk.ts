@@ -1,5 +1,5 @@
-import type { AgentStore } from './store.ts';
-import { WALK_SINE_Q8 } from './tables.ts';
+import type { AgentStore } from '../agents/store.ts';
+import { WALK_SINE_Q8 } from '../maths/tables.ts';
 
 // Headings run clockwise on screen from down, as the facings do: 0 down, 64 left, 128 up and 192 right.
 const HEADINGS = 256;

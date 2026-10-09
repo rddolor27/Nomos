@@ -1,5 +1,5 @@
-import { mix } from './draw.ts';
-import { take, type Arena } from './memory.ts';
+import { mix } from '../random/draw.ts';
+import { take, type Arena } from '../memory/arena.ts';
 
 // While total * max weight stays below 2^53 the product is exact, and so is its floor division by the weight sum
 // (R4 architecture §3).

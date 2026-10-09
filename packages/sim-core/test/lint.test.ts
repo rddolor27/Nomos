@@ -50,10 +50,10 @@ describe('the sim-core lint profile', { timeout: 30_000 }, () => {
   it('rejects reading the look column outside the store', async () => {
     for (const code of ['s.look[0]', 'const { look } = s', "s['look'][0]"]) {
       expect(await profileMessageCount(code, 'packages/sim-core/src/planted.ts'), code).toBeGreaterThan(0);
-      expect(await profileMessageCount(code, 'packages/sim-core/src/store.ts'), code).toBe(0);
+      expect(await profileMessageCount(code, 'packages/sim-core/src/agents/store.ts'), code).toBe(0);
     }
     for (const code of ['2 ** 3', 'BigInt(1)']) {
-      expect(await profileMessageCount(code, 'packages/sim-core/src/store.ts'), code).toBeGreaterThan(0);
+      expect(await profileMessageCount(code, 'packages/sim-core/src/agents/store.ts'), code).toBeGreaterThan(0);
     }
   });
 
@@ -64,17 +64,17 @@ describe('the sim-core lint profile', { timeout: 30_000 }, () => {
     for (const code of ['units * price', 'mulPpm(a, b) * 2']) {
       expect(await profileMessageCount(code, 'packages/sim-core/src/planted.ts'), code).toBe(0);
     }
-    expect(await profileMessageCount('c * ratePpm', 'packages/sim-core/src/money.ts')).toBe(0);
+    expect(await profileMessageCount('c * ratePpm', 'packages/sim-core/src/money/ppm.ts')).toBe(0);
   });
 
   it('allows BigInt only in the apportionment module', async () => {
     const bigint = 'export const z = BigInt(1) + 2n';
-    expect(await profileMessageCount(bigint, 'packages/sim-core/src/apportion.ts')).toBe(0);
-    for (const filePath of ['src/split.ts', 'src/apportion-big.ts', 'src/apportion/inner.ts']) {
+    expect(await profileMessageCount(bigint, 'packages/sim-core/src/maths/apportion.ts')).toBe(0);
+    for (const filePath of ['src/maths/split.ts', 'src/maths/apportion-big.ts', 'src/maths/apportion/inner.ts']) {
       expect(await profileMessageCount(bigint, `packages/sim-core/${filePath}`), filePath).toBeGreaterThan(0);
     }
     for (const code of ['Math.exp(1)', 'c * ratePpm', 's.look[0]']) {
-      expect(await profileMessageCount(code, 'packages/sim-core/src/apportion.ts'), code).toBeGreaterThan(0);
+      expect(await profileMessageCount(code, 'packages/sim-core/src/maths/apportion.ts'), code).toBeGreaterThan(0);
     }
   });
 
@@ -91,8 +91,8 @@ describe('the sim-core lint profile', { timeout: 30_000 }, () => {
     const files = [
       'packages/sim-culture/src/planted.ts',
       'packages/sim-protocol/src/map.ts',
-      'packages/sim-core/src/draw.ts',
-      'packages/sim-core/src/noise.ts',
+      'packages/sim-core/src/random/draw.ts',
+      'packages/sim-core/src/random/noise.ts',
     ];
     for (const filePath of files) {
       for (const code of ['export const a = Math.sin(1)', 'BigInt(1)']) {
@@ -107,9 +107,9 @@ describe('the sim-core lint profile', { timeout: 30_000 }, () => {
     const simFiles = [
       'packages/sim-core/src/planted.ts',
       'packages/sim-worker/src/planted.ts',
-      'packages/sim-core/src/store.ts',
-      'packages/sim-core/src/money.ts',
-      'packages/sim-core/src/apportion.ts',
+      'packages/sim-core/src/agents/store.ts',
+      'packages/sim-core/src/money/ppm.ts',
+      'packages/sim-core/src/maths/apportion.ts',
     ];
     for (const code of ['v.sort()', 'v.toSorted()']) {
       for (const filePath of simFiles) {
@@ -120,7 +120,7 @@ describe('the sim-core lint profile', { timeout: 30_000 }, () => {
   });
 });
 
-const HOT_FILE = 'packages/sim-core/src/wander.ts';
+const HOT_FILE = 'packages/sim-core/src/movement/wander.ts';
 const HOT_PLANTS = [
   'g([1])',
   'g({ a: 1 })',
@@ -195,17 +195,17 @@ describe('the hot-path lint', { timeout: 30_000 }, () => {
 
   it('leaves other files alone', async () => {
     for (const plant of HOT_PLANTS) {
-      expect(await hotMessageCount(inTick(plant), 'packages/sim-core/src/warm.ts'), plant).toBe(0);
+      expect(await hotMessageCount(inTick(plant), 'packages/sim-core/src/step/warm.ts'), plant).toBe(0);
     }
     for (const code of HOT_FILE_PLANTS) {
-      expect(await hotMessageCount(code, 'packages/sim-core/src/warm.ts'), code).toBe(0);
+      expect(await hotMessageCount(code, 'packages/sim-core/src/step/warm.ts'), code).toBe(0);
     }
   });
 });
 
 const GENERATOR_FILES = [
-  'packages/sim-core/src/draw.ts',
-  'packages/sim-core/src/noise.ts',
+  'packages/sim-core/src/random/draw.ts',
+  'packages/sim-core/src/random/noise.ts',
   'packages/sim-protocol/src/map.ts',
 ];
 const BARE_DIVISIONS = ['a / b', 'a /= 2'];
@@ -225,7 +225,7 @@ describe('the generator lint', { timeout: 30_000 }, () => {
   });
 
   it('spares the helpers and other code', async () => {
-    const files = ['packages/sim-core/src/int.ts', 'packages/sim-core/src/ledger.ts', 'packages/sim-core/src/planted.ts'];
+    const files = ['packages/sim-core/src/maths/int.ts', 'packages/sim-core/src/money/ledger.ts', 'packages/sim-core/src/planted.ts'];
     for (const filePath of files) {
       for (const code of [...BARE_DIVISIONS, ...BARE_REMAINDERS]) {
         expect(await genMessages(code, filePath), `${filePath}: ${code}`).toEqual([]);

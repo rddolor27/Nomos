@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { draw2 } from '../src/draw.ts';
-import { DESKTOP_MEMORY_BYTES, PHONE_MEMORY_BYTES, reserveArena } from '../src/memory.ts';
-import { CELL_SHIFT, SUBPIXELS, TILE_PX, cellOf } from '../src/space.ts';
-import { AGENT_COLUMNS, createAgentStore } from '../src/store.ts';
+import { draw2 } from '../src/random/draw.ts';
+import { DESKTOP_MEMORY_BYTES, PHONE_MEMORY_BYTES, reserveArena } from '../src/memory/arena.ts';
+import { CELL_SHIFT, SUBPIXELS, TILE_PX, cellOf } from '../src/world/space.ts';
+import { AGENT_COLUMNS, createAgentStore } from '../src/agents/store.ts';
 
 describe('the agent store', () => {
   it('fits 25,000 agents in a phone reservation and 100,000 in a desktop one', () => {

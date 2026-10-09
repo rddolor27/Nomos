@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { WARM_AGENTS, WARM_DAYS, WARM_MEMORY_BYTES, WARM_TICKS, warmUp } from '../src/warm.ts';
-import { createWorld, stateHash } from '../src/world.ts';
+import { WARM_AGENTS, WARM_DAYS, WARM_MEMORY_BYTES, WARM_TICKS, warmUp } from '../src/step/warm.ts';
+import { createWorld, stateHash } from '../src/world/world.ts';
 import { run } from './run.ts';
 
 describe('the warm-up', () => {

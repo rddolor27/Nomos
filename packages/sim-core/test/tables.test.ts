@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { buildTables } from '../scripts/tables.ts';
-import { draw2 } from '../src/draw.ts';
-import { log2Q16 } from '../src/log2.ts';
-import * as tables from '../src/tables.ts';
+import { draw2 } from '../src/random/draw.ts';
+import { log2Q16 } from '../src/maths/log2.ts';
+import * as tables from '../src/maths/tables.ts';
 
 const { BAND_SHARE_PPM, COPULA_Q16, FADE_0_35Y, FADE_1Y, FADE_2_6Y, INV_NORMAL_Q16, LOG2_Q16, WALK_SINE_Q8 } = tables;
 

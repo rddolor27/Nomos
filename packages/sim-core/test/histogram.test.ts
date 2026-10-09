@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { draw2 } from '../src/draw.ts';
+import { draw2 } from '../src/random/draw.ts';
 import {
   BINS_PER_OCTAVE,
   HISTOGRAM_BINS,
@@ -8,8 +8,8 @@ import {
   clearHistogram,
   createHistogram,
   topShare,
-} from '../src/histogram.ts';
-import { reserveArena } from '../src/memory.ts';
+} from '../src/money/histogram.ts';
+import { reserveArena } from '../src/memory/arena.ts';
 
 const TOP_TENTH_PPM = 100_000;
 const SAMPLES = 100_000;

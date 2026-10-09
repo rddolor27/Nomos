@@ -1,4 +1,4 @@
-import { take, type Arena } from './memory.ts';
+import { take, type Arena } from '../memory/arena.ts';
 
 export const INPUT_FOCUS = 1;
 export const INPUT_CAPACITY = 4096;

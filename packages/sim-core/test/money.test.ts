@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { draw2 } from '../src/draw.ts';
-import { MAX_SAFE_CENTS } from '../src/invariants.ts';
-import { PPM, mulPpm } from '../src/money.ts';
+import { draw2 } from '../src/random/draw.ts';
+import { MAX_SAFE_CENTS } from '../src/money/invariants.ts';
+import { PPM, mulPpm } from '../src/money/ppm.ts';
 
 const TWO_TO = [1];
 for (let bits = 1; bits <= 53; bits++) TWO_TO.push(TWO_TO[bits - 1] * 2);

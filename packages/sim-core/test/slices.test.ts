@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ACTION_WALK } from '../src/actions.ts';
+import { ACTION_WALK } from '../src/agents/actions.ts';
 import {
   KIND_AGENTS,
   KIND_HOUSEHOLDS,
@@ -8,9 +8,9 @@ import {
   daySlice,
   daySliceCount,
   type SpoilageRule,
-} from '../src/slices.ts';
-import { step } from '../src/step.ts';
-import { TIER_AGENTS, type Tier } from '../src/tiers.ts';
+} from '../src/day/slices.ts';
+import { step } from '../src/step/step.ts';
+import { TIER_AGENTS, type Tier } from '../src/memory/tiers.ts';
 import {
   RECORD_DAY,
   RECORD_POPULATION,
@@ -20,7 +20,7 @@ import {
   createWorld,
   restoreWorld,
   stateHash,
-} from '../src/world.ts';
+} from '../src/world/world.ts';
 import { run } from './run.ts';
 
 const TIERS: readonly Tier[] = ['phone', 'phone-plus', 'desktop'];

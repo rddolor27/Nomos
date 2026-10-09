@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { draw3 } from '../src/draw.ts';
-import { CASH_NOT_ZERO, CENTS_NOT_EXACT, MAX_SAFE_CENTS, OK, checkCash } from '../src/invariants.ts';
+import { draw3 } from '../src/random/draw.ts';
+import { CASH_NOT_ZERO, CENTS_NOT_EXACT, MAX_SAFE_CENTS, OK, checkCash } from '../src/money/invariants.ts';
 import {
   FIRMS,
   HOUSEHOLDS,
@@ -15,8 +15,8 @@ import {
   retire,
   sectorAccount,
   transfer,
-} from '../src/ledger.ts';
-import { reserveArena } from '../src/memory.ts';
+} from '../src/money/ledger.ts';
+import { reserveArena } from '../src/memory/arena.ts';
 
 const TRILLION = 1_000_000_000_000;
 

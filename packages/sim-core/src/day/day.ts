@@ -1,8 +1,8 @@
-import { dayOf, dayOfYear, yearOf } from './calendar.ts';
-import { INPUT_CAPACITY, INPUT_FOCUS } from './inputs.ts';
+import { dayOf, dayOfYear, yearOf } from '../time/calendar.ts';
+import { INPUT_CAPACITY, INPUT_FOCUS } from '../world/inputs.ts';
 import { openDayWindow } from './slices.ts';
 import { rekeyStride } from './stride.ts';
-import { TICK, type World } from './world.ts';
+import { TICK, type World } from '../world/world.ts';
 
 const LOGGED = 0;
 const APPLIED = 1;

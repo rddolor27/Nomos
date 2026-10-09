@@ -1,8 +1,8 @@
 import { festivalToday } from '@nomos/sim-culture';
 import { describe, expect, it } from 'vitest';
 import { festivalShoppers } from '../src/consumption/stand-in.ts';
-import { CUSTOM_FESTIVAL, customOf } from '../src/store.ts';
-import { createWorld, type World } from '../src/world.ts';
+import { CUSTOM_FESTIVAL, customOf } from '../src/agents/store.ts';
+import { createWorld, type World } from '../src/world/world.ts';
 
 function shoppersByHand(world: World, day: number): number {
   const { count, customs } = world.agents;

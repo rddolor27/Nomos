@@ -1,13 +1,13 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { ACTION_IDLE, ACTION_WALK, FACING_RIGHT, FACING_UP } from '../src/actions.ts';
-import { draw2 } from '../src/draw.ts';
-import { CASH_NOT_ZERO, OK, checkInvariants } from '../src/invariants.ts';
-import { HOUSEHOLDS, MINT, sectorAccount } from '../src/ledger.ts';
-import { SYSTEM_NAMES, step, type SystemTimer } from '../src/step.ts';
-import { SPAWN } from '../src/streams.ts';
-import { TIER_AGENTS, TIER_MEMORY_BYTES, type Tier } from '../src/tiers.ts';
-import { WALK_X_Q8, WALK_Y_Q8, facingFor } from '../src/walk.ts';
+import { ACTION_IDLE, ACTION_WALK, FACING_RIGHT, FACING_UP } from '../src/agents/actions.ts';
+import { draw2 } from '../src/random/draw.ts';
+import { CASH_NOT_ZERO, OK, checkInvariants } from '../src/money/invariants.ts';
+import { HOUSEHOLDS, MINT, sectorAccount } from '../src/money/ledger.ts';
+import { SYSTEM_NAMES, step, type SystemTimer } from '../src/step/step.ts';
+import { SPAWN } from '../src/random/streams.ts';
+import { TIER_AGENTS, TIER_MEMORY_BYTES, type Tier } from '../src/memory/tiers.ts';
+import { WALK_X_Q8, WALK_Y_Q8, facingFor } from '../src/movement/walk.ts';
 import {
   TICK,
   checkpoint,
@@ -18,7 +18,7 @@ import {
   restoreWorld,
   stateHash,
   type World,
-} from '../src/world.ts';
+} from '../src/world/world.ts';
 import type { Goldens } from './engines/checks.ts';
 import { run } from './run.ts';
 

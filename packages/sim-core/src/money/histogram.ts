@@ -1,5 +1,5 @@
-import { take, type Arena } from './memory.ts';
-import { PPM, mulPpm } from './money.ts';
+import { take, type Arena } from '../memory/arena.ts';
+import { PPM, mulPpm } from './ppm.ts';
 
 const STEP_BITS = 4;
 export const BINS_PER_OCTAVE = 1 << STEP_BITS;

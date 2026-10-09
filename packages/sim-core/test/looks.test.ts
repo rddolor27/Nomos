@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { PHONE_MEMORY_BYTES, reserveArena } from '../src/memory.ts';
+import { PHONE_MEMORY_BYTES, reserveArena } from '../src/memory/arena.ts';
 import {
   CUSTOM_FESTIVAL,
   CUSTOM_FOOD,
@@ -12,8 +12,8 @@ import {
   createAgentStore,
   customOf,
   withCustom,
-} from '../src/store.ts';
-import { AGENT_SALT, CULTURE, LEDGER_SALT, LOOK, layerOf } from '../src/streams.ts';
+} from '../src/agents/store.ts';
+import { AGENT_SALT, CULTURE, LEDGER_SALT, LOOK, layerOf } from '../src/random/streams.ts';
 
 interface Vectors {
   streams: Record<string, number>;

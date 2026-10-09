@@ -1,4 +1,4 @@
-import { take, type Arena } from './memory.ts';
+import { take, type Arena } from '../memory/arena.ts';
 
 export interface FlowPlan {
   readonly slots: number;

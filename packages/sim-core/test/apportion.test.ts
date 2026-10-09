@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { apportion, apportionByStride, createApportionScratch } from '../src/apportion.ts';
-import { draw2 } from '../src/draw.ts';
-import { reserveArena } from '../src/memory.ts';
+import { apportion, apportionByStride, createApportionScratch } from '../src/maths/apportion.ts';
+import { draw2 } from '../src/random/draw.ts';
+import { reserveArena } from '../src/memory/arena.ts';
 
 const STREAM = 0x7f3;
 const CASES = 10_000;

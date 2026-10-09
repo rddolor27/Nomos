@@ -1,5 +1,5 @@
 import { draw3 } from './draw.ts';
-import { floorDiv, floorMod } from './int.ts';
+import { floorDiv, floorMod } from '../maths/int.ts';
 
 // Ported from tools/worldgen/noise.py. Fractions are Q15 (ONE is 1.0), so every product fits a signed
 // 32-bit int and >> floors exactly as Python's does.

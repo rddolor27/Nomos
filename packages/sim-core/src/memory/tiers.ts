@@ -1,4 +1,4 @@
-import { DESKTOP_MEMORY_BYTES, PHONE_MEMORY_BYTES } from './memory.ts';
+import { DESKTOP_MEMORY_BYTES, PHONE_MEMORY_BYTES } from './arena.ts';
 
 export type Tier = 'phone' | 'phone-plus' | 'desktop';
 

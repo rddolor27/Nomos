@@ -1,9 +1,9 @@
-import { TICKS_PER_DAY } from './calendar.ts';
-import { dayBoundary } from './day.ts';
-import { OK, checkInvariants, failInvariant } from './invariants.ts';
-import { SPOILAGE_RULE, daySliceCount, runDaySlice } from './slices.ts';
-import { move } from './wander.ts';
-import { DAY_AGENTS, DAY_HOUSEHOLDS, TICK, type World } from './world.ts';
+import { TICKS_PER_DAY } from '../time/calendar.ts';
+import { dayBoundary } from '../day/day.ts';
+import { OK, checkInvariants, failInvariant } from '../money/invariants.ts';
+import { SPOILAGE_RULE, daySliceCount, runDaySlice } from '../day/slices.ts';
+import { move } from '../movement/wander.ts';
+import { DAY_AGENTS, DAY_HOUSEHOLDS, TICK, type World } from '../world/world.ts';
 
 export interface SystemTimer {
   lap(system: number): void;

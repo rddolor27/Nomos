@@ -9,7 +9,7 @@ import pow from '@stdlib/math-base-special-pow';
 import sin from '@stdlib/math-base-special-sin';
 import cdf from '@stdlib/stats-base-dists-normal-cdf';
 import quantile from '@stdlib/stats-base-dists-normal-quantile';
-import { draw2, mix } from '../src/draw.ts';
+import { draw2, mix } from '../src/random/draw.ts';
 
 const SEED = 42;
 const STREAM = 0x7f0;

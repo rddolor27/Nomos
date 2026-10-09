@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { draw1, draw2 } from '../src/draw.ts';
-import { applyFlows, createFlowPlan, planFlow, type FlowPlan } from '../src/flows.ts';
-import { OK, checkCash } from '../src/invariants.ts';
-import { createLedger, issue } from '../src/ledger.ts';
-import { reserveArena } from '../src/memory.ts';
+import { draw1, draw2 } from '../src/random/draw.ts';
+import { applyFlows, createFlowPlan, planFlow, type FlowPlan } from '../src/money/flows.ts';
+import { OK, checkCash } from '../src/money/invariants.ts';
+import { createLedger, issue } from '../src/money/ledger.ts';
+import { reserveArena } from '../src/memory/arena.ts';
 
 const STREAM = 0x7f5;
 const ENTITIES = 10_000;
