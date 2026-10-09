@@ -14,10 +14,8 @@ const scope = self as unknown as { mapWorkerListening?: boolean };
 function onMessage(event: MessageEvent<MapAppMessage | PlaceRequest>): void {
   const msg = event.data;
   if (msg.type === 'place') {
-    // A failed request reaches the page as the worker's error event, as an uncaught throw would.
-    void answerPlace(msg, contexts, now)
-      .then(({ reply, transfer }) => self.postMessage(reply, { transfer }))
-      .catch((error: unknown) => self.reportError(error));
+    // answerPlace never throws: a request it cannot answer comes back as a place-error for that place.
+    void answerPlace(msg, contexts, now).then(({ reply, transfer }) => self.postMessage(reply, { transfer }));
     return;
   }
   const answer = answerGenerate(msg, now);

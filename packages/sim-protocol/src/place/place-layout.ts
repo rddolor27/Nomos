@@ -58,6 +58,8 @@ export interface PlaceWalks {
 // Place p is settlement p, or wonder p minus the settlement count: the order of tools/worldgen/world.py's place_contexts.
 export type PlaceRequest = { type: 'place'; place: number };
 export type PlaceReply = { type: 'place'; place: number; layout: PlaceLayout; walks: PlaceWalks; ms: number };
+// The map worker's answer instead when it cannot build place p: an unknown index, no world yet, or a failed build.
+export type PlaceError = { type: 'place-error'; place: number; message: string };
 
 // Every column owns its buffer, so each is listed once and the map worker can transfer them all.
 export function placeBuffers(layout: PlaceLayout, walks: PlaceWalks): ArrayBuffer[] {
