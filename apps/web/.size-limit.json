@@ -72,9 +72,19 @@
     "limit": "14.5 kB"
   },
   {
+    "name": "Town view chunk",
+    "path": ["dist/assets/place-view-*.js"],
+    "limit": "8 kB"
+  },
+  {
     "name": "Map worker chunk",
     "path": ["dist/assets/map-worker-*.js"],
     "limit": "17 kB"
+  },
+  {
+    "name": "Place builder chunk",
+    "path": ["dist/assets/place-builder-*.js"],
+    "limit": "19.5 kB"
   },
   {
     "name": "index.html",
