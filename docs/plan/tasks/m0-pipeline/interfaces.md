@@ -95,7 +95,7 @@ Skin B and Skin C arrive as `blobs/` and `town/` beside `dots/` (M1.3, M3.3). M8
 | `app/` | `app.ts`, `boot.ts`, `lifecycle.ts`, `query.ts`, `tiers.ts` | The app shell: boot hand-off, worker link, query, tiers and the page lifecycle |
 | `view/` | `camera-input.ts` | Pointer and keyboard input on the view, and the click that inspects; it loads after the first frame, as the charts do (M0.7) |
 | `panels/` | `hud.ts`, `charts.ts`, `controls.ts`, `inspector.ts` (new) | The HUD, the lazy charts and controls, and the on-demand inspector |
-| `map/` | `generate.ts` and `map-worker.ts` (M8.1); `map-view.ts`, `map-input.ts`, `labels.ts`, `legend.ts` and `crowd-motion.ts` (M8.3) | The map: its worker, and the lazy view the Map control opens |
+| `map/` | `generate.ts` and `map-worker.ts` (M8.1); `map-view.ts`, `map-input.ts`, `labels.ts`, `legend.ts`, `crowd-motion.ts` and `goto.ts` (M8.3) | The map: its worker, and the lazy view the Map control opens |
 
 `apps/web/vite/` keeps the build plugins. Vite names a lazy chunk after its file, so the size-limit globs `charts-*.js` and `controls-*.js` hold after the move, and the view input's and the inspector's chunks need entries of their own.
 
@@ -476,6 +476,9 @@ The Country and Region views draw a `WorldMap` with a renderer of their own, whi
 - **Closing the map** resumes the town only if the map paused it, and gives focus back to the Map control. Escape closes it too.
 - **The toolbar** holds Close map, Fit, Zoom in and Zoom out, Countries, Pause dots, and a "Go to a settlement" list (owner, 9 October 2026).
   - **Going to a settlement:** choose it from the list, grouped by country with the capital first, or click or tap it on the map. Either way, the view jumps there, centred, at the step nearest 64 CSS px a cell.
+    - `map/goto.ts` holds `goToGroups`, `mountGoTo`, `cameraOn` and `settlementUnder`, which finds a settlement within 1.5 cells or 12 CSS px of a tap.
+    - `MapInputTarget` gains `tap(deviceX, deviceY)`, called for a press that lifts having moved less than 5 CSS px.
+    - The list reads "Go to…" again after every jump.
   - **Pause dots** stands the crowd still, as reduced motion does.
   - **The status line** is the map's live region. It says when the map is ready, and focusing the map reads it, through `aria-describedby`.
 - **Labels** are a fixed pool of DOM elements, moved by transforms whenever the camera moves:
