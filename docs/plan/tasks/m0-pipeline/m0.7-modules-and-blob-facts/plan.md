@@ -895,11 +895,11 @@ These are the senior's rulings where the brief or the task was silent. The owner
 
 ## Sources
 
-- **The owner's decisions:** 9 October 2026, in [task.md](task.md) and checkpoint [0016](../../../checkpoints/0016-structure-countries-and-m0-6-closing.md). The mixed name style is also in [M8.1's plan](../../m8-country-map/m8.1-world-generator/plan.md), "Names for places and countries".
+- **The owner's decisions:** 9 October 2026, in [task.md](task.md) and checkpoint 0016, in git history. The mixed name style is also in [M8.1's plan](../../m8-country-map/m8.1-world-generator/plan.md), "Names for places and countries".
 - **The researcher's results** (verified 9 October 2026): Wikidata for the franchise's species, towns and cities, and LDNOOBW's 21 Latin-script lists; carried in N1.
 - **Hot paths, the fastest-of-9 statistic and the 10% tolerance:** the [implementation plan](../../../implementation-plan.md)'s Performance budget and its R5 gates. `move`'s earlier timings are in [M0.6's plan](../m0.6-gates-and-guards/plan.md), Task 10.
 - **Names, the filter and the sound set:** [R8 customs notes](../../../../research/round-8-cultures/notes/customs-preferences.md), part c, for the filter rules, FMG's bases, the "-mon" ban and decision (k).
-- **Money:** M0's ledger items (R1, R4), and [checkpoint 0015](../../../checkpoints/0015-m0-5-and-m0-6-closing.md)'s money rulings. Wealth on screen: the [R6 report](../../../../research/round-6-goods-and-wellbeing/report.md), "On screen".
+- **Money:** M0's ledger items (R1, R4), and checkpoint 0015's money rulings, in git history. Wealth on screen: the [R6 report](../../../../research/round-6-goods-and-wellbeing/report.md), "On screen".
 
 ## Appendix A: move.sh
 
