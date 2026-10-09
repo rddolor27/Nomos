@@ -151,6 +151,15 @@ importers:
         specifier: workspace:*
         version: link:../sim-protocol
 
+  packages/worldgen:
+    dependencies:
+      '@nomos/sim-core':
+        specifier: workspace:*
+        version: link:../sim-core
+      '@nomos/sim-protocol':
+        specifier: workspace:*
+        version: link:../sim-protocol
+
   tools/bench:
     dependencies:
       '@nomos/sim-core':

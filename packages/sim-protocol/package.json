@@ -4,7 +4,8 @@
   "type": "module",
   "sideEffects": false,
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./world-map": "./src/world-map/world-map.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
