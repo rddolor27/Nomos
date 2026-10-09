@@ -28,5 +28,23 @@
     "date": "2026-10-08",
     "licence": "CC0-1.0",
     "count": 280
+  },
+  "avoid-species": {
+    "query": "SELECT ?item ?label ?rev ?number WHERE { ?item p:P1685 ?statement . ?statement pq:P972 wd:Q20005020 ; ps:P1685 ?number . ?item rdfs:label ?label . FILTER(LANG(?label) = \"en\") ?item schema:version ?rev . }",
+    "date": "2026-10-09",
+    "licence": "CC0-1.0",
+    "count": 1023
+  },
+  "avoid-places": {
+    "query": "SELECT DISTINCT ?item ?label ?rev WHERE { VALUES ?class { wd:Q1964689 wd:Q106921111 wd:Q82551957 wd:Q108078133 } ?item wdt:P31 ?class . { ?item wdt:P1080 wd:Q17562848 } UNION { ?item wdt:P31 wd:Q32860792 } ?item rdfs:label ?label . FILTER(LANG(?label) = \"en\") ?item schema:version ?rev . }",
+    "date": "2026-10-09",
+    "licence": "CC0-1.0",
+    "count": 76
+  },
+  "profanity": {
+    "query": "https://raw.githubusercontent.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words/5faf2ba42d7b1c0977169ec3611df25a3c08eb13/{cs,da,de,en,eo,es,fi,fil,fr,fr-CA-u-sd-caqc,hi,hu,it,kab,nl,no,pl,pt,sv,tlh,tr}",
+    "date": "2026-10-09",
+    "licence": "CC-BY-4.0",
+    "count": 1438
   }
 }

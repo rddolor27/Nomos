@@ -3,6 +3,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { nameTokens } from '../src/text/fold.ts';
 import { CATEGORIES, FIXTURES, type Category } from '../src/filters/real-world.ts';
+import { mergeSourceNotes, type SourceNote } from './source-notes.ts';
 
 const CLDR_TAG = '47.0.0';
 const CLDR_PACKAGE = `https://raw.githubusercontent.com/unicode-org/cldr-json/${CLDR_TAG}/cldr-json/cldr-localenames-full/`;
@@ -88,7 +89,7 @@ const fetched: Record<Category, Fetched> = {
 const licences = { cldr: await get(`${CLDR_PACKAGE}LICENSE`), wikidata: await get(CC0_TEXT) };
 
 const date = new Date().toISOString().slice(0, 10);
-const sources: Record<string, { query: string; date: string; licence: string; count: number }> = {};
+const sources: Record<string, SourceNote> = {};
 for (const category of CATEGORIES) {
   const { labels, query, licence } = fetched[category];
   const counts = labelsPerToken(labels);
@@ -99,4 +100,4 @@ for (const category of CATEGORIES) {
 }
 writeFileSync(new URL('LICENSE-cldr.txt', FIXTURES), licences.cldr);
 writeFileSync(new URL('LICENSE-wikidata.txt', FIXTURES), licences.wikidata);
-writeFileSync(new URL('sources.json', FIXTURES), `${JSON.stringify(sources, null, 2)}\n`);
+mergeSourceNotes(sources);
