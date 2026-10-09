@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { Blob } from '../src/agents/blob.ts';
-import { walletAccount } from '../src/money/ledger.ts';
+import { issue, walletAccount } from '../src/money/ledger.ts';
 import { draw2 } from '../src/random/draw.ts';
 import { checkpoint, restoreWorld } from '../src/world/checkpoint.ts';
 import { createWorld } from '../src/world/world.ts';
@@ -14,6 +14,8 @@ describe('the Blob handle', () => {
   it('reads and writes its row through every accessor', () => {
     const { agents, cash, blob } = createWorld(42, 'phone');
     const { count, x, y, vx, vy, heading, action, facing, nameKey } = agents;
+    // Every wallet holds its own balance, so a getter that reads a neighbour's wallet shows.
+    for (let i = 0; i < count[0]; i++) issue(cash, walletAccount(cash, i), i);
     for (let k = 0; k < ROWS; k++) {
       const i = draw2(42, 1, k, 0) % count[0];
       blob.at(i);
