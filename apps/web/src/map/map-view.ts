@@ -251,13 +251,9 @@ function bindPanel(panel: MapPanel): void {
   observeDeviceSize(parts.section, (width, height, dpr) => onSize(panel, width, height, dpr));
 }
 
-// On a closed list, Windows and Linux browsers fire change at every arrow press, so the list keeps its choice until it
-// loses focus: then each press goes on to the next settlement. Its keys stay its own; only Escape closes the map.
+// The list's keys stay its own; only Escape reaches the map, to close it.
 function bindGoTo(panel: MapPanel, list: HTMLSelectElement): void {
   list.addEventListener('change', () => goTo(panel, Number(list.value)));
-  list.addEventListener('blur', () => {
-    list.value = '';
-  });
   list.addEventListener('keydown', (event) => {
     if (event.key !== 'Escape') event.stopPropagation();
   });
@@ -371,8 +367,10 @@ function tapAt(panel: MapPanel, deviceX: number, deviceY: number): void {
   if (id >= 0) goTo(panel, id);
 }
 
-// The jump is instant: the view centres on the settlement at the close step, where its crowd walks.
+// The jump is instant: the view centres on the settlement at the close step, where its crowd walks. The Go to list shows
+// its placeholder again after every jump, so it never names a place the view has left.
 function goTo(panel: MapPanel, id: number): void {
+  panel.parts.goTo.value = '';
   if (!panel.world || panel.deviceWidth === 0 || panel.deviceHeight === 0) return;
   panel.camera = cameraOn(panel.world.map, id, panel.deviceWidth, panel.deviceHeight, panel.dpr);
   requestDraw(panel);

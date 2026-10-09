@@ -33,14 +33,41 @@ async function offCentre(page: Page, name: string): Promise<{ x: number; y: numb
   return { x: label.x + label.width / 2 - (map.x + map.width / 2), y: label.y - (map.y + map.height / 2) };
 }
 
+// A jump within the Region view lands on the next frame, so the label's place is polled.
 async function expectCentred(page: Page, name: string): Promise<void> {
   await expect.poll(() => view(page)).toBe('region');
-  const { x, y } = await offCentre(page, name);
-  expect(Math.abs(x), `${name}, across`).toBeLessThanOrEqual(1);
-  expect(Math.abs(y - HALF_CELL_CSS), `${name}, down`).toBeLessThanOrEqual(1);
+  await expect
+    .poll(async () => {
+      const { x, y } = await offCentre(page, name);
+      return Math.abs(x) <= 1 && Math.abs(y - HALF_CELL_CSS) <= 1;
+    }, { message: `${name}, centred at the close step` })
+    .toBe(true);
 }
 
-test('lists each country with its capital first, and centres the view on the settlement chosen', async ({ page }) => {
+// The first settlement labelled in view, besides the one named, whose cell centre, half a cell above its label, lies on
+// open map rather than under the bar or the legend, which keep their pointers. Hit testing skips the labels.
+async function settlementOnOpenMap(page: Page, besides: string): Promise<{ name: string; x: number; y: number }> {
+  return page.evaluate(
+    ([named, half]) => {
+      for (const span of document.querySelectorAll<HTMLElement>('#map .map-label:not(.map-country)')) {
+        const box = span.getBoundingClientRect();
+        const [x, y] = [box.x + box.width / 2, box.y - half];
+        const open = span.style.visibility === 'visible' && span.textContent !== named;
+        if (open && document.elementFromPoint(x, y)?.tagName === 'CANVAS') return { name: span.textContent ?? '', x, y };
+      }
+      throw new Error(`no settlement besides ${named} lies on open map`);
+    },
+    [besides, HALF_CELL_CSS] as const,
+  );
+}
+
+// After every jump the list shows its placeholder, so it never names a place the view has left.
+async function expectPlaceholder(page: Page): Promise<void> {
+  await expect(goToList(page)).toHaveValue('');
+  await expect(goToList(page).locator('option:checked')).toHaveText('Go to…');
+}
+
+test('lists each country with its capital first, and jumps to the settlement chosen', async ({ page }) => {
   await openMap(page);
   const [country, capital] = /^(.+): capital (.+), \d+ settlements?$/.exec(
     (await page.locator('#map .map-legend li').nth(1).textContent()) ?? '',
@@ -49,24 +76,24 @@ test('lists each country with its capital first, and centres the view on the set
   await expect(group).toHaveAttribute('label', country);
   await expect(group.locator('option').first()).toHaveText(capital);
 
-  // selectOption leaves focus where it was, so the list takes it first, as a pick by mouse or keys gives it.
-  await goToList(page).focus();
   await goToList(page).selectOption({ label: capital });
   await expectCentred(page, capital);
-  // The list keeps its choice until it loses focus, then shows its placeholder again.
-  await page.locator('#map').focus();
-  await expect(goToList(page)).toHaveValue('');
+  await expectPlaceholder(page);
+
+  // A later click on another settlement jumps on, and the list still names no place.
+  const other = await settlementOnOpenMap(page, capital);
+  await page.mouse.click(other.x, other.y);
+  await expectCentred(page, other.name);
+  await expectPlaceholder(page);
 });
 
-test("walks town by town with the list's arrow keys", async ({ page }) => {
+test("jumps from the list's keys too", async ({ page }) => {
   await openMap(page);
-  const options = goToList(page).locator('optgroup').first().locator('option');
-  const first = (await options.nth(0).textContent()) ?? '';
+  const first = (await goToList(page).locator('optgroup').first().locator('option').first().textContent()) ?? '';
   await goToList(page).focus();
   await goToList(page).press('ArrowDown');
   await expectCentred(page, first);
-  await goToList(page).press('ArrowDown');
-  await expect(goToList(page)).toHaveValue((await options.nth(1).getAttribute('value')) ?? '');
+  await expectPlaceholder(page);
 });
 
 test('jumps to the settlement clicked on the map', async ({ page }) => {
