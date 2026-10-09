@@ -442,8 +442,9 @@ The Country and Region views draw a `WorldMap` with a renderer of their own, whi
   - The Country view draws the `map8_` art at `cellPx / 8`, and the Region view the `map16_` art at `cellPx / 16`.
   - `mapViewFor(current, cellPx, dpr)` switches to the Region view at 16 CSS px a cell, with `autoSkin`'s 15% hysteresis: it enters at 18.4 and stays down to 13.6. At 8 device px a cell it is always the Country view.
 - **Colours:** `map/map-colours.json` is the one table of the map's colours.
-  - It holds the five country colours and the line colours, and `tools/worldgen/mapdraw.py` reads the same file.
+  - It holds the five country colours, the line colours, and the crowd's six body hues keyed by `CROWD_HUES` name with their dark `outline`. `tools/worldgen/mapdraw.py` reads the same file.
   - `COUNTRY_COLOURS` holds the five as `0xRRGGBB`, indexed by `WorldMap.countries.colour`. They appear only on map overlays and the legend (Countries rule 5).
+  - `CROWD_COLOURS` holds the six body hues as `0xRRGGBB` by `CROWD_HUES` index, and `CROWD_OUTLINE` the outline. `test_worldgen.py` holds them to `spritekit.py`'s `BODY_HUES` bases and `OUTLINE` (M8.3, Task 17).
   - The owner picked the five on 9 October 2026. In index order they are `#42F6FC` cyan, `#0000E4` blue, `#600090` deep violet, `#CC36D8` orchid and `#FC66FC` pink-violet.
   - A test keeps them, in D65 Lab and CIEDE2000, ≥ 15 from every palette colour, and ≥ 11.95 apart for normal, protan, deutan and tritan vision (M8.3, Task 14).
 - **Atlas page:** `tools/atlas` writes `map.webp`, `map.png` and `map.json` beside the town atlas. The page holds the 81 map-scale frames: terrain tiles, wonders and landmarks at both scales, and the settlement icons.
@@ -460,7 +461,7 @@ The Country and Region views draw a `WorldMap` with a renderer of their own, whi
 - **What draws:**
   - **Before the atlas page,** and whenever `setFlat(true)`, it draws the flat Countries view: each country's land in its colour, with borders and icons.
   - **After the page:** each cell's tile, then rivers, sea lanes, roads, bridges, colour bands and border lines as pixel lines, then peaks, settlements, wonders and landmarks in row order, as `mapdraw.py` draws them.
-  - **The crowd,** in the Region view only, after the tiles and lines and before the icons. Each dot is a disc in its body hue, in whole device pixels that grow with zoom, with a 1-px dark outline from 4 px up.
+  - **The crowd,** in the Region view only, flat or not, after the tiles and lines and before the icons. Each dot is a disc in its body hue, with a 1-px dark outline from 4 px up. Its size is a tenth of a cell in whole device pixels, rounded up: 2, 4, 5, 7, 10 and 13 px at 16, 32, 48, 64, 96 and 128 px a cell, so the dots are outlined wherever the Region view opens.
   - **The Canvas2D fallback** draws the flat fills, the crowd, settlement icons and labels only.
 - **Imports:** the map scene imports nothing from `render-gl`'s other folders, so no town module gains an export for it. Dependency-cruiser enforces this.
 
