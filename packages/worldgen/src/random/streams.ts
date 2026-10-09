@@ -1,4 +1,4 @@
-// rng.py's world streams, one per purpose, append only. LOOK (11) is sim-core's, in its random/streams.ts.
+// rng.py's world streams, one per purpose, append only. sim-core's random/streams.ts holds LOOK too, for its agents.
 export const SHAPE = 1;
 export const ELEVATION = 2;
 export const RIDGES = 3;
@@ -9,6 +9,7 @@ export const ROAD = 7;
 export const WONDER = 8;
 export const LANDMARK = 9;
 export const PLACE = 10;
+export const LOOK = 11;
 export const CROWD = 12;
 export const COUNTRY = 13;
 export const NAME = 14;

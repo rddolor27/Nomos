@@ -28,10 +28,7 @@ describe('the codes the port shares with tools/worldgen', () => {
     expect({ standard: [...WORLD_SIZES.standard], large: [...WORLD_SIZES.large] }).toEqual(fixture.sizes);
   });
 
-  // LOOK is sim-core's own stream (random/streams.ts); every other world stream is the generator's.
   it("keeps rng.py's world streams", () => {
-    const { LOOK, ...world } = fixture.streams;
-    expect(LOOK).toBe(11);
-    expect({ ...streams }).toEqual(world);
+    expect({ ...streams }).toEqual(fixture.streams);
   });
 });
