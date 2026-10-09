@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { draw2 } from '../src/random/draw.ts';
+import { draw1, draw2 } from '../src/random/draw.ts';
 import { DESKTOP_MEMORY_BYTES, PHONE_MEMORY_BYTES, reserveArena } from '../src/memory/arena.ts';
+import { PERSON_NAME, layerOf } from '../src/random/streams.ts';
 import { CELL_SHIFT, SUBPIXELS, TILE_PX, cellOf } from '../src/world/space.ts';
+import { createWorld } from '../src/world/world.ts';
 import { AGENT_COLUMNS, createAgentStore } from '../src/agents/store.ts';
 
 describe('the agent store', () => {
@@ -23,6 +25,14 @@ describe('the agent store', () => {
       if (ArrayBuffer.isView(column)) expect(canonicalOffsets, name).toContain(column.byteOffset);
     }
     expect(store.count[0]).toBe(0);
+  });
+
+  it('draws a name key per id on its own stream', () => {
+    expect(PERSON_NAME).toBe(0x106);
+    expect(layerOf(PERSON_NAME)).toBe('agent');
+    expect(AGENT_COLUMNS.at(-1)).toEqual({ name: 'nameKey', bytes: 4 });
+    const { agents } = createWorld(42, 'phone');
+    for (let i = 0; i < agents.count[0]; i++) expect(agents.nameKey[i]).toBe(draw1(42, PERSON_NAME, i));
   });
 
   it('bins Q8 positions into cells by shift', () => {

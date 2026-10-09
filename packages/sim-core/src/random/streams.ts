@@ -8,6 +8,7 @@ export const SPAWN = AGENT_SALT + 2;
 export const WANDER = AGENT_SALT + 3;
 export const STRIDE = AGENT_SALT + 4;
 export const FESTIVAL = AGENT_SALT + 5;
+export const PERSON_NAME = AGENT_SALT + 6;
 
 export function layerOf(stream: number): 'world' | 'agent' | 'ledger' {
   if (stream < AGENT_SALT) return 'world';

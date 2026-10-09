@@ -1,6 +1,6 @@
 import { draw1 } from '../random/draw.ts';
 import { take, type Arena } from '../memory/arena.ts';
-import { CULTURE, LOOK } from '../random/streams.ts';
+import { CULTURE, LOOK, PERSON_NAME } from '../random/streams.ts';
 
 export const LOOKS = 96;
 export const MAX_CULTURES = 8;
@@ -27,6 +27,7 @@ export interface AgentStore {
   readonly birthCulture: Uint8Array;
   readonly customs: Uint16Array;
   readonly homeRegion: Uint16Array;
+  readonly nameKey: Uint32Array;
 }
 
 // Every per-agent column, checked against the 256-bytes-per-agent budget (Performance budget).
@@ -43,6 +44,7 @@ export const AGENT_COLUMNS: readonly { name: string; bytes: number }[] = [
   { name: 'birthCulture', bytes: 1 },
   { name: 'customs', bytes: 2 },
   { name: 'homeRegion', bytes: 2 },
+  { name: 'nameKey', bytes: 4 },
 ];
 
 export function createAgentStore(arena: Arena, capacity: number): AgentStore {
@@ -61,6 +63,7 @@ export function createAgentStore(arena: Arena, capacity: number): AgentStore {
     birthCulture: take(arena, Uint8Array, capacity, true),
     customs: take(arena, Uint16Array, capacity, true),
     homeRegion: take(arena, Uint16Array, capacity, true),
+    nameKey: take(arena, Uint32Array, capacity, true),
   };
 }
 
@@ -76,6 +79,7 @@ export function addAgent(store: AgentStore, seed: number, id: number, cultures: 
   store.birthCulture[slot] = culture;
   store.customs[slot] = culture * 0x1111; // someone raised in one culture holds its four customs
   store.homeRegion[slot] = homeRegion;
+  store.nameKey[slot] = draw1(seed, PERSON_NAME, id);
   store.count[0] = slot + 1;
   return slot;
 }
