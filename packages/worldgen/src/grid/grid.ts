@@ -128,11 +128,28 @@ export function parts(nbrs: Adjacency, member: ArrayLike<number>): { label: Int3
   return { label, sizes };
 }
 
+// Whether any neighbour in the list has its flag set. The cell's own flag does not count.
+export function anyAround(flags: ArrayLike<number>, nbrs: Adjacency, cell: number): boolean {
+  for (let k = nbrs.start[cell]; k < nbrs.start[cell + 1]; k++) {
+    if (flags[nbrs.cells[k]] !== 0) return true;
+  }
+  return false;
+}
+
 // Cells set in either: the ocean with the lakes, or the ocean with the terminal lakes.
 export function union(a: Uint8Array, b: Uint8Array): Uint8Array {
   const out = new Uint8Array(a.length);
   for (let i = 0; i < a.length; i++) out[i] = a[i] | b[i];
   return out;
+}
+
+// The cells set in either, in index order: the sources a distances() walk starts from.
+export function unionCells(a: ArrayLike<number>, b: ArrayLike<number>): number[] {
+  const cells: number[] = [];
+  for (let i = 0; i < a.length; i++) {
+    if (a[i] !== 0 || b[i] !== 0) cells.push(i);
+  }
+  return cells;
 }
 
 export function sum(values: ArrayLike<number>): number {

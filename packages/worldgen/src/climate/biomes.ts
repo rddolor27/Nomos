@@ -1,6 +1,6 @@
 import { value } from '@nomos/sim-core/kernels';
 import { BIOME_NAMES } from '@nomos/sim-protocol/world-map';
-import { type Adjacency, distances, neighbours, xOf, yOf } from '../grid/grid.ts';
+import { type Adjacency, anyAround, distances, neighbours, unionCells, xOf, yOf } from '../grid/grid.ts';
 import { MOISTURE } from '../random/streams.ts';
 
 export const OCEAN = BIOME_NAMES.indexOf('ocean');
@@ -38,17 +38,9 @@ const NONE = -1;
 // The covers a lone cell gives up. A tie between neighbouring covers goes to the earliest here.
 const SOFT = [GRASSLAND, DECIDUOUS, CONIFER, MARSH, SAND, SNOW];
 
-// climate.ts imports this file, so this file cannot share its anyAround.
-function oceanBeside(ocean: Uint8Array, nbrs: Adjacency, i: number): boolean {
-  for (let k = nbrs.start[i]; k < nbrs.start[i + 1]; k++) {
-    if (ocean[nbrs.cells[k]] !== 0) return true;
-  }
-  return false;
-}
-
 // Low warm shores take sand in long stretches, not as a ring round every coast.
 function sandy(seed: number, width: number, i: number, ocean: Uint8Array, nbrs4: Adjacency): boolean {
-  return oceanBeside(ocean, nbrs4, i) && value(seed, MOISTURE, xOf(i, width), yOf(i, width), 10, BEACHES) >= 30000;
+  return anyAround(ocean, nbrs4, i) && value(seed, MOISTURE, xOf(i, width), yOf(i, width), 10, BEACHES) >= 30000;
 }
 
 // Higher than its neighbours on average: a summit or ridge line, not a flank or a plateau.
@@ -57,14 +49,6 @@ function crest(elevation: Int32Array, nbrs: Adjacency, i: number): boolean {
   let around = 0;
   for (let k = nbrs.start[i]; k < nbrs.start[i + 1]; k++) around += elevation[nbrs.cells[k]];
   return count * elevation[i] - around >= 15 * count;
-}
-
-function freshCells(lake: Uint8Array, river: Uint8Array): number[] {
-  const cells: number[] = [];
-  for (let i = 0; i < lake.length; i++) {
-    if (lake[i] !== 0 || river[i] !== 0) cells.push(i);
-  }
-  return cells;
 }
 
 // The chain's first branches, the water and then the high ground; NONE passes the cell on.
@@ -154,7 +138,7 @@ export function biomes(
 ): Uint8Array {
   const nbrs4 = neighbours(width, height, false);
   const nbrs8 = neighbours(width, height);
-  const fresh = distances(nbrs8, freshCells(lake, river), null, 4);
+  const fresh = distances(nbrs8, unionCells(lake, river), null, 4);
   const out = new Uint8Array(width * height);
   for (let i = 0; i < elevation.length; i++) {
     const e = elevation[i];

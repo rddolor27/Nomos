@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { adjacency, distances, neighbours, parts, type Adjacency } from '../src/grid/grid.ts';
+import { adjacency, anyAround, distances, neighbours, parts, unionCells, type Adjacency } from '../src/grid/grid.ts';
 import { MinHeap } from '../src/grid/heap.ts';
 import { chance, shuffled } from '../src/random/keyed.ts';
 import { fold } from './engines/fold.ts';
@@ -28,6 +28,25 @@ describe('the grid helpers, as grid.py and rng.py', () => {
     const split = parts(neighbours(4, 3, false), new Uint8Array([1, 1, 0, 1, 0, 0, 1, 1, 1, 0, 0, 1]));
     expect([...split.label]).toEqual([0, 0, -1, 1, -1, -1, 1, 1, 2, -1, -1, 1]);
     expect(split.sizes).toEqual([2, 4, 1]);
+  });
+
+  it('finds a flag among the neighbours in the list it is given, never on the cell itself', () => {
+    const flagAt = (cell: number): Uint8Array => Uint8Array.from({ length: 9 }, (_, i) => (i === cell ? 3 : 0));
+    const eight = neighbours(3, 3);
+    const four = neighbours(3, 3, false);
+    expect(anyAround(flagAt(4), eight, 4)).toBe(false);
+    expect(anyAround(flagAt(4), eight, 0)).toBe(true);
+    expect(anyAround(flagAt(4), four, 0)).toBe(false);
+    expect(anyAround(flagAt(4), four, 1)).toBe(true);
+    // The corner's first neighbour counts, and a flag two cells away does not, though it starts the next cell's list.
+    expect(anyAround(flagAt(1), eight, 0)).toBe(true);
+    expect(anyAround(flagAt(2), eight, 0)).toBe(false);
+    // The last cell's list ends where the grid's cells do.
+    expect(anyAround(flagAt(0), eight, 8)).toBe(false);
+  });
+
+  it('lists the cells set in either flag array, in index order', () => {
+    expect(unionCells(new Uint8Array([1, 0, 0, 1, 0]), new Uint8Array([0, 0, 7, 1, 5]))).toEqual([0, 2, 3, 4]);
   });
 
   it('shuffles and draws chances as rng.py', () => {

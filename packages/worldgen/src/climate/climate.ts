@@ -1,6 +1,6 @@
 import { below, fbm, floorDiv } from '@nomos/sim-core/kernels';
 import { SIDE_NAMES } from '@nomos/sim-protocol/world-map';
-import { type Adjacency, distances, neighbours } from '../grid/grid.ts';
+import { anyAround, distances, neighbours, unionCells } from '../grid/grid.ts';
 import { MOISTURE, TEMPERATURE } from '../random/streams.ts';
 import { BEACH, CLIFFS, CLIFF_AT, INLAND } from './biomes.ts';
 
@@ -37,14 +37,6 @@ export function temperature(
   return { temperature: out, cold: coldSide };
 }
 
-function wetCells(water: Uint8Array, river: Uint8Array): number[] {
-  const cells: number[] = [];
-  for (let i = 0; i < water.length; i++) {
-    if (water[i] !== 0 || river[i] !== 0) cells.push(i);
-  }
-  return cells;
-}
-
 // Rain, a keyed wobble, and a bonus that fades to nothing four steps from water or a river. Water is the ocean with the
 // lakes.
 export function moisture(
@@ -55,7 +47,7 @@ export function moisture(
   water: Uint8Array,
   river: Uint8Array,
 ): Uint8Array {
-  const near = distances(neighbours(width, height), wetCells(water, river), null, 4);
+  const near = distances(neighbours(width, height), unionCells(water, river), null, 4);
   const out = new Uint8Array(width * height);
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
@@ -65,13 +57,6 @@ export function moisture(
     }
   }
   return out;
-}
-
-function anyAround(flags: Uint8Array, nbrs: Adjacency, cell: number): boolean {
-  for (let k = nbrs.start[cell]; k < nbrs.start[cell + 1]; k++) {
-    if (flags[nbrs.cells[k]] !== 0) return true;
-  }
-  return false;
 }
 
 // Beach or cliffs for each land cell beside the ocean: cliffs where high ground meets it.
