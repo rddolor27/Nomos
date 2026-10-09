@@ -57,12 +57,13 @@ module.exports = {
     {
       name: 'worldgen-imports-kernels-only',
       comment:
-        'M8.1: the generator takes sim-core values only through kernels.ts and sim-protocol only through its world-map codes, so it stays pure and small.',
+        'M8.1: the generator takes sim-core values only through kernels.ts, and sim-protocol only through its world-map codes and, from M3.1, the place layout, so it stays pure and small.',
       severity: 'error',
       from: { path: '^packages/worldgen/src/' },
       to: {
         path: '^packages/',
-        pathNot: '^packages/worldgen/|^packages/sim-core/src/kernels\\.ts$|^packages/sim-protocol/src/world-map/world-map\\.ts$',
+        pathNot:
+          '^packages/worldgen/|^packages/sim-core/src/kernels\\.ts$|^packages/sim-protocol/src/world-map/world-map\\.ts$|^packages/sim-protocol/src/place/place-layout\\.ts$',
       },
     },
     {
