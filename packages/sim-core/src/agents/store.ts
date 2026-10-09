@@ -6,6 +6,8 @@ export const LOOKS = 96;
 export const MAX_CULTURES = 8;
 // The firms a household buys from, the 7 of Lengnick's model.
 export const SUPPLIERS = 7;
+// Zeroed memory would read as firm 0, so an agent starts with -1 for its employer and each supplier.
+const NO_FIRM = -1;
 
 export const CUSTOM_FOOD = 0;
 export const CUSTOM_FESTIVAL = 1;
@@ -30,6 +32,16 @@ export interface AgentStore {
   readonly customs: Uint16Array;
   readonly homeRegion: Uint16Array;
   readonly nameKey: Uint32Array;
+  // The employing firm's row, or -1.
+  readonly employer: Int32Array;
+  // Cents.
+  readonly reservationWage: Float64Array;
+  // SUPPLIERS firm rows to an agent, at i * SUPPLIERS + k, or -1 where empty.
+  readonly suppliers: Int32Array;
+  // Bit k is set when supplier k ran short this month.
+  readonly stockedOut: Uint8Array;
+  // This month's units to buy.
+  readonly plannedUnits: Int32Array;
 }
 
 // Every per-agent column, checked against the 256-bytes-per-agent budget (Performance budget).
@@ -47,6 +59,11 @@ export const AGENT_COLUMNS: readonly { name: string; bytes: number }[] = [
   { name: 'customs', bytes: 2 },
   { name: 'homeRegion', bytes: 2 },
   { name: 'nameKey', bytes: 4 },
+  { name: 'employer', bytes: 4 },
+  { name: 'reservationWage', bytes: 8 },
+  { name: 'suppliers', bytes: 4 * SUPPLIERS },
+  { name: 'stockedOut', bytes: 1 },
+  { name: 'plannedUnits', bytes: 4 },
 ];
 
 export function createAgentStore(arena: Arena, capacity: number): AgentStore {
@@ -66,6 +83,11 @@ export function createAgentStore(arena: Arena, capacity: number): AgentStore {
     customs: take(arena, Uint16Array, capacity, true),
     homeRegion: take(arena, Uint16Array, capacity, true),
     nameKey: take(arena, Uint32Array, capacity, true),
+    employer: take(arena, Int32Array, capacity, true),
+    reservationWage: take(arena, Float64Array, capacity, true),
+    suppliers: take(arena, Int32Array, capacity * SUPPLIERS, true),
+    stockedOut: take(arena, Uint8Array, capacity, true),
+    plannedUnits: take(arena, Int32Array, capacity, true),
   };
 }
 
@@ -82,6 +104,8 @@ export function addAgent(store: AgentStore, seed: number, id: number, cultures: 
   store.customs[slot] = culture * 0x1111; // someone raised in one culture holds its four customs
   store.homeRegion[slot] = homeRegion;
   store.nameKey[slot] = draw1(seed, PERSON_NAME, id);
+  store.employer[slot] = NO_FIRM;
+  for (let k = 0; k < SUPPLIERS; k++) store.suppliers[slot * SUPPLIERS + k] = NO_FIRM;
   store.count[0] = slot + 1;
   return slot;
 }

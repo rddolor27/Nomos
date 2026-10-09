@@ -8,9 +8,11 @@ import {
   MINT,
   NATIONAL_ACCOUNTS,
   POLICE_BUDGET,
+  PROFITS,
   ROUNDING,
   TREASURY,
   createLedger,
+  firmAccount,
   issue,
   retire,
   sectorAccount,
@@ -32,13 +34,34 @@ function keyedCents(tick: number, op: number): number {
 
 describe('the cash ledger', () => {
   it('lays out national accounts, then four sectors per settlement, then one wallet per slot', () => {
-    expect([MINT, TREASURY, ROUNDING, NATIONAL_ACCOUNTS]).toEqual([0, 1, 2, 16]);
+    expect([MINT, TREASURY, ROUNDING, PROFITS, NATIONAL_ACCOUNTS]).toEqual([0, 1, 2, 3, 16]);
     expect([HOUSEHOLDS, FIRMS, LOCAL_GOVERNMENT, POLICE_BUDGET]).toEqual([0, 1, 2, 3]);
     const cash = createLedger(reserveArena(65_536), 3, 5);
     expect([cash.accounts, cash.firstWallet, walletAccount(cash, 0), walletAccount(cash, 4)]).toEqual([33, 28, 28, 32]);
     expect(cash.balance).toHaveLength(33);
     expect(sectorAccount(0, HOUSEHOLDS)).toBe(16);
     expect(sectorAccount(2, POLICE_BUDGET)).toBe(27);
+  });
+
+  it('puts one account per firm after the wallets, and none unless asked', () => {
+    const cash = createLedger(reserveArena(65_536), 3, 5, 2);
+    expect([cash.accounts, cash.firstWallet, cash.firstFirm, firmAccount(cash, 0), firmAccount(cash, 1)]).toEqual([
+      35, 28, 33, 33, 34,
+    ]);
+    expect(cash.balance).toHaveLength(35);
+    const unasked = createLedger(reserveArena(65_536), 3, 5);
+    expect([unasked.accounts, unasked.firstFirm]).toEqual([33, 33]);
+  });
+
+  it('keeps firm cash inside the sum to zero', () => {
+    const cash = createLedger(reserveArena(65_536), 3, 5, 2);
+    issue(cash, firmAccount(cash, 1), 500);
+    transfer(cash, firmAccount(cash, 1), walletAccount(cash, 4), 200);
+    transfer(cash, walletAccount(cash, 4), firmAccount(cash, 0), 50);
+    expect([cash.balance[34], cash.balance[32], cash.balance[33], cash.balance[MINT]]).toEqual([300, 150, 50, -500]);
+    expect(checkCash(cash)).toBe(OK);
+    cash.balance[firmAccount(cash, 0)] += 1;
+    expect(checkCash(cash)).toBe(CASH_NOT_ZERO);
   });
 
   it('lists the balances as canonical', () => {

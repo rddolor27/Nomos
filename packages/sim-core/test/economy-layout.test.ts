@@ -1,7 +1,12 @@
 import { describe, expect, it } from 'vitest';
+import { SUPPLIERS } from '../src/agents/store.ts';
 import { LENGNICK, checkParams, type EconomyParams } from '../src/economy/params.ts';
+import { createEconomyScratch } from '../src/economy/scratch.ts';
 import * as stats from '../src/economy/stats.ts';
+import { createFirmStore } from '../src/firms/store.ts';
+import { PHONE_MEMORY_BYTES, reserveArena } from '../src/memory/arena.ts';
 import { TIER_AGENTS, TIER_FIRMS, type Tier } from '../src/memory/tiers.ts';
+import { firmAccount } from '../src/money/ledger.ts';
 import {
   CULTURE,
   FESTIVAL,
@@ -18,8 +23,14 @@ import {
   layerOf,
 } from '../src/random/streams.ts';
 import { DAYS_PER_MONTH, dayOfMonth, monthOf } from '../src/time/calendar.ts';
+import { checkpoint, restoreWorld, stateHash } from '../src/world/checkpoint.ts';
+import { createWorld } from '../src/world/world.ts';
 
 const TIERS: readonly Tier[] = ['phone', 'phone-plus', 'desktop'];
+
+function isZeroed(column: ArrayBufferView): boolean {
+  return new Uint8Array(column.buffer, column.byteOffset, column.byteLength).every((byte) => byte === 0);
+}
 
 function refuses(change: Partial<EconomyParams>, field: string, tier: Tier = 'phone'): void {
   const check = () => checkParams({ ...LENGNICK, ...change }, tier);
@@ -150,5 +161,138 @@ describe('the economy statistics', () => {
       .map(([, slot]) => slot);
     expect(slots.sort((a, b) => a - b)).toEqual(Array.from({ length: stats.STATS }, (_, slot) => slot));
     expect(stats.STATS).toBe(17);
+  });
+});
+
+describe('the firm store', () => {
+  it('holds ten canonical columns of the kinds the economy needs, and a count', () => {
+    const arena = reserveArena(PHONE_MEMORY_BYTES);
+    const firms = createFirmStore(arena, 1_000);
+    const kinds = {
+      price: Float64Array,
+      wage: Float64Array,
+      stock: Int32Array,
+      employees: Int32Array,
+      demand: Int32Array,
+      lastDemand: Int32Array,
+      vacancy: Uint8Array,
+      notice: Uint8Array,
+      monthsFull: Uint8Array,
+      idleMonths: Uint8Array,
+    };
+    for (const name of Object.keys(kinds) as (keyof typeof kinds)[]) {
+      expect(firms[name], name).toBeInstanceOf(kinds[name]);
+      expect(firms[name], name).toHaveLength(1_000);
+    }
+    const canonicalOffsets = arena.canonical.filter((_, i) => i % 2 === 0);
+    for (const [name, column] of Object.entries(firms)) {
+      if (ArrayBuffer.isView(column)) expect(canonicalOffsets, name).toContain(column.byteOffset);
+    }
+    expect([firms.capacity, firms.count[0]]).toEqual([1_000, 0]);
+  });
+});
+
+describe('the economy scratch', () => {
+  it('is sized by its owners and kept out of the hash', () => {
+    const arena = reserveArena(PHONE_MEMORY_BYTES);
+    const scratch = createEconomyScratch(arena, 500, 50);
+    const shapes = {
+      order: [Int32Array, 500],
+      weights: [Float64Array, 500],
+      shares: [Float64Array, 500],
+      firmPrefix: [Int32Array, 50],
+      firmTally: [Int32Array, 50],
+      pay: [Float64Array, 50],
+      stats: [Float64Array, stats.STATS],
+    } as const;
+    for (const name of Object.keys(shapes) as (keyof typeof shapes)[]) {
+      const [kind, length] = shapes[name];
+      expect(scratch[name], name).toBeInstanceOf(kind);
+      expect(scratch[name], name).toHaveLength(length);
+    }
+    expect(arena.canonical).toEqual([]);
+  });
+});
+
+describe('the economy layout of a world', () => {
+  it('gives every tier a firm slot to ten agent slots, a firm account to each, and scratch for its whole count', () => {
+    for (const tier of TIERS) {
+      const { cash, firms, economyScratch } = createWorld(42, tier, undefined, 10);
+      expect(firms.capacity, tier).toBe(TIER_FIRMS[tier]);
+      expect(cash.firstFirm - cash.firstWallet, tier).toBe(TIER_AGENTS[tier]);
+      expect(cash.accounts - cash.firstFirm, tier).toBe(TIER_FIRMS[tier]);
+      expect(economyScratch.order, tier).toHaveLength(TIER_AGENTS[tier]);
+      expect(economyScratch.firmPrefix, tier).toHaveLength(TIER_FIRMS[tier]);
+    }
+  });
+
+  it('starts a phone world with 1,000 empty firms, and every blob unemployed and unlinked', () => {
+    const { agents, firms, cash, economyScratch } = createWorld(42, 'phone');
+    const blobs = agents.count[0];
+    expect(blobs).toBe(10_000);
+    expect(firms.capacity).toBe(1_000);
+    expect(agents.employer.subarray(0, blobs).every((employer) => employer === -1)).toBe(true);
+    expect(agents.suppliers.subarray(0, blobs * SUPPLIERS).every((supplier) => supplier === -1)).toBe(true);
+    const zeroed = {
+      ...firms,
+      ...economyScratch,
+      reservationWage: agents.reservationWage,
+      stockedOut: agents.stockedOut,
+      plannedUnits: agents.plannedUnits,
+      firmCash: cash.balance.subarray(cash.firstFirm),
+    };
+    for (const [name, column] of Object.entries(zeroed)) {
+      if (ArrayBuffer.isView(column)) expect(isZeroed(column), name).toBe(true);
+    }
+  });
+
+  it('hashes the economy columns, firm rows and firm accounts, and skips the scratch', () => {
+    const world = createWorld(42, 'phone', undefined, 10);
+    const { agents, firms, cash, economyScratch } = world;
+    const clean = stateHash(world);
+    for (const [name, column] of Object.entries(economyScratch)) {
+      column[3] = 7;
+      expect(stateHash(world), name).toBe(clean);
+    }
+    const hashed = {
+      employer: agents.employer,
+      reservationWage: agents.reservationWage,
+      suppliers: agents.suppliers,
+      stockedOut: agents.stockedOut,
+      plannedUnits: agents.plannedUnits,
+      ...firms,
+      firmCash: cash.balance.subarray(cash.firstFirm),
+    };
+    for (const [name, column] of Object.entries(hashed)) {
+      if (!ArrayBuffer.isView(column)) continue;
+      const cell = column as Int32Array;
+      const was = cell[0];
+      cell[0] = was + 1;
+      expect(stateHash(world), name).not.toBe(clean);
+      cell[0] = was;
+    }
+    expect(stateHash(world)).toBe(clean);
+  });
+
+  it('carries the economy state through a checkpoint, the scratch included', () => {
+    const world = createWorld(42, 'phone', undefined, 10);
+    world.agents.employer[2] = 5;
+    world.agents.suppliers[SUPPLIERS + 3] = 4;
+    world.agents.reservationWage[2] = 142_800;
+    world.firms.count[0] = 6;
+    world.firms.price[5] = 2_500;
+    world.firms.idleMonths[5] = 2;
+    world.cash.balance[firmAccount(world.cash, 5)] = 99;
+    world.economyScratch.order[1] = 8;
+
+    const restored = restoreWorld(42, 'phone', checkpoint(world));
+
+    expect(stateHash(restored)).toBe(stateHash(world));
+    expect(restored.agents.employer[2]).toBe(5);
+    expect(restored.agents.suppliers[SUPPLIERS + 3]).toBe(4);
+    expect(restored.agents.reservationWage[2]).toBe(142_800);
+    expect([restored.firms.count[0], restored.firms.price[5], restored.firms.idleMonths[5]]).toEqual([6, 2_500, 2]);
+    expect(restored.cash.balance[firmAccount(restored.cash, 5)]).toBe(99);
+    expect(restored.economyScratch.order[1]).toBe(8);
   });
 });

@@ -7,9 +7,11 @@ import { createInputLog, type InputLog } from './inputs.ts';
 import { createLedger, issue, walletAccount, type Ledger } from '../money/ledger.ts';
 import { reserveArena, take, type Arena } from '../memory/arena.ts';
 import { MAX_CULTURES, addAgent, createAgentStore, type AgentStore } from '../agents/store.ts';
+import { createFirmStore, type FirmStore } from '../firms/store.ts';
+import { createEconomyScratch, type EconomyScratch } from '../economy/scratch.ts';
 import { SPAWN, STRIDE } from '../random/streams.ts';
 import { STRIDE_DAYS, createStride, type Stride } from '../day/stride.ts';
-import { TIER_AGENTS, TIER_MEMORY_BYTES, TIER_TILES_PER_AGENT, type Tier } from '../memory/tiers.ts';
+import { TIER_AGENTS, TIER_FIRMS, TIER_MEMORY_BYTES, TIER_TILES_PER_AGENT, type Tier } from '../memory/tiers.ts';
 import { setHeading } from '../movement/walk.ts';
 
 export const TICK = 0;
@@ -41,6 +43,8 @@ export interface World {
   readonly arena: Arena;
   readonly globals: Int32Array;
   readonly agents: AgentStore;
+  readonly firms: FirmStore;
+  readonly economyScratch: EconomyScratch;
   readonly cash: Ledger;
   readonly blob: Blob;
   readonly claims: Claims;
@@ -83,7 +87,7 @@ export function layoutWorld(
   const arena = reserveArena(memoryBytes);
   const globals = take(arena, Int32Array, GLOBAL_SLOTS, true);
   const store = createAgentStore(arena, agents);
-  const cash = createLedger(arena, SETTLEMENTS, agents);
+  const cash = createLedger(arena, SETTLEMENTS, agents, TIER_FIRMS[tier]);
   const blob = new Blob(store, cash);
   const claims = createClaims(arena, cash, LOAN_CAPACITY);
   const record = take(arena, Int32Array, 2 * RECORD_FIELDS, true);
@@ -92,12 +96,16 @@ export function layoutWorld(
   const cultureUid = take(arena, Uint8Array, MAX_CULTURES, true);
   const focus = take(arena, Int32Array, 1, false);
   focus[0] = NO_FOCUS;
+  const firms = createFirmStore(arena, TIER_FIRMS[tier]);
+  const economyScratch = createEconomyScratch(arena, agents, TIER_FIRMS[tier]);
   return {
     seed,
     tier,
     arena,
     globals,
     agents: store,
+    firms,
+    economyScratch,
     cash,
     blob,
     claims,
