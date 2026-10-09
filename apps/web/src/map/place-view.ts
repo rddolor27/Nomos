@@ -159,7 +159,8 @@ function buildParts(): Parts {
     fit: make('button', { type: 'button' }, 'Fit'),
     zoomIn: make('button', { type: 'button', class: 'map-zoom', 'aria-label': 'Zoom in' }, '+'),
     zoomOut: make('button', { type: 'button', class: 'map-zoom', 'aria-label': 'Zoom out' }, '\u{2212}'),
-    pause: make('button', { type: 'button', 'aria-pressed': 'false' }, 'Pause dots'),
+    // The map's Pause dots, by the name its walkers go by here; both share one state.
+    pause: make('button', { type: 'button', 'aria-pressed': 'false' }, 'Pause people'),
     title: make('h2', { id: 'place-title' }),
     about: make('p', {}),
     status: make('p', { id: 'place-status', role: 'status' }),
