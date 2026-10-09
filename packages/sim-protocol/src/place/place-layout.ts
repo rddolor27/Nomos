@@ -73,10 +73,20 @@ export type PlaceReply = { type: 'place'; place: number; layout: PlaceLayout; wa
 // The map worker's answer instead when it cannot build place p: an unknown index, no world yet, or a failed build.
 export type PlaceError = { type: 'place-error'; place: number; message: string };
 
+// The starting town, Highcourt, which the first screen's Town skin draws under the sim's agents (owner request,
+// 10 October 2026). It needs no world: the town is the one tools/worldgen/export_map.py exports as the sim's map.
+export type TownRequest = { type: 'town' };
+export type TownReply = { type: 'town'; layout: PlaceLayout; ms: number };
+export type TownError = { type: 'town-error'; message: string };
+
+function buffersOf(views: readonly ArrayBufferView[]): ArrayBuffer[] {
+  return views.map((view) => view.buffer as ArrayBuffer);
+}
+
 // Every column owns its buffer, so each is listed once and the map worker can transfer them all.
-export function placeBuffers(layout: PlaceLayout, walks: PlaceWalks, crowd: PlaceCrowd): ArrayBuffer[] {
+export function layoutBuffers(layout: PlaceLayout): ArrayBuffer[] {
   const p = layout.people;
-  const views: ArrayBufferView[] = [
+  return buffersOf([
     layout.tiles,
     layout.ground,
     layout.standing,
@@ -90,15 +100,13 @@ export function placeBuffers(layout: PlaceLayout, walks: PlaceWalks, crowd: Plac
     p.x,
     p.y,
     p.lift,
-    walks.person,
-    walks.offsets,
-    walks.cells,
-    crowd.look,
-    crowd.expression,
-    crowd.loop,
-    crowd.phase,
-    crowd.offsets,
-    crowd.cells,
+  ]);
+}
+
+export function placeBuffers(layout: PlaceLayout, walks: PlaceWalks, crowd: PlaceCrowd): ArrayBuffer[] {
+  return [
+    ...layoutBuffers(layout),
+    ...buffersOf([walks.person, walks.offsets, walks.cells]),
+    ...buffersOf([crowd.look, crowd.expression, crowd.loop, crowd.phase, crowd.offsets, crowd.cells]),
   ];
-  return views.map((view) => view.buffer as ArrayBuffer);
 }
