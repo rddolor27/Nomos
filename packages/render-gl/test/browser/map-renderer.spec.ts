@@ -105,6 +105,26 @@ test('recovers a lost context', async ({ page }) => {
   expect(result?.after).toMatchObject({ backend: 'webgl2', swapped: false, wrong: [] });
 });
 
+// The app draws only on demand, so nothing else would draw the map again.
+test('draws the last frame again when a lost context comes back, unasked', async ({ page }) => {
+  const result = await page.evaluate(
+    async ({ world, camera }) => {
+      const harness = window.mapHarness;
+      if (harness.bootRenderer(160, 120) !== 'webgl2') return null;
+      harness.world(world);
+      await harness.atlas();
+      const before = harness.render(camera, false);
+      if (!(await harness.loseContext())) return null;
+      await harness.restoreContext();
+      return { before, after: harness.shown(camera, false) };
+    },
+    { world: WORLD, camera: LADDER[2] },
+  );
+  test.skip(result === null, 'no WebGL2 context to lose in this browser');
+  expect(result?.before.wrong).toEqual([]);
+  expect(result?.after).toMatchObject({ backend: 'webgl2', view: result?.before.view, swapped: false, wrong: [] });
+});
+
 test('falls back to Canvas2D when the context stays lost', async ({ page }) => {
   const result = await page.evaluate(
     async ({ world, camera }) => {
@@ -120,4 +140,23 @@ test('falls back to Canvas2D when the context stays lost', async ({ page }) => {
   );
   test.skip(result === null, 'no WebGL2 context to lose in this browser');
   expect(result).toMatchObject({ backend: 'canvas2d', swapped: true, wrong: [] });
+});
+
+test('draws the last frame on the Canvas2D canvas when the context stays lost, unasked', async ({ page }) => {
+  const result = await page.evaluate(
+    async ({ world, camera }) => {
+      const harness = window.mapHarness;
+      if (harness.bootRenderer(160, 120, { restoreTimeoutMs: 100 }) !== 'webgl2') return null;
+      harness.world(world);
+      await harness.atlas();
+      const before = harness.render(camera, false);
+      if (!(await harness.loseContext())) return null;
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      return { before, after: harness.shown(camera, false) };
+    },
+    { world: WORLD, camera: LADDER[1] },
+  );
+  test.skip(result === null, 'no WebGL2 context to lose in this browser');
+  expect(result?.before.wrong).toEqual([]);
+  expect(result?.after).toMatchObject({ backend: 'canvas2d', swapped: true, wrong: [] });
 });

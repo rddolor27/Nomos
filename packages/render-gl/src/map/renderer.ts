@@ -59,6 +59,8 @@ interface MapState {
   dpr: number;
   view: MapView;
   flat: boolean;
+  // The last camera draw received, which a painter made after a lost context draws at once: the app draws on demand.
+  camera: MapCamera | null;
   world: WorldMap | null;
   page: AtlasPage | null;
   crowd: Crowd | null;
@@ -153,10 +155,18 @@ export function createMapRenderer(canvas: HTMLCanvasElement, options: MapRendere
     dpr: 1,
     view: 'country',
     flat: false,
+    camera: null,
     world: null,
     page: null,
     crowd: null,
   };
+
+  function redraw(): void {
+    const { painter, camera, canvas } = state;
+    if (!painter || !camera || state.lost || canvas.width === 0 || canvas.height === 0) return;
+    state.view = mapViewFor(state.view, camera.cellPx, state.dpr);
+    painter.draw(camera, state.view, state.flat);
+  }
 
   function fallBack(): void {
     unwatch();
@@ -164,6 +174,7 @@ export function createMapRenderer(canvas: HTMLCanvasElement, options: MapRendere
     state.painter = adopt(state, canvas2d(state.canvas));
     state.backend = 'canvas2d';
     state.lost = false;
+    redraw();
   }
 
   // Without preventDefault the browser never restores the context.
@@ -182,6 +193,7 @@ export function createMapRenderer(canvas: HTMLCanvasElement, options: MapRendere
     }
     state.painter = painter;
     state.lost = false;
+    redraw();
   }
 
   function watch(): void {
@@ -238,10 +250,8 @@ export function createMapRenderer(canvas: HTMLCanvasElement, options: MapRendere
       if (!state.lost) state.painter?.setCrowd(hue, xy);
     },
     draw(camera) {
-      const painter = state.painter;
-      if (!painter || state.lost || state.canvas.width === 0 || state.canvas.height === 0) return;
-      state.view = mapViewFor(state.view, camera.cellPx, state.dpr);
-      painter.draw(camera, state.view, state.flat);
+      state.camera = camera;
+      redraw();
     },
     // The listeners go first: losing the context fires webglcontextlost, which would start the fallback timer.
     dispose() {

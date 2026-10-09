@@ -50,6 +50,15 @@ export interface WorldSpec {
   sites?: [kind: number, cell: number][];
 }
 
+// hues counts the pixels of each crowd hue in the frame.
+export interface RenderedFrame {
+  backend: MapBackend;
+  view: MapView;
+  swapped: boolean;
+  wrong: string[];
+  hues: number[];
+}
+
 export interface MapHarness {
   // False when the browser offers no WebGL2.
   boot(width: number, height: number): boolean;
@@ -63,12 +72,11 @@ export interface MapHarness {
   readonly colours: { countries: string[]; border: string; water: string; crowd: string[] };
   // A MapRenderer instead of the bare passes; world, atlas and crowd then feed it.
   bootRenderer(width: number, height: number, options?: MapRendererOptions): MapBackend;
-  // Draws through the renderer and checks the frame against the reference for the backend it drew on. hues counts the
-  // pixels of each crowd hue in the frame.
-  render(
-    camera: MapCamera,
-    flat: boolean,
-  ): { backend: MapBackend; view: MapView; swapped: boolean; wrong: string[]; hues: number[] };
+  // Draws through the renderer and checks the frame against the reference for the backend it drew on.
+  render(camera: MapCamera, flat: boolean): RenderedFrame;
+  // Checks the frame the renderer shows, as render does, without drawing. The map's WebGL2 context doesn't preserve its
+  // drawing buffer, so a WebGL2 frame reads back only in the task that drew it.
+  shown(camera: MapCamera, flat: boolean): RenderedFrame;
   // Each dot's CROWD_HUES index, and its x and y in fractional cells.
   crowd(hue: number[], xy: number[]): void;
   // Rewrites the crowd's places in the array the renderer holds, as the map view's motion will.
@@ -391,6 +399,16 @@ function readRenderer(drawn: MapRenderer): void {
   else read2d(drawn.canvas);
 }
 
+function shownFrame(camera: MapCamera, flat: boolean): RenderedFrame {
+  const { drawn, map } = rendered();
+  readRenderer(drawn);
+  const { width, height } = drawn.canvas;
+  const crowd = crowdOver(crowdLayer(width, height, camera, drawn.view), width);
+  const want = drawn.backend === 'webgl2' ? glWant(map, drawn.view, flat, crowd) : canvasWant(map, drawn.view, crowd);
+  const wrong = mismatches(width, height, camera, drawn.view, want);
+  return { backend: drawn.backend, view: drawn.view, swapped: drawn.canvas !== bootCanvas, wrong, hues: huesShown() };
+}
+
 function webglOf(canvas: HTMLCanvasElement | undefined): WebGL2RenderingContext | null {
   return canvas?.getContext('webgl2') ?? null;
 }
@@ -457,16 +475,12 @@ window.mapHarness = {
     return backend;
   },
   render(camera, flat) {
-    const { drawn, map } = rendered();
+    const { drawn } = rendered();
     drawn.setFlat(flat);
     drawn.draw(camera);
-    readRenderer(drawn);
-    const { width, height } = drawn.canvas;
-    const crowd = crowdOver(crowdLayer(width, height, camera, drawn.view), width);
-    const want = drawn.backend === 'webgl2' ? glWant(map, drawn.view, flat, crowd) : canvasWant(map, drawn.view, crowd);
-    const wrong = mismatches(width, height, camera, drawn.view, want);
-    return { backend: drawn.backend, view: drawn.view, swapped: drawn.canvas !== bootCanvas, wrong, hues: huesShown() };
+    return shownFrame(camera, flat);
   },
+  shown: shownFrame,
   crowd(hue, xy) {
     crowdHue = Uint8Array.from(hue);
     crowdXy = Float32Array.from(xy);
