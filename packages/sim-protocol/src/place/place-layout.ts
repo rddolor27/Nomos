@@ -55,14 +55,23 @@ export interface PlaceWalks {
   cells: Int32Array;
 }
 
+// The street crowd (M3.1 part 2): look-only walkers in proportion to the population, who walk PlaceWalks' loops too.
+// Walker k has look look[k] and expression expression[k], and follows loop loop[k], starting phase[k] art px along it.
+export interface PlaceCrowd {
+  look: Uint8Array;
+  expression: Uint8Array;
+  loop: Uint16Array;
+  phase: Uint16Array;
+}
+
 // Place p is settlement p, or wonder p minus the settlement count: the order of tools/worldgen/world.py's place_contexts.
 export type PlaceRequest = { type: 'place'; place: number };
-export type PlaceReply = { type: 'place'; place: number; layout: PlaceLayout; walks: PlaceWalks; ms: number };
+export type PlaceReply = { type: 'place'; place: number; layout: PlaceLayout; walks: PlaceWalks; crowd: PlaceCrowd; ms: number };
 // The map worker's answer instead when it cannot build place p: an unknown index, no world yet, or a failed build.
 export type PlaceError = { type: 'place-error'; place: number; message: string };
 
 // Every column owns its buffer, so each is listed once and the map worker can transfer them all.
-export function placeBuffers(layout: PlaceLayout, walks: PlaceWalks): ArrayBuffer[] {
+export function placeBuffers(layout: PlaceLayout, walks: PlaceWalks, crowd: PlaceCrowd): ArrayBuffer[] {
   const p = layout.people;
   const views: ArrayBufferView[] = [
     layout.tiles,
@@ -81,6 +90,10 @@ export function placeBuffers(layout: PlaceLayout, walks: PlaceWalks): ArrayBuffe
     walks.person,
     walks.offsets,
     walks.cells,
+    crowd.look,
+    crowd.expression,
+    crowd.loop,
+    crowd.phase,
   ];
   return views.map((view) => view.buffer as ArrayBuffer);
 }

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { NO_CODE, placeBuffers, type PlaceLayout, type PlaceWalks } from '../src/place/place-layout.ts';
+import { NO_CODE, placeBuffers, type PlaceCrowd, type PlaceLayout, type PlaceWalks } from '../src/place/place-layout.ts';
 
-function tinyPlace(): { layout: PlaceLayout; walks: PlaceWalks } {
+function tinyPlace(): { layout: PlaceLayout; walks: PlaceWalks; crowd: PlaceCrowd } {
   const layout: PlaceLayout = {
     width: 2,
     height: 1,
@@ -23,7 +23,13 @@ function tinyPlace(): { layout: PlaceLayout; walks: PlaceWalks } {
     },
   };
   const walks: PlaceWalks = { person: new Uint16Array([0]), offsets: new Int32Array([0, 2]), cells: new Int32Array([1, 0]) };
-  return { layout, walks };
+  const crowd: PlaceCrowd = {
+    look: new Uint8Array([7]),
+    expression: new Uint8Array([1]),
+    loop: new Uint16Array([0]),
+    phase: new Uint16Array([5]),
+  };
+  return { layout, walks, crowd };
 }
 
 function views(value: unknown): ArrayBufferView[] {
@@ -35,7 +41,7 @@ function views(value: unknown): ArrayBufferView[] {
 describe('the place layout', () => {
   it('lists every column buffer once, so one transfer moves them all', () => {
     const place = tinyPlace();
-    const buffers = placeBuffers(place.layout, place.walks);
+    const buffers = placeBuffers(place.layout, place.walks, place.crowd);
     expect(new Set(buffers).size).toBe(buffers.length);
     expect(new Set(buffers)).toEqual(new Set(views(place).map((view) => view.buffer)));
     const moved = structuredClone(place, { transfer: buffers });

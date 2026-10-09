@@ -45,7 +45,7 @@ describe('the map worker', { timeout: 60_000 }, () => {
       expect(reply.layout).toEqual(fresh.layout);
       expect(reply.walks).toEqual(fresh.walks);
       expect(reply.walks.person.length).toBeGreaterThan(0);
-      expect(transfer).toEqual(placeBuffers(reply.layout, reply.walks));
+      expect(transfer).toEqual(placeBuffers(reply.layout, reply.walks, reply.crowd));
       expect(new Set(transfer).size).toBe(transfer.length);
       const moved = structuredClone(reply, { transfer });
       expect(reply.layout.tiles.byteLength).toBe(0);
