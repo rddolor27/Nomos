@@ -15,7 +15,7 @@ M0's sub-milestones are planned in parallel, so the names and layouts they share
 | `@nomos/bench` | `tools/bench` | The CI budget, allocation and startup gates | M0.6 |
 | `@nomos/sim-culture` | `packages/sim-culture` | Culture code, walled off from crime, police, labour, wage, wealth, money, ability, housing and migration code; it also turns name keys into names | M0.6, names in M0.7 |
 | `@nomos/names` | `tools/names` | The name lint, its real-world fixture, the shared mixed sound set, the person-name filter and the culture text lint; M3.7 extends it | M0.6, sound set and person-name filter in M0.7 |
-| `@nomos/worldgen` | `packages/worldgen` | The TypeScript port of `tools/worldgen`: a seeded world of countries as a `WorldMap`, and its place names. It runs only in the map worker | M8.1 |
+| `@nomos/worldgen` | `packages/worldgen` | The TypeScript port of `tools/worldgen`: a seeded world of countries as a `WorldMap`, its place names, and each place's layout as `place.py` makes it. It runs only in the map worker | M8.1, places in M3.1 |
 
 Dependencies point one way:
 - `sim-core` ← `sim-protocol` ← `sim-worker`;
@@ -25,7 +25,7 @@ Dependencies point one way:
 - `sim-culture` imports values only from the `@nomos/sim-core/kernels` subpath (the draws, `DAYS_PER_YEAR`, the stream ids `CULTURE` and `FESTIVAL`, and the culture column helpers), whose modules never import it. `sim-core`'s `consumption/` and its orchestration call `sim-culture`, and dependency-cruiser keeps modules acyclic (M0.6);
 - `web` imports `sim-culture` only in `src/panels/inspector.ts`, which loads on demand, for `personName` (M0.7);
 - `tools/names` writes `sim-culture`'s generated `naming/words.ts` and checks it; no package imports `tools/names` at run time. `names` imports `@nomos/sim-core/kernels`, for the keyed draw that picks its sounds (M0.7);
-- `worldgen` imports values only from `@nomos/sim-core/kernels` and `@nomos/sim-protocol/world-map`. In `web`, only the map worker's modules reach it, and `render-gl`'s `./map` export draws its output (M8.1, below).
+- `worldgen` imports values only from `@nomos/sim-core/kernels`, `@nomos/sim-protocol/world-map` and, from M3.1, `@nomos/sim-protocol/place`. In `web`, only the map worker's modules reach it, and `render-gl`'s `./map` and `./place` exports draw its output (M8.1 and M3.1, below).
 
 The world step lives in `sim-core`, so headless runs and the worker run the same code.
 
@@ -69,6 +69,8 @@ The tables give the layout M0.7 builds, including the files it adds. A renamed f
 | `map/` | `map.ts` | The binary map |
 | `sprites/` | `sprite-manifest.ts` (generated) | The sprite-manifest types |
 | `shared/` | `calendar.ts`, `columns.ts` | Constants re-exported from `sim-core`, so `render-gl` and the app never import it |
+| `world-map/` | `world-map.ts` | The world map, its crowd and the map worker's messages, behind the `./world-map` export (M8.1) |
+| `place/` | `place-layout.ts` | A place's layout, its walk loops and the map worker's place messages, behind the `./place` export (M3.1) |
 
 **`packages/sim-worker/src`:** `index.ts` and `worker.ts` (the `./worker` export) at `src/`, and `loop/loop.ts`.
 
@@ -95,7 +97,7 @@ Skin B and Skin C arrive as `blobs/` and `town/` beside `dots/` (M1.3, M3.3). M8
 | `app/` | `app.ts`, `boot.ts`, `lifecycle.ts`, `query.ts`, `tiers.ts` | The app shell: boot hand-off, worker link, query, tiers and the page lifecycle |
 | `view/` | `camera-input.ts` | Pointer and keyboard input on the view, and the click that inspects; it loads after the first frame, as the charts do (M0.7) |
 | `panels/` | `hud.ts`, `charts.ts`, `controls.ts`, `inspector.ts` (new) | The HUD, the lazy charts and controls, and the on-demand inspector |
-| `map/` | `generate.ts` and `map-worker.ts` (M8.1); `map-view.ts`, `map-input.ts`, `labels.ts`, `legend.ts`, `crowd-motion.ts` and `goto.ts` (M8.3) | The map: its worker, and the lazy view the Map control opens |
+| `map/` | `generate.ts` and `map-worker.ts` (M8.1); `map-view.ts`, `map-input.ts`, `labels.ts`, `legend.ts`, `crowd-motion.ts` and `goto.ts` (M8.3); `place-builder.ts`, `place-view.ts` and `walkers.ts` (M3.1) | The map: its worker and the worker's lazy place builder, the lazy view the Map control opens, and the town view a place opens into |
 
 `apps/web/vite/` keeps the build plugins. Vite names a lazy chunk after its file, so the size-limit globs `charts-*.js` and `controls-*.js` hold after the move, and the view input's and the inspector's chunks need entries of their own.
 
@@ -290,7 +292,7 @@ M8.1 ports `tools/worldgen` to TypeScript, and M8.3 draws what it makes. The own
 
 | Folder | Files | Concern |
 | --- | --- | --- |
-| `src/` | `index.ts` | The barrel: `generateWorld`, `worldFingerprint`, `placeNames`, `crowdOf` and `StageTimer` |
+| `src/` | `index.ts` | The barrel: `generateWorld`, `worldFingerprint`, `placeNames`, `crowdOf` and `StageTimer`, and from M3.1 `placeContexts`, `buildPlace` and `PlaceContext` |
 | `random/` | `streams.ts`, `keyed.ts` | `rng.py`'s world streams, and its `chance` and `shuffled` |
 | `grid/` | `grid.ts`, `heap.ts` | `grid.py`'s neighbours, distances and parts, cell coordinates, and the binary heap behind every Dijkstra and A\* |
 | `terrain/` | `templates.ts`, `chains.ts`, `shape.ts` | `terrain.py` |
@@ -304,8 +306,9 @@ M8.1 ports `tools/worldgen` to TypeScript, and M8.3 draws what it makes. The own
 | `names/` | `place-names.ts`, `words.ts` (generated) | Place and country names |
 | `world/` | `draft.ts`, `generate.ts`, `fingerprint.ts` | The world being built, the pipeline, and `world.fingerprint` |
 | `crowd/` | `crowd.ts` | The map's look-only crowd, which Python lacks (M8.3) |
+| `place/` | `site.ts`, `build.ts`, the stage files, `looks.ts`, `contexts.ts`, `layout.ts`, `walks.ts` and `frames.ts` (generated) | `place.py`, `looks.py`'s `look_for` and `world.py`'s place contexts, plus the walk loops Python lacks (M3.1, Places below) |
 
-- **Imports:** values only from `@nomos/sim-core/kernels` and `@nomos/sim-protocol/world-map`.
+- **Imports:** values only from `@nomos/sim-core/kernels`, `@nomos/sim-protocol/world-map` and `@nomos/sim-protocol/place`.
   - `kernels` gives the keyed draw, value noise and integer maths. M8.1 adds `mix`, `draw`, `below`, `value`, `fbm`, `floorDiv`, `floorMod` and a new `isqrt` to its exports.
   - `world-map` is a leaf module holding the codes and the `WorldMap` type, so each code has one home.
 - **Lints:** M0.6's generator profile covers `packages/worldgen/src`:
@@ -412,14 +415,15 @@ The owner asked on 9 October 2026 to see each country's people on the map, as a 
 ### Map worker messages
 
 - Page to map worker, `MapAppMessage`: `{ type: 'generate', seed: number, size: WorldSize }`.
-- Map worker to page, `MapWorkerMessage`: `{ type: 'world', map: WorldMap, names: string[], crowd: MapCrowd, stageMs: Record<string, number> }`, with every buffer transferred, the crowd's included. `stageMs` holds each `StageTimer` stage's milliseconds, plus `names` and `crowd`.
-- A throw in the generator reaches the page as the Worker's `error` event, as the sim worker's do.
+- Map worker to page, `MapWorkerMessage`: `{ type: 'world', map: WorldMap, names: string[], crowd: MapCrowd, stageMs: Record<string, number> }`, with every buffer transferred, the crowd's included. `stageMs` holds each `StageTimer` stage's milliseconds, plus `names`, `crowd` and, from M3.1, `contexts`, the place contexts kept for place requests.
+- A throw in the world generator reaches the page as the Worker's `error` event, as the sim worker's do.
 - Both types live in `world-map.ts`.
+- From M3.1, the worker also answers a `PlaceRequest` with a `PlaceReply` or a `PlaceError`, whose types live in `place-layout.ts` (Places, below). A place that can't be built never throws.
 
 ### Who imports what
 
 - `worldgen` imports values only from `@nomos/sim-core/kernels` and `@nomos/sim-protocol/world-map`, and nothing imports it but the map worker and tests. Dependency-cruiser enforces both.
-- **In `web`,** only `src/map/generate.ts`, which answers a `generate` message, and `src/map/map-worker.ts`, which binds it to the worker's messages, may reach `@nomos/worldgen`.
+- **In `web`,** only `src/map/generate.ts`, which answers a `generate` message, `src/map/map-worker.ts`, which binds it to the worker's messages, and `src/map/place-builder.ts`, the worker's lazy part that builds places (M3.1), may reach `@nomos/worldgen`.
   - The page starts the worker with `new Worker(new URL('./map-worker.ts', import.meta.url), { type: 'module', name: 'map' })`.
   - So Vite builds it as its own chunk, `map-worker-*.js`, whose name never matches the sim worker's `worker-*.js` glob.
 - **`render-gl`** gains a `./map` export, the lazy map scene, with its entry file at `src/map.ts`. It imports only `sim-protocol`, and its API is The map scene, below.
@@ -450,7 +454,7 @@ The Country and Region views draw a `WorldMap` with a renderer of their own, whi
   - A test keeps them, in D65 Lab and CIEDE2000, ≥ 15 from every palette colour, and ≥ 11.95 apart for normal, protan, deutan and tritan vision (M8.3, Task 14).
 - **Atlas page:** `tools/atlas` writes `map.webp`, `map.png` and `map.json` beside the town atlas. The page holds the 81 map-scale frames: terrain tiles, wonders and landmarks at both scales, and the settlement icons.
   - `AtlasPage` is `{ image: ImageBitmap, frames: Record<string, AtlasFrame> }`, keyed `"<sheet>/<frame>"`.
-  - `AtlasFrame` is `{ x, y, w, h, anchor: [x, y] }`.
+  - `AtlasFrame` is `{ x, y, w, h, anchor: [x, y], face?: [x, y] }`. From M3.1, body frames carry `face`, the offset their face overlays draw at, from `characters.json`.
   - `loadAtlasPage(jsonUrl, imageUrl): Promise<AtlasPage>` fetches the page.
   - Frames are found by name, never by atlas index (R9).
 - **`createMapRenderer(canvas: HTMLCanvasElement, options?: MapRendererOptions): MapRenderer`.**
@@ -492,3 +496,65 @@ The Country and Region views draw a `WorldMap` with a renderer of their own, whi
 - **Chunks:**
   - `map-view-*.js`, `map-worker-*.js` and `dist/atlas/map.webp` each get a size-limit entry;
   - `vite.config.ts`'s `render-gl` chunk group leaves out `src/map`, so the scene never joins the renderer chunk.
+
+## Places (owner: M3.1)
+
+The owner asked on 9 October 2026 to zoom into a settlement on the map and see that town and its people. A place is what `tools/worldgen/place.py` lays out for one settlement or wonder: a district of 48 × 28 tiles for a capital or city, 40 × 24 for a town, 32 × 20 for a village or hamlet, or a wonder's vista of 30 × 18. M3.1's step plan builds it, ahead of the rest of M3.1.
+
+### The contract
+
+`@nomos/sim-protocol/place`, in `place/place-layout.ts`:
+- **`PlaceLayout`:** `width` and `height` in tiles, of `PLACE_TILE_PX` (16) art px each, and:
+  - `frames`: each sprite's name once, `"<sheet>/<frame>"` as `tools/atlas` keys it, in order of first use: tiles row by row, then ground, then standing;
+  - `tiles`: a `Uint16Array` of frame indices, row-major; an animated tile shows its frame 0;
+  - `ground` and `standing`: `Int32Array`s of three numbers a sprite: its frame, then its anchor's x and y in art px from the place's top-left;
+  - `people`: a `PlacePeople`.
+- **`PlacePeople`:** one column a field of `place.py`'s `Person`:
+  - `look`, one of `looks.py`'s 96: hue `look % 6` in `LOOK_HUES` (`CROWD_HUES`), eyes `⌊look / 6⌋ % 4` in `LOOK_EYES` and pattern `⌊look / 24⌋` in `LOOK_PATTERNS`;
+  - `pose`, `facing`, `expression`, `job` and `emote`, as indices into `PLACE_POSES`, `PLACE_FACINGS`, `PLACE_EXPRESSIONS`, `PLACE_JOBS` and `PLACE_EMOTES`, with `NO_CODE` (255) for no job or emote;
+  - `step`, a walker's frame, 0 or 1;
+  - `x` and `y`, the anchor in art px, and `lift`, which raises a sitter onto a bench.
+- **`PlaceWalks`:** the loops look-only walkers follow, which `place.py` lacks. Loop r belongs to `person[r]` and steps through `cells[offsets[r]]` to `cells[offsets[r + 1] − 1]`, as y × width + x, then back to its first cell, the person's own tile.
+- **Messages:**
+  - `PlaceRequest` is `{ type: 'place', place }`. Place p is settlement p, or wonder p minus the settlement count, in `world.py`'s `place_contexts` order.
+  - `PlaceReply` is `{ type: 'place', place, layout, walks, ms }`, with every buffer transferred, as `placeBuffers(layout, walks)` lists them.
+  - `PlaceError` is `{ type: 'place-error', place, message }`, sent instead for an unknown place, a request before any world, or a failed build.
+
+### Building a place
+
+- **`placeContexts(map: WorldMap): PlaceContext[]`** ports `world.py`'s `_context` and `place_contexts`.
+  - Settlements come first in id order, seeded `draw(world seed, PLACE, 0, cell)`; then wonders in placement order, seeded `draw(world seed, PLACE, 1, kind)`.
+  - `PlaceContext` holds `model.py`'s fields, in its order.
+- **`buildPlace(ctx): { layout: PlaceLayout, walks: PlaceWalks }`** ports `place.py` one function to one function, in `worldgen`'s `place/`.
+  - Its frame table, `place/frames.ts`, is generated by `scripts/place-frames.ts`. It holds only the fields `place.py` reads: w, the anchor, the footprint and the door.
+  - Looks are `look_for(place seed, person index)` on the `LOOK` stream. `worldgen`'s `streams.ts` holds `PLACE` 10, `LOOK` 11 and `CROWD` 12, as `rng.py` does.
+- **Walk loops,** in TypeScript only:
+  - A tile is walkable if it is a road, or a standable tile with nothing standing on it.
+  - `place.py`'s walkers, and 350 per mille of the standers with no job, each get a loop: 3–6 waypoints within 10 steps of their tile, joined by shortest paths inside that reach.
+  - Sitters and people with a job stay put.
+  - A place's loops hold at most 4,096 cells.
+  - Every draw is `draw(place seed, CROWD, …)`, with first keys 0x110–0x112, clear of `place.py`'s 1–6.
+- **Stages:** `place.py`'s `SETTLEMENT_STAGES`, mirrored by `build.ts`, list `build_settlement`'s stage groups in order: water, centre, buildings, decor, nature and people.
+
+### Goldens
+
+- `tools/worldgen/place_goldens.py` writes `packages/worldgen/test/fixtures/place-goldens-v1.json`. It holds a fingerprint after each stage for:
+  - every place of the first 20 standard worlds, 1,033 of them;
+  - seven pinned places that reach what those worlds miss: a viaduct, landmarks off the plaza, rocky ground, east and west sea arches, and a cliffed cove.
+  A vista has its context, ground and layout fingerprinted.
+- `tools/worldgen/place_fixtures.py` writes `packages/render-gl/test/fixtures/places-v1.json`: three whole layouts, with the SHA-256 of `placedraw.py`'s picture of each, which the place pass must match.
+- **CI** runs both with `--check`; the goldens check covers the first world and the pinned places.
+- **Engines:** `scripts/engines.ts` and the browser engine spec check the places of the first two worlds plus the pinned ones, 109 places in all, in Node, Bun, Chromium, Firefox and WebKit.
+
+### In the map worker
+
+- After a world, `generate.ts` keeps its place contexts, made before the world's buffers are transferred away, and times them as the `contexts` stage.
+- The first `PlaceRequest` imports `place-builder.ts`, which builds as its own chunk, `place-builder-*.js`, so opening the map pays nothing for places. `ms` times the build alone.
+- `map-worker.ts` installs its message handler only once. WebKit runs a module worker's script a second time when a dynamically imported module imports it back.
+
+### The atlas in every build
+
+`apps/web/vite/atlas.ts` runs `tools/atlas/build_atlas.py --out <outDir>/atlas` after every `vite build` of `apps/web`, into any outDir. So no preview, test server or deploy serves the page without its art.
+- The build fails if Python 3 or Pillow is missing (`pip install -r tools/requirements.txt`).
+- The step adds about 8 s a build, almost all of it in the lossless WebP encodes.
+- The first entry into a place loads `atlas/atlas.json` and `atlas/atlas.webp`; first load never does.
