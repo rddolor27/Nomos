@@ -306,12 +306,12 @@ M8.1 ports `tools/worldgen` to TypeScript, and M8.3 draws what it makes. The own
 | `settle/` | `habitability.ts`, `settle.ts`, `farm.ts` | `settle.py` |
 | `countries/` | `countries.ts`, `grow.ts` | `countries.py`; `grow` serves regions too |
 | `regions/` | `regions.ts` | Regions inside countries, and market territories across them; Python has neither |
-| `routes/` | `costs.ts`, `graph.ts`, `roads.ts`, `lanes.ts` | `roads.py`, whose step costs countries share |
+| `routes/` | `costs.ts`, `graph.ts`, `roads.ts`, `lanes.ts`, `classes.ts` (M3.1's Part 3) | `roads.py`, whose step costs countries share, and its road classes |
 | `features/` | `survey.ts`, `wonders.ts`, `landmarks.ts` | `features.py` |
 | `names/` | `place-names.ts`, `words.ts` (generated) | Place and country names |
 | `world/` | `draft.ts`, `generate.ts`, `fingerprint.ts` | The world being built, the pipeline, and `world.fingerprint` |
 | `crowd/` | `crowd.ts` | The map's look-only crowd, which Python lacks (M8.3) |
-| `place/` | `site.ts`, `build.ts`, the stage files, `looks.ts`, `contexts.ts`, `layout.ts`, `walks.ts` and `frames.ts` (generated) | `place.py`, `looks.py`'s `look_for` and `world.py`'s place contexts, plus the walk loops Python lacks (M3.1, Places below) |
+| `place/` | `site.ts`, `build.ts`, the stage files (among them `walls.ts` and `farms.ts`, from M3.1's Part 3), `looks.ts`, `contexts.ts`, `layout.ts`, `walks.ts`, `street-crowd.ts` and `frames.ts` (generated) | `place.py`, `looks.py`'s `look_for` and `world.py`'s place contexts, plus the walk loops and the street crowd Python lacks (M3.1, Places below) |
 
 - **Imports:** values only from `@nomos/sim-core/kernels`, `@nomos/sim-protocol/world-map` and `@nomos/sim-protocol/place`.
   - `kernels` gives the keyed draw, value noise and integer maths. M8.1 adds `mix`, `draw`, `below`, `value`, `fbm`, `floorDiv`, `floorMod` and a new `isqrt` to its exports.
@@ -325,10 +325,10 @@ M8.1 ports `tools/worldgen` to TypeScript, and M8.3 draws what it makes. The own
 ### Generating
 
 - `generateWorld(seed: number, size: WorldSize, timer?: StageTimer): WorldMap` makes the world `tools/worldgen`'s `world.generate(seed, *SIZES[size])` makes. The seed is read as uint32.
-- `worldFingerprint(map: WorldMap): number` equals Python's `world.fingerprint` for the same world.
+- `worldFingerprint(map: WorldMap): number` equals Python's `world.fingerprint` for the same world. From M3.1's Part 3 it folds `roadClass` after the roads and lanes.
 - `StageTimer` is `{ lap(stage: string): void }`, called as each stage ends: `shape`, `rain`, `drain`, `climate`, `biomes`, `settle`, `countries`, `regions`, `farm`, `roads`, `lanes` and `features`. The package reads no clock itself.
 - **Goldens:**
-  - `tools/worldgen/goldens.py` writes one fingerprint per stage for 100 seeds of each size into `packages/worldgen/test/fixtures/goldens-v1.json`. The file defines the stages and their fold.
+  - `tools/worldgen/goldens.py` writes one fingerprint per stage for 100 seeds of each size into `packages/worldgen/test/fixtures/goldens-v1.json`. The file defines the stages and their fold. From M3.1's Part 3, a `classes` stage follows `roads`.
   - Regions and names, which Python lacks, are frozen from TypeScript in `frozen-v1.json`.
 
 ### `WorldMap`
@@ -340,7 +340,8 @@ In `sim-protocol`'s `world-map/world-map.ts`, exported as `@nomos/sim-protocol/w
 - `BIOME_NAMES`: ocean, lake, grassland, farmland, forest-deciduous, forest-conifer, marsh, sand, hills, mountain, peak, snow;
 - `COAST_NAMES`: inland, beach, cliffs;
 - `TIER_NAMES`: capital, city, town, village, hamlet;
-- `WONDER_NAMES` and `LANDMARK_NAMES`: `model.py`'s `WONDERS` and `LANDMARKS`.
+- `WONDER_NAMES` and `LANDMARK_NAMES`: `model.py`'s `WONDERS` and `LANDMARKS`;
+- `ROAD_CLASS_NAMES`: minor, major (M3.1's Part 3).
 
 Per world:
 
@@ -385,6 +386,7 @@ The rest:
 | `countries.capital`, `countries.colour` | `Int32Array`, `Uint8Array` | Country k is index k − 1, with K = 3–5: its capital's settlement id, and its colour, 0–4, an index into M8.3's five map colours |
 | `regions.seat`, `regions.country` | `Int32Array`, `Uint8Array` | Region r is index r − 1: its seat's settlement id, and its country |
 | `roads`, `lanes` | `PathTable` | One path of cells per road route or sea lane, as `{ offsets: Int32Array, cells: Int32Array }`: path p is `cells[offsets[p]]` up to `cells[offsets[p + 1] − 1]` |
+| `roadClass` | `Uint8Array` | One per road path, in `roads`' order, a `ROAD_CLASS_NAMES` index. Major roads are the cheapest chains of routes joining the towns, cities and capitals that a spanning tree links on each landmass (M3.1's Part 3) |
 | `bridges` | `Int32Array` | River cells that roads cross, ascending |
 | `wonders.kind`, `wonders.cell` | `Uint8Array`, `Int32Array` | `WONDER_NAMES` indices, 4–8 a world, or 3 where the land has no fourth site, in placement order |
 | `landmarks.kind`, `landmarks.cell` | `Uint8Array`, `Int32Array` | Landmarks on cells of their own (lighthouses, viaducts and observatories), as `LANDMARK_NAMES` indices |
@@ -452,12 +454,12 @@ The Country and Region views draw a `WorldMap` with a renderer of their own, whi
   - The Country view draws the `map8_` art at `cellPx / 8`, and the Region view the `map16_` art at `cellPx / 16`.
   - `mapViewFor(current, cellPx, dpr)` switches to the Region view at 16 CSS px a cell, with `autoSkin`'s 15% hysteresis: it enters at 18.4 and stays down to 13.6. At 8 device px a cell it is always the Country view.
 - **Colours:** `map/map-colours.json` is the one table of the map's colours.
-  - It holds the five country colours, the line colours, and the crowd's six body hues keyed by `CROWD_HUES` name with their dark `outline`. `tools/worldgen/mapdraw.py` reads the same file.
+  - It holds the five country colours, the line colours, with `highway`, the palette's `STONE_L` (M3.1's Part 3), and the crowd's six body hues keyed by `CROWD_HUES` name with their dark `outline`. `tools/worldgen/mapdraw.py` reads the same file.
   - `COUNTRY_COLOURS` holds the five as `0xRRGGBB`, indexed by `WorldMap.countries.colour`. They appear only on map overlays and the legend (Countries rule 5).
   - `CROWD_COLOURS` holds the six body hues as `0xRRGGBB` by `CROWD_HUES` index, and `CROWD_OUTLINE` the outline, which equals `OUTLINE`, the palette's outline that a place is drawn on (M3.1). `test_worldgen.py` holds them to `spritekit.py`'s `BODY_HUES` bases and `OUTLINE` (M8.3, Task 17).
   - The owner picked the five on 9 October 2026. In index order they are `#42F6FC` cyan, `#0000E4` blue, `#600090` deep violet, `#CC36D8` orchid and `#FC66FC` pink-violet.
   - A test keeps them, in D65 Lab and CIEDE2000, ≥ 15 from every palette colour, and ≥ 11.95 apart for normal, protan, deutan and tritan vision (M8.3, Task 14).
-- **Atlas page:** `tools/atlas` writes `map.webp`, `map.png` and `map.json` beside the town atlas. The page holds the 81 map-scale frames: terrain tiles, wonders and landmarks at both scales, and the settlement icons.
+- **Atlas page:** `tools/atlas` writes `map.webp`, `map.png` and `map.json` beside the town atlas. The page holds the 93 map-scale frames: terrain tiles, wonders and landmarks at both scales, and the settlement icons, walled ones and their highlight rings included (M3.1's Part 3).
   - `AtlasPage` is `{ image: ImageBitmap, frames: Record<string, AtlasFrame> }`, keyed `"<sheet>/<frame>"`.
   - `AtlasFrame` is `{ x, y, w, h, anchor: [x, y], face?: [x, y] }`. From M3.1, body frames carry `face`, the offset their face overlays draw at, from `characters.json`.
   - `loadAtlasPage(jsonUrl, imageUrl): Promise<AtlasPage>` fetches the page.
@@ -470,7 +472,8 @@ The Country and Region views draw a `WorldMap` with a renderer of their own, whi
   - It falls back to Canvas2D when WebGL2 is missing, when a texture can't reach 3,072 px, or when a lost context stays lost for `restoreTimeoutMs`.
 - **What draws:**
   - **Before the atlas page,** and whenever `setFlat(true)`, it draws the flat Countries view: each country's land in its colour, with borders and icons.
-  - **After the page:** each cell's tile, then rivers, sea lanes, roads, bridges, colour bands and border lines as pixel lines, then peaks, settlements, wonders and landmarks in row order, as `mapdraw.py` draws them.
+  - **After the page:** each cell's tile, then rivers, sea lanes, minor roads dotted and major roads solid in `highway`, bridges, colour bands and border lines as pixel lines, then peaks, settlements, wonders and landmarks in row order, as `mapdraw.py` draws them.
+  - **Settlement icons** (M3.1's Part 3): a capital's or city's icon is `map8_settlement_<tier>-walled` in the Country view and `map16_settlement_<tier>-walled` in the Region view. A town's is `…_town-palisade`, and a village's or hamlet's stays `settlement_<tier>`.
   - **The crowd,** in the Region view only, flat or not, after the tiles and lines and before the icons. Each dot is a disc in its body hue, with a 1-px dark outline from 4 px up. Its size is a tenth of a cell in whole device pixels, rounded up: 2, 4, 5, 7, 10 and 13 px at 16, 32, 48, 64, 96 and 128 px a cell, so the dots are outlined wherever the Region view opens.
   - **The Canvas2D fallback** draws the flat fills, the crowd, settlement icons and labels only.
 - **Imports:** the map scene imports nothing from `render-gl`'s other folders, so no town module gains an export for it. Dependency-cruiser enforces this.
@@ -504,7 +507,7 @@ The Country and Region views draw a `WorldMap` with a renderer of their own, whi
 
 ## Places (owner: M3.1)
 
-The owner asked on 9 October 2026 to zoom into a settlement on the map and see that town and its people. A place is what `tools/worldgen/place.py` lays out for one settlement or wonder: a district of 48 × 28 tiles for a capital or city, 40 × 24 for a town, 32 × 20 for a village or hamlet, or a wonder's vista of 30 × 18. M3.1's step plan builds it, ahead of the rest of M3.1.
+The owner asked on 9 October 2026 to zoom into a settlement on the map and see that town and its people. A place is what `tools/worldgen/place.py` lays out for one settlement or wonder: a district of 176 × 112 tiles for a capital or city, 152 × 96 for a town, 80 × 48 for a village and 56 × 32 for a hamlet, or a wonder's vista of 30 × 18. These are M3.1's Part 3 sizes, or 160 × 100 and 140 × 80 if its Task 11 takes Ruling 1's fallback. M3.1's step plan builds it, ahead of the rest of M3.1.
 
 ### The contract
 
@@ -520,9 +523,10 @@ The owner asked on 9 October 2026 to zoom into a settlement on the map and see t
   - `step`, a walker's frame, 0 or 1;
   - `x` and `y`, the anchor in art px, and `lift`, which raises a sitter onto a bench.
 - **`PlaceWalks`:** the loops look-only walkers follow, which `place.py` lacks. Loop r belongs to `person[r]` and steps through `cells[offsets[r]]` to `cells[offsets[r + 1] − 1]`, as y × width + x, then back to its first cell, the person's own tile.
+- **`PlaceCrowd`:** the street crowd (M3.1's Part 2), look-only walkers, one per 150 residents and at most 3,000. Crowd loop r steps through `cells[offsets[r]]` to `cells[offsets[r + 1] − 1]` and back. Walker k has `look[k]` and `expression[k]`, follows loop `loop[k]`, and starts `phase[k]` art px along it.
 - **Messages:**
   - `PlaceRequest` is `{ type: 'place', place }`. Place p is settlement p, or wonder p minus the settlement count, in `world.py`'s `place_contexts` order.
-  - `PlaceReply` is `{ type: 'place', place, layout, walks, ms }`, with every buffer transferred, as `placeBuffers(layout, walks)` lists them.
+  - `PlaceReply` is `{ type: 'place', place, layout, walks, crowd, ms }`, with every buffer transferred, as `placeBuffers(layout, walks, crowd)` lists them.
   - `PlaceError` is `{ type: 'place-error', place, message }`, sent instead for an unknown place, a request before any world, or a failed build.
   - **The starting town (owner request, 10 October 2026):** `TownRequest` is `{ type: 'town' }`, which needs no world. The answer is `TownReply`, `{ type: 'town', layout, ms }`, with the layout's buffers transferred as `layoutBuffers(layout)` lists them, or `TownError`, `{ type: 'town-error', message }`, when the build fails. `placeBuffers` lists `layoutBuffers` first.
 
@@ -538,9 +542,16 @@ The owner asked on 9 October 2026 to zoom into a settlement on the map and see t
   - A tile is walkable if it is a road, or a standable tile with nothing standing on it.
   - `place.py`'s walkers, and 350 per mille of the standers with no job, each get a loop: 3–6 waypoints within 10 steps of their tile, joined by shortest paths inside that reach.
   - Sitters and people with a job stay put.
-  - A place's loops hold at most 4,096 cells.
+  - A place's loops hold at most 16,384 cells.
   - Every draw is `draw(place seed, CROWD, …)`, with first keys 0x110–0x112, clear of `place.py`'s 1–6.
-- **Stages:** `place.py`'s `SETTLEMENT_STAGES`, mirrored by `build.ts`, list `build_settlement`'s stage groups in order: water, centre, buildings, decor, nature and people.
+- **The street crowd** keeps to at most 300 loops of at most 4,000 cells, 131,072 cells in all. From M3.1's Part 3, its hubs lie on roads that aren't farm tracks, and each hub's search order is keyed by `LANE` (0x125) on `CROWD`, so loops spread across wide roads.
+- **Stages:** `place.py`'s `SETTLEMENT_STAGES`, mirrored by `build.ts`, list `build_settlement`'s stage groups in order: water, centre, walls, buildings, farms, decor, nature and people. Walls and farms join in M3.1's Part 3.
+- **The walled town** (M3.1's Part 3):
+  - **New tile kinds:** `stone` (main road, 3 wide), `cobble` (street, 2), `gravel` (country road, 2), `track` (farm track, 1), `flower-bed`, and `crop_vine_<stage>` and `crop_rice_<stage>`. `path` stays the lane and `paving` the plaza. A road tile keeps the highest-ranked kind laid on it, in the order paving, stone, cobble, gravel, track, path.
+  - **Wall rings:** half-sizes of 64 × 40 for capitals and cities, in stone, and 56 × 30 for towns, as a palisade. Each is centred on the plaza's centre and kept 6 tiles inside the place's edge.
+  - **Gates** are 2 tiles wide. A front gate is a standing sprite over road that marks nothing solid; a side gate is a solid pier and cap beside a 2-tile gap.
+  - **Bridges:** main and country roads cross rivers on ground-layer bridge pieces. The water tiles stay water and become road.
+  - **`town.nmap`** gains the built kind `wall`, and `farm_` buildings count as workplaces.
 
 ### Goldens
 
@@ -565,6 +576,7 @@ The owner asked on 9 October 2026 to zoom into a settlement on the map and see t
 - The build fails if Python 3 or Pillow is missing (`pip install -r tools/requirements.txt`).
 - The step adds about 8 s a build, almost all of it in the lossless WebP encodes.
 - The first entry into a place loads `atlas/atlas.json` and `atlas/atlas.webp`; first load never does.
+- From M3.1's Part 3, the town page leaves out frames ending in `_snow` or `_night`, and `test_atlas.py` fails past 1,920 px.
 
 ### `@nomos/render-gl/place`
 

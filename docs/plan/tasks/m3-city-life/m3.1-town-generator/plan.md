@@ -768,7 +768,7 @@ It may run beside Tasks 11–16, since it shares no file with them and road clas
 
 ### Task 21: Close part 3 (coordinator)
 
-- `interfaces.md`: the sim-architect's changes below, in a docs commit of their own, after `nomos-bd`'s edit lands. Reconcile them with that edit first, which may already have changed `PlaceReply` for the Town skin's `town` request.
+- `interfaces.md`: the sim-architect's changes below. The coordinator applied them on 10 October 2026, after `nomos-bd`'s Town skin edit landed, and reconciled them with its `TownRequest`. At close, check them against the code, and if Task 11 took Ruling 1's fallback, change item 8's sizes.
   1. **The world map, The package:** add `classes.ts` to the `routes/` row's files, and "and its road classes" to its concern.
   2. **The world map, The package, `place/` row:** after "the stage files", add "(among them `walls.ts` and `farms.ts`, from M3.1's Part 3)" and `street-crowd.ts`. Make its concern "…plus the walk loops and the street crowd Python lacks…".
   3. **Generating:** add to the goldens bullet "From M3.1's Part 3 a `classes` stage follows `roads`", and to the `worldFingerprint` bullet "It folds `roadClass` after the roads and lanes."
