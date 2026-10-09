@@ -49,10 +49,11 @@ module.exports = {
     },
     {
       name: 'map-view-takes-only-types-from-the-town',
-      comment: 'M8.3: the map view reaches the town only through `import type`, so the entry chunk never gains an export for it.',
+      comment:
+        'M8.3: the map view reaches the town only through `import type`, so the entry chunk never gains an export for it. M0.8 shares one toolbar module, whose bytes passed the size gate.',
       severity: 'error',
       from: { path: '^apps/web/src/map/' },
-      to: { path: '^apps/web/src/', pathNot: '^apps/web/src/map/' },
+      to: { path: '^apps/web/src/', pathNot: '^apps/web/src/map/|^apps/web/src/panels/toolbar\\.ts$' },
     },
     {
       name: 'worldgen-imports-kernels-only',
