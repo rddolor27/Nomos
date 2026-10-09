@@ -8,6 +8,8 @@ import { chains } from '../../src/terrain/chains.ts';
 import { cut, landOf, rawOf, reliefOf, riseOf, shape } from '../../src/terrain/shape.ts';
 import { rain } from '../../src/climate/rain.ts';
 import { EROSION_PASSES, accumulate, erode, flood } from '../../src/drainage/flood.ts';
+import { lakes } from '../../src/drainage/lakes.ts';
+import { drain } from '../../src/drainage/drain.ts';
 
 export function stagePrints(seed: number, size: WorldSize): Map<string, number> {
   const [width, height] = WORLD_SIZES[size];
@@ -43,6 +45,12 @@ export function stagePrints(seed: number, size: WorldSize): Map<string, number> 
     passes.push(flooded.filled, flooded.receiver, flooded.order, flow, eroded);
   }
   prints.set('erode', fold(...passes));
+
+  const settled = flood(seed, width, height, eroded, shaped.ocean);
+  const pools = lakes(width, height, eroded, settled.filled, shaped.ocean);
+  prints.set('lakes', fold(settled.filled, settled.receiver, settled.order, pools.lake, pools.terminal, pools.level));
+  const drained = drain(seed, width, height, shaped.elevation, shaped.ocean, rained.rain);
+  prints.set('drain', fold(drained.elevation, drained.lake, drained.receiver, drained.flow, drained.river));
 
   return prints;
 }
