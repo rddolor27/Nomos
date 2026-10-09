@@ -47,8 +47,12 @@ def person_codes(p):
             'x': p.x, 'y': p.y, 'lift': p.lift}
 
 
-def fixture(name, ctx):
-    layout = build(ctx)
+def context_fields(ctx):
+    return {k: list(v) if isinstance(v, tuple) else v for k, v in vars(ctx).items()}
+
+
+def layout_codes(layout):
+    """A layout in PlaceLayout's shape: frames in order of first use, and frame codes for the tiles and sprites."""
     frames, index = [], {}
 
     def code(category, frame):
@@ -62,11 +66,14 @@ def fixture(name, ctx):
     ground = [v for s in layout.ground for v in (code(s.category, s.name), s.x, s.y)]
     standing = [v for s in layout.standing for v in (code(s.category, s.name), s.x, s.y)]
     codes = [person_codes(p) for p in layout.people]
+    return {'width': layout.width, 'height': layout.height, 'frames': frames, 'tiles': tiles, 'ground': ground,
+            'standing': standing, 'people': {field: [c[field] for c in codes] for field in PEOPLE}}
+
+
+def fixture(name, ctx):
+    layout = build(ctx)
     image = draw(layout)
-    context = {k: list(v) if isinstance(v, tuple) else v for k, v in vars(ctx).items()}
-    return {'name': name, 'context': context, 'width': layout.width, 'height': layout.height, 'frames': frames,
-            'tiles': tiles, 'ground': ground, 'standing': standing,
-            'people': {field: [c[field] for c in codes] for field in PEOPLE},
+    return {'name': name, 'context': context_fields(ctx), **layout_codes(layout),
             'pixels': {'width': image.width, 'height': image.height,
                        'sha256': hashlib.sha256(image.tobytes()).hexdigest()}}
 
