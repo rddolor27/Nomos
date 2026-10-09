@@ -347,7 +347,12 @@ Read these before every port task. Each catches a way a line-by-line port drifts
     - a country's regions grow from its own seats by the countries' growth, over its own land and any water, so every land cell gets a region of its own country;
     - market territories grow from the same seats with no fence.
 
-    Large worlds `5eed0001`–`5eed0006` held 1–7 seats per country, and standard ones 1–7 (measured here). A one-region country is its capital's region.
+    Large worlds `5eed0001`–`5eed0006` held 1–7 seats per country, and standard ones 1–7 (measured here). Over all 200 golden worlds, as built in Task 23 (measured here):
+    - **Regions per country:** 1–12 in standard worlds and 1–11 in large ones, with a median of 3 and a mean of 3.7. Task 33's sweep and M8.3's Region view expect up to 12, and countries of a single region.
+    - **Regions per world:** 11–19.
+    - **Land whose market lies in another country:** 11–12% in the median world, and 25% at most.
+
+    A one-region country is its capital's region.
 11. **`variant` per cell.** The generator stores `mapdraw.py`'s keyed tile variant, so `render-gl` needs no draw.
 12. **The map worker lives in `apps/web/src/map/`:** `generate.ts` answers a message, and `map-worker.ts` binds it. The page starts it by URL, so its chunk is `map-worker-*.js`, apart from the sim worker's `worker-*.js`.
 13. **Stand-in names** keep M8.3's labels unblocked: `country-1`, and `capital-0` or `town-12` as Python names settlements, until Task 33 lands.
