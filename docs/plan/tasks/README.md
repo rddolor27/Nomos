@@ -188,7 +188,6 @@ Each must be settled before its sub-milestone starts. The task files give the co
 | M1.4 | whether the sounds pass a listen: the Sound tab asks the owner to play `dist/sounds/` before M1, above all the nine tracks against well-known jingles |
 | M1.4 | whether the synth renders at 22,050 Hz like the previews, or at the audio context's 44.1 or 48 kHz |
 | M1.6 | whether lab mode still goes public when M1 closes, as round 1 planned, now that launch waits for M8 (R9), which decides whether `v0.1.0` is announced |
-| M2.1 | what a month is on the 112-day year. Lengnick's firms decide monthly, and round 2's targets count months. A 21-day month, as in the paper, gives 5⅓ months a year; a 28-day season gives 4 (computed) |
 | M3.1 | the town walls' look, from the asset-designer's mockups, before the full sprite set is drawn |
 | M3.1 | how many blobs the grown starting town holds on each device tier, within the tick budgets |
 | M3.2 | soldiers are paid from taxes, which arrive only with M5's treasury (R1); choose a stopgap, such as M0.2's local-government account |
