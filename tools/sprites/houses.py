@@ -4,9 +4,11 @@ Seven building styles (thatched cottage, timber frame, brick, stone, painted pla
 weatherboard, rubble) in shapes sized by density, never by wealth: a detached house, row-house
 pieces that tile side by side, an apartment block, a village hut and a farmhouse; for a dense
 core, tall gabled townhouse pieces and corner houses that end a terrace with a wing along the
-side street; and a small gabled cabin for suburbs and outskirts. Every style shares the same door,
-windows, chimney size, lintels and flower boxes, so no style reads as richer or poorer
-(content rule 5). Roofs are drawn in terracotta and recoloured for the other variants.
+side street; and a small gabled cabin for suburbs and outskirts. Row and townhouse pieces also come
+handed, their door on the other side. Every style shares the same windows, chimney size and
+lintels, and draws its door, flower boxes, curtains and chimney pots from the same few choices by
+style and roof, so no style reads as richer or poorer (content rule 5). Roofs are drawn in
+terracotta and recoloured for the other variants.
 Each shape also gets a night overlay of lit windows that fits every style of that shape, and
 each style of a shape a snow overlay that fits every roof colour.
 
@@ -71,25 +73,68 @@ def at(tex, x, y):
 
 
 # ------------------------------------------------------------------ parts shared by every style
-DOOR = [                      # 16 x 17 with its frame: a 14-px opening fits the blob body
-    "..DDDDDDDDDDDD..",
-    ".DLLLLLLLLLLLLD.",
-    "DLLWWDWWWWDWWWWD",
-    "DLWWWDWWWWDWWWWD",
-    "DLWWWDWWWWDWWWWD",
-    "DLWWWDWWWWDWWWWD",
-    "DLWWWDWWWWDWWWWD",
-    "DLWWWDWWWWDWWWWD",
-    "DLWWWDWWWWDWWSWD",
-    "DLWWWDWWWWDWWWWD",
-    "DLWWWDWWWWDWWWWD",
-    "DLWWWDWWWWDWWWWD",
-    "DLWWWDWWWWDWWWWD",
-    "DLWWWDWWWWDWWWWD",
-    "DLWWWDWWWWDWWWWD",
-    "DWWWWDWWWWDWWWWD",
-    "DSSSSSSSSSSSSSSD",
-]
+# Doors are 16 x 17 with their frame: a 14-px opening fits the blob body. They are drawn in a paint's
+# lit (h), body (m) and edge (e) tones, on a stone step (S) with a stone knob.
+DOORS = {
+    'boards': [
+        "..eeeeeeeeeeee..",
+        ".ehhhhhhhhhhhhe.",
+        "ehhmmemmmmemmmme",
+        "ehmmmemmmmemmmme",
+        "ehmmmemmmmemmmme",
+        "ehmmmemmmmemmmme",
+        "ehmmmemmmmemmmme",
+        "ehmmmemmmmemmmme",
+        "ehmmmemmmmemmSme",
+        "ehmmmemmmmemmmme",
+        "ehmmmemmmmemmmme",
+        "ehmmmemmmmemmmme",
+        "ehmmmemmmmemmmme",
+        "ehmmmemmmmemmmme",
+        "ehmmmemmmmemmmme",
+        "emmmmemmmmemmmme",
+        "eSSSSSSSSSSSSSSe",
+    ],
+    'panels': [                # four sunk panels, shaded at the top and left, lit at the bottom and right
+        "..eeeeeeeeeeee..",
+        ".ehhhhhhhhhhhhe.",
+        "ehmmmmmmmmmmmmme",
+        "ehmeeeemmeeeemme",
+        "ehmemmhmmemmhmme",
+        "ehmemmhmmemmhmme",
+        "ehmemmhmmemmhmme",
+        "ehmehhhmmehhhmme",
+        "ehmmmmmmmmmmmSme",
+        "ehmmmmmmmmmmmmme",
+        "ehmeeeemmeeeemme",
+        "ehmemmhmmemmhmme",
+        "ehmemmhmmemmhmme",
+        "ehmemmhmmemmhmme",
+        "ehmehhhmmehhhmme",
+        "emmmmmmmmmmmmmme",
+        "eSSSSSSSSSSSSSSe",
+    ],
+    'stable': [                # split across the middle, so the top half opens on its own
+        "..eeeeeeeeeeee..",
+        ".ehhhhhhhhhhhhe.",
+        "ehhmmmemmmmemmme",
+        "ehmmmmemmmmemmme",
+        "ehmmmmemmmmemmme",
+        "ehmmmmemmmmemmme",
+        "ehmmmmemmmmemmme",
+        "ehmmmmemmmmemmme",
+        "eeeeeeeeeeeeeeee",
+        "ehhhhhhhhhhhhhhe",
+        "ehmmmmemmmmemSme",
+        "ehmmmmemmmmemmme",
+        "ehmmmmemmmmemmme",
+        "ehmmmmemmmmemmme",
+        "ehmmmmemmmmemmme",
+        "emmmmmemmmmemmme",
+        "eSSSSSSSSSSSSSSe",
+    ],
+}
+DOOR = DOORS['boards']                     # every design has its size
 WINDOW = [                    # 9 x 9, four panes
     "CCCCCCCCC",
     "CbbbCbbbC",
@@ -125,12 +170,60 @@ WINDOW_NARROW = [             # 4 x 9, one pane wide, a pair flanks the hut's do
 ]
 WINDOWS = {'large': WINDOW, 'small': WINDOW_SMALL, 'narrow': WINDOW_NARROW}
 SILL = ["CCCCCCCCCCC", ".~~~~~~~~~."]
-FLOWER_BOX = [                # first row covers the window's bottom frame, never its glass
-    "gPgGwgFgVGg",
-    "LLLLLLLLLLL",
-    "DWWWWWWWWWD",
-    ".~~~~~~~~~.",
-]
+# A flower box's first row covers the window's bottom frame, never its glass. Every set flowers.
+FLOWERS = ("gPgGwgFgVGg", "gPgFPgGgPFg", "gwgFwgGgwFg", "gBgFBgGgBFg", "gugFugGguFg")
+
+# ------------------------------------------------------------------ dressing
+# Paints as (lit, body, edge) symbols, for doors and flower boxes.
+PAINTS = {'wood': 'LWD', 'green': 'gFn', 'plum': 'pMN', 'slate': 'Ssd', 'oak': 'YyW', 'cream': 'wCc'}
+# Each style's door paint under each roof colour, in ROOF_COLOURS order: never the colour of its own
+# walls or roof, and each paint about as common as the others.
+DOOR_PAINTS = {
+    'cottage': ('green', 'oak', 'plum', 'slate', 'wood'),
+    'timber': ('slate', 'green', 'wood', 'oak', 'plum'),
+    'brick': ('plum', 'cream', 'slate', 'green', 'oak'),
+    'stone': ('wood', 'plum', 'cream', 'green', 'oak'),
+    'plaster': ('oak', 'wood', 'green', 'cream', 'slate'),
+    'board': ('green', 'plum', 'slate', 'cream', 'cream'),
+    'rubble': ('slate', 'wood', 'green', 'wood', 'plum'),
+}
+CURTAIN = 'P'
+POTS = {8: ".Rr..Rr.", 6: "..Rr.."}       # chimney pots, standing on the cap's lit course
+SHIFTED = ('timber', 'stone', 'board')     # styles whose chimneys stand at a shape's other place
+
+
+def painted(art, paint):
+    lit, body, edge = PAINTS[paint]
+    return [row.translate(str.maketrans({'h': lit, 'm': body, 'e': edge})) for row in art]
+
+
+class Trim:
+    """One frame's dressing: its door's design and paint, the flowers in its boxes, whether its upper
+    panes have curtains, and whether its chimney has pots. Style and roof pick them from the same few
+    choices, so place.py's uniform draws of style and roof spread them evenly, and no style dresses
+    richer or poorer."""
+
+    def __init__(self, style, roof):
+        i, j = STYLES.index(style), list(ROOF_COLOURS).index(roof)
+        self.paint = DOOR_PAINTS[style][j]
+        self.door = painted(list(DOORS.values())[(i + j) % len(DOORS)], self.paint)
+        self.flowers = FLOWERS[(2 * i + j) % len(FLOWERS)]
+        self.curtains = (2 * i + j) % 3 == 0
+        self.pots = (i + j) % 2 == 0
+
+    def box(self, width):
+        rows = [self.flowers[:width], 'h' * width, 'e' + 'm' * (width - 2) + 'e', '.' + '~' * (width - 2) + '.']
+        return painted(rows, self.paint)
+
+    def window(self, art):
+        """Curtains drawn back each side of the upper panes, behind the glass."""
+        if not self.curtains:
+            return art
+        w = len(art[0])
+        drapes = {(1, 1), (w - 2, 1)} if w < 7 else {(x, y) for x in (1, w - 2) for y in (1, 2, 3)}
+        drapes |= {(2, 1), (w - 3, 1)}
+        return [''.join(CURTAIN if (x, y) in drapes and ch in 'Bbw' else ch for x, ch in enumerate(row))
+                for y, row in enumerate(art)]
 
 # Chimneys rise above the roofline; each style builds its own in its wall material.
 BRICK_STACK = [
@@ -201,10 +294,14 @@ CHIMNEY = {
 ROOF_SHADE = {'1': '2', '2': '3', '3': '4', '4': '4'}
 
 
-def chimney_art(style, small=False):
-    """A style's chimney; the small one (for the hut) drops two middle columns and three rows."""
+def chimney_art(style, small=False, pots=False):
+    """A style's chimney; the small one (for the hut) drops two middle columns and three rows. Pots
+    replace the cap's top course and leave its outline over the roof as it was, so one snow overlay
+    still fits every roof."""
     art = CHIMNEY[style]
-    return [row[:3] + row[5:] for row in art[:7]] if small else art
+    if small:
+        art = [row[:3] + row[5:] for row in art[:7]]
+    return [POTS[len(art[0])], art[0]] + art[2:] if pots else art
 
 # ------------------------------------------------------------------ roofs
 # Texture symbols: '.' body, 'h' lit course edge, '-' course shadow, '|' joint,
@@ -578,6 +675,14 @@ class Plan:
         self.w, self.h = w, h
         self.roof, self.walls, self.joins = roof, walls, joins
         self.doors, self.windows, self.chimneys = [], [], []
+        self.roof_of = None
+
+    def handed(self, shape):
+        """A handed twin of this plan, which is the shape named `shape`: the same roof, walls and
+        chimneys, to dress with a door and windows the other way round. It shares the shape's snow."""
+        twin = Plan(self.w, self.h, self.roof, self.walls, self.joins)
+        twin.chimneys, twin.roof_of = self.chimneys, shape
+        return twin
 
     def door(self, x):
         self.doors.append(x)
@@ -587,9 +692,15 @@ class Plan:
         self.windows.append((x, y, extra, WINDOWS[kind]))
         return self
 
-    def chimney(self, x, y, small=False):
-        self.chimneys.append((x, y, small))
+    def chimney(self, x, y, small=False, shift=0):
+        """A chimney at x, or at x + shift for the SHIFTED styles, so rows of mixed styles vary."""
+        self.chimneys.append((x, y, small, shift))
         return self
+
+    def stacks(self, style, pots):
+        """(x, y, art) of each chimney as this style builds it."""
+        moved = style in SHIFTED
+        return [(x + shift * moved, y, chimney_art(style, small, pots)) for (x, y, small, shift) in self.chimneys]
 
     def openings(self):
         y1 = self.walls[3]
@@ -602,21 +713,22 @@ class Plan:
 def draw_house(plan, style, roof, snow=False):
     w, h = plan.w, plan.h
     x0, y0, x1, y1 = plan.walls
+    trim = Trim(style, roof)
     g = blank(w, h)
     wall(g, style, x0, y0, x1, y1, plan.openings(), lambda x: plan.roof.wall_top(x, y0))
     for x in plan.doors:
-        stamp(g, DOOR, x, y1 - len(DOOR) + 1)
+        stamp(g, trim.door, x, y1 - len(DOOR) + 1)
     for (x, y, extra, art) in plan.windows:
-        stamp(g, art, x, y)
+        stamp(g, trim.window(art), x, y)
         if extra == 'box':
-            stamp(g, [r[:len(art[0]) + 2] for r in FLOWER_BOX], x - 1, y + len(art) - 1)
+            stamp(g, trim.box(len(art[0]) + 2), x - 1, y + len(art) - 1)
         elif extra == 'sill':
             stamp(g, [r[:len(art[0]) + 2] for r in SILL], x - 1, y + len(art))
     im = render(g)
     r = blank(w, h)
     plan.roof.draw(r, style, plain=snow)
-    for (cx, cy, small) in plan.chimneys:     # each chimney shades the roof to its right
-        art = chimney_art(style, small)
+    stacks = plan.stacks(style, trim.pots)
+    for (cx, cy, art) in stacks:              # each chimney shades the roof to its right
         for y in range(cy + len(art) + 1):
             for x in (cx + len(art[0]) - 1, cx + len(art[0])):
                 if r[y][x] in ROOF_SHADE:
@@ -625,8 +737,8 @@ def draw_house(plan, style, roof, snow=False):
         r = [[SNOW_TONE.get(ch, ch) for ch in row] for row in r]
     im.alpha_composite(recolor(render(r), ROOF_COLOURS[roof]))
     c = blank(w, h)
-    for (cx, cy, small) in plan.chimneys:
-        stamp(c, chimney_art(style, small), cx, cy)
+    for (cx, cy, art) in stacks:
+        stamp(c, art, cx, cy)
     cim = render(c)
     im.alpha_composite(cim)
     im = ring(im, np.array(cim)[:, :, 3] > 0)
@@ -649,27 +761,31 @@ def plans():
     p = {}
     # Detached, farmhouse and apartment fronts are mirror-symmetric about a centred door.
     p['detached'] = (Plan(48, 48, HipRoof(1, 4, 46, 25), walls=(3, 26, 44, 46))
-                     .door(16).window(5, 30, 'box').window(34, 30, 'box').chimney(32, 1))
+                     .door(16).window(5, 30, 'box').window(34, 30, 'box').chimney(32, 1, shift=-24))
     # A row unit is a door and a window; every piece keeps the same rhythm so a terrace reads
-    # as evenly spaced homes, and the end pieces keep 2 px of wall at the corner.
+    # as evenly spaced homes, and the end pieces keep 2 px of wall at the corner. A handed
+    # piece reverses the rhythm, so neighbours can pair their doors.
     p['row-left'] = (Plan(32, 48, HipRoof(1, 4, 31, 25, ends=(True, False)), walls=(3, 26, 31, 46))
-                     .door(5).window(23, 30, 'box', 'small').chimney(12, 1))
+                     .door(5).window(23, 30, 'box', 'small').chimney(12, 1, shift=8))
     p['row-middle'] = (Plan(32, 48, HipRoof(0, 4, 31, 25, ends=(False, False)), walls=(0, 26, 31, 46))
-                       .door(3).window(22, 30, 'box', 'small').chimney(12, 1))
+                       .door(3).window(22, 30, 'box', 'small').chimney(12, 1, shift=8))
     p['row-right'] = (Plan(32, 48, HipRoof(0, 4, 30, 25, ends=(False, True)), walls=(0, 26, 28, 46))
-                      .door(2).window(20, 30, 'box', 'small').chimney(12, 1))
+                      .door(2).window(20, 30, 'box', 'small').chimney(12, 1, shift=-8))
+    p['row-left-handed'] = p['row-left'].handed('row-left').door(14).window(5, 30, 'box', 'small')
+    p['row-middle-handed'] = p['row-middle'].handed('row-middle').door(13).window(3, 30, 'box', 'small')
+    p['row-right-handed'] = p['row-right'].handed('row-right').door(11).window(2, 30, 'box', 'small')
     # The hut's walls run 1 px under its eave so a narrow window fits each side of the door.
     p['hut'] = (Plan(32, 32, HipRoof(1, 3, 30, 12), walls=(2, 13, 29, 30))
                 .door(8).window(3, 16, 'sill', 'narrow').window(25, 16, 'sill', 'narrow')
-                .chimney(20, 1, small=True))
+                .chimney(20, 1, small=True, shift=-14))
     p['farmhouse'] = (Plan(64, 48, HipRoof(1, 4, 62, 25), walls=(3, 26, 60, 46))
                       .door(24).window(9, 30, 'box').window(46, 30, 'box')
-                      .chimney(8, 1).chimney(48, 1))
+                      .chimney(8, 1, shift=8).chimney(48, 1, shift=-8))
     a = Plan(64, 64, HipRoof(1, 4, 62, 15), walls=(3, 16, 60, 62))
     for x in (8, 21, 34, 47):
         a.window(x, 18, 'box' if x in (8, 47) else 'sill')
         a.window(x, 31, 'sill' if x in (8, 47) else 'box')
-    a.door(24).window(8, 47, 'sill').window(47, 47, 'sill').chimney(10, 1).chimney(46, 1)
+    a.door(24).window(8, 47, 'sill').window(47, 47, 'sill').chimney(10, 1, shift=8).chimney(46, 1, shift=-8)
     p['apartment'] = a
     p.update(townhouses())
     p.update(corners())
@@ -677,7 +793,7 @@ def plans():
     # It is named cabin, since cottage already names a style.
     p['cabin'] = (Plan(32, 48, GableRoof((1, 30), 28, 12), walls=(2, 29, 29, 46))
                   .door(8).window(3, 32, 'sill', 'narrow').window(25, 32, 'sill', 'narrow')
-                  .window(14, 18, 'sill', 'narrow').chimney(17, 1))
+                  .window(14, 18, 'sill', 'narrow').chimney(17, 1, shift=-10))
     return p
 
 
@@ -688,17 +804,18 @@ def corners():
     left = (Plan(48, 64, WingRoof(1, 16, 47, 30, (True, False), GableRoof((1, 20), 26, 15)),
                  walls=(3, 31, 47, 62), joins='r')
             .door(5).window(24, 46, 'box').window(37, 46, 'box')
-            .window(8, 32, 'sill').window(24, 32, 'box').window(37, 32, 'sill').chimney(32, 13))
+            .window(8, 32, 'sill').window(24, 32, 'box').window(37, 32, 'sill').chimney(32, 13, shift=-8))
     right = (Plan(48, 64, WingRoof(0, 16, 46, 30, (False, True), GableRoof((27, 46), 26, 15)),
                   walls=(0, 31, 44, 62), joins='l')
              .door(27).window(2, 46, 'box').window(15, 46, 'box')
-             .window(2, 32, 'sill').window(15, 32, 'box').window(31, 32, 'sill').chimney(8, 13))
+             .window(2, 32, 'sill').window(15, 32, 'box').window(31, 32, 'sill').chimney(8, 13, shift=8))
     return {'corner-left': left, 'corner-right': right}
 
 
 def townhouses():
     """Tall, narrow terrace pieces for a dense core, each with its own gable to the street, so a
-    terrace reads as separate homes. Every piece shares one gable and one rhythm of door and windows."""
+    terrace reads as separate homes. Every piece shares one gable and one rhythm of door and windows,
+    and comes handed too."""
     pieces = {'townhouse-left': ((2, 31), (1, 31), 'r'), 'townhouse-middle': ((0, 31), (0, 31), 'lr'),
               'townhouse-right': ((0, 29), (0, 30), 'l')}
     p = {}
@@ -706,7 +823,10 @@ def townhouses():
         p[shape] = (Plan(32, 64, GableRoof((0, 31), 30, 14, clip), walls=(wx0, 31, wx1, 62), joins=joins)
                     .door(4).window(22, 46, 'box', 'small')
                     .window(8, 32, 'sill', 'small').window(22, 32, 'box', 'small')
-                    .window(12, 20, 'sill', 'small').chimney(17, 1))
+                    .window(12, 20, 'sill', 'small').chimney(18, 1, shift=-12))
+        p[f'{shape}-handed'] = (p[shape].handed(shape).door(12).window(3, 46, 'box', 'small')
+                                .window(3, 32, 'box', 'small').window(17, 32, 'sill', 'small')
+                                .window(12, 20, 'sill', 'small'))
     return p
 
 
@@ -720,12 +840,14 @@ def build():
         night = f'house_{shape}_night'
         joins = {'joins': plan.joins} if plan.joins else {}
         for style in STYLES:
-            snow = f'house_{style}_{shape}_snow'
+            snow = f'house_{style}_{plan.roof_of or shape}_snow'
             for roof in ROOF_COLOURS:
                 im = draw_house(plan, style, roof)
                 doors = [[x + len(DOOR[0]) // 2, plan.walls[3]] for x in plan.doors]
                 sheet.add(f'house_{style}_{shape}_roof-{roof}', im, footprint=footprint(plan),
                           door=doors[0], night=night, snow=snow, **joins)
+            if plan.roof_of:
+                continue
             bare = draw_house(plan, style, 'terracotta')
             sheet.add(snow, overlay(bare, draw_house(plan, style, 'terracotta', snow=True)),
                       footprint=footprint(plan), layer='snow')
