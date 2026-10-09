@@ -1,0 +1,5 @@
+#charts figure { margin: 0 0 24px; }
+#charts figcaption { margin-bottom: 8px; font-weight: 600; }
+#charts summary { display: flex; align-items: center; min-height: var(--ui-h); color: var(--ui-muted); cursor: pointer; }
+#charts table { width: 100%; border-collapse: collapse; font-size: var(--ui-small); font-variant-numeric: tabular-nums; }
+#charts th, #charts td { padding: 4px 8px; border-bottom: 1px solid var(--ui-raised); text-align: right; }

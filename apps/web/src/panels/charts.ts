@@ -1,5 +1,6 @@
 import uPlot from 'uplot';
 import 'uplot/dist/uPlot.min.css';
+import './charts.css';
 
 export interface Charts {
   push(tick: number, systemMs: Record<string, number>, frameMs: number): void;
@@ -31,23 +32,26 @@ const SYSTEMS_CAPTION = 'Tick time by system (ms)';
 const FRAME_CAPTION = 'Frame time (ms)';
 
 // Okabe-Ito sky blue, orange and yellow and Tol Bright grey (round 3's colour-blind-safe palettes), each at least 3:1
-// against the page's #464C5E, which the role colours' navy (1.2:1) and teal (2.6:1) are not. A fifth series repeats
-// the first.
+// against the page's --ui-bg, which the role colours' navy is not. A fifth series repeats the first.
 const SERIES_COLOURS = ['#56B4E9', '#E69F00', '#BBBBBB', '#F0E442'];
-const TEXT = '#F6F0DE';
-const GRID = 'rgba(246, 240, 222, 0.12)';
 // Whole ticks only, so the x axis never labels a tick 7.5.
 const TICK_INCREMENTS = [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10_000, 20_000, 50_000, 100_000];
 
 const NUMBER = new Intl.NumberFormat('en', { maximumFractionDigits: 3 });
 const MILLISECONDS = new Intl.NumberFormat('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-const AXIS: uPlot.Axis = {
-  stroke: TEXT,
-  grid: { stroke: GRID },
-  ticks: { stroke: GRID },
-  values: (_, splits) => splits.map((split) => NUMBER.format(split)),
-};
+// The axes take the page's text and a recessive grid from index.html's tokens, read once as the charts mount.
+function chartAxes(root: HTMLElement): uPlot.Axis[] {
+  const tokens = getComputedStyle(root);
+  const grid = { stroke: tokens.getPropertyValue('--ui-raised').trim() };
+  const axis: uPlot.Axis = {
+    stroke: tokens.getPropertyValue('--ui-text').trim(),
+    grid,
+    ticks: grid,
+    values: (_, splits) => splits.map((split) => NUMBER.format(split)),
+  };
+  return [{ ...axis, label: 'Tick', incrs: TICK_INCREMENTS }, { ...axis, label: 'Time (ms)' }];
+}
 
 function formatted(format: Intl.NumberFormat, value: number | null): string {
   return value === null ? MISSING : format.format(value);
@@ -95,7 +99,7 @@ function el<K extends keyof HTMLElementTagNameMap>(tag: K, text = '', ...childre
   return element;
 }
 
-function createView(root: HTMLElement, plot: Plot): View {
+function createView(root: HTMLElement, plot: Plot, axes: uPlot.Axis[]): View {
   const host = el('div');
   const tbody = el('tbody');
   const headings = ['Tick', ...plot.labels].map((label) => Object.assign(el('th', label), { scope: 'col' }));
@@ -108,7 +112,7 @@ function createView(root: HTMLElement, plot: Plot): View {
       width: host.clientWidth,
       height: CHART_HEIGHT,
       scales: { x: { time: false } },
-      axes: [{ ...AXIS, incrs: TICK_INCREMENTS }, AXIS],
+      axes,
       series: seriesOptions(plot.labels),
     },
     chartData(plot),
@@ -137,7 +141,7 @@ export function mountCharts(root: HTMLElement): Charts {
   setInterval(() => {
     if (!plots || !changed) return;
     changed = false;
-    views ??= plots.map((plot) => createView(root, plot));
+    views ??= plots.map((plot) => createView(root, plot, chartAxes(root)));
     views.forEach(render);
   }, REFRESH_MS);
 
