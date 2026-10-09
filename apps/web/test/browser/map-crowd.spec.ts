@@ -54,6 +54,21 @@ test('draws the crowd at a Region step, and a dot moves within a second', async 
   expect(await movesWithin(page.locator('#map canvas'), 1000)).toBe(true);
 });
 
+test("zooms with the bar's buttons into the Region view, where the crowd draws, and back out", async ({ page }) => {
+  await openMap(page);
+  const zoomIn = page.getByRole('button', { name: 'Zoom in' });
+  const zoomOut = page.getByRole('button', { name: 'Zoom out' });
+  await expect(zoomIn).toHaveText('+');
+  await expect(zoomOut).toHaveText('\u{2212}');
+  await zoomIn.click();
+  await zoomIn.click();
+  await expect.poll(() => crowd(page)).toMatchObject({ view: 'region', crowdDrawn: true });
+  // Back at 16 px a cell the Region view holds, by its 15% hysteresis, so the Country view takes a second step.
+  await zoomOut.click();
+  await zoomOut.click();
+  await expect.poll(() => crowd(page)).toMatchObject({ view: 'country', crowdDrawn: false });
+});
+
 test('keeps every dot still under reduced motion', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await openMap(page);

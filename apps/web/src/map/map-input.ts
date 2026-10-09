@@ -39,6 +39,13 @@ function spread(pointers: Map<number, [number, number]>): [number, number, numbe
   return [Math.hypot(a[0] - b[0], a[1] - b[1]), (a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
 }
 
+// The zoom keys and the map's zoom buttons both zoom about the view's centre.
+export function zoomAtCentre(view: HTMLElement, target: MapInputTarget, steps: number): void {
+  const centreX = (view.clientWidth * devicePixelRatio) / 2;
+  const centreY = (view.clientHeight * devicePixelRatio) / 2;
+  target.setCamera(zoomMapAt(target.camera(), steps, centreX, centreY));
+}
+
 function onKey(view: HTMLElement, target: MapInputTarget, event: KeyboardEvent): void {
   // Ctrl or Cmd with plus and minus zooms the browser, which stays the browser's.
   if (event.ctrlKey || event.metaKey || event.altKey) return;
@@ -47,7 +54,7 @@ function onKey(view: HTMLElement, target: MapInputTarget, event: KeyboardEvent):
   const zoom = ZOOM_KEYS.get(event.key);
   const step = PAN_CELLS * camera.cellPx;
   if (pan) target.setCamera(panMapBy(camera, pan[0] * step, pan[1] * step));
-  else if (zoom) target.setCamera(zoomMapAt(camera, zoom, (view.clientWidth * devicePixelRatio) / 2, (view.clientHeight * devicePixelRatio) / 2));
+  else if (zoom) zoomAtCentre(view, target, zoom);
   else if (event.key === 'Home') target.fit();
   else if (event.key === 'Escape') target.close();
   else return;
