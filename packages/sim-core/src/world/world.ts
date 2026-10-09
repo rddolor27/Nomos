@@ -2,14 +2,14 @@ import { ACTION_WALK } from '../agents/actions.ts';
 import { Blob } from '../agents/blob.ts';
 import { createClaims, type Claims } from '../money/claims.ts';
 import { below, draw2 } from '../random/draw.ts';
-import { openCells, pointInTileQ8, standInGround, type Ground } from './ground.ts';
+import { openCells, pointInTileQ8, standInGround, walkableTiles, type Ground } from './ground.ts';
 import { createInputLog, type InputLog } from './inputs.ts';
 import { createLedger, issue, walletAccount, type Ledger } from '../money/ledger.ts';
 import { reserveArena, take, type Arena } from '../memory/arena.ts';
 import { MAX_CULTURES, addAgent, createAgentStore, type AgentStore } from '../agents/store.ts';
 import { SPAWN, STRIDE } from '../random/streams.ts';
 import { STRIDE_DAYS, createStride, type Stride } from '../day/stride.ts';
-import { TIER_AGENTS, TIER_MEMORY_BYTES, type Tier } from '../memory/tiers.ts';
+import { TIER_AGENTS, TIER_MEMORY_BYTES, TIER_TILES_PER_AGENT, type Tier } from '../memory/tiers.ts';
 import { setHeading } from '../movement/walk.ts';
 
 export const TICK = 0;
@@ -55,10 +55,17 @@ export interface World {
   checks: boolean;
 }
 
-export function createWorld(seed: number, tier: Tier, ground?: Ground): World {
+// The layout always holds the tier's whole count, so a smaller town moves no offset and a checkpoint restores at any size.
+export function createWorld(seed: number, tier: Tier, ground?: Ground, agents: number = TIER_AGENTS[tier]): World {
   const world = layoutWorld(seed, tier, TIER_AGENTS[tier], TIER_MEMORY_BYTES[tier], ground);
-  populate(world);
+  populate(world, agents);
   return world;
+}
+
+// A town's blobs: one to every TIER_TILES_PER_AGENT walkable tiles, and never past the tier's own count.
+export function townAgents(tier: Tier, ground: Ground): number {
+  const fitting = Math.floor(walkableTiles(ground) / TIER_TILES_PER_AGENT[tier]);
+  return Math.max(1, Math.min(TIER_AGENTS[tier], fitting));
 }
 
 // No take is caught: create* is not atomic across its takes, so a world that does not fit is dropped whole.
@@ -104,10 +111,12 @@ export function layoutWorld(
   };
 }
 
-export function populate(world: World): void {
+export function populate(world: World, people: number = world.agents.capacity): void {
   const seed = world.seed;
   const agents = world.agents;
-  const people = agents.capacity;
+  if (!Number.isInteger(people) || people < 1 || people > agents.capacity) {
+    throw new RangeError(`a ${world.tier} world holds 1 to ${agents.capacity} agents, not ${people}`);
+  }
   const width = world.ground.width;
   const open = openCells(world.ground);
   if (open.length === 0) throw new RangeError('the ground has no walkable cell to spawn on');

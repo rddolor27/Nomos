@@ -1,11 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { draw2 } from '../src/random/draw.ts';
-import type { Ground } from '../src/world/ground.ts';
+import { standInGround, walkableTiles, type Ground } from '../src/world/ground.ts';
 import { PHONE_MEMORY_BYTES } from '../src/memory/arena.ts';
+import { OK, checkInvariants } from '../src/money/invariants.ts';
+import { MINT } from '../src/money/ledger.ts';
 import { step } from '../src/step/step.ts';
 import { SPAWN } from '../src/random/streams.ts';
 import { checkpoint, restoreWorld, stateHash } from '../src/world/checkpoint.ts';
-import { createWorld, layoutWorld, populate, type World } from '../src/world/world.ts';
+import { OPENING_CENTS, createWorld, layoutWorld, populate, townAgents, type World } from '../src/world/world.ts';
 import { run } from './run.ts';
 
 const TILE_Q8 = 16 * 256;
@@ -95,5 +97,55 @@ describe('the ground', () => {
   it('refuses a ground with no open cell or a walk of the wrong size', () => {
     expect(() => createWorld(42, 'phone', { width: 4, height: 4, walk: new Uint8Array(16) })).toThrow(RangeError);
     expect(() => createWorld(42, 'phone', { width: 4, height: 4, walk: new Uint8Array(15).fill(1) })).toThrow(RangeError);
+  });
+});
+
+describe('a town of blobs', () => {
+  it('counts the walkable tiles', () => {
+    expect(walkableTiles(roomGround())).toBe(ROOM.width * ROOM.height);
+    expect(walkableTiles(standInGround())).toBe(65_536);
+  });
+
+  it("fills a town at its tier's density and never past its tier", () => {
+    const hundred = new Uint8Array(32 * 32);
+    hundred.fill(1, 0, 100);
+    const small: Ground = { width: 32, height: 32, walk: hundred };
+    const tiers = ['desktop', 'phone-plus', 'phone'] as const;
+    expect(tiers.map((tier) => townAgents(tier, small))).toEqual([50, 33, 25]);
+    expect(tiers.map((tier) => townAgents(tier, standInGround()))).toEqual([32_768, 21_845, 10_000]);
+    const lone: Ground = { width: 2, height: 2, walk: new Uint8Array([0, 0, 0, 1]) };
+    expect(townAgents('desktop', lone)).toBe(1);
+  });
+
+  it('spawns a town smaller than its tier in the places the full tier would use', () => {
+    const ground = roomGround();
+    const full = createWorld(42, 'phone', ground);
+    const town = createWorld(42, 'phone', ground, 300);
+    const { count, capacity, x, y, look } = town.agents;
+    expect([count[0], capacity]).toEqual([300, 10_000]);
+    expect(town.arena.top).toBe(full.arena.top);
+    for (const column of ['x', 'y', 'look'] as const) {
+      expect(town.agents[column].slice(0, 300), column).toEqual(full.agents[column].slice(0, 300));
+    }
+    expect([x[300], y[300], look[300]]).toEqual([0, 0, 0]);
+    expect(town.cash.balance[MINT]).toBe(-OPENING_CENTS * 300);
+    expect(agentsOutsideRoom(town)).toBe(0);
+    expect(checkInvariants(town.cash, town.claims)).toBe(OK);
+  });
+
+  it('refuses a count the tier cannot hold', () => {
+    for (const agents of [0, -1, 1.5, 10_001]) {
+      expect(() => createWorld(42, 'phone', roomGround(), agents), String(agents)).toThrow(RangeError);
+    }
+  });
+
+  it('replays a smaller town from its seed and restores it from a checkpoint', () => {
+    const ground = roomGround();
+    const original = run(createWorld(42, 'phone', ground, 300), 500);
+    const restored = restoreWorld(42, 'phone', checkpoint(original), ground);
+    expect(restored.agents.count[0]).toBe(300);
+    const hash = stateHash(run(original, 1_000));
+    expect(stateHash(run(restored, 1_000))).toBe(hash);
+    expect(stateHash(run(createWorld(42, 'phone', ground, 300), 1_000))).toBe(hash);
   });
 });

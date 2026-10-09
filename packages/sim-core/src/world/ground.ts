@@ -36,11 +36,16 @@ export function walkableAt(ground: Ground, xQ8: number, yQ8: number): boolean {
   return tx >= 0 && ty >= 0 && tx < ground.width && ty < ground.height && ground.walk[ty * ground.width + tx] !== 0;
 }
 
-export function openCells(ground: Ground): Int32Array {
+export function walkableTiles(ground: Ground): number {
   const walk = ground.walk;
   let open = 0;
   for (let cell = 0; cell < walk.length; cell++) if (walk[cell] !== 0) open++;
-  const cells = new Int32Array(open);
+  return open;
+}
+
+export function openCells(ground: Ground): Int32Array {
+  const walk = ground.walk;
+  const cells = new Int32Array(walkableTiles(ground));
   let n = 0;
   for (let cell = 0; cell < walk.length; cell++) if (walk[cell] !== 0) cells[n++] = cell;
   return cells;
