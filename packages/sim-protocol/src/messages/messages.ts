@@ -8,7 +8,7 @@ export const SNAPSHOT_BYTES = 12;
 export const SNAPSHOT_BUFFERS = 3;
 
 export type AppMessage =
-  | { type: 'init'; seed: number; tier: Tier; map: ArrayBuffer }
+  | { type: 'init'; seed: number; tier: Tier; map: ArrayBuffer; checks: boolean }
   | { type: 'pause' }
   | { type: 'resume' }
   | { type: 'checkpoint' } // a worker cannot see pagehide, so the app asks for the checkpoint

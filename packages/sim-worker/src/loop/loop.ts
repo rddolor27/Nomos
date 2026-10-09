@@ -79,7 +79,7 @@ export function createSimLoop(host: LoopHost, cpuSlowdown = 1): { handle(msg: Ap
   function handle(msg: AppMessage): void {
     workFromMs = host.now();
     if (msg.type === 'init') {
-      init(msg.seed, msg.tier, msg.map);
+      init(msg.seed, msg.tier, msg.map, msg.checks);
       return;
     }
     if (session === null) return;
@@ -89,9 +89,10 @@ export function createSimLoop(host: LoopHost, cpuSlowdown = 1): { handle(msg: Ap
     else giveBack(session.pool, msg.buffer);
   }
 
-  function init(seed: number, tier: Tier, map: ArrayBuffer): void {
+  function init(seed: number, tier: Tier, map: ArrayBuffer, checks: boolean): void {
     running = false;
     const world = host.makeWorld(seed, tier, map);
+    world.checks = checks;
     const pool = createSnapshotPool(world.agents.capacity);
     session = { world, pool };
     post({ type: 'ready', agents: world.agents.count[0] }, []);

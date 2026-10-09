@@ -69,7 +69,7 @@ function fakePage({ init = true } = {}) {
     return world;
   }
 
-  if (init) loop.handle({ type: 'init', seed: 42, tier: 'phone', map: new ArrayBuffer(0) });
+  if (init) loop.handle({ type: 'init', seed: 42, tier: 'phone', map: new ArrayBuffer(0), checks: true });
   return {
     handle: loop.handle,
     advance,
@@ -101,7 +101,7 @@ describe('the sim loop', () => {
     page.advance(1_000);
     expect(page.posted).toEqual([]);
 
-    page.handle({ type: 'init', seed: 42, tier: 'phone', map: new ArrayBuffer(0) });
+    page.handle({ type: 'init', seed: 42, tier: 'phone', map: new ArrayBuffer(0), checks: true });
     expect(page.posted.map(({ type }) => type)).toEqual(['ready', 'snapshot']);
     expect(page.posted[0]).toEqual({ type: 'ready', agents: 10_000 });
     page.advance(1_000);
@@ -131,8 +131,18 @@ describe('the sim loop', () => {
     vi.mocked(warmUp).mockImplementationOnce(() => {
       for (const { type } of page.posted) postedFirst.push(type);
     });
-    page.handle({ type: 'init', seed: 42, tier: 'phone', map: new ArrayBuffer(0) });
+    page.handle({ type: 'init', seed: 42, tier: 'phone', map: new ArrayBuffer(0), checks: true });
     expect(postedFirst).toEqual(['ready', 'snapshot']);
+  });
+
+  it("sets the world's checks from init", () => {
+    const unchecked = fakePage({ init: false });
+    unchecked.handle({ type: 'init', seed: 42, tier: 'phone', map: new ArrayBuffer(0), checks: false });
+    expect(unchecked.world().checks).toBe(false);
+
+    const checked = fakePage({ init: false });
+    checked.handle({ type: 'init', seed: 42, tier: 'phone', map: new ArrayBuffer(0), checks: true });
+    expect(checked.world().checks).toBe(true);
   });
 
   // Both orders finish the warm-up before the world's first tick, and the scratch both worlds share is written before
@@ -157,7 +167,7 @@ describe('the sim loop', () => {
         queued = send(page);
         page.stall(300);
       });
-      page.handle({ type: 'init', seed: 42, tier: 'phone', map: new ArrayBuffer(0) });
+      page.handle({ type: 'init', seed: 42, tier: 'phone', map: new ArrayBuffer(0), checks: true });
       expect(page.posted.map(({ type }) => type)).toEqual(['ready', 'snapshot']);
       for (const msg of queued) page.handle(msg);
       return page;
@@ -319,7 +329,13 @@ describe('the sim loop', () => {
       vi.mocked(warmUp).mockImplementationOnce(() => {
         clock += WARM_MS;
       });
-      createSimLoop(host, cpuSlowdown).handle({ type: 'init', seed: 42, tier: 'phone', map: new ArrayBuffer(0) });
+      createSimLoop(host, cpuSlowdown).handle({
+        type: 'init',
+        seed: 42,
+        tier: 'phone',
+        map: new ArrayBuffer(0),
+        checks: true,
+      });
       return { readyMs, doneMs: clock };
     }
 

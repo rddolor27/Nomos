@@ -13,6 +13,9 @@ export const WARM_TICKS = 2000;
 export function warmUp(): void {
   const world = layoutWorld(0, 'phone', WARM_AGENTS, WARM_MEMORY_BYTES);
   populate(world);
+  // Production workers skip the ledger check, so the warm-up compiles the step without it, and its cost stays flat as
+  // wallets grow.
+  world.checks = false;
   for (let day = 0; day < WARM_DAYS; day++) {
     dayBoundary(world);
     const slices = daySliceCount(world.globals[DAY_AGENTS], world.globals[DAY_HOUSEHOLDS], SPOILAGE_RULE, world.tier);

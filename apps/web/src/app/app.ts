@@ -149,7 +149,7 @@ export async function startApp(boot: Boot, doc: Document, start: Start): Promise
   // keeps, so the bytes can go to the worker. Nothing may await between the post and the listeners below, or a fast
   // worker's ready and spawn would arrive to find none.
   const { bytes, map } = await loadMap(boot, status);
-  post({ type: 'init', seed: start.seed, tier: start.tier, map: bytes }, [bytes]);
+  post({ type: 'init', seed: start.seed, tier: start.tier, map: bytes, checks: import.meta.env.DEV }, [bytes]);
   const renderer = createWorldRenderer(element<HTMLCanvasElement>(doc, '#world'), {
     backend: start.backend,
     release: (buffer) => post({ type: 'return', buffer }, [buffer]),

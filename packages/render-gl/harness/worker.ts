@@ -72,7 +72,7 @@ async function spawn(seed: number): Promise<Spawn> {
         send(worker, { type: 'return', buffer: data.buffer }, [data.buffer]);
         resolve({ agents, tick: data.tick, count: data.count, offWalk });
       });
-      send(worker, { type: 'init', seed, tier: 'phone', map: bytes }, [bytes]);
+      send(worker, { type: 'init', seed, tier: 'phone', map: bytes, checks: true }, [bytes]);
     });
   } finally {
     worker.terminate();
@@ -96,7 +96,7 @@ async function failOn(text: string): Promise<string> {
         resolve(event.message);
       });
       const map = new TextEncoder().encode(text).buffer;
-      send(worker, { type: 'init', seed: 42, tier: 'phone', map }, [map]);
+      send(worker, { type: 'init', seed: 42, tier: 'phone', map, checks: true }, [map]);
     });
   } finally {
     worker.terminate();
