@@ -21,6 +21,9 @@ import { farm } from '../../src/settle/farm.ts';
 import { landmasses, routeGraph } from '../../src/routes/graph.ts';
 import { buildRoads } from '../../src/routes/roads.ts';
 import { lanes } from '../../src/routes/lanes.ts';
+import { survey } from '../../src/features/survey.ts';
+import { wonders } from '../../src/features/wonders.ts';
+import type { FeatureWorld } from '../../src/world/draft.ts';
 
 export function stagePrints(seed: number, size: WorldSize): Map<string, number> {
   const [width, height] = WORLD_SIZES[size];
@@ -116,6 +119,26 @@ export function stagePrints(seed: number, size: WorldSize): Map<string, number> 
   prints.set('roads', fold(paths(built.roads), built.bridges));
   const sailed = lanes(width, height, farmed, settlements);
   prints.set('lanes', fold(paths(sailed)));
+
+  const world: FeatureWorld = {
+    seed,
+    width,
+    height,
+    elevation: drained.elevation,
+    biome: farmed,
+    temperature: warmth.temperature,
+    moisture: wetness,
+    river: drained.river,
+    receiver: drained.receiver,
+    coast,
+    settlements,
+    roads: built.roads,
+    bridges: built.bridges,
+  };
+  const land = survey(world);
+  prints.set('survey', fold(land.slope, land.forestDepth, land.town, land.big, land.wet, land.hotspot, land.hotReach));
+  const spots = wonders(world, land);
+  prints.set('wonders', fold(rows(spots.map((p) => [p.kind, p.x, p.y]))));
 
   return prints;
 }
