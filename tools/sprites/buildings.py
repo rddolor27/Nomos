@@ -666,6 +666,64 @@ HAY = [
     '.OOOOOOO..',
 ]
 
+CRATE_FISH = [
+    '.OKOKOWO.',
+    'OKWkKWkKO',
+    'OkKKkKKkO',
+    'OOOOOOOOO',
+    'OLwwwwwdO',
+    'OOOOOOOOO',
+]
+
+PICK = [                # a pick stood on its head, handle up
+    '..OOOO..',
+    '..OLwO..',
+    '..OLwO..',
+    '..OLwO..',
+    '..OLwO..',
+    '..OLwO..',
+    'OOOLwOOO',
+    'OKKKKkxO',
+    'OOOOOOOO',
+]
+
+SHOVEL = [
+    '.OOO.',
+    'OLLwO',
+    '.OwO.',
+    '.OwO.',
+    '.OwO.',
+    '.OwO.',
+    '.OwO.',
+    'OKKkO',
+    'OKkxO',
+    'OkkxO',
+    '.OxO.',
+    '..O..',
+]
+
+WORKBENCH = [           # a joiner's bench: a plane and shavings on top, a vice at one end
+    '...OOOOO..........',
+    '...OKKkO..CC......',
+    'OOOOOOOOOOOOOOOOOO',
+    'OLLLLLLLLLLLLLLLwO',
+    'OwwwwwwwwwwwwwwwdO',
+    'OOOOOOOOOOOOOOOOOO',
+    '.OdO..........OdO.',
+    '.OdO..........OdO.',
+    '.OdO..........OdO.',
+    '.OOO..........OOO.',
+]
+
+BUCKET = [
+    'OOOOOO',
+    'OAAAAO',
+    'OLwwdO',
+    'OxxxxO',
+    'OLwwdO',
+    '.OOOO.',
+]
+
 SMOKE = [               # a little smoke in CREAM_D: two puffs drifting up and to the right
     '....Cc.',
     '...CCcc',
@@ -702,12 +760,17 @@ def log_pile(tiers):
 # ------------------------------------------------------------------ civic
 def clinic():
     b = Building(4)
+    c = b.c
+    E, dx = b.E, b.door_x()
     b.roof('green', 'shingle')
     b.wall('cream')
     b.doorway()
-    b.window(b.wx0 + 5)
-    b.window(b.wx1 - 14)
-    b.c.prop((b.W - 13) // 2, b.E - 10, CROSS)
+    for x in (b.wx0 + 5, b.wx1 - 14):
+        b.window(x, sill=None)
+        c.prop(x - 1, E + 14, FLOWER_BOX)
+    c.prop((b.W - 13) // 2, E - 10, CROSS)
+    hood(c, dx - 4, E + 1, 26, 'green')                       # the large clinic's entrance canopy, small
+    posts(c, (dx - 3, dx + 17), E + 6, b.g)
     return b
 
 
@@ -727,8 +790,9 @@ def police():
     c.rect(dx - 1, b.g - DOOR_H, dx + 18, b.g, 'N')           # navy door frame
     c.vline(dx + 18, b.g - DOOR_H + 1, b.g, 'n')
     b.doorway()
-    b.window(b.wx0 + 6, 'N')
-    b.window(b.wx1 - 15, 'N')
+    b.window(b.wx0 + 6, 'N', sill='W')
+    b.window(b.wx1 - 15, 'N', sill='W')
+    c.ground(b.wx0 + 5, BENCH)
     c.prop((b.W - 13) // 2, b.E - 10, BADGE)
     return b
 
@@ -736,12 +800,17 @@ def police():
 def school():
     b = Building(4, top=13)
     c = b.c
+    E, dx = b.E, b.door_x()
     b.roof('terracotta', 'tile')
     b.wall('cream', 'clapboard')
     b.doorway()
-    b.window(b.wx0 + 4, 'w', sill='L')
-    b.window(b.wx1 - 13, 'w', sill='L')
+    for x in (b.wx0 + 2, b.wx1 - 14):                         # classroom windows, as on the large school
+        c.stamp(x, E + 3, class_window(2))
+        c.hline(x, x + 12, E + 16, 'L')
+        c.swap(x, E + 17, x + 12, E + 17, SHADE)
     c.prop(b.W // 2 - 7, b.top + 4 - len(CUPOLA) + 1, CUPOLA)
+    hood(c, dx - 4, E + 1, 26, 'terracotta')
+    posts(c, (dx - 3, dx + 17), E + 6, b.g)
     return b
 
 
@@ -781,16 +850,23 @@ def town_hall():
     c.vline(dx + 18, b.g - DOOR_H + 1, b.g, 'k')
     b.doorway()
     for x in (b.wx0 + 5, b.wx0 + 17, b.wx1 - 26, b.wx1 - 14):
-        b.window(x, 'C', sill='C')
+        b.window(x, 'C', sill=None)
+        c.prop(x - 1, b.E + 14, FLOWER_BOX)
+    quoins(c, b.wx0, b.E + 1, b.g - 3)
+    quoins(c, b.wx1, b.E + 1, b.g - 3, right=True)
+    front_steps(c, dx - 3, dx + 20, b.g, 2)
     return b
 
 
 def records_office():
     b = Building(4)
     c = b.c
+    dx = b.door_x()
     b.roof('shingle', 'shingle')
     b.wall('stone', 'stone', plinth=None)
+    c.hline(dx + 2, dx + 15, b.g - DOOR_H, 'K')               # stone lintel over the door
     b.doorway()
+    c.prop(dx + 18, b.E + 6, LANTERN)
     for x in (b.wx0 + 5, b.wx1 - 14):
         b.window(x, 'w', sill='K')
         for yy, row in ((b.E + 7, 'VSaTSV'), (b.E + 11, 'aTSVaS')):   # shelves of records
@@ -819,8 +895,8 @@ def portico(c, px0, px1, E, g, columns, pict, rise):
     for cx in columns:
         c.hline(cx - 1, cx + 5, E + 3, 'W')
         c.hline(cx - 1, cx + 5, E + 4, 'O')
-        for y in range(E + 5, g - 2):
-            c.stamp(cx - 1, y, ['OWCCccO'])
+        for y in range(E + 5, g - 2):                         # fluted shafts
+            c.stamp(cx - 1, y, ['OWCcCcO'])
         c.hline(cx - 1, cx + 5, g - 3, 'K')
     c.hline(px0 - 2, px1 + 2, g - 2, 'O')                     # steps
     c.hline(px0 - 2, px1 + 2, g - 1, 'K')
@@ -849,7 +925,10 @@ def jail():
     roof_flat(c, 2, b.W - 3, 1, b.E - 1)
     c.hline(b.wx0, b.wx1, b.E, 'O')
     b.wall('stone', 'stone', plinth=None)
-    c.stamp(b.door_x(), b.g - DOOR_H + 1, door_double(band='x'))
+    dx = b.door_x()
+    c.hline(dx, dx + 17, b.g - DOOR_H, 'K')                   # stone lintel
+    c.stamp(dx, b.g - DOOR_H + 1, door_double(band='x'))
+    c.prop(dx + 18, b.E + 5, LANTERN)
     for x in (b.wx0 + 6, b.wx1 - 13):                         # small high barred windows
         c.stamp(x, b.E + 4, ['OOOOOOOO', 'OkdkdkdO', 'OkdkdkdO', 'OkdkdkdO', 'OOOOOOOO'])
         c.hline(x, x + 7, b.E + 9, 'K')
@@ -865,12 +944,14 @@ def shop():
     dx = b.wx1 - 21
     b.doorway(dx)
     c.stamp(b.wx0 + 3, b.E + 8, window('w', w=22, h=11))
-    for i, ch in enumerate('VVSSGGaaVS'):                     # goods on display
-        c.put(b.wx0 + 5 + i * 2, b.E + 16, ch)
-        c.put(b.wx0 + 6 + i * 2, b.E + 16, ch)
+    for row, goods in ((b.E + 16, 'VVSSGGaaVS'), (b.E + 12, 'YiRSPiYRSi')):   # goods on two shelves
+        for i, ch in enumerate(goods):
+            c.put(b.wx0 + 5 + i * 2, row, ch)
+            c.put(b.wx0 + 6 + i * 2, row, ch)
     c.hline(b.wx0 + 3, b.wx0 + 24, b.E + 19, 'C')
     c.prop(b.wx0 - 2, b.E, awning(b.wx1 - b.wx0 + 5))
     c.swap(b.wx0, b.E + 7, b.wx1, b.E + 7, SHADE)             # awning shadow on the wall
+    c.prop(b.wx0 + 26, b.E + 9, LANTERN)
     c.prop(dx + 4, b.E - 12, COIN)
     return b
 
@@ -922,8 +1003,11 @@ def market_stall(open_=True):
     if open_:
         for x, crate in ((5, CRATE_APPLES), (17, CRATE_GREENS), (29, CRATE_BREAD)):
             c.prop(x, ct - 5, crate)
+        c.prop(39, ct - 7, POT)
         c.vline(W // 2, 14, 15, 'x')                           # coin sign on a short chain
         c.prop(W // 2 - 2, 16, COIN_SMALL)
+        c.vline(8, 14, 15, 'w')                                # a string of onions from the canopy
+        c.prop(6, 16, ['.OO.', 'OSCO', 'OSsO', '.OO.', 'OSCO', 'OSsO', '.OO.'])
     else:
         c.tile(3, 13, W - 4, ct - 1, ['TTTTCCCC'], ox=1)       # canvas let down over the front
         c.swap(3, ct - 3, W - 4, ct - 1, {'T': 't', 'C': 'c'})
@@ -932,6 +1016,8 @@ def market_stall(open_=True):
         c.vline(W - 3, 13, ct - 1, 'c')
         for x in (12, W // 2, W - 13):                         # ties
             c.vline(x, ct - 6, ct - 5, 'd')
+        c.vline(W // 2, 14, 15, 'x')                           # the sign stays up while the stall is shut
+        c.prop(W // 2 - 2, 16, COIN_SMALL)
     return Sprite(c, [3, 2])
 
 
@@ -961,6 +1047,10 @@ def warehouse():
     b.wall('wood', 'vboard', plinth=None)
     big_doors(c, b.W // 2 - 13, b.g, 26)
     c.hline(b.W // 2 - 14, b.W // 2 + 13, b.g - DOOR_H, 'x')  # door rail
+    gablet(c, b.W // 2 - 10, 2, 20, LOFT_CRATES, 'slate')     # a loft over the doors, with its hoist
+    c.prop(b.W // 2 - 2, 8, ['OOOO', 'OLwO', 'OwdO', 'OOOO'])
+    c.vline(b.W // 2, 12, 21, 'S')
+    c.prop(b.W // 2 - 2, 22, ['.OOO.', 'OxkxO', '.OkO.', '..O..'])
     c.ground(b.wx0 + 1, SACK)
     c.ground(b.wx0 + 7, SACK)
     c.prop(b.wx0 + 3, b.H - 15, SACK)
@@ -988,6 +1078,9 @@ def farm():
     c.stamp(xm - 3, front - 8, ['OOOOOOOO', 'OCCCCCCO', 'OCddddCO', 'OCdSSdCO', 'OCSSSSCO', 'OCCCCCCO',
                                 'OOOOOOOO'])
     big_doors(c, xm - 10, g, 22, leaf='r', hi='V', lo='r', brace='C')
+    c.ground(xm + 11, HAY)                                    # hay against the doors' frame
+    c.prop(xm + 13, H - 15, HAY[:7] + ['.OOOOOOO..'])
+    c.ground(bx0 + 3, BUCKET)
     sx0, sx1 = 58, 77                                         # silo
     c.rect(sx0, 9, sx1, g, 'K')
     for y in range(9, g + 1):
@@ -1032,6 +1125,8 @@ def pasture():
     c.prop(ox0 + 7, b.g - 14, HAY[:7] + ['.OOOOOOO..'])
     c.ground(ox0 + 2, HAY)
     c.ground(ox0 + 13, HAY)
+    c.vline(ox1 - 4, b.g - DOOR_H + 3, b.g - DOOR_H + 4, 'x')   # a lamp hung in the shelter
+    c.prop(ox1 - 6, b.g - DOOR_H + 5, LANTERN)
     fx0, fx1 = ox1 + 1, b.wx1                                 # paddock fence: rails and posts
     for y in (b.g - 11, b.g - 7):
         c.hline(fx0, fx1, y - 1, 'O')
@@ -1097,6 +1192,9 @@ def dock():
     for y in range(shore + 2, pend - 1, 7):                   # side pilings in the water
         c.rect(px1 + 1, y, px1 + 2, y + 2, 'd')
         c.put(px1 + 1, y, 'w')
+    c.prop(px0 + 2, g - 4, CRATE_FISH)
+    c.prop(px1 - 5, pend - 16, LANTERN)                       # a lamp on a post at the pier's end
+    c.prop(px1 - 4, pend - 10, ['OwdO'] * 9)
     bx, by = 23, shore + 3                                    # rowing boat beside the pier
     c.stamp(bx, by, boat_rows())
     c.hline(bx + 13, px0 - 1, by + 7, 'S')                    # mooring rope
@@ -1134,6 +1232,11 @@ def lumber_camp():
     c.vline(36, 20, g, 'w')
     c.vline(35, 20, g, 'L')
     c.vline(34, 20, g, 'O')
+    c.hline(10, 28, 23, 'K')                                  # a two-man saw hung on the back wall
+    for x in range(11, 28, 2):
+        c.put(x, 24, 'k')
+    c.vline(9, 21, 25, 'L')
+    c.vline(29, 21, 25, 'L')
     for y in range(g - 11, g, 4):                             # stacked boards
         c.hline(7, 31, y, 'O')
         c.hline(7, 31, y + 1, 'S')
@@ -1199,6 +1302,7 @@ def quarry():
     c.ground(47, blk)                                         # cut blocks at the rim
     c.ground(55, blk[:5] + blk[4:])                           # a taller block staggers the seams
     c.prop(47, H - 15, blk)
+    c.prop(56, H - 25, PICK)                                  # a pick left on the blocks
     for y in range(2, 16):                                    # hoist: post on the far rim, boom over the pit
         c.put(40, y, 'L')
         c.put(41, y, 'w')
@@ -1258,6 +1362,7 @@ def mine():
     c.vline(tx + 7, g - 8, g, 'K')
     c.vline(tx + 14, g - 8, g, 'K')
     c.stamp(tx + 18, g - 15, ['.OO.', 'OYYO', 'OYyO', '.OO.'])  # lantern
+    c.ground(tx - 6, SHOVEL)
     c.ground(tx + 24, [                                       # ore cart
         '.O.O.OO.O.',
         'OrOxOrrOxO',
@@ -1292,8 +1397,8 @@ def fuel_works():
             c.put(x, y, ch)
     c.prop(cx - 3, top - 2, ['OOOOOOO', 'OKkkkxO', 'OxxxxxO', 'OOOOOOO'])   # vent
     c.prop(cx - 1, top - 2 - len(SMOKE), SMOKE)
-    for x in (cx - 12, cx - 4, cx + 4, cx + 11):              # air holes at the base
-        c.stamp(x, g - 3, ['OOO', 'OxO', 'OOO'])
+    for x in (cx - 12, cx - 4, cx + 4, cx + 11):              # air holes at the base, glowing
+        c.stamp(x, g - 3, ['OOO', 'OrO' if x in (cx - 4, cx + 11) else 'OxO', 'OOO'])
     c.ground(46, log_pile([3, 2, 1]))
     c.prop(47, H - 22, [                                      # basket of charcoal on the logs
         '.O.O.O.O.',
@@ -1316,24 +1421,24 @@ def workshop():
     c.prop(chx, b.top + 6, ['OOOOOOOO', 'OKKKKKkO', 'OkkkkkxO', 'OOOOOOOO', '.OKkkxO.', '.OKkkxO.',
                             '.OkkkxO.', '.OOOOOO.'])
     c.prop(chx + 1, b.top + 6 - len(SMOKE), SMOKE)
-    ox0, ox1 = b.wx0 + 4, b.wx0 + 29                          # open front: forge and anvil
-    c.rect(ox0, b.g - DOOR_H + 1, ox1, b.g, 'O')
-    c.rect(ox0 + 1, b.g - DOOR_H + 2, ox1 - 1, b.g, 'd')
-    c.hline(ox0 + 1, ox1 - 1, b.g - DOOR_H + 2, 'n')
-    c.ground(ox0 + 2, [
-        'OOOOOOOOO',
-        'OrRRrRRrO',
-        'ORrOOOrRO',
-        'OrOYVYOrO',
-        'ORrYYYrRO',
-        'OrRRrRRrO',
-        'ORrRRrRrO',
-        'OrRRrRRrO',
-        'ORrRRrRrO',
-        'OrrrrrrrO',
-        'OOOOOOOOO',
-    ])
-    c.ground(ox0 + 13, ['OOOOOOOOO', 'OKKKKKKkO', 'OOkkkkkOO', '..OkxO...', '.OkkkkxO.', 'OOOOOOOOO'])
+    ox0, ox1 = b.wx0 + 4, b.wx0 + 29                          # open front on a joiner's bench
+    g = b.g
+    c.rect(ox0, g - DOOR_H + 1, ox1, g, 'O')
+    c.rect(ox0 + 1, g - DOOR_H + 2, ox1 - 1, g, 'd')
+    c.hline(ox0 + 1, ox1 - 1, g - DOOR_H + 2, 'n')
+    c.hline(ox0 + 3, ox0 + 9, g - 13, 'K')                    # tools on the back wall: a saw,
+    for x in range(ox0 + 4, ox0 + 10, 2):
+        c.put(x, g - 12, 'k')
+    c.vline(ox0 + 2, g - 14, g - 12, 'L')
+    c.hline(ox0 + 12, ox0 + 14, g - 14, 'x')                  # a mallet and two chisels
+    c.vline(ox0 + 13, g - 13, g - 10, 'L')
+    for x in (ox0 + 17, ox0 + 19):
+        c.vline(x, g - 14, g - 13, 'L')
+        c.vline(x, g - 12, g - 10, 'K')
+    for x in (ox1 - 4, ox1 - 2):                              # planks leaning in the corner
+        c.vline(x, g - 15, g, 'S')
+        c.vline(x + 1, g - 15, g, 's')
+    c.ground(ox0 + 1, WORKBENCH)
     c.ground(b.wx1 - 16, CRATE)
     c.prop(b.wx1 - 16, b.H - 19, CRATE)
     c.ground(b.wx1 - 7, POT)
@@ -1646,6 +1751,15 @@ LOFT_DOOR = ['OOOOOOOOOO', 'OddddddddO', 'OdLwwwwddO', 'OdLwwwwddO', 'OdLwwwwddO
              'OdLwwwwddO', 'OddddddddO', 'OOOOOOOOOO']
 
 HOIST = ['OOOOOOOO', 'OLLLLLwO', 'OwwwwwdO', 'OOOOOOOO']
+
+LOFT_CRATES = [         # a loft door open on stacked crates
+    'OOOOOOOOOOOOOOOOOO',
+    'OwLOOOOOOOOOOOOwdO',
+    'OwLOdLwwdLwwdLOwdO',
+    'OwLOLwwdLwwdLwOwdO',
+    'OwLOOOOOOOOOOOOwdO',
+    'OOOOOOOOOOOOOOOOOO',
+]
 
 FLUME = [               # a plank channel bringing water onto the wheel's top
     'OOOOOOOOOOOOOOOOOOOO',
@@ -2006,11 +2120,12 @@ def porch_roof(c, x, y):
                   'O' + 'r' * 22 + 'O', 'O' * 24])
 
 
-def canopy(c, x, y, w):
-    """A flat entrance canopy seen from above, its front edge in shade; snow lies on it in winter."""
-    top, mid = ('W', 'W') if _snowing else ('g', 'G')
-    c.prop(x, y, ['O' * w, 'O' + top * (w - 2) + 'O', 'O' + mid * (w - 4) + 'llO', 'O' + 'l' * (w - 2) + 'O',
-                  'O' * w])
+def hood(c, x, y, w, ramp):
+    """A narrow roof or canopy over a door, seen from above, its lowest row the eave; snow lies on
+    it in winter."""
+    rp = RAMPS['snow' if _snowing else ramp]
+    c.prop(x, y, ['O' * w, 'O' + rp['H'] * (w - 2) + 'O', 'O' + rp['B'] * (w - 3) + rp['D'] + 'O',
+                  'O' + RAMPS[ramp]['D'] * (w - 2) + 'O', 'O' * w])
 
 
 def posts(c, xs, y, g):
@@ -2122,8 +2237,8 @@ def school_large():
     b.window(W // 2 - 5, 'w', y=up + 2, sill='L')
     dx = b.door_x()
     b.doorway()
-    porch_roof(c, dx - 4, ground - 3)
-    posts(c, (dx - 3, dx + 19), ground + 3, g)
+    porch_roof(c, dx - 3, ground - 3)
+    posts(c, (dx - 3, dx + 17), ground + 3, g)
     return b
 
 
@@ -2146,8 +2261,8 @@ def clinic_large():
     c.prop((W - 13) // 2, E - 14, CROSS)
     dx = b.door_x()
     b.doorway()
-    canopy(c, dx - 5, ground - 1, 28)
-    posts(c, (dx - 4, dx + 19), ground + 4, g)
+    hood(c, dx - 4, ground - 1, 26, 'green')
+    posts(c, (dx - 3, dx + 17), ground + 4, g)
     return b
 
 
