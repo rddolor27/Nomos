@@ -3,6 +3,7 @@ costs, so borders bend to mountains, lakes, rivers and coasts. Countries are map
 other stage reads them (owner, 9 October 2026).
 """
 import heapq
+from collections import Counter
 from dataclasses import dataclass
 from math import isqrt
 
@@ -17,6 +18,7 @@ COUNTRY = 13
 COUNT, COLOUR = range(2)
 COLOURS = 5
 CAPITAL_TIERS = ('capital', 'city', 'town')
+MIN_SETTLEMENTS = 3
 # Tuned on previews. Water costs far more than any land step, so an island without a capital joins
 # the country with the cheapest crossing.
 RIVER_STEP = 30
@@ -32,10 +34,18 @@ class Country:
 
 
 def found(seed, width, height, biome, river, receiver, settlements, land):
-    """(each cell's country, 0 for water; the countries in id order). Each capital takes the capital
-    tier; nothing else on a settlement changes."""
-    ids = capitals(settlements, count(seed), land)
-    label = grow(width, height, biome, river, receiver, [settlements[i].uid for i in ids])
+    """(each cell's country, 0 for water; the countries in id order). A capital whose country would hold
+    fewer than MIN_SETTLEMENTS settlements is passed over for the next town in line, the least populous
+    first and never the largest settlement. Each capital takes the capital tier; nothing else changes."""
+    k, passed = count(seed), set()
+    while True:
+        ids = capitals([s for s in settlements if s.id not in passed], k, land)
+        label = grow(width, height, biome, river, receiver, [settlements[i].uid for i in ids])
+        held = Counter(label[s.uid] for s in settlements)
+        small = [i for n, i in enumerate(ids, 1) if n > 1 and held[n] < MIN_SETTLEMENTS]
+        if not small:
+            break
+        passed.add(small[-1])
     country = bytearray(0 if b in (OCEAN, LAKE) else label[i] for i, b in enumerate(biome))
     colours = shuffled(range(COLOURS), seed, COUNTRY, COLOUR)
     for i in ids:

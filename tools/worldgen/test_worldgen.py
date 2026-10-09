@@ -21,7 +21,7 @@ sys.path.insert(0, str(HERE))
 import place  # noqa: E402
 import settle  # noqa: E402
 from climate import GRASSLAND, HILLS, HILLS_AT, LAKE, MOUNTAIN, OCEAN, SNOW, SNOW_BELOW, biomes  # noqa: E402
-from countries import Country, capitals, count, grow  # noqa: E402
+from countries import Country, capitals, count, found, grow  # noqa: E402
 from grid import neighbours  # noqa: E402
 from mapdraw import BORDER, COUNTRY_COLOURS, View, _borders, countries_png, country_png, region_png  # noqa: E402
 from model import PlaceContext  # noqa: E402
@@ -132,6 +132,21 @@ def diagonal_never_slips():
     return [f'{name}: cell 4 joins {labels[4]}, want {want}' for name, labels, want in cases if labels[4] != want]
 
 
+def small_countries_pass_their_capital_on():
+    """A strip G*7 O O G O O G*7: town 2 on the one-cell island would hold only itself, so town 3 at x 4
+    takes its place, and each country then holds three settlements. Seed 4 draws three countries."""
+    g, o = GRASSLAND, OCEAN
+    biome = bytearray([g] * 7 + [o, o, g, o, o] + [g] * 7)
+    places = [(0, 'capital', 100_000), (18, 'city', 60_000), (9, 'town', 9_000), (4, 'town', 8_000),
+              (1, 'village', 900), (2, 'village', 850), (6, 'village', 800), (16, 'village', 700), (13, 'village', 600)]
+    towns = [Settlement(i, x, 0, tier, people, uid=x) for i, (x, tier, people) in enumerate(places)]
+    _, made = found(4, 19, 1, biome, bytearray(19), [-1] * 19, towns, 15)
+    problems = [] if [c.capital for c in made] == [0, 1, 3] else [f'capitals {[c.capital for c in made]}, want [0, 1, 3]']
+    if (towns[2].tier, towns[3].tier) != ('town', 'capital'):
+        problems.append(f'tiers of 2 and 3: {towns[2].tier}, {towns[3].tier}')
+    return problems
+
+
 def fingerprint_covers_countries():
     w = world('standard', FIRST)
     first = fingerprint(w)
@@ -239,7 +254,8 @@ def snow_lies_on_cold_lowland(w):
 CHECKS = [snow_on_cold_lowland, lone_snow_melts, snow_is_uninhabitable, snow_places_build, snow_falls_on_a_cold_world,
           count_is_three_to_five, capitals_spaced_in_population_order, grow_breaks_ties_by_cost_then_cell,
           grow_bends_to_mountains, island_joins_the_cheaper_crossing, diagonal_never_slips,
-          fingerprint_covers_countries, borders_draw_on_cell_edges, previews_write]
+          small_countries_pass_their_capital_on, fingerprint_covers_countries, borders_draw_on_cell_edges,
+          previews_write]
 WORLD_CHECKS = [snow_lies_on_cold_lowland, countries_cover_the_land, stage_only_retiers_capitals]
 
 
