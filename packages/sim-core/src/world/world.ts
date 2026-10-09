@@ -1,4 +1,5 @@
 import { ACTION_WALK } from '../agents/actions.ts';
+import { Blob } from '../agents/blob.ts';
 import { createClaims, type Claims } from '../money/claims.ts';
 import { below, draw2 } from '../random/draw.ts';
 import { openCells, pointInTileQ8, standInGround, type Ground } from './ground.ts';
@@ -41,6 +42,7 @@ export interface World {
   readonly globals: Int32Array;
   readonly agents: AgentStore;
   readonly cash: Ledger;
+  readonly blob: Blob;
   readonly claims: Claims;
   readonly record: Int32Array;
   readonly stride: Stride;
@@ -75,6 +77,7 @@ export function layoutWorld(
   const globals = take(arena, Int32Array, GLOBAL_SLOTS, true);
   const store = createAgentStore(arena, agents);
   const cash = createLedger(arena, SETTLEMENTS, agents);
+  const blob = new Blob(store, cash);
   const claims = createClaims(arena, cash, LOAN_CAPACITY);
   const record = take(arena, Int32Array, 2 * RECORD_FIELDS, true);
   const stride = createStride(arena, agents, STRIDE_DAYS, STRIDE);
@@ -89,6 +92,7 @@ export function layoutWorld(
     globals,
     agents: store,
     cash,
+    blob,
     claims,
     record,
     stride,
