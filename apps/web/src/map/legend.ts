@@ -30,6 +30,7 @@ export function mountLegend(root: HTMLElement, rows: readonly LegendRow[]): void
   const doc = root.ownerDocument;
   const list = doc.createElement('ul');
   list.className = 'map-legend';
+  list.setAttribute('aria-label', 'Countries');
   for (const row of rows) {
     const swatch = doc.createElement('span');
     swatch.className = 'map-swatch';

@@ -98,8 +98,6 @@ const CSS = `
 #map:focus-visible::after { content: ""; position: absolute; inset: 0; z-index: 2; border: 3px solid #f7c948;
   pointer-events: none; }
 #map canvas { position: absolute; top: 0; left: 0; }
-.map-keys { position: absolute; width: 1px; height: 1px; margin: 0; overflow: hidden; clip-path: inset(50%);
-  white-space: nowrap; }
 .map-bar { position: absolute; top: 0; left: 0; right: 0; z-index: 1; display: flex; flex-wrap: wrap; align-items: center;
   gap: .3rem 1rem; padding: .4rem .75rem; background: rgb(26 28 36 / .88); }
 .map-bar button { font: inherit; min-width: 5.5em; padding: .2rem .8rem; }
@@ -155,11 +153,11 @@ function buildParts(doc: Document): Parts {
     section: make(doc, 'section', {
       id: 'map',
       'aria-label': 'Map of the world',
-      'aria-describedby': 'map-keys',
+      'aria-describedby': 'map-keys map-status',
       tabindex: '0',
       hidden: '',
     }),
-    keys: make(doc, 'p', { id: 'map-keys', class: 'map-keys' }, KEYS),
+    keys: make(doc, 'p', { id: 'map-keys', hidden: '' }, KEYS),
     bar: make(doc, 'div', { class: 'map-bar' }),
     close: make(doc, 'button', { type: 'button' }, 'Close map'),
     fit: make(doc, 'button', { type: 'button' }, 'Fit'),
@@ -168,7 +166,7 @@ function buildParts(doc: Document): Parts {
     flat: make(doc, 'button', { type: 'button', 'aria-pressed': 'false' }, 'Countries'),
     pauseDots: make(doc, 'button', { type: 'button', 'aria-pressed': 'false' }, 'Pause dots'),
     goTo: make(doc, 'select', { 'aria-label': 'Go to a settlement', disabled: '' }),
-    status: make(doc, 'p', { role: 'status' }),
+    status: make(doc, 'p', { id: 'map-status', role: 'status' }),
     canvas: make(doc, 'canvas', { role: 'img', 'aria-label': 'Map of the countries; the legend after it lists each one' }),
     labels: make(doc, 'div', { class: 'map-labels', 'aria-hidden': 'true' }),
     legend: make(doc, 'div', {}),
@@ -248,6 +246,7 @@ function bindPanel(panel: MapPanel): void {
   // A drag captures the pointer on the section, which would take a bar button's click, and a press on the bar or the
   // legend is no tap on the map, so both keep their pointers.
   for (const part of [parts.bar, parts.legend]) part.addEventListener('pointerdown', (event) => event.stopPropagation());
+  panel.reducedMotion.addEventListener('change', () => onMotionPreference(panel));
   bindMapInput(parts.section, target);
   observeDeviceSize(parts.section, (width, height, dpr) => onSize(panel, width, height, dpr));
 }
@@ -398,7 +397,8 @@ function loadPage(panel: MapPanel): void {
 function statusText(panel: MapPanel): string {
   if (panel.failure) return `The map could not be made: ${panel.failure}`;
   if (!panel.world) return 'Making the map…';
-  return panel.pageFailed ? 'The map shows flat colours, as its art did not load.' : '';
+  const ready = `${panel.world.map.countries.capital.length} countries; the legend lists them.`;
+  return panel.pageFailed ? `${ready} The map shows flat colours, as its art did not load.` : ready;
 }
 
 // Rewriting the same text would make some screen readers announce it again.
@@ -418,6 +418,12 @@ function toggleFlat(panel: MapPanel): void {
   panel.flat = !panel.flat;
   panel.parts.flat.setAttribute('aria-pressed', String(panel.flat));
   panel.renderer?.setFlat(panel.flat);
+  requestDraw(panel);
+}
+
+// Read live: switched on, the dots go back to their time-0 places; switched off, they walk on.
+function onMotionPreference(panel: MapPanel): void {
+  if (panel.reducedMotion.matches && panel.world) crowdAt(panel.world.crowd, 0, panel.xy);
   requestDraw(panel);
 }
 

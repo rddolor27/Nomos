@@ -112,8 +112,8 @@ test('pans the Country and Region views within 2 ms a frame', async ({ page, bro
   const atlasType = (await atlasPage).headers()['content-type'];
   expect(atlasType, 'the atlas page, which the web server builds after the app').toBe('image/webp');
   await expect(page.locator('#map .map-legend li')).not.toHaveCount(0, { timeout: 60_000 });
-  // Empty once the world is here, unless the atlas page failed to load or decode.
-  await expect(page.locator('#map [role="status"]')).toHaveText('');
+  // The ready line once the world is here, with no flat-colours note unless the atlas page failed to load or decode.
+  await expect(page.locator('#map [role="status"]')).toHaveText(/^\d countries; the legend lists them\.$/);
   expect(await page.evaluate(() => window.__app?.paused), 'the town, paused under the map').toBe(true);
   expect(await page.evaluate(() => window.__map?.view)).toBe('country');
 
