@@ -1,6 +1,8 @@
 # M3.3 Skin C town: implementation brief
 
 > **Status:** brief. Before building, expand it into a step-by-step plan with the writing-plans skill, in this file, against the code as it then stands.
+>
+> **Started early:** M3.1's town view (owner, 9 October 2026) built the place pass, `@nomos/render-gl/place`. It draws a place's tiles, sprites and people from the full atlas page, in one instanced WebGL2 draw, with a Canvas2D fallback, pixel for pixel as `placedraw.py` does. Every `vite build` now writes the atlas pages too. Build the town skin on these ([interfaces.md](../../m0-pipeline/interfaces.md), Places).
 
 **Task:** [task.md](task.md)
 
