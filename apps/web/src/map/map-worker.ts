@@ -7,15 +7,25 @@ import { answerGenerate, answerPlace } from './generate.ts';
 // Vite builds it as map-worker-*.js, apart from every first-load chunk (interfaces.md, The world map).
 let contexts: PlaceContext[] = [];
 const now = (): number => performance.now();
+// The place builder's chunk imports this one for the code they share, and WebKit then runs this module a second time
+// (a probe in Playwright's WebKit 27.2, 9 October 2026). Only the first run listens, so the last world stays its own.
+const scope = self as unknown as { mapWorkerListening?: boolean };
 
-self.onmessage = (event: MessageEvent<MapAppMessage | PlaceRequest>) => {
+function onMessage(event: MessageEvent<MapAppMessage | PlaceRequest>): void {
   const msg = event.data;
   if (msg.type === 'place') {
-    const { reply, transfer } = answerPlace(msg, contexts, now);
-    self.postMessage(reply, { transfer });
+    // A failed request reaches the page as the worker's error event, as an uncaught throw would.
+    void answerPlace(msg, contexts, now)
+      .then(({ reply, transfer }) => self.postMessage(reply, { transfer }))
+      .catch((error: unknown) => self.reportError(error));
     return;
   }
   const answer = answerGenerate(msg, now);
   contexts = answer.contexts;
   self.postMessage(answer.reply, { transfer: answer.transfer });
-};
+}
+
+if (!scope.mapWorkerListening) {
+  scope.mapWorkerListening = true;
+  self.onmessage = onMessage;
+}
