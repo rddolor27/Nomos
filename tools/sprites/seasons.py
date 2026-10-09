@@ -249,7 +249,8 @@ def icon(rows, size, name):
 # ------------------------------------------------------------------ the season map
 RECOLOUR = {
     'ground': ['nature/terrain_grass_*', 'scenery/terrain_meadow_*', 'nature/crop_pasture',
-               'scenery/shore_*', 'scenery/cliff_*', 'nature/terrain_farm-track_*'],
+               'scenery/shore_*', 'scenery/cliff_*', 'nature/terrain_farm-track_*', 'nature/prop_hedge',
+               'nature/terrain_flower-bed'],
     'foliage': ['nature/tree_deciduous_*', 'nature/tree_fruit', 'nature/prop_bush', 'nature/tree_orchard*'],
 }
 SPRING = {'GRASS_L': 'SPRING_L', 'GRASS': 'SPRING', 'LEAF_D': 'SPRING_D'}
@@ -289,7 +290,7 @@ def season_map():
             'ground': {c: [f'seasons/snow_{c}_{v}' for v in range(VARIANTS)] for c in COVERS},
             'road': {c: [f'seasons/snow_light_{v}' for v in range(VARIANTS)] for c in ('full', 'patchy')},
             'on_ground': ['nature/terrain_grass_*', 'scenery/terrain_meadow_*', 'nature/terrain_sand',
-                          'nature/terrain_soil-tilled', 'nature/crop_*'],
+                          'nature/terrain_soil-tilled', 'nature/crop_*', 'nature/terrain_flower-bed'],
             'on_road': ['nature/terrain_dirt-path', 'nature/terrain_paving', 'nature/terrain_cut-stone',
                         'nature/terrain_cobbles_*', 'nature/terrain_gravel_*', 'nature/terrain_farm-track_*'],
             'sprites': {'nature/tree_conifer': 'seasons/tree_conifer_snow'},

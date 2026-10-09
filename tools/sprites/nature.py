@@ -1129,6 +1129,46 @@ BUSH = [
     '....kkkkkk....',
 ]
 
+# Garden pieces for the greens inside town walls. A hedge is one clipped block a tile wide that
+# stands 1 px into the tile above, so blocks in a row or a column meet on a single outline.
+HEDGE = [
+    '..GGGGgGGGGGgg..',
+    '.GGGgGGGGGgGGGg.',
+    'GGgGGGGgGGGGGggk',
+    'GGGGGgGGGgGGgGgk',
+    'GgGGGGGGGGGGGGgk',
+    'gGGgGGGgGGgGGggk',
+    'ggggggggggggggkk',
+    'gkgkgggkggkgggkk',
+    'kggkgkggkgggkgkk',
+    'gkggkggkgkgkggkk',
+    'kgkgggkggkggkgkk',
+    'gkgkkgkkgkkgkkkk',
+    'kkgkkgkkgkkgkkkk',
+    'kkkkkkkkkkkkkkkk',
+    '.kkkkkkkkkkkkkk.',
+]
+
+# Two rows of mixed flowers on dark earth, laid as terrain in beds of any size.
+FLOWER_BED = [
+    'wwdwwwwdwwwwwdww',
+    'wPPwwYwwWWwwUUww',
+    'PYPPwYYWYWWwUYUw',
+    'pPpgGgkgWWgGgUkw',
+    'gkgkgkkgkgkkgkkg',
+    'kgkkwkkkkwkkkgkw',
+    'wwwdwwwwwdwwwwww',
+    'wwwwwdwwwwwwwdww',
+    'wwWWwwwUUwwPPwwY',
+    'wWYWWwUYUwPYPPYY',
+    'wgWWgGgUkGpPpgYw',
+    'gkgkgkkgkgkgkkgk',
+    'kkgkkwkkgkkkwkgk',
+    'wwwwwwwwwwwwwwww',
+    'wdwwwwwdwwwwdwww',
+    'wwwwdwwwwwwwwwdw',
+]
+
 # Fence parts on a full 16x16 tile so rails reach the tile edges and join their neighbours.
 # A tile only draws the rail that runs up from its post; the tile below draws the join.
 FENCE_POST = [
@@ -1395,6 +1435,7 @@ def build():
         sheet.add(f'terrain_gravel_{i}', tile(rows))
     sheet.add('terrain_farm-track_horizontal', tile(FARM_TRACK))
     sheet.add('terrain_farm-track_vertical', tile(transposed(FARM_TRACK)))
+    sheet.add('terrain_flower-bed', tile(FLOWER_BED))
 
     sheet.add('crop_grain_seedling', over(soil, GRAIN_SEEDLING))
     sheet.add('crop_grain_growing', over(soil, GRAIN_GROWING))
@@ -1437,6 +1478,7 @@ def build():
     sheet.add('prop_signpost', outlined(SIGNPOST))
     sheet.add('prop_flower-patch', outlined(FLOWER_PATCH))
     sheet.add('prop_bush', outlined(BUSH))
+    sheet.add('prop_hedge', outlined(HEDGE))
     sheet.add('prop_notice-board', outlined(NOTICE_BOARD))
     sheet.add('prop_planter', outlined(PLANTER))
     sheet.add('prop_trough', outlined(TROUGH))

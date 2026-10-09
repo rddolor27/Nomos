@@ -13,7 +13,9 @@
       "nature/crop_pasture",
       "scenery/shore_*",
       "scenery/cliff_*",
-      "nature/terrain_farm-track_*"
+      "nature/terrain_farm-track_*",
+      "nature/prop_hedge",
+      "nature/terrain_flower-bed"
     ],
     "foliage": [
       "nature/tree_deciduous_*",
@@ -130,7 +132,8 @@
       "scenery/terrain_meadow_*",
       "nature/terrain_sand",
       "nature/terrain_soil-tilled",
-      "nature/crop_*"
+      "nature/crop_*",
+      "nature/terrain_flower-bed"
     ],
     "on_road": [
       "nature/terrain_dirt-path",
