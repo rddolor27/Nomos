@@ -1,5 +1,5 @@
 import { NO_CODE, PLACE_FACINGS, PLACE_POSES, PLACE_TILE_PX, type PlaceLayout, type PlaceWalks } from '@nomos/sim-protocol/place';
-import { buildSite, generateWorld, layoutOf, placeContexts, placeWalks } from '@nomos/worldgen';
+import { buildPlace, generateWorld, placeContexts } from '@nomos/worldgen';
 import { describe, expect, it } from 'vitest';
 import { WALK_PX_PER_S, Walkers } from '../src/map/walkers.ts';
 
@@ -123,9 +123,7 @@ describe("walkers in a world's places", () => {
   const places = [0, map.settlements.cell.length];
 
   it.each(places)('keep to their loops in place %i', (place) => {
-    const site = buildSite(contexts[place]);
-    const layout = layoutOf(site);
-    const walks = placeWalks(site);
+    const { layout, walks } = buildPlace(contexts[place]);
     const walkers = new Walkers(layout, walks);
     const { x, y, facing } = layout.people;
     const startX = Int32Array.from(walks.person, (p) => x[p]);

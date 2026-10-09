@@ -36,6 +36,6 @@ function plain(layout: PlaceLayout): Omit<FixturePlace, 'name' | 'context'> {
 describe("the place port against place.py's fixtures", () => {
   it.each(places.map((place) => [place.name, place] as const))('lays out %s as place.py does', (_, place) => {
     const { width, height, frames, tiles, ground, standing, people } = place;
-    expect(plain(buildPlace(place.context))).toEqual({ width, height, frames, tiles, ground, standing, people });
+    expect(plain(buildPlace(place.context).layout)).toEqual({ width, height, frames, tiles, ground, standing, people });
   });
 });

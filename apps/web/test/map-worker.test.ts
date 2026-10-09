@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { placeBuffers, type PlaceError, type PlaceReply } from '@nomos/sim-protocol/place';
 import { crowdBuffers } from '@nomos/sim-protocol/world-map';
-import { buildSite, layoutOf, placeWalks, worldFingerprint } from '@nomos/worldgen';
+import { buildPlace, worldFingerprint } from '@nomos/worldgen';
 import { answerGenerate, answerPlace } from '../src/map/generate.ts';
 
 describe('the map worker', { timeout: 60_000 }, () => {
@@ -39,17 +39,17 @@ describe('the map worker', { timeout: 60_000 }, () => {
       const answer = await answerPlace({ type: 'place', place }, world.contexts, () => (now += 7));
       const reply = built(answer.reply);
       const transfer = answer.transfer;
-      const site = buildSite(world.contexts[place]);
+      const fresh = buildPlace(world.contexts[place]);
       expect(reply).toMatchObject({ type: 'place', place, ms: 7 });
       expect(reply.layout.width).toBe(width);
-      expect(reply.layout).toEqual(layoutOf(site));
-      expect(reply.walks).toEqual(placeWalks(site));
+      expect(reply.layout).toEqual(fresh.layout);
+      expect(reply.walks).toEqual(fresh.walks);
       expect(reply.walks.person.length).toBeGreaterThan(0);
       expect(transfer).toEqual(placeBuffers(reply.layout, reply.walks));
       expect(new Set(transfer).size).toBe(transfer.length);
       const moved = structuredClone(reply, { transfer });
       expect(reply.layout.tiles.byteLength).toBe(0);
-      expect(moved.layout.frames).toEqual(layoutOf(site).frames);
+      expect(moved.layout.frames).toEqual(fresh.layout.frames);
     }
   });
 

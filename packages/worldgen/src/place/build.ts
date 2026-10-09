@@ -1,5 +1,5 @@
 import { floorDiv } from '@nomos/sim-core/kernels';
-import type { PlaceLayout } from '@nomos/sim-protocol/place';
+import type { PlaceLayout, PlaceWalks } from '@nomos/sim-protocol/place';
 import { herd } from './animals.ts';
 import type { PlaceContext } from './context.ts';
 import { decorate, placeFields } from './decor.ts';
@@ -23,6 +23,7 @@ import {
 import { Site } from './site.ts';
 import { layGround, layRidges, layWater, riverPoints } from './terrain.ts';
 import { buildVista, VISTA_SIZE } from './vista.ts';
+import { placeWalks } from './walks.ts';
 
 const SIZES: Readonly<Record<string, readonly [number, number]>> = {
   capital: [48, 28],
@@ -36,9 +37,11 @@ const ROCKY = ['hills', 'mountain', 'peak'];
 // Biomes whose settlements keep a pasture beside their fields.
 const PASTORAL = ['farmland', 'grassland', 'hills'];
 
-// place.py's build: the layout of a settlement's district or a wonder's vista, the same for the same context.
-export function buildPlace(ctx: PlaceContext): PlaceLayout {
-  return layoutOf(buildSite(ctx));
+// place.py's build, with the walk loops the port adds: a settlement's district or a wonder's vista as the map worker
+// sends it, the same for the same context.
+export function buildPlace(ctx: PlaceContext): { layout: PlaceLayout; walks: PlaceWalks } {
+  const site = buildSite(ctx);
+  return { layout: layoutOf(site), walks: placeWalks(site) };
 }
 
 export function buildSite(ctx: PlaceContext): Site {

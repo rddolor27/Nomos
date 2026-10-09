@@ -167,7 +167,7 @@ export function checkPlaces(goldens: PlaceGoldens, worlds: number): PlaceReport 
       const label = `${hex(world.seed)} place ${i} (${ctx.name})`;
       checkPlace(report, goldens, label, ctx, world.places[i]);
       const mirrored = world.places[i].split(' ').at(-1);
-      if (w === 0 && hex(foldLayout(buildPlace(ctx))) !== mirrored) report.failures.push(`${label}: the mirror drifts`);
+      if (w === 0 && hex(foldLayout(buildPlace(ctx).layout)) !== mirrored) report.failures.push(`${label}: the mirror drifts`);
     });
   });
   return report;

@@ -1,7 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { PLACE_TILE_PX, type PlaceWalks } from '@nomos/sim-protocol/place';
 import { describe, expect, it } from 'vitest';
-import { buildSite, generateWorld, placeContexts, type PlaceContext } from '../src/index.ts';
+import { generateWorld, placeContexts, type PlaceContext } from '../src/index.ts';
+import { buildSite } from '../src/place/build.ts';
 import type { Site } from '../src/place/site.ts';
 import { placeWalks } from '../src/place/walks.ts';
 
