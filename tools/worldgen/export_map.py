@@ -96,7 +96,12 @@ def cell_names(site, kind_at, door_cells):
     for y in range(site.h):
         for x in range(site.w):
             category, name = tile_for(site, x, y)
-            kind_names.append(kind_at.get((x, y), site.kind[y][x]))
+            kind = kind_at.get((x, y), site.kind[y][x])
+            # Map v1 holds no ground sprites, so a footbridge's water cells draw as the paved causeway
+            # place.cross lays on other crossings; otherwise blobs would seem to walk on the river.
+            if site.road[y][x] and kind == 'water':
+                kind, category, name = 'paving', 'nature', 'terrain_paving'
+            kind_names.append(kind)
             walk.append(walk_at(site, x, y, door_cells))
             frame_names.append(f'{category}/{name}')
     return kind_names, walk, frame_names

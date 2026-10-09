@@ -26,7 +26,7 @@ Each SHA-256 is of the bytes git stores. Git stores `.json`, `.md` and `.txt` fi
 
 | File | Author | Source | Licence | SHA-256 | Edits |
 |---|---|---|---|---|---|
-| `maps/town.nmap` | Nomos contributors | `tools/worldgen/export_map.py` | Original; repository licence | `bf1987a72c7ea9fafef663714ca11f813ef91f9cd53f745d6611b223ae0febe7` | None |
+| `maps/town.nmap` | Nomos contributors | `tools/worldgen/export_map.py` | Original; repository licence | `fcc7cd0ca3a968a3cd8d3ff2c40010e1879879dad64ac08b65b6562b81b1d247` | None |
 | `sounds/ambience.json` | Nomos contributors | `tools/sounds/ambience.py`, built by `tools/sounds/build_all.py` | Original; repository licence | `770042da91802b6d199e1a54d6217ac576e9d3efd631fc9ade68a9362d2541a8` | None |
 | `sounds/events.json` | Nomos contributors | `tools/sounds/events.py`, built by `tools/sounds/build_all.py` | Original; repository licence | `614fe2fc1bd7442c4f126c676f05a45660094e54b8f0df00e432e59d50aaa12f` | None |
 | `sounds/justice.json` | Nomos contributors | `tools/sounds/justice.py`, built by `tools/sounds/build_all.py` | Original; repository licence | `0bbd0ac878d350f02ff9becad449c16f641a4ae222a6ac1080765b4625d0a4d5` | None |

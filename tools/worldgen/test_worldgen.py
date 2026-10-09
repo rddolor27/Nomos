@@ -18,12 +18,14 @@ from PIL import Image, ImageDraw
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
+import export_map  # noqa: E402
 import place  # noqa: E402
 import settle  # noqa: E402
 from climate import GRASSLAND, HILLS, HILLS_AT, LAKE, MOUNTAIN, OCEAN, SNOW, SNOW_BELOW, biomes  # noqa: E402
 from countries import Country, capitals, count, found, grow  # noqa: E402
 from grid import neighbours  # noqa: E402
 from mapdraw import BORDER, COUNTRY_COLOURS, View, _borders, countries_png, country_png, region_png  # noqa: E402
+from mapfile import WALK_ROAD  # noqa: E402
 from model import PlaceContext  # noqa: E402
 from settle import Settlement, habitability  # noqa: E402
 from world import SIZES, fingerprint, generate  # noqa: E402
@@ -212,6 +214,16 @@ def previews_write():
     return [] if sizes == want else [f'image sizes {sizes}, want {want}']
 
 
+def town_roads_never_draw_as_water():
+    """Blobs walk the default town's footbridges, so those cells must not draw as river in either layer."""
+    town = export_map.town_map(export_map.TOWN)
+    names = [name for name, _ in town['kinds']]
+    wet = [f'{i % town["width"]},{i // town["width"]}: {names[kind]}, {town["frames"][tile]}'
+           for i, (kind, walk, tile) in enumerate(zip(town['terrain'], town['walk'], town['tiles']))
+           if walk == WALK_ROAD and (names[kind] == 'water' or 'water' in town['frames'][tile])]
+    return [f'{len(wet)} road cells draw as water, the first at {wet[0]}'] if wet else []
+
+
 def countries_cover_the_land(w):
     k = len(w.countries)
     problems = [] if 3 <= k <= 5 and [c.id for c in w.countries] == list(range(1, k + 1)) else [
@@ -263,7 +275,7 @@ CHECKS = [snow_on_cold_lowland, lone_snow_melts, snow_is_uninhabitable, snow_pla
           count_is_three_to_five, capitals_spaced_in_population_order, grow_breaks_ties_by_cost_then_cell,
           grow_bends_to_mountains, island_joins_the_cheaper_crossing, diagonal_never_slips,
           small_countries_pass_their_capital_on, fingerprint_covers_countries, fingerprints_are_pinned,
-          borders_draw_on_cell_edges, previews_write]
+          borders_draw_on_cell_edges, previews_write, town_roads_never_draw_as_water]
 WORLD_CHECKS = [snow_lies_on_cold_lowland, countries_cover_the_land, stage_only_retiers_capitals]
 
 
