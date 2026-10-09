@@ -180,6 +180,7 @@ const ENTRY_FILES = [
   'packages/sim-core/src/kernels.ts',
   'packages/render-gl/src/map.ts',
   'packages/render-gl/src/place.ts',
+  'packages/render-gl/src/town.ts',
   'packages/sim-worker/src/worker.ts',
   'apps/web/src/main.ts',
   'tools/cli/src/main.ts',

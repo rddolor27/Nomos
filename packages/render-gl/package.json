@@ -6,7 +6,8 @@
   "exports": {
     ".": "./src/index.ts",
     "./map": "./src/map.ts",
-    "./place": "./src/place.ts"
+    "./place": "./src/place.ts",
+    "./town": "./src/town.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
