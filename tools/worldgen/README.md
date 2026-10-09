@@ -8,7 +8,7 @@ Random worlds for Nomos, drawn with the sprites in `tools/sprites`. It is the Py
 - Output goes to `dist/worldgen/<seed>/`, or `dist/worldgen/<seed>-large/` for a large world:
   - `country.png`: the Country view, 8-px tiles, with country borders;
   - `region.png`: the Region view around the largest capital, 16-px tiles;
-  - `countries.png`: the flat Countries view, each country's land in its map colour;
+  - `countries.png`: the flat Countries view, each country's land in its map colour. These previews and the app's map read the country colours from one table, `packages/render-gl/src/map/map-colours.json`;
   - the largest capital, the largest town and village, and every natural wonder's view;
   - `<capital>_seasons.png`: that capital in spring, summer, autumn and winter;
   - `looks.png`: the world's first 48 people.
