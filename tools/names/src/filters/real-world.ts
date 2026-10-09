@@ -1,12 +1,12 @@
 import { readFileSync } from 'node:fs';
-import { withinDistance } from './edit.ts';
-import { nameTokens } from './fold.ts';
+import { withinDistance } from '../text/edit.ts';
+import { nameTokens } from '../text/fold.ts';
 
 export const CATEGORIES = ['countries', 'languages', 'demonyms', 'ethnonyms', 'religions'] as const;
 export type Category = (typeof CATEGORIES)[number];
 export type RealWorld = ReadonlyMap<string, Category>;
 
-export const FIXTURES = new URL('../fixtures/', import.meta.url);
+export const FIXTURES = new URL('../../fixtures/', import.meta.url);
 
 // R8 customs notes, part c: two edits rejected 35-42% of 3-4 letter names, so names up to this length get one.
 const ONE_EDIT_MAX_LETTERS = 5;

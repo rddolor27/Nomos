@@ -2,8 +2,8 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
-import { CUSTOM_NOUNS, HIERARCHY_WORDS, cultureTableHits, cultureTextHits } from '../src/culture-text.ts';
-import { scanPaths } from '../src/scan.ts';
+import { CUSTOM_NOUNS, HIERARCHY_WORDS, cultureTableHits, cultureTextHits } from '../src/lints/culture-text.ts';
+import { scanPaths } from '../src/lints/scan.ts';
 
 const VELAN = ['Velan'];
 

@@ -1,4 +1,4 @@
-import { foldName } from './fold.ts';
+import { foldName } from '../text/fold.ts';
 
 // R8 prior-art notes, part c: no culture is older, purer, more developed or closer to nature.
 export const HIERARCHY_WORDS: readonly string[] = [

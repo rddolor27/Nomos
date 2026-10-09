@@ -4,10 +4,10 @@ import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterEach, describe, expect, it } from 'vitest';
-import { withinDistance } from '../src/edit.ts';
-import { foldName, nameTokens } from '../src/fold.ts';
-import { franchiseHits } from '../src/franchise.ts';
-import { formatFindings, scanPaths, scanRepo } from '../src/scan.ts';
+import { withinDistance } from '../src/text/edit.ts';
+import { foldName, nameTokens } from '../src/text/fold.ts';
+import { franchiseHits } from '../src/filters/franchise.ts';
+import { formatFindings, scanPaths, scanRepo } from '../src/lints/scan.ts';
 
 const ROOT = fileURLToPath(new URL('../../../', import.meta.url));
 

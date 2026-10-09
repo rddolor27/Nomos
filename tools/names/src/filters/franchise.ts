@@ -1,4 +1,4 @@
-import { foldName } from './fold.ts';
+import { foldName } from '../text/fold.ts';
 
 // Character classes keep this file from spelling the name it bans, so the repo scan passes on it.
 const UNACCENTED = /pok[e]mon/g;

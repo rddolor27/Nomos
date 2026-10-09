@@ -2,7 +2,7 @@ import { execFileSync } from 'node:child_process';
 import { lstatSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { cultureTableHits } from './culture-text.ts';
-import { franchiseHits } from './franchise.ts';
+import { franchiseHits } from '../filters/franchise.ts';
 
 // line is 1-based for a hit in a file's text, and 0 for a hit in its path.
 export interface Finding {

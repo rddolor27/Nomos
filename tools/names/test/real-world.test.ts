@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { beforeAll, describe, expect, it } from 'vitest';
-import { franchiseHits } from '../src/franchise.ts';
-import { CATEGORIES, FIXTURES, loadRealWorld, nearRealWorld, type Category, type RealWorld } from '../src/real-world.ts';
+import { franchiseHits } from '../src/filters/franchise.ts';
+import { CATEGORIES, FIXTURES, loadRealWorld, nearRealWorld, type Category, type RealWorld } from '../src/filters/real-world.ts';
 
 interface SourceNote {
   readonly query: string;
