@@ -5,6 +5,7 @@ import {
   createMapRenderer,
   fitMapCamera,
   loadAtlasPage,
+  mapViewFor,
   type AtlasPage,
   type MapCamera,
   type MapRenderer,
@@ -12,6 +13,7 @@ import {
 } from '@nomos/render-gl/map';
 import type { MapAppMessage, MapWorkerMessage } from '@nomos/sim-protocol/world-map';
 import type { App } from '../app/app.ts';
+import { crowdAt } from './crowd-motion.ts';
 import { mountLabels, type Labels } from './labels.ts';
 import { legendRows, mountLegend } from './legend.ts';
 import { bindMapInput } from './map-input.ts';
@@ -20,8 +22,11 @@ import { bindMapInput } from './map-input.ts';
 interface MapHook {
   open: boolean;
   view: MapView;
-  // The last frame's main-thread time: renderer.draw plus labels.update.
+  // The last frame's main-thread time: moving the crowd, renderer.draw and labels.update.
   frameMs: number;
+  dots: number;
+  // Whether the last frame drew the crowd, which only the Region view does.
+  crowdDrawn: boolean;
 }
 
 declare global {
@@ -52,11 +57,14 @@ interface MapPanel {
   readonly town: readonly HTMLElement[];
   readonly hook: MapHook;
   readonly onFrame: FrameRequestCallback;
+  readonly reducedMotion: MediaQueryList;
   canvas: HTMLCanvasElement;
   renderer: MapRenderer | null;
   returnFocus: HTMLElement | null;
   resumeTown: boolean;
   world: MapWorkerMessage | null;
+  // Each dot's place, x then y in cells, which crowdAt rewrites in place while the crowd walks.
+  xy: Float32Array;
   making: boolean;
   failure: string;
   page: AtlasPage | null;
@@ -161,16 +169,18 @@ function createPanel(app: App): MapPanel {
     app,
     parts,
     town,
-    hook: { open: false, view: 'country', frameMs: 0 },
-    onFrame: () => {
+    hook: { open: false, view: 'country', frameMs: 0, dots: 0, crowdDrawn: false },
+    onFrame: (nowMs) => {
       panel.frameAsked = false;
-      drawNow(panel);
+      drawNow(panel, nowMs);
     },
+    reducedMotion: matchMedia('(prefers-reduced-motion: reduce)'),
     canvas: parts.canvas,
     renderer: null,
     returnFocus: null,
     resumeTown: false,
     world: null,
+    xy: new Float32Array(0),
     making: false,
     failure: '',
     page: null,
@@ -250,7 +260,7 @@ function openRenderer(panel: MapPanel): MapRenderer {
   const renderer = createMapRenderer(panel.canvas, { backend });
   renderer.init();
   if (panel.deviceWidth > 0 && panel.deviceHeight > 0) renderer.resize(panel.deviceWidth, panel.deviceHeight, panel.dpr);
-  if (panel.world) renderer.setWorld(panel.world.map);
+  if (panel.world) setWorld(renderer, panel.world, panel.xy);
   if (panel.page) renderer.setAtlas(panel.page);
   renderer.setFlat(panel.flat);
   return renderer;
@@ -286,12 +296,22 @@ function makeWorld(panel: MapPanel): void {
   worker.postMessage(generate);
 }
 
-// A world that arrives after a closing waits for the next opening, where show mounts it.
+// setCrowd sizes the renderer's buffers, so it runs once per renderer, never per frame.
+function setWorld(renderer: MapRenderer, world: MapWorkerMessage, xy: Float32Array): void {
+  renderer.setWorld(world.map);
+  renderer.setCrowd(world.crowd.hue, xy);
+}
+
+// The crowd starts at its time-0 places, where it stays under reduced motion. A world that arrives after a closing waits
+// for the next opening, where show mounts it.
 function adoptWorld(panel: MapPanel, world: MapWorkerMessage): void {
   panel.world = world;
+  panel.xy = new Float32Array(2 * world.crowd.hue.length);
+  crowdAt(world.crowd, 0, panel.xy);
+  panel.hook.dots = world.crowd.hue.length;
   showStatus(panel);
   if (!panel.renderer) return;
-  panel.renderer.setWorld(world.map);
+  setWorld(panel.renderer, world, panel.xy);
   mountWorld(panel, world);
   requestDraw(panel);
 }
@@ -353,22 +373,32 @@ function onSize(panel: MapPanel, width: number, height: number, dpr: number): vo
   if (!panel.renderer || width === 0 || height === 0) return;
   panel.renderer.resize(width, height, dpr);
   if (!panel.fitted) fit(panel);
-  drawNow(panel);
+  drawNow(panel, performance.now());
 }
 
-// The map draws on demand: a camera change, a resize, a toggle or an arrival asks for one frame.
+// The map draws on demand: a camera change, a resize, a toggle or an arrival asks for one frame. Only a walking crowd
+// asks for the next frame itself.
 function requestDraw(panel: MapPanel): void {
   if (panel.frameAsked) return;
   panel.frameAsked = true;
   requestAnimationFrame(panel.onFrame);
 }
 
-function drawNow(panel: MapPanel): void {
-  const { renderer, labels, camera, dpr } = panel;
-  if (!renderer || !labels || panel.deviceWidth === 0 || panel.deviceHeight === 0) return;
+// The crowd walks only where it is drawn, in the Region view, which mapViewFor predicts as the renderer will choose it.
+function walking(panel: MapPanel, renderer: MapRenderer): boolean {
+  return !panel.reducedMotion.matches && mapViewFor(renderer.view, panel.camera.cellPx, panel.dpr) === 'region';
+}
+
+function drawNow(panel: MapPanel, nowMs: number): void {
+  const { renderer, labels, world, camera, dpr } = panel;
+  if (!renderer || !labels || !world || panel.deviceWidth === 0 || panel.deviceHeight === 0) return;
   const startMs = performance.now();
+  const walks = walking(panel, renderer);
+  if (walks) crowdAt(world.crowd, nowMs, panel.xy);
   renderer.draw(camera);
   labels.update(camera, renderer.view, panel.deviceWidth / dpr, panel.deviceHeight / dpr, dpr);
   panel.hook.frameMs = performance.now() - startMs;
   panel.hook.view = renderer.view;
+  panel.hook.crowdDrawn = renderer.view === 'region';
+  if (walks) requestDraw(panel);
 }
