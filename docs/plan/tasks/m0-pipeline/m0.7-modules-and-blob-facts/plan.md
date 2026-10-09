@@ -506,6 +506,7 @@ The owner's rule: a per-tick loop reads rows through the handle's accessors unle
 - **The walking loop alone** matches the brief's probe on open ground. On the town map, walls cost the handle 10–12%, and the redraw loop's cost depends on which variant V8 compiles first. The town's walker counts match the stand-in's within 0.15.
 - **A copy of the handle with `declare`d fields** measured worse, 1.14–1.33× on the whole `move`, so `Blob` stays as B2 built it.
 - **`move` before, unchanged after:** 0.054, 0.136 and 0.554 ms in Node (`pnpm --filter @nomos/bench budget`), and 0.055, 0.135 and 0.547 ms in Chromium 156.0.8078.4 (the budget spec), at 10k, 25k and 100k.
+- **`move` at M0.7's close** (C1, measured here on a busy machine): 0.054, 0.140 and 0.575 ms in Node, and 0.053, 0.137 and 0.573 ms in Chromium 156.0.8078.4. That is 0.96–1.05× B3's figures, and `move` hasn't changed since B3, so the gap is noise. All nine rows of each budget pass.
 
 ### Task B4: Per-tick loops through the handle (junior, from this code)
 
@@ -844,7 +845,11 @@ These are the senior's rulings where the brief or the task was silent. The owner
 - **Per-tick checks with wallets** (the brief, measured): 0.048, 0.107 and 0.329 ms a tick at 10k, 25k and 100k, against under 0.001 ms without wallets.
 - **Bytes on 9 October** (G3, measured here):
   - initial JS 16.74 kB of 17 kB;
-  - entry chunk 5.44 kB, worker 5.36 kB, renderer 5.93 kB.
+  - entry chunk 5.44 kB, worker 5.36 kB, renderer 5.93 kB;
+  - after I1:
+    - initial JS is 16,781 B of 17,000, 15 B more, where Step 5 expected no change. The entry chunk now hands `formatCount`, `element` and Vite's preload helper to the lazy chunks.
+    - the inspector chunk is 4,126 B, under a 4.5 kB limit;
+    - the camera input chunk is 1,042 B, so its limit rose from 1 kB to 1.5 kB.
 
 ## Risks
 
