@@ -34,7 +34,7 @@
   - the eight culture emblems from `assets/sprites/culture.png`;
   - banner and lens colours that avoid the job colours, and the reds and oranges kept for crime.
 - **Names come from a stored key (M0.7).** Each blob carries a 32-bit `nameKey`, drawn at birth on the `PERSON_NAME` stream. The sim stores and hashes it but never reads it.
-  - `personName(nameKey)` in `sim-culture` already turns it into "Given Family" from M0.7's word table of the one shared invented sound set, round 8's design H.
+  - `personName(nameKey)` in `sim-culture` already turns it into "Given Family" from M0.7's word table of the one shared mixed sound set, which the owner chose on 9 October 2026 in place of round 8's design H.
   - This adds the naming custom's structure, set by the birth culture, as `personName()`'s second argument: given and family name, given and parent's given name, or given, "of" and home place.
   - Every word passes the full filter by construction, since the table keeps only words that pass.
   - No gendered forms and no diacritics, and site words stay separate.
@@ -46,7 +46,7 @@
   - M0.6's real-world fixture.
 
   This adds real festival names, and runs the filter over festival names.
-- **The sound-set screen at authoring time:** design H scored 0.209 in round 8, and M8.1's trigram screen checks M0.7's word tables: below 0.26 passes, 0.26–0.40 goes to review and above 0.40 fails. Any word added for people's names takes the same screen.
+- **The sound-set screen at authoring time:** M0.7's word table drops any word that copies a real name, and M8.1's place table does the same. The owner relaxed round 8's trigram bar on 9 October 2026, since names now mix Greek-like sounds with other languages. Any word added for people's names takes the same screen.
 
 ## Packages and files
 
@@ -59,7 +59,7 @@
 - `apps/web/src/panels/inspector.ts`, from M0.7: names through `personName()`, and the inspector's Customs tab.
 - `tools/names/`, from M0.7:
   - a real festival names fixture beside M0.7's `avoid-places.txt`, `avoid-species.txt` and LDNOOBW lists, with its licence file;
-  - M8.1's trigram screen against Fantasy Map Generator's bases (MIT), rerun for any word added for people's names.
+  - the real-name screen against Fantasy Map Generator's bases (MIT), rerun for any word added for people's names.
 
 ## Interfaces and data
 
@@ -80,7 +80,7 @@
 - `culture costs ≤ 0.1 ms a day at 10k`: M0.6's budget gate gives the culture day pass ≤ 0.1 ms RM at 10k agents, with zero scavenges across a year of day passes.
 - `festivals are fair`: with equal festival days and timing, mean contact and mean LS do not differ by culture on 50 paired seeds. Each ratio is within 0.95–1.05, a proposed band.
 - `names pass the filter`: 1,000 seeds per culture build person and festival names with no more than 5% rejected, and every accepted name passes the full filter. Person names reject none, since every table word passes.
-- `sound set passes the screen`: M8.1's screen scores every word table below 0.40, and any table between 0.26 and 0.40 has a recorded review.
+- `sound set passes the screen`: no word in any table copies a real name from the screen's bases.
 - The relabel test (M0.6) and every guard keep passing.
 
 ## Risks and unknowns
@@ -104,7 +104,7 @@
 Suggestions for the step plan, which makes the final call.
 
 - **Build order:** the filter's festival fixture first, as a tool with no sim dependency. Then the festival table and attendance, adoption on the stride, the transmission harness, festival demand, music events, UI names, and decorations last.
-- **Reuse:** M0.7's `nameKey`, `personName()`, word table and name filter; M8.1's trigram screen; M0.6's `sim-culture` wall, relabel test, and name and text lints; M0.3's stride scheduler; M2.6's shifts, festival stocking and, if built, its recompute hook; M3.6's isolation counter; M3.3's follow-cam.
+- **Reuse:** M0.7's `nameKey`, `personName()`, word table and name filter; the real-name screen; M0.6's `sim-culture` wall, relabel test, and name and text lints; M0.3's stride scheduler; M2.6's shifts, festival stocking and, if built, its recompute hook; M3.6's isolation counter; M3.3's follow-cam.
 - **Pitfalls:**
   - Convert yearly adoption rates to a hazard per 30-day visit, 1 − (1 − p)^(30/112), never p ÷ 3.73 ([calendar.md](../../../calendar.md), "Rescaling rules").
   - Festival contact feeds the isolation counter, LS and then on-the-job search, a path from culture to labour that no import check sees. The fairness check must pass before any festival knob leaves 0.
