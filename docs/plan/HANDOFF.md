@@ -72,3 +72,15 @@ A living summary for the next session, appended as work lands. Start with `CLAUD
   - The street-crowd and walkers tests pass, 10 of 10. The browser specs weren't rerun.
   - Building the crowd adds 9–12 ms to a capital in Node.
   - Optional: export `walkableGrid` from `walks.ts`, so `street-crowd.ts` stops restating the rule.
+- 10 Oct: **bigger places and crowds landed,** in M3.1 part 2, steps 1 and 2 (81ac739, d1210d0 and 4932aef).
+  - Places: capital and city 128×80, town 112×64, village 80×48, hamlet 56×32.
+  - Houses: 380–520 in a capital or city, 240–340 in a town.
+  - `place.py`'s own crowds: 150–300 in a capital or city, by population, plus the street crowd.
+  - A warm capital builds in 78 ms. The goldens, the fixtures and the TypeScript port all match.
+  - The coordinator fixed the dependency rule broken by the M0.8 toolbar (42f509e): `map-view-takes-only-types-from-the-town` now allows `panels/toolbar.ts`.
+- **CI is red on purpose until step 4.** `python tools/worldgen/export_map.py --check` fails, because Highcourt now builds at 128×80 while `assets/maps/town.nmap` is still 48×28. Next session, do step 4 first:
+  - re-export `town.nmap` with `python tools/worldgen/export_map.py`;
+  - record the new replay hash, and update the sim tests that pin the old map;
+  - re-measure the 2 ms bar with about 520 houses and 3,000 or more walkers (step 3);
+  - check `engines.spec.ts`'s timeouts, since its places are about 7× larger.
+- The plan's "Part 2" text still says 96×56; the real sizes are above.
