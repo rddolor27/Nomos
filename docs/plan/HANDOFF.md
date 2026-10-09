@@ -160,3 +160,20 @@ If the session ended: check `git log` for those Task lines, and `git status` for
   - the replay hash stays `b3b2c251`, because the CLI runs on the stand-in ground;
   - `town.nmap` is 5.4 kB brotli;
   - the build, size and browser gates weren't run. They belong to `nomos-bd`'s step 4.
+
+## The town view session (nomos-bd), continued
+
+- 10 Oct: **step 4 and the blob counts are done and pushed** (217980a, d5dfdff, d999ab7, dea6b06 and d6e3bdc).
+  - Highcourt is re-exported at 128×80, with 6,763 walkable tiles.
+  - The first screen starts with 3,381 blobs on desktop (one per 2 tiles), 2,254 on phone-plus (one per 3) and 1,690 on phone (one per 4), set by `TIER_TILES_PER_AGENT`.
+  - A `?tier=` URL still runs the whole tier, 100k, 25k or 10k, for perf.
+  - The CLI hash stays `b3b2c251`. The first screen pins seed 42 at 1,000 ticks: phone `83e5b191`, desktop `4099e61d`.
+  - `pnpm test` passes 636 tests, and the bench budget passes all 9 rows.
+  - Initial JS is at 16,950 of 17,000 B.
+  - The blob count is now a run input, so M6's share links must record it.
+  - Stale 48×28 text remains in:
+    - `place-camera.test.ts:11`;
+    - `interfaces.md`, in the Places sizes;
+    - `countries.md:46`;
+    - the M3.1 plan at line 41, and the M0.4 plan at line 83.
+  - Still running: the game engineer, on walking in any direction, and the render engineer, on the Town skin. Then the economy (M2), with up to 5 agents.
