@@ -74,7 +74,7 @@ const HOT_FILES = [
   'packages/sim-core/src/maths/{int,split,log2}.ts',
   'packages/sim-core/src/time/calendar.ts',
   'packages/sim-core/src/agents/store.ts',
-  'packages/sim-protocol/src/{snapshot,visual}.ts',
+  'packages/sim-protocol/src/snapshot/{snapshot,visual}.ts',
 ];
 // Functions in hot files that run only at creation, restore or failure, or between ticks, so they may allocate. A name
 // matches whole, so one that only starts with a cold word, such as createdToday or failures, stays hot.
@@ -137,7 +137,7 @@ const HOT_SYNTAX = [
 
 // The generator code that exists: the keyed draw, value noise and the map parser. M8.1 adds packages/worldgen/src,
 // built before M1 (owner, 9 October 2026).
-const GENERATOR_FILES = ['packages/sim-core/src/random/{draw,noise}.ts', 'packages/sim-protocol/src/map.ts'];
+const GENERATOR_FILES = ['packages/sim-core/src/random/{draw,noise}.ts', 'packages/sim-protocol/src/map/map.ts'];
 // % is allowed on an unsigned left operand, where JS and Python agree.
 const GEN_SYNTAX = [
   { selector: "BinaryExpression[operator='/']", message: FLOOR_DIV },

@@ -48,7 +48,7 @@ interface MapSpec {
   entities: EntitySpec[];
 }
 
-// The layout table of the M0.4 plan, written byte by byte and independent of src/map.ts.
+// The layout table of the M0.4 plan, written byte by byte and independent of src/map/map.ts.
 function encode(spec: MapSpec): Uint8Array<ArrayBuffer> {
   const out: number[] = [];
   const u8 = (value: number): void => {

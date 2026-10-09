@@ -1,5 +1,5 @@
 import { SUBPIXELS, type World } from '@nomos/sim-core';
-import { SNAPSHOT_BUFFERS, SNAPSHOT_BYTES } from './messages.ts';
+import { SNAPSHOT_BUFFERS, SNAPSHOT_BYTES } from '../messages/messages.ts';
 import { packVisual } from './visual.ts';
 
 const SNAPSHOT_WORDS = SNAPSHOT_BYTES / Uint32Array.BYTES_PER_ELEMENT;

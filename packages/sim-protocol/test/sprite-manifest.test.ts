@@ -6,7 +6,7 @@ import { parseMap, type SpriteManifest } from '../src/index.ts';
 
 const spritesDir = new URL('../../../assets/sprites/', import.meta.url);
 const schemaFile = new URL('../schema/sprite-manifest.schema.json', import.meta.url);
-const typesFile = new URL('../src/sprite-manifest.ts', import.meta.url);
+const typesFile = new URL('../src/sprites/sprite-manifest.ts', import.meta.url);
 const townFile = new URL('../../../assets/maps/town.nmap', import.meta.url);
 const MANIFEST_WITHOUT_FRAMES = 'season_map.json';
 

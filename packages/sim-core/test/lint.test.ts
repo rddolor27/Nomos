@@ -90,7 +90,7 @@ describe('the sim-core lint profile', { timeout: 30_000 }, () => {
   it('bans transcendental maths in every sim package', async () => {
     const files = [
       'packages/sim-culture/src/planted.ts',
-      'packages/sim-protocol/src/map.ts',
+      'packages/sim-protocol/src/map/map.ts',
       'packages/sim-core/src/random/draw.ts',
       'packages/sim-core/src/random/noise.ts',
     ];
@@ -100,7 +100,7 @@ describe('the sim-core lint profile', { timeout: 30_000 }, () => {
       }
     }
     expect(await profileMessageCount('s.look[0]', 'packages/sim-culture/src/planted.ts')).toBeGreaterThan(0);
-    expect(await profileMessageCount('s.look[0]', 'packages/sim-protocol/src/map.ts')).toBe(0);
+    expect(await profileMessageCount('s.look[0]', 'packages/sim-protocol/src/map/map.ts')).toBe(0);
   });
 
   it('rejects sorting in sim code', async () => {
@@ -206,7 +206,7 @@ describe('the hot-path lint', { timeout: 30_000 }, () => {
 const GENERATOR_FILES = [
   'packages/sim-core/src/random/draw.ts',
   'packages/sim-core/src/random/noise.ts',
-  'packages/sim-protocol/src/map.ts',
+  'packages/sim-protocol/src/map/map.ts',
 ];
 const BARE_DIVISIONS = ['a / b', 'a /= 2'];
 const BARE_REMAINDERS = ['a % b', '(a | 0) % b', 'a %= 3'];
