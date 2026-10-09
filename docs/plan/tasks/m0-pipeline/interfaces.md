@@ -423,7 +423,8 @@ The Country and Region views draw a `WorldMap` with a renderer of their own, whi
 - **Colours:** `map/map-colours.json` is the one table of the map's colours.
   - It holds the five country colours and the line colours, and `tools/worldgen/mapdraw.py` reads the same file.
   - `COUNTRY_COLOURS` holds the five as `0xRRGGBB`, indexed by `WorldMap.countries.colour`. They appear only on map overlays and the legend (Countries rule 5).
-  - The owner picks the five from a swatch sheet; until then the table holds M8.1's provisional ones.
+  - The owner picked the five on 9 October 2026. In index order they are `#42F6FC` cyan, `#0000E4` blue, `#600090` deep violet, `#CC36D8` orchid and `#FC66FC` pink-violet.
+  - A test keeps them, in D65 Lab and CIEDE2000, ≥ 15 from every palette colour, and ≥ 12 apart for normal, protan, deutan and tritan vision (M8.3, Task 14).
 - **Atlas page:** `tools/atlas` writes `map.webp`, `map.png` and `map.json` beside the town atlas. The page holds the 81 map-scale frames: terrain tiles, wonders and landmarks at both scales, and the settlement icons.
   - `AtlasPage` is `{ image: ImageBitmap, frames: Record<string, AtlasFrame> }`, keyed `"<sheet>/<frame>"`.
   - `AtlasFrame` is `{ x, y, w, h, anchor: [x, y] }`.
@@ -452,7 +453,7 @@ The Country and Region views draw a `WorldMap` with a renderer of their own, whi
   - the Country view labels countries, capitals and cities;
   - the Region view labels every settlement;
   - a greedy pass, in that priority order, drops any label that would overlap one already shown.
-- **The legend** lists each country's colour, name, capital and settlement count. It is also the map's text alternative.
+- **The legend** lists each country's colour, name, capital and settlement count. It is also the map's text alternative. Colour is never the only cue: each country's name is written on the map at Country zoom, and the legend names it beside its swatch.
 - **Chunks:**
   - `map-view-*.js`, `map-worker-*.js` and `dist/atlas/map.webp` each get a size-limit entry;
   - `vite.config.ts`'s `render-gl` chunk group leaves out `src/map`, so the scene never joins the renderer chunk.

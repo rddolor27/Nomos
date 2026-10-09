@@ -40,14 +40,20 @@
 | 11 | Size limits and the first-load check | Junior, exact steps | 10 |
 | 12 | The exit tests: tiles complete, labels by band, the town's pause | Junior, exact code | 10, M8.1 Task 29 |
 | 13 | The 2 ms bar | Senior | 10 |
-| 14 | The owner's five colours and the Countries golden frame | Senior and owner | 9, the owner's pick |
+| 14 | The colour check and the Countries golden frame | Senior | 9 |
 | 15 | Close M8.3 | Senior | 11–14 |
 
-### The owner's open decisions, taken as parameters
+### The owner's decisions
 
-Neither decision blocks a task before the one that needs it.
-- **The five country colours.** Task 2 puts the provisional five of M8.1's Part 1, Ruling 5, into `map-colours.json`, the one table that `render-gl` and `mapdraw.py` read. No test hard-codes a country colour: each reads the table. Task 14 writes the owner's picks into that one file, then regenerates the Countries golden frame.
-- **The 2 ms bar.** Task 13's spec holds it as `MAP_FRAME_MS = 2`, marked proposed. If the owner sets another bar, only that constant changes.
+- **The five country colours, decided on 9 October 2026.** The owner picked the swatch sheet's suggested five. In colour-index order they are:
+  - A, `#42F6FC` cyan;
+  - C, `#0000E4` blue;
+  - G, `#600090` deep violet;
+  - I, `#CC36D8` orchid;
+  - K, `#FC66FC` pink-violet.
+
+  Task 2 writes them into `map-colours.json`, the one table that `render-gl` and `mapdraw.py` read. They replace M8.1's provisional five, which failed the palette bar twice: `#AABB00` lies 8.3 from `AUTUMN_L` and `#44BBCC` 12.3 from `WATER_L` (swatch sheet, computed). No test hard-codes a country colour: each reads the table. Task 14 adds the colour check and the golden frame.
+- **The 2 ms bar, still open.** Task 13's spec holds it as `MAP_FRAME_MS = 2`, marked proposed. If the owner sets another bar, only that constant changes, and no earlier task waits on it.
 
 ### Global constraints
 
@@ -74,15 +80,25 @@ Neither decision blocks a task before the one that needs it.
    - `tools/atlas` writes `map.webp`, `map.png` and `map.json` beside it: 81 frames on a 256 × 91 px page, with the WebP at 3,860 bytes (measured here).
    - The app fetches the page when the map opens. Until it arrives, or if it is missing, the flat Countries view draws.
    - Local runs build it with `python tools/atlas/build_atlas.py --out apps/web/dist/atlas` after `pnpm --filter @nomos/web build`, as CI already does.
-5. **Colours in one JSON file,** `packages/render-gl/src/map/map-colours.json`. It holds the five country colours and the water and line colours, and `mapdraw.py` reads its country colours from it.
+5. **Colours in one JSON file,** `packages/render-gl/src/map/map-colours.json`. It holds the owner's five country colours and the water and line colours, and `mapdraw.py` reads its country colours from it.
 6. **Labels are DOM,** as the brief suggested:
    - a fixed pool of spans, measured once and moved by transforms only when the camera moves;
    - bands follow R4: the Country view labels countries, capitals and cities, and the Region view labels every settlement;
-   - a greedy pass in that order drops any label that would overlap one already placed.
+   - a greedy pass in that order drops any label that would overlap one already placed;
+   - **colour is never the only cue:** each country's name is written on the map at Country zoom, and the legend names every country beside its swatch.
 7. **The Map control mounts from the lazy controls chunk,** as a lil-gui button, so the entry chunk gains no byte.
 8. **The town pauses while the map shows,** through `app.setPaused(true)`, and resumes on close only if the map paused it. The town's view and HUD go `inert` under the map, so the HUD's stale Play label is never seen or read. The map section covers both.
 9. **One world per page.** The map worker answers once and is then terminated. The map view keeps the `WorldMap` and names for every later opening, since the seed never changes within a page.
 10. **The Canvas2D fallback** draws the flat fills, from a one-pixel-per-cell image scaled without smoothing, then the settlement icons and the labels. Borders show as colour edges, as the brief allowed.
+
+### Rulings on the colour check (coordinator, 9 October 2026)
+
+11. **"Families" means colour-wheel hue sectors,** as the swatch sheet reads it. The red–orange and body-hue families are sectors of hue, not single colours.
+12. **The pair bar is 12, not the brief's 20.**
+    - An exact search found at most four colours in the free hues that keep 20 apart, so five can't.
+    - The owner's five keep about 12.0 apart for every viewer: normal, protan, deutan and tritan, simulated with Machado 2009 at full severity (swatch sheet, computed).
+    - The palette bar stays 15: each of the five lies at least 15.25 from all 61 palette colours (swatch sheet, computed).
+13. **Distances use D65 Lab,** as the sheet computes them. A D50-adapted Lab, as CSS `lab()` uses, moves the margins by −2.5 to +0.9 and would drop some below 15, so the check must use the same D65 conversion.
 
 ### Files
 
@@ -264,11 +280,11 @@ Neither decision blocks a task before the one that needs it.
   ```
 
 - [ ] **Step 2: Run** `pnpm exec vitest run packages/render-gl/test/map-camera.test.ts packages/render-gl/test/map-colours.test.ts`, and `python tools/worldgen/test_worldgen.py`. Expected: failures, since nothing exists yet.
-- [ ] **Step 3: The colours.** `packages/render-gl/src/map/map-colours.json`, holding Part 1's provisional country colours and `spritekit`'s palette colours for the rest:
+- [ ] **Step 3: The colours.** `packages/render-gl/src/map/map-colours.json`, holding the owner's five country colours of 9 October 2026, in colour-index order, and `spritekit`'s palette colours for the rest:
 
   ```json
   {
-    "countries": ["#0000DD", "#AABB00", "#334422", "#EE00DD", "#44BBCC"],
+    "countries": ["#42F6FC", "#0000E4", "#600090", "#CC36D8", "#FC66FC"],
     "water": "#3C7CD0",
     "river": "#3C7CD0",
     "lane": "#7CC4F0",
@@ -284,8 +300,8 @@ Neither decision blocks a task before the one that needs it.
   ```ts
   import table from './map-colours.json';
 
-  // One table with tools/worldgen/mapdraw.py's previews. Country colours are map-only: no body, building, soldier or police
-  // officer ever wears one (Countries rule 5). The owner's five picks replace the provisional ones in the JSON (Task 14).
+  // One table with tools/worldgen/mapdraw.py's previews. The country colours are the owner's five (9 October 2026), and
+  // map-only: no body, building, soldier or police officer ever wears one (Countries rule 5).
   export const COUNTRY_COLOURS: readonly number[] = table.countries.map(rgbOf);
 
   export const LINE_COLOURS = {
@@ -307,8 +323,8 @@ Neither decision blocks a task before the one that needs it.
 
   ```python
   ROOT = HERE.parents[1]
-  # One table with render-gl's map scene (M8.3). Countries.Country.colour indexes its five country colours, which stay
-  # outside the sprite palette (M8.1 plan, Ruling 5) until the owner's picks replace them.
+  # One table with render-gl's map scene (M8.3). Countries.Country.colour indexes its five country colours, the owner's
+  # picks of 9 October 2026, which stay outside the sprite palette.
   MAP_COLOURS = json.loads((ROOT / 'packages' / 'render-gl' / 'src' / 'map' / 'map-colours.json').read_text(encoding='utf-8'))
   COUNTRY_COLOURS = tuple(tuple(int(colour[k:k + 2], 16) for k in (1, 3, 5)) for colour in MAP_COLOURS['countries'])
   ```
@@ -399,7 +415,7 @@ Neither decision blocks a task before the one that needs it.
     },
     ```
 
-- [ ] **Step 6: Run** the Step 2 commands, then the gates. Expected: all pass, `mapdraw.py`'s previews unchanged, since the colours are the same. Then plant `import '../dots/colour.ts';` at the top of `src/map/camera.ts`, and run `pnpm depcruise`. Expected: one `map-scene-stands-alone` error. Remove the line.
+- [ ] **Step 6: Run** the Step 2 commands, then the gates. Expected: all pass. The previews now draw countries in the owner's colours, but no world fingerprint moves, since a country holds only a colour index until it is drawn: `test_worldgen.py`'s pinned fingerprints still pass. Then plant `import '../dots/colour.ts';` at the top of `src/map/camera.ts`, and run `pnpm depcruise`. Expected: one `map-scene-stands-alone` error. Remove the line.
 - [ ] **Step 7: Commit** `feat(render-gl): add the map export with its camera and colours`, with every file above.
 
 ### Task 3: Frame names and the atlas page loader (junior, exact code)
@@ -1507,18 +1523,23 @@ Labels are DOM, so only their placement runs in Node. Task 10 mounts them, and T
 - **If the bar fails,** profile it. Labels and the overlay upload are the likely costs, so write label styles only on change and build each overlay once. Report the measured figures with the engine and the load average (docs rules).
 - **Commit** `test(web): time the map's frames against the proposed 2 ms bar`.
 
-### Task 14: The owner's five colours and the Countries golden frame (senior and owner)
+### Task 14: The colour check and the Countries golden frame (senior)
 
-**Needs** the owner's five picks from the swatch sheet.
+The owner's step is done: the owner picked the five on 9 October 2026, and Task 2 writes them into `map-colours.json`.
 
-- **Write the picks** into `map-colours.json`'s `countries`, in the owner's order. That is the only file that changes for the colours, and both `render-gl` and `mapdraw.py` read it.
-- **Check them against the reserved colours.** Move the swatch sheet's CIEDE2000 check into `tools/worldgen/test_worldgen.py`: every country colour stays ≥ 15 from each of the 47 reserved colours, and ≥ 15 from the other four. The reserved colours are the body hues, police navy, merchant teal, the crime reds and oranges, black and the eight emblem colours. Part 1's Ruling 5 lists 42 of them.
+- **The colour check,** in `tools/worldgen/test_worldgen.py`, as `country_colours_keep_apart`. It reads `MAP_COLOURS['countries']` and needs only NumPy, which `tools/requirements.txt` already pins.
+  - **Conversion:** sRGB to CIE Lab with the D65 white, as the swatch sheet computes it (Ruling 13). Never use D50-adapted Lab.
+  - **Distance:** CIEDE2000. Port or mirror the sheet's NumPy version from the gitignored `dist/colours/swatches.py`, with its check against Sharma's 34 test pairs. Copy those pairs into the test, so the check never depends on `dist/`.
+  - **The palette bar:** every country colour lies ≥ 15 from each of the 61 palette colours in `spritekit.PALETTE`. The owner's five pass, the nearest at 15.25 (swatch sheet, computed).
+  - **The pair bar:** every two country colours lie ≥ 12 apart for normal vision, and for protan, deutan and tritan vision simulated with Machado 2009 at full severity (Ruling 12). The owner's five keep about 12.0.
+  - **Families:** no country colour falls in the red–orange or body-hue hue sectors, as the sheet defines them (Ruling 11).
+  - **Simulation:** Machado 2009's full-severity matrices, ported from the sheet with the conversion.
+  - **Proof that the check bites:** run it once against M8.1's provisional table, and see it fail on `#AABB00`, 8.3 from `AUTUMN_L`, and `#44BBCC`, 12.3 from `WATER_L`.
 - **A golden frame** of seed 42's flat Countries view, at a fixed 1,280 × 800 CSS size, in `apps/web/test/browser/map-golden.spec.ts`:
   - it compares a hash of the canvas pixels with `apps/web/test/golden/map-countries.json`;
   - `UPDATE_GOLDEN=1` rewrites the hash, as `render-gl`'s golden spec does;
   - it also checks that every land edge between two countries draws its border colour, and that the legend lists every country with its name and capital.
-- **Regenerate the previews** with `python tools/worldgen/generate.py --size large --seed 5eed0001`, and have the owner look once.
-- **Commits:** `feat(render-gl): give countries the owner's five map colours`, then `test(web): pin the Countries view of seed 42`.
+- **Commits:** `test(worldgen): keep the country colours apart from the palette`, then `test(web): pin the Countries view of seed 42`.
 
 ### Task 15: Close M8.3 (senior)
 
