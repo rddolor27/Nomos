@@ -17,6 +17,8 @@ sys.path.insert(0, str(HERE))
 from build_atlas import ATLAS_WIDTH, MAP_PAGE_WIDTH, MAP_PREFIXES, MAX_HEIGHT, pack  # noqa: E402
 
 SPRITES = HERE.parents[1] / 'assets' / 'sprites'
+# Pinned here, apart from build_atlas's MAP_PREFIXES, so a wrong prefix list can't pass on both sides (M8.3 Task 1).
+MAP_FRAMES = 81
 NOT_A_MANIFEST = 'season_map.json'
 SAMPLE_EVERY = 37
 IMAGES = ('atlas.webp', 'atlas.png')
@@ -129,6 +131,8 @@ def map_page_problems(out):
     width, height = index['size']
     problems = [f'{key}: in map.json but no map frame' for key in index['frames'] if key not in expected]
     problems += [f'{key}: missing from map.json' for key in expected if key not in index['frames']]
+    if len(expected) != MAP_FRAMES:
+        problems.append(f'{len(expected)} map frames, not {MAP_FRAMES}: a map sprite changed or MAP_PREFIXES drifted')
     if width > MAP_PAGE_WIDTH:
         problems.append(f'the map page is {width} px wide, over {MAP_PAGE_WIDTH}')
     if not problems:
