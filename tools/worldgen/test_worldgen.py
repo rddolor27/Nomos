@@ -31,6 +31,9 @@ from world import SIZES, fingerprint, generate  # noqa: E402
 FIRST = 0x5EED0001
 SNOWY = ('standard', 0x5EED000A)
 SAMPLE = [('standard', FIRST), ('standard', FIRST + 1), ('standard', FIRST + 2), SNOWY, ('large', FIRST)]
+# Pinned after the M8.1 preview tuning; a deliberate change to any stage updates them, and goldens.py
+# replaces them when version 1 freezes.
+PINNED = {('standard', FIRST): 0x1EC8F880, ('large', FIRST): 0x867CD479}
 
 
 @lru_cache(maxsize=8)
@@ -162,6 +165,11 @@ def fingerprint_covers_countries():
     return problems
 
 
+def fingerprints_are_pinned():
+    return [f'{size} {seed:08x}: fingerprint {got:08x}, pinned {want:08x}'
+            for (size, seed), want in PINNED.items() if (got := fingerprint(world(size, seed))) != want]
+
+
 BLANK = (1, 2, 3)
 
 
@@ -254,8 +262,8 @@ def snow_lies_on_cold_lowland(w):
 CHECKS = [snow_on_cold_lowland, lone_snow_melts, snow_is_uninhabitable, snow_places_build, snow_falls_on_a_cold_world,
           count_is_three_to_five, capitals_spaced_in_population_order, grow_breaks_ties_by_cost_then_cell,
           grow_bends_to_mountains, island_joins_the_cheaper_crossing, diagonal_never_slips,
-          small_countries_pass_their_capital_on, fingerprint_covers_countries, borders_draw_on_cell_edges,
-          previews_write]
+          small_countries_pass_their_capital_on, fingerprint_covers_countries, fingerprints_are_pinned,
+          borders_draw_on_cell_edges, previews_write]
 WORLD_CHECKS = [snow_lies_on_cold_lowland, countries_cover_the_land, stage_only_retiers_capitals]
 
 
