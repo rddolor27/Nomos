@@ -141,6 +141,12 @@ BARE_FRUIT = (30, 26, [
     (8, 13, 2, 10, 1, 1), (22, 13, 28, 10, 1, 1), (11, 11, 7, 5, 1, 1), (19, 11, 23, 5, 1, 1),
     (6, 11, 5, 6, 1, 1), (24, 11, 25, 6, 1, 1),
 ])
+BARE_ORCHARD = (16, 18, [                                    # pruned open in the middle
+    (8, 17, 8, 11, 3, 2),
+    (7, 17, 5, 17, 1, 1), (9, 17, 11, 17, 1, 1),
+    (8, 11, 2, 5, 2, 1), (8, 11, 14, 5, 2, 1), (7, 10, 5, 2, 1, 1), (9, 10, 11, 2, 1, 1),
+    (3, 6, 1, 2, 1, 1), (13, 6, 15, 2, 1, 1), (5, 3, 4, 0, 1, 1), (11, 3, 12, 0, 1, 1),
+])
 
 
 def bare(spec):
@@ -244,7 +250,7 @@ def icon(rows, size, name):
 RECOLOUR = {
     'ground': ['nature/terrain_grass_*', 'scenery/terrain_meadow_*', 'nature/crop_pasture',
                'scenery/shore_*', 'scenery/cliff_*', 'nature/terrain_farm-track_*'],
-    'foliage': ['nature/tree_deciduous_*', 'nature/tree_fruit', 'nature/prop_bush'],
+    'foliage': ['nature/tree_deciduous_*', 'nature/tree_fruit', 'nature/prop_bush', 'nature/tree_orchard*'],
 }
 SPRING = {'GRASS_L': 'SPRING_L', 'GRASS': 'SPRING', 'LEAF_D': 'SPRING_D'}
 WINTER = {'GRASS_L': 'WINTER_L', 'GRASS': 'WINTER', 'LEAF_D': 'WINTER_D'}
@@ -257,14 +263,16 @@ PALETTES = {
 }
 BARE_TREE = 'seasons/tree_deciduous_mature_bare'
 SWAPS = {     # worldgen plants blossom and autumn trees as species; they show their colour in season only
-    'spring': {'scenery/tree_autumn': 'nature/tree_deciduous_mature'},
+    'spring': {'scenery/tree_autumn': 'nature/tree_deciduous_mature',
+               'nature/tree_orchard': 'nature/tree_orchard_blossom'},
     'summer': {'scenery/tree_blossom': 'nature/tree_deciduous_mature',
                'scenery/tree_autumn': 'nature/tree_deciduous_mature'},
     'autumn': {'scenery/tree_blossom': 'scenery/tree_autumn'},
     'winter': {'nature/tree_deciduous_mature': BARE_TREE, 'scenery/tree_blossom': BARE_TREE,
                'scenery/tree_autumn': BARE_TREE,
                'nature/tree_deciduous_young': 'seasons/tree_deciduous_young_bare',
-               'nature/tree_fruit': 'seasons/tree_fruit_bare'},
+               'nature/tree_fruit': 'seasons/tree_fruit_bare',
+               'nature/tree_orchard': 'seasons/tree_orchard_bare'},
 }
 
 
@@ -308,6 +316,7 @@ def build():
     sheet.add('tree_deciduous_mature_bare', bare(BARE_MATURE))
     sheet.add('tree_deciduous_young_bare', bare(BARE_YOUNG))
     sheet.add('tree_fruit_bare', bare(BARE_FRUIT))
+    sheet.add('tree_orchard_bare', bare(BARE_ORCHARD))
     sheet.add('tree_conifer_snow', snowy_conifer())
     for size, icons in ((16, ICON16), (8, ICON8)):
         for name in SEASONS:

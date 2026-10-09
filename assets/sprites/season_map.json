@@ -18,7 +18,8 @@
     "foliage": [
       "nature/tree_deciduous_*",
       "nature/tree_fruit",
-      "nature/prop_bush"
+      "nature/prop_bush",
+      "nature/tree_orchard*"
     ]
   },
   "palette": {
@@ -62,7 +63,8 @@
   },
   "sprites": {
     "spring": {
-      "scenery/tree_autumn": "nature/tree_deciduous_mature"
+      "scenery/tree_autumn": "nature/tree_deciduous_mature",
+      "nature/tree_orchard": "nature/tree_orchard_blossom"
     },
     "summer": {
       "scenery/tree_blossom": "nature/tree_deciduous_mature",
@@ -76,7 +78,8 @@
       "scenery/tree_blossom": "seasons/tree_deciduous_mature_bare",
       "scenery/tree_autumn": "seasons/tree_deciduous_mature_bare",
       "nature/tree_deciduous_young": "seasons/tree_deciduous_young_bare",
-      "nature/tree_fruit": "seasons/tree_fruit_bare"
+      "nature/tree_fruit": "seasons/tree_fruit_bare",
+      "nature/tree_orchard": "seasons/tree_orchard_bare"
     }
   },
   "snow": {

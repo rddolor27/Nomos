@@ -510,6 +510,202 @@ VEG_RIPE = [
     '................',
 ]
 
+# Rice paddies for hot, wet land: every tile is a plot ringed by an earth bund, lit on its bottom
+# and right edges and shaded on its top and left ones, so plots side by side share a 2-px bund. The
+# rice stands in flooded plots and is drained for harvest, so stubble sits on mud.
+PADDY = [
+    'dwwwwkwwwwwwwwwL',
+    'wttttttttttttttL',
+    'wtaaaaaaaaaaaaaL',
+    'wtaaaaaaaaAAaaaG',
+    'ktaaaaaaaaaaaaaL',
+    'wtaaAAaaaaaaaaaL',
+    'wtaaaaaaaaaaaaaL',
+    'wtaaaaaaaaaaaaaL',
+    'wtaaaaaaaaaaAAag',
+    'wtaaaaaaaaaaaaaL',
+    'wtaaaaaAAaaaaaaL',
+    'wtaaaaaaaaaaaaaL',
+    'wtaAAaaaaaaaaaaL',
+    'wtaaaaaaaaaaaaaL',
+    'wtaaaaaaaaaaaaaL',
+    'LLLLGLLLLLLgLLLL',
+]
+
+PADDY_DRAINED = [
+    'dwwwwkwwwwwwwwwL',
+    'wddddddddddddddL',
+    'wdwwwwwwwwwwwwwL',
+    'wdwwwwwwwwwaawwG',
+    'kdwwwwwwwwwwwwwL',
+    'wdwaawwwwwwwwwwL',
+    'wdwwwwwwwwwwwwwL',
+    'wdwwwwwwwwwwwwwL',
+    'wdwwwwwwwwwwwwwg',
+    'wdwwwwwwwwwwwwwL',
+    'wdwwwwwaawwwwwwL',
+    'wdwwwwwwwwwwwwwL',
+    'wdwwwwwwwwwwwwwL',
+    'wdwwwwwwwwwwaawL',
+    'wdwwwwwwwwwwwwwL',
+    'LLLLGLLLLLLgLLLL',
+]
+
+RICE_SEEDLING = [
+    '................',
+    '................',
+    '...G.G.G.G.G.G..',
+    '....g...g...g...',
+    '...AkA.AkA.AkA..',
+    '................',
+    '...G.G.G.G.G.G..',
+    '....g...g...g...',
+    '...AkA.AkA.AkA..',
+    '................',
+    '...G.G.G.G.G.G..',
+    '....g...g...g...',
+    '...AkA.AkA.AkA..',
+    '................',
+    '................',
+    '................',
+]
+
+RICE_GROWING = [
+    '................',
+    '..G.G..G.G..G.G.',
+    '.GgGgGGgGgGGgGg.',
+    '.gGgkgGgGkgGgkg.',
+    '.kgkkkkgkkkkgkk.',
+    '..k.k..k.k..k.k.',
+    '.G.G..G.G..G.G..',
+    'GgGgGGgGgGGgGgG.',
+    'gGgkggGgkggGgkg.',
+    'kgkkkkgkkkkgkkk.',
+    '.k.k..k.k..k.k..',
+    '..G.G..G.G..G.G.',
+    '.GgGgGGgGgGGgGg.',
+    '.gGgkgGgGkgGgkg.',
+    '.kgkkkkgkkkkgkk.',
+    '................',
+]
+
+# Golden heads nodding over the last green of the stems.
+RICE_RIPE = [
+    '................',
+    '.YY.YS.YY.YS.YY.',
+    'YSYsYSYSYsYSYSY.',
+    'sYsYsYsYsYsYsYs.',
+    'gsSsgsSsgsSsgsS.',
+    'kgkgkgkgkgkgkgk.',
+    'YY.YS.YY.YS.YY..',
+    'SYsYSYSYsYSYSYs.',
+    'YsYsYsYsYsYsYsY.',
+    'sSsgsSsgsSsgsSs.',
+    'gkgkgkgkgkgkgkg.',
+    '.YY.YS.YY.YS.YY.',
+    'YSYsYSYSYsYSYSY.',
+    'sYsYsYsYsYsYsYs.',
+    'gsSsgsSsgsSsgsS.',
+    '................',
+]
+
+RICE_STUBBLE = [
+    '................',
+    '................',
+    '..S...S...S..S..',
+    '..s.S.s.S.s..s..',
+    '....s...s.......',
+    '................',
+    '....S...S...S...',
+    '..S.s.S.s.S.s...',
+    '..s...s...s.....',
+    '................',
+    '..S...S...S..S..',
+    '..s.S.s.S.s..s..',
+    '....s...s.......',
+    '................',
+    '................',
+    '................',
+]
+
+# Vineyards for warm, dry land: two trellised rows a tile on dusty ground, posts every 4 px. The
+# stages follow the field crops' year: bud on pruned stocks, full leaf, grapes, then bare canes.
+VINE_SEEDLING = [
+    '................',
+    '.G...G...G...G..',
+    'wkwwwkwwwkwwwkww',
+    '.d...d...d...d..',
+    '.d...d...d...d..',
+    'dd..dd..dd..dd..',
+    '................',
+    '................',
+    '................',
+    '...G...G...G...G',
+    'wwwkwwwkwwwkwwwk',
+    '...d...d...d...d',
+    '...d...d...d...d',
+    '..dd..dd..dd..dd',
+    '................',
+    '................',
+]
+
+VINE_GROWING = [
+    '..GGg..GGg..GGg.',
+    '.GGggGGGggGGGggG',
+    'GgggkgGgggkgGggk',
+    'gkgkkkgkgkkkgkkk',
+    'kkdkkkkdkkkkdkkk',
+    '.d...d...d...d..',
+    'dd..dd..dd..dd..',
+    '................',
+    'Gg..GGg..GGg..GG',
+    'ggGGGggGGGggGGGg',
+    'kgGggkgGggkgGggk',
+    'kkgkgkkkgkgkkkgk',
+    'kkkkdkkkkdkkkkdk',
+    '...d...d...d...d',
+    '..dd..dd..dd..dd',
+    '................',
+]
+
+VINE_RIPE = [
+    '..GGg..GGg..GGg.',
+    '.GGggGGGggGGGggG',
+    'GgggkgGgggkgGggk',
+    'gkUUkkgkgUUkgkkk',
+    'kkUnkkkdkUnkkkUU',
+    '.d.n.d...dn..dUn',
+    'dd..dd..dd..dd.n',
+    '................',
+    'Gg..GGg..GGg..GG',
+    'ggGGGggGGGggGGGg',
+    'kgGggkgGggkgGggk',
+    'UUgkgkUUgkgkkUUk',
+    'UnkkdkUnkkdkkUnk',
+    '.n.d...n.d...nd.',
+    '..dd..dd..dd..dd',
+    '................',
+]
+
+VINE_STUBBLE = [
+    '..w...w...L...w.',
+    '.wLw.wLw.wLw.wLw',
+    'dwwdwwdwwdwwdwwd',
+    '.d..Yd...d..Sd..',
+    '.d...d...d...d..',
+    'dd..dd..dd..dd..',
+    '................',
+    '................',
+    'w...L...w...w...',
+    'Lw.wLw.wLw.wLw.w',
+    'wdwwdwwdwwdwwdww',
+    '...dS..Yd...d...',
+    '...d...d...d...d',
+    '..dd..dd..dd..dd',
+    '................',
+    '................',
+]
+
 # --------------------------------------------------------------------------- trees
 # Fill grids; outlined() adds the 1-px ring, so each sprite is 2 px wider and taller.
 # Crowns are clumps lit on their top-left edge, with dark rims where a clump tucks behind another.
@@ -679,6 +875,51 @@ TREE_FRUIT = [
     '..........LLw.ww.ddd..........',
 ]
 FRUIT = [(9, 2), (19, 3), (3, 8), (14, 8), (24, 8), (8, 13), (20, 13), (26, 11)]
+
+# A pruned orchard tree, a tile wide so trees stand in rows; the season map swaps in the blossom
+# in spring and seasons.py's bare tree in winter.
+TREE_ORCHARD = [
+    '....GGGg.GGg....',
+    '..GGGGGggGGGgg..',
+    '.GGGGGgggGGgggg.',
+    '.GGGggggkgggggk.',
+    'GGGgggggkgggggkk',
+    'GGgggkkggggggkkk',
+    'GggggGGkkggggkkk',
+    'ggggGGGgggkgkkkk',
+    'ggggGggggkkkkkk.',
+    '.ggggggkkkkkkk..',
+    '..kkkkkkkkkkk...',
+    '....kkkdddkk....',
+    '.......Lwd......',
+    '.......Lwd......',
+    '.......Lwd......',
+    '.......Lwd......',
+    '......dLwdd.....',
+    '.....LLw.wdd....',
+]
+ORCHARD_FRUIT = [(3, 3), (10, 2), (12, 6), (2, 7), (7, 8)]
+
+TREE_ORCHARD_BLOSSOM = [
+    '....WWWP.WWP....',
+    '..WWWWWPPWWWPP..',
+    '.WWPWWPPPWWPPPP.',
+    '.WWWPPgPpPPPPPp.',
+    'WWWPPPPPpPPgPPpp',
+    'WWPPPppPPPPPPppp',
+    'WgPPPWWppPPPPppU',
+    'PPPPWWWPPPpPpppU',
+    'PPPPWPPPPppppUU.',
+    '.PPPPgPppppUUU..',
+    '..pUppppUppUU...',
+    '....UUUdddUU....',
+    '.......Lwd......',
+    '.......Lwd......',
+    '.......Lwd......',
+    '.......Lwd......',
+    '......dLwdd.....',
+    '.....LLw.wdd....',
+]
 
 # --------------------------------------------------------------------------- rocks
 
@@ -1127,10 +1368,10 @@ def cart(load):
     return add_outline(pad(body))
 
 
-def fruit_tree():
-    im = grid(TREE_FRUIT)
+def fruit_tree(rows, places):
+    im = grid(rows)
     apple = grid(['PV', 'Vr'])
-    for x, y in FRUIT:
+    for x, y in places:
         im.alpha_composite(apple, (x, y))
     return add_outline(pad(im))
 
@@ -1163,6 +1404,13 @@ def build():
     sheet.add('crop_veg_growing', over(soil, VEG_GROWING))
     sheet.add('crop_veg_ripe', over(soil, VEG_RIPE))
     sheet.add('crop_pasture', tile(PASTURE))
+    paddy, dust = tile(PADDY), tile(DIRT)
+    for stage, rows in (('seedling', RICE_SEEDLING), ('growing', RICE_GROWING), ('ripe', RICE_RIPE)):
+        sheet.add(f'crop_rice_{stage}', over(paddy, rows))
+    sheet.add('crop_rice_stubble', over(tile(PADDY_DRAINED), RICE_STUBBLE))
+    for stage, rows in (('seedling', VINE_SEEDLING), ('growing', VINE_GROWING), ('ripe', VINE_RIPE),
+                        ('stubble', VINE_STUBBLE)):
+        sheet.add(f'crop_vine_{stage}', over(dust, rows))
 
     # trees anchor at the bottom centre, which is the base of every trunk
     sheet.add('tree_deciduous_sapling', outlined(TREE_SAPLING))
@@ -1170,7 +1418,9 @@ def build():
     sheet.add('tree_deciduous_mature', outlined(TREE_MATURE))
     sheet.add('tree_deciduous_stump', outlined(TREE_STUMP))
     sheet.add('tree_conifer', outlined(TREE_CONIFER))
-    sheet.add('tree_fruit', fruit_tree())
+    sheet.add('tree_fruit', fruit_tree(TREE_FRUIT, FRUIT))
+    sheet.add('tree_orchard', fruit_tree(TREE_ORCHARD, ORCHARD_FRUIT))
+    sheet.add('tree_orchard_blossom', outlined(TREE_ORCHARD_BLOSSOM))
     sheet.add('tree_log', outlined(TREE_LOG))
 
     sheet.add('rock_boulder', outlined(ROCK_BOULDER))
