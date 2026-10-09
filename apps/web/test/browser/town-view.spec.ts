@@ -156,6 +156,31 @@ test.describe('in one engine', () => {
     await expect(page.getByRole('img', { name: new RegExp(`^${capital}: `) })).toHaveCount(0);
   });
 
+  test('never opens a town view whose map closed while it loaded', async ({ page }) => {
+    let release = (): void => undefined;
+    const held = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    await page.route(/\/place-view-[\w-]{8}\.js$/, async (route) => {
+      await held;
+      await route.continue();
+    });
+    await openMap(page);
+    const capital = await goToCapital(page);
+    await page.getByRole('button', { name: `Enter ${capital}` }).click();
+    await page.getByRole('button', { name: 'Close map' }).click();
+    await expect(page.locator('#map')).toBeHidden();
+    release();
+    await page.waitForTimeout(1000);
+    await expect(page.locator('#place')).toHaveCount(0);
+    await expect(page.locator('#hud')).toHaveJSProperty('inert', false);
+    // The map opens again, draws, and enters on request.
+    await page.getByRole('button', { name: 'Map', exact: true }).click();
+    await page.getByRole('button', { name: `Enter ${capital}` }).click();
+    await expect(page.locator('#place')).toBeVisible();
+    await expect(page.locator('#place h2')).toHaveText(capital);
+  });
+
   test('opens the settlement in focus on a tap, and Back to map returns', async ({ page }) => {
     await openMap(page);
     await goToCapital(page);

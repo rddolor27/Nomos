@@ -113,6 +113,8 @@ interface MapPanel {
   focusView: MapView | null;
   // While the town view covers the map, the map draws nothing.
   placeOpen: boolean;
+  // Counted up by every entry and every close, so a town view whose map closed while it loaded never opens.
+  entries: number;
   host: PlaceHost | null;
 }
 
@@ -252,6 +254,7 @@ function createPanel(app: App): MapPanel {
     focusCamera: null,
     focusView: null,
     placeOpen: false,
+    entries: 0,
     host: null,
   };
   bindPanel(panel);
@@ -317,6 +320,8 @@ function show(panel: MapPanel, returnFocus: HTMLElement): void {
 
 function close(panel: MapPanel): void {
   if (!panel.hook.open) return;
+  panel.entries++;
+  panel.placeOpen = false;
   panel.hook.open = false;
   panel.parts.section.hidden = true;
   closeRenderer(panel);
@@ -436,9 +441,12 @@ function placeHost(panel: MapPanel): PlaceHost {
 function enter(panel: MapPanel, place: number, returnFocus: HTMLElement): void {
   if (!panel.world || panel.placeOpen || place < 0) return;
   panel.placeOpen = true;
+  const entry = ++panel.entries;
   const info = placeInfo(panel.world.map, panel.world.names, place);
   import('./place-view.ts')
-    .then(({ openPlace }) => openPlace(placeHost(panel), info, returnFocus))
+    .then(({ openPlace }) => {
+      if (entry === panel.entries) openPlace(placeHost(panel), info, returnFocus);
+    })
     .catch((error: unknown) => {
       panel.placeOpen = false;
       requestDraw(panel);
