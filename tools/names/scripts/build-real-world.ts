@@ -3,13 +3,12 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { nameTokens } from '../src/text/fold.ts';
 import { CATEGORIES, FIXTURES, type Category } from '../src/filters/real-world.ts';
-import { mergeSourceNotes, type SourceNote } from './source-notes.ts';
+import { get, mergeSourceNotes, type SourceNote } from './source-notes.ts';
 
 const CLDR_TAG = '47.0.0';
 const CLDR_PACKAGE = `https://raw.githubusercontent.com/unicode-org/cldr-json/${CLDR_TAG}/cldr-json/cldr-localenames-full/`;
 const CC0_TEXT = 'https://creativecommons.org/publicdomain/zero/1.0/legalcode.txt';
 const WIKIDATA = 'https://query.wikidata.org/sparql';
-const USER_AGENT = 'NomosNameFixture/1.0 (https://github.com/rddolor27/Nomos)';
 const MIN_SITELINKS = 5;
 const NOT_COUNTRIES = new Set(['EU', 'EZ', 'UN', 'XA', 'XB', 'ZZ']);
 const RECURRING_LABELS = 3;
@@ -38,12 +37,6 @@ const SPARQL: Record<'demonyms' | 'ethnonyms' | 'religions', string> = {
     ?item wdt:P31 ?kind ; wikibase:sitelinks ?links ; rdfs:label ?label .
     FILTER(LANG(?label) = "en" && ?links >= ${MIN_SITELINKS}) }`,
 };
-
-async function get(url: string, accept = '*/*'): Promise<string> {
-  const response = await fetch(url, { headers: { 'User-Agent': USER_AGENT, Accept: accept } });
-  if (!response.ok) throw new Error(`${url} answered ${response.status} ${response.statusText}`);
-  return response.text();
-}
 
 function isCountryKey(key: string): boolean {
   return /^[A-Z]{2}(-alt-[a-z]+)?$/.test(key) && !NOT_COUNTRIES.has(key.slice(0, 2));

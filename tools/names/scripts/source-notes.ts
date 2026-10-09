@@ -10,6 +10,13 @@ export interface SourceNote {
 }
 
 const SOURCES = new URL('sources.json', FIXTURES);
+const USER_AGENT = 'NomosNameFixture/1.0 (https://github.com/rddolor27/Nomos)';
+
+export async function get(url: string, accept = '*/*'): Promise<string> {
+  const response = await fetch(url, { headers: { 'User-Agent': USER_AGENT, Accept: accept } });
+  if (!response.ok) throw new Error(`${url} answered ${response.status} ${response.statusText}`);
+  return response.text();
+}
 
 // Each build script owns some notes, so a rerun of one keeps the others' notes as they are, in place.
 export function mergeSourceNotes(notes: Readonly<Record<string, SourceNote>>): void {

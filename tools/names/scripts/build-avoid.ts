@@ -5,10 +5,9 @@ import { writeFileSync } from 'node:fs';
 import { franchiseHits } from '../src/filters/franchise.ts';
 import { FIXTURES } from '../src/filters/real-world.ts';
 import { foldName, nameTokens } from '../src/text/fold.ts';
-import { mergeSourceNotes } from './source-notes.ts';
+import { get, mergeSourceNotes } from './source-notes.ts';
 
 const WIKIDATA = 'https://query.wikidata.org/sparql';
-const USER_AGENT = 'NomosNameFixture/1.0 (https://github.com/rddolor27/Nomos)';
 const LDNOOBW_COMMIT = '5faf2ba42d7b1c0977169ec3611df25a3c08eb13';
 const LDNOOBW = `https://raw.githubusercontent.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words/${LDNOOBW_COMMIT}/`;
 // The 21 Latin-script lists (researcher, 9 October 2026).
@@ -56,12 +55,6 @@ interface Item {
 }
 interface SparqlRows {
   readonly results: { readonly bindings: readonly Record<string, { readonly value: string }>[] };
-}
-
-async function get(url: string, accept = '*/*'): Promise<string> {
-  const response = await fetch(url, { headers: { 'User-Agent': USER_AGENT, Accept: accept } });
-  if (!response.ok) throw new Error(`${url} answered ${response.status} ${response.statusText}`);
-  return response.text();
 }
 
 function oneLine(query: string): string {

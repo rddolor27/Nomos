@@ -4,7 +4,7 @@
 import { writeFileSync } from 'node:fs';
 import { FIXTURES } from '../src/filters/real-world.ts';
 import { nameTokens } from '../src/text/fold.ts';
-import { mergeSourceNotes } from './source-notes.ts';
+import { get, mergeSourceNotes } from './source-notes.ts';
 
 const COMMIT = '546c41d37e1daf842df620139e3228553e2f0847';
 const RAW = `https://raw.githubusercontent.com/Azgaar/Fantasy-Map-Generator/${COMMIT}/`;
@@ -21,13 +21,7 @@ const CREDIT =
   'Nomos uses the 32 real-world bases and Levantine.';
 const BASE = /name:\s*"([^"]+)",\s*i:\s*\d+[\s\S]*?b:\s*"([^"]*)"/g;
 
-async function get(path: string): Promise<string> {
-  const response = await fetch(`${RAW}${path}`, { headers: { 'User-Agent': 'NomosNameFixture/1.0 (https://github.com/rddolor27/Nomos)' } });
-  if (!response.ok) throw new Error(`${RAW}${path} answered ${response.status} ${response.statusText}`);
-  return response.text();
-}
-
-const source = await get(BASES_FILE);
+const source = await get(`${RAW}${BASES_FILE}`);
 const found = new Map([...source.matchAll(BASE)].map((match) => [match[1], match[2]]));
 const missing = REAL_WORLD.filter((name) => !found.has(name));
 if (missing.length > 0) {
@@ -41,7 +35,7 @@ const bases = [...REAL_WORLD].sort().map((name): [string, string[]] => {
 // One base a line keeps diffs readable.
 const json = `{\n${bases.map(([name, tokens]) => `  ${JSON.stringify(name)}: ${JSON.stringify(tokens)}`).join(',\n')}\n}\n`;
 writeFileSync(new URL('name-bases.json', FIXTURES), json);
-writeFileSync(new URL('LICENSE-fmg.txt', FIXTURES), await get('LICENSE'));
+writeFileSync(new URL('LICENSE-fmg.txt', FIXTURES), await get(`${RAW}LICENSE`));
 
 const count = bases.reduce((sum, [, tokens]) => sum + tokens.length, 0);
 mergeSourceNotes({
