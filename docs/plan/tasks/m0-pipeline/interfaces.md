@@ -87,7 +87,7 @@ The tables give the layout M0.7 builds, including the files it adds. A renamed f
 | `skins/` | `skin.ts`, `skin-toggle.ts` | Skin choice, the automatic policy and the toggle |
 | `dots/` | `dots.ts`, `colour.ts`, `minimap.ts`, `skin-a.json` | Skin A: dot shapes, its palette and contrast, and the minimap |
 
-Skin B and Skin C arrive as `blobs/` and `town/` beside `dots/` (M1.3, M3.3). M8.3 adds `map/`, the map scene, behind the `./map` export whose entry file is `src/map.ts`. M3.1 adds `place/`, the place pass, behind the `./place` export whose entry file is `src/place.ts`, and `map/lifecycle.ts`, the context-loss lifecycle the map and place renderers share.
+Skin B and Skin C arrive as `blobs/` and `town/` beside `dots/` (M1.3, M3.3). M8.3 adds `map/`, the map scene, behind the `./map` export whose entry file is `src/map.ts`. M3.1 adds `place/`, the place pass, behind the `./place` export whose entry file is `src/place.ts`, and `map/lifecycle.ts`, the context-loss lifecycle the map and place renderers share. The Town skin brings `town/` early, with `people.ts` and `town-skin.ts`, behind the `./town` export whose entry file is `src/town.ts` (The Town skin, below).
 
 **`apps/web/src`**
 
@@ -95,9 +95,9 @@ Skin B and Skin C arrive as `blobs/` and `town/` beside `dots/` (M1.3, M3.3). M8
 | --- | --- | --- |
 | `src/` | `main.ts` | The entry `index.html` loads |
 | `app/` | `app.ts`, `boot.ts`, `lifecycle.ts`, `query.ts`, `tiers.ts` | The app shell: boot hand-off, worker link, query, tiers and the page lifecycle |
-| `view/` | `camera-input.ts` | Pointer and keyboard input on the view, and the click that inspects; it loads after the first frame, as the charts do (M0.7) |
+| `view/` | `camera-input.ts`; `town-skin.ts` (the Town skin) | Pointer and keyboard input on the view, and the click that inspects; it loads after the first frame, as the charts do (M0.7). The Town skin's loader, which loads in idle time after that |
 | `panels/` | `hud.ts`, `charts.ts`, `controls.ts`, `inspector.ts` (new) | The HUD, the lazy charts and controls, and the on-demand inspector |
-| `map/` | `generate.ts` and `map-worker.ts` (M8.1); `map-view.ts`, `map-input.ts`, `labels.ts`, `legend.ts`, `crowd-motion.ts` and `goto.ts` (M8.3); `place-builder.ts`, `place-view.ts` and `walkers.ts` (M3.1) | The map: its worker and the worker's lazy place builder, the lazy view the Map control opens, and the town view a place opens into |
+| `map/` | `generate.ts` and `map-worker.ts` (M8.1); `map-view.ts`, `map-input.ts`, `labels.ts`, `legend.ts`, `crowd-motion.ts` and `goto.ts` (M8.3); `place-builder.ts`, `place-view.ts` and `walkers.ts` (M3.1); `town.ts` (the Town skin) | The map: its worker and the worker's lazy place builder, the lazy view the Map control opens, and the town view a place opens into. `town.ts` pins Highcourt's place context for the builder |
 
 `apps/web/vite/` keeps the build plugins. Vite names a lazy chunk after its file, so the size-limit globs `charts-*.js` and `controls-*.js` hold after the move, and the view input's and the inspector's chunks need entries of their own.
 
@@ -251,9 +251,11 @@ The map doesn't draw through `WorldRenderer`. M8.3's `MapRenderer` has a canvas 
 - In `render-gl`: `createWorldRenderer(canvas: HTMLCanvasElement, options: RendererOptions): WorldRenderer`.
   - `RendererOptions` is `{ release(buffer: ArrayBuffer): void; backend?: 'auto' | 'canvas2d'; restoreTimeoutMs?: number }`. `'canvas2d'` skips WebGL2, as `?canvas` asks. A lost WebGL2 context falls back to Canvas2D after `restoreTimeoutMs`, 3,000 ms by default.
   - `WorldRenderer` reads `backend` (`Backend`, `'webgl2' | 'canvas2d'`), `canvas` (the fallback replaces it), `drawnAgents` and `drawnSkin`.
-  - Its methods are `init(): Backend`, `resize(deviceWidth, deviceHeight, dpr)`, `setMap(map: MapV1)`, `pushSnapshot(frame)`, `draw(camera: Camera, alpha: number)`, `setSkin(skin: Skin): Skin`, `setLod(policy: 'auto' | 'fixed')` and `dispose()`. `init` falls back to Canvas2D when WebGL2 is missing or a shader fails to link.
+  - Its methods are `init(): Backend`, `resize(deviceWidth, deviceHeight, dpr)`, `setMap(map: MapV1)`, `pushSnapshot(frame)`, `draw(camera: Camera, alpha: number)`, `setSkin(skin: Skin): Skin`, `setLod(policy: 'auto' | 'fixed')`, `setTown(town: TownPainter)` and `dispose()`. `init` falls back to Canvas2D when WebGL2 is missing or a shader fails to link.
+  - `setTown` lends the Town skin, which loads after the first frame (The Town skin, below). The renderer never disposes it; its maker does.
 - `pushSnapshot` takes `{ tick, count, buffer }`, exactly as the worker sends it. It copies the snapshot and hands the buffer to `options.release` on every push, even when nothing draws, so the worker's pool never runs dry.
-- `Skin` is `'dots' | 'blobs' | 'town'` (`SKINS`), and `BUILT_SKINS` is `['dots']`. `setSkin` returns the skin it will really draw, dots until the others are built (R3). Under `setLod('auto')`, the default, `autoSkin` picks dots or town each draw from the tile's CSS size and the agents in view.
+- `Skin` is `'dots' | 'blobs' | 'town'` (`SKINS`), and `BUILT_SKINS` is `['dots', 'town']` (owner request, 10 October 2026; `['dots']` before). `setSkin` returns the skin it will really draw, dots for blobs until they are built (R3). Under `setLod('auto')`, the default, `autoSkin` picks dots or town each draw from the tile's CSS size and the agents in view.
+  - Until a town is lent, a draw that picks the town draws dots, and `drawnSkin` says dots.
 - Other exports:
   - `Camera` is `{ x, y, zoom }`: the world pixel at the view's top-left, and whole device pixels per texel, from `MIN_ZOOM` 1 to `MAX_ZOOM` 16;
   - `fitCamera(mapWidth, mapHeight, deviceWidth, deviceHeight)`, with the map in tiles; `zoomAt(camera, zoom, deviceX, deviceY)`; `panBy(camera, dxDevice, dyDevice)`, where a positive delta moves the view right or down; `snapCamera(camera)`; and `cssPxPerTile(zoom, dpr)`. The first four return a new `Camera`;
@@ -522,6 +524,7 @@ The owner asked on 9 October 2026 to zoom into a settlement on the map and see t
   - `PlaceRequest` is `{ type: 'place', place }`. Place p is settlement p, or wonder p minus the settlement count, in `world.py`'s `place_contexts` order.
   - `PlaceReply` is `{ type: 'place', place, layout, walks, ms }`, with every buffer transferred, as `placeBuffers(layout, walks)` lists them.
   - `PlaceError` is `{ type: 'place-error', place, message }`, sent instead for an unknown place, a request before any world, or a failed build.
+  - **The starting town (owner request, 10 October 2026):** `TownRequest` is `{ type: 'town' }`, which needs no world. The answer is `TownReply`, `{ type: 'town', layout, ms }`, with the layout's buffers transferred as `layoutBuffers(layout)` lists them, or `TownError`, `{ type: 'town-error', message }`, when the build fails. `placeBuffers` lists `layoutBuffers` first.
 
 ### Building a place
 
@@ -553,6 +556,7 @@ The owner asked on 9 October 2026 to zoom into a settlement on the map and see t
 
 - After a world, `generate.ts` keeps its place contexts, made before the world's buffers are transferred away, and times them as the `contexts` stage.
 - The first `PlaceRequest` imports `place-builder.ts`, which builds as its own chunk, `place-builder-*.js`, so opening the map pays nothing for places. `ms` times the build alone.
+- A `TownRequest` goes through the same lazy builder: `buildTownAnswer` answers with `buildPlace(TOWN).layout`, where `TOWN`, in `map/town.ts`, is Highcourt's context as `tools/worldgen/export_map.py` pins it. `apps/web/test/town.test.ts` holds it to Python's field by field, and its layout to `assets/maps/town.nmap` tile for tile, so the art the Town skin draws is the ground the sim walks.
 - `map-worker.ts` installs its message handler only once. WebKit runs a module worker's script a second time when a dynamically imported module imports it back.
 
 ### The atlas in every build
@@ -610,3 +614,40 @@ The owner asked on 9 October 2026 to zoom into a settlement on the map and see t
   - focus moves to Back to map on entry, and returns on exit;
   - the status line reads the place: "<name>, a <tier> of N people in <country>: X people are out, Y of them walking."
 - **Test hooks:** `window.__map` gains `camera` and `map`, and `window.__place` is the town view's.
+
+## The Town skin (owner request, 10 October 2026)
+
+The owner asked on 10 October 2026 for the town view's art on the first screen. The Town skin draws Highcourt, the town `town.nmap` is exported from, with the place pass, and the sim's agents as its people. It is an early first cut of Skin C (M3.3).
+
+### `@nomos/render-gl/town`
+
+- **`TownPainter`,** in `renderer/types.ts`: `draw(camera: Camera, alpha: number, view: TownView): number | undefined`. `TownView` is what the renderer lends each draw: `drawnSkin`, `retained` (the two latest snapshots), `canvas` and `dpr`.
+  - When `drawnSkin` is the town, it draws and returns the agents drawn. Otherwise it hides its canvas and returns undefined, and the renderer draws the dots.
+  - The first-load renderer chunk gains only this hook, `setTown`, `BUILT_SKINS` and the town check in the skin choice.
+- **`TownSkin`,** the `./town` export, is a `TownPainter`: `new TownSkin(canvas: HTMLCanvasElement, layout: PlaceLayout, page: AtlasPage, options?: LifecycleOptions)`.
+  - It draws through a `createPlaceRenderer` of its own, on its own canvas over the dots' canvas, at `{ x: camera.x, y: camera.y, scale: camera.zoom }`, since a world px is an art px. Its canvas takes the dots' canvas's device size and dpr whenever they change.
+  - While it shows, the dots' canvas is hidden, so assistive tech meets one picture.
+  - It reads `canvas`, which its Canvas2D fallback replaces, and `dispose()` disposes its place renderer.
+- **People,** `town/people.ts`'s `TownPeople`: one person per agent in the layout's `people` columns, rewritten every draw from the snapshots.
+  - **x and y:** eased by alpha as the dots are, `prev × (1 − alpha) + cur × alpha`, or the current place after a jump of more than 16 px, rounded to whole art px. A snapshot's world px are art px, tile × 16 plus the offset in the tile, and the anchor is the blob's ground point.
+  - **look:** `lookOf(word)`, one of the same 96 looks as `looks.py`'s.
+  - **pose:** walk when `actionOf(word)` is walk, else stand. Expression is neutral, with no job or emote yet.
+  - **facing:** from the move between the two snapshots, along its larger axis, or `facingOf(word)` for a blob that stood still or jumped.
+  - **step:** `(along >> 3) & 1`, where `along` is the drawn x of a blob facing left or right and the drawn y of any other, so the walk frame changes every 8 art px walked; 0 for a stander.
+  - The columns regrow to the agent count when it changes, the one time the place is set again; a frame allocates nothing.
+- **Imports:** `src/place`, `src/map`'s `frames.ts` for its types, the renderer's types, and `sim-protocol`.
+
+### In `web`
+
+- **Loading:** after `app:interactive`, in idle time, `main.ts` imports `view/town-skin.ts`, which builds as its own chunk, `town-skin-*.js`, with a size-limit entry. Its `mountTownSkin(app)`:
+  - adds `<canvas id="town">` to `#view` after `#world`, hidden, as an image named for the town;
+  - starts a map worker, sends a `TownRequest`, and terminates the worker once it answers;
+  - loads `atlas/atlas.json` and `atlas/atlas.webp`, as the town view does;
+  - once both are in, makes a `TownSkin` on the app renderer's backend, so `?canvas` draws it in Canvas2D, lends it with `app.renderer.setTown` and redraws.
+  - A failed load keeps the dots and logs why.
+- **Skins:** the HUD's toggle is unchanged.
+  - Auto shows the town at `autoSkin`'s town level: from 6.9 CSS px a tile with at most 425 agents in view, kept down to 5.1 px and 575 agents.
+  - Dots and Town fix the skin, and Blobs still shows dots.
+  - Until the town is lent, Town and Auto draw dots.
+- **Chunks:** `vite.config.ts`'s `render-gl` chunk group leaves out `src/town` too, so the town never joins the renderer chunk.
+- **Test hooks:** none new. `window.__app.renderer.drawnSkin` reads `town` once the town draws.
