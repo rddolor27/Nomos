@@ -768,14 +768,14 @@ The owner's rule: a per-tick loop reads rows through the handle's accessors unle
 
 ### Task C1: Close (orchestrator, with the senior)
 
-- [ ] Once the worldgen senior's work has landed, point two references at `packages/sim-protocol/src/map/map.ts`, with the Edit tool: `tools/worldgen/mapfile.py`'s docstring (line 4) and `tools/worldgen/README.md`'s link (line 15). Commit `chore(worldgen): point at map.ts's new folder`.
+- [ ] Once the worldgen senior's work has landed, point two references at `packages/sim-protocol/src/map/map.ts`, with the Edit tool. Find them by their text, `sim-protocol/src/map.ts`, since their lines move as worldgen changes: one is in `tools/worldgen/mapfile.py`'s docstring, the other is a link in `tools/worldgen/README.md`. Commit `chore(worldgen): point at map.ts's new folder`.
 - [ ] Record the Chromium budget spec's `move` row after the change, beside B3's before. This answers the brief's open question.
 - [ ] Node and G5's three browsers prove the goldens here. Bun, the fifth engine, runs only in CI's `bun` job, on the owner's push.
 - [ ] Run the reviews: the `determinism-review` skill on `packages/sim-*`, `economy-review` on B1, `perf-check`, and `code-reviewer` over the whole change. `senior-qa` proves every exit check in `task.md`.
 - [ ] Run `graphify update .`, delete `.superpowers/m0.7/`, and fill in `milestone.md`'s Started, Done and Actual cells.
 - [ ] Write the next checkpoint. It records:
-  - the owner's mixed name style;
-  - the docs still naming design H or the trigram screen: `implementation-plan.md` (lines 172 and 342, after the shared doc changes), `structure.md` (line 12), `countries.md` (line 45), and M3.7's `task.md` and brief;
+  - the owner's mixed name style, which supersedes checkpoint 0016's decision of a name from round 8's design H;
+  - the syncs that carried that style into the docs on 9 October: `ff4321a` for M3.7's task and brief, and `b494f38`, `d7401ae` and `357b776` for the implementation plan, the structure tab and the countries tab;
   - the push, which waits for the owner.
 
 ## Rulings
