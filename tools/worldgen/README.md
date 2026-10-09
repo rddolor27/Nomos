@@ -4,13 +4,16 @@ Random worlds for Nomos, drawn with the sprites in `tools/sprites`. It is the Py
 
 - Make a new world: `python tools/worldgen/generate.py`. Every run draws a new seed and prints it with a summary.
 - Rebuild a world: `python tools/worldgen/generate.py --seed 5eed0001`.
-- Output goes to `dist/worldgen/<seed>/`:
-  - `country.png`: the Country view, 8-px tiles;
-  - `region.png`: the Region view around the capital, 16-px tiles;
-  - the capital, the largest town and village, and every natural wonder's view;
-  - `<capital>_seasons.png`: the capital in spring, summer, autumn and winter;
+- Make a large world, 192×128 cells instead of 96×64, as the explorable map uses: add `--size large`.
+- Output goes to `dist/worldgen/<seed>/`, or `dist/worldgen/<seed>-large/` for a large world:
+  - `country.png`: the Country view, 8-px tiles, with country borders;
+  - `region.png`: the Region view around the largest capital, 16-px tiles;
+  - `countries.png`: the flat Countries view, each country's land in its map colour;
+  - the largest capital, the largest town and village, and every natural wonder's view;
+  - `<capital>_seasons.png`: that capital in spring, summer, autumn and winter;
   - `looks.png`: the world's first 48 people.
 - Country maps only: `python tools/worldgen/world.py`. Hand-made test places: `python tools/worldgen/place.py --demo`.
+- Check the generator: `python tools/worldgen/test_worldgen.py`. Add `--seeds 100 --size large` to check 100 large worlds.
 - Export the default town, Highcourt, as a binary map: `python tools/worldgen/export_map.py` writes `assets/maps/town.nmap` (seed `0xC0FFEE42`, 48×28 tiles) and refreshes `assets/LICENSES.md`. `--check` compares with the committed file and exits 1 on a difference.
 - `mapfile.py` writes map v1, the format [`parseMap`](../../packages/sim-protocol/src/map.ts) reads, and raises `ValueError` on any map `parseMap` would reject. Run it to write the 3×2 test fixture `packages/sim-protocol/test/fixtures/tiny.nmap`; `--check` compares.
 
@@ -32,26 +35,32 @@ Random worlds for Nomos, drawn with the sprites in `tools/sprites`. It is the Py
 3. **Climate** (`climate.py`):
    - Rain rides a keyed prevailing wind. It dries out crossing mountains, which leaves rain shadows, and picks up moisture again over water.
    - Temperature falls toward a keyed cold edge and with height.
-4. **Biomes:** ocean, lake, peak, mountain, hills, sand (desert and beaches), marsh, conifer and deciduous forest, and grassland. Each coast is beach or cliffs.
+4. **Biomes:** ocean, lake, peak, mountain, hills, snow (lowland colder than 40), sand (desert and beaches), marsh, conifer and deciduous forest, and grassland. Each coast is beach or cliffs. Nobody settles snow or peaks.
 5. **Settlements** (`settle.py`):
    - Habitability comes from land, water, slope and climate, and picks spaced sites.
    - Populations follow rank-size, giving tiers from capital to hamlet.
    - Farmland surrounds each settlement, wider for bigger ones.
    - Each settlement's draws key on its cell (`uid`), never on its population rank, so adding or removing a place re-rolls no other.
-6. **Roads** (`roads.py`):
+6. **Countries** (`countries.py`):
+   - 3–5 per world, by a keyed draw. They are map facts only: no other stage reads them.
+   - Capitals: the largest settlement, then each town or larger in population order, spaced at least isqrt(land ÷ countries) cells apart. The spacing shrinks by a quarter until all fit, and each capital takes the capital tier before farmland is laid out.
+   - One multi-source Dijkstra grows every country from its capital. Steps cost more through forest, hills and mountains, more again into rivers, and far more over sea and lakes. So borders bend to mountains, lakes, rivers and coasts, and an island without a capital joins the country with the cheapest crossing.
+   - Ties break by (cost, cell), so a port draws the same borders. A diagonal step may not slip across a river or a one-cell strait.
+   - Every land cell and settlement belongs to one country; water to none. Each country's map colour comes from a keyed shuffle of five provisional colours, until the owner picks the final five.
+7. **Roads** (`roads.py`):
    - A spanning tree per landmass, plus shortcuts where the detour passes 1.5×.
    - Each road is routed by A* over the terrain, and reusing a road costs half, so routes merge into trunks.
    - Bridges go where roads cross rivers.
    - Sea lanes join the landmasses port to port: a spanning tree whose links are the closest pairs of ports.
-7. **Natural wonders** (`features.py`):
+8. **Natural wonders** (`features.py`):
    - 4–8 per world, each kind at most once, tried in a keyed order.
    - Each sits on the best site for its kind: a waterfall where a river drops, a dune deep in desert, a glacier on the coldest peak, a sea arch on a cliff coast, and so on.
    - Hot springs, a geyser and a caldera lake share one geothermal hotspot.
    - Wonders sit at least 8 cells apart. A kind with no fitting site is skipped, so a world without desert has no dune.
-8. **Built landmarks:**
+9. **Built landmarks:**
    - By tier and site, with keyed chances: a clock tower in every capital, lighthouses in coastal towns, windmills in farm villages, libraries in cities, terraces on hills.
    - Viaducts over steep river valleys and observatories on high ground near towns get map cells of their own.
-9. **Place records:** each settlement and wonder gets its own seed and a context record (`model.PlaceContext`). The record holds the biome, climate, the sides facing the sea or fields, the coast type, the sides where rivers and roads arrive, its landmarks and its wonder.
+10. **Place records:** each settlement and wonder gets its own seed and a context record (`model.PlaceContext`). The record holds the biome, climate, the sides facing the sea or fields, the coast type, the sides where rivers and roads arrive, its landmarks and its wonder.
 
 ## Places (`place.py`)
 
