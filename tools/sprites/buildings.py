@@ -27,6 +27,9 @@ SYM = cmap(
 ROOF = 24        # roof rows of a standard two-tile-deep building (the eave line follows)
 WALL = 21        # front-wall rows between the eave line and the ground outline
 DOOR_H = 18      # doorway rows including its top outline
+UPPER = 13       # an upper storey's rows under the eave, over its cornice
+CORNICE = 2      # cornice rows between an upper storey and the ground storey
+STOREYS = UPPER + CORNICE + WALL
 
 
 # ------------------------------------------------------------------ canvas
@@ -356,6 +359,17 @@ class Building(Sprite):
 
     def wall(self, ramp, tex='plaster', plinth='stone'):
         wall(self.c, self.wx0, self.wx1, self.E + 1, self.g, ramp, tex, plinth)
+
+    def storeys(self, ramp, tex='plaster', plinth='stone', band=('C', 'c')):
+        """An upper storey over a ground storey of the standard height, with a lit cornice band
+        between them, on a wall of STOREYS rows. Returns the top rows of the two storeys."""
+        c, x0, x1 = self.c, self.wx0, self.wx1
+        wall(c, x0, x1, self.E + 1, self.g, ramp, tex, plinth)
+        cy = self.E + 1 + UPPER
+        c.hline(x0, x1, cy, band[0])
+        c.hline(x0, x1, cy + 1, band[1])
+        c.swap(x0, cy + 2, x1, cy + 2, SHADE)
+        return self.E + 1, cy + CORNICE
 
     def door_x(self):
         return (self.W - 18) // 2
@@ -789,6 +803,31 @@ def records_office():
     return b
 
 
+def portico(c, px0, px1, E, g, columns, pict, rise):
+    """A pediment with its pictogram over an entablature on plain columns, and steps across the
+    front; the pediment rises `rise` rows at a slope of 1:2."""
+    xm = (px0 + px1) // 2
+    for x in range(px0, px1 + 1):
+        dist = (xm - x) if x <= xm else (x - xm - 1)
+        yt = E - 3 - max(0, rise - dist // 2)
+        c.vline(x, yt + 1, E - 3, 'C')
+        c.put(x, yt, 'O')
+        c.put(x, yt + 1, 'W' if x <= xm else 'c')
+    c.stamp(xm - len(pict[0]) // 2, E - 5 - len(pict), pict)
+    for row, ch in enumerate('OWCcO'):                        # entablature
+        c.hline(px0 - 1, px1 + 1, E - 2 + row, ch)
+    for cx in columns:
+        c.hline(cx - 1, cx + 5, E + 3, 'W')
+        c.hline(cx - 1, cx + 5, E + 4, 'O')
+        for y in range(E + 5, g - 2):
+            c.stamp(cx - 1, y, ['OWCCccO'])
+        c.hline(cx - 1, cx + 5, g - 3, 'K')
+    c.hline(px0 - 2, px1 + 2, g - 2, 'O')                     # steps
+    c.hline(px0 - 2, px1 + 2, g - 1, 'K')
+    c.hline(px0 - 3, px1 + 3, g, 'k')
+    c.put(px0 - 3, g, 'K')
+
+
 def courthouse():
     b = Building(5)
     c = b.c
@@ -800,30 +839,7 @@ def courthouse():
     c.stamp(W // 2 - 9, g - 3 - DOOR_H + 1, doorway())        # doorway on the top step
     for x in (17, W - 22):                                    # narrow windows between columns
         c.stamp(x, E + 8, NARROW_WINDOW)
-    px0, px1 = 7, W - 8                                       # pediment (slope 1:2)
-    xm = (px0 + px1) // 2
-    for x in range(px0, px1 + 1):
-        dist = (xm - x) if x <= xm else (x - xm - 1)
-        yt = E - 3 - max(0, 13 - dist // 2)
-        c.vline(x, yt + 1, E - 3, 'C')
-        c.put(x, yt, 'O')
-        c.put(x, yt + 1, 'W' if x <= xm else 'c')
-    c.stamp(xm - 6, E - 13, SCALES)
-    c.hline(px0 - 1, px1 + 1, E - 2, 'O')                     # entablature
-    c.hline(px0 - 1, px1 + 1, E - 1, 'W')
-    c.hline(px0 - 1, px1 + 1, E, 'C')
-    c.hline(px0 - 1, px1 + 1, E + 1, 'c')
-    c.hline(px0 - 1, px1 + 1, E + 2, 'O')
-    for cx in (10, 24, 51, 65):                               # four plain columns
-        c.hline(cx - 1, cx + 5, E + 3, 'W')
-        c.hline(cx - 1, cx + 5, E + 4, 'O')
-        for y in range(E + 5, g - 2):
-            c.stamp(cx - 1, y, ['OWCCccO'])
-        c.hline(cx - 1, cx + 5, g - 3, 'K')
-    c.hline(5, W - 6, g - 2, 'O')                             # steps
-    c.hline(5, W - 6, g - 1, 'K')
-    c.hline(4, W - 5, g, 'k')
-    c.put(4, g, 'K')
+    portico(c, 7, W - 8, E, g, (10, 24, 51, 65), SCALES, 13)
     return b
 
 
@@ -1782,6 +1798,359 @@ def watermill():
     return Sprite(c, [4, 2], anchor=(bw // 2, H - 1), door=[bw // 2, g])
 
 
+# ------------------------------------------------------------------ library parts
+# The library landmark (landmarks.py) and the large civic library share these, so both read as
+# one building type: a sandstone reading hall, tall arched windows, an open-book plaque and a
+# fanlit arched entrance.
+BOOK = [                # an open book on a framed stone plaque
+    '.OOOOOOOOOOOOOOOOO.',
+    'OKKKKKKKKKKKKKKKKkO',
+    'OKk..OOO...OOO..kxO',
+    'OKkOOWWWOOOCCCOOkxO',
+    'OKOWWWWWWOCCCCCcOxO',
+    'OKOWxxxxWOCxxxxcOxO',
+    'OKOWWWWWWOCCCCCcOxO',
+    'OKOWxxxWWOCCxxxcOxO',
+    'OKOWWWWWWOCCCCCcOxO',
+    'OKkOOOOOWOCOOOOOkxO',
+    'OKkxxxxxOOOxxxxxkxO',
+    'OkxxxxxxxxxxxxxxxxO',
+    '.OOOOOOOOOOOOOOOOO.',
+]
+
+SHRUB = [               # a clipped shrub in a stone planter
+    '..OOOOO..',
+    '.OgggGGO.',
+    'OggGGGGGO',
+    'OgGGGGlGO',
+    'OGGGGlllO',
+    '.OllllO..',
+    'OKKKKKKkO',
+    'OkkkkkkxO',
+    'OkkkkkkxO',
+    'OOOOOOOOO',
+]
+
+
+def arched_window(w, h, frame='C'):
+    """A tall window under a round head: a fanlit head, then two lights in four panes."""
+    f = frame
+    left = (w - 3) // 2
+    right = w - 3 - left - 2
+    rows = ['..' + 'O' * (w - 4) + '..', '.O' + f * (w - 4) + 'O.']
+    rows += ['O' + f + 'A' * (w - 4) + f + 'O'] * 3
+    rows.append('O' + f * (w - 2) + 'O')
+    body = h - 8
+    for i in range(body):
+        g = 'A' if i < body // 2 else 'a'
+        rows.append('O' + f * (w - 2) + 'O' if i in (body // 3, 2 * body // 3) else
+                    'O' + f + g * left + f + g * right + f + 'O')
+    rows.append('O' + f * (w - 2) + 'O')
+    rows.append('O' * w)
+    rows = [list(r) for r in rows]
+    rows[2][2] = rows[3][2] = rows[6][2] = 'W'
+    return [''.join(r) for r in rows]
+
+
+def reading_hall(c, x0, x1, E, base):
+    """Sandstone walls under a frieze, on a rusticated stone plinth that ends on row `base`."""
+    wall(c, x0, x1, E + 1, base, 'sand', plinth=None)
+    for y, ch in ((E + 1, 's'), (E + 2, 'C'), (E + 3, 'C'), (E + 4, 's')):
+        c.hline(x0, x1, y, ch)
+    c.rect(x0, base - 5, x1, base, 'k')
+    c.tile(x0, base - 5, x1, base, ['Kkkkkkkkkkkx', 'kkkkkkkkkkkx', 'xxxxxxxxxxxx'], stagger=6)
+    c.hline(x0, x1, base - 6, 'K')
+    c.vline(x0, base - 5, base, 'K')
+    c.vline(x1, base - 5, base, 'x')
+
+
+def entrance_bay(c, x0, x1, top, bottom):
+    """A cream ashlar bay rising above the eave, with a lit cornice and outlined sides."""
+    c.rect(x0, top, x1, bottom, 'C')
+    c.tile(x0, top + 3, x1, bottom, ['CCCCCCCCCCCCCC', 'CCCCCCCCCCCCCC', 'CCCCCCCCCCCCCC',
+                                      'cccccccccccccC'], stagger=7, oy=1)
+    for y, ch in ((top, 'W'), (top + 1, 'C'), (top + 2, 'c'), (top + 3, 'O')):
+        c.hline(x0 - 1, x1 + 1, y, ch)
+    c.vline(x0 - 1, top + 4, bottom, 'O')
+    c.vline(x1 + 1, top + 4, bottom, 'O')
+    c.vline(x0, top + 4, bottom, 'W')
+    c.vline(x1, top + 4, bottom, 'c')
+
+
+def fanlight_arch(c, ax, r, spring, base):
+    """Double doors under a round arch of radius r with a fanlight, a lit surround and a keystone;
+    the arch springs at row `spring` and the doors stand on row `base`."""
+    for y in range(spring - r - 2, base + 1):
+        for x in range(ax - r - 2, ax + r + 2):
+            d = math.hypot(x + 0.5 - ax, min(0.0, y + 0.5 - spring))
+            if y >= spring:
+                d = abs(x + 0.5 - ax)
+            if d < r - 1:
+                ang = math.degrees(math.atan2(spring - y, x + 0.5 - ax))
+                fan = y < spring and abs(ang % 45) < 8
+                c.put(x, y, 'C' if fan else 'A' if y < spring - 3 else 'a')
+            elif d < r:
+                c.put(x, y, 'O')
+            elif d < r + 2 and y < spring:
+                c.put(x, y, 'W' if x < ax else 'c')
+    c.rect(ax - 1, spring - r - 2, ax, spring - r - 1, 'W')
+    c.hline(ax - r + 1, ax + r - 2, spring, 'C')
+    c.stamp(ax - 9, spring + 1, door_double(h=base - spring))
+
+
+# ------------------------------------------------------------------ large civic buildings
+# For capitals and cities, where a town's hall would be lost among hundreds of houses. Each is
+# today's building at a larger size, in the same materials, roof and pictogram: more bays, an
+# upper storey and a bigger footprint, never richer trim. Towns keep the standard set.
+CLOCK_FACE = [
+    '...OOOOOOO...',
+    '..OWWCCCCCO..',
+    '.OWCCCCdCCcO.',
+    'OWCCCCCdCCCcO',
+    'OWCCCCCdCCCcO',
+    'OCCCCCCdCCCcO',
+    'OCCCCCCddddcO',
+    'OCCCCCCCCCCcO',
+    'OCCCCCCCCCCcO',
+    '.OCCCCCCCCcO.',
+    '..OcccccccO..',
+    '...OOOOOOO...',
+]
+
+SCALES_LARGE = [
+    '.......xx.......',
+    '.xxxxxxxxxxxxxx.',
+    '.x.....xx.....x.',
+    'x.x....xx....x.x',
+    'x.x....xx....x.x',
+    'xxx....xx....xxx',
+    '.......xx.......',
+    '.......xx.......',
+    '....xxxxxxxx....',
+]
+
+ROUND_WINDOW = ['.OOOOO.', 'OWAAAcO', 'OAAWAcO', 'OAaaacO', '.OOOOO.']
+
+SQUARE_WINDOW = ['OOOOOOO', 'OCCCCCO', 'OCAAACO', 'OCAWACO', 'OCaaaCO', 'OCCCCCO', 'OOOOOOO']
+
+
+def quoins(c, x, y0, y1, right=False):
+    """Dressed corner stones up a wall corner: long and short cream blocks, each over a shaded course."""
+    face, edge = ('c', 's') if right else ('C', 'c')
+    for i, y in enumerate(range(y0, y1 - 1, 3)):
+        w = 4 if i % 2 == 0 else 2
+        a = x - w + 1 if right else x
+        c.hline(a, a + w - 1, y, face)
+        c.hline(a, a + w - 1, y + 1, face)
+        c.hline(a, a + w - 1, y + 2, edge)
+
+
+def front_steps(c, x0, x1, g, n):
+    """n steps before a door, each wider than the one above it."""
+    for i in range(n):
+        y = g - 2 * (n - 1 - i) - 1
+        a, z = x0 - 3 * i, x1 + 3 * i
+        c.hline(a, z, y, 'C')
+        c.hline(a, z, y + 1, 'c')
+        c.put(z, y + 1, 'K')
+
+
+def clock_tower(c, cx, top, bottom, half=13):
+    """A sandstone clock tower on the facade's centre line: a slate pyramid, a cornice, the clock
+    and a slit window, standing down to row `bottom`."""
+    x0, x1 = cx - half, cx + half - 1
+    for i in range(12):
+        y = top + i
+        a, z = cx - 1 - i - (i > 0), cx + i + (i > 0)
+        c.hline(a, z, y, 'x' if i == 11 else 'k')
+        c.put(a, y, 'K')
+        c.put(a + 1, y, 'K')
+        c.put(z, y, 'x')
+    if _snowing:
+        c.swap(cx - 14, top, cx + 13, top + 10, SNOW_DECK)
+    y = top + 12
+    for row, ch in enumerate('OCsO'):
+        c.hline(x0 - 1, x1 + 1, y + row, ch)
+    y += 4
+    c.rect(x0, y, x1, bottom, 'S')
+    c.vline(x0 - 1, y, bottom, 'O')
+    c.vline(x1 + 1, y, bottom, 'O')
+    c.vline(x0, y, bottom, 'C')
+    c.vline(x1, y, bottom, 's')
+    c.hline(x0, x1, y, 's')
+    c.stamp(cx - 6, y + 3, CLOCK_FACE)
+    c.hline(x0, x1, y + 17, 'C')
+    c.hline(x0, x1, y + 18, 's')
+    c.stamp(cx - 3, y + 21, ['OOOOOO', 'OddddO', 'OwwwwO', 'OddddO', 'OwwwwO', 'OddddO', 'OOOOOO'])
+    c.hline(x0, x1, bottom - 1, 'C')
+    c.hline(x0, x1, bottom, 's')
+
+
+def class_window(n, frame='w'):
+    """A classroom window: n tall lights side by side, with a transom across them."""
+    rail = 'O' + (frame * 5 + 'O') * n
+    rows = ['O' * (6 * n + 1), rail]
+    rows += ['O' + (frame + 'AAAA' + 'O') * n] * 5 + [rail] + ['O' + (frame + 'aaaa' + 'O') * n] * 4
+    rows += [rail, 'O' * (6 * n + 1)]
+    rows = [list(r) for r in rows]
+    for k in range(n):
+        rows[2][2 + 6 * k] = rows[3][2 + 6 * k] = 'W'
+    return [''.join(r) for r in rows]
+
+
+def porch_roof(c, x, y):
+    """A little gabled terracotta roof over a porch, under snow in winter."""
+    R, r, S = ('W', 'I', 'W') if _snowing else ('R', 'r', 'S')
+    c.prop(x, y, ['......OOOOOOOOOOOO......', '....OO' + R * 11 + r * 2 + 'OO....',
+                  '..OO' + R * 15 + r * 3 + 'OO..', 'OO' + S * 21 + 's' + 'OO',
+                  'O' + 'r' * 22 + 'O', 'O' * 24])
+
+
+def canopy(c, x, y, w):
+    """A flat entrance canopy seen from above, its front edge in shade; snow lies on it in winter."""
+    top, mid = ('W', 'W') if _snowing else ('g', 'G')
+    c.prop(x, y, ['O' * w, 'O' + top * (w - 2) + 'O', 'O' + mid * (w - 4) + 'llO', 'O' + 'l' * (w - 2) + 'O',
+                  'O' * w])
+
+
+def posts(c, xs, y, g):
+    """Slim white posts from row y down to the ground row."""
+    for x in xs:
+        c.prop(x, y, ['OWcO'] * (g - y + 1))
+
+
+def town_hall_large():
+    b = Building(8, roof_rows=26, top=24, depth=3, wall_rows=STOREYS, door=True)
+    c = b.c
+    W, E, g = b.W, b.E, b.g
+    b.roof('terracotta', 'tile')
+    for x0, x1 in ((1, 32), (W - 33, W - 2)):                 # end pavilions under taller roofs
+        roof_hip(c, x0, x1, b.top - 5, E - 1, 'terracotta', 'tile')
+    c.hline(b.wx0, b.wx1, E, 'O')
+    up, ground = b.storeys('sand')
+    c.vline(31, up, g - 3, 's')                               # the pavilions stand forward of the wings
+    c.vline(W - 32, up, g - 3, 'C')
+    for x in (b.wx0, 30, W - 31, b.wx1):
+        quoins(c, x, up, g - 3, right=x in (30, b.wx1))
+    clock_tower(c, W // 2, 1, E - 1)
+    for x in (6, 18, 37, W - 47, W - 28, W - 16):
+        b.window(x, 'C', y=up + 2, sill='C')
+        b.window(x, 'C', y=ground + 2, sill='C')
+    b.window(W // 2 - 5, 'C', y=up + 2, sill='C')
+    dx = b.door_x()
+    c.rect(dx - 2, g - DOOR_H - 1, dx + 19, g, 'K')           # stone surround on the entrance
+    c.vline(dx + 19, g - DOOR_H, g, 'k')
+    c.vline(dx + 18, g - DOOR_H + 1, g, 'k')
+    b.doorway()
+    front_steps(c, dx - 3, dx + 20, g, 2)
+    return b
+
+
+def courthouse_large():
+    b = Building(7, roof_rows=26, top=4, depth=3, wall_rows=STOREYS, door=True)
+    c = b.c
+    W, E, g = b.W, b.E, b.g
+    b.roof('slate', 'slate')
+    up, ground = b.storeys('cream', plinth=None)
+    px0, px1 = 20, W - 21
+    c.rect(px0 + 2, E + 1, px1 - 2, g - 3, 'c')               # wall in the portico's shade
+    c.hline(px0 + 2, px1 - 2, E + 3, 'S')
+    c.stamp(W // 2 - 9, g - 3 - DOOR_H + 1, doorway())        # doorway on the top step
+    for x in (34, W - 39):                                    # narrow windows between the columns
+        c.stamp(x, E + 8, NARROW_WINDOW)
+        c.stamp(x, ground + 2, NARROW_WINDOW[:9] + ['OOOOO'])
+    for x in (6, W - 16):                                     # the wings
+        b.window(x, 'C', y=up + 2, sill='C')
+        b.window(x, 'C', y=ground + 2, sill='C')
+    portico(c, px0, px1, E, g, (24, 41, W - 47, W - 30), SCALES_LARGE, 17)
+    return b
+
+
+def library_large():
+    """The library landmark's reading hall, a bay wider each side and a tile deeper, with a
+    gallery storey of square windows over its tall arched ones."""
+    W, H = 112, 86
+    c = Canvas(W, H)
+    E, g = 26, H - 2
+    base = g - 7                                              # the wall's foot, over the steps
+    roof_hip(c, 1, W - 2, 1, E - 1, 'slate', 'slate')
+    c.hline(3, W - 4, E, 'O')
+    reading_hall(c, 3, W - 4, E, base)
+    gallery = E + 6
+    for px in (4, 16, 28, 40, W - 43, W - 31, W - 19, W - 7):    # cream piers between the bays
+        c.vline(px, E + 5, base - 7, 'W' if px < W // 2 else 'C')
+        c.vline(px + 1, E + 5, base - 7, 'C')
+        c.vline(px + 2, E + 5, base - 7, 's')
+    c.hline(3, W - 4, gallery + 9, 'C')                       # string course under the gallery
+    c.swap(3, gallery + 10, W - 4, gallery + 10, SHADE)
+    for x in (8, 20, 32, W - 39, W - 27, W - 15):
+        c.stamp(x, gallery + 1, SQUARE_WINDOW)
+        c.stamp(x - 1, gallery + 12, arched_window(9, 26))
+        c.put(x + 3, gallery + 11, 'W')                       # keystone
+        c.hline(x - 1, x + 7, gallery + 38, 'C')
+    entrance_bay(c, W // 2 - 15, W // 2 + 14, 6, base - 6)
+    c.prop(W // 2 - 9, 11, BOOK)
+    fanlight_arch(c, W // 2, 10, base - 19, base)
+    for i in range(3):                                        # steps, widening toward the street
+        y = base + 1 + 2 * i
+        x0, x1 = 30 - 3 * i, W - 31 + 3 * i
+        c.hline(x0, x1, y, 'C')
+        c.hline(x0, x1, y + 1, 'c')
+        c.put(x1, y + 1, 'K')
+    c.ground(10, SHRUB)
+    c.ground(W - 19, SHRUB)
+    return Sprite(c, [7, 3], door=[W // 2, g])
+
+
+def school_large():
+    b = Building(6, roof_rows=26, top=16, depth=3, wall_rows=STOREYS, door=True)
+    c = b.c
+    W, E, g = b.W, b.E, b.g
+    b.roof('terracotta', 'tile')
+    up, ground = b.storeys('cream', 'clapboard', band=('W', 'C'))
+    c.prop(W // 2 - 7, b.top + 4 - len(CUPOLA) + 1, CUPOLA)
+    gx0, gx1 = W // 2 - 16, W // 2 + 15                      # the schoolhouse gable over the entrance
+    xm, trim_row = roof_gable(c, gx0, gx1, E + 1, 10, 4, 'terracotta', trim='W')
+    for x in range(gx0 + 2, gx1 - 1):
+        c.vline(x, trim_row(x) + 1, E + 1, 'C' if (trim_row(x) + x) % 3 else 'c')
+    c.stamp(xm - 3, E - 6, ROUND_WINDOW)
+    for x in (6, W - 25):                                     # classrooms either side
+        c.stamp(x, up + 1, class_window(3))
+        c.hline(x, x + 18, up + 15, 'L')
+        c.stamp(x, ground + 2, class_window(3))
+        c.hline(x, x + 18, ground + 15, 'L')
+    b.window(W // 2 - 5, 'w', y=up + 2, sill='L')
+    dx = b.door_x()
+    b.doorway()
+    porch_roof(c, dx - 4, ground - 3)
+    posts(c, (dx - 3, dx + 19), ground + 3, g)
+    return b
+
+
+def clinic_large():
+    b = Building(6, roof_rows=26, top=4, depth=3, wall_rows=STOREYS, door=True)
+    c = b.c
+    W, E, g = b.W, b.E, b.g
+    b.roof('green', 'shingle')
+    for x0, x1 in ((1, 28), (W - 29, W - 2)):                 # wards either side under taller roofs
+        roof_hip(c, x0, x1, b.top - 3, E - 1, 'green', 'shingle')
+    c.hline(b.wx0, b.wx1, E, 'O')
+    up, ground = b.storeys('cream')
+    c.vline(27, up, g - 3, 'c')
+    c.vline(W - 28, up, g - 3, 'W')
+    for x in (6, 16, W - 26, W - 16):
+        b.window(x, 'W', y=up + 2, w=9)
+        b.window(x, 'W', y=ground + 2, w=9)
+    for x in (31, 43, 55):
+        b.window(x, 'W', y=up + 2)
+    c.prop((W - 13) // 2, E - 14, CROSS)
+    dx = b.door_x()
+    b.doorway()
+    canopy(c, dx - 5, ground - 1, 28)
+    posts(c, (dx - 4, dx + 19), ground + 4, g)
+    return b
+
+
 SPRITES = [
     ('civic_clinic', clinic),
     ('civic_police-station', police),
@@ -1810,6 +2179,11 @@ SPRITES = [
     ('farm_granary', granary),
     ('farm_shed', shed),
     ('work_watermill', watermill),
+    ('civic_town-hall_large', town_hall_large),
+    ('civic_courthouse_large', courthouse_large),
+    ('civic_library_large', library_large),
+    ('civic_school_large', school_large),
+    ('civic_clinic_large', clinic_large),
 ]
 
 

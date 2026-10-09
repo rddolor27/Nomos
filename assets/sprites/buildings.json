@@ -2,13 +2,13 @@
   "image": "buildings.png",
   "size": [
     256,
-    873
+    1301
   ],
   "tile": 16,
   "frames": {
     "civic_clinic": {
-      "x": 0,
-      "y": 488,
+      "x": 65,
+      "y": 914,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -21,9 +21,43 @@
         2
       ]
     },
+    "civic_clinic_large": {
+      "x": 97,
+      "y": 267,
+      "w": 96,
+      "h": 69,
+      "anchor": [
+        48,
+        68
+      ],
+      "snow": "civic_clinic_large_snow",
+      "footprint": [
+        6,
+        3
+      ],
+      "door": [
+        48,
+        67
+      ]
+    },
+    "civic_clinic_large_snow": {
+      "x": 0,
+      "y": 349,
+      "w": 96,
+      "h": 69,
+      "anchor": [
+        48,
+        68
+      ],
+      "layer": "snow",
+      "footprint": [
+        6,
+        3
+      ]
+    },
     "civic_clinic_snow": {
-      "x": 65,
-      "y": 488,
+      "x": 130,
+      "y": 914,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -37,8 +71,8 @@
       ]
     },
     "civic_courthouse": {
-      "x": 130,
-      "y": 488,
+      "x": 0,
+      "y": 965,
       "w": 80,
       "h": 48,
       "anchor": [
@@ -51,9 +85,43 @@
         2
       ]
     },
-    "civic_courthouse_snow": {
+    "civic_courthouse_large": {
+      "x": 97,
+      "y": 349,
+      "w": 112,
+      "h": 69,
+      "anchor": [
+        56,
+        68
+      ],
+      "snow": "civic_courthouse_large_snow",
+      "footprint": [
+        7,
+        3
+      ],
+      "door": [
+        56,
+        67
+      ]
+    },
+    "civic_courthouse_large_snow": {
       "x": 0,
-      "y": 537,
+      "y": 419,
+      "w": 112,
+      "h": 69,
+      "anchor": [
+        56,
+        68
+      ],
+      "layer": "snow",
+      "footprint": [
+        7,
+        3
+      ]
+    },
+    "civic_courthouse_snow": {
+      "x": 81,
+      "y": 965,
       "w": 80,
       "h": 48,
       "anchor": [
@@ -67,8 +135,8 @@
       ]
     },
     "civic_jail": {
-      "x": 81,
-      "y": 537,
+      "x": 162,
+      "y": 965,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -82,8 +150,8 @@
       ]
     },
     "civic_jail_snow": {
-      "x": 146,
-      "y": 537,
+      "x": 0,
+      "y": 1014,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -96,9 +164,43 @@
         2
       ]
     },
-    "civic_police-station": {
+    "civic_library_large": {
+      "x": 129,
+      "y": 90,
+      "w": 112,
+      "h": 86,
+      "anchor": [
+        56,
+        85
+      ],
+      "snow": "civic_library_large_snow",
+      "footprint": [
+        7,
+        3
+      ],
+      "door": [
+        56,
+        84
+      ]
+    },
+    "civic_library_large_snow": {
       "x": 0,
-      "y": 586,
+      "y": 180,
+      "w": 112,
+      "h": 86,
+      "anchor": [
+        56,
+        85
+      ],
+      "layer": "snow",
+      "footprint": [
+        7,
+        3
+      ]
+    },
+    "civic_police-station": {
+      "x": 65,
+      "y": 1014,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -112,8 +214,8 @@
       ]
     },
     "civic_police-station_snow": {
-      "x": 65,
-      "y": 586,
+      "x": 130,
+      "y": 1014,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -127,8 +229,8 @@
       ]
     },
     "civic_records-office": {
-      "x": 130,
-      "y": 586,
+      "x": 0,
+      "y": 1063,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -142,8 +244,8 @@
       ]
     },
     "civic_records-office_snow": {
-      "x": 0,
-      "y": 635,
+      "x": 65,
+      "y": 1063,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -157,8 +259,8 @@
       ]
     },
     "civic_school": {
-      "x": 65,
-      "y": 67,
+      "x": 0,
+      "y": 556,
       "w": 64,
       "h": 61,
       "anchor": [
@@ -171,9 +273,43 @@
         2
       ]
     },
+    "civic_school_large": {
+      "x": 113,
+      "y": 180,
+      "w": 96,
+      "h": 81,
+      "anchor": [
+        48,
+        80
+      ],
+      "snow": "civic_school_large_snow",
+      "footprint": [
+        6,
+        3
+      ],
+      "door": [
+        48,
+        79
+      ]
+    },
+    "civic_school_large_snow": {
+      "x": 0,
+      "y": 267,
+      "w": 96,
+      "h": 81,
+      "anchor": [
+        48,
+        80
+      ],
+      "layer": "snow",
+      "footprint": [
+        6,
+        3
+      ]
+    },
     "civic_school_snow": {
-      "x": 130,
-      "y": 67,
+      "x": 65,
+      "y": 556,
       "w": 64,
       "h": 61,
       "anchor": [
@@ -187,8 +323,8 @@
       ]
     },
     "civic_town-hall": {
-      "x": 0,
-      "y": 134,
+      "x": 130,
+      "y": 556,
       "w": 80,
       "h": 60,
       "anchor": [
@@ -201,9 +337,43 @@
         2
       ]
     },
+    "civic_town-hall_large": {
+      "x": 0,
+      "y": 0,
+      "w": 128,
+      "h": 89,
+      "anchor": [
+        64,
+        88
+      ],
+      "snow": "civic_town-hall_large_snow",
+      "footprint": [
+        8,
+        3
+      ],
+      "door": [
+        64,
+        87
+      ]
+    },
+    "civic_town-hall_large_snow": {
+      "x": 0,
+      "y": 90,
+      "w": 128,
+      "h": 89,
+      "anchor": [
+        64,
+        88
+      ],
+      "layer": "snow",
+      "footprint": [
+        8,
+        3
+      ]
+    },
     "civic_town-hall_snow": {
-      "x": 81,
-      "y": 134,
+      "x": 0,
+      "y": 618,
       "w": 80,
       "h": 60,
       "anchor": [
@@ -217,8 +387,8 @@
       ]
     },
     "farm_barn": {
-      "x": 65,
-      "y": 375,
+      "x": 130,
+      "y": 799,
       "w": 80,
       "h": 56,
       "anchor": [
@@ -236,8 +406,8 @@
       ]
     },
     "farm_barn_snow": {
-      "x": 146,
-      "y": 375,
+      "x": 0,
+      "y": 857,
       "w": 80,
       "h": 56,
       "anchor": [
@@ -251,8 +421,8 @@
       ]
     },
     "farm_granary": {
-      "x": 65,
-      "y": 635,
+      "x": 130,
+      "y": 1063,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -270,8 +440,8 @@
       ]
     },
     "farm_granary_snow": {
-      "x": 98,
-      "y": 635,
+      "x": 163,
+      "y": 1063,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -285,8 +455,8 @@
       ]
     },
     "farm_shed": {
-      "x": 65,
-      "y": 829,
+      "x": 130,
+      "y": 1257,
       "w": 32,
       "h": 32,
       "anchor": [
@@ -304,8 +474,8 @@
       ]
     },
     "farm_shed_snow": {
-      "x": 98,
-      "y": 829,
+      "x": 163,
+      "y": 1257,
       "w": 32,
       "h": 32,
       "anchor": [
@@ -319,8 +489,8 @@
       ]
     },
     "shop_bakery": {
-      "x": 93,
-      "y": 256,
+      "x": 186,
+      "y": 679,
       "w": 64,
       "h": 58,
       "anchor": [
@@ -338,8 +508,8 @@
       ]
     },
     "shop_bakery_snow": {
-      "x": 158,
-      "y": 256,
+      "x": 0,
+      "y": 740,
       "w": 64,
       "h": 58,
       "anchor": [
@@ -353,8 +523,8 @@
       ]
     },
     "shop_general": {
-      "x": 131,
-      "y": 635,
+      "x": 0,
+      "y": 1112,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -368,8 +538,8 @@
       ]
     },
     "shop_general_snow": {
-      "x": 0,
-      "y": 684,
+      "x": 65,
+      "y": 1112,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -383,8 +553,8 @@
       ]
     },
     "shop_inn": {
-      "x": 0,
-      "y": 0,
+      "x": 113,
+      "y": 419,
       "w": 80,
       "h": 66,
       "anchor": [
@@ -402,8 +572,8 @@
       ]
     },
     "shop_inn_snow": {
-      "x": 81,
-      "y": 0,
+      "x": 0,
+      "y": 489,
       "w": 80,
       "h": 66,
       "anchor": [
@@ -417,8 +587,8 @@
       ]
     },
     "shop_market-stall": {
-      "x": 65,
-      "y": 684,
+      "x": 130,
+      "y": 1112,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -431,8 +601,8 @@
       ]
     },
     "shop_market-stall_closed": {
-      "x": 114,
-      "y": 684,
+      "x": 179,
+      "y": 1112,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -445,8 +615,8 @@
       ]
     },
     "shop_warehouse": {
-      "x": 163,
-      "y": 684,
+      "x": 0,
+      "y": 1161,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -460,8 +630,8 @@
       ]
     },
     "shop_warehouse_snow": {
-      "x": 0,
-      "y": 733,
+      "x": 65,
+      "y": 1161,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -475,8 +645,8 @@
       ]
     },
     "work_dock": {
-      "x": 162,
-      "y": 0,
+      "x": 81,
+      "y": 489,
       "w": 64,
       "h": 66,
       "anchor": [
@@ -490,8 +660,8 @@
       ]
     },
     "work_dock_snow": {
-      "x": 0,
-      "y": 67,
+      "x": 146,
+      "y": 489,
       "w": 64,
       "h": 66,
       "anchor": [
@@ -505,8 +675,8 @@
       ]
     },
     "work_farm": {
-      "x": 162,
-      "y": 134,
+      "x": 81,
+      "y": 618,
       "w": 80,
       "h": 60,
       "anchor": [
@@ -520,8 +690,8 @@
       ]
     },
     "work_farm_snow": {
-      "x": 0,
-      "y": 195,
+      "x": 162,
+      "y": 618,
       "w": 80,
       "h": 60,
       "anchor": [
@@ -535,8 +705,8 @@
       ]
     },
     "work_fuel-works": {
-      "x": 65,
-      "y": 733,
+      "x": 130,
+      "y": 1161,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -549,8 +719,8 @@
       ]
     },
     "work_lumber-camp": {
-      "x": 130,
-      "y": 733,
+      "x": 0,
+      "y": 1210,
       "w": 80,
       "h": 46,
       "anchor": [
@@ -564,8 +734,8 @@
       ]
     },
     "work_lumber-camp_snow": {
-      "x": 0,
-      "y": 782,
+      "x": 81,
+      "y": 1210,
       "w": 80,
       "h": 46,
       "anchor": [
@@ -579,8 +749,8 @@
       ]
     },
     "work_mine": {
-      "x": 162,
-      "y": 433,
+      "x": 0,
+      "y": 914,
       "w": 64,
       "h": 50,
       "anchor": [
@@ -593,8 +763,8 @@
       ]
     },
     "work_pasture": {
-      "x": 146,
-      "y": 782,
+      "x": 0,
+      "y": 1257,
       "w": 64,
       "h": 44,
       "anchor": [
@@ -608,8 +778,8 @@
       ]
     },
     "work_pasture_snow": {
-      "x": 0,
-      "y": 829,
+      "x": 65,
+      "y": 1257,
       "w": 64,
       "h": 44,
       "anchor": [
@@ -623,8 +793,8 @@
       ]
     },
     "work_quarry": {
-      "x": 81,
-      "y": 782,
+      "x": 162,
+      "y": 1210,
       "w": 64,
       "h": 46,
       "anchor": [
@@ -637,8 +807,8 @@
       ]
     },
     "work_smithy": {
-      "x": 0,
-      "y": 317,
+      "x": 65,
+      "y": 740,
       "w": 64,
       "h": 57,
       "anchor": [
@@ -656,8 +826,8 @@
       ]
     },
     "work_smithy_snow": {
-      "x": 65,
-      "y": 317,
+      "x": 130,
+      "y": 740,
       "w": 64,
       "h": 57,
       "anchor": [
@@ -671,8 +841,8 @@
       ]
     },
     "work_stable": {
-      "x": 0,
-      "y": 433,
+      "x": 81,
+      "y": 857,
       "w": 80,
       "h": 54,
       "anchor": [
@@ -690,8 +860,8 @@
       ]
     },
     "work_stable_snow": {
-      "x": 81,
-      "y": 433,
+      "x": 162,
+      "y": 857,
       "w": 80,
       "h": 54,
       "anchor": [
@@ -705,8 +875,8 @@
       ]
     },
     "work_watermill": {
-      "x": 81,
-      "y": 195,
+      "x": 0,
+      "y": 679,
       "w": 92,
       "h": 60,
       "anchor": [
@@ -724,8 +894,8 @@
       ]
     },
     "work_watermill_snow": {
-      "x": 0,
-      "y": 256,
+      "x": 93,
+      "y": 679,
       "w": 92,
       "h": 60,
       "anchor": [
@@ -739,8 +909,8 @@
       ]
     },
     "work_workshop": {
-      "x": 130,
-      "y": 317,
+      "x": 0,
+      "y": 799,
       "w": 64,
       "h": 57,
       "anchor": [
@@ -754,8 +924,8 @@
       ]
     },
     "work_workshop_snow": {
-      "x": 0,
-      "y": 375,
+      "x": 65,
+      "y": 799,
       "w": 64,
       "h": 57,
       "anchor": [

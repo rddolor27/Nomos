@@ -19,7 +19,7 @@ import numpy as np
 from PIL import Image
 
 import buildings
-from buildings import _hash, roof_hip, wall
+from buildings import BOOK, SHRUB, _hash, arched_window, entrance_bay, fanlight_arch, reading_hall, roof_hip
 from spritekit import Sheet, add_outline, cmap, from_ascii, pad
 
 KEY = {**buildings.SYM, **cmap(I='ICE_L', i='ICE', e='LILAC', o='ROSE', u='BODY_L')}
@@ -116,58 +116,8 @@ def outlined(rows):
 # ------------------------------------------------------------------ library
 # A long reading hall of warm sandstone under a slate roof: tall arched windows between cream
 # pilasters, a cream entrance bay rising above the eave with an open-book plaque, a fanlight
-# over closed double doors, a broad flight of steps and two clipped shrubs in planters.
-BOOK = [                                           # an open book on a framed stone plaque
-    '.OOOOOOOOOOOOOOOOO.',
-    'OKKKKKKKKKKKKKKKKkO',
-    'OKk..OOO...OOO..kxO',
-    'OKkOOWWWOOOCCCOOkxO',
-    'OKOWWWWWWOCCCCCcOxO',
-    'OKOWxxxxWOCxxxxcOxO',
-    'OKOWWWWWWOCCCCCcOxO',
-    'OKOWxxxWWOCCxxxcOxO',
-    'OKOWWWWWWOCCCCCcOxO',
-    'OKkOOOOOWOCOOOOOkxO',
-    'OKkxxxxxOOOxxxxxkxO',
-    'OkxxxxxxxxxxxxxxxxO',
-    '.OOOOOOOOOOOOOOOOO.',
-]
-
-
-def arched_window(w, h, frame='C'):
-    """A tall window under a round head: a fanlit head, then two lights in four panes."""
-    f = frame
-    left = (w - 3) // 2
-    right = w - 3 - left - 2
-    rows = ['..' + 'O' * (w - 4) + '..', '.O' + f * (w - 4) + 'O.']
-    rows += ['O' + f + 'A' * (w - 4) + f + 'O'] * 3
-    rows.append('O' + f * (w - 2) + 'O')
-    body = h - 8
-    for i in range(body):
-        g = 'A' if i < body // 2 else 'a'
-        rows.append('O' + f * (w - 2) + 'O' if i in (body // 3, 2 * body // 3) else
-                    'O' + f + g * left + f + g * right + f + 'O')
-    rows.append('O' + f * (w - 2) + 'O')
-    rows.append('O' * w)
-    rows = [list(r) for r in rows]
-    rows[2][2] = rows[3][2] = rows[6][2] = 'W'
-    return [''.join(r) for r in rows]
-
-
-SHRUB = [
-    '..OOOOO..',
-    '.OgggGGO.',
-    'OggGGGGGO',
-    'OgGGGGlGO',
-    'OGGGGlllO',
-    '.OllllO..',
-    'OKKKKKKkO',
-    'OkkkkkkxO',
-    'OkkkkkkxO',
-    'OOOOOOOOO',
-]
-
-
+# over closed double doors, a broad flight of steps and two clipped shrubs in planters. Its
+# parts live in buildings.py, which draws the large civic library from them too.
 def library():
     W, H = 96, 72
     c = Canvas(W, H)
@@ -175,14 +125,7 @@ def library():
     wx0, wx1 = 3, W - 4
     roof_hip(c, 1, W - 2, 1, E - 1, 'slate', 'slate')
     c.hline(wx0, wx1, E, 'O')
-    wall(c, wx0, wx1, E + 1, base, 'sand', plinth=None)
-    for y, ch in ((E + 1, 's'), (E + 2, 'C'), (E + 3, 'C'), (E + 4, 's')):
-        c.hline(wx0, wx1, y, ch)                # frieze under the eave
-    c.rect(wx0, base - 5, wx1, base, 'k')       # rusticated plinth
-    c.tile(wx0, base - 5, wx1, base, ['Kkkkkkkkkkkx', 'kkkkkkkkkkkx', 'xxxxxxxxxxxx'], stagger=6)
-    c.hline(wx0, wx1, base - 6, 'K')
-    c.vline(wx0, base - 5, base, 'K')
-    c.vline(wx1, base - 5, base, 'x')
+    reading_hall(c, wx0, wx1, E, base)
     for px in (4, 17, 29, W - 31, W - 19, W - 6):     # cream pilasters between the windows
         c.vline(px, E + 5, base - 7, 'W' if px < W // 2 else 'C')
         c.vline(px + 1, E + 5, base - 7, 'C')
@@ -192,35 +135,10 @@ def library():
         c.put(x + 4, E + 5, 'W')                # keystone
         c.hline(x, x + 8, E + 34, 'C')
         c.swap(x, E + 35, x + 8, E + 35, buildings.SHADE)
-    bx0, bx1 = W // 2 - 14, W // 2 + 13         # cream entrance bay rising above the eave
-    top = 7
-    c.rect(bx0, top, bx1, base - 6, 'C')
-    c.tile(bx0, top + 3, bx1, base - 6, ['CCCCCCCCCCCCCC', 'CCCCCCCCCCCCCC', 'CCCCCCCCCCCCCC',
-                                          'cccccccccccccC'], stagger=7, oy=1)
-    for y, ch in ((top, 'W'), (top + 1, 'C'), (top + 2, 'c'), (top + 3, 'O')):
-        c.hline(bx0 - 1, bx1 + 1, y, ch)
-    c.vline(bx0 - 1, top + 4, base - 6, 'O')
-    c.vline(bx1 + 1, top + 4, base - 6, 'O')
-    c.vline(bx0, top + 4, base - 6, 'W')
-    c.vline(bx1, top + 4, base - 6, 'c')
+    top = 7                                     # cream entrance bay rising above the eave
+    entrance_bay(c, W // 2 - 14, W // 2 + 13, top, base - 6)
     c.prop(W // 2 - 9, top + 5, BOOK)
-    ax, r, spring = W // 2, 9, base - 17        # fanlit arch over the doors
-    for y in range(spring - r - 2, base + 1):
-        for x in range(ax - r - 2, ax + r + 2):
-            d = math.hypot(x + 0.5 - ax, min(0.0, y + 0.5 - spring))
-            if y >= spring:
-                d = abs(x + 0.5 - ax)
-            if d < r - 1:
-                ang = math.degrees(math.atan2(spring - y, x + 0.5 - ax))
-                fan = y < spring and abs(ang % 45) < 8
-                c.put(x, y, 'C' if fan else 'A' if y < spring - 3 else 'a')
-            elif d < r:
-                c.put(x, y, 'O')
-            elif d < r + 2 and y < spring:
-                c.put(x, y, 'W' if x < ax else 'c')
-    c.rect(ax - 1, spring - r - 2, ax, spring - r - 1, 'W')   # keystone
-    c.hline(ax - r + 1, ax + r - 2, spring, 'C')
-    c.stamp(ax - 9, spring + 1, buildings.door_double(h=base - spring))
+    fanlight_arch(c, W // 2, 9, base - 17, base)
     for i in range(3):                          # steps, widening toward the street
         y = base + 1 + 2 * i
         x0, x1 = 26 - 3 * i, W - 27 + 3 * i
