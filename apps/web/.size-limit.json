@@ -81,5 +81,11 @@
     "path": ["dist/atlas/atlas.webp"],
     "brotli": false,
     "limit": "300 kB"
+  },
+  {
+    "name": "Map atlas page",
+    "path": ["dist/atlas/map.webp"],
+    "brotli": false,
+    "limit": "8 kB"
   }
 ]

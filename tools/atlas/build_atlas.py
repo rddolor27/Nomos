@@ -1,8 +1,9 @@
 """Packs every sprite frame of every manifest into one atlas (plan: M0.5 Task 3).
 
 Run `python tools/atlas/build_atlas.py [--out DIR]`, default dist/atlas/. It writes atlas.webp (lossless), atlas.png
-(shrunk by oxipng when that is installed) and atlas.json, each frame's place keyed "<category>/<name>". Frames are packed,
-not sheets, because houses.png alone is 2,316 px tall. The output is a build product and is never committed.
+(shrunk by oxipng when that is installed) and atlas.json, each frame's place keyed "<category>/<name>". It also writes the
+map scene's page, map.webp, map.png and map.json (M8.3). Frames are packed, not sheets, because houses.png alone is
+2,316 px tall. The output is a build product and is never committed.
 """
 import argparse
 import json
@@ -20,6 +21,11 @@ NOT_A_MANIFEST = 'season_map.json'
 ATLAS_WIDTH = 2048
 MAX_HEIGHT = 2048
 GAP = 1
+# The map scene's own page (M8.3): terrain tiles, wonders and landmarks at both map scales, and the settlement icons,
+# so the map never waits for the whole atlas.
+MAP_PAGE_WIDTH = 256
+MAP_PREFIXES = ('map/map8_', 'map/map16_', 'map/settlement_', 'wonders/map8_', 'wonders/map16_', 'landmarks/map8_',
+                'landmarks/map16_')
 
 
 class Frame(NamedTuple):
@@ -44,27 +50,27 @@ def read_frames():
     return frames
 
 
-def pack(sizes):
-    """Shelf-packs {key: (w, h)}, tallest first with GAP px between frames, into ATLAS_WIDTH px.
+def pack(sizes, width=ATLAS_WIDTH):
+    """Shelf-packs {key: (w, h)}, tallest first with GAP px between frames, into `width` px.
     Returns ({key: (x, y)}, height); raises ValueError when the atlas would pass MAX_HEIGHT or a frame is too wide."""
     places = {}
     x = y = shelf = 0
     for key, (w, h) in sorted(sizes.items(), key=lambda item: (-item[1][1], -item[1][0], item[0])):
-        if w > ATLAS_WIDTH:
-            raise ValueError(f'{key} is {w} px wide, over the {ATLAS_WIDTH} px atlas')
-        if x + w > ATLAS_WIDTH:
+        if w > width:
+            raise ValueError(f'{key} is {w} px wide, over the {width} px atlas')
+        if x + w > width:
             x, y, shelf = 0, y + shelf + GAP, 0
         places[key] = (x, y)
         x += w + GAP
         shelf = max(shelf, h)
     height = y + shelf
     if height > MAX_HEIGHT:
-        raise ValueError(f'atlas would be {ATLAS_WIDTH} x {height} px, over {MAX_HEIGHT} px tall')
+        raise ValueError(f'atlas would be {width} x {height} px, over {MAX_HEIGHT} px tall')
     return places, height
 
 
-def compose(frames, places, height):
-    atlas = Image.new('RGBA', (ATLAS_WIDTH, height), (0, 0, 0, 0))
+def compose(frames, places, width, height):
+    atlas = Image.new('RGBA', (width, height), (0, 0, 0, 0))
     sheets = {}
     for f in frames:
         if f.sheet not in sheets:
@@ -74,10 +80,10 @@ def compose(frames, places, height):
     return atlas
 
 
-def write_atlas(atlas, frames, places, out):
+def write_atlas(atlas, frames, places, out, name='atlas'):
     out.mkdir(parents=True, exist_ok=True)
-    atlas.save(out / 'atlas.webp', lossless=True, quality=100, method=6)
-    png = out / 'atlas.png'
+    atlas.save(out / f'{name}.webp', lossless=True, quality=100, method=6)
+    png = out / f'{name}.png'
     atlas.save(png)
     oxipng = shutil.which('oxipng')
     if oxipng:
@@ -87,8 +93,17 @@ def write_atlas(atlas, frames, places, out):
         'frames': {f.key: {'x': places[f.key][0], 'y': places[f.key][1], 'w': f.w, 'h': f.h, 'anchor': f.anchor}
                    for f in sorted(frames)},
     }
-    (out / 'atlas.json').write_text(json.dumps(index, separators=(',', ':')), encoding='utf-8')
+    (out / f'{name}.json').write_text(json.dumps(index, separators=(',', ':')), encoding='utf-8')
     return bool(oxipng)
+
+
+def build_page(frames, width, out, name):
+    places, height = pack({f.key: (f.w, f.h) for f in frames}, width)
+    optimised = write_atlas(compose(frames, places, width, height), frames, places, out, name)
+    print(f'{name}: {len(frames)} frames packed into {width} x {height} px in {out}')
+    for suffix in ('webp', 'png'):
+        print(f'{name}.{suffix}: {(out / f"{name}.{suffix}").stat().st_size:,} bytes')
+    return optimised
 
 
 def main(argv=None):
@@ -97,14 +112,11 @@ def main(argv=None):
     out = parser.parse_args(argv).out
     frames = read_frames()
     try:
-        places, height = pack({f.key: (f.w, f.h) for f in frames})
+        optimised = build_page(frames, ATLAS_WIDTH, out, 'atlas')
+        build_page([f for f in frames if f.key.startswith(MAP_PREFIXES)], MAP_PAGE_WIDTH, out, 'map')
     except ValueError as error:
         sys.exit(f'atlas: {error}')
-    optimised = write_atlas(compose(frames, places, height), frames, places, out)
-    print(f'{len(frames)} frames packed into {ATLAS_WIDTH} x {height} px in {out}')
-    for name in ('atlas.webp', 'atlas.png'):
-        print(f'{name}: {(out / name).stat().st_size:,} bytes')
-    print('atlas.png went through oxipng' if optimised else 'oxipng is not installed: atlas.png is as Pillow wrote it')
+    print('the PNGs went through oxipng' if optimised else 'oxipng is not installed: the PNGs are as Pillow wrote them')
 
 
 if __name__ == '__main__':

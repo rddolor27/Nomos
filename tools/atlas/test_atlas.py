@@ -14,7 +14,7 @@ from PIL import Image
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
-from build_atlas import ATLAS_WIDTH, MAX_HEIGHT, pack  # noqa: E402
+from build_atlas import ATLAS_WIDTH, MAP_PAGE_WIDTH, MAP_PREFIXES, MAX_HEIGHT, pack  # noqa: E402
 
 SPRITES = HERE.parents[1] / 'assets' / 'sprites'
 NOT_A_MANIFEST = 'season_map.json'
@@ -95,11 +95,11 @@ def placement_problems(index, expected):
     return problems
 
 
-def pixel_problems(index, expected, out):
+def pixel_problems(index, expected, out, images=IMAGES, every=SAMPLE_EVERY):
     problems = []
     sheets = {}
-    atlases = {name: load_rgba(out / name) for name in IMAGES}
-    for key in sorted(expected)[::SAMPLE_EVERY]:
+    atlases = {name: load_rgba(out / name) for name in images}
+    for key in sorted(expected)[::every]:
         sheet_path, x, y, w, h, _ = expected[key]
         if sheet_path not in sheets:
             sheets[sheet_path] = load_rgba(sheet_path)
@@ -122,6 +122,21 @@ def built_problems(out):
     return problems
 
 
+def map_page_problems(out):
+    """The map page holds exactly the map-scale frames, within MAP_PAGE_WIDTH, each pixel for pixel."""
+    expected = {key: frame for key, frame in manifest_frames().items() if key.startswith(MAP_PREFIXES)}
+    index = json.loads((out / 'map.json').read_text(encoding='utf-8'))
+    width, height = index['size']
+    problems = [f'{key}: in map.json but no map frame' for key in index['frames'] if key not in expected]
+    problems += [f'{key}: missing from map.json' for key in expected if key not in index['frames']]
+    if width > MAP_PAGE_WIDTH:
+        problems.append(f'the map page is {width} px wide, over {MAP_PAGE_WIDTH}')
+    if not problems:
+        problems = placement_problems(index, expected) + pixel_problems(index, expected, out, ('map.webp', 'map.png'), 1)
+    print(f'{len(expected)} map frames on a {width} x {height} page')
+    return problems
+
+
 def main():
     problems = too_big_problems()
     with tempfile.TemporaryDirectory() as tmp:
@@ -130,7 +145,7 @@ def main():
         if run.returncode:
             problems.append(f'build_atlas.py exited {run.returncode}: {run.stderr.strip()}')
         else:
-            problems += built_problems(Path(tmp))
+            problems += built_problems(Path(tmp)) + map_page_problems(Path(tmp))
     for problem in problems[:20]:
         print('  ' + problem)
     print('ok' if not problems else f'{len(problems)} problem(s)')
