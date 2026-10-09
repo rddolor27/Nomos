@@ -52,3 +52,6 @@ A living summary for the next session, appended as work lands. Start with `CLAUD
   - `openPlaceCamera` takes the smallest step at which the place covers the view, and never less than 2 CSS px an art px. Fit still shows the whole place.
   - Proof: `place-camera.test.ts`, 5 of 5, plus lint and typecheck. The browser specs weren't rerun, so rerun `town-view.spec.ts` next session.
   - Next: M3.1 part 2, step 1, bigger places, with `sim-engineer`.
+- 10 Oct: **started M3.1 part 2, steps 1 and 2** (bigger places and crowds), with `sim-engineer` on Sonnet. If the session ended before its report:
+  - check `git log` for a commit whose body reads "Part 2: Bigger places and crowds", and `git status` for its uncommitted work in `tools/worldgen/place.py` and `packages/worldgen/src/place/`;
+  - finish only when `place_goldens.py --check` and the worldgen Vitest suite pass, and the TypeScript port matches.
