@@ -1,8 +1,8 @@
 """Houses: original GBA-era top-down pixel-art homes for Nomos, in three-quarter view.
 
-Five building styles (thatched cottage, timber frame, brick, stone, painted plaster) in five
-shapes sized by density, never by wealth: a detached house, row-house pieces that tile side by
-side, an apartment block, a village hut and a farmhouse. Every style shares the same door,
+Seven building styles (thatched cottage, timber frame, brick, stone, painted plaster,
+weatherboard, rubble) in five shapes sized by density, never by wealth: a detached house,
+row-house pieces that tile side by side, an apartment block, a village hut and a farmhouse. Every style shares the same door,
 windows, chimney size, lintels and flower boxes, so no style reads as richer or poorer
 (content rule 5). Roofs are drawn in terracotta and recoloured for the other variants.
 Each shape also gets a night overlay of lit windows that fits every style of that shape, and
@@ -34,7 +34,7 @@ ROOF_COLOURS = {
     'plum': {'SAND': 'PINK_D', 'ROOF': 'PLUM', 'ROOF_D': 'NAVY', 'WOOD_D': 'NAVY_D'},
     'green': {'SAND': 'GRASS', 'ROOF': 'LEAF_D', 'ROOF_D': 'NAVY', 'WOOD_D': 'NAVY_D'},
 }
-STYLES = ('cottage', 'timber', 'brick', 'stone', 'plaster')
+STYLES = ('cottage', 'timber', 'brick', 'stone', 'plaster', 'board', 'rubble')
 
 # Darker partner of each colour: eave shadows and the shadows under sills and boxes.
 SHADE = {'C': 'c', 'c': 'S', 'w': 'C', 'Y': 'y', 'y': 'W', 'L': 'W', 'W': 'D', 'D': 'D',
@@ -181,6 +181,19 @@ CHIMNEY = {
         ".MMMMMN.",
         ".MMMMMN.",
     ],
+    'board': BRICK_STACK,
+    'rubble': [
+        "SSSSSSSS",
+        "dsssssdd",
+        ".CYYcYy.",
+        ".YYycYy.",
+        ".cccccc.",
+        ".YcCYYy.",
+        ".ycYYyy.",
+        ".cccccc.",
+        ".CYYcYy.",
+        ".YYycYy.",
+    ],
 }
 ROOF_SHADE = {'1': '2', '2': '3', '3': '4', '4': '4'}
 
@@ -239,6 +252,26 @@ ROOF_TEX = {
         ".h.,.h.,",
         ".h.,.h.,",
         ".--,.--,",
+    ],
+    'board': [             # fish-scale shingles, each course half a scale over
+        ".hh..hh.",
+        "........",
+        "-..--..-",
+        ".--..--.",
+        "h..hh..h",
+        "........",
+        ".--..--.",
+        "-..--..-",
+    ],
+    'rubble': [            # heavy stone slabs
+        "hhhhhhhhhhhhhhhh",
+        ".........|......",
+        ".........|......",
+        "----------------",
+        "hhhhhhhhhhhhhhhh",
+        "...|............",
+        "...|............",
+        "----------------",
     ],
 }
 TONES = {   # per roof facet: front, lit left hip, shaded right hip
@@ -341,13 +374,31 @@ WALL_TEX = {
         "dddddddddddddddd",
     ],
     'plaster': ["M"],
+    'board': [             # lapped boards, with a butt joint here and there
+        "LLLLLLLLLLLLLLLL",
+        "LLLLLLLLLLLWLLLL",
+        "WWWWWWWWWWWWWWWW",
+        "LLLLLLLLLLLLLLLL",
+        "LLLWLLLLLLLLLLLL",
+        "WWWWWWWWWWWWWWWW",
+    ],
+    'rubble': [            # fieldstones in rough courses, rounded at the corners
+        "CYYYYccCYYYccCcc",
+        "YYYYYycYYYYycYyc",
+        "cyyyyyccyyyyccyc",
+        "cccccccccccccccc",
+        "CYYccCYYYYccCYcc",
+        "YYYycYYYYYycYYyc",
+        "cyyyccyyyyyccyyc",
+        "cccccccccccccccc",
+    ],
 }
 PLINTH = {
     'default': ["SSsSSSsdSSsSSSsd", "ssdsssddssdsssdd"],
     'stone': ["sdsssdssdsssssds", "dddddddddddddddd"],
 }
 LINTEL = {    # one row above every opening, in each style's own material
-    'cottage': 'W', 'timber': 'W', 'brick': 'S', 'stone': 'S', 'plaster': 'c',
+    'cottage': 'W', 'timber': 'W', 'brick': 'S', 'stone': 'S', 'plaster': 'c', 'board': 'D', 'rubble': 'W',
 }
 
 
