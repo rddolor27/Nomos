@@ -130,8 +130,9 @@ test('keeps Play/Pause disabled when the start fails', async ({ page }) => {
 });
 
 test('zooms and pans', async ({ page }) => {
-  await open(page);
   const view = page.locator('#view');
+  await open(page);
+  await expect(view).toHaveAttribute('aria-label', /arrow keys pan/);
   await expect(page.locator('#hud-zoom')).toHaveText('Zoom 1×');
   await view.press('+');
   await expect(page.locator('#hud-zoom')).toHaveText('Zoom 2×');

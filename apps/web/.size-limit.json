@@ -57,6 +57,11 @@
     "limit": "8 kB"
   },
   {
+    "name": "Camera input chunk",
+    "path": ["dist/assets/camera-input-*.js"],
+    "limit": "1 kB"
+  },
+  {
     "name": "index.html",
     "path": ["dist/index.html"],
     "limit": "1.5 kB"

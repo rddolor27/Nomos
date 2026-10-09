@@ -1,6 +1,5 @@
 import { element, startApp, type App } from './app/app.ts';
 import { SIM_BUILD, takeBoot } from './app/boot.ts';
-import { bindCameraInput } from './view/camera-input.ts';
 import { frameMedianMs, mountHud } from './panels/hud.ts';
 import { bindLifecycle } from './app/lifecycle.ts';
 import { backendFrom, seedFrom } from './app/query.ts';
@@ -45,14 +44,17 @@ function nextTask(): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, 0));
 }
 
-// uPlot and lil-gui download only after the first frame (R5), both at once, since one after the other costs a round
-// trip; each mount still runs in a task of its own, so input never waits behind them all (load-memory.md §2).
+// uPlot, lil-gui and the view input download only after the first frame (R5), all at once, since one after the other
+// costs a round trip; each mount still runs in a task of its own, so input never waits behind them all
+// (load-memory.md §2).
 async function afterFirstFrame(app: App): Promise<void> {
   await app.firstFrame;
-  mountHud(element(document, '#hud'), app);
-  bindCameraInput(element(document, '#view'), app);
+  const cameraInputModule = import('./view/camera-input.ts');
   const chartsModule = import('./panels/charts.ts');
   const controlsModule = import('./panels/controls.ts');
+  mountHud(element(document, '#hud'), app);
+  const { bindCameraInput } = await cameraInputModule;
+  bindCameraInput(element(document, '#view'), app);
   await nextTask();
   const { mountCharts } = await chartsModule;
   const charts = mountCharts(element(document, '#charts'));

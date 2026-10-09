@@ -25,12 +25,15 @@ test('loads uPlot and lil-gui after the first frame', async ({ page }) => {
       firstFrame: performance.getEntriesByName('frame:first')[0].startTime,
       charts: startsOf(/^\/assets\/charts-[\w-]+\.js$/),
       controls: startsOf(/^\/assets\/controls-[\w-]+\.js$/),
+      cameraInput: startsOf(/^\/assets\/camera-input-[\w-]+\.js$/),
     };
   });
   expect(loads.charts).toHaveLength(1);
   expect(loads.controls).toHaveLength(1);
+  expect(loads.cameraInput).toHaveLength(1);
   expect(loads.charts[0]).toBeGreaterThanOrEqual(loads.firstFrame);
   expect(loads.controls[0]).toBeGreaterThanOrEqual(loads.firstFrame);
+  expect(loads.cameraInput[0]).toBeGreaterThanOrEqual(loads.firstFrame);
 });
 
 test('gives every chart a data table', async ({ page }) => {
