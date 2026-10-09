@@ -23,6 +23,14 @@
 
 - **First-load bytes:** the HUD and its CSS sit on the first-frame path. Keep the new styles small, and load the rest after the first frame.
 - **lil-gui:** replacing it changes the controls chunk and `web.md`'s load order.
+- **Found on 10 October 2026,** before building:
+  - **Bytes:**
+    - The "Initial JS, M0 stand-in" gate is at 16.78 of 17 kB, and `main.ts` imports `hud.ts` statically. So new toolbar and zoom code must load in a chunk after the first frame, with its own size-limit entry.
+    - The "Charts chunk" is at 21.31 of 22 kB and the "Controls chunk" at 7.30 of 8 kB.
+    - Before the first frame, the page loads 19.13 kB.
+  - **Focus ring:** the ring and the pressed state on the map's buttons use the sun body hue, #f7c948, which the new look keeps out of the UI. Changing it means updating `RING` in `apps/web/test/browser/a11y.spec.ts`.
+  - **Zoom:** the town has no Fit, Home key or pinch. Only the map and the town view have them, through `map-input.ts`.
+  - **Selectors:** five browser specs find the Map button by its exact name, "Map", which lil-gui gives it today, so the new toolbar button must keep that name. The town view's specs depend on "Back to map", "Try again" and "Close map", and on `#place-status`.
 
 ## Open questions
 
