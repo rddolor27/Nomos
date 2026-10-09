@@ -26,11 +26,13 @@ jobs:
       - run: python tools/licenses.py --check
       - run: python tools/test_licenses.py
       - run: python tools/atlas/test_atlas.py
+      - run: python tools/worldgen/goldens.py --check --seeds 3
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm names
       - run: pnpm depcruise
       - run: pnpm test
+      - run: node packages/worldgen/scripts/engines.ts
       # The ledger gate: two days per tier with the money invariants checked every tick, so a lost cent exits non-zero.
       - run: for tier in phone phone-plus desktop; do node tools/cli/src/main.ts --seed 7 --tier "$tier" --ticks 2880; done
       # In this order: a Vite build empties dist/, so the atlas goes in after it, then every chunk is measured.
@@ -64,7 +66,7 @@ jobs:
           name: playwright-report
           path: playwright-report/
 
-  # The kernels and replay goldens under JavaScriptCore, the fifth engine after Node and the three browsers.
+  # The kernels, replay goldens and world generator stages under JavaScriptCore, the fifth engine after Node and the three browsers.
   bun:
     runs-on: ubuntu-latest
     steps:
@@ -79,3 +81,4 @@ jobs:
           bun-version: '1.3'
       - run: pnpm install --frozen-lockfile
       - run: bun packages/sim-core/scripts/engines.ts
+      - run: bun packages/worldgen/scripts/engines.ts
