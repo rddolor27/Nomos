@@ -192,6 +192,12 @@ The steps, in order:
    - `CROWDS` becomes a count drawn from the settlement's population, banded by tier. On desktop that is about 150–300 for a capital or city, 60–120 for a town, 25–50 for a village and 10–20 for a hamlet.
    - Phones show a share of each tier's count.
    - Walk loops scale with the crowds, under a raised cell budget.
+2b. **The street crowd** (render-engineer, with the town view). Later on 10 October the owner asked for far more blobs per settlement, since the sim aims at 100k and later a million.
+   - The town view adds look-only walkers in proportion to population: about one per 100–200 residents.
+   - The cap is up to 3,000 walkers on desktop and 600 on phones.
+   - Several walkers share each walk loop, at staggered phases and speeds.
+   - It is TypeScript only: no `place.py` change, so no golden changes. Looks come from the keyed look draw on (place seed, walker index).
+   - The place pass draws them in its one instanced draw. Re-measure the 2 ms bar in step 3.
 3. **Budgets** (render-engineer): re-measure the place pass and the walkers against the 2 ms bar with the bigger crowds, in both backends.
 4. **The starting town** (sim-engineer, with senior-game-engineer).
    - Highcourt, `export_map.py`'s pinned capital, is re-exported at 96×56 as `assets/maps/town.nmap`.

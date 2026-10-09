@@ -55,3 +55,6 @@ A living summary for the next session, appended as work lands. Start with `CLAUD
 - 10 Oct: **started M3.1 part 2, steps 1 and 2** (bigger places and crowds), with `sim-engineer` on Sonnet. If the session ended before its report:
   - check `git log` for a commit whose body reads "Part 2: Bigger places and crowds", and `git status` for its uncommitted work in `tools/worldgen/place.py` and `packages/worldgen/src/place/`;
   - finish only when `place_goldens.py --check` and the worldgen Vitest suite pass, and the TypeScript port matches.
+- 10 Oct: **the owner wants far more blobs per settlement,** since the sim aims at 100k and later a million.
+  - Planned as M3.1 part 2, step 2b, the street crowd: TypeScript-only walkers on the walk loops, about one per 100–200 residents, up to 3,000 on desktop and 600 on phones.
+  - It runs after steps 1 and 2, with `render-engineer`.
