@@ -7,7 +7,7 @@ import { LANDMARK } from '../random/streams.ts';
 import { CAPITAL, CITY, type Settlement, TOWN } from '../settle/settle.ts';
 import type { FeatureWorld, Spot } from '../world/draft.ts';
 import { at, countAround, framed, type Land } from './survey.ts';
-import { crowded } from './wonders.ts';
+import { beats, crowded } from './wonders.ts';
 
 // features.py's sub-purposes of the LANDMARK stream, by value.
 const ODDS = 0;
@@ -47,11 +47,6 @@ const MAX_VIADUCTS = 2;
 // A viaduct: its depth, then its tie draw and its cell. An observatory: its height with a draw added, then its cell.
 type Crossing = readonly [depth: number, tie: number, cell: number];
 type Lookout = readonly [height: number, cell: number];
-
-// Python compares (sea, tie draw) tuples, so the draw decides only between equal sea counts.
-function beats(sea: number, tie: number, bestSea: number, bestTie: number): boolean {
-  return sea > bestSea || (sea === bestSea && tie > bestTie);
-}
 
 // Coastal land beside the settlement but not under it, with room above for the icon and no other icon on it.
 function canLight(world: FeatureWorld, land: Land, cell: number, used: Uint8Array): boolean {

@@ -1,4 +1,4 @@
-import { LANDMARK_SLOTS, NO_LANDMARK, type PathTable, type WorldMap } from '@nomos/sim-protocol/world-map';
+import { LANDMARK_SLOTS, NO_LANDMARK, type WorldMap } from '@nomos/sim-protocol/world-map';
 import { describe, expect, it } from 'vitest';
 import { INLAND } from '../src/climate/biomes.ts';
 import { landmarks } from '../src/features/landmarks.ts';
@@ -6,44 +6,9 @@ import { survey } from '../src/features/survey.ts';
 import { xOf, yOf } from '../src/grid/grid.ts';
 import { generateWorld } from '../src/index.ts';
 import type { FeatureWorld, Spot } from '../src/world/draft.ts';
+import { featureWorldOf } from './feature-world.ts';
 
 const SEED = 0x5eed0001;
-
-function pathsOf(table: PathTable): number[][] {
-  const paths: number[][] = [];
-  for (let p = 0; p < table.offsets.length - 1; p++) {
-    paths.push(Array.from(table.cells.subarray(table.offsets[p], table.offsets[p + 1])));
-  }
-  return paths;
-}
-
-// What generateWorld handed survey and landmarks, read back from the map's columns.
-function featureWorldOf(map: WorldMap): FeatureWorld {
-  const { settlements, width } = map;
-  return {
-    seed: map.seed,
-    width,
-    height: map.height,
-    elevation: Int32Array.from(map.elevation),
-    biome: map.biome,
-    temperature: map.temperature,
-    moisture: map.moisture,
-    river: map.river,
-    receiver: map.receiver,
-    coast: map.coast,
-    settlements: Array.from(settlements.cell, (cell, id) => ({
-      id,
-      x: xOf(cell, width),
-      y: yOf(cell, width),
-      tier: settlements.tier[id],
-      population: settlements.population[id],
-      uid: cell,
-      landmarks: [],
-    })),
-    roads: pathsOf(map.roads),
-    bridges: Array.from(map.bridges),
-  };
-}
 
 function wonderSpots(map: WorldMap): Spot[] {
   const { kind, cell } = map.wonders;

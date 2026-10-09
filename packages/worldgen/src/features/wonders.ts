@@ -159,7 +159,7 @@ export function crowded(x: number, y: number, placed: readonly Spot[]): boolean 
 }
 
 // Python compares (score, tie draw) tuples, so the second part decides only between equal scores.
-function beats(score: number, tie: number, bestScore: number, bestTie: number): boolean {
+export function beats(score: number, tie: number, bestScore: number, bestTie: number): boolean {
   return score > bestScore || (score === bestScore && tie > bestTie);
 }
 

@@ -1,18 +1,11 @@
 // M8.1's exit sweeps, over the same seeds from 5EED0001 every run: node packages/worldgen/scripts/sweep.ts. Countries
 // and regions are checked on the first 100 seeds of each size, wonders on 1,000 standard seeds. Prints the worlds made
 // and the problems found, and exits 1 on any problem.
-import {
-  BIOME_NAMES,
-  TIER_NAMES,
-  WONDER_NAMES,
-  type PathTable,
-  type WorldMap,
-  type WorldSize,
-} from '@nomos/sim-protocol/world-map';
+import { BIOME_NAMES, TIER_NAMES, WONDER_NAMES, type WorldMap, type WorldSize } from '@nomos/sim-protocol/world-map';
 import { survey } from '../src/features/survey.ts';
 import { dist2, xOf, yOf } from '../src/grid/grid.ts';
 import { generateWorld } from '../src/index.ts';
-import type { FeatureWorld } from '../src/world/draft.ts';
+import { featureWorldOf } from '../test/feature-world.ts';
 
 const FIRST_SEED = 0x5eed0001;
 const SIZES: readonly WorldSize[] = ['standard', 'large'];
@@ -60,41 +53,6 @@ function wrongCells(map: WorldMap, what: string, wrong: (cell: number) => boolea
     count++;
   }
   return count > 0 ? [`cells ${what}: ${count}, the first at ${where(map, first)}`] : [];
-}
-
-function pathsOf(table: PathTable): number[][] {
-  const paths: number[][] = [];
-  for (let p = 0; p < table.offsets.length - 1; p++) {
-    paths.push(Array.from(table.cells.subarray(table.offsets[p], table.offsets[p + 1])));
-  }
-  return paths;
-}
-
-function featureWorldOf(map: WorldMap): FeatureWorld {
-  const { settlements, width } = map;
-  return {
-    seed: map.seed,
-    width,
-    height: map.height,
-    elevation: Int32Array.from(map.elevation),
-    biome: map.biome,
-    temperature: map.temperature,
-    moisture: map.moisture,
-    river: map.river,
-    receiver: map.receiver,
-    coast: map.coast,
-    settlements: Array.from(settlements.cell, (cell, id) => ({
-      id,
-      x: xOf(cell, width),
-      y: yOf(cell, width),
-      tier: settlements.tier[id],
-      population: settlements.population[id],
-      uid: cell,
-      landmarks: [],
-    })),
-    roads: pathsOf(map.roads),
-    bridges: Array.from(map.bridges),
-  };
 }
 
 function countryCount(map: WorldMap): string[] {
