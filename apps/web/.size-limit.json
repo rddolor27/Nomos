@@ -59,7 +59,12 @@
   {
     "name": "Camera input chunk",
     "path": ["dist/assets/camera-input-*.js"],
-    "limit": "1 kB"
+    "limit": "1.5 kB"
+  },
+  {
+    "name": "Inspector chunk",
+    "path": ["dist/assets/inspector-*.js"],
+    "limit": "4.5 kB"
   },
   {
     "name": "index.html",

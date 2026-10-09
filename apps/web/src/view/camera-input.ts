@@ -1,5 +1,6 @@
-import { panBy, zoomAt } from '@nomos/render-gl';
-import type { App } from '../app/app.ts';
+import { panBy, worldAt, zoomAt } from '@nomos/render-gl';
+import type { AppMessage } from '@nomos/sim-protocol';
+import { element, type App } from '../app/app.ts';
 
 // One tile per arrow press.
 const PAN_WORLD_PX = 16;
@@ -20,16 +21,38 @@ const ZOOM_KEYS = new Map<string, number>([
   ['=', 1],
   ['-', -1],
 ]);
+// A press that never strays this far from where it went down is a click, not a drag (unsourced estimate).
+const CLICK_CSS_PX = 4;
 
 interface Drag {
   pointer: number;
   x: number;
   y: number;
+  downX: number;
+  downY: number;
+  clickable: boolean;
+}
+
+// The panel and its word table load at the first inspect, never with the page (web rules: the inspector loads on
+// demand). One per page, as bindCameraInput runs once.
+let inspectorReady: Promise<void> | null = null;
+
+export function isClick(dxCss: number, dyCss: number): boolean {
+  return dxCss * dxCss + dyCss * dyCss < CLICK_CSS_PX * CLICK_CSS_PX;
 }
 
 function devicePoint(view: HTMLElement, event: MouseEvent): [number, number] {
   const box = view.getBoundingClientRect();
   return [(event.clientX - box.left) * devicePixelRatio, (event.clientY - box.top) * devicePixelRatio];
+}
+
+function inspectAt(app: App, deviceX: number, deviceY: number): void {
+  inspectorReady ??= import('../panels/inspector.ts').then(({ mountInspector }) => {
+    mountInspector(element(document, '#hud'), app.worker);
+  });
+  const [x, y] = worldAt(app.camera, deviceX, deviceY);
+  const message: AppMessage = { type: 'inspect', x, y };
+  inspectorReady.then(() => app.worker.postMessage(message)).catch((error: unknown) => console.error(error));
 }
 
 function onKey(app: App, event: KeyboardEvent): void {
@@ -40,6 +63,7 @@ function onKey(app: App, event: KeyboardEvent): void {
   const { canvas } = app.renderer;
   if (pan) app.camera = panBy(app.camera, pan[0] * PAN_WORLD_PX * app.camera.zoom, pan[1] * PAN_WORLD_PX * app.camera.zoom);
   else if (zoom) app.camera = zoomAt(app.camera, app.camera.zoom + zoom, canvas.width / 2, canvas.height / 2);
+  else if (event.key === 'Enter') inspectAt(app, canvas.width / 2, canvas.height / 2);
   else return;
   event.preventDefault();
 }
@@ -60,10 +84,12 @@ export function bindCameraInput(view: HTMLElement, app: App): void {
     app.camera = zoomAt(app.camera, app.camera.zoom - Math.sign(wheelPx), x, y);
     wheelPx = 0;
   };
+  // A second pointer down, as in a pinch, takes over the drag and is never a click.
   const onPointerDown = (event: PointerEvent): void => {
     if (event.button !== 0) return;
-    drag = { pointer: event.pointerId, x: event.clientX, y: event.clientY };
-    view.setPointerCapture(event.pointerId);
+    const { pointerId, clientX, clientY } = event;
+    drag = { pointer: pointerId, x: clientX, y: clientY, downX: clientX, downY: clientY, clickable: drag === null };
+    view.setPointerCapture(pointerId);
   };
   // The world follows the pointer, so the camera moves the other way: panBy's delta moves the view.
   const onPointerMove = (event: PointerEvent): void => {
@@ -72,17 +98,26 @@ export function bindCameraInput(view: HTMLElement, app: App): void {
     app.camera = panBy(app.camera, (drag.x - event.clientX) * dpr, (drag.y - event.clientY) * dpr);
     drag.x = event.clientX;
     drag.y = event.clientY;
+    if (!isClick(event.clientX - drag.downX, event.clientY - drag.downY)) drag.clickable = false;
   };
-  const onPointerEnd = (event: PointerEvent): void => {
+  const onPointerUp = (event: PointerEvent): void => {
+    if (drag?.pointer !== event.pointerId) return;
+    if (drag.clickable) {
+      const [x, y] = devicePoint(view, event);
+      inspectAt(app, x, y);
+    }
+    drag = null;
+  };
+  const onPointerCancel = (event: PointerEvent): void => {
     if (drag?.pointer === event.pointerId) drag = null;
   };
   const onKeyDown = (event: KeyboardEvent): void => onKey(app, event);
 
-  view.setAttribute('aria-label', 'Town view: arrow keys pan, plus and minus zoom');
+  view.setAttribute('aria-label', 'Town view: arrow keys pan, plus and minus zoom, Enter shows the blob at the centre');
   view.addEventListener('wheel', onWheel, { passive: false });
   view.addEventListener('pointerdown', onPointerDown);
   view.addEventListener('pointermove', onPointerMove);
-  view.addEventListener('pointerup', onPointerEnd);
-  view.addEventListener('pointercancel', onPointerEnd);
+  view.addEventListener('pointerup', onPointerUp);
+  view.addEventListener('pointercancel', onPointerCancel);
   view.addEventListener('keydown', onKeyDown);
 }

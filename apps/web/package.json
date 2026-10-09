@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@nomos/render-gl": "workspace:*",
+    "@nomos/sim-culture": "workspace:*",
     "@nomos/sim-protocol": "workspace:*",
     "@nomos/sim-worker": "workspace:*",
     "lil-gui": "0.21.0",
@@ -19,6 +20,7 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",
     "@nomos/bench": "workspace:*",
+    "@nomos/sim-core": "workspace:*",
     "@size-limit/file": "^14.2.0",
     "size-limit": "^14.2.0",
     "vite": "^8.3.3"
