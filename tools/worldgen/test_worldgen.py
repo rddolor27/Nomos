@@ -6,10 +6,14 @@ sample through them a world at a time, so a sweep of 100 large worlds never hold
 """
 import argparse
 import sys
+import tempfile
 from collections import Counter
 from dataclasses import replace
 from functools import lru_cache
 from pathlib import Path
+from types import SimpleNamespace
+
+from PIL import Image, ImageDraw
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
@@ -17,8 +21,9 @@ sys.path.insert(0, str(HERE))
 import place  # noqa: E402
 import settle  # noqa: E402
 from climate import GRASSLAND, HILLS, HILLS_AT, LAKE, MOUNTAIN, OCEAN, SNOW, SNOW_BELOW, biomes  # noqa: E402
-from countries import capitals, count, grow  # noqa: E402
+from countries import Country, capitals, count, grow  # noqa: E402
 from grid import neighbours  # noqa: E402
+from mapdraw import BORDER, COUNTRY_COLOURS, View, _borders, countries_png, country_png, region_png  # noqa: E402
 from model import PlaceContext  # noqa: E402
 from settle import Settlement, habitability  # noqa: E402
 from world import SIZES, fingerprint, generate  # noqa: E402
@@ -142,6 +147,48 @@ def fingerprint_covers_countries():
     return problems
 
 
+BLANK = (1, 2, 3)
+
+
+def drawn_borders(width, height, country, size, line, band):
+    """_borders for a stand-in world of countries 1 (colour 0) and 2 (colour 1), on a blank image."""
+    w = SimpleNamespace(width=width, height=height, country=bytearray(country),
+                        countries=[Country(1, 0, 0), Country(2, 1, 1)])
+    image = Image.new('RGB', (width * size, height * size), BLANK)
+    _borders(View(w, size, 0, 0, width, height), ImageDraw.Draw(image), line, band)
+    return image
+
+
+def borders_draw_on_cell_edges():
+    c0, c1 = COUNTRY_COLOURS[0], COUNTRY_COLOURS[1]
+    narrow = [BLANK, c0, BORDER, c1, BLANK]
+    problems = []
+    for name, size, line, band, first, want in (('8 px', 8, 1, 1, 5, narrow),
+                                                 ('16 px', 16, 2, 2, 12, [BLANK, c0, c0, BORDER, BORDER, c1, c1, BLANK])):
+        image = drawn_borders(2, 1, [1, 2], size, line, band)
+        problems += [f'{name}, row {y}: {got}' for y in range(size)
+                     if (got := [image.getpixel((x, y)) for x in range(first, first + len(want))]) != want]
+    image = drawn_borders(1, 2, [1, 2], 8, 1, 1)
+    problems += [f'stacked, column {x}: {got}' for x in range(8)
+                 if (got := [image.getpixel((x, y)) for y in range(5, 10)]) != narrow]
+    if [colour for _, colour in drawn_borders(3, 1, [1, 0, 2], 8, 1, 1).getcolors()] != [BLANK]:
+        problems.append('water between two countries drew a border')
+    return problems[:6]
+
+
+def previews_write():
+    w = world('standard', FIRST)
+    sizes = {}
+    with tempfile.TemporaryDirectory() as tmp:
+        for draw in (country_png, region_png, countries_png):
+            path = Path(tmp) / f'{draw.__name__}.png'
+            draw(w, path)
+            with Image.open(path) as image:
+                sizes[draw.__name__] = image.size
+    want = {'country_png': (1536, 1024), 'region_png': (960, 544), 'countries_png': (1536, 1024)}
+    return [] if sizes == want else [f'image sizes {sizes}, want {want}']
+
+
 def countries_cover_the_land(w):
     k = len(w.countries)
     problems = [] if 3 <= k <= 5 and [c.id for c in w.countries] == list(range(1, k + 1)) else [
@@ -192,7 +239,7 @@ def snow_lies_on_cold_lowland(w):
 CHECKS = [snow_on_cold_lowland, lone_snow_melts, snow_is_uninhabitable, snow_places_build, snow_falls_on_a_cold_world,
           count_is_three_to_five, capitals_spaced_in_population_order, grow_breaks_ties_by_cost_then_cell,
           grow_bends_to_mountains, island_joins_the_cheaper_crossing, diagonal_never_slips,
-          fingerprint_covers_countries]
+          fingerprint_covers_countries, borders_draw_on_cell_edges, previews_write]
 WORLD_CHECKS = [snow_lies_on_cold_lowland, countries_cover_the_land, stage_only_retiers_capitals]
 
 

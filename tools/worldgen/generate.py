@@ -1,9 +1,10 @@
-"""Make a random world and draw it at every zoom: python tools/worldgen/generate.py [--seed HEX]
+"""Make a random world and draw it at every zoom:
+python tools/worldgen/generate.py [--seed HEX] [--size standard|large]
 
 Without --seed every run makes a new world; the seed it prints rebuilds that world exactly. Writes
-the Country and Region maps, the capital, the largest town and village, every natural wonder's
-view, the capital in all four seasons and a line-up of the world's first people to
-dist/worldgen/<seed>/.
+the Country, Region and flat Countries maps, the largest capital, the largest town and village,
+every natural wonder's view, that capital in all four seasons and a line-up of the world's first
+people to dist/worldgen/<seed>/, or to dist/worldgen/<seed>-large/ for a large world.
 """
 import argparse
 import sys
@@ -17,8 +18,8 @@ import mapdraw  # noqa: E402
 import place  # noqa: E402
 import placedraw  # noqa: E402
 from looks import look_for  # noqa: E402
-from rng import new_seed, parse_seed, seed_text  # noqa: E402
-from world import DIST, generate, place_contexts, summary  # noqa: E402
+from rng import new_seed, parse_seed  # noqa: E402
+from world import SIZES, folder, generate, place_contexts, summary  # noqa: E402
 
 LINEUP = (12, 4)
 FACINGS = ('down', 'left', 'up', 'right')
@@ -46,15 +47,17 @@ def lineup(seed):
 def main():
     parser = argparse.ArgumentParser(description='Generate a random world and draw it at every zoom.')
     parser.add_argument('--seed', type=parse_seed, help='hex seed; a new one each run if left out')
+    parser.add_argument('--size', choices=SIZES, default='standard', help='standard 96x64 or large 192x128 cells')
     args = parser.parse_args()
     seed = new_seed() if args.seed is None else args.seed
     start = time.perf_counter()
-    world = generate(seed)
+    world = generate(seed, *SIZES[args.size])
     seconds = time.perf_counter() - start
-    out = DIST / seed_text(seed)
+    out = folder(seed, args.size)
     out.mkdir(parents=True, exist_ok=True)
     mapdraw.country_png(world, out / 'country.png')
     mapdraw.region_png(world, out / 'region.png')
+    mapdraw.countries_png(world, out / 'countries.png')
     picks = chosen(place_contexts(world))
     for ctx in picks:
         placedraw.render(place.build(ctx), out / f'{ctx.name}.png')

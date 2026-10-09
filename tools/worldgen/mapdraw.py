@@ -1,6 +1,7 @@
-"""Draw a World as the Country view (whole grid, 8-px tiles) and the Region view (a window of
-16-px tiles), from the map, wonders and landmarks sprite sheets. Lines and marks drawn here use
-spritekit.PALETTE colours only; images are saved at 2x with nearest scaling.
+"""Draw a World as the Country view (whole grid, 8-px tiles), the Region view (a window of 16-px
+tiles) and the flat Countries view, from the map, wonders and landmarks sprite sheets. Lines and
+marks drawn here use spritekit.PALETTE colours, except the country colours, which are map-only by
+the owner's choice; images are saved at 2x with nearest scaling.
 """
 import sys
 from dataclasses import dataclass
@@ -24,6 +25,10 @@ RIVER, ROAD, DECK, RAIL = PALETTE['WATER'], PALETTE['WOOD'], PALETTE['WOOD_L'], 
 LANE = PALETTE['WATER_L']
 # Stands in for map8_snow and map16_snow until tools/sprites draws them (M8.1 plan, Task 6).
 SNOW_FILL = PALETTE['WHITE'] + (255,)
+# Provisional, outside the sprite palette, until the owner picks five from a swatch sheet at M8.3
+# (M8.1 plan, Ruling 5). Countries.Country.colour indexes this table.
+COUNTRY_COLOURS = ((0x00, 0x00, 0xDD), (0xAA, 0xBB, 0x00), (0x33, 0x44, 0x22), (0xEE, 0x00, 0xDD), (0x44, 0xBB, 0xCC))
+BORDER = PALETTE['OUTLINE']
 PEAKS, ICONS, TOWNS = range(3)
 
 
@@ -121,6 +126,46 @@ def _bridges(view, pen, along, across):
         pen.rectangle([x - dx // 2, y - dy // 2, x + (dx - 1) // 2, y + (dy - 1) // 2], fill=DECK, outline=RAIL)
 
 
+def _colour(world, i):
+    return COUNTRY_COLOURS[world.countries[world.country[i] - 1].colour]
+
+
+def _edges(world):
+    """(cell, neighbour, vertical) for each land edge between two countries, looking east and south."""
+    out = []
+    for i, k in enumerate(world.country):
+        x, y = i % world.width, i // world.width
+        if k and x + 1 < world.width and world.country[i + 1] not in (0, k):
+            out.append((i, i + 1, True))
+        if k and y + 1 < world.height and world.country[i + world.width] not in (0, k):
+            out.append((i, i + world.width, False))
+    return out
+
+
+def _strip(view, i, vertical, start, width):
+    """A rectangle `width` px across, starting `start` px past the edge between cell i and its east
+    (vertical edge) or south neighbour, as long as the edge."""
+    x, y, size = i % view.world.width - view.x0, i // view.world.width - view.y0, view.size
+    if vertical:
+        edge = (x + 1) * size + start
+        return [edge, y * size, edge + width - 1, y * size + size - 1]
+    edge = (y + 1) * size + start
+    return [x * size, edge, x * size + size - 1, edge + width - 1]
+
+
+def _borders(view, pen, line, band):
+    """A neutral line along each land edge between two countries, with a band of each side's colour
+    beside it; bands first, so the lines run unbroken over corners."""
+    w = view.world
+    edges = _edges(w)
+    near = -((line + 1) // 2)
+    for i, j, vertical in edges:
+        pen.rectangle(_strip(view, i, vertical, near - band, band), fill=_colour(w, i))
+        pen.rectangle(_strip(view, i, vertical, line // 2, band), fill=_colour(w, j))
+    for i, _, vertical in edges:
+        pen.rectangle(_strip(view, i, vertical, near, line), fill=BORDER)
+
+
 def _overlays(view):
     """(row, layer, column, category, sprite) for everything that rises over the terrain."""
     w, size = view.world, view.size
@@ -178,7 +223,23 @@ def country_png(world, path):
     _rivers(view, pen, 1)
     _routes(view, pen, 1, 1, 1)
     _bridges(view, pen, 4, 3)
+    _borders(view, pen, 1, 1)
     _place(image, sprite, view, _overlays(view))
+    _save(image, path)
+
+
+def countries_png(world, path):
+    """The flat Countries view: each country's land in its colour on water, with borders and icons."""
+    sprite = _sprites()
+    view = View(world, 8, 0, 0, world.width, world.height)
+    image = Image.new('RGBA', (world.width * 8, world.height * 8), PALETTE['WATER'] + (255,))
+    pen = ImageDraw.Draw(image)
+    for i, k in enumerate(world.country):
+        if k:
+            x, y = i % world.width * 8, i // world.width * 8
+            pen.rectangle([x, y, x + 7, y + 7], fill=_colour(world, i))
+    _borders(view, pen, 1, 1)
+    _place(image, sprite, view, [o for o in _overlays(view) if o[1] != PEAKS])
     _save(image, path)
 
 
@@ -193,6 +254,7 @@ def region_png(world, path, centre=None, cols=30, rows=17):
     _rivers(view, pen, 2)
     _routes(view, pen, 2, 2, 2)
     _bridges(view, pen, 8, 5)
+    _borders(view, pen, 2, 2)
     overlays = _overlays(view)
     taken = {(gx, gy) for gy, layer, gx, _, _ in overlays if layer != PEAKS}
     _place(image, sprite, view, overlays + _beside(view, sprite, taken))

@@ -178,21 +178,27 @@ def summary(world, seconds):
         'landmarks on the map: ' + (', '.join(f'{k} {outside[k]}' for k in LANDMARKS if outside[k]) or 'none')])
 
 
+def folder(seed, size):
+    return DIST / (seed_text(seed) + ('' if size == 'standard' else f'-{size}'))
+
+
 def main():
     parser = argparse.ArgumentParser(description='Generate and draw a random country.')
     parser.add_argument('--seed', type=parse_seed, help='hex seed; a new one each run if left out')
+    parser.add_argument('--size', choices=SIZES, default='standard', help='standard 96x64 or large 192x128 cells')
     args = parser.parse_args()
     seed = new_seed() if args.seed is None else args.seed
     start = time.perf_counter()
-    world = generate(seed)
+    world = generate(seed, *SIZES[args.size])
     seconds = time.perf_counter() - start
     import mapdraw
-    out = DIST / seed_text(seed)
+    out = folder(seed, args.size)
     out.mkdir(parents=True, exist_ok=True)
     mapdraw.country_png(world, out / 'country.png')
     mapdraw.region_png(world, out / 'region.png')
+    mapdraw.countries_png(world, out / 'countries.png')
     print(summary(world, seconds))
-    print(f'wrote {out / "country.png"} and {out / "region.png"}')
+    print(f'wrote country.png, region.png and countries.png to {out}')
 
 
 if __name__ == '__main__':
