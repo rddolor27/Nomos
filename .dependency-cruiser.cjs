@@ -69,9 +69,9 @@ module.exports = {
     {
       name: 'worldgen-only-in-the-map-worker',
       comment:
-        'M8.1, owner (9 October 2026): the map runs in a worker of its own, so no page module but the map worker may reach the generator.',
+        'M8.1, owner (9 October 2026): the map runs in a worker of its own, so no page module but the map worker may reach the generator. The place builder is the worker\'s lazy part (M3.1).',
       severity: 'error',
-      from: { path: '^apps/web/src/', pathNot: '^apps/web/src/map/(map-worker|generate)\\.ts$' },
+      from: { path: '^apps/web/src/', pathNot: '^apps/web/src/map/(map-worker|generate|place-builder)\\.ts$' },
       to: { path: '^packages/worldgen/', reachable: true },
     },
     {
