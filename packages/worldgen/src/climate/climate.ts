@@ -84,3 +84,16 @@ export function coasts(width: number, height: number, elevation: Int32Array, oce
   }
   return out;
 }
+
+// The steepest drop or climb to a neighbour, where a neighbour below sea level counts as sea level; water has none.
+export function slopes(width: number, height: number, elevation: Int32Array, water: Uint8Array): Int32Array {
+  const nbrs = neighbours(width, height);
+  const out = new Int32Array(width * height);
+  for (let i = 0; i < out.length; i++) {
+    if (water[i] !== 0) continue;
+    for (let k = nbrs.start[i]; k < nbrs.start[i + 1]; k++) {
+      out[i] = Math.max(out[i], Math.abs(elevation[i] - Math.max(0, elevation[nbrs.cells[k]])));
+    }
+  }
+  return out;
+}

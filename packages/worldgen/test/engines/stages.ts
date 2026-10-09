@@ -11,7 +11,9 @@ import { EROSION_PASSES, accumulate, erode, flood } from '../../src/drainage/flo
 import { lakes } from '../../src/drainage/lakes.ts';
 import { drain } from '../../src/drainage/drain.ts';
 import { union } from '../../src/grid/grid.ts';
-import { coasts, moisture, temperature } from '../../src/climate/climate.ts';
+import { coasts, moisture, slopes, temperature } from '../../src/climate/climate.ts';
+import { biomes } from '../../src/climate/biomes.ts';
+import { habitability } from '../../src/settle/habitability.ts';
 
 export function stagePrints(seed: number, size: WorldSize): Map<string, number> {
   const [width, height] = WORLD_SIZES[size];
@@ -59,6 +61,33 @@ export function stagePrints(seed: number, size: WorldSize): Map<string, number> 
   const wetness = moisture(seed, width, height, rained.rain, water, drained.river);
   const coast = coasts(width, height, drained.elevation, shaped.ocean);
   prints.set('climate', fold(warmth.cold, warmth.temperature, wetness, coast));
+
+  const biome = biomes(
+    seed,
+    width,
+    height,
+    drained.elevation,
+    warmth.temperature,
+    wetness,
+    shaped.ocean,
+    drained.lake,
+    drained.river,
+    coast,
+  );
+  prints.set('biomes', fold(biome));
+  const slope = slopes(width, height, drained.elevation, water);
+  const score = habitability(
+    width,
+    height,
+    biome,
+    drained.elevation,
+    drained.river,
+    coast,
+    warmth.temperature,
+    wetness,
+    slope,
+  );
+  prints.set('habitability', fold(slope, score));
 
   return prints;
 }
