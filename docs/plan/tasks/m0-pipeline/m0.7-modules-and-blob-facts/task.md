@@ -12,7 +12,7 @@ Needs M0.5's review fixes and M0.6's review committed, since every package moves
   - blobs walk in any direction instead of only up, down, left and right, with gentle turns and walls that slide the walker, keeping movement exact and within its budget: an owner request of 9 October 2026, built ahead of the move and outside this estimate, whose contract [interfaces.md](../interfaces.md) holds (Structure);
   - the `Blob` handle: one per world, made in `layoutWorld` and re-pointed with `at(index)`, with accessors for position, velocity, heading, action, facing, `nameKey`, the wallet and its cash; per-tick loops use its accessors or plain columns and call no method per blob (Structure, R5);
   - names: a 32-bit `nameKey` column drawn at birth on a new `PERSON_NAME` stream and never read by the sim, and `personName(nameKey)` in `sim-culture`, which builds "Given Family" from a generated table of 1,024 words of the shared sound set (Structure, R8);
-  - the one shared sound set, round 8's design H, in `tools/names`, which writes the name table; M8.1's place names reuse it (R8);
+  - the one shared mixed sound set in `tools/names`: Greek-like sounds mixed with sounds from several other languages, picked at random, learned from Fantasy Map Generator's name bases. It writes the name table, and M8.1's place names reuse it (Structure, R8);
   - the person-name filter in `tools/names`, pulled forward from M3.7: M0.6's franchise ban and real-world fixture, plus distinctive Pokémon town and city names and species names (edit distance 1 up to 5 letters, 2 above) and the LDNOOBW Latin-script lists, so every word in the name table passes it (R3, R8);
   - wallets: one cash account per blob in the cash ledger, after the settlement accounts, opened at birth from MINT at the owner's opening balance, inside the invariant that all accounts plus MINT sum to zero (Structure, R1, R4);
   - per-tick invariant checks in development builds, tests and the CLI, set by a `checks` flag on `init`, because wallets make the check grow with population (Structure, R1);
@@ -20,8 +20,11 @@ Needs M0.5's review fixes and M0.6's review committed, since every package moves
 - **Owner decided:** on 9 October 2026 the owner chose:
   - an opening wallet balance of 100,000 cents (1,000.00) for every blob, today's stand-in amount, until M2 replaces it: M2.1 sets household cash from monthly wages, and M2.5 calibrates wealth;
   - accessors in per-tick loops. Loops read blobs through the `Blob` handle, which cost 7% in the four-way `move` (measured here, Node 24.18.0, V8 only), and a loop measured more than 10% slower than plain columns keeps its columns. A method per blob, such as `blob.walk()`, measured 2.0–2.8× slower there, past the movement budget, so it stays out of per-tick loops;
-  - round 8's design H for the shared sound set.
-- **Verify first:** a source for the Pokémon town, city and species names other than the pret decompilations, which content rules allow for numbers only, and the licence of each new fixture, which decide what `tools/names/fixtures/` may hold.
+  - one mixed name style for everyone, people now and towns and countries in M8.1: Greek-like sounds mixed with sounds from several other languages, picked at random, so no culture owns a sound. This replaces round 8's design H. Round 8's trigram screen against real languages is dropped, and the edit-distance filter stays: Pokémon names, real countries, demonyms, languages, ethnonyms and religions, and profanity.
+- **Verified on 9 October 2026,** by a researcher:
+  - the franchise's 1,025 species and 84 towns and cities come from Wikidata (CC0), each item pinned by its revision, never from the pret decompilations or PokéAPI;
+  - profanity comes from LDNOOBW's 21 Latin-script lists at commit `5faf2ba` (CC BY 4.0, with attribution);
+  - the mixed sounds come from Fantasy Map Generator's name bases at commit `546c41d` (MIT with one added permission paragraph, credited to Azgaar, Dopu and Avengium).
 - **Exit checks:**
   - after the move, seed 42's replay hashes equal the goldens at every tier, every test, lint, typecheck, dependency-cruiser and name check that passed before still passes, and every built chunk is gated (Structure);
   - the layout lint rejects a planted file at `src/`, and the hot-path lint catches a planted allocation in a class method in a hot folder (Structure, R5);

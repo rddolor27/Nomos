@@ -14,7 +14,7 @@ M0's sub-milestones are planned in parallel, so the names and layouts they share
 | `@nomos/cli` | `tools/cli` | Headless runs and replay hashes in Node, through sim-core's world step | M0.3 |
 | `@nomos/bench` | `tools/bench` | The CI budget, allocation and startup gates | M0.6 |
 | `@nomos/sim-culture` | `packages/sim-culture` | Culture code, walled off from crime, police, labour, wage, wealth, ability, housing and migration code; it also turns name keys into names | M0.6, names in M0.7 |
-| `@nomos/names` | `tools/names` | The name lint, its real-world fixture, the person-name filter and the culture text lint; M3.7 extends it | M0.6, person-name filter in M0.7 |
+| `@nomos/names` | `tools/names` | The name lint, its real-world fixture, the shared mixed sound set, the person-name filter and the culture text lint; M3.7 extends it | M0.6, sound set and person-name filter in M0.7 |
 
 Dependencies point one way:
 - `sim-core` ← `sim-protocol` ← `sim-worker`;
@@ -23,7 +23,7 @@ Dependencies point one way:
 - `cli` imports `sim-core` and `sim-protocol`;
 - `sim-culture` imports values only from the `@nomos/sim-core/kernels` subpath (the draws, `DAYS_PER_YEAR`, the stream ids `CULTURE` and `FESTIVAL`, and the culture column helpers), whose modules never import it. `sim-core`'s `consumption/` and its orchestration call `sim-culture`, and dependency-cruiser keeps modules acyclic (M0.6);
 - `web` imports `sim-culture` only in `src/panels/inspector.ts`, which loads on demand, for `personName` (M0.7);
-- `tools/names` writes `sim-culture`'s generated `naming/words.ts` and checks it; no package imports `tools/names` at run time (M0.7).
+- `tools/names` writes `sim-culture`'s generated `naming/words.ts` and checks it; no package imports `tools/names` at run time. `names` imports `@nomos/sim-core/kernels`, for the keyed draw that picks its sounds (M0.7).
 
 The world step lives in `sim-core`, so headless runs and the worker run the same code.
 
@@ -49,7 +49,7 @@ The tables give the layout M0.7 builds, including the files it adds. A renamed f
 | `memory/` | `arena.ts` (was `memory.ts`), `tiers.ts` | The one reserved memory, and the device tiers |
 | `agents/` | `store.ts`, `actions.ts`, `blob.ts` (new), `nearest.ts` (new) | Agent columns, action and facing codes, the `Blob` handle, and the nearest-blob query |
 | `money/` | `ledger.ts`, `ppm.ts` (was `money.ts`), `claims.ts`, `registry.ts`, `invariants.ts`, `flows.ts`, `histogram.ts` | Cents, accounts, wallets, loans, holdings and the money invariants |
-| `world/` | `world.ts`, `checkpoint.ts` (split from `world.ts`), `ground.ts`, `inputs.ts`, `space.ts` | The `World`, its creation and population; the hash, checkpoints and restore; the ground and the input log |
+| `world/` | `world.ts`, `checkpoint.ts` (split from `world.ts`), `ground.ts`, `inputs.ts`, `space.ts` | The `World`, its creation and population; the hash, checkpoints and restore; the ground, the input log and the Q8 space |
 | `day/` | `day.ts`, `slices.ts`, `stride.ts` | The day boundary, day slices and the stride scheduler |
 | `movement/` | `wander.ts`, `walk.ts` | `move`, and the walking step on each heading |
 | `step/` | `step.ts`, `warm.ts` | The world step and its warm-up |
@@ -70,7 +70,7 @@ The tables give the layout M0.7 builds, including the files it adds. A renamed f
 
 **`packages/sim-worker/src`:** `index.ts` and `worker.ts` (the `./worker` export) at `src/`, and `loop/loop.ts`.
 
-**`packages/sim-culture/src`:** `index.ts` at `src/`, `festivals/festivals.ts`, `relabel/relabel.ts`, and the new `naming/person-name.ts` and generated `naming/words.ts`.
+**`packages/sim-culture/src`:** `index.ts` at `src/`, `festivals/festivals.ts`, `relabel/relabel.ts`, and the new `naming/person-name.ts` and generated `naming/words.ts`, with Fantasy Map Generator's licence, `naming/LICENSE-fmg.txt`, beside it.
 
 **`packages/render-gl/src`**
 
@@ -91,10 +91,10 @@ Skin B and Skin C arrive as `blobs/` and `town/` beside `dots/` (M1.3, M3.3).
 | --- | --- | --- |
 | `src/` | `main.ts` | The entry `index.html` loads |
 | `app/` | `app.ts`, `boot.ts`, `lifecycle.ts`, `query.ts`, `tiers.ts` | The app shell: boot hand-off, worker link, query, tiers and the page lifecycle |
-| `view/` | `camera-input.ts` | Pointer and keyboard input on the view, and the click that inspects |
+| `view/` | `camera-input.ts` | Pointer and keyboard input on the view, and the click that inspects; it loads after the first frame, as the charts do (M0.7) |
 | `panels/` | `hud.ts`, `charts.ts`, `controls.ts`, `inspector.ts` (new) | The HUD, the lazy charts and controls, and the on-demand inspector |
 
-`apps/web/vite/` keeps the build plugins. Vite names a lazy chunk after its file, so the size-limit globs `charts-*.js` and `controls-*.js` hold after the move, and the inspector's chunk needs its own entry.
+`apps/web/vite/` keeps the build plugins. Vite names a lazy chunk after its file, so the size-limit globs `charts-*.js` and `controls-*.js` hold after the move, and the view input's and the inspector's chunks need entries of their own.
 
 **`tools/cli/src`:** `main.ts` only, the entry CI runs.
 
@@ -113,15 +113,15 @@ Skin B and Skin C arrive as `blobs/` and `town/` beside `dots/` (M1.3, M3.3).
 | `src/` | `cli.ts` | The entry `pnpm names` runs |
 | `text/` | `fold.ts`, `edit.ts` | Folding, tokens and edit distance |
 | `filters/` | `franchise.ts`, `real-world.ts`, `name-filter.ts` (new) | The franchise ban, the real-world fixture and the person-name filter |
-| `sound-set/` | `sound-set.ts` (new) | The one shared invented sound set: round 8's design H and its candidate words |
+| `sound-set/` | `sound-set.ts` (new) | The one shared mixed sound set: Greek-like sounds mixed with other languages', learned from Fantasy Map Generator's name bases, and its candidate words |
 | `lints/` | `culture-text.ts`, `scan.ts` | The culture text lint and the repo scan |
 
-`tools/names/scripts/` gains `words.ts`, which writes the person-name table into `sim-culture` and checks it with `--check`. M8.1's place-name table comes from the same `sound-set/`, as a second output of `words.ts`.
+`tools/names/scripts/` gains `words.ts`, which writes the person-name table into `sim-culture` and checks it with `--check`, and `build-avoid.ts` and `build-name-bases.ts`, which rebuild the new fixtures from the network and are run by hand. M8.1's place-name table comes from the same `sound-set/`, as a second output of `words.ts`.
 
 ## The world step (owner: M0.3)
 
 - **Creation:** `createWorld(seed: number, tier: Tier, ground?: Ground): World`, and `restoreWorld(seed, tier, state: ArrayBuffer, ground?: Ground): World` for checkpoints. A `World` holds the agent store, the ledgers, the tick counter, `world.ground`, and `world.blob`, the world's `Blob` handle, made once in `layoutWorld` (M0.7).
-- **Checks:** while `world.checks` is true, the default, `step` runs `checkInvariants` after every tick. Tests and the CLI keep the default. The worker sets it from `init.checks`, which the app sends as true only from development builds, because wallets make the check cost grow with population (M0.7).
+- **Checks:** while `world.checks` is true, the default, `step` runs `checkInvariants` after every tick. Tests and the CLI keep the default. The worker sets it from `init.checks`, which the app sends as true only from development builds, because wallets make the check cost grow with population. `warmUp`'s throwaway world runs with checks off, as production does (M0.7).
 - **Ground (M0.4):** `{ width, height, walk: Uint8Array }` in `sim-core`, tiles row-major from the top-left, where nonzero means walkable. A `MapV1` is a `Ground`, so `sim-core` never imports `sim-protocol`.
   - The ground is an unhashed input: it stays out of the arena and the hash, and a restore must pass the same ground.
   - Without one, `standInGround()` gives a 256 × 256 all-open square, as in the CLI.
@@ -172,7 +172,7 @@ Skin B and Skin C arrive as `blobs/` and `town/` beside `dots/` (M1.3, M3.3).
 
 - **One cash account per blob** in `world.cash`, after the settlement accounts: national accounts 0–15, then 4 sector accounts per settlement, then one wallet per agent slot.
 - `createLedger(arena, settlements: number, wallets: number): Ledger`. `Ledger` gains `firstWallet`, and `walletAccount(ledger: Ledger, slot: number): number` returns `firstWallet + slot`. `layoutWorld` passes the tier's agent cap.
-- **Opening balance:** `populate` issues `OPENING_CENTS` from MINT into each new blob's wallet, and no longer funds the households sector account. The owner set it on 9 October 2026 to 100,000 cents (1,000.00), today's per-agent issue.
+- **Opening balance:** `populate` issues `OPENING_CENTS`, exported from `world/world.ts`, from MINT into each new blob's wallet, and no longer funds the households sector account. The owner set it on 9 October 2026 to 100,000 cents (1,000.00), today's per-agent issue.
 - **Invariants:** wallets are ledger accounts, so `checkCash` covers them, and all accounts plus MINT still sum to zero. The claims rows `debt` and `lent` are sized by `cash.accounts`, so they cover wallets too.
 - **Bytes:** 4 for `nameKey`, 8 for the wallet and 16 for its claims rows, so 28 bytes per agent; at 100k agents the arena grows from 2.39 MB, with the movement column `heading`, to about 5.19 MB of its 64 MiB (computed). `TIER_MEMORY_BYTES` and snapshot v1 are unchanged; neither fact is drawn.
 
@@ -205,7 +205,7 @@ Skin B and Skin C arrive as `blobs/` and `town/` beside `dots/` (M1.3, M3.3).
   - `{ type: 'pause' }` and `{ type: 'resume' }`
   - `{ type: 'return', buffer: ArrayBuffer }`
   - `{ type: 'checkpoint' }`, which the app sends on `pagehide`
-  - `{ type: 'inspect', x, y }`, in world pixels: a read-only query, answered at any time, even while a run plays (M0.7)
+  - `{ type: 'inspect', x, y }`, in world pixels, which the worker rounds to Q8: a read-only query, answered at any time, even while a run plays (M0.7)
 - Worker to app:
   - `{ type: 'ready', agents }`. A tick-0 snapshot follows (M0.4), then the worker warms up (R6) and waits for `resume`. Messages sent during the warm-up wait until it ends. Under reduced motion the app withholds `resume` (M0.5).
   - `{ type: 'snapshot', tick, count, buffer: ArrayBuffer }`
@@ -259,6 +259,15 @@ Skin B and Skin C arrive as `blobs/` and `town/` beside `dots/` (M1.3, M3.3).
 - `sim-culture`'s `cultureViews(world): readonly ArrayBufferView[]` lists the regions that hold culture: the `culture`, `birthCulture` and `customs` columns and `World.cultureUid`. `relabelCultures(world, perm: Uint8Array): void` renumbers culture c as `perm[c]` in every column and custom and moves its uid along, and throws `RangeError` unless `perm` reorders exactly the cultures in use. R8's relabel test checks that `stateHashExcept(world, cultureViews(world))` doesn't change (M0.6).
 - **Names (M0.7, R8):**
   - `sim-culture` exports `personName(nameKey: number): string`, "Given Family" with each word capitalised. The given word is `NAME_WORDS[(nameKey & 0xffff) % NAME_WORDS.length]` and the family word the same over `nameKey >>> 16`, moved to the next word when the two would match.
-  - `NAME_WORDS`, in the generated `naming/words.ts`, holds 1,024 words of the shared sound set in `tools/names/src/sound-set/`, each 4 or more letters and each passing `tools/names`' person-name filter. `node tools/names/scripts/words.ts` rebuilds it, and `--check` fails when it is stale.
+  - `NAME_WORDS`, in the generated `naming/words.ts`, holds 1,024 words of the shared sound set in `tools/names/src/sound-set/`, each 4–10 letters and each passing `tools/names`' person-name filter. `node tools/names/scripts/words.ts` rebuilds it and copies Fantasy Map Generator's licence beside it, and `--check` fails when either is stale.
   - Names are text only on screen: the sim stores the key, and only the app's inspector calls `personName`. M3.7 adds the naming custom's structure, such as given and parent's given name, as a second argument.
-- **The person-name filter (M0.7, R3, R8):** `tools/names`' `rejectName(word: string): string | null` returns the rule a word breaks, or null. It joins M0.6's franchise ban and real-world fixture with distinctive Pokémon town and city names and species names, at edit distance 1 up to 5 letters and 2 above, and the LDNOOBW Latin-script lists, exact for 3-letter entries and by substring for 4 or more. M3.7 adds real festival names and runs it over places and festivals.
+- **The mixed sound set (M0.7, owner, 9 October 2026):** one style for everyone, people now and towns and countries in M8.1, so no culture owns a sound. Each word mixes Greek-like sounds with those of two other real-world languages, picked at random per word. It is learned from Fantasy Map Generator's name bases at commit `546c41d`, kept in `tools/names/fixtures/name-bases.json` with that project's MIT licence beside it, and round 8's trigram screen is dropped.
+  - `loadSoundSet(): SoundSet` reads the bases and learns each as letter chains, order 2.
+  - `drawWord(sounds: SoundSet, seed: number, n: number): string` is candidate n of the table built on `seed`, drawn with `draw2`. M8.1's place table uses its own seed.
+- **The person-name filter (M0.7, R3, R8):** `tools/names`' `rejectName(word: string): string | null` returns the rule a word breaks, or null. Its rules, in order:
+  - `franchise`: M0.6's franchise ban, and creature-style words ending in "mon";
+  - `real-world`: M0.6's real-world fixture;
+  - `place` and `species`: the franchise's distinctive town and city names and its species names, from Wikidata (CC0), at edit distance 1 up to 5 letters and 2 above;
+  - `profanity`: LDNOOBW's 21 Latin-script lists (CC BY 4.0), exact for 3-letter entries and by substring for 4 or more.
+
+  M3.7 adds real festival names and runs it over places and festivals.

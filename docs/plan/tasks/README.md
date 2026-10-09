@@ -34,7 +34,7 @@ The plan's own effort lines sum to about 221.5–340.5 days before launch, but m
 | [M0.4 Renderer and Skin A](m0-pipeline/m0.4-renderer-and-skin-a/task.md) | One WebGL2 renderer drawing 10,000 agents as dots over a map | 4–6 days | [step plan](m0-pipeline/m0.4-renderer-and-skin-a/plan.md) |
 | [M0.5 Web app](m0-pipeline/m0.5-web-app/task.md) | The page a visitor opens: first frame, HUD, charts, tiers, accessibility | 3–4 days | [step plan](m0-pipeline/m0.5-web-app/plan.md) |
 | [M0.6 Gates and guards](m0-pipeline/m0.6-gates-and-guards/task.md) | CI gates that enforce every rule the plan relies on | 3–5 days | [step plan](m0-pipeline/m0.6-gates-and-guards/plan.md) |
-| [M0.7 Modules and blob facts](m0-pipeline/m0.7-modules-and-blob-facts/task.md) | Module folders in every package, the `Blob` handle, and a name and a wallet for every blob, shown on click; walking in any direction, built first on 9 October 2026, falls outside this estimate | 5–8 days | [brief](m0-pipeline/m0.7-modules-and-blob-facts/plan.md) |
+| [M0.7 Modules and blob facts](m0-pipeline/m0.7-modules-and-blob-facts/task.md) | Module folders in every package, the `Blob` handle, and a name and a wallet for every blob, shown on click; walking in any direction, built first on 9 October 2026, falls outside this estimate | 5–8 days | [step plan](m0-pipeline/m0.7-modules-and-blob-facts/plan.md) |
 
 ### Map first: M8.1 and M8.3, after M0 and before M1
 
