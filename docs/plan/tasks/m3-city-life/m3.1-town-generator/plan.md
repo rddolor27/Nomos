@@ -38,7 +38,7 @@ This pulls M3.1's port forward, and starts M3.3's atlas pages and sprite drawing
 
 ### Rulings (coordinator, 9 October 2026; the owner can overturn them)
 
-1. **A place is `place.py`'s district.** That is 48×28 tiles for a capital or city, 40×24 for a town, 32×20 for a village or hamlet, and 30×18 for a wonder's vista. The brief's "256² town" and "64×64 districts" do not match `place.py`, which stays the reference.
+1. **A place is `place.py`'s district.** That was 48×28 tiles for a capital or city, 40×24 for a town, 32×20 for a village or hamlet, and 30×18 for a wonder's vista, until Parts 2 and 3 grew them (Part 3, Ruling 1). The brief's "256² town" and "64×64 districts" do not match `place.py`, which stays the reference.
 2. **People are look-only, like the map's crowd.** They are `place.py`'s people, with no names, money or sim. Some walk loops. The rest stand or sit where `place.py` puts them.
 3. **Summer art only.** Seasons wait for M3.8.
 4. **Wonders open their vistas too,** since the port builds them anyway.
@@ -768,7 +768,29 @@ It may run beside Tasks 11–16, since it shares no file with them and road clas
 
 ### Task 21: Close part 3 (coordinator)
 
-- `interfaces.md`: the sim-architect's changes, in a docs commit of their own, after `nomos-bd`'s edit lands.
+- `interfaces.md`: the sim-architect's changes below, in a docs commit of their own, after `nomos-bd`'s edit lands. Reconcile them with that edit first, which may already have changed `PlaceReply` for the Town skin's `town` request.
+  1. **The world map, The package:** add `classes.ts` to the `routes/` row's files, and "and its road classes" to its concern.
+  2. **The world map, The package, `place/` row:** after "the stage files", add "(among them `walls.ts` and `farms.ts`, from M3.1's Part 3)" and `street-crowd.ts`. Make its concern "…plus the walk loops and the street crowd Python lacks…".
+  3. **Generating:** add to the goldens bullet "From M3.1's Part 3 a `classes` stage follows `roads`", and to the `worldFingerprint` bullet "It folds `roadClass` after the roads and lanes."
+  4. **`WorldMap`:** add the code table "`ROAD_CLASS_NAMES`: minor, major (M3.1's Part 3)". Add a row to "The rest": `roadClass`, a `Uint8Array` with one class per road path, in roads' order, as a `ROAD_CLASS_NAMES` index. Major roads are the cheapest chains of routes joining the towns, cities and capitals that a spanning tree links on each landmass.
+  5. **`@nomos/render-gl/map`, Colours:** after "the line colours", add "with `highway`, the palette's `STONE_L` (M3.1's Part 3)".
+  6. **`@nomos/render-gl/map`, What draws, "After the page":** replace "roads" with "minor roads dotted, major roads solid in `highway`". Add: a capital's or city's icon is `map8_settlement_<tier>-walled` in the Country view and `map16_…` in the Region view, a town's is `…_town-palisade`, and a village's or hamlet's stays `settlement_<tier>`.
+  7. **`@nomos/render-gl/map`, Atlas page:** the map page holds 93 frames, not 81, since the walled icons and their highlight rings (b02c835).
+  8. **Places, intro:** the sizes become 176 × 112 tiles for a capital or city, 152 × 96 for a town, 80 × 48 for a village and 56 × 32 for a hamlet (M3.1's Part 3), or a wonder's vista of 30 × 18. If Task 11 took Ruling 1's fallback, use 160 × 100 and 140 × 80.
+  9. **The contract,** catching up with Part 2's street crowd, which `interfaces.md` never recorded:
+     - `PlaceReply` becomes `{ type: 'place', place, layout, walks, crowd, ms }`, as `placeBuffers(layout, walks, crowd)` lists them;
+     - add **`PlaceCrowd`:** look-only walkers, one per 150 residents and at most 3,000. Crowd loop r steps through `cells[offsets[r]]` to `cells[offsets[r + 1] − 1]` and back. Walker k has `look[k]` and `expression[k]`, follows loop `loop[k]`, and starts `phase[k]` art px along it.
+  10. **Building a place:**
+      - the loop budget reads "A place's loops hold at most 16,384 cells", the code's value, not 4,096;
+      - add: the street crowd keeps to at most 300 loops of at most 4,000 cells, 131,072 cells in all. Its hubs lie on roads that aren't farm tracks, and each hub's search order is keyed by `LANE` (0x125) on `CROWD`, so loops spread across wide roads (M3.1's Part 3);
+      - the stages become water, centre, walls, buildings, farms, decor, nature and people.
+  11. **Building a place, a new bullet, "The walled town (M3.1's Part 3)":**
+      - **New tile kinds:** `stone` (main road, 3 wide), `cobble` (street, 2), `gravel` (country road, 2), `track` (farm track, 1), `flower-bed`, and `crop_vine_<stage>` and `crop_rice_<stage>`. `path` stays the lane and `paving` the plaza. A road tile keeps the highest-ranked kind laid on it, in the order paving, stone, cobble, gravel, track, path.
+      - **Wall rings:** half-sizes of 64 × 40 for capitals and cities, in stone, and 56 × 30 for towns, as a palisade. Each is centred on the plaza's centre and kept 6 tiles inside the place's edge.
+      - **Gates** are 2 tiles wide. A front gate is a standing sprite over road that marks nothing solid; a side gate is a solid pier and cap beside a 2-tile gap.
+      - **Bridges:** main and country roads cross rivers on ground-layer bridge pieces. The water tiles stay water and become road.
+      - **`town.nmap`** gains the built kind `wall`, and `farm_` buildings count as workplaces.
+  12. **The atlas in every build:** add "The town page leaves out frames ending in `_snow` or `_night`, and `test_atlas.py` fails past 1,920 px (M3.1's Part 3)."
 - Once everything is committed, run `senior-qa` once to prove task.md's Part 3 checks, and `code-reviewer` once over the whole part. Then run `/determinism-review` over `packages/worldgen`.
 - Fill in the Started, Done and Actual cells in `milestone.md`, then write the next checkpoint and commit it alone.
 
