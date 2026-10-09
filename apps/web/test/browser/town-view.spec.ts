@@ -140,6 +140,22 @@ test.describe('in one engine', () => {
     await expect(page.locator('#map')).toBeFocused();
   });
 
+  test('names the picture afresh on every entry', async ({ page }) => {
+    await openMap(page);
+    const capital = await goToCapital(page);
+    await page.getByRole('button', { name: `Enter ${capital}` }).click();
+    await placeShown(page);
+    await expect(page.getByRole('img', { name: new RegExp(`^${capital}: `) })).toBeVisible();
+    await page.keyboard.press('Escape');
+    // The first country's next settlement: the town view's canvas has been swapped since the first entry.
+    const other = (await goToList(page).locator('optgroup').first().locator('option').nth(1).textContent()) ?? '';
+    await goToList(page).selectOption({ label: other });
+    await page.getByRole('button', { name: `Enter ${other}` }).click();
+    await placeShown(page);
+    await expect(page.getByRole('img', { name: new RegExp(`^${other}: `) })).toBeVisible();
+    await expect(page.getByRole('img', { name: new RegExp(`^${capital}: `) })).toHaveCount(0);
+  });
+
   test('opens the settlement in focus on a tap, and Back to map returns', async ({ page }) => {
     await openMap(page);
     await goToCapital(page);

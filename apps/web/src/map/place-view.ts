@@ -65,6 +65,9 @@ interface Parts {
   title: HTMLElement;
   about: HTMLElement;
   status: HTMLElement;
+  // The image the place shows as, named for it. The canvas inside is swapped on every exit and by the Canvas2D fallback,
+  // so the name stays on this wrapper and the canvas is hidden from assistive tech.
+  picture: HTMLElement;
   canvas: HTMLCanvasElement;
 }
 
@@ -103,6 +106,7 @@ const CSS = `
 #place:focus-visible { outline: none; }
 #place:focus-visible::after { content: ""; position: absolute; inset: 0; z-index: 2; border: 3px solid #f7c948;
   pointer-events: none; }
+#place .place-picture { position: absolute; inset: 0; }
 #place canvas { position: absolute; top: 0; left: 0; }
 #place h2 { margin: 0; font-size: inherit; }
 `;
@@ -114,7 +118,7 @@ const KEYS =
 const ARROW_TILES = 2;
 // A frame later than this walks the walkers only this far, so a stalled tab never jumps them across the place.
 const MOST_WALK_MS = 100;
-// What a place holds, by its standing sprites' frames, as the canvas's label tells it.
+// What a place holds, by its standing sprites' frames, as the picture's name tells it.
 const HOLDINGS: [part: string, one: string, many: string][] = [
   ['houses/', 'home', 'homes'],
   ['buildings/civic_', 'civic building', 'civic buildings'],
@@ -164,11 +168,13 @@ function buildParts(): Parts {
     title: make('h2', { id: 'place-title' }),
     about: make('p', {}),
     status: make('p', { id: 'place-status', role: 'status' }),
-    canvas: make('canvas', { role: 'img' }),
+    picture: make('div', { class: 'place-picture', role: 'img' }),
+    canvas: make('canvas', { 'aria-hidden': 'true' }),
   };
   const { back, retry, fit, zoomIn, zoomOut, pause, title, about, status } = parts;
   parts.bar.append(back, retry, fit, zoomIn, zoomOut, pause, title, about, status);
-  parts.section.append(parts.keys, parts.bar, parts.canvas);
+  parts.picture.append(parts.canvas);
+  parts.section.append(parts.keys, parts.bar, parts.picture);
   return parts;
 }
 
@@ -237,7 +243,7 @@ function show(view: PlaceView, info: PlaceInfo, returnFocus: HTMLElement): void 
   const { parts, host } = view;
   parts.title.textContent = info.name;
   parts.about.textContent = aboutText(info);
-  parts.canvas.setAttribute('aria-label', `${info.name}, being built`);
+  parts.picture.setAttribute('aria-label', `${info.name}, being built`);
   parts.pause.setAttribute('aria-pressed', String(host.paused()));
   host.map.inert = true;
   parts.section.hidden = false;
@@ -303,7 +309,7 @@ function adopt(view: PlaceView, info: PlaceInfo, reply: PlaceReply): void {
   view.walkers = new Walkers(reply.layout, reply.walks);
   view.hook.walkers = view.walkers.count;
   view.renderer?.setPlace(reply.layout);
-  view.parts.canvas.setAttribute('aria-label', holdingsText(info, reply.layout));
+  view.parts.picture.setAttribute('aria-label', holdingsText(info, reply.layout));
   if (view.deviceWidth > 0 && view.deviceHeight > 0) openCamera(view);
   showStatus(view);
   requestDraw(view);
