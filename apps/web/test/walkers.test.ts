@@ -1,7 +1,7 @@
 import { NO_CODE, PLACE_FACINGS, PLACE_POSES, PLACE_TILE_PX, type PlaceLayout, type PlaceWalks } from '@nomos/sim-protocol/place';
 import { buildPlace, generateWorld, placeContexts } from '@nomos/worldgen';
 import { describe, expect, it } from 'vitest';
-import { WALK_PX_PER_S, Walkers } from '../src/map/walkers.ts';
+import { WALK_PX_PER_S, Walkers, withCrowd } from '../src/map/walkers.ts';
 
 const STAND = PLACE_POSES.indexOf('stand');
 const WALK = PLACE_POSES.indexOf('walk');
@@ -89,6 +89,21 @@ describe('walkers', () => {
     new Walkers(layout, walks).walk(msFor(30));
     const p = layout.people;
     expect([p.x[1], p.y[1], p.pose[1], p.facing[1], p.step[1]]).toEqual([40, 40, PLACE_POSES.indexOf('sit'), DOWN, 0]);
+  });
+
+  it('starts the street crowd at its phases on the loops it shares, in walk pose', () => {
+    const { layout, walks } = square();
+    const crowd = { look: Uint8Array.of(3, 4), expression: Uint8Array.of(1, 2), loop: Uint16Array.of(0, 0), phase: Uint16Array.of(16, 40) };
+    const placed = withCrowd(layout, crowd, 2);
+    const walkers = new Walkers(placed, walks, crowd, 2);
+    const p = placed.people;
+    expect(walkers.count).toBe(3);
+    expect([2, 3].map((j) => [p.x[j], p.y[j], p.pose[j], p.facing[j], p.look[j], p.job[j]])).toEqual([
+      [38, 29, WALK, DOWN, 3, NO_CODE],
+      [30, 45, WALK, LEFT, 4, NO_CODE],
+    ]);
+    walkers.walk(msFor(4));
+    expect([p.x[2], p.y[2]]).toEqual([38, 33]);
   });
 
   it('stands every walker back where place.py put it', () => {

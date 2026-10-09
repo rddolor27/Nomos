@@ -14,6 +14,8 @@ const FRAMES = 120;
 // tier changes no timed frame. The phone tier keeps the town's play before the click from holding SwiftShader's main
 // thread; reduced motion would pause it too, but would also stop the crowd the Region frames move.
 const TOWN = '/?seed=42&tier=phone';
+// Seed 14's first capital holds 526,831 people, so its street crowd fills the 3,000 cap; the phone tier would draw 600.
+const CROWDED = '/?seed=14&tier=phone-plus';
 const ATLAS_PAGE = /\/atlas\/map\.webp$/;
 // A press holds the map still for its first 5 CSS px, a tap's slop (map-input.ts), so the timed moves start past it.
 const TAP_SLOP_CSS_PX = 5;
@@ -161,13 +163,13 @@ test('pans the Country and Region views within 2 ms a frame', async ({ page, bro
 // the drag pans the capital; ?canvas draws the town, the map and the town view in Canvas2D.
 test('pans the town view of a capital within 2 ms a frame, in WebGL2 and in Canvas2D', async ({ page, browser }) => {
   test.setTimeout(240_000);
-  await enterCapital(page, TOWN);
+  await enterCapital(page, CROWDED);
   const webgl = summarise(await timePan(page, 'place'));
   const shown = await page.evaluate(() => {
     const canvas = document.querySelector<HTMLCanvasElement>('#place canvas');
     return { backend: window.__place?.backend, walkers: window.__place?.walkers ?? 0, size: `${canvas?.width} x ${canvas?.height}` };
   });
-  await enterCapital(page, `${TOWN}&canvas`);
+  await enterCapital(page, `${CROWDED}&canvas`);
   const canvas = summarise(await timePan(page, 'place'));
   const fallback = await page.evaluate(() => window.__place?.backend);
   expect([shown.backend, fallback]).toEqual(['webgl2', 'canvas2d']);

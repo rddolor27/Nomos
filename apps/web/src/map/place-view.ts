@@ -14,7 +14,7 @@ import {
 import { PLACE_TILE_PX, type PlaceLayout, type PlaceReply } from '@nomos/sim-protocol/place';
 import type { PlaceInfo } from './goto.ts';
 import { bindMapInput, zoomAtCentre, type MapInputTarget } from './map-input.ts';
-import { Walkers } from './walkers.ts';
+import { Walkers, withCrowd } from './walkers.ts';
 import { OverflowMenu, addToolbarStyles, group, iconButton, zoomGroup } from '../panels/toolbar.ts';
 
 // What the town view's browser tests read, as window.__map exposes the map.
@@ -44,6 +44,8 @@ export interface PlaceHost {
   // The map's section, which the town view covers, inert, while it shows.
   readonly map: HTMLElement;
   readonly backend: 'auto' | 'canvas2d';
+  // The phone tier, which draws a smaller street crowd.
+  readonly phone: boolean;
   // Asks the map worker for a place; one of the two callbacks runs, in time.
   request(place: number, onReply: (reply: PlaceReply) => void, onFail: (why: string) => void): void;
   // Pause dots, shared by the map's crowd and the town's walkers.
@@ -116,6 +118,9 @@ const KEYS =
   'to the map.';
 // An arrow press moves two tiles.
 const ARROW_TILES = 2;
+// The most street-crowd walkers drawn (M3.1 part 2).
+const CROWD_ON_DESKTOPS = 3000;
+const CROWD_ON_PHONES = 600;
 // A frame later than this walks the walkers only this far, so a stalled tab never jumps them across the place.
 const MOST_WALK_MS = 100;
 // What a place holds, by its standing sprites' frames, as the picture's name tells it.
@@ -308,13 +313,22 @@ function closeRenderer(view: PlaceView): void {
 }
 
 // A reply for a place left behind changes nothing.
+// The street crowd's first walkers, as many as this device draws within the 2 ms bar: phones and the Canvas2D fallback
+// draw fewer (owner, 10 October 2026).
+function crowdShown(view: PlaceView, reply: PlaceReply): number {
+  const fewer = view.host.phone || view.renderer?.backend === 'canvas2d';
+  return Math.min(reply.crowd.look.length, fewer ? CROWD_ON_PHONES : CROWD_ON_DESKTOPS);
+}
+
 function adopt(view: PlaceView, info: PlaceInfo, reply: PlaceReply): void {
   if (!view.hook.open || view.info !== info) return;
-  view.layout = reply.layout;
-  view.walkers = new Walkers(reply.layout, reply.walks);
+  const n = crowdShown(view, reply);
+  const layout = withCrowd(reply.layout, reply.crowd, n);
+  view.layout = layout;
+  view.walkers = new Walkers(layout, reply.walks, reply.crowd, n);
   view.hook.walkers = view.walkers.count;
-  view.renderer?.setPlace(reply.layout);
-  view.parts.picture.setAttribute('aria-label', holdingsText(info, reply.layout));
+  view.renderer?.setPlace(layout);
+  view.parts.picture.setAttribute('aria-label', holdingsText(info, layout));
   if (view.deviceWidth > 0 && view.deviceHeight > 0) openCamera(view);
   showStatus(view);
   requestDraw(view);
