@@ -22,8 +22,9 @@ export interface ShownPlace {
 export interface PlaceHarness {
   // A fresh renderer on a canvas of the fixture place's size times scale, given the town atlas and the place.
   boot(name: string, scale: number, options?: PlaceRendererOptions): Promise<PlaceBackend>;
-  // Draws, then reads the frame back in the same task, since WebGL2 keeps no drawing buffer, and hashes it.
-  render(camera: PlaceCamera): Promise<ShownPlace>;
+  // Draws, then reads the frame back in the same task, since WebGL2 keeps no drawing buffer, and hashes it: scaled up
+  // first by whole nearest-neighbour steps when upscale is more than 1, so a zoomed frame can be held to a 1x one.
+  render(camera: PlaceCamera, upscale?: number): Promise<ShownPlace>;
   // Reads and hashes what the renderer shows, without drawing.
   shown(): Promise<ShownPlace>;
   // Moves person j in the layout's own columns, as a walker's motion will.
@@ -104,17 +105,29 @@ function readFrame(drawn: PlaceRenderer): Uint8Array<ArrayBuffer> {
   return new Uint8Array(context.getImageData(0, 0, canvas.width, canvas.height).data.buffer);
 }
 
+// Each pixel repeated k times across and down, as PIL's Image.NEAREST resize does by a whole factor.
+function nearest(bytes: Uint8Array<ArrayBuffer>, width: number, height: number, k: number): Uint8Array<ArrayBuffer> {
+  const from = new Uint32Array(bytes.buffer, bytes.byteOffset, width * height);
+  const to = new Uint32Array(width * k * height * k);
+  for (let y = 0; y < height * k; y++) {
+    for (let x = 0; x < width * k; x++) to[y * width * k + x] = from[Math.floor(y / k) * width + Math.floor(x / k)];
+  }
+  return new Uint8Array(to.buffer);
+}
+
 async function sha256(bytes: Uint8Array<ArrayBuffer>): Promise<string> {
   const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', bytes));
   return Array.from(digest, (byte) => byte.toString(16).padStart(2, '0')).join('');
 }
 
 // The bytes are read before the first await, in the task that called.
-function shownFrame(): Promise<ShownPlace> {
+function shownFrame(upscale = 1): Promise<ShownPlace> {
   const drawn = booted();
-  const bytes = readFrame(drawn);
   const { backend, canvas } = drawn;
-  return sha256(bytes).then((hash) => ({ backend, swapped: canvas !== bootCanvas, width: canvas.width, height: canvas.height, sha256: hash }));
+  const read = readFrame(drawn);
+  const bytes = upscale > 1 ? nearest(read, canvas.width, canvas.height, upscale) : read;
+  const [width, height] = [canvas.width * upscale, canvas.height * upscale];
+  return sha256(bytes).then((hash) => ({ backend, swapped: canvas !== bootCanvas, width, height, sha256: hash }));
 }
 
 function copyPeople(people: PlaceLayout['people']): PlaceLayout['people'] {
@@ -138,11 +151,11 @@ window.placeHarness = {
     renderer.setPlace(layout);
     return backend;
   },
-  render(camera) {
+  render(camera, upscale) {
     booted().draw(camera);
-    return shownFrame();
+    return shownFrame(upscale);
   },
-  shown: shownFrame,
+  shown: () => shownFrame(),
   move(j, dx, dy) {
     if (!layout) throw new Error('boot the place harness first');
     layout.people.x[j] += dx;

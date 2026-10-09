@@ -64,6 +64,34 @@ for (const { name, pixels } of FIXTURES) {
   });
 }
 
+// placedraw.py's 1x picture holds at every scale: a 2x frame is the 1x frame scaled up by nearest neighbour.
+for (const backend of ['webgl2', 'canvas2d'] as const) {
+  test(`draws each place at 2x as its 1x picture scaled up, through ${backend}`, async ({ page }) => {
+    const drawn = await page.evaluate(
+      async ({ names, backend }) => {
+        const harness = window.placeHarness;
+        const options = backend === 'canvas2d' ? { backend } : undefined;
+        const out: { name: string; one: string; upscaled: string; two: string }[] = [];
+        for (const name of names) {
+          if ((await harness.boot(name, 1, options)) !== backend) return null;
+          const one = await harness.render({ x: 0, y: 0, scale: 1 });
+          const upscaled = await harness.render({ x: 0, y: 0, scale: 1 }, 2);
+          await harness.boot(name, 2, options);
+          const two = await harness.render({ x: 0, y: 0, scale: 2 });
+          out.push({ name, one: one.sha256, upscaled: upscaled.sha256, two: two.sha256 });
+        }
+        return out;
+      },
+      { names: FIXTURES.map((place) => place.name), backend },
+    );
+    test.skip(drawn === null, `no ${backend} in this browser`);
+    for (const { name, one, upscaled, two } of drawn ?? []) {
+      expect(one, `${name} at 1x`).toBe(FIXTURES.find((place) => place.name === name)?.pixels.sha256);
+      expect(two, `${name} at 2x`).toBe(upscaled);
+    }
+  });
+}
+
 test('redraws moved people, and both backends draw them alike at 2x off the whole pixel', async ({ page }) => {
   const result = await page.evaluate(
     async ({ camera, moves }) => {
