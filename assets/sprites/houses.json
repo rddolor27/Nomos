@@ -2,7 +2,7 @@
   "image": "houses.png",
   "size": [
     256,
-    3132
+    5799
   ],
   "tile": 16,
   "frames": {
@@ -136,9 +136,364 @@
       ],
       "layer": "snow"
     },
-    "house_board_detached_roof-green": {
+    "house_board_cabin_roof-green": {
+      "x": 0,
+      "y": 3250,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        16,
+        46
+      ],
+      "night": "house_cabin_night",
+      "snow": "house_board_cabin_snow"
+    },
+    "house_board_cabin_roof-plum": {
+      "x": 33,
+      "y": 3250,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        16,
+        46
+      ],
+      "night": "house_cabin_night",
+      "snow": "house_board_cabin_snow"
+    },
+    "house_board_cabin_roof-slate": {
+      "x": 66,
+      "y": 3250,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        16,
+        46
+      ],
+      "night": "house_cabin_night",
+      "snow": "house_board_cabin_snow"
+    },
+    "house_board_cabin_roof-terracotta": {
+      "x": 99,
+      "y": 3250,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        16,
+        46
+      ],
+      "night": "house_cabin_night",
+      "snow": "house_board_cabin_snow"
+    },
+    "house_board_cabin_roof-thatch": {
+      "x": 132,
+      "y": 3250,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        16,
+        46
+      ],
+      "night": "house_cabin_night",
+      "snow": "house_board_cabin_snow"
+    },
+    "house_board_cabin_snow": {
+      "x": 165,
+      "y": 3250,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "layer": "snow"
+    },
+    "house_board_corner-left_roof-green": {
       "x": 65,
-      "y": 910,
+      "y": 130,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        13,
+        62
+      ],
+      "night": "house_corner-left_night",
+      "snow": "house_board_corner-left_snow",
+      "joins": "r"
+    },
+    "house_board_corner-left_roof-plum": {
+      "x": 114,
+      "y": 130,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        13,
+        62
+      ],
+      "night": "house_corner-left_night",
+      "snow": "house_board_corner-left_snow",
+      "joins": "r"
+    },
+    "house_board_corner-left_roof-slate": {
+      "x": 163,
+      "y": 130,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        13,
+        62
+      ],
+      "night": "house_corner-left_night",
+      "snow": "house_board_corner-left_snow",
+      "joins": "r"
+    },
+    "house_board_corner-left_roof-terracotta": {
+      "x": 0,
+      "y": 195,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        13,
+        62
+      ],
+      "night": "house_corner-left_night",
+      "snow": "house_board_corner-left_snow",
+      "joins": "r"
+    },
+    "house_board_corner-left_roof-thatch": {
+      "x": 49,
+      "y": 195,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        13,
+        62
+      ],
+      "night": "house_corner-left_night",
+      "snow": "house_board_corner-left_snow",
+      "joins": "r"
+    },
+    "house_board_corner-left_snow": {
+      "x": 98,
+      "y": 195,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "layer": "snow"
+    },
+    "house_board_corner-right_roof-green": {
+      "x": 147,
+      "y": 195,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        35,
+        62
+      ],
+      "night": "house_corner-right_night",
+      "snow": "house_board_corner-right_snow",
+      "joins": "l"
+    },
+    "house_board_corner-right_roof-plum": {
+      "x": 196,
+      "y": 195,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        35,
+        62
+      ],
+      "night": "house_corner-right_night",
+      "snow": "house_board_corner-right_snow",
+      "joins": "l"
+    },
+    "house_board_corner-right_roof-slate": {
+      "x": 0,
+      "y": 260,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        35,
+        62
+      ],
+      "night": "house_corner-right_night",
+      "snow": "house_board_corner-right_snow",
+      "joins": "l"
+    },
+    "house_board_corner-right_roof-terracotta": {
+      "x": 49,
+      "y": 260,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        35,
+        62
+      ],
+      "night": "house_corner-right_night",
+      "snow": "house_board_corner-right_snow",
+      "joins": "l"
+    },
+    "house_board_corner-right_roof-thatch": {
+      "x": 98,
+      "y": 260,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        35,
+        62
+      ],
+      "night": "house_corner-right_night",
+      "snow": "house_board_corner-right_snow",
+      "joins": "l"
+    },
+    "house_board_corner-right_snow": {
+      "x": 147,
+      "y": 260,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "layer": "snow"
+    },
+    "house_board_detached_roof-green": {
+      "x": 198,
+      "y": 3250,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -157,8 +512,8 @@
       "snow": "house_board_detached_snow"
     },
     "house_board_detached_roof-plum": {
-      "x": 114,
-      "y": 910,
+      "x": 0,
+      "y": 3299,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -177,8 +532,8 @@
       "snow": "house_board_detached_snow"
     },
     "house_board_detached_roof-slate": {
-      "x": 163,
-      "y": 910,
+      "x": 49,
+      "y": 3299,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -197,8 +552,8 @@
       "snow": "house_board_detached_snow"
     },
     "house_board_detached_roof-terracotta": {
-      "x": 0,
-      "y": 975,
+      "x": 98,
+      "y": 3299,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -217,8 +572,8 @@
       "snow": "house_board_detached_snow"
     },
     "house_board_detached_roof-thatch": {
-      "x": 49,
-      "y": 975,
+      "x": 147,
+      "y": 3299,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -237,8 +592,8 @@
       "snow": "house_board_detached_snow"
     },
     "house_board_detached_snow": {
-      "x": 98,
-      "y": 975,
+      "x": 196,
+      "y": 3299,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -252,8 +607,8 @@
       "layer": "snow"
     },
     "house_board_farmhouse_roof-green": {
-      "x": 147,
-      "y": 975,
+      "x": 0,
+      "y": 3348,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -272,8 +627,8 @@
       "snow": "house_board_farmhouse_snow"
     },
     "house_board_farmhouse_roof-plum": {
-      "x": 0,
-      "y": 1024,
+      "x": 65,
+      "y": 3348,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -292,8 +647,8 @@
       "snow": "house_board_farmhouse_snow"
     },
     "house_board_farmhouse_roof-slate": {
-      "x": 65,
-      "y": 1024,
+      "x": 130,
+      "y": 3348,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -312,8 +667,8 @@
       "snow": "house_board_farmhouse_snow"
     },
     "house_board_farmhouse_roof-terracotta": {
-      "x": 130,
-      "y": 1024,
+      "x": 0,
+      "y": 3397,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -332,8 +687,8 @@
       "snow": "house_board_farmhouse_snow"
     },
     "house_board_farmhouse_roof-thatch": {
-      "x": 0,
-      "y": 1073,
+      "x": 65,
+      "y": 3397,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -352,8 +707,8 @@
       "snow": "house_board_farmhouse_snow"
     },
     "house_board_farmhouse_snow": {
-      "x": 65,
-      "y": 1073,
+      "x": 130,
+      "y": 3397,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -367,8 +722,8 @@
       "layer": "snow"
     },
     "house_board_hut_roof-green": {
-      "x": 198,
-      "y": 2886,
+      "x": 33,
+      "y": 5553,
       "w": 32,
       "h": 32,
       "anchor": [
@@ -387,8 +742,8 @@
       "snow": "house_board_hut_snow"
     },
     "house_board_hut_roof-plum": {
-      "x": 0,
-      "y": 2935,
+      "x": 66,
+      "y": 5553,
       "w": 32,
       "h": 32,
       "anchor": [
@@ -407,8 +762,8 @@
       "snow": "house_board_hut_snow"
     },
     "house_board_hut_roof-slate": {
-      "x": 33,
-      "y": 2935,
+      "x": 99,
+      "y": 5553,
       "w": 32,
       "h": 32,
       "anchor": [
@@ -427,8 +782,8 @@
       "snow": "house_board_hut_snow"
     },
     "house_board_hut_roof-terracotta": {
-      "x": 66,
-      "y": 2935,
+      "x": 132,
+      "y": 5553,
       "w": 32,
       "h": 32,
       "anchor": [
@@ -447,8 +802,8 @@
       "snow": "house_board_hut_snow"
     },
     "house_board_hut_roof-thatch": {
-      "x": 99,
-      "y": 2935,
+      "x": 165,
+      "y": 5553,
       "w": 32,
       "h": 32,
       "anchor": [
@@ -467,8 +822,8 @@
       "snow": "house_board_hut_snow"
     },
     "house_board_hut_snow": {
-      "x": 132,
-      "y": 2935,
+      "x": 198,
+      "y": 5553,
       "w": 32,
       "h": 32,
       "anchor": [
@@ -482,8 +837,8 @@
       "layer": "snow"
     },
     "house_board_row-left_roof-green": {
-      "x": 130,
-      "y": 1073,
+      "x": 195,
+      "y": 3397,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -502,8 +857,8 @@
       "snow": "house_board_row-left_snow"
     },
     "house_board_row-left_roof-plum": {
-      "x": 163,
-      "y": 1073,
+      "x": 0,
+      "y": 3446,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -522,8 +877,8 @@
       "snow": "house_board_row-left_snow"
     },
     "house_board_row-left_roof-slate": {
-      "x": 196,
-      "y": 1073,
+      "x": 33,
+      "y": 3446,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -542,8 +897,8 @@
       "snow": "house_board_row-left_snow"
     },
     "house_board_row-left_roof-terracotta": {
-      "x": 0,
-      "y": 1122,
+      "x": 66,
+      "y": 3446,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -562,8 +917,8 @@
       "snow": "house_board_row-left_snow"
     },
     "house_board_row-left_roof-thatch": {
-      "x": 33,
-      "y": 1122,
+      "x": 99,
+      "y": 3446,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -582,8 +937,8 @@
       "snow": "house_board_row-left_snow"
     },
     "house_board_row-left_snow": {
-      "x": 66,
-      "y": 1122,
+      "x": 132,
+      "y": 3446,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -597,8 +952,8 @@
       "layer": "snow"
     },
     "house_board_row-middle_roof-green": {
-      "x": 99,
-      "y": 1122,
+      "x": 165,
+      "y": 3446,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -617,8 +972,8 @@
       "snow": "house_board_row-middle_snow"
     },
     "house_board_row-middle_roof-plum": {
-      "x": 132,
-      "y": 1122,
+      "x": 198,
+      "y": 3446,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -637,8 +992,8 @@
       "snow": "house_board_row-middle_snow"
     },
     "house_board_row-middle_roof-slate": {
-      "x": 165,
-      "y": 1122,
+      "x": 0,
+      "y": 3495,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -657,8 +1012,8 @@
       "snow": "house_board_row-middle_snow"
     },
     "house_board_row-middle_roof-terracotta": {
-      "x": 198,
-      "y": 1122,
+      "x": 33,
+      "y": 3495,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -677,8 +1032,8 @@
       "snow": "house_board_row-middle_snow"
     },
     "house_board_row-middle_roof-thatch": {
-      "x": 0,
-      "y": 1171,
+      "x": 66,
+      "y": 3495,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -697,8 +1052,8 @@
       "snow": "house_board_row-middle_snow"
     },
     "house_board_row-middle_snow": {
-      "x": 33,
-      "y": 1171,
+      "x": 99,
+      "y": 3495,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -712,8 +1067,8 @@
       "layer": "snow"
     },
     "house_board_row-right_roof-green": {
-      "x": 66,
-      "y": 1171,
+      "x": 132,
+      "y": 3495,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -732,8 +1087,8 @@
       "snow": "house_board_row-right_snow"
     },
     "house_board_row-right_roof-plum": {
-      "x": 99,
-      "y": 1171,
+      "x": 165,
+      "y": 3495,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -752,8 +1107,8 @@
       "snow": "house_board_row-right_snow"
     },
     "house_board_row-right_roof-slate": {
-      "x": 132,
-      "y": 1171,
+      "x": 198,
+      "y": 3495,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -772,8 +1127,8 @@
       "snow": "house_board_row-right_snow"
     },
     "house_board_row-right_roof-terracotta": {
-      "x": 165,
-      "y": 1171,
+      "x": 0,
+      "y": 3544,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -792,8 +1147,8 @@
       "snow": "house_board_row-right_snow"
     },
     "house_board_row-right_roof-thatch": {
-      "x": 198,
-      "y": 1171,
+      "x": 33,
+      "y": 3544,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -812,8 +1167,8 @@
       "snow": "house_board_row-right_snow"
     },
     "house_board_row-right_snow": {
-      "x": 0,
-      "y": 1220,
+      "x": 66,
+      "y": 3544,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -826,9 +1181,369 @@
       ],
       "layer": "snow"
     },
+    "house_board_townhouse-left_roof-green": {
+      "x": 196,
+      "y": 260,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-left_night",
+      "snow": "house_board_townhouse-left_snow",
+      "joins": "r"
+    },
+    "house_board_townhouse-left_roof-plum": {
+      "x": 0,
+      "y": 325,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-left_night",
+      "snow": "house_board_townhouse-left_snow",
+      "joins": "r"
+    },
+    "house_board_townhouse-left_roof-slate": {
+      "x": 33,
+      "y": 325,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-left_night",
+      "snow": "house_board_townhouse-left_snow",
+      "joins": "r"
+    },
+    "house_board_townhouse-left_roof-terracotta": {
+      "x": 66,
+      "y": 325,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-left_night",
+      "snow": "house_board_townhouse-left_snow",
+      "joins": "r"
+    },
+    "house_board_townhouse-left_roof-thatch": {
+      "x": 99,
+      "y": 325,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-left_night",
+      "snow": "house_board_townhouse-left_snow",
+      "joins": "r"
+    },
+    "house_board_townhouse-left_snow": {
+      "x": 132,
+      "y": 325,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "layer": "snow"
+    },
+    "house_board_townhouse-middle_roof-green": {
+      "x": 165,
+      "y": 325,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-middle_night",
+      "snow": "house_board_townhouse-middle_snow",
+      "joins": "lr"
+    },
+    "house_board_townhouse-middle_roof-plum": {
+      "x": 198,
+      "y": 325,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-middle_night",
+      "snow": "house_board_townhouse-middle_snow",
+      "joins": "lr"
+    },
+    "house_board_townhouse-middle_roof-slate": {
+      "x": 0,
+      "y": 390,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-middle_night",
+      "snow": "house_board_townhouse-middle_snow",
+      "joins": "lr"
+    },
+    "house_board_townhouse-middle_roof-terracotta": {
+      "x": 33,
+      "y": 390,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-middle_night",
+      "snow": "house_board_townhouse-middle_snow",
+      "joins": "lr"
+    },
+    "house_board_townhouse-middle_roof-thatch": {
+      "x": 66,
+      "y": 390,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-middle_night",
+      "snow": "house_board_townhouse-middle_snow",
+      "joins": "lr"
+    },
+    "house_board_townhouse-middle_snow": {
+      "x": 99,
+      "y": 390,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "layer": "snow"
+    },
+    "house_board_townhouse-right_roof-green": {
+      "x": 132,
+      "y": 390,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-right_night",
+      "snow": "house_board_townhouse-right_snow",
+      "joins": "l"
+    },
+    "house_board_townhouse-right_roof-plum": {
+      "x": 165,
+      "y": 390,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-right_night",
+      "snow": "house_board_townhouse-right_snow",
+      "joins": "l"
+    },
+    "house_board_townhouse-right_roof-slate": {
+      "x": 198,
+      "y": 390,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-right_night",
+      "snow": "house_board_townhouse-right_snow",
+      "joins": "l"
+    },
+    "house_board_townhouse-right_roof-terracotta": {
+      "x": 0,
+      "y": 455,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-right_night",
+      "snow": "house_board_townhouse-right_snow",
+      "joins": "l"
+    },
+    "house_board_townhouse-right_roof-thatch": {
+      "x": 33,
+      "y": 455,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-right_night",
+      "snow": "house_board_townhouse-right_snow",
+      "joins": "l"
+    },
+    "house_board_townhouse-right_snow": {
+      "x": 66,
+      "y": 455,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "layer": "snow"
+    },
     "house_brick_apartment_roof-green": {
-      "x": 65,
-      "y": 130,
+      "x": 99,
+      "y": 455,
       "w": 64,
       "h": 64,
       "anchor": [
@@ -847,8 +1562,8 @@
       "snow": "house_brick_apartment_snow"
     },
     "house_brick_apartment_roof-plum": {
-      "x": 130,
-      "y": 130,
+      "x": 164,
+      "y": 455,
       "w": 64,
       "h": 64,
       "anchor": [
@@ -868,7 +1583,7 @@
     },
     "house_brick_apartment_roof-slate": {
       "x": 0,
-      "y": 195,
+      "y": 520,
       "w": 64,
       "h": 64,
       "anchor": [
@@ -888,7 +1603,7 @@
     },
     "house_brick_apartment_roof-terracotta": {
       "x": 65,
-      "y": 195,
+      "y": 520,
       "w": 64,
       "h": 64,
       "anchor": [
@@ -908,7 +1623,7 @@
     },
     "house_brick_apartment_roof-thatch": {
       "x": 130,
-      "y": 195,
+      "y": 520,
       "w": 64,
       "h": 64,
       "anchor": [
@@ -928,7 +1643,7 @@
     },
     "house_brick_apartment_snow": {
       "x": 0,
-      "y": 260,
+      "y": 585,
       "w": 64,
       "h": 64,
       "anchor": [
@@ -941,9 +1656,364 @@
       ],
       "layer": "snow"
     },
-    "house_brick_detached_roof-green": {
+    "house_brick_cabin_roof-green": {
+      "x": 99,
+      "y": 3544,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        16,
+        46
+      ],
+      "night": "house_cabin_night",
+      "snow": "house_brick_cabin_snow"
+    },
+    "house_brick_cabin_roof-plum": {
+      "x": 132,
+      "y": 3544,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        16,
+        46
+      ],
+      "night": "house_cabin_night",
+      "snow": "house_brick_cabin_snow"
+    },
+    "house_brick_cabin_roof-slate": {
+      "x": 165,
+      "y": 3544,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        16,
+        46
+      ],
+      "night": "house_cabin_night",
+      "snow": "house_brick_cabin_snow"
+    },
+    "house_brick_cabin_roof-terracotta": {
+      "x": 198,
+      "y": 3544,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        16,
+        46
+      ],
+      "night": "house_cabin_night",
+      "snow": "house_brick_cabin_snow"
+    },
+    "house_brick_cabin_roof-thatch": {
+      "x": 0,
+      "y": 3593,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        16,
+        46
+      ],
+      "night": "house_cabin_night",
+      "snow": "house_brick_cabin_snow"
+    },
+    "house_brick_cabin_snow": {
       "x": 33,
-      "y": 1220,
+      "y": 3593,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "layer": "snow"
+    },
+    "house_brick_corner-left_roof-green": {
+      "x": 65,
+      "y": 585,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        13,
+        62
+      ],
+      "night": "house_corner-left_night",
+      "snow": "house_brick_corner-left_snow",
+      "joins": "r"
+    },
+    "house_brick_corner-left_roof-plum": {
+      "x": 114,
+      "y": 585,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        13,
+        62
+      ],
+      "night": "house_corner-left_night",
+      "snow": "house_brick_corner-left_snow",
+      "joins": "r"
+    },
+    "house_brick_corner-left_roof-slate": {
+      "x": 163,
+      "y": 585,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        13,
+        62
+      ],
+      "night": "house_corner-left_night",
+      "snow": "house_brick_corner-left_snow",
+      "joins": "r"
+    },
+    "house_brick_corner-left_roof-terracotta": {
+      "x": 0,
+      "y": 650,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        13,
+        62
+      ],
+      "night": "house_corner-left_night",
+      "snow": "house_brick_corner-left_snow",
+      "joins": "r"
+    },
+    "house_brick_corner-left_roof-thatch": {
+      "x": 49,
+      "y": 650,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        13,
+        62
+      ],
+      "night": "house_corner-left_night",
+      "snow": "house_brick_corner-left_snow",
+      "joins": "r"
+    },
+    "house_brick_corner-left_snow": {
+      "x": 98,
+      "y": 650,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "layer": "snow"
+    },
+    "house_brick_corner-right_roof-green": {
+      "x": 147,
+      "y": 650,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        35,
+        62
+      ],
+      "night": "house_corner-right_night",
+      "snow": "house_brick_corner-right_snow",
+      "joins": "l"
+    },
+    "house_brick_corner-right_roof-plum": {
+      "x": 196,
+      "y": 650,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        35,
+        62
+      ],
+      "night": "house_corner-right_night",
+      "snow": "house_brick_corner-right_snow",
+      "joins": "l"
+    },
+    "house_brick_corner-right_roof-slate": {
+      "x": 0,
+      "y": 715,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        35,
+        62
+      ],
+      "night": "house_corner-right_night",
+      "snow": "house_brick_corner-right_snow",
+      "joins": "l"
+    },
+    "house_brick_corner-right_roof-terracotta": {
+      "x": 49,
+      "y": 715,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        35,
+        62
+      ],
+      "night": "house_corner-right_night",
+      "snow": "house_brick_corner-right_snow",
+      "joins": "l"
+    },
+    "house_brick_corner-right_roof-thatch": {
+      "x": 98,
+      "y": 715,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        35,
+        62
+      ],
+      "night": "house_corner-right_night",
+      "snow": "house_brick_corner-right_snow",
+      "joins": "l"
+    },
+    "house_brick_corner-right_snow": {
+      "x": 147,
+      "y": 715,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "layer": "snow"
+    },
+    "house_brick_detached_roof-green": {
+      "x": 66,
+      "y": 3593,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -962,8 +2032,8 @@
       "snow": "house_brick_detached_snow"
     },
     "house_brick_detached_roof-plum": {
-      "x": 82,
-      "y": 1220,
+      "x": 115,
+      "y": 3593,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -982,8 +2052,8 @@
       "snow": "house_brick_detached_snow"
     },
     "house_brick_detached_roof-slate": {
-      "x": 131,
-      "y": 1220,
+      "x": 164,
+      "y": 3593,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -1002,8 +2072,8 @@
       "snow": "house_brick_detached_snow"
     },
     "house_brick_detached_roof-terracotta": {
-      "x": 180,
-      "y": 1220,
+      "x": 0,
+      "y": 3642,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -1022,8 +2092,8 @@
       "snow": "house_brick_detached_snow"
     },
     "house_brick_detached_roof-thatch": {
-      "x": 0,
-      "y": 1269,
+      "x": 49,
+      "y": 3642,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -1042,8 +2112,8 @@
       "snow": "house_brick_detached_snow"
     },
     "house_brick_detached_snow": {
-      "x": 49,
-      "y": 1269,
+      "x": 98,
+      "y": 3642,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -1057,8 +2127,8 @@
       "layer": "snow"
     },
     "house_brick_farmhouse_roof-green": {
-      "x": 98,
-      "y": 1269,
+      "x": 147,
+      "y": 3642,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -1077,8 +2147,8 @@
       "snow": "house_brick_farmhouse_snow"
     },
     "house_brick_farmhouse_roof-plum": {
-      "x": 163,
-      "y": 1269,
+      "x": 0,
+      "y": 3691,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -1097,8 +2167,8 @@
       "snow": "house_brick_farmhouse_snow"
     },
     "house_brick_farmhouse_roof-slate": {
-      "x": 0,
-      "y": 1318,
+      "x": 65,
+      "y": 3691,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -1117,8 +2187,8 @@
       "snow": "house_brick_farmhouse_snow"
     },
     "house_brick_farmhouse_roof-terracotta": {
-      "x": 65,
-      "y": 1318,
+      "x": 130,
+      "y": 3691,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -1137,8 +2207,8 @@
       "snow": "house_brick_farmhouse_snow"
     },
     "house_brick_farmhouse_roof-thatch": {
-      "x": 130,
-      "y": 1318,
+      "x": 0,
+      "y": 3740,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -1157,8 +2227,8 @@
       "snow": "house_brick_farmhouse_snow"
     },
     "house_brick_farmhouse_snow": {
-      "x": 0,
-      "y": 1367,
+      "x": 65,
+      "y": 3740,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -1172,8 +2242,8 @@
       "layer": "snow"
     },
     "house_brick_hut_roof-green": {
-      "x": 165,
-      "y": 2935,
+      "x": 0,
+      "y": 5602,
       "w": 32,
       "h": 32,
       "anchor": [
@@ -1192,8 +2262,8 @@
       "snow": "house_brick_hut_snow"
     },
     "house_brick_hut_roof-plum": {
-      "x": 198,
-      "y": 2935,
+      "x": 33,
+      "y": 5602,
       "w": 32,
       "h": 32,
       "anchor": [
@@ -1212,8 +2282,8 @@
       "snow": "house_brick_hut_snow"
     },
     "house_brick_hut_roof-slate": {
-      "x": 0,
-      "y": 2968,
+      "x": 66,
+      "y": 5602,
       "w": 32,
       "h": 32,
       "anchor": [
@@ -1232,8 +2302,8 @@
       "snow": "house_brick_hut_snow"
     },
     "house_brick_hut_roof-terracotta": {
-      "x": 33,
-      "y": 2968,
+      "x": 99,
+      "y": 5602,
       "w": 32,
       "h": 32,
       "anchor": [
@@ -1252,8 +2322,8 @@
       "snow": "house_brick_hut_snow"
     },
     "house_brick_hut_roof-thatch": {
-      "x": 66,
-      "y": 2968,
+      "x": 132,
+      "y": 5602,
       "w": 32,
       "h": 32,
       "anchor": [
@@ -1272,8 +2342,8 @@
       "snow": "house_brick_hut_snow"
     },
     "house_brick_hut_snow": {
-      "x": 99,
-      "y": 2968,
+      "x": 165,
+      "y": 5602,
       "w": 32,
       "h": 32,
       "anchor": [
@@ -1287,8 +2357,8 @@
       "layer": "snow"
     },
     "house_brick_row-left_roof-green": {
-      "x": 65,
-      "y": 1367,
+      "x": 130,
+      "y": 3740,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -1307,8 +2377,8 @@
       "snow": "house_brick_row-left_snow"
     },
     "house_brick_row-left_roof-plum": {
-      "x": 98,
-      "y": 1367,
+      "x": 163,
+      "y": 3740,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -1327,8 +2397,8 @@
       "snow": "house_brick_row-left_snow"
     },
     "house_brick_row-left_roof-slate": {
-      "x": 131,
-      "y": 1367,
+      "x": 196,
+      "y": 3740,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -1347,8 +2417,8 @@
       "snow": "house_brick_row-left_snow"
     },
     "house_brick_row-left_roof-terracotta": {
-      "x": 164,
-      "y": 1367,
+      "x": 0,
+      "y": 3789,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -1367,8 +2437,8 @@
       "snow": "house_brick_row-left_snow"
     },
     "house_brick_row-left_roof-thatch": {
-      "x": 197,
-      "y": 1367,
+      "x": 33,
+      "y": 3789,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -1387,8 +2457,8 @@
       "snow": "house_brick_row-left_snow"
     },
     "house_brick_row-left_snow": {
-      "x": 0,
-      "y": 1416,
+      "x": 66,
+      "y": 3789,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -1402,8 +2472,8 @@
       "layer": "snow"
     },
     "house_brick_row-middle_roof-green": {
-      "x": 33,
-      "y": 1416,
+      "x": 99,
+      "y": 3789,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -1422,8 +2492,8 @@
       "snow": "house_brick_row-middle_snow"
     },
     "house_brick_row-middle_roof-plum": {
-      "x": 66,
-      "y": 1416,
+      "x": 132,
+      "y": 3789,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -1442,8 +2512,8 @@
       "snow": "house_brick_row-middle_snow"
     },
     "house_brick_row-middle_roof-slate": {
-      "x": 99,
-      "y": 1416,
+      "x": 165,
+      "y": 3789,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -1462,8 +2532,8 @@
       "snow": "house_brick_row-middle_snow"
     },
     "house_brick_row-middle_roof-terracotta": {
-      "x": 132,
-      "y": 1416,
+      "x": 198,
+      "y": 3789,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -1482,8 +2552,8 @@
       "snow": "house_brick_row-middle_snow"
     },
     "house_brick_row-middle_roof-thatch": {
-      "x": 165,
-      "y": 1416,
+      "x": 0,
+      "y": 3838,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -1502,8 +2572,8 @@
       "snow": "house_brick_row-middle_snow"
     },
     "house_brick_row-middle_snow": {
-      "x": 198,
-      "y": 1416,
+      "x": 33,
+      "y": 3838,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -1517,8 +2587,8 @@
       "layer": "snow"
     },
     "house_brick_row-right_roof-green": {
-      "x": 0,
-      "y": 1465,
+      "x": 66,
+      "y": 3838,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -1537,8 +2607,8 @@
       "snow": "house_brick_row-right_snow"
     },
     "house_brick_row-right_roof-plum": {
-      "x": 33,
-      "y": 1465,
+      "x": 99,
+      "y": 3838,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -1557,8 +2627,8 @@
       "snow": "house_brick_row-right_snow"
     },
     "house_brick_row-right_roof-slate": {
-      "x": 66,
-      "y": 1465,
+      "x": 132,
+      "y": 3838,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -1577,8 +2647,8 @@
       "snow": "house_brick_row-right_snow"
     },
     "house_brick_row-right_roof-terracotta": {
-      "x": 99,
-      "y": 1465,
+      "x": 165,
+      "y": 3838,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -1597,8 +2667,8 @@
       "snow": "house_brick_row-right_snow"
     },
     "house_brick_row-right_roof-thatch": {
-      "x": 132,
-      "y": 1465,
+      "x": 198,
+      "y": 3838,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -1617,8 +2687,8 @@
       "snow": "house_brick_row-right_snow"
     },
     "house_brick_row-right_snow": {
-      "x": 165,
-      "y": 1465,
+      "x": 0,
+      "y": 3887,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -1631,9 +2701,414 @@
       ],
       "layer": "snow"
     },
+    "house_brick_townhouse-left_roof-green": {
+      "x": 196,
+      "y": 715,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-left_night",
+      "snow": "house_brick_townhouse-left_snow",
+      "joins": "r"
+    },
+    "house_brick_townhouse-left_roof-plum": {
+      "x": 0,
+      "y": 780,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-left_night",
+      "snow": "house_brick_townhouse-left_snow",
+      "joins": "r"
+    },
+    "house_brick_townhouse-left_roof-slate": {
+      "x": 33,
+      "y": 780,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-left_night",
+      "snow": "house_brick_townhouse-left_snow",
+      "joins": "r"
+    },
+    "house_brick_townhouse-left_roof-terracotta": {
+      "x": 66,
+      "y": 780,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-left_night",
+      "snow": "house_brick_townhouse-left_snow",
+      "joins": "r"
+    },
+    "house_brick_townhouse-left_roof-thatch": {
+      "x": 99,
+      "y": 780,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-left_night",
+      "snow": "house_brick_townhouse-left_snow",
+      "joins": "r"
+    },
+    "house_brick_townhouse-left_snow": {
+      "x": 132,
+      "y": 780,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "layer": "snow"
+    },
+    "house_brick_townhouse-middle_roof-green": {
+      "x": 165,
+      "y": 780,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-middle_night",
+      "snow": "house_brick_townhouse-middle_snow",
+      "joins": "lr"
+    },
+    "house_brick_townhouse-middle_roof-plum": {
+      "x": 198,
+      "y": 780,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-middle_night",
+      "snow": "house_brick_townhouse-middle_snow",
+      "joins": "lr"
+    },
+    "house_brick_townhouse-middle_roof-slate": {
+      "x": 0,
+      "y": 845,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-middle_night",
+      "snow": "house_brick_townhouse-middle_snow",
+      "joins": "lr"
+    },
+    "house_brick_townhouse-middle_roof-terracotta": {
+      "x": 33,
+      "y": 845,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-middle_night",
+      "snow": "house_brick_townhouse-middle_snow",
+      "joins": "lr"
+    },
+    "house_brick_townhouse-middle_roof-thatch": {
+      "x": 66,
+      "y": 845,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-middle_night",
+      "snow": "house_brick_townhouse-middle_snow",
+      "joins": "lr"
+    },
+    "house_brick_townhouse-middle_snow": {
+      "x": 99,
+      "y": 845,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "layer": "snow"
+    },
+    "house_brick_townhouse-right_roof-green": {
+      "x": 132,
+      "y": 845,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-right_night",
+      "snow": "house_brick_townhouse-right_snow",
+      "joins": "l"
+    },
+    "house_brick_townhouse-right_roof-plum": {
+      "x": 165,
+      "y": 845,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-right_night",
+      "snow": "house_brick_townhouse-right_snow",
+      "joins": "l"
+    },
+    "house_brick_townhouse-right_roof-slate": {
+      "x": 198,
+      "y": 845,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-right_night",
+      "snow": "house_brick_townhouse-right_snow",
+      "joins": "l"
+    },
+    "house_brick_townhouse-right_roof-terracotta": {
+      "x": 0,
+      "y": 910,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-right_night",
+      "snow": "house_brick_townhouse-right_snow",
+      "joins": "l"
+    },
+    "house_brick_townhouse-right_roof-thatch": {
+      "x": 33,
+      "y": 910,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-right_night",
+      "snow": "house_brick_townhouse-right_snow",
+      "joins": "l"
+    },
+    "house_brick_townhouse-right_snow": {
+      "x": 66,
+      "y": 910,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "layer": "snow"
+    },
+    "house_cabin_night": {
+      "x": 33,
+      "y": 3887,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "layer": "night"
+    },
+    "house_corner-left_night": {
+      "x": 99,
+      "y": 910,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "layer": "night"
+    },
+    "house_corner-right_night": {
+      "x": 148,
+      "y": 910,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "layer": "night"
+    },
     "house_cottage_apartment_roof-green": {
-      "x": 65,
-      "y": 260,
+      "x": 0,
+      "y": 975,
       "w": 64,
       "h": 64,
       "anchor": [
@@ -1652,8 +3127,8 @@
       "snow": "house_cottage_apartment_snow"
     },
     "house_cottage_apartment_roof-plum": {
-      "x": 130,
-      "y": 260,
+      "x": 65,
+      "y": 975,
       "w": 64,
       "h": 64,
       "anchor": [
@@ -1672,8 +3147,8 @@
       "snow": "house_cottage_apartment_snow"
     },
     "house_cottage_apartment_roof-slate": {
-      "x": 0,
-      "y": 325,
+      "x": 130,
+      "y": 975,
       "w": 64,
       "h": 64,
       "anchor": [
@@ -1692,8 +3167,8 @@
       "snow": "house_cottage_apartment_snow"
     },
     "house_cottage_apartment_roof-terracotta": {
-      "x": 65,
-      "y": 325,
+      "x": 0,
+      "y": 1040,
       "w": 64,
       "h": 64,
       "anchor": [
@@ -1712,8 +3187,8 @@
       "snow": "house_cottage_apartment_snow"
     },
     "house_cottage_apartment_roof-thatch": {
-      "x": 130,
-      "y": 325,
+      "x": 65,
+      "y": 1040,
       "w": 64,
       "h": 64,
       "anchor": [
@@ -1732,8 +3207,8 @@
       "snow": "house_cottage_apartment_snow"
     },
     "house_cottage_apartment_snow": {
-      "x": 0,
-      "y": 390,
+      "x": 130,
+      "y": 1040,
       "w": 64,
       "h": 64,
       "anchor": [
@@ -1746,9 +3221,364 @@
       ],
       "layer": "snow"
     },
-    "house_cottage_detached_roof-green": {
+    "house_cottage_cabin_roof-green": {
+      "x": 66,
+      "y": 3887,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        16,
+        46
+      ],
+      "night": "house_cabin_night",
+      "snow": "house_cottage_cabin_snow"
+    },
+    "house_cottage_cabin_roof-plum": {
+      "x": 99,
+      "y": 3887,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        16,
+        46
+      ],
+      "night": "house_cabin_night",
+      "snow": "house_cottage_cabin_snow"
+    },
+    "house_cottage_cabin_roof-slate": {
+      "x": 132,
+      "y": 3887,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        16,
+        46
+      ],
+      "night": "house_cabin_night",
+      "snow": "house_cottage_cabin_snow"
+    },
+    "house_cottage_cabin_roof-terracotta": {
+      "x": 165,
+      "y": 3887,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        16,
+        46
+      ],
+      "night": "house_cabin_night",
+      "snow": "house_cottage_cabin_snow"
+    },
+    "house_cottage_cabin_roof-thatch": {
       "x": 198,
-      "y": 1465,
+      "y": 3887,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        16,
+        46
+      ],
+      "night": "house_cabin_night",
+      "snow": "house_cottage_cabin_snow"
+    },
+    "house_cottage_cabin_snow": {
+      "x": 0,
+      "y": 3936,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "layer": "snow"
+    },
+    "house_cottage_corner-left_roof-green": {
+      "x": 195,
+      "y": 1040,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        13,
+        62
+      ],
+      "night": "house_corner-left_night",
+      "snow": "house_cottage_corner-left_snow",
+      "joins": "r"
+    },
+    "house_cottage_corner-left_roof-plum": {
+      "x": 0,
+      "y": 1105,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        13,
+        62
+      ],
+      "night": "house_corner-left_night",
+      "snow": "house_cottage_corner-left_snow",
+      "joins": "r"
+    },
+    "house_cottage_corner-left_roof-slate": {
+      "x": 49,
+      "y": 1105,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        13,
+        62
+      ],
+      "night": "house_corner-left_night",
+      "snow": "house_cottage_corner-left_snow",
+      "joins": "r"
+    },
+    "house_cottage_corner-left_roof-terracotta": {
+      "x": 98,
+      "y": 1105,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        13,
+        62
+      ],
+      "night": "house_corner-left_night",
+      "snow": "house_cottage_corner-left_snow",
+      "joins": "r"
+    },
+    "house_cottage_corner-left_roof-thatch": {
+      "x": 147,
+      "y": 1105,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        13,
+        62
+      ],
+      "night": "house_corner-left_night",
+      "snow": "house_cottage_corner-left_snow",
+      "joins": "r"
+    },
+    "house_cottage_corner-left_snow": {
+      "x": 196,
+      "y": 1105,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "layer": "snow"
+    },
+    "house_cottage_corner-right_roof-green": {
+      "x": 0,
+      "y": 1170,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        35,
+        62
+      ],
+      "night": "house_corner-right_night",
+      "snow": "house_cottage_corner-right_snow",
+      "joins": "l"
+    },
+    "house_cottage_corner-right_roof-plum": {
+      "x": 49,
+      "y": 1170,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        35,
+        62
+      ],
+      "night": "house_corner-right_night",
+      "snow": "house_cottage_corner-right_snow",
+      "joins": "l"
+    },
+    "house_cottage_corner-right_roof-slate": {
+      "x": 98,
+      "y": 1170,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        35,
+        62
+      ],
+      "night": "house_corner-right_night",
+      "snow": "house_cottage_corner-right_snow",
+      "joins": "l"
+    },
+    "house_cottage_corner-right_roof-terracotta": {
+      "x": 147,
+      "y": 1170,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        35,
+        62
+      ],
+      "night": "house_corner-right_night",
+      "snow": "house_cottage_corner-right_snow",
+      "joins": "l"
+    },
+    "house_cottage_corner-right_roof-thatch": {
+      "x": 196,
+      "y": 1170,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        35,
+        62
+      ],
+      "night": "house_corner-right_night",
+      "snow": "house_cottage_corner-right_snow",
+      "joins": "l"
+    },
+    "house_cottage_corner-right_snow": {
+      "x": 0,
+      "y": 1235,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "layer": "snow"
+    },
+    "house_cottage_detached_roof-green": {
+      "x": 33,
+      "y": 3936,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -1767,8 +3597,8 @@
       "snow": "house_cottage_detached_snow"
     },
     "house_cottage_detached_roof-plum": {
-      "x": 0,
-      "y": 1514,
+      "x": 82,
+      "y": 3936,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -1787,8 +3617,8 @@
       "snow": "house_cottage_detached_snow"
     },
     "house_cottage_detached_roof-slate": {
-      "x": 49,
-      "y": 1514,
+      "x": 131,
+      "y": 3936,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -1807,8 +3637,8 @@
       "snow": "house_cottage_detached_snow"
     },
     "house_cottage_detached_roof-terracotta": {
-      "x": 98,
-      "y": 1514,
+      "x": 180,
+      "y": 3936,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -1827,8 +3657,8 @@
       "snow": "house_cottage_detached_snow"
     },
     "house_cottage_detached_roof-thatch": {
-      "x": 147,
-      "y": 1514,
+      "x": 0,
+      "y": 3985,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -1847,8 +3677,8 @@
       "snow": "house_cottage_detached_snow"
     },
     "house_cottage_detached_snow": {
-      "x": 196,
-      "y": 1514,
+      "x": 49,
+      "y": 3985,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -1862,8 +3692,8 @@
       "layer": "snow"
     },
     "house_cottage_farmhouse_roof-green": {
-      "x": 0,
-      "y": 1563,
+      "x": 98,
+      "y": 3985,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -1882,8 +3712,8 @@
       "snow": "house_cottage_farmhouse_snow"
     },
     "house_cottage_farmhouse_roof-plum": {
-      "x": 65,
-      "y": 1563,
+      "x": 163,
+      "y": 3985,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -1902,8 +3732,8 @@
       "snow": "house_cottage_farmhouse_snow"
     },
     "house_cottage_farmhouse_roof-slate": {
-      "x": 130,
-      "y": 1563,
+      "x": 0,
+      "y": 4034,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -1922,8 +3752,8 @@
       "snow": "house_cottage_farmhouse_snow"
     },
     "house_cottage_farmhouse_roof-terracotta": {
-      "x": 0,
-      "y": 1612,
+      "x": 65,
+      "y": 4034,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -1942,8 +3772,8 @@
       "snow": "house_cottage_farmhouse_snow"
     },
     "house_cottage_farmhouse_roof-thatch": {
-      "x": 65,
-      "y": 1612,
+      "x": 130,
+      "y": 4034,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -1962,8 +3792,8 @@
       "snow": "house_cottage_farmhouse_snow"
     },
     "house_cottage_farmhouse_snow": {
-      "x": 130,
-      "y": 1612,
+      "x": 0,
+      "y": 4083,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -1977,8 +3807,8 @@
       "layer": "snow"
     },
     "house_cottage_hut_roof-green": {
-      "x": 132,
-      "y": 2968,
+      "x": 198,
+      "y": 5602,
       "w": 32,
       "h": 32,
       "anchor": [
@@ -1997,8 +3827,8 @@
       "snow": "house_cottage_hut_snow"
     },
     "house_cottage_hut_roof-plum": {
-      "x": 165,
-      "y": 2968,
+      "x": 0,
+      "y": 5635,
       "w": 32,
       "h": 32,
       "anchor": [
@@ -2017,8 +3847,8 @@
       "snow": "house_cottage_hut_snow"
     },
     "house_cottage_hut_roof-slate": {
-      "x": 198,
-      "y": 2968,
+      "x": 33,
+      "y": 5635,
       "w": 32,
       "h": 32,
       "anchor": [
@@ -2037,8 +3867,8 @@
       "snow": "house_cottage_hut_snow"
     },
     "house_cottage_hut_roof-terracotta": {
-      "x": 0,
-      "y": 3001,
+      "x": 66,
+      "y": 5635,
       "w": 32,
       "h": 32,
       "anchor": [
@@ -2057,8 +3887,8 @@
       "snow": "house_cottage_hut_snow"
     },
     "house_cottage_hut_roof-thatch": {
-      "x": 33,
-      "y": 3001,
+      "x": 99,
+      "y": 5635,
       "w": 32,
       "h": 32,
       "anchor": [
@@ -2077,8 +3907,8 @@
       "snow": "house_cottage_hut_snow"
     },
     "house_cottage_hut_snow": {
-      "x": 66,
-      "y": 3001,
+      "x": 132,
+      "y": 5635,
       "w": 32,
       "h": 32,
       "anchor": [
@@ -2092,8 +3922,8 @@
       "layer": "snow"
     },
     "house_cottage_row-left_roof-green": {
-      "x": 195,
-      "y": 1612,
+      "x": 65,
+      "y": 4083,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -2112,8 +3942,8 @@
       "snow": "house_cottage_row-left_snow"
     },
     "house_cottage_row-left_roof-plum": {
-      "x": 0,
-      "y": 1661,
+      "x": 98,
+      "y": 4083,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -2132,8 +3962,8 @@
       "snow": "house_cottage_row-left_snow"
     },
     "house_cottage_row-left_roof-slate": {
-      "x": 33,
-      "y": 1661,
+      "x": 131,
+      "y": 4083,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -2152,8 +3982,8 @@
       "snow": "house_cottage_row-left_snow"
     },
     "house_cottage_row-left_roof-terracotta": {
-      "x": 66,
-      "y": 1661,
+      "x": 164,
+      "y": 4083,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -2172,8 +4002,8 @@
       "snow": "house_cottage_row-left_snow"
     },
     "house_cottage_row-left_roof-thatch": {
-      "x": 99,
-      "y": 1661,
+      "x": 197,
+      "y": 4083,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -2192,8 +4022,8 @@
       "snow": "house_cottage_row-left_snow"
     },
     "house_cottage_row-left_snow": {
-      "x": 132,
-      "y": 1661,
+      "x": 0,
+      "y": 4132,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -2207,8 +4037,8 @@
       "layer": "snow"
     },
     "house_cottage_row-middle_roof-green": {
-      "x": 165,
-      "y": 1661,
+      "x": 33,
+      "y": 4132,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -2227,8 +4057,8 @@
       "snow": "house_cottage_row-middle_snow"
     },
     "house_cottage_row-middle_roof-plum": {
-      "x": 198,
-      "y": 1661,
+      "x": 66,
+      "y": 4132,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -2247,8 +4077,8 @@
       "snow": "house_cottage_row-middle_snow"
     },
     "house_cottage_row-middle_roof-slate": {
-      "x": 0,
-      "y": 1710,
+      "x": 99,
+      "y": 4132,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -2267,8 +4097,8 @@
       "snow": "house_cottage_row-middle_snow"
     },
     "house_cottage_row-middle_roof-terracotta": {
-      "x": 33,
-      "y": 1710,
+      "x": 132,
+      "y": 4132,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -2287,8 +4117,8 @@
       "snow": "house_cottage_row-middle_snow"
     },
     "house_cottage_row-middle_roof-thatch": {
-      "x": 66,
-      "y": 1710,
+      "x": 165,
+      "y": 4132,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -2307,8 +4137,8 @@
       "snow": "house_cottage_row-middle_snow"
     },
     "house_cottage_row-middle_snow": {
-      "x": 99,
-      "y": 1710,
+      "x": 198,
+      "y": 4132,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -2322,8 +4152,8 @@
       "layer": "snow"
     },
     "house_cottage_row-right_roof-green": {
-      "x": 132,
-      "y": 1710,
+      "x": 0,
+      "y": 4181,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -2342,8 +4172,8 @@
       "snow": "house_cottage_row-right_snow"
     },
     "house_cottage_row-right_roof-plum": {
-      "x": 165,
-      "y": 1710,
+      "x": 33,
+      "y": 4181,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -2362,8 +4192,8 @@
       "snow": "house_cottage_row-right_snow"
     },
     "house_cottage_row-right_roof-slate": {
-      "x": 198,
-      "y": 1710,
+      "x": 66,
+      "y": 4181,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -2382,8 +4212,8 @@
       "snow": "house_cottage_row-right_snow"
     },
     "house_cottage_row-right_roof-terracotta": {
-      "x": 0,
-      "y": 1759,
+      "x": 99,
+      "y": 4181,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -2402,8 +4232,8 @@
       "snow": "house_cottage_row-right_snow"
     },
     "house_cottage_row-right_roof-thatch": {
-      "x": 33,
-      "y": 1759,
+      "x": 132,
+      "y": 4181,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -2422,8 +4252,8 @@
       "snow": "house_cottage_row-right_snow"
     },
     "house_cottage_row-right_snow": {
-      "x": 66,
-      "y": 1759,
+      "x": 165,
+      "y": 4181,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -2436,9 +4266,369 @@
       ],
       "layer": "snow"
     },
-    "house_detached_night": {
+    "house_cottage_townhouse-left_roof-green": {
+      "x": 49,
+      "y": 1235,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-left_night",
+      "snow": "house_cottage_townhouse-left_snow",
+      "joins": "r"
+    },
+    "house_cottage_townhouse-left_roof-plum": {
+      "x": 82,
+      "y": 1235,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-left_night",
+      "snow": "house_cottage_townhouse-left_snow",
+      "joins": "r"
+    },
+    "house_cottage_townhouse-left_roof-slate": {
+      "x": 115,
+      "y": 1235,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-left_night",
+      "snow": "house_cottage_townhouse-left_snow",
+      "joins": "r"
+    },
+    "house_cottage_townhouse-left_roof-terracotta": {
+      "x": 148,
+      "y": 1235,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-left_night",
+      "snow": "house_cottage_townhouse-left_snow",
+      "joins": "r"
+    },
+    "house_cottage_townhouse-left_roof-thatch": {
+      "x": 181,
+      "y": 1235,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-left_night",
+      "snow": "house_cottage_townhouse-left_snow",
+      "joins": "r"
+    },
+    "house_cottage_townhouse-left_snow": {
+      "x": 214,
+      "y": 1235,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "layer": "snow"
+    },
+    "house_cottage_townhouse-middle_roof-green": {
+      "x": 0,
+      "y": 1300,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-middle_night",
+      "snow": "house_cottage_townhouse-middle_snow",
+      "joins": "lr"
+    },
+    "house_cottage_townhouse-middle_roof-plum": {
+      "x": 33,
+      "y": 1300,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-middle_night",
+      "snow": "house_cottage_townhouse-middle_snow",
+      "joins": "lr"
+    },
+    "house_cottage_townhouse-middle_roof-slate": {
+      "x": 66,
+      "y": 1300,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-middle_night",
+      "snow": "house_cottage_townhouse-middle_snow",
+      "joins": "lr"
+    },
+    "house_cottage_townhouse-middle_roof-terracotta": {
       "x": 99,
-      "y": 1759,
+      "y": 1300,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-middle_night",
+      "snow": "house_cottage_townhouse-middle_snow",
+      "joins": "lr"
+    },
+    "house_cottage_townhouse-middle_roof-thatch": {
+      "x": 132,
+      "y": 1300,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-middle_night",
+      "snow": "house_cottage_townhouse-middle_snow",
+      "joins": "lr"
+    },
+    "house_cottage_townhouse-middle_snow": {
+      "x": 165,
+      "y": 1300,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "layer": "snow"
+    },
+    "house_cottage_townhouse-right_roof-green": {
+      "x": 198,
+      "y": 1300,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-right_night",
+      "snow": "house_cottage_townhouse-right_snow",
+      "joins": "l"
+    },
+    "house_cottage_townhouse-right_roof-plum": {
+      "x": 0,
+      "y": 1365,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-right_night",
+      "snow": "house_cottage_townhouse-right_snow",
+      "joins": "l"
+    },
+    "house_cottage_townhouse-right_roof-slate": {
+      "x": 33,
+      "y": 1365,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-right_night",
+      "snow": "house_cottage_townhouse-right_snow",
+      "joins": "l"
+    },
+    "house_cottage_townhouse-right_roof-terracotta": {
+      "x": 66,
+      "y": 1365,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-right_night",
+      "snow": "house_cottage_townhouse-right_snow",
+      "joins": "l"
+    },
+    "house_cottage_townhouse-right_roof-thatch": {
+      "x": 99,
+      "y": 1365,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-right_night",
+      "snow": "house_cottage_townhouse-right_snow",
+      "joins": "l"
+    },
+    "house_cottage_townhouse-right_snow": {
+      "x": 132,
+      "y": 1365,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "layer": "snow"
+    },
+    "house_detached_night": {
+      "x": 198,
+      "y": 4181,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -2452,8 +4642,8 @@
       "layer": "night"
     },
     "house_farmhouse_night": {
-      "x": 148,
-      "y": 1759,
+      "x": 0,
+      "y": 4230,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -2467,8 +4657,8 @@
       "layer": "night"
     },
     "house_hut_night": {
-      "x": 99,
-      "y": 3001,
+      "x": 165,
+      "y": 5635,
       "w": 32,
       "h": 32,
       "anchor": [
@@ -2482,8 +4672,8 @@
       "layer": "night"
     },
     "house_plaster_apartment_roof-green": {
-      "x": 65,
-      "y": 390,
+      "x": 165,
+      "y": 1365,
       "w": 64,
       "h": 64,
       "anchor": [
@@ -2502,8 +4692,8 @@
       "snow": "house_plaster_apartment_snow"
     },
     "house_plaster_apartment_roof-plum": {
-      "x": 130,
-      "y": 390,
+      "x": 0,
+      "y": 1430,
       "w": 64,
       "h": 64,
       "anchor": [
@@ -2522,8 +4712,8 @@
       "snow": "house_plaster_apartment_snow"
     },
     "house_plaster_apartment_roof-slate": {
-      "x": 0,
-      "y": 455,
+      "x": 65,
+      "y": 1430,
       "w": 64,
       "h": 64,
       "anchor": [
@@ -2542,8 +4732,8 @@
       "snow": "house_plaster_apartment_snow"
     },
     "house_plaster_apartment_roof-terracotta": {
-      "x": 65,
-      "y": 455,
+      "x": 130,
+      "y": 1430,
       "w": 64,
       "h": 64,
       "anchor": [
@@ -2562,8 +4752,8 @@
       "snow": "house_plaster_apartment_snow"
     },
     "house_plaster_apartment_roof-thatch": {
-      "x": 130,
-      "y": 455,
+      "x": 0,
+      "y": 1495,
       "w": 64,
       "h": 64,
       "anchor": [
@@ -2582,8 +4772,8 @@
       "snow": "house_plaster_apartment_snow"
     },
     "house_plaster_apartment_snow": {
-      "x": 0,
-      "y": 520,
+      "x": 65,
+      "y": 1495,
       "w": 64,
       "h": 64,
       "anchor": [
@@ -2596,9 +4786,364 @@
       ],
       "layer": "snow"
     },
-    "house_plaster_detached_roof-green": {
+    "house_plaster_cabin_roof-green": {
+      "x": 65,
+      "y": 4230,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        16,
+        46
+      ],
+      "night": "house_cabin_night",
+      "snow": "house_plaster_cabin_snow"
+    },
+    "house_plaster_cabin_roof-plum": {
+      "x": 98,
+      "y": 4230,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        16,
+        46
+      ],
+      "night": "house_cabin_night",
+      "snow": "house_plaster_cabin_snow"
+    },
+    "house_plaster_cabin_roof-slate": {
+      "x": 131,
+      "y": 4230,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        16,
+        46
+      ],
+      "night": "house_cabin_night",
+      "snow": "house_plaster_cabin_snow"
+    },
+    "house_plaster_cabin_roof-terracotta": {
+      "x": 164,
+      "y": 4230,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        16,
+        46
+      ],
+      "night": "house_cabin_night",
+      "snow": "house_plaster_cabin_snow"
+    },
+    "house_plaster_cabin_roof-thatch": {
+      "x": 197,
+      "y": 4230,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        16,
+        46
+      ],
+      "night": "house_cabin_night",
+      "snow": "house_plaster_cabin_snow"
+    },
+    "house_plaster_cabin_snow": {
       "x": 0,
-      "y": 1808,
+      "y": 4279,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "layer": "snow"
+    },
+    "house_plaster_corner-left_roof-green": {
+      "x": 130,
+      "y": 1495,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        13,
+        62
+      ],
+      "night": "house_corner-left_night",
+      "snow": "house_plaster_corner-left_snow",
+      "joins": "r"
+    },
+    "house_plaster_corner-left_roof-plum": {
+      "x": 179,
+      "y": 1495,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        13,
+        62
+      ],
+      "night": "house_corner-left_night",
+      "snow": "house_plaster_corner-left_snow",
+      "joins": "r"
+    },
+    "house_plaster_corner-left_roof-slate": {
+      "x": 0,
+      "y": 1560,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        13,
+        62
+      ],
+      "night": "house_corner-left_night",
+      "snow": "house_plaster_corner-left_snow",
+      "joins": "r"
+    },
+    "house_plaster_corner-left_roof-terracotta": {
+      "x": 49,
+      "y": 1560,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        13,
+        62
+      ],
+      "night": "house_corner-left_night",
+      "snow": "house_plaster_corner-left_snow",
+      "joins": "r"
+    },
+    "house_plaster_corner-left_roof-thatch": {
+      "x": 98,
+      "y": 1560,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        13,
+        62
+      ],
+      "night": "house_corner-left_night",
+      "snow": "house_plaster_corner-left_snow",
+      "joins": "r"
+    },
+    "house_plaster_corner-left_snow": {
+      "x": 147,
+      "y": 1560,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "layer": "snow"
+    },
+    "house_plaster_corner-right_roof-green": {
+      "x": 196,
+      "y": 1560,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        35,
+        62
+      ],
+      "night": "house_corner-right_night",
+      "snow": "house_plaster_corner-right_snow",
+      "joins": "l"
+    },
+    "house_plaster_corner-right_roof-plum": {
+      "x": 0,
+      "y": 1625,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        35,
+        62
+      ],
+      "night": "house_corner-right_night",
+      "snow": "house_plaster_corner-right_snow",
+      "joins": "l"
+    },
+    "house_plaster_corner-right_roof-slate": {
+      "x": 49,
+      "y": 1625,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        35,
+        62
+      ],
+      "night": "house_corner-right_night",
+      "snow": "house_plaster_corner-right_snow",
+      "joins": "l"
+    },
+    "house_plaster_corner-right_roof-terracotta": {
+      "x": 98,
+      "y": 1625,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        35,
+        62
+      ],
+      "night": "house_corner-right_night",
+      "snow": "house_plaster_corner-right_snow",
+      "joins": "l"
+    },
+    "house_plaster_corner-right_roof-thatch": {
+      "x": 147,
+      "y": 1625,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        35,
+        62
+      ],
+      "night": "house_corner-right_night",
+      "snow": "house_plaster_corner-right_snow",
+      "joins": "l"
+    },
+    "house_plaster_corner-right_snow": {
+      "x": 196,
+      "y": 1625,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "layer": "snow"
+    },
+    "house_plaster_detached_roof-green": {
+      "x": 33,
+      "y": 4279,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -2617,8 +5162,8 @@
       "snow": "house_plaster_detached_snow"
     },
     "house_plaster_detached_roof-plum": {
-      "x": 49,
-      "y": 1808,
+      "x": 82,
+      "y": 4279,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -2637,8 +5182,8 @@
       "snow": "house_plaster_detached_snow"
     },
     "house_plaster_detached_roof-slate": {
-      "x": 98,
-      "y": 1808,
+      "x": 131,
+      "y": 4279,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -2657,8 +5202,8 @@
       "snow": "house_plaster_detached_snow"
     },
     "house_plaster_detached_roof-terracotta": {
-      "x": 147,
-      "y": 1808,
+      "x": 180,
+      "y": 4279,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -2677,8 +5222,8 @@
       "snow": "house_plaster_detached_snow"
     },
     "house_plaster_detached_roof-thatch": {
-      "x": 196,
-      "y": 1808,
+      "x": 0,
+      "y": 4328,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -2697,8 +5242,8 @@
       "snow": "house_plaster_detached_snow"
     },
     "house_plaster_detached_snow": {
-      "x": 0,
-      "y": 1857,
+      "x": 49,
+      "y": 4328,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -2712,8 +5257,8 @@
       "layer": "snow"
     },
     "house_plaster_farmhouse_roof-green": {
-      "x": 49,
-      "y": 1857,
+      "x": 98,
+      "y": 4328,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -2732,8 +5277,8 @@
       "snow": "house_plaster_farmhouse_snow"
     },
     "house_plaster_farmhouse_roof-plum": {
-      "x": 114,
-      "y": 1857,
+      "x": 163,
+      "y": 4328,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -2752,8 +5297,8 @@
       "snow": "house_plaster_farmhouse_snow"
     },
     "house_plaster_farmhouse_roof-slate": {
-      "x": 179,
-      "y": 1857,
+      "x": 0,
+      "y": 4377,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -2772,8 +5317,8 @@
       "snow": "house_plaster_farmhouse_snow"
     },
     "house_plaster_farmhouse_roof-terracotta": {
-      "x": 0,
-      "y": 1906,
+      "x": 65,
+      "y": 4377,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -2792,8 +5337,8 @@
       "snow": "house_plaster_farmhouse_snow"
     },
     "house_plaster_farmhouse_roof-thatch": {
-      "x": 65,
-      "y": 1906,
+      "x": 130,
+      "y": 4377,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -2812,8 +5357,8 @@
       "snow": "house_plaster_farmhouse_snow"
     },
     "house_plaster_farmhouse_snow": {
-      "x": 130,
-      "y": 1906,
+      "x": 0,
+      "y": 4426,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -2827,8 +5372,8 @@
       "layer": "snow"
     },
     "house_plaster_hut_roof-green": {
-      "x": 132,
-      "y": 3001,
+      "x": 198,
+      "y": 5635,
       "w": 32,
       "h": 32,
       "anchor": [
@@ -2847,8 +5392,8 @@
       "snow": "house_plaster_hut_snow"
     },
     "house_plaster_hut_roof-plum": {
-      "x": 165,
-      "y": 3001,
+      "x": 0,
+      "y": 5668,
       "w": 32,
       "h": 32,
       "anchor": [
@@ -2867,8 +5412,8 @@
       "snow": "house_plaster_hut_snow"
     },
     "house_plaster_hut_roof-slate": {
-      "x": 198,
-      "y": 3001,
+      "x": 33,
+      "y": 5668,
       "w": 32,
       "h": 32,
       "anchor": [
@@ -2887,8 +5432,8 @@
       "snow": "house_plaster_hut_snow"
     },
     "house_plaster_hut_roof-terracotta": {
-      "x": 0,
-      "y": 3034,
+      "x": 66,
+      "y": 5668,
       "w": 32,
       "h": 32,
       "anchor": [
@@ -2907,8 +5452,8 @@
       "snow": "house_plaster_hut_snow"
     },
     "house_plaster_hut_roof-thatch": {
-      "x": 33,
-      "y": 3034,
+      "x": 99,
+      "y": 5668,
       "w": 32,
       "h": 32,
       "anchor": [
@@ -2927,8 +5472,8 @@
       "snow": "house_plaster_hut_snow"
     },
     "house_plaster_hut_snow": {
-      "x": 66,
-      "y": 3034,
+      "x": 132,
+      "y": 5668,
       "w": 32,
       "h": 32,
       "anchor": [
@@ -2942,8 +5487,8 @@
       "layer": "snow"
     },
     "house_plaster_row-left_roof-green": {
-      "x": 195,
-      "y": 1906,
+      "x": 65,
+      "y": 4426,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -2962,8 +5507,8 @@
       "snow": "house_plaster_row-left_snow"
     },
     "house_plaster_row-left_roof-plum": {
-      "x": 0,
-      "y": 1955,
+      "x": 98,
+      "y": 4426,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -2982,8 +5527,8 @@
       "snow": "house_plaster_row-left_snow"
     },
     "house_plaster_row-left_roof-slate": {
-      "x": 33,
-      "y": 1955,
+      "x": 131,
+      "y": 4426,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -3002,8 +5547,8 @@
       "snow": "house_plaster_row-left_snow"
     },
     "house_plaster_row-left_roof-terracotta": {
-      "x": 66,
-      "y": 1955,
+      "x": 164,
+      "y": 4426,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -3022,8 +5567,8 @@
       "snow": "house_plaster_row-left_snow"
     },
     "house_plaster_row-left_roof-thatch": {
-      "x": 99,
-      "y": 1955,
+      "x": 197,
+      "y": 4426,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -3042,8 +5587,8 @@
       "snow": "house_plaster_row-left_snow"
     },
     "house_plaster_row-left_snow": {
-      "x": 132,
-      "y": 1955,
+      "x": 0,
+      "y": 4475,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -3057,8 +5602,8 @@
       "layer": "snow"
     },
     "house_plaster_row-middle_roof-green": {
-      "x": 165,
-      "y": 1955,
+      "x": 33,
+      "y": 4475,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -3077,8 +5622,8 @@
       "snow": "house_plaster_row-middle_snow"
     },
     "house_plaster_row-middle_roof-plum": {
-      "x": 198,
-      "y": 1955,
+      "x": 66,
+      "y": 4475,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -3097,8 +5642,8 @@
       "snow": "house_plaster_row-middle_snow"
     },
     "house_plaster_row-middle_roof-slate": {
-      "x": 0,
-      "y": 2004,
+      "x": 99,
+      "y": 4475,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -3117,8 +5662,8 @@
       "snow": "house_plaster_row-middle_snow"
     },
     "house_plaster_row-middle_roof-terracotta": {
-      "x": 33,
-      "y": 2004,
+      "x": 132,
+      "y": 4475,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -3137,8 +5682,8 @@
       "snow": "house_plaster_row-middle_snow"
     },
     "house_plaster_row-middle_roof-thatch": {
-      "x": 66,
-      "y": 2004,
+      "x": 165,
+      "y": 4475,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -3157,8 +5702,8 @@
       "snow": "house_plaster_row-middle_snow"
     },
     "house_plaster_row-middle_snow": {
-      "x": 99,
-      "y": 2004,
+      "x": 198,
+      "y": 4475,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -3172,8 +5717,8 @@
       "layer": "snow"
     },
     "house_plaster_row-right_roof-green": {
-      "x": 132,
-      "y": 2004,
+      "x": 0,
+      "y": 4524,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -3192,8 +5737,8 @@
       "snow": "house_plaster_row-right_snow"
     },
     "house_plaster_row-right_roof-plum": {
-      "x": 165,
-      "y": 2004,
+      "x": 33,
+      "y": 4524,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -3212,8 +5757,8 @@
       "snow": "house_plaster_row-right_snow"
     },
     "house_plaster_row-right_roof-slate": {
-      "x": 198,
-      "y": 2004,
+      "x": 66,
+      "y": 4524,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -3232,8 +5777,8 @@
       "snow": "house_plaster_row-right_snow"
     },
     "house_plaster_row-right_roof-terracotta": {
-      "x": 0,
-      "y": 2053,
+      "x": 99,
+      "y": 4524,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -3252,8 +5797,8 @@
       "snow": "house_plaster_row-right_snow"
     },
     "house_plaster_row-right_roof-thatch": {
-      "x": 33,
-      "y": 2053,
+      "x": 132,
+      "y": 4524,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -3272,8 +5817,8 @@
       "snow": "house_plaster_row-right_snow"
     },
     "house_plaster_row-right_snow": {
-      "x": 66,
-      "y": 2053,
+      "x": 165,
+      "y": 4524,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -3286,9 +5831,369 @@
       ],
       "layer": "snow"
     },
-    "house_row-left_night": {
+    "house_plaster_townhouse-left_roof-green": {
+      "x": 0,
+      "y": 1690,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-left_night",
+      "snow": "house_plaster_townhouse-left_snow",
+      "joins": "r"
+    },
+    "house_plaster_townhouse-left_roof-plum": {
+      "x": 33,
+      "y": 1690,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-left_night",
+      "snow": "house_plaster_townhouse-left_snow",
+      "joins": "r"
+    },
+    "house_plaster_townhouse-left_roof-slate": {
+      "x": 66,
+      "y": 1690,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-left_night",
+      "snow": "house_plaster_townhouse-left_snow",
+      "joins": "r"
+    },
+    "house_plaster_townhouse-left_roof-terracotta": {
       "x": 99,
-      "y": 2053,
+      "y": 1690,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-left_night",
+      "snow": "house_plaster_townhouse-left_snow",
+      "joins": "r"
+    },
+    "house_plaster_townhouse-left_roof-thatch": {
+      "x": 132,
+      "y": 1690,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-left_night",
+      "snow": "house_plaster_townhouse-left_snow",
+      "joins": "r"
+    },
+    "house_plaster_townhouse-left_snow": {
+      "x": 165,
+      "y": 1690,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "layer": "snow"
+    },
+    "house_plaster_townhouse-middle_roof-green": {
+      "x": 198,
+      "y": 1690,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-middle_night",
+      "snow": "house_plaster_townhouse-middle_snow",
+      "joins": "lr"
+    },
+    "house_plaster_townhouse-middle_roof-plum": {
+      "x": 0,
+      "y": 1755,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-middle_night",
+      "snow": "house_plaster_townhouse-middle_snow",
+      "joins": "lr"
+    },
+    "house_plaster_townhouse-middle_roof-slate": {
+      "x": 33,
+      "y": 1755,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-middle_night",
+      "snow": "house_plaster_townhouse-middle_snow",
+      "joins": "lr"
+    },
+    "house_plaster_townhouse-middle_roof-terracotta": {
+      "x": 66,
+      "y": 1755,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-middle_night",
+      "snow": "house_plaster_townhouse-middle_snow",
+      "joins": "lr"
+    },
+    "house_plaster_townhouse-middle_roof-thatch": {
+      "x": 99,
+      "y": 1755,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-middle_night",
+      "snow": "house_plaster_townhouse-middle_snow",
+      "joins": "lr"
+    },
+    "house_plaster_townhouse-middle_snow": {
+      "x": 132,
+      "y": 1755,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "layer": "snow"
+    },
+    "house_plaster_townhouse-right_roof-green": {
+      "x": 165,
+      "y": 1755,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-right_night",
+      "snow": "house_plaster_townhouse-right_snow",
+      "joins": "l"
+    },
+    "house_plaster_townhouse-right_roof-plum": {
+      "x": 198,
+      "y": 1755,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-right_night",
+      "snow": "house_plaster_townhouse-right_snow",
+      "joins": "l"
+    },
+    "house_plaster_townhouse-right_roof-slate": {
+      "x": 0,
+      "y": 1820,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-right_night",
+      "snow": "house_plaster_townhouse-right_snow",
+      "joins": "l"
+    },
+    "house_plaster_townhouse-right_roof-terracotta": {
+      "x": 33,
+      "y": 1820,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-right_night",
+      "snow": "house_plaster_townhouse-right_snow",
+      "joins": "l"
+    },
+    "house_plaster_townhouse-right_roof-thatch": {
+      "x": 66,
+      "y": 1820,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-right_night",
+      "snow": "house_plaster_townhouse-right_snow",
+      "joins": "l"
+    },
+    "house_plaster_townhouse-right_snow": {
+      "x": 99,
+      "y": 1820,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "layer": "snow"
+    },
+    "house_row-left_night": {
+      "x": 198,
+      "y": 4524,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -3302,8 +6207,8 @@
       "layer": "night"
     },
     "house_row-middle_night": {
-      "x": 132,
-      "y": 2053,
+      "x": 0,
+      "y": 4573,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -3317,8 +6222,8 @@
       "layer": "night"
     },
     "house_row-right_night": {
-      "x": 165,
-      "y": 2053,
+      "x": 33,
+      "y": 4573,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -3332,8 +6237,8 @@
       "layer": "night"
     },
     "house_rubble_apartment_roof-green": {
-      "x": 65,
-      "y": 520,
+      "x": 132,
+      "y": 1820,
       "w": 64,
       "h": 64,
       "anchor": [
@@ -3352,8 +6257,8 @@
       "snow": "house_rubble_apartment_snow"
     },
     "house_rubble_apartment_roof-plum": {
-      "x": 130,
-      "y": 520,
+      "x": 0,
+      "y": 1885,
       "w": 64,
       "h": 64,
       "anchor": [
@@ -3372,8 +6277,8 @@
       "snow": "house_rubble_apartment_snow"
     },
     "house_rubble_apartment_roof-slate": {
-      "x": 0,
-      "y": 585,
+      "x": 65,
+      "y": 1885,
       "w": 64,
       "h": 64,
       "anchor": [
@@ -3392,8 +6297,8 @@
       "snow": "house_rubble_apartment_snow"
     },
     "house_rubble_apartment_roof-terracotta": {
-      "x": 65,
-      "y": 585,
+      "x": 130,
+      "y": 1885,
       "w": 64,
       "h": 64,
       "anchor": [
@@ -3412,8 +6317,8 @@
       "snow": "house_rubble_apartment_snow"
     },
     "house_rubble_apartment_roof-thatch": {
-      "x": 130,
-      "y": 585,
+      "x": 0,
+      "y": 1950,
       "w": 64,
       "h": 64,
       "anchor": [
@@ -3432,8 +6337,8 @@
       "snow": "house_rubble_apartment_snow"
     },
     "house_rubble_apartment_snow": {
-      "x": 0,
-      "y": 650,
+      "x": 65,
+      "y": 1950,
       "w": 64,
       "h": 64,
       "anchor": [
@@ -3446,9 +6351,364 @@
       ],
       "layer": "snow"
     },
-    "house_rubble_detached_roof-green": {
+    "house_rubble_cabin_roof-green": {
+      "x": 66,
+      "y": 4573,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        16,
+        46
+      ],
+      "night": "house_cabin_night",
+      "snow": "house_rubble_cabin_snow"
+    },
+    "house_rubble_cabin_roof-plum": {
+      "x": 99,
+      "y": 4573,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        16,
+        46
+      ],
+      "night": "house_cabin_night",
+      "snow": "house_rubble_cabin_snow"
+    },
+    "house_rubble_cabin_roof-slate": {
+      "x": 132,
+      "y": 4573,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        16,
+        46
+      ],
+      "night": "house_cabin_night",
+      "snow": "house_rubble_cabin_snow"
+    },
+    "house_rubble_cabin_roof-terracotta": {
+      "x": 165,
+      "y": 4573,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        16,
+        46
+      ],
+      "night": "house_cabin_night",
+      "snow": "house_rubble_cabin_snow"
+    },
+    "house_rubble_cabin_roof-thatch": {
       "x": 198,
-      "y": 2053,
+      "y": 4573,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        16,
+        46
+      ],
+      "night": "house_cabin_night",
+      "snow": "house_rubble_cabin_snow"
+    },
+    "house_rubble_cabin_snow": {
+      "x": 0,
+      "y": 4622,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "layer": "snow"
+    },
+    "house_rubble_corner-left_roof-green": {
+      "x": 130,
+      "y": 1950,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        13,
+        62
+      ],
+      "night": "house_corner-left_night",
+      "snow": "house_rubble_corner-left_snow",
+      "joins": "r"
+    },
+    "house_rubble_corner-left_roof-plum": {
+      "x": 179,
+      "y": 1950,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        13,
+        62
+      ],
+      "night": "house_corner-left_night",
+      "snow": "house_rubble_corner-left_snow",
+      "joins": "r"
+    },
+    "house_rubble_corner-left_roof-slate": {
+      "x": 0,
+      "y": 2015,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        13,
+        62
+      ],
+      "night": "house_corner-left_night",
+      "snow": "house_rubble_corner-left_snow",
+      "joins": "r"
+    },
+    "house_rubble_corner-left_roof-terracotta": {
+      "x": 49,
+      "y": 2015,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        13,
+        62
+      ],
+      "night": "house_corner-left_night",
+      "snow": "house_rubble_corner-left_snow",
+      "joins": "r"
+    },
+    "house_rubble_corner-left_roof-thatch": {
+      "x": 98,
+      "y": 2015,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        13,
+        62
+      ],
+      "night": "house_corner-left_night",
+      "snow": "house_rubble_corner-left_snow",
+      "joins": "r"
+    },
+    "house_rubble_corner-left_snow": {
+      "x": 147,
+      "y": 2015,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "layer": "snow"
+    },
+    "house_rubble_corner-right_roof-green": {
+      "x": 196,
+      "y": 2015,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        35,
+        62
+      ],
+      "night": "house_corner-right_night",
+      "snow": "house_rubble_corner-right_snow",
+      "joins": "l"
+    },
+    "house_rubble_corner-right_roof-plum": {
+      "x": 0,
+      "y": 2080,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        35,
+        62
+      ],
+      "night": "house_corner-right_night",
+      "snow": "house_rubble_corner-right_snow",
+      "joins": "l"
+    },
+    "house_rubble_corner-right_roof-slate": {
+      "x": 49,
+      "y": 2080,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        35,
+        62
+      ],
+      "night": "house_corner-right_night",
+      "snow": "house_rubble_corner-right_snow",
+      "joins": "l"
+    },
+    "house_rubble_corner-right_roof-terracotta": {
+      "x": 98,
+      "y": 2080,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        35,
+        62
+      ],
+      "night": "house_corner-right_night",
+      "snow": "house_rubble_corner-right_snow",
+      "joins": "l"
+    },
+    "house_rubble_corner-right_roof-thatch": {
+      "x": 147,
+      "y": 2080,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        35,
+        62
+      ],
+      "night": "house_corner-right_night",
+      "snow": "house_rubble_corner-right_snow",
+      "joins": "l"
+    },
+    "house_rubble_corner-right_snow": {
+      "x": 196,
+      "y": 2080,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "layer": "snow"
+    },
+    "house_rubble_detached_roof-green": {
+      "x": 33,
+      "y": 4622,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -3467,8 +6727,8 @@
       "snow": "house_rubble_detached_snow"
     },
     "house_rubble_detached_roof-plum": {
-      "x": 0,
-      "y": 2102,
+      "x": 82,
+      "y": 4622,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -3487,8 +6747,8 @@
       "snow": "house_rubble_detached_snow"
     },
     "house_rubble_detached_roof-slate": {
-      "x": 49,
-      "y": 2102,
+      "x": 131,
+      "y": 4622,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -3507,8 +6767,8 @@
       "snow": "house_rubble_detached_snow"
     },
     "house_rubble_detached_roof-terracotta": {
-      "x": 98,
-      "y": 2102,
+      "x": 180,
+      "y": 4622,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -3527,8 +6787,8 @@
       "snow": "house_rubble_detached_snow"
     },
     "house_rubble_detached_roof-thatch": {
-      "x": 147,
-      "y": 2102,
+      "x": 0,
+      "y": 4671,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -3547,8 +6807,8 @@
       "snow": "house_rubble_detached_snow"
     },
     "house_rubble_detached_snow": {
-      "x": 196,
-      "y": 2102,
+      "x": 49,
+      "y": 4671,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -3562,8 +6822,8 @@
       "layer": "snow"
     },
     "house_rubble_farmhouse_roof-green": {
-      "x": 0,
-      "y": 2151,
+      "x": 98,
+      "y": 4671,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -3582,8 +6842,8 @@
       "snow": "house_rubble_farmhouse_snow"
     },
     "house_rubble_farmhouse_roof-plum": {
-      "x": 65,
-      "y": 2151,
+      "x": 163,
+      "y": 4671,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -3602,8 +6862,8 @@
       "snow": "house_rubble_farmhouse_snow"
     },
     "house_rubble_farmhouse_roof-slate": {
-      "x": 130,
-      "y": 2151,
+      "x": 0,
+      "y": 4720,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -3622,8 +6882,8 @@
       "snow": "house_rubble_farmhouse_snow"
     },
     "house_rubble_farmhouse_roof-terracotta": {
-      "x": 0,
-      "y": 2200,
+      "x": 65,
+      "y": 4720,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -3642,8 +6902,8 @@
       "snow": "house_rubble_farmhouse_snow"
     },
     "house_rubble_farmhouse_roof-thatch": {
-      "x": 65,
-      "y": 2200,
+      "x": 130,
+      "y": 4720,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -3662,8 +6922,8 @@
       "snow": "house_rubble_farmhouse_snow"
     },
     "house_rubble_farmhouse_snow": {
-      "x": 130,
-      "y": 2200,
+      "x": 0,
+      "y": 4769,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -3677,8 +6937,8 @@
       "layer": "snow"
     },
     "house_rubble_hut_roof-green": {
-      "x": 99,
-      "y": 3034,
+      "x": 165,
+      "y": 5668,
       "w": 32,
       "h": 32,
       "anchor": [
@@ -3697,8 +6957,8 @@
       "snow": "house_rubble_hut_snow"
     },
     "house_rubble_hut_roof-plum": {
-      "x": 132,
-      "y": 3034,
+      "x": 198,
+      "y": 5668,
       "w": 32,
       "h": 32,
       "anchor": [
@@ -3717,8 +6977,8 @@
       "snow": "house_rubble_hut_snow"
     },
     "house_rubble_hut_roof-slate": {
-      "x": 165,
-      "y": 3034,
+      "x": 0,
+      "y": 5701,
       "w": 32,
       "h": 32,
       "anchor": [
@@ -3737,8 +6997,8 @@
       "snow": "house_rubble_hut_snow"
     },
     "house_rubble_hut_roof-terracotta": {
-      "x": 198,
-      "y": 3034,
+      "x": 33,
+      "y": 5701,
       "w": 32,
       "h": 32,
       "anchor": [
@@ -3757,8 +7017,8 @@
       "snow": "house_rubble_hut_snow"
     },
     "house_rubble_hut_roof-thatch": {
-      "x": 0,
-      "y": 3067,
+      "x": 66,
+      "y": 5701,
       "w": 32,
       "h": 32,
       "anchor": [
@@ -3777,8 +7037,8 @@
       "snow": "house_rubble_hut_snow"
     },
     "house_rubble_hut_snow": {
-      "x": 33,
-      "y": 3067,
+      "x": 99,
+      "y": 5701,
       "w": 32,
       "h": 32,
       "anchor": [
@@ -3792,8 +7052,8 @@
       "layer": "snow"
     },
     "house_rubble_row-left_roof-green": {
-      "x": 195,
-      "y": 2200,
+      "x": 65,
+      "y": 4769,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -3812,8 +7072,8 @@
       "snow": "house_rubble_row-left_snow"
     },
     "house_rubble_row-left_roof-plum": {
-      "x": 0,
-      "y": 2249,
+      "x": 98,
+      "y": 4769,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -3832,8 +7092,8 @@
       "snow": "house_rubble_row-left_snow"
     },
     "house_rubble_row-left_roof-slate": {
-      "x": 33,
-      "y": 2249,
+      "x": 131,
+      "y": 4769,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -3852,8 +7112,8 @@
       "snow": "house_rubble_row-left_snow"
     },
     "house_rubble_row-left_roof-terracotta": {
-      "x": 66,
-      "y": 2249,
+      "x": 164,
+      "y": 4769,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -3872,8 +7132,8 @@
       "snow": "house_rubble_row-left_snow"
     },
     "house_rubble_row-left_roof-thatch": {
-      "x": 99,
-      "y": 2249,
+      "x": 197,
+      "y": 4769,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -3892,8 +7152,8 @@
       "snow": "house_rubble_row-left_snow"
     },
     "house_rubble_row-left_snow": {
-      "x": 132,
-      "y": 2249,
+      "x": 0,
+      "y": 4818,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -3907,8 +7167,8 @@
       "layer": "snow"
     },
     "house_rubble_row-middle_roof-green": {
-      "x": 165,
-      "y": 2249,
+      "x": 33,
+      "y": 4818,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -3927,8 +7187,8 @@
       "snow": "house_rubble_row-middle_snow"
     },
     "house_rubble_row-middle_roof-plum": {
-      "x": 198,
-      "y": 2249,
+      "x": 66,
+      "y": 4818,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -3947,8 +7207,8 @@
       "snow": "house_rubble_row-middle_snow"
     },
     "house_rubble_row-middle_roof-slate": {
-      "x": 0,
-      "y": 2298,
+      "x": 99,
+      "y": 4818,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -3967,8 +7227,8 @@
       "snow": "house_rubble_row-middle_snow"
     },
     "house_rubble_row-middle_roof-terracotta": {
-      "x": 33,
-      "y": 2298,
+      "x": 132,
+      "y": 4818,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -3987,8 +7247,8 @@
       "snow": "house_rubble_row-middle_snow"
     },
     "house_rubble_row-middle_roof-thatch": {
-      "x": 66,
-      "y": 2298,
+      "x": 165,
+      "y": 4818,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -4007,8 +7267,8 @@
       "snow": "house_rubble_row-middle_snow"
     },
     "house_rubble_row-middle_snow": {
-      "x": 99,
-      "y": 2298,
+      "x": 198,
+      "y": 4818,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -4022,8 +7282,8 @@
       "layer": "snow"
     },
     "house_rubble_row-right_roof-green": {
-      "x": 132,
-      "y": 2298,
+      "x": 0,
+      "y": 4867,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -4042,8 +7302,8 @@
       "snow": "house_rubble_row-right_snow"
     },
     "house_rubble_row-right_roof-plum": {
-      "x": 165,
-      "y": 2298,
+      "x": 33,
+      "y": 4867,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -4062,8 +7322,8 @@
       "snow": "house_rubble_row-right_snow"
     },
     "house_rubble_row-right_roof-slate": {
-      "x": 198,
-      "y": 2298,
+      "x": 66,
+      "y": 4867,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -4082,8 +7342,8 @@
       "snow": "house_rubble_row-right_snow"
     },
     "house_rubble_row-right_roof-terracotta": {
-      "x": 0,
-      "y": 2347,
+      "x": 99,
+      "y": 4867,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -4102,8 +7362,8 @@
       "snow": "house_rubble_row-right_snow"
     },
     "house_rubble_row-right_roof-thatch": {
-      "x": 33,
-      "y": 2347,
+      "x": 132,
+      "y": 4867,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -4122,8 +7382,8 @@
       "snow": "house_rubble_row-right_snow"
     },
     "house_rubble_row-right_snow": {
-      "x": 66,
-      "y": 2347,
+      "x": 165,
+      "y": 4867,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -4136,9 +7396,369 @@
       ],
       "layer": "snow"
     },
+    "house_rubble_townhouse-left_roof-green": {
+      "x": 0,
+      "y": 2145,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-left_night",
+      "snow": "house_rubble_townhouse-left_snow",
+      "joins": "r"
+    },
+    "house_rubble_townhouse-left_roof-plum": {
+      "x": 33,
+      "y": 2145,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-left_night",
+      "snow": "house_rubble_townhouse-left_snow",
+      "joins": "r"
+    },
+    "house_rubble_townhouse-left_roof-slate": {
+      "x": 66,
+      "y": 2145,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-left_night",
+      "snow": "house_rubble_townhouse-left_snow",
+      "joins": "r"
+    },
+    "house_rubble_townhouse-left_roof-terracotta": {
+      "x": 99,
+      "y": 2145,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-left_night",
+      "snow": "house_rubble_townhouse-left_snow",
+      "joins": "r"
+    },
+    "house_rubble_townhouse-left_roof-thatch": {
+      "x": 132,
+      "y": 2145,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-left_night",
+      "snow": "house_rubble_townhouse-left_snow",
+      "joins": "r"
+    },
+    "house_rubble_townhouse-left_snow": {
+      "x": 165,
+      "y": 2145,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "layer": "snow"
+    },
+    "house_rubble_townhouse-middle_roof-green": {
+      "x": 198,
+      "y": 2145,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-middle_night",
+      "snow": "house_rubble_townhouse-middle_snow",
+      "joins": "lr"
+    },
+    "house_rubble_townhouse-middle_roof-plum": {
+      "x": 0,
+      "y": 2210,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-middle_night",
+      "snow": "house_rubble_townhouse-middle_snow",
+      "joins": "lr"
+    },
+    "house_rubble_townhouse-middle_roof-slate": {
+      "x": 33,
+      "y": 2210,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-middle_night",
+      "snow": "house_rubble_townhouse-middle_snow",
+      "joins": "lr"
+    },
+    "house_rubble_townhouse-middle_roof-terracotta": {
+      "x": 66,
+      "y": 2210,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-middle_night",
+      "snow": "house_rubble_townhouse-middle_snow",
+      "joins": "lr"
+    },
+    "house_rubble_townhouse-middle_roof-thatch": {
+      "x": 99,
+      "y": 2210,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-middle_night",
+      "snow": "house_rubble_townhouse-middle_snow",
+      "joins": "lr"
+    },
+    "house_rubble_townhouse-middle_snow": {
+      "x": 132,
+      "y": 2210,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "layer": "snow"
+    },
+    "house_rubble_townhouse-right_roof-green": {
+      "x": 165,
+      "y": 2210,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-right_night",
+      "snow": "house_rubble_townhouse-right_snow",
+      "joins": "l"
+    },
+    "house_rubble_townhouse-right_roof-plum": {
+      "x": 198,
+      "y": 2210,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-right_night",
+      "snow": "house_rubble_townhouse-right_snow",
+      "joins": "l"
+    },
+    "house_rubble_townhouse-right_roof-slate": {
+      "x": 0,
+      "y": 2275,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-right_night",
+      "snow": "house_rubble_townhouse-right_snow",
+      "joins": "l"
+    },
+    "house_rubble_townhouse-right_roof-terracotta": {
+      "x": 33,
+      "y": 2275,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-right_night",
+      "snow": "house_rubble_townhouse-right_snow",
+      "joins": "l"
+    },
+    "house_rubble_townhouse-right_roof-thatch": {
+      "x": 66,
+      "y": 2275,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-right_night",
+      "snow": "house_rubble_townhouse-right_snow",
+      "joins": "l"
+    },
+    "house_rubble_townhouse-right_snow": {
+      "x": 99,
+      "y": 2275,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "layer": "snow"
+    },
     "house_stone_apartment_roof-green": {
-      "x": 65,
-      "y": 650,
+      "x": 132,
+      "y": 2275,
       "w": 64,
       "h": 64,
       "anchor": [
@@ -4157,8 +7777,8 @@
       "snow": "house_stone_apartment_snow"
     },
     "house_stone_apartment_roof-plum": {
-      "x": 130,
-      "y": 650,
+      "x": 0,
+      "y": 2340,
       "w": 64,
       "h": 64,
       "anchor": [
@@ -4177,8 +7797,8 @@
       "snow": "house_stone_apartment_snow"
     },
     "house_stone_apartment_roof-slate": {
-      "x": 0,
-      "y": 715,
+      "x": 65,
+      "y": 2340,
       "w": 64,
       "h": 64,
       "anchor": [
@@ -4197,8 +7817,8 @@
       "snow": "house_stone_apartment_snow"
     },
     "house_stone_apartment_roof-terracotta": {
-      "x": 65,
-      "y": 715,
+      "x": 130,
+      "y": 2340,
       "w": 64,
       "h": 64,
       "anchor": [
@@ -4217,8 +7837,8 @@
       "snow": "house_stone_apartment_snow"
     },
     "house_stone_apartment_roof-thatch": {
-      "x": 130,
-      "y": 715,
+      "x": 0,
+      "y": 2405,
       "w": 64,
       "h": 64,
       "anchor": [
@@ -4237,8 +7857,8 @@
       "snow": "house_stone_apartment_snow"
     },
     "house_stone_apartment_snow": {
-      "x": 0,
-      "y": 780,
+      "x": 65,
+      "y": 2405,
       "w": 64,
       "h": 64,
       "anchor": [
@@ -4251,9 +7871,364 @@
       ],
       "layer": "snow"
     },
-    "house_stone_detached_roof-green": {
+    "house_stone_cabin_roof-green": {
+      "x": 198,
+      "y": 4867,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        16,
+        46
+      ],
+      "night": "house_cabin_night",
+      "snow": "house_stone_cabin_snow"
+    },
+    "house_stone_cabin_roof-plum": {
+      "x": 0,
+      "y": 4916,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        16,
+        46
+      ],
+      "night": "house_cabin_night",
+      "snow": "house_stone_cabin_snow"
+    },
+    "house_stone_cabin_roof-slate": {
+      "x": 33,
+      "y": 4916,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        16,
+        46
+      ],
+      "night": "house_cabin_night",
+      "snow": "house_stone_cabin_snow"
+    },
+    "house_stone_cabin_roof-terracotta": {
+      "x": 66,
+      "y": 4916,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        16,
+        46
+      ],
+      "night": "house_cabin_night",
+      "snow": "house_stone_cabin_snow"
+    },
+    "house_stone_cabin_roof-thatch": {
       "x": 99,
-      "y": 2347,
+      "y": 4916,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        16,
+        46
+      ],
+      "night": "house_cabin_night",
+      "snow": "house_stone_cabin_snow"
+    },
+    "house_stone_cabin_snow": {
+      "x": 132,
+      "y": 4916,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "layer": "snow"
+    },
+    "house_stone_corner-left_roof-green": {
+      "x": 130,
+      "y": 2405,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        13,
+        62
+      ],
+      "night": "house_corner-left_night",
+      "snow": "house_stone_corner-left_snow",
+      "joins": "r"
+    },
+    "house_stone_corner-left_roof-plum": {
+      "x": 179,
+      "y": 2405,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        13,
+        62
+      ],
+      "night": "house_corner-left_night",
+      "snow": "house_stone_corner-left_snow",
+      "joins": "r"
+    },
+    "house_stone_corner-left_roof-slate": {
+      "x": 0,
+      "y": 2470,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        13,
+        62
+      ],
+      "night": "house_corner-left_night",
+      "snow": "house_stone_corner-left_snow",
+      "joins": "r"
+    },
+    "house_stone_corner-left_roof-terracotta": {
+      "x": 49,
+      "y": 2470,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        13,
+        62
+      ],
+      "night": "house_corner-left_night",
+      "snow": "house_stone_corner-left_snow",
+      "joins": "r"
+    },
+    "house_stone_corner-left_roof-thatch": {
+      "x": 98,
+      "y": 2470,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        13,
+        62
+      ],
+      "night": "house_corner-left_night",
+      "snow": "house_stone_corner-left_snow",
+      "joins": "r"
+    },
+    "house_stone_corner-left_snow": {
+      "x": 147,
+      "y": 2470,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "layer": "snow"
+    },
+    "house_stone_corner-right_roof-green": {
+      "x": 196,
+      "y": 2470,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        35,
+        62
+      ],
+      "night": "house_corner-right_night",
+      "snow": "house_stone_corner-right_snow",
+      "joins": "l"
+    },
+    "house_stone_corner-right_roof-plum": {
+      "x": 0,
+      "y": 2535,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        35,
+        62
+      ],
+      "night": "house_corner-right_night",
+      "snow": "house_stone_corner-right_snow",
+      "joins": "l"
+    },
+    "house_stone_corner-right_roof-slate": {
+      "x": 49,
+      "y": 2535,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        35,
+        62
+      ],
+      "night": "house_corner-right_night",
+      "snow": "house_stone_corner-right_snow",
+      "joins": "l"
+    },
+    "house_stone_corner-right_roof-terracotta": {
+      "x": 98,
+      "y": 2535,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        35,
+        62
+      ],
+      "night": "house_corner-right_night",
+      "snow": "house_stone_corner-right_snow",
+      "joins": "l"
+    },
+    "house_stone_corner-right_roof-thatch": {
+      "x": 147,
+      "y": 2535,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        35,
+        62
+      ],
+      "night": "house_corner-right_night",
+      "snow": "house_stone_corner-right_snow",
+      "joins": "l"
+    },
+    "house_stone_corner-right_snow": {
+      "x": 196,
+      "y": 2535,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "layer": "snow"
+    },
+    "house_stone_detached_roof-green": {
+      "x": 165,
+      "y": 4916,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -4272,8 +8247,8 @@
       "snow": "house_stone_detached_snow"
     },
     "house_stone_detached_roof-plum": {
-      "x": 148,
-      "y": 2347,
+      "x": 0,
+      "y": 4965,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -4292,8 +8267,8 @@
       "snow": "house_stone_detached_snow"
     },
     "house_stone_detached_roof-slate": {
-      "x": 197,
-      "y": 2347,
+      "x": 49,
+      "y": 4965,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -4312,8 +8287,8 @@
       "snow": "house_stone_detached_snow"
     },
     "house_stone_detached_roof-terracotta": {
-      "x": 0,
-      "y": 2396,
+      "x": 98,
+      "y": 4965,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -4332,8 +8307,8 @@
       "snow": "house_stone_detached_snow"
     },
     "house_stone_detached_roof-thatch": {
-      "x": 49,
-      "y": 2396,
+      "x": 147,
+      "y": 4965,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -4352,8 +8327,8 @@
       "snow": "house_stone_detached_snow"
     },
     "house_stone_detached_snow": {
-      "x": 98,
-      "y": 2396,
+      "x": 196,
+      "y": 4965,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -4367,8 +8342,8 @@
       "layer": "snow"
     },
     "house_stone_farmhouse_roof-green": {
-      "x": 147,
-      "y": 2396,
+      "x": 0,
+      "y": 5014,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -4387,8 +8362,8 @@
       "snow": "house_stone_farmhouse_snow"
     },
     "house_stone_farmhouse_roof-plum": {
-      "x": 0,
-      "y": 2445,
+      "x": 65,
+      "y": 5014,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -4407,8 +8382,8 @@
       "snow": "house_stone_farmhouse_snow"
     },
     "house_stone_farmhouse_roof-slate": {
-      "x": 65,
-      "y": 2445,
+      "x": 130,
+      "y": 5014,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -4427,8 +8402,8 @@
       "snow": "house_stone_farmhouse_snow"
     },
     "house_stone_farmhouse_roof-terracotta": {
-      "x": 130,
-      "y": 2445,
+      "x": 0,
+      "y": 5063,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -4447,8 +8422,8 @@
       "snow": "house_stone_farmhouse_snow"
     },
     "house_stone_farmhouse_roof-thatch": {
-      "x": 0,
-      "y": 2494,
+      "x": 65,
+      "y": 5063,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -4467,8 +8442,8 @@
       "snow": "house_stone_farmhouse_snow"
     },
     "house_stone_farmhouse_snow": {
-      "x": 65,
-      "y": 2494,
+      "x": 130,
+      "y": 5063,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -4482,8 +8457,8 @@
       "layer": "snow"
     },
     "house_stone_hut_roof-green": {
-      "x": 66,
-      "y": 3067,
+      "x": 132,
+      "y": 5701,
       "w": 32,
       "h": 32,
       "anchor": [
@@ -4502,8 +8477,8 @@
       "snow": "house_stone_hut_snow"
     },
     "house_stone_hut_roof-plum": {
-      "x": 99,
-      "y": 3067,
+      "x": 165,
+      "y": 5701,
       "w": 32,
       "h": 32,
       "anchor": [
@@ -4522,8 +8497,8 @@
       "snow": "house_stone_hut_snow"
     },
     "house_stone_hut_roof-slate": {
-      "x": 132,
-      "y": 3067,
+      "x": 198,
+      "y": 5701,
       "w": 32,
       "h": 32,
       "anchor": [
@@ -4542,8 +8517,8 @@
       "snow": "house_stone_hut_snow"
     },
     "house_stone_hut_roof-terracotta": {
-      "x": 165,
-      "y": 3067,
+      "x": 0,
+      "y": 5734,
       "w": 32,
       "h": 32,
       "anchor": [
@@ -4562,8 +8537,8 @@
       "snow": "house_stone_hut_snow"
     },
     "house_stone_hut_roof-thatch": {
-      "x": 198,
-      "y": 3067,
+      "x": 33,
+      "y": 5734,
       "w": 32,
       "h": 32,
       "anchor": [
@@ -4582,8 +8557,8 @@
       "snow": "house_stone_hut_snow"
     },
     "house_stone_hut_snow": {
-      "x": 0,
-      "y": 3100,
+      "x": 66,
+      "y": 5734,
       "w": 32,
       "h": 32,
       "anchor": [
@@ -4597,8 +8572,8 @@
       "layer": "snow"
     },
     "house_stone_row-left_roof-green": {
-      "x": 130,
-      "y": 2494,
+      "x": 195,
+      "y": 5063,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -4617,8 +8592,8 @@
       "snow": "house_stone_row-left_snow"
     },
     "house_stone_row-left_roof-plum": {
-      "x": 163,
-      "y": 2494,
+      "x": 0,
+      "y": 5112,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -4637,8 +8612,8 @@
       "snow": "house_stone_row-left_snow"
     },
     "house_stone_row-left_roof-slate": {
-      "x": 196,
-      "y": 2494,
+      "x": 33,
+      "y": 5112,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -4657,8 +8632,8 @@
       "snow": "house_stone_row-left_snow"
     },
     "house_stone_row-left_roof-terracotta": {
-      "x": 0,
-      "y": 2543,
+      "x": 66,
+      "y": 5112,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -4677,8 +8652,8 @@
       "snow": "house_stone_row-left_snow"
     },
     "house_stone_row-left_roof-thatch": {
-      "x": 33,
-      "y": 2543,
+      "x": 99,
+      "y": 5112,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -4697,8 +8672,8 @@
       "snow": "house_stone_row-left_snow"
     },
     "house_stone_row-left_snow": {
-      "x": 66,
-      "y": 2543,
+      "x": 132,
+      "y": 5112,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -4712,8 +8687,8 @@
       "layer": "snow"
     },
     "house_stone_row-middle_roof-green": {
-      "x": 99,
-      "y": 2543,
+      "x": 165,
+      "y": 5112,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -4732,8 +8707,8 @@
       "snow": "house_stone_row-middle_snow"
     },
     "house_stone_row-middle_roof-plum": {
-      "x": 132,
-      "y": 2543,
+      "x": 198,
+      "y": 5112,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -4752,8 +8727,8 @@
       "snow": "house_stone_row-middle_snow"
     },
     "house_stone_row-middle_roof-slate": {
-      "x": 165,
-      "y": 2543,
+      "x": 0,
+      "y": 5161,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -4772,8 +8747,8 @@
       "snow": "house_stone_row-middle_snow"
     },
     "house_stone_row-middle_roof-terracotta": {
-      "x": 198,
-      "y": 2543,
+      "x": 33,
+      "y": 5161,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -4792,8 +8767,8 @@
       "snow": "house_stone_row-middle_snow"
     },
     "house_stone_row-middle_roof-thatch": {
-      "x": 0,
-      "y": 2592,
+      "x": 66,
+      "y": 5161,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -4812,8 +8787,8 @@
       "snow": "house_stone_row-middle_snow"
     },
     "house_stone_row-middle_snow": {
-      "x": 33,
-      "y": 2592,
+      "x": 99,
+      "y": 5161,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -4827,8 +8802,8 @@
       "layer": "snow"
     },
     "house_stone_row-right_roof-green": {
-      "x": 66,
-      "y": 2592,
+      "x": 132,
+      "y": 5161,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -4847,8 +8822,8 @@
       "snow": "house_stone_row-right_snow"
     },
     "house_stone_row-right_roof-plum": {
-      "x": 99,
-      "y": 2592,
+      "x": 165,
+      "y": 5161,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -4867,8 +8842,8 @@
       "snow": "house_stone_row-right_snow"
     },
     "house_stone_row-right_roof-slate": {
-      "x": 132,
-      "y": 2592,
+      "x": 198,
+      "y": 5161,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -4887,8 +8862,8 @@
       "snow": "house_stone_row-right_snow"
     },
     "house_stone_row-right_roof-terracotta": {
-      "x": 165,
-      "y": 2592,
+      "x": 0,
+      "y": 5210,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -4907,8 +8882,8 @@
       "snow": "house_stone_row-right_snow"
     },
     "house_stone_row-right_roof-thatch": {
-      "x": 198,
-      "y": 2592,
+      "x": 33,
+      "y": 5210,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -4927,8 +8902,8 @@
       "snow": "house_stone_row-right_snow"
     },
     "house_stone_row-right_snow": {
-      "x": 0,
-      "y": 2641,
+      "x": 66,
+      "y": 5210,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -4941,9 +8916,369 @@
       ],
       "layer": "snow"
     },
+    "house_stone_townhouse-left_roof-green": {
+      "x": 0,
+      "y": 2600,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-left_night",
+      "snow": "house_stone_townhouse-left_snow",
+      "joins": "r"
+    },
+    "house_stone_townhouse-left_roof-plum": {
+      "x": 33,
+      "y": 2600,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-left_night",
+      "snow": "house_stone_townhouse-left_snow",
+      "joins": "r"
+    },
+    "house_stone_townhouse-left_roof-slate": {
+      "x": 66,
+      "y": 2600,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-left_night",
+      "snow": "house_stone_townhouse-left_snow",
+      "joins": "r"
+    },
+    "house_stone_townhouse-left_roof-terracotta": {
+      "x": 99,
+      "y": 2600,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-left_night",
+      "snow": "house_stone_townhouse-left_snow",
+      "joins": "r"
+    },
+    "house_stone_townhouse-left_roof-thatch": {
+      "x": 132,
+      "y": 2600,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-left_night",
+      "snow": "house_stone_townhouse-left_snow",
+      "joins": "r"
+    },
+    "house_stone_townhouse-left_snow": {
+      "x": 165,
+      "y": 2600,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "layer": "snow"
+    },
+    "house_stone_townhouse-middle_roof-green": {
+      "x": 198,
+      "y": 2600,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-middle_night",
+      "snow": "house_stone_townhouse-middle_snow",
+      "joins": "lr"
+    },
+    "house_stone_townhouse-middle_roof-plum": {
+      "x": 0,
+      "y": 2665,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-middle_night",
+      "snow": "house_stone_townhouse-middle_snow",
+      "joins": "lr"
+    },
+    "house_stone_townhouse-middle_roof-slate": {
+      "x": 33,
+      "y": 2665,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-middle_night",
+      "snow": "house_stone_townhouse-middle_snow",
+      "joins": "lr"
+    },
+    "house_stone_townhouse-middle_roof-terracotta": {
+      "x": 66,
+      "y": 2665,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-middle_night",
+      "snow": "house_stone_townhouse-middle_snow",
+      "joins": "lr"
+    },
+    "house_stone_townhouse-middle_roof-thatch": {
+      "x": 99,
+      "y": 2665,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-middle_night",
+      "snow": "house_stone_townhouse-middle_snow",
+      "joins": "lr"
+    },
+    "house_stone_townhouse-middle_snow": {
+      "x": 132,
+      "y": 2665,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "layer": "snow"
+    },
+    "house_stone_townhouse-right_roof-green": {
+      "x": 165,
+      "y": 2665,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-right_night",
+      "snow": "house_stone_townhouse-right_snow",
+      "joins": "l"
+    },
+    "house_stone_townhouse-right_roof-plum": {
+      "x": 198,
+      "y": 2665,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-right_night",
+      "snow": "house_stone_townhouse-right_snow",
+      "joins": "l"
+    },
+    "house_stone_townhouse-right_roof-slate": {
+      "x": 0,
+      "y": 2730,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-right_night",
+      "snow": "house_stone_townhouse-right_snow",
+      "joins": "l"
+    },
+    "house_stone_townhouse-right_roof-terracotta": {
+      "x": 33,
+      "y": 2730,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-right_night",
+      "snow": "house_stone_townhouse-right_snow",
+      "joins": "l"
+    },
+    "house_stone_townhouse-right_roof-thatch": {
+      "x": 66,
+      "y": 2730,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-right_night",
+      "snow": "house_stone_townhouse-right_snow",
+      "joins": "l"
+    },
+    "house_stone_townhouse-right_snow": {
+      "x": 99,
+      "y": 2730,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "layer": "snow"
+    },
     "house_timber_apartment_roof-green": {
-      "x": 65,
-      "y": 780,
+      "x": 132,
+      "y": 2730,
       "w": 64,
       "h": 64,
       "anchor": [
@@ -4962,8 +9297,8 @@
       "snow": "house_timber_apartment_snow"
     },
     "house_timber_apartment_roof-plum": {
-      "x": 130,
-      "y": 780,
+      "x": 0,
+      "y": 2795,
       "w": 64,
       "h": 64,
       "anchor": [
@@ -4982,8 +9317,8 @@
       "snow": "house_timber_apartment_snow"
     },
     "house_timber_apartment_roof-slate": {
-      "x": 0,
-      "y": 845,
+      "x": 65,
+      "y": 2795,
       "w": 64,
       "h": 64,
       "anchor": [
@@ -5002,8 +9337,8 @@
       "snow": "house_timber_apartment_snow"
     },
     "house_timber_apartment_roof-terracotta": {
-      "x": 65,
-      "y": 845,
+      "x": 130,
+      "y": 2795,
       "w": 64,
       "h": 64,
       "anchor": [
@@ -5022,8 +9357,8 @@
       "snow": "house_timber_apartment_snow"
     },
     "house_timber_apartment_roof-thatch": {
-      "x": 130,
-      "y": 845,
+      "x": 0,
+      "y": 2860,
       "w": 64,
       "h": 64,
       "anchor": [
@@ -5042,8 +9377,8 @@
       "snow": "house_timber_apartment_snow"
     },
     "house_timber_apartment_snow": {
-      "x": 0,
-      "y": 910,
+      "x": 65,
+      "y": 2860,
       "w": 64,
       "h": 64,
       "anchor": [
@@ -5056,9 +9391,364 @@
       ],
       "layer": "snow"
     },
-    "house_timber_detached_roof-green": {
+    "house_timber_cabin_roof-green": {
+      "x": 99,
+      "y": 5210,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        16,
+        46
+      ],
+      "night": "house_cabin_night",
+      "snow": "house_timber_cabin_snow"
+    },
+    "house_timber_cabin_roof-plum": {
+      "x": 132,
+      "y": 5210,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        16,
+        46
+      ],
+      "night": "house_cabin_night",
+      "snow": "house_timber_cabin_snow"
+    },
+    "house_timber_cabin_roof-slate": {
+      "x": 165,
+      "y": 5210,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        16,
+        46
+      ],
+      "night": "house_cabin_night",
+      "snow": "house_timber_cabin_snow"
+    },
+    "house_timber_cabin_roof-terracotta": {
+      "x": 198,
+      "y": 5210,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        16,
+        46
+      ],
+      "night": "house_cabin_night",
+      "snow": "house_timber_cabin_snow"
+    },
+    "house_timber_cabin_roof-thatch": {
+      "x": 0,
+      "y": 5259,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "door": [
+        16,
+        46
+      ],
+      "night": "house_cabin_night",
+      "snow": "house_timber_cabin_snow"
+    },
+    "house_timber_cabin_snow": {
       "x": 33,
-      "y": 2641,
+      "y": 5259,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "footprint": [
+        2,
+        3
+      ],
+      "layer": "snow"
+    },
+    "house_timber_corner-left_roof-green": {
+      "x": 130,
+      "y": 2860,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        13,
+        62
+      ],
+      "night": "house_corner-left_night",
+      "snow": "house_timber_corner-left_snow",
+      "joins": "r"
+    },
+    "house_timber_corner-left_roof-plum": {
+      "x": 179,
+      "y": 2860,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        13,
+        62
+      ],
+      "night": "house_corner-left_night",
+      "snow": "house_timber_corner-left_snow",
+      "joins": "r"
+    },
+    "house_timber_corner-left_roof-slate": {
+      "x": 0,
+      "y": 2925,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        13,
+        62
+      ],
+      "night": "house_corner-left_night",
+      "snow": "house_timber_corner-left_snow",
+      "joins": "r"
+    },
+    "house_timber_corner-left_roof-terracotta": {
+      "x": 49,
+      "y": 2925,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        13,
+        62
+      ],
+      "night": "house_corner-left_night",
+      "snow": "house_timber_corner-left_snow",
+      "joins": "r"
+    },
+    "house_timber_corner-left_roof-thatch": {
+      "x": 98,
+      "y": 2925,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        13,
+        62
+      ],
+      "night": "house_corner-left_night",
+      "snow": "house_timber_corner-left_snow",
+      "joins": "r"
+    },
+    "house_timber_corner-left_snow": {
+      "x": 147,
+      "y": 2925,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "layer": "snow"
+    },
+    "house_timber_corner-right_roof-green": {
+      "x": 196,
+      "y": 2925,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        35,
+        62
+      ],
+      "night": "house_corner-right_night",
+      "snow": "house_timber_corner-right_snow",
+      "joins": "l"
+    },
+    "house_timber_corner-right_roof-plum": {
+      "x": 0,
+      "y": 2990,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        35,
+        62
+      ],
+      "night": "house_corner-right_night",
+      "snow": "house_timber_corner-right_snow",
+      "joins": "l"
+    },
+    "house_timber_corner-right_roof-slate": {
+      "x": 49,
+      "y": 2990,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        35,
+        62
+      ],
+      "night": "house_corner-right_night",
+      "snow": "house_timber_corner-right_snow",
+      "joins": "l"
+    },
+    "house_timber_corner-right_roof-terracotta": {
+      "x": 98,
+      "y": 2990,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        35,
+        62
+      ],
+      "night": "house_corner-right_night",
+      "snow": "house_timber_corner-right_snow",
+      "joins": "l"
+    },
+    "house_timber_corner-right_roof-thatch": {
+      "x": 147,
+      "y": 2990,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "door": [
+        35,
+        62
+      ],
+      "night": "house_corner-right_night",
+      "snow": "house_timber_corner-right_snow",
+      "joins": "l"
+    },
+    "house_timber_corner-right_snow": {
+      "x": 196,
+      "y": 2990,
+      "w": 48,
+      "h": 64,
+      "anchor": [
+        24,
+        63
+      ],
+      "footprint": [
+        3,
+        4
+      ],
+      "layer": "snow"
+    },
+    "house_timber_detached_roof-green": {
+      "x": 66,
+      "y": 5259,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -5077,8 +9767,8 @@
       "snow": "house_timber_detached_snow"
     },
     "house_timber_detached_roof-plum": {
-      "x": 82,
-      "y": 2641,
+      "x": 115,
+      "y": 5259,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -5097,8 +9787,8 @@
       "snow": "house_timber_detached_snow"
     },
     "house_timber_detached_roof-slate": {
-      "x": 131,
-      "y": 2641,
+      "x": 164,
+      "y": 5259,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -5117,8 +9807,8 @@
       "snow": "house_timber_detached_snow"
     },
     "house_timber_detached_roof-terracotta": {
-      "x": 180,
-      "y": 2641,
+      "x": 0,
+      "y": 5308,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -5137,8 +9827,8 @@
       "snow": "house_timber_detached_snow"
     },
     "house_timber_detached_roof-thatch": {
-      "x": 0,
-      "y": 2690,
+      "x": 49,
+      "y": 5308,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -5157,8 +9847,8 @@
       "snow": "house_timber_detached_snow"
     },
     "house_timber_detached_snow": {
-      "x": 49,
-      "y": 2690,
+      "x": 98,
+      "y": 5308,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -5172,8 +9862,8 @@
       "layer": "snow"
     },
     "house_timber_farmhouse_roof-green": {
-      "x": 98,
-      "y": 2690,
+      "x": 147,
+      "y": 5308,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -5192,8 +9882,8 @@
       "snow": "house_timber_farmhouse_snow"
     },
     "house_timber_farmhouse_roof-plum": {
-      "x": 163,
-      "y": 2690,
+      "x": 0,
+      "y": 5357,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -5212,8 +9902,8 @@
       "snow": "house_timber_farmhouse_snow"
     },
     "house_timber_farmhouse_roof-slate": {
-      "x": 0,
-      "y": 2739,
+      "x": 65,
+      "y": 5357,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -5232,8 +9922,8 @@
       "snow": "house_timber_farmhouse_snow"
     },
     "house_timber_farmhouse_roof-terracotta": {
-      "x": 65,
-      "y": 2739,
+      "x": 130,
+      "y": 5357,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -5252,8 +9942,8 @@
       "snow": "house_timber_farmhouse_snow"
     },
     "house_timber_farmhouse_roof-thatch": {
-      "x": 130,
-      "y": 2739,
+      "x": 0,
+      "y": 5406,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -5272,8 +9962,8 @@
       "snow": "house_timber_farmhouse_snow"
     },
     "house_timber_farmhouse_snow": {
-      "x": 0,
-      "y": 2788,
+      "x": 65,
+      "y": 5406,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -5287,8 +9977,8 @@
       "layer": "snow"
     },
     "house_timber_hut_roof-green": {
-      "x": 33,
-      "y": 3100,
+      "x": 99,
+      "y": 5734,
       "w": 32,
       "h": 32,
       "anchor": [
@@ -5307,8 +9997,8 @@
       "snow": "house_timber_hut_snow"
     },
     "house_timber_hut_roof-plum": {
-      "x": 66,
-      "y": 3100,
+      "x": 132,
+      "y": 5734,
       "w": 32,
       "h": 32,
       "anchor": [
@@ -5327,8 +10017,8 @@
       "snow": "house_timber_hut_snow"
     },
     "house_timber_hut_roof-slate": {
-      "x": 99,
-      "y": 3100,
+      "x": 165,
+      "y": 5734,
       "w": 32,
       "h": 32,
       "anchor": [
@@ -5347,8 +10037,8 @@
       "snow": "house_timber_hut_snow"
     },
     "house_timber_hut_roof-terracotta": {
-      "x": 132,
-      "y": 3100,
+      "x": 198,
+      "y": 5734,
       "w": 32,
       "h": 32,
       "anchor": [
@@ -5367,8 +10057,8 @@
       "snow": "house_timber_hut_snow"
     },
     "house_timber_hut_roof-thatch": {
-      "x": 165,
-      "y": 3100,
+      "x": 0,
+      "y": 5767,
       "w": 32,
       "h": 32,
       "anchor": [
@@ -5387,8 +10077,8 @@
       "snow": "house_timber_hut_snow"
     },
     "house_timber_hut_snow": {
-      "x": 198,
-      "y": 3100,
+      "x": 33,
+      "y": 5767,
       "w": 32,
       "h": 32,
       "anchor": [
@@ -5402,8 +10092,8 @@
       "layer": "snow"
     },
     "house_timber_row-left_roof-green": {
-      "x": 65,
-      "y": 2788,
+      "x": 130,
+      "y": 5406,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -5422,8 +10112,8 @@
       "snow": "house_timber_row-left_snow"
     },
     "house_timber_row-left_roof-plum": {
-      "x": 98,
-      "y": 2788,
+      "x": 163,
+      "y": 5406,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -5442,8 +10132,8 @@
       "snow": "house_timber_row-left_snow"
     },
     "house_timber_row-left_roof-slate": {
-      "x": 131,
-      "y": 2788,
+      "x": 196,
+      "y": 5406,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -5462,8 +10152,8 @@
       "snow": "house_timber_row-left_snow"
     },
     "house_timber_row-left_roof-terracotta": {
-      "x": 164,
-      "y": 2788,
+      "x": 0,
+      "y": 5455,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -5482,8 +10172,8 @@
       "snow": "house_timber_row-left_snow"
     },
     "house_timber_row-left_roof-thatch": {
-      "x": 197,
-      "y": 2788,
+      "x": 33,
+      "y": 5455,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -5502,8 +10192,8 @@
       "snow": "house_timber_row-left_snow"
     },
     "house_timber_row-left_snow": {
-      "x": 0,
-      "y": 2837,
+      "x": 66,
+      "y": 5455,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -5517,8 +10207,8 @@
       "layer": "snow"
     },
     "house_timber_row-middle_roof-green": {
-      "x": 33,
-      "y": 2837,
+      "x": 99,
+      "y": 5455,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -5537,8 +10227,8 @@
       "snow": "house_timber_row-middle_snow"
     },
     "house_timber_row-middle_roof-plum": {
-      "x": 66,
-      "y": 2837,
+      "x": 132,
+      "y": 5455,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -5557,8 +10247,8 @@
       "snow": "house_timber_row-middle_snow"
     },
     "house_timber_row-middle_roof-slate": {
-      "x": 99,
-      "y": 2837,
+      "x": 165,
+      "y": 5455,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -5577,8 +10267,8 @@
       "snow": "house_timber_row-middle_snow"
     },
     "house_timber_row-middle_roof-terracotta": {
-      "x": 132,
-      "y": 2837,
+      "x": 198,
+      "y": 5455,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -5597,8 +10287,8 @@
       "snow": "house_timber_row-middle_snow"
     },
     "house_timber_row-middle_roof-thatch": {
-      "x": 165,
-      "y": 2837,
+      "x": 0,
+      "y": 5504,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -5617,8 +10307,8 @@
       "snow": "house_timber_row-middle_snow"
     },
     "house_timber_row-middle_snow": {
-      "x": 198,
-      "y": 2837,
+      "x": 33,
+      "y": 5504,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -5632,8 +10322,8 @@
       "layer": "snow"
     },
     "house_timber_row-right_roof-green": {
-      "x": 0,
-      "y": 2886,
+      "x": 66,
+      "y": 5504,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -5652,8 +10342,8 @@
       "snow": "house_timber_row-right_snow"
     },
     "house_timber_row-right_roof-plum": {
-      "x": 33,
-      "y": 2886,
+      "x": 99,
+      "y": 5504,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -5672,8 +10362,8 @@
       "snow": "house_timber_row-right_snow"
     },
     "house_timber_row-right_roof-slate": {
-      "x": 66,
-      "y": 2886,
+      "x": 132,
+      "y": 5504,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -5692,8 +10382,8 @@
       "snow": "house_timber_row-right_snow"
     },
     "house_timber_row-right_roof-terracotta": {
-      "x": 99,
-      "y": 2886,
+      "x": 165,
+      "y": 5504,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -5712,8 +10402,8 @@
       "snow": "house_timber_row-right_snow"
     },
     "house_timber_row-right_roof-thatch": {
-      "x": 132,
-      "y": 2886,
+      "x": 198,
+      "y": 5504,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -5732,8 +10422,8 @@
       "snow": "house_timber_row-right_snow"
     },
     "house_timber_row-right_snow": {
-      "x": 165,
-      "y": 2886,
+      "x": 0,
+      "y": 5553,
       "w": 32,
       "h": 48,
       "anchor": [
@@ -5745,6 +10435,411 @@
         3
       ],
       "layer": "snow"
+    },
+    "house_timber_townhouse-left_roof-green": {
+      "x": 0,
+      "y": 3055,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-left_night",
+      "snow": "house_timber_townhouse-left_snow",
+      "joins": "r"
+    },
+    "house_timber_townhouse-left_roof-plum": {
+      "x": 33,
+      "y": 3055,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-left_night",
+      "snow": "house_timber_townhouse-left_snow",
+      "joins": "r"
+    },
+    "house_timber_townhouse-left_roof-slate": {
+      "x": 66,
+      "y": 3055,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-left_night",
+      "snow": "house_timber_townhouse-left_snow",
+      "joins": "r"
+    },
+    "house_timber_townhouse-left_roof-terracotta": {
+      "x": 99,
+      "y": 3055,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-left_night",
+      "snow": "house_timber_townhouse-left_snow",
+      "joins": "r"
+    },
+    "house_timber_townhouse-left_roof-thatch": {
+      "x": 132,
+      "y": 3055,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-left_night",
+      "snow": "house_timber_townhouse-left_snow",
+      "joins": "r"
+    },
+    "house_timber_townhouse-left_snow": {
+      "x": 165,
+      "y": 3055,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "layer": "snow"
+    },
+    "house_timber_townhouse-middle_roof-green": {
+      "x": 198,
+      "y": 3055,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-middle_night",
+      "snow": "house_timber_townhouse-middle_snow",
+      "joins": "lr"
+    },
+    "house_timber_townhouse-middle_roof-plum": {
+      "x": 0,
+      "y": 3120,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-middle_night",
+      "snow": "house_timber_townhouse-middle_snow",
+      "joins": "lr"
+    },
+    "house_timber_townhouse-middle_roof-slate": {
+      "x": 33,
+      "y": 3120,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-middle_night",
+      "snow": "house_timber_townhouse-middle_snow",
+      "joins": "lr"
+    },
+    "house_timber_townhouse-middle_roof-terracotta": {
+      "x": 66,
+      "y": 3120,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-middle_night",
+      "snow": "house_timber_townhouse-middle_snow",
+      "joins": "lr"
+    },
+    "house_timber_townhouse-middle_roof-thatch": {
+      "x": 99,
+      "y": 3120,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-middle_night",
+      "snow": "house_timber_townhouse-middle_snow",
+      "joins": "lr"
+    },
+    "house_timber_townhouse-middle_snow": {
+      "x": 132,
+      "y": 3120,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "layer": "snow"
+    },
+    "house_timber_townhouse-right_roof-green": {
+      "x": 165,
+      "y": 3120,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-right_night",
+      "snow": "house_timber_townhouse-right_snow",
+      "joins": "l"
+    },
+    "house_timber_townhouse-right_roof-plum": {
+      "x": 198,
+      "y": 3120,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-right_night",
+      "snow": "house_timber_townhouse-right_snow",
+      "joins": "l"
+    },
+    "house_timber_townhouse-right_roof-slate": {
+      "x": 0,
+      "y": 3185,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-right_night",
+      "snow": "house_timber_townhouse-right_snow",
+      "joins": "l"
+    },
+    "house_timber_townhouse-right_roof-terracotta": {
+      "x": 33,
+      "y": 3185,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-right_night",
+      "snow": "house_timber_townhouse-right_snow",
+      "joins": "l"
+    },
+    "house_timber_townhouse-right_roof-thatch": {
+      "x": 66,
+      "y": 3185,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "door": [
+        12,
+        62
+      ],
+      "night": "house_townhouse-right_night",
+      "snow": "house_timber_townhouse-right_snow",
+      "joins": "l"
+    },
+    "house_timber_townhouse-right_snow": {
+      "x": 99,
+      "y": 3185,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "layer": "snow"
+    },
+    "house_townhouse-left_night": {
+      "x": 132,
+      "y": 3185,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "layer": "night"
+    },
+    "house_townhouse-middle_night": {
+      "x": 165,
+      "y": 3185,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "layer": "night"
+    },
+    "house_townhouse-right_night": {
+      "x": 198,
+      "y": 3185,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "footprint": [
+        2,
+        4
+      ],
+      "layer": "night"
     }
   }
 }
