@@ -24,12 +24,13 @@ from spritekit import PALETTE, Sheet, add_outline, cmap, from_ascii, mirror, pad
 # One symbol per palette colour; where colours pair up, uppercase is the lighter one.
 # The BODY_* colours stay out so the blob body is unique, VERMILLION is kept for the
 # true-crime pin and NAVY for the recorded-crime pin, so no settlement or terrain uses them.
+# ICE_L and ICE shade the snow tiles, as they shade the ground snow in seasons.py.
 P = cmap(
     O='OUTLINE', W='WHITE', C='CREAM', c='CREAM_D', S='SAND', s='SAND_D',
     L='WOOD_L', w='WOOD', d='WOOD_D', G='GRASS_L', g='GRASS', k='LEAF_D',
     T='TEAL', t='TEAL_D', A='WATER_L', a='WATER', N='NAVY', n='NAVY_D',
     H='STONE_L', h='STONE', x='STONE_D', R='ROOF', r='ROOF_D', V='VERMILLION',
-    Y='GOLD', P='PINK', p='PINK_D', U='PLUM',
+    Y='GOLD', P='PINK', p='PINK_D', U='PLUM', I='ICE_L', i='ICE',
 )
 
 
@@ -139,6 +140,27 @@ SAND16 = [
     'SSSSSSCCSSSSSSSS',
     'SSSSSSSssSSSSSSS',
     'SSSSSSSSSSSSSSSS',
+]
+
+# Snow on cold lowland: white with low drifts, each an ice-blue curve that is paler on its lit
+# left and deeper on its shaded right.
+SNOW16 = [
+    'WWWWWWWWWWWWWWWW',
+    'WWWWWWWWWWIIWWWW',
+    'WWWIIIWWWWWWiWWW',
+    'WWIWWWIWWWWWWWWW',
+    'WIWWWWWiWWWWWWWW',
+    'WWWWWWWWWWWWWWWW',
+    'WWWWWWWWWWWWWWWW',
+    'WWWWWWWWWWWWWWWW',
+    'WWWWWWWWWWWWWWWW',
+    'WWWIIWWWWWWWWWWW',
+    'WWWWWiWWWWIIIWWW',
+    'WWWWWWWWWIWWWIWW',
+    'WWWWWWWWIWWWWWiW',
+    'WWWWWWWWWWWWWWWW',
+    'WWWWWWWWWWWWWWWW',
+    'WWWWWWWWWWWWWWWW',
 ]
 
 # Two frames: each wave crest flattens into a line below it, with the same number of lit pixels.
@@ -372,6 +394,17 @@ SAND8 = [
     'SSSSSCCS',
     'SSSSSSss',
     'SSSSSSSS',
+]
+
+SNOW8 = [
+    'WWWWWWWW',
+    'WWIIIWWW',
+    'WIWWWiWW',
+    'WWWWWWWW',
+    'WWWWWWWW',
+    'WWWWWIIW',
+    'WWWWWWWW',
+    'WWWWWWWW',
 ]
 
 WATER8 = [
@@ -783,6 +816,7 @@ def build():
     sheet.add('map16_peak', grid(PEAK16, (16, 24)), overlay=True)
     sheet.add('map16_peak-low', grid(PEAK16_LOW, (16, 16)), overlay=True)
     sheet.add('map16_sand', tile(SAND16, 16))
+    sheet.add('map16_snow', tile(SNOW16, 16))
     sheet.add('map16_marsh', tile(MARSH16, 16))
     for i, rows in enumerate(WATER16):
         sheet.add(f'map16_water_{i}', tile(rows, 16))
@@ -799,6 +833,7 @@ def build():
     sheet.add('map8_mountain', tile(MOUNTAIN8, 8))
     sheet.add('map8_peak', grid(PEAK8, (8, 10)), overlay=True)
     sheet.add('map8_sand', tile(SAND8, 8))
+    sheet.add('map8_snow', tile(SNOW8, 8))
     sheet.add('map8_marsh', tile(MARSH8, 8))
     for i, rows in enumerate(WATER8):
         sheet.add(f'map8_water_{i}', tile(rows, 8))
