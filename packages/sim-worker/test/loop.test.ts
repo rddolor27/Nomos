@@ -55,7 +55,7 @@ function fakePage({ init = true } = {}) {
     },
     // Cloned and transferred as postMessage would, so reused message objects and returned buffers behave as in a browser.
     post: (msg, transfer) => posted.push(structuredClone(msg, { transfer })),
-    makeWorld: (seed, tier) => (world = createWorld(seed, tier)),
+    makeWorld: (seed, tier, _map, agents) => (world = createWorld(seed, tier, undefined, agents)),
   };
   const loop = createSimLoop(host);
 
@@ -118,6 +118,17 @@ describe('the sim loop', () => {
     page.advance(1_000);
     expect(page.tick()).toBe(0);
     expect(page.posted).toHaveLength(2);
+  });
+
+  it('spawns the count init asks for, a tier smaller than its own', () => {
+    const page = fakePage({ init: false });
+    page.handle({ type: 'init', seed: 42, tier: 'phone', map: new ArrayBuffer(0), checks: true, agents: 300 });
+    expect(page.posted[0]).toEqual({ type: 'ready', agents: 300 });
+    expect(page.ofType('snapshot')[0].count).toBe(300);
+
+    const greedy = fakePage({ init: false });
+    const tooMany: AppMessage = { type: 'init', seed: 42, tier: 'phone', map: new ArrayBuffer(0), checks: true, agents: 10_001 };
+    expect(() => greedy.handle(tooMany)).toThrow(RangeError);
   });
 
   it('posts the spawn after ready', () => {

@@ -23,7 +23,7 @@ const loop = createSimLoop(
     },
     post: (msg, transfer) => self.postMessage(msg, transfer),
     // Nothing catches a bad map's MapError, so it leaves the handler and the page sees the Worker's error event.
-    makeWorld: (seed, tier, map) => createWorld(seed, tier, parseMap(map)),
+    makeWorld: (seed, tier, map, agents) => createWorld(seed, tier, parseMap(map), agents),
   },
   cpuSlowdown,
 );

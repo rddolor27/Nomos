@@ -1,14 +1,14 @@
 import type { Tier } from '@nomos/sim-core';
 
 export type { Tier };
-export { TIER_AGENTS } from '@nomos/sim-core';
+export { TIER_AGENTS, townAgents } from '@nomos/sim-core';
 
 // Snapshot v1 (interfaces.md): float32 x, float32 y and the uint32 visual word, in three pooled buffers that circulate.
 export const SNAPSHOT_BYTES = 12;
 export const SNAPSHOT_BUFFERS = 3;
 
 export type AppMessage =
-  | { type: 'init'; seed: number; tier: Tier; map: ArrayBuffer; checks: boolean }
+  | { type: 'init'; seed: number; tier: Tier; map: ArrayBuffer; checks: boolean; agents?: number } // agents: omitted, the tier's whole count
   | { type: 'pause' }
   | { type: 'resume' }
   | { type: 'checkpoint' } // a worker cannot see pagehide, so the app asks for the checkpoint

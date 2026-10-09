@@ -36,7 +36,7 @@ export interface LoopHost {
   sleep(fn: () => void, ms: number): void;
   yieldNow(fn: () => void): void;
   post(msg: WorkerMessage, transfer: Transferable[]): void;
-  makeWorld(seed: number, tier: Tier, map: ArrayBuffer): World;
+  makeWorld(seed: number, tier: Tier, map: ArrayBuffer, agents?: number): World;
 }
 
 interface Session {
@@ -84,7 +84,7 @@ export function createSimLoop(host: LoopHost, cpuSlowdown = 1): { handle(msg: Ap
   function handle(msg: AppMessage): void {
     workFromMs = host.now();
     if (msg.type === 'init') {
-      init(msg.seed, msg.tier, msg.map, msg.checks);
+      init(msg.seed, msg.tier, msg.map, msg.checks, msg.agents);
       return;
     }
     if (session === null) return;
@@ -95,9 +95,9 @@ export function createSimLoop(host: LoopHost, cpuSlowdown = 1): { handle(msg: Ap
     else giveBack(session.pool, msg.buffer);
   }
 
-  function init(seed: number, tier: Tier, map: ArrayBuffer, checks: boolean): void {
+  function init(seed: number, tier: Tier, map: ArrayBuffer, checks: boolean, agents?: number): void {
     running = false;
-    const world = host.makeWorld(seed, tier, map);
+    const world = host.makeWorld(seed, tier, map, agents);
     world.checks = checks;
     const pool = createSnapshotPool(world.agents.capacity);
     session = { world, pool };
