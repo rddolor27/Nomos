@@ -1,29 +1,32 @@
-import { CROWD_HUES, CROWD_Q, CROWD_STOPS, type WorldMap } from '@nomos/sim-protocol/world-map';
+import { CROWD_HUES, CROWD_Q, CROWD_STOPS, WORLD_SIZES, type WorldMap } from '@nomos/sim-protocol/world-map';
 import { describe, expect, it } from 'vitest';
 import { crowdOf } from '../src/crowd/crowd.ts';
 
 const WIDTH = 12;
 const HEIGHT = 8;
+type Place = readonly [x: number, y: number, people: number, country: number];
 // Settlements in id order, as [x, y, population, country]: 90 dots, then 9, then a hamlet's one.
 const PLACES = [
   [5, 2, 9000, 1],
   [8, 4, 999, 2],
   [1, 6, 40, 1],
 ] as const;
+// 71 dots, the most a reach of 1 holds, on open land: the settlement and its four neighbours are all country 1.
+const OPEN: Place = [2, 3, 7100, 1];
 // The furthest, in cells either way, a stop may stand from its settlement: its reach, plus the block around its home.
 const FARTHEST = [3, 2, 2];
 const OWNERS = [...Array<number>(90).fill(0), ...Array<number>(9).fill(1), 2];
 
 // Two countries inside a ring of sea, country 1 west of x = 6, with a lake at (4, 3). crowdOf reads only the seed,
 // the size, the countries and the settlements.
-function tinyWorld(seed: number): WorldMap {
+function tinyWorld(seed: number, places: readonly Place[] = PLACES): WorldMap {
   const n = WIDTH * HEIGHT;
   const country = new Uint8Array(n);
   for (let y = 1; y < HEIGHT - 1; y++) {
     for (let x = 1; x < WIDTH - 1; x++) country[y * WIDTH + x] = x < 6 ? 1 : 2;
   }
   country[3 * WIDTH + 4] = 0;
-  const count = PLACES.length;
+  const count = places.length;
   return {
     version: 1,
     seed,
@@ -44,10 +47,10 @@ function tinyWorld(seed: number): WorldMap {
     region: new Uint16Array(n),
     market: new Uint16Array(n),
     settlements: {
-      cell: Int32Array.from(PLACES, ([x, y]) => y * WIDTH + x),
+      cell: Int32Array.from(places, ([x, y]) => y * WIDTH + x),
       tier: new Uint8Array(count),
-      population: Int32Array.from(PLACES, (place) => place[2]),
-      country: Uint8Array.from(PLACES, (place) => place[3]),
+      population: Int32Array.from(places, (place) => place[2]),
+      country: Uint8Array.from(places, (place) => place[3]),
       region: new Uint16Array(count),
       landmarks: new Uint8Array(count * 3),
     },
@@ -68,6 +71,23 @@ function stopCell(stops: Uint16Array, dot: number, stop: number): [number, numbe
 
 function apart(ax: number, ay: number, bx: number, by: number): number {
   return Math.max(Math.abs(ax - bx), Math.abs(ay - by));
+}
+
+// How many homes of the settlement at OPEN lie on each side of it, over seeds 1 to 40.
+function homesBySide(): { north: number; south: number; west: number; east: number } {
+  const [px, py] = OPEN;
+  const sides = { north: 0, south: 0, west: 0, east: 0 };
+  for (let seed = 1; seed <= 40; seed++) {
+    const crowd = crowdOf(tinyWorld(seed, [OPEN]));
+    for (let dot = 0; dot < crowd.hue.length; dot++) {
+      const [x, y] = stopCell(crowd.stops, dot, 0);
+      if (y < py) sides.north++;
+      if (y > py) sides.south++;
+      if (x < px) sides.west++;
+      if (x > px) sides.east++;
+    }
+  }
+  return sides;
 }
 
 describe('the map crowd', () => {
@@ -121,5 +141,17 @@ describe('the map crowd', () => {
   it('makes the same crowd from the same seed, and another from another', () => {
     expect(crowdOf(tinyWorld(0x5eed0001))).toEqual(crowd);
     expect(crowdOf(tinyWorld(0x5eed0002)).stops).not.toEqual(crowd.stops);
+  });
+
+  it('spreads the homes of a small settlement alike to every side', () => {
+    const { north, south, west, east } = homesBySide();
+    expect(Math.abs(north - south), `north ${north}, south ${south}`).toBeLessThanOrEqual((north + south) / 10);
+    expect(Math.abs(west - east), `west ${west}, east ${east}`).toBeLessThanOrEqual((west + east) / 10);
+  });
+
+  it('keeps every world side within the 16 bits of a stop', () => {
+    for (const side of Object.values(WORLD_SIZES).flat()) {
+      expect(side * CROWD_Q, `side ${side}`).toBeLessThanOrEqual(65_536);
+    }
   });
 });

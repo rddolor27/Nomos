@@ -6,7 +6,8 @@ import { CROWD } from '../random/streams.ts';
 // The map's look-only crowd (owner, 9 October 2026). map.country is 0 on water, so matching a settlement's country
 // keeps its dots ashore and at home.
 const PEOPLE_PER_DOT = 100;
-// A yard holds about this many dots a cell, so a capital's spreads some nine cells and a hamlet's keeps to its own.
+// A yard holds about this many dots a cell. A hamlet's reach is 1, which is five cells, and the largest capital on
+// 5EED0001, at 3,262 dots, reaches 7.
 const DOTS_PER_CELL = 24;
 // Legs take 2.5 to 6 s, so neighbours fall out of step.
 const LEG_MS = 2500;
@@ -33,7 +34,7 @@ function reachOf(dots: number): number {
   return 1 + isqrt(floorDiv(dots, DOTS_PER_CELL * 3));
 }
 
-// The settlement's own land within reach, nearest first, ties to the lower cell.
+// The settlement's own land within reach, in row order.
 function yardOf(map: WorldMap, settlement: number, reach: number): number[] {
   const { width, height } = map;
   const home = map.settlements.cell[settlement];
@@ -46,8 +47,7 @@ function yardOf(map: WorldMap, settlement: number, reach: number): number[] {
       if (map.country[y * width + x] === country && dist2(x, y, hx, hy) <= reach * reach) yard.push(y * width + x);
     }
   }
-  const away = (cell: number): number => dist2(xOf(cell, width), yOf(cell, width), hx, hy);
-  return yard.sort((a, b) => away(a) - away(b) || a - b);
+  return yard;
 }
 
 // The country's cells in the 3 x 3 block around a cell, the cell included: where a dot's later stops fall.
@@ -76,8 +76,11 @@ function placeDot(
 ): void {
   const { seed, width } = map;
   const uid = map.settlements.cell[settlement];
-  const first = below(yard.length, seed, CROWD, HOME, uid, k);
-  const home = yard[Math.min(first, below(yard.length, seed, CROWD, NEAR, uid, k))];
+  const hx = xOf(uid, width);
+  const hy = yOf(uid, width);
+  const a = yard[below(yard.length, seed, CROWD, HOME, uid, k)];
+  const b = yard[below(yard.length, seed, CROWD, NEAR, uid, k)];
+  const home = dist2(xOf(b, width), yOf(b, width), hx, hy) < dist2(xOf(a, width), yOf(a, width), hx, hy) ? b : a;
   const near = blockOf(map, home, map.settlements.country[settlement], block);
   for (let stop = 0; stop < CROWD_STOPS; stop++) {
     const cell = stop === 0 ? home : block[below(near, seed, CROWD, STOP, uid, k, stop)];
