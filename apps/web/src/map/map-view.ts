@@ -13,7 +13,7 @@ import {
   type MapRenderer,
   type MapView,
 } from '@nomos/render-gl/map';
-import type { PlaceReply, PlaceRequest } from '@nomos/sim-protocol/place';
+import type { PlaceError, PlaceReply, PlaceRequest } from '@nomos/sim-protocol/place';
 import type { MapAppMessage, MapWorkerMessage, WorldMap } from '@nomos/sim-protocol/world-map';
 import type { App } from '../app/app.ts';
 import { crowdAt } from './crowd-motion.ts';
@@ -362,33 +362,32 @@ function makeWorld(panel: MapPanel): void {
   panel.worker = worker;
   panel.making = true;
   panel.failure = '';
-  worker.addEventListener('message', ({ data }: MessageEvent<MapWorkerMessage | PlaceReply>) => {
-    if (data.type === 'place') {
-      placeAnswered(panel, data);
-      return;
-    }
-    panel.making = false;
-    adoptWorld(panel, data);
+  worker.addEventListener('message', ({ data }: MessageEvent<MapWorkerMessage | PlaceReply | PlaceError>) => {
+    onWorkerMessage(panel, data);
   });
+  // The worker answers each place itself, with a place-error when it cannot build one, so only an error while the world
+  // is made is the map's; a later one stays in the console.
   worker.addEventListener('error', (event) => {
+    if (!panel.making) return;
     event.preventDefault();
-    onWorkerError(panel, worker, event.message);
+    worker.terminate();
+    panel.worker = null;
+    panel.making = false;
+    panel.failure = event.message || 'its worker did not start';
+    showStatus(panel);
   });
   const generate: MapAppMessage = { type: 'generate', seed: panel.app.seed, size: 'large' };
   worker.postMessage(generate);
 }
 
-// An error while the world is made ends the worker; one while a place is built fails only that place.
-function onWorkerError(panel: MapPanel, worker: Worker, message: string): void {
-  if (!panel.making) {
-    placeFailed(panel, message || 'the map worker failed');
-    return;
+// A message of a kind the map does not know is no world, so it is left alone.
+function onWorkerMessage(panel: MapPanel, data: MapWorkerMessage | PlaceReply | PlaceError): void {
+  if (data.type === 'place') placeAnswered(panel, data);
+  else if (data.type === 'place-error') placeFailed(panel, data.place, data.message);
+  else if (data.type === 'world') {
+    panel.making = false;
+    adoptWorld(panel, data);
   }
-  worker.terminate();
-  panel.worker = null;
-  panel.making = false;
-  panel.failure = message || 'its worker did not start';
-  showStatus(panel);
 }
 
 function placeAnswered(panel: MapPanel, reply: PlaceReply): void {
@@ -399,9 +398,10 @@ function placeAnswered(panel: MapPanel, reply: PlaceReply): void {
   pending.onReply(reply);
 }
 
-function placeFailed(panel: MapPanel, why: string): void {
+// Fails the pending request for that place only; an answer for any other place lands nowhere.
+function placeFailed(panel: MapPanel, place: number, why: string): void {
   const pending = panel.pending;
-  if (!pending) return;
+  if (!pending || pending.place !== place) return;
   clearTimeout(pending.timer);
   panel.pending = null;
   pending.onFail(why);
@@ -416,7 +416,7 @@ function requestPlace(panel: MapPanel, place: number, onReply: PendingPlace['onR
     onFail('the map worker has stopped');
     return;
   }
-  const timer = setTimeout(() => placeFailed(panel, 'the map worker did not answer'), PLACE_TIMEOUT_MS);
+  const timer = setTimeout(() => placeFailed(panel, place, 'the map worker did not answer'), PLACE_TIMEOUT_MS);
   panel.pending = { place, onReply, onFail, timer };
   const request: PlaceRequest = { type: 'place', place };
   panel.worker.postMessage(request);

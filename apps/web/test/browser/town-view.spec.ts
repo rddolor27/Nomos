@@ -181,6 +181,20 @@ test.describe('in one engine', () => {
     await expect(page.locator('#place h2')).toHaveText(capital);
   });
 
+  test('tells of a place the worker could not build, with Try again, and keeps the map whole', async ({ page, context }) => {
+    // Without its builder chunk, the worker answers the request with a place-error for that place.
+    await context.route(/\/place-builder-[\w-]{8}\.js$/, (route) => route.abort());
+    await openMap(page);
+    const capital = await goToCapital(page);
+    await page.getByRole('button', { name: `Enter ${capital}` }).click();
+    await expect(page.locator('#place-status')).toHaveText(
+      new RegExp(`^${capital} could not be built: .*(fetch|import|load)`, 'i'),
+    );
+    await expect(page.getByRole('button', { name: 'Try again' })).toBeVisible();
+    await page.getByRole('button', { name: 'Back to map' }).click();
+    await expect(page.locator('#map [role="status"]')).toHaveText(/^\d countries; the legend lists them\.$/);
+  });
+
   test('opens the settlement in focus on a tap, and Back to map returns', async ({ page }) => {
     await openMap(page);
     await goToCapital(page);
