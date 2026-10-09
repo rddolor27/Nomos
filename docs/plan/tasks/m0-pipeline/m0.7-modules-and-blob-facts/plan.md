@@ -818,7 +818,7 @@ These are the senior's rulings where the brief or the task was silent. The owner
     - letter chains of order 2, learned from FMG's 33 real-world bases;
     - Greek leads every word at weight 2, mixed with two other bases picked at random per word, at weight 1 each;
     - words stop at 11 letters;
-    - a word that copies a base's name whole is dropped, so no real place name becomes a person's name.
+    - a word that copies one of the bases' own names whole is dropped. Other real place names can still come out, such as Aktau, Thera and Trosa, and they stay: a place name as a person's name is ordinary (the orchestrator's ruling in the M0.7 review).
 
     The owner reads N3's sample, and these numbers are the place to tune.
 12. **The franchise rule** also rejects words ending in "mon", round 8's creature-style ban, which removed at most 0.28% of names there (measured in round 8).
@@ -828,6 +828,14 @@ These are the senior's rulings where the brief or the task was silent. The owner
     - the shipped inspector chunk carries no notice. Whether the build should ship one is the owner's licence call, open beside the art licence.
 14. **`tools/names` depends on `@nomos/sim-core`** for the keyed draw, so Nomos keeps one draw. Every fixture script merges its notes into `sources.json`.
 15. **The inspector** is vanilla TypeScript: two lines of text don't justify Solid's or Preact's bytes. Its line sits in `#hud`. The wallet shows only there (content rule 5), as does the name, which round 8 allows with the follow-cam.
+16. **A reviewed deny list** (the orchestrator's ruling in the M0.7 review, reported to the owner). `rejectName`'s sixth rule, `denied`, rejects 56 words read in the table that the lists missed, by exact match. The senior's reading of the five kinds:
+    - common words in major Latin-script languages, such as English, Spanish, Portuguese, French, German, Italian, Dutch, Indonesian and Turkish;
+    - slang or rude words in any language, including words that open or end with one, such as `turdiang` and `duncum`;
+    - brand, product and franchise names, and words that show one whole, such as `cacmario`;
+    - faith terms, and famous people.
+
+    Words romanized from other scripts are denied only when rude, such as `huina`, since romanized syllables meet real words everywhere. Each rebuild adds unread words, so the list was reread until a rebuild added none that read badly: three rounds, 53, 2 and 1 words.
+17. **`money/` is guarded in both walls.** The orchestrator ruled that wallets are wealth, so ESLint's culture profile guards `money/`. The senior added it to dependency-cruiser's `culture-wall` too, so "guarded" names one set of folders.
 
 ## Data
 
@@ -850,6 +858,7 @@ These are the senior's rulings where the brief or the task was silent. The owner
     - initial JS is 16,781 B of 17,000, 15 B more, where Step 5 expected no change. The entry chunk now hands `formatCount`, `element` and Vite's preload helper to the lazy chunks.
     - the inspector chunk is 4,126 B, under a 4.5 kB limit;
     - the camera input chunk is 1,042 B, so its limit rose from 1 kB to 1.5 kB.
+  - after the review fixes: initial JS 16,780 B, the inspector chunk 4,166 B with the rebuilt table, and the camera input chunk 1,060 B with the chord fix.
 
 ## Risks
 
@@ -875,6 +884,14 @@ These are the senior's rulings where the brief or the task was silent. The owner
   - the wealth spread (M2.5).
 
   Until then every wallet holds 100,000 cents, so wealth's Gini is 0 by design.
+- **Deferred from the M0.7 review** (code review and senior QA, 9 October 2026):
+  - Canvas2D draws at most 5,000 blobs, but inspect answers for every blob, so it can name one the view never drew.
+  - The `sim-protocol/src/shared/` folder name needs a Layout edit.
+  - The culture wall guards only top-level folders, so a nested guarded folder such as `src/world/crime/` stays unguarded. A known gap.
+  - `move` on the town map at 100k has about 5% headroom and no gate.
+  - The a11y and perf specs flake under parallel load. This predates M0.7.
+  - A failed load of the inspector chunk stays cached, so inspect fails until a reload.
+  - The deny list matches whole words only. It catches no near miss of a non-Pokémon franchise name, such as `olmar` beside Pikmin's Olimar, which the table keeps.
 
 ## Sources
 
