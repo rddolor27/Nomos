@@ -26,10 +26,13 @@ test('opens the map on demand, pauses the town, and resumes it on close', async 
   expect(await playing(page)).toBe(false);
   expect(fetched.some((url) => url.includes('map-view-'))).toBe(true);
   await expect(page.locator('#view')).toHaveAttribute('inert', '');
+  await expect(page.locator('#hud')).toHaveAttribute('inert', '');
   await map.press('Escape');
   await expect(map).toBeHidden();
+  await expect(page.getByRole('button', { name: 'Map', exact: true })).toBeFocused();
   expect(await playing(page)).toBe(true);
   await expect(page.locator('#view')).not.toHaveAttribute('inert', '');
+  await expect(page.locator('#hud')).not.toHaveAttribute('inert', '');
 });
 
 test('keeps the town paused on close when it was paused before', async ({ page }) => {

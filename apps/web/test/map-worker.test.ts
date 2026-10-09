@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { crowdBuffers } from '@nomos/sim-protocol/world-map';
 import { worldFingerprint } from '@nomos/worldgen';
 import { answerGenerate } from '../src/map/generate.ts';
 
@@ -17,6 +18,7 @@ describe('the map worker', { timeout: 60_000 }, () => {
     expect(Object.values(reply.stageMs).every((ms) => ms === 2)).toBe(true);
     expect(new Set(transfer).size).toBe(transfer.length);
     const moved = structuredClone(reply, { transfer });
+    expect(crowdBuffers(reply.crowd).every((b) => b.byteLength === 0)).toBe(true);
     expect(worldFingerprint(moved.map)).toBe(0x1ec8f880);
   });
 });
