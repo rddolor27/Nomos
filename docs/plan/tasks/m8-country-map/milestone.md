@@ -8,8 +8,8 @@ Estimates are full-time days for one person coding by hand (unsourced estimates)
 
 | Sub-milestone | Delivers | Estimate | Started | Done | Actual |
 | --- | --- | --- | --- | --- | --- |
-| [M8.1 World generator](m8.1-world-generator/task.md) | Built after M0: a seeded world of 3–5 countries made in a worker, matching the Python generator stage by stage, with names for places and countries | 9.5–14 days | | | |
-| [M8.3 Country and Region views](m8.3-country-and-region-views/task.md) | Built after M8.1: the world drawn as 8- and 16-px tilemaps, with countries, labels, pan and zoom | 7–11 days | | | |
+| [M8.1 World generator](m8.1-world-generator/task.md) | Built after M0: a seeded world of 3–5 countries made in a worker, matching the Python generator stage by stage, with names for places and countries | 9.5–14 days | 9 Oct 2026, 08:31 (step plan committed) | | |
+| [M8.3 Country and Region views](m8.3-country-and-region-views/task.md) | Built after M8.1: the world drawn as 8- and 16-px tilemaps, with countries, labels, pan and zoom | 7–11 days | 9 Oct 2026, 12:28 (step plan committed) | 9 Oct 2026, 21:05 | About 495 min of work, 1–7 agents, beside M8.1's port, with the owner's pause of about 25 min excluded. It also built the owner's crowd and zoom to any settlement, which the estimate predates |
 | [M8.2 Cultures and names](m8.2-cultures-and-names/task.md) | Culture home regions that cross borders and stay balanced after spin-up, and filtered names for regions and festivals | 3–5 days | | | |
 | [M8.8 Military sites, map tiles and sound](m8.8-military-sites-map-tiles-and-sound/task.md) | Garrisons, forts and watchtowers on the map, the new coast, cliff and snow tiles, and country sound | 4–7 days | | | |
 | [M8.4 Map modes, flows and papers](m8.4-map-modes-flows-and-papers/task.md) | Map modes, flow bands, route ledgers, town papers and a gazette per country | 6–9 days | | | |
