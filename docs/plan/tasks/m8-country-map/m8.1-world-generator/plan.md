@@ -276,9 +276,10 @@ Written when M0.7 closes. Part 1 settles the countries stage, snow and the previ
   - hot springs, geyser and caldera lake share one geothermal hotspot;
   - built landmarks by tier and site, placed on the settlement, or on cells of their own for viaducts, observatories and lighthouses.
 - **Names for places and countries (R4, R8, Countries).** `tools/worldgen` has no name scheme today: settlements are named `capital-0` or `town-12`. M0.7 builds what names need, and this adds only what places need.
-  - **From M0.7, reused as is:** the one shared invented sound set, round 8's design H, in `tools/names/src/sound-set/`; the name filter `rejectName` and its fixtures; and `scripts/words.ts`, which keeps only words of 4–10 letters that pass the filter and writes them as a generated table, with `--check`.
-  - **A place-name table of its own.** `words.ts` gains a second output: 1,024 place words on their own build seed, written to `packages/worldgen/src/names/words.ts`. Places then sound like the people but mostly use other words. The table sits in `worldgen` because the page may import `sim-culture`, which holds the person table, only in its inspector (M0.7).
-  - **The trigram screen,** which M0.7 left to this brief: `tools/names` compares both tables with real name bases by trigram similarity. Below 0.26 passes, 0.26–0.40 goes to review and above 0.40 fails. Design H scored 0.209 in round 8 (measured there).
+  - **One mixed style for all names (owner, 9 October 2026).** Towns and countries, like people, take names in one style shared by everyone: Greek-like sounds mixed with sounds from several other languages, picked at random. No culture owns a sound.
+  - **From M0.7, reused as is:** that one shared sound set, in `tools/names/src/sound-set/`; the name filter `rejectName` and its fixtures; and `scripts/words.ts`, which keeps only words of 4–10 letters that pass the filter and writes them as a generated table, with `--check`.
+  - **A place-name table of its own.** `words.ts` gains a second output: 1,024 place words from the same mixed sound set, on their own build seed, written to `packages/worldgen/src/names/words.ts`. Places then sound like the people but mostly use other words. The table sits in `worldgen` because the page may import `sim-culture`, which holds the person table, only in its inspector (M0.7).
+  - **No trigram screen.** The owner dropped the screen against real name bases on 9 October 2026, since the style borrows real languages' sounds on purpose. The edit-distance filter stays: Pokémon names, real countries, demonyms, languages, ethnonyms and religions, and profanity.
   - **Picking:** each name is a table index drawn on the world stream `NAME`, keyed on (seed, kind, uid, attempt). A repeat within the world takes the next attempt. Places are named in uid order, countries first, so a name depends only on the set of places, never on visiting order.
   - **Outside canonical state:** the map worker computes names for labels, and no sim rule reads a name. Python needs none, so names get goldens frozen per generator version.
   - **Why a table, not round 4's foswig chain:** the filter's fixtures stay test-only, so a name shown at run time must come from a list checked before release. A chain's outputs can't be listed; a table is the list.
@@ -297,9 +298,7 @@ Written when M0.7 closes. Part 1 settles the countries stage, snow and the previ
   - `src/country/`: `template.ts`, `elevation.ts`, `chains.ts`, `flood.ts`, `flow.ts`, `erosion.ts`, `climate.ts`, `biomes.ts`, `settle.ts`, `countries.ts`, `grow.ts`, `routes.ts`, `regions.ts` and `features.ts`, one file per stage. `grow.ts` serves countries and regions. Python has no regions stage, so `regions.ts` gets goldens frozen per generator version;
   - `src/names/`: the picker, and the generated place table `words.ts`;
   - `test/country-goldens.test.ts`: runs in Node, and in Bun and three browsers through M0.6's engine harness.
-- `tools/names`, from M0.7:
-  - `scripts/words.ts`: a second output, the place table, on its own build seed;
-  - the trigram screen against Fantasy Map Generator's 33 name bases (MIT), with its licence file, run on both tables.
+- `tools/names`, from M0.7: `scripts/words.ts` gains a second output, the place table, on its own build seed. A possible source for the mixed sounds, which M0.7 settles, is Fantasy Map Generator's name bases at commit `546c41d37e1daf842df620139e3228553e2f0847`. They are MIT with one added permission paragraph, and their 33 real-world bases include Greek. Any use commits that licence beside the data.
 
 ### Interfaces and data
 
@@ -319,7 +318,7 @@ Written when M0.7 closes. Part 1 settles the countries stage, snow and the previ
 
 - **Layers, the square grid, identity across visits, porting traps and new tiles:** the [R9 report](../../../../research/round-9-maps-and-world-builder/report.md), part 1, and [R9 map pipeline notes](../../../../research/round-9-maps-and-world-builder/notes/map-pipeline.md).
 - **Rank-size, spacing, routes and regions:** [R4 world map notes](../../../../research/round-4-multi-scale/notes/world-maps.md) and [R4 economy and demography notes](../../../../research/round-4-multi-scale/notes/economy-demography.md), part 2.
-- **The sound set, the filter and the screen:** [R8 customs notes](../../../../research/round-8-cultures/notes/customs-preferences.md), part c, and M0.7's [brief](../../m0-pipeline/m0.7-modules-and-blob-facts/plan.md), "Names".
+- **The sound set and the filter:** [R8 customs notes](../../../../research/round-8-cultures/notes/customs-preferences.md), part c; M0.7's [brief](../../m0-pipeline/m0.7-modules-and-blob-facts/plan.md), "Names"; and the owner's decision of 9 October 2026 on one mixed name style.
 - **Countries:** the owner's decisions of 9 October 2026 ([M8 milestone](../milestone.md)).
 - **Reference code:** `tools/worldgen/` (`world.py`, `terrain.py`, `drainage.py`, `climate.py`, `settle.py`, `countries.py`, `roads.py` and `features.py`).
 
@@ -328,7 +327,7 @@ Written when M0.7 closes. Part 1 settles the countries stage, snow and the previ
 - `generates within budget`: in desktop Chromium, a standard 96×64 world takes ≤ 100 ms and a large 192×128 world ≤ 400 ms, as the fastest of 9 samples.
 - `fingerprints match Python`: per-stage fingerprints, countries included, match the goldens for 100 seeds in Node, Bun, Chromium, Firefox and WebKit.
 - `countries cover the land`: over 100 seeds of each size, K is 3–5, every land cell has one country and water none, each settlement's country is its cell's, each country holds at least 3 settlements, and every capital is a town or larger. Part 1's `test_worldgen.py --seeds 100` checks the same in Python.
-- `names pass the filter`: every place-table word has 4–10 letters and passes `rejectName`, `words.ts --check` passes, both tables pass the trigram screen, and 1,000 seeds of each size name every place and country with no repeat within a world.
+- `names pass the filter`: every place-table word has 4–10 letters and passes `rejectName`, `words.ts --check` passes, and 1,000 seeds of each size name every place and country with no repeat within a world.
 - `identity by cell`: changing a far settlement's population leaves every other place's seed, landmarks and name unchanged.
 - `wonders by the rules`: over 1,000 seeds, every world has 4–8 wonders, no kind twice, and the geothermal three share one hotspot.
 
@@ -353,7 +352,7 @@ Suggestions for the step plan, which makes the final call.
 
 - **Build order:**
   1. Python: Part 1; the owner's review; the freeze and `goldens.py`.
-  2. The place table and the screen in `tools/names`, which share no files with the port, so they can run in parallel.
+  2. The place table in `tools/names`, which shares no files with the port, so they can run in parallel.
   3. The port: the elevation stage and its golden test in all five engines, proving the harness, then each stage in pipeline order, settlements, countries and routes last, then regions and names.
 - **Reuse:** `roads.COVER` for terrain costs, `grid.neighbours` for the fixed neighbour order, `rng.shuffled` for colours, M0.6's engine harness and lints, M0's keyed draw and integer noise.
 - **Keep it simple:** port the Python line for line, and optimise only a stage that misses the budget. One growth function serves countries and regions.
