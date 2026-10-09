@@ -187,6 +187,7 @@ The steps, in order:
    - `place.py`'s `SIZES` become 96×56 for a capital or city, 80×48 for a town, 64×40 for a village and 40×24 for a hamlet. Vistas stay 30×18.
    - Retune `PLAZAS`, `BLOCK`, `REACH` and `HOUSES`, so the bigger districts fill with streets and houses rather than grass.
    - Regenerate the goldens and fixtures, then port the change to TypeScript stage by stage.
+   - **The town view fills the screen** (owner, 10 October 2026: "it shouldn't be just a small rectangle"). `openPlaceCamera` opens at the smallest whole scale at which the place covers the whole view, never under 2 CSS px per art px, and the user pans. Fit stays a button. This is render-engineer work, done with this step.
 2. **Crowds by population** (sim-engineer).
    - `CROWDS` becomes a count drawn from the settlement's population, banded by tier. On desktop that is about 150–300 for a capital or city, 60–120 for a town, 25–50 for a village and 10–20 for a hamlet.
    - Phones show a share of each tier's count.
