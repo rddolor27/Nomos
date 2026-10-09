@@ -1,6 +1,6 @@
 import { below, floorDiv, isqrt } from '@nomos/sim-core/kernels';
 import { CROWD_HUES, CROWD_Q, CROWD_STOPS, type MapCrowd, type WorldMap } from '@nomos/sim-protocol/world-map';
-import { dist2, xOf, yOf } from '../grid/grid.ts';
+import { dist2, inside, ORTHO, xOf, yOf } from '../grid/grid.ts';
 import { CROWD } from '../random/streams.ts';
 
 // The map's look-only crowd (owner, 9 October 2026). map.country is 0 on water, so matching a settlement's country
@@ -50,21 +50,23 @@ function yardOf(map: WorldMap, settlement: number, reach: number): number[] {
   return yard;
 }
 
-// The country's cells in the 3 x 3 block around a cell, the cell included: where a dot's later stops fall.
-function blockOf(map: WorldMap, cell: number, country: number, out: Int32Array): number {
+// A cell, then the country's cells north, east, south and west of it: where a dot's stops 1 and 3 fall. Two cells that
+// share an edge make a convex rectangle, so a straight leg between them stays on the country's land.
+function besideOf(map: WorldMap, cell: number, country: number, out: Int32Array): number {
   const { width, height } = map;
   const cx = xOf(cell, width);
   const cy = yOf(cell, width);
-  let count = 0;
-  for (let y = Math.max(0, cy - 1); y <= Math.min(height - 1, cy + 1); y++) {
-    for (let x = Math.max(0, cx - 1); x <= Math.min(width - 1, cx + 1); x++) {
-      if (map.country[y * width + x] === country) out[count++] = y * width + x;
-    }
+  out[0] = cell;
+  let count = 1;
+  for (const [dx, dy] of ORTHO) {
+    const neighbour = cell + dy * width + dx;
+    if (inside(cx + dx, cy + dy, width, height) && map.country[neighbour] === country) out[count++] = neighbour;
   }
   return count;
 }
 
-// Dot k of a settlement: a home in its yard, the nearer of two draws, then three more stops beside it.
+// Dot k of a settlement: a home in its yard, the nearer of two draws. Stops 0 and 2 stand in the home cell and stops 1
+// and 3 in it or a cell beside it, so every leg joins the home cell to itself or to a neighbour.
 function placeDot(
   map: WorldMap,
   crowd: MapCrowd,
@@ -72,7 +74,7 @@ function placeDot(
   settlement: number,
   yard: readonly number[],
   k: number,
-  block: Int32Array,
+  beside: Int32Array,
 ): void {
   const { seed, width } = map;
   const uid = map.settlements.cell[settlement];
@@ -81,9 +83,9 @@ function placeDot(
   const a = yard[below(yard.length, seed, CROWD, HOME, uid, k)];
   const b = yard[below(yard.length, seed, CROWD, NEAR, uid, k)];
   const home = dist2(xOf(b, width), yOf(b, width), hx, hy) < dist2(xOf(a, width), yOf(a, width), hx, hy) ? b : a;
-  const near = blockOf(map, home, map.settlements.country[settlement], block);
+  const near = besideOf(map, home, map.settlements.country[settlement], beside);
   for (let stop = 0; stop < CROWD_STOPS; stop++) {
-    const cell = stop === 0 ? home : block[below(near, seed, CROWD, STOP, uid, k, stop)];
+    const cell = (stop & 1) === 0 ? home : beside[below(near, seed, CROWD, STOP, uid, k, stop)];
     const at = 2 * (dot * CROWD_STOPS + stop);
     crowd.stops[at] = xOf(cell, width) * CROWD_Q + EDGE + below(INNER, seed, CROWD, OFFSET, uid, k, 2 * stop);
     crowd.stops[at + 1] = yOf(cell, width) * CROWD_Q + EDGE + below(INNER, seed, CROWD, OFFSET, uid, k, 2 * stop + 1);
@@ -104,12 +106,12 @@ export function crowdOf(map: WorldMap): MapCrowd {
     legMs: new Uint16Array(total),
     startMs: new Uint16Array(total),
   };
-  const block = new Int32Array(9);
+  const beside = new Int32Array(1 + ORTHO.length);
   let dot = 0;
   for (let s = 0; s < population.length; s++) {
     const dots = dotsOf(population[s]);
     const yard = yardOf(map, s, reachOf(dots));
-    for (let k = 0; k < dots; k++) placeDot(map, crowd, dot++, s, yard, k, block);
+    for (let k = 0; k < dots; k++) placeDot(map, crowd, dot++, s, yard, k, beside);
   }
   return crowd;
 }

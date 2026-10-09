@@ -1,6 +1,7 @@
 import { CROWD_HUES, CROWD_Q, CROWD_STOPS, WORLD_SIZES, type WorldMap } from '@nomos/sim-protocol/world-map';
 import { describe, expect, it } from 'vitest';
 import { crowdOf } from '../src/crowd/crowd.ts';
+import { legCells } from './crowd-legs.ts';
 
 const WIDTH = 12;
 const HEIGHT = 8;
@@ -13,7 +14,7 @@ const PLACES = [
 ] as const;
 // 71 dots, the most a reach of 1 holds, on open land: the settlement and its four neighbours are all country 1.
 const OPEN: Place = [2, 3, 7100, 1];
-// The furthest, in cells either way, a stop may stand from its settlement: its reach, plus the block around its home.
+// The furthest, in cells either way, a stop may stand from its settlement: its reach, plus a step beside its home.
 const FARTHEST = [3, 2, 2];
 const OWNERS = [...Array<number>(90).fill(0), ...Array<number>(9).fill(1), 2];
 
@@ -112,12 +113,30 @@ describe('the map crowd', () => {
     });
   });
 
-  it("puts a dot's later stops beside its first", () => {
+  it("puts a dot's stops 0 and 2 in its home cell", () => {
+    OWNERS.forEach((_, dot) => {
+      expect(stopCell(crowd.stops, dot, 2), `dot ${dot}`).toEqual(stopCell(crowd.stops, dot, 0));
+    });
+  });
+
+  it("puts a dot's stops 1 and 3 in its home cell or an orthogonal neighbour", () => {
+    let beside = 0;
     OWNERS.forEach((_, dot) => {
       const [hx, hy] = stopCell(crowd.stops, dot, 0);
-      for (let stop = 1; stop < CROWD_STOPS; stop++) {
+      for (const stop of [1, 3]) {
         const [x, y] = stopCell(crowd.stops, dot, stop);
-        expect(apart(x, y, hx, hy), `dot ${dot} stop ${stop}`).toBeLessThanOrEqual(1);
+        expect(Math.abs(x - hx) + Math.abs(y - hy), `dot ${dot} stop ${stop}`).toBeLessThanOrEqual(1);
+        if (x !== hx || y !== hy) beside++;
+      }
+    });
+    expect(beside, 'stops in a neighbour of their home').toBeGreaterThan(0);
+  });
+
+  it("keeps every straight leg on its settlement's own country", () => {
+    OWNERS.forEach((s, dot) => {
+      for (const cell of legCells(crowd, dot, WIDTH)) {
+        const where = `dot ${dot} crosses cell ${cell % WIDTH}, ${Math.floor(cell / WIDTH)}`;
+        expect(world.country[cell], where).toBe(PLACES[s][3]);
       }
     });
   });

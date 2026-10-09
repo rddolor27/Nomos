@@ -9,6 +9,7 @@ import {
 import { describe, expect, it } from 'vitest';
 import { crowdOf } from '../src/crowd/crowd.ts';
 import { generateWorld } from '../src/index.ts';
+import { legCells } from './crowd-legs.ts';
 
 const WATER = new Set([BIOME_NAMES.indexOf('ocean'), BIOME_NAMES.indexOf('lake')]);
 const WORLDS: [number, 'standard' | 'large'][] = [
@@ -37,14 +38,30 @@ function strays(map: WorldMap, crowd: MapCrowd, owner: readonly number[]): strin
   return out;
 }
 
+// Every dot with a straight leg that crosses another country's land or water.
+function legStrays(map: WorldMap, crowd: MapCrowd, owner: readonly number[]): string[] {
+  const out: string[] = [];
+  owner.forEach((s, dot) => {
+    const off = legCells(crowd, dot, map.width).find(
+      (cell) => map.country[cell] !== map.settlements.country[s] || WATER.has(map.biome[cell]),
+    );
+    if (off !== undefined) {
+      out.push(`dot ${dot} of settlement ${s} crosses cell ${off % map.width}, ${Math.floor(off / map.width)}`);
+    }
+  });
+  return out;
+}
+
 describe('the map crowd on real worlds', { timeout: 120_000 }, () => {
-  it("puts a dot per 100 people on its own country's land, in every hue", () => {
+  it("puts a dot per 100 people, and every stop and straight leg, on its own country's land, in every hue", () => {
     for (const [seed, size] of WORLDS) {
       const map = generateWorld(seed, size);
       const crowd = crowdOf(map);
       const owner = owners(map);
       expect(crowd.hue.length, `${size} ${seed}`).toBe(owner.length);
       expect(strays(map, crowd, owner), `${size} ${seed}`).toEqual([]);
+      const legs = legStrays(map, crowd, owner);
+      expect(legs.slice(0, 5), `${size} ${seed}: ${legs.length} dots`).toEqual([]);
       expect(new Set(crowd.hue).size, `${size} ${seed}`).toBe(CROWD_HUES.length);
     }
   });
