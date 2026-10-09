@@ -48,3 +48,7 @@ A living summary for the next session, appended as work lands. Start with `CLAUD
 ## Progress log
 
 - 10 Oct: handoff written. Next: the town view fills the screen (`openPlaceCamera`).
+- 10 Oct: **the town view opens filling the screen,** done.
+  - `openPlaceCamera` takes the smallest step at which the place covers the view, and never less than 2 CSS px an art px. Fit still shows the whole place.
+  - Proof: `place-camera.test.ts`, 5 of 5, plus lint and typecheck. The browser specs weren't rerun, so rerun `town-view.spec.ts` next session.
+  - Next: M3.1 part 2, step 1, bigger places, with `sim-engineer`.
