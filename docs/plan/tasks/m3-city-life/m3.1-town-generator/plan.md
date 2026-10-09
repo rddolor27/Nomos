@@ -260,10 +260,11 @@ The owner also said to settle open calls ourselves. The rulings below are those 
 
 ### Rulings (sim-architect, 10 October 2026; the owner can overturn them)
 
-1. **Sizes.** A capital or city is 160×100 tiles and a town 140×80. Villages (80×48), hamlets (56×32) and vistas (30×18) keep theirs.
+1. **Sizes** (the coordinator's ruling, 10 October 2026, over the sim-architect's 160×100 and 140×80). A capital or city is 176×112 tiles and a town 152×96. Villages (80×48), hamlets (56×32) and vistas (30×18) keep theirs.
    - The wall ring is 129×81 tiles in a capital or city and 113×61 in a town, centred on the plaza.
-   - Measured here, a 129×81 ring holds about 420 houses with 2-tile streets, whatever the place's size, so the owner's 160×100 keeps the core's count.
-   - Its farm belt is thin, though: about 15 tiles east and west and 9 north and south. 176×112 would give 24 and 16, at about 1.2× the tiles and build time (Open questions).
+   - Measured here, a 129×81 ring holds about 420 houses with 2-tile streets, whatever the place's size, so the core keeps the owner's count.
+   - The farm belt is about 24 tiles east and west and 16 north and south of a capital's or city's wall, and about 20 and 17 of a town's. At 160×100 it would be 15 and 9, about one row of plots north and south, too thin for the owner's "city outskirts to have farms".
+   - The cost is about 1.2× the tiles of 160×100. If Task 11's builds break Task 9's budget at these sizes, fall back to 160×100 and 140×80, and report it.
    - Villages and hamlets have no wall, and over 90% of their land is open today, so they hold a farm belt as they are.
 2. **The core holds the count, so the density falls across the wall.** The streets fill the ring nearly full, so the gradient shows in what is built: apartments and tall terraces by the plaza, low terraces and detached houses by the wall, cabins and farmhouses in the suburbs, then fields. Houses aim at bell-shaped targets, so the fill starts at the plaza and the tail spills past the gates.
 3. **Highcourt is re-exported in every task that moves it.** The other session's `apps/web/test/town.test.ts` holds the port's Highcourt to `town.nmap` tile for tile, so the art the Town skin draws is the ground the sim walks. The owner's one re-export at the end becomes a check (Task 20). The replay hash stays, because the CLI runs on the stand-in ground.
@@ -467,7 +468,7 @@ Tasks 11–15 each change `place.py` by their rules, then run these steps. Each 
 - `road_sides(site)` / `roadSides`: `lay_roads`' sides, which the spokes share.
 
 **Rules:**
-1. **Sizes:** a capital or city 160×100, a town 140×80, the rest unchanged.
+1. **Sizes:** a capital or city 176×112, a town 152×96, the rest unchanged (Ruling 1, with its fallback).
 2. **Laying a road tile,** `lay_road`: skip a tile outside the place, or one where `step` is `None` that isn't a road already. Mark it a road. Water keeps its kind; any other tile takes the kind if it is open ground or a lower-ranked road. `lay_path`, which lays lanes, stays as it is.
 3. **Width:** a road `w` tiles wide covers, at each cell of its centreline, the `w`×`w` square whose top-left is `(x − (w − 1) // 2, y − (w − 1) // 2)`. `pave` keeps today's crossings for lanes and tracks, so vistas don't change. For wider roads it lays the squares, then the bridges.
 4. **Stone bridges:** a wide road crosses water in a straight line, as `route` and `straight` keep it.
@@ -799,16 +800,18 @@ It may run beside Tasks 11–16, since it shares no file with them and road clas
 
 - **The core's count sits near the owner's floor.** The probe holds about 420 at full packing, and the greens, trades and large civic set take some of that. Task 13 tunes in a fixed order.
 - **Python is slow.** Goldens take minutes, and CI's `place_goldens.py --check --worlds 1` grows with the walled places. Measure it in Task 11; if it passes 5 minutes, ask the coordinator about checking fewer of the first world's places.
-- **The farm belt is thin north and south** (Ruling 1). A town keeps about 9 rows there, less the 2 the north wall's image shades, so about one row of plots.
+- **The farm belt costs build time** (Ruling 1). 176×112 holds about 1.2× the tiles of 160×100, and every plot is a search. Task 11 measures it against Task 9's budget, with the fallback ready.
 - **Shared files:** both sessions touch `town.nmap`'s pinned tests and `assets/LICENSES.md`. The Global constraints' checks guard them.
 - **The atlas keeps growing.** Task 10's trim buys about a sixth of the page, but each new house form costs 35 frames, one for each material and roof. The test's 1,920 px line warns before the cap breaks; a second page is the fix after that.
 - **Art still being polished** changes pixels, so `places-v1.json` and the atlas move with each sheet. The coordinator regenerates them as the hand-off says.
 
 ### Open questions for the owner
 
-1. **The farm belt's depth.** 160×100 leaves about 15 tiles east and west and 9 north and south (Ruling 1). 176×112 gives 24 and 16, at about 1.2× the tiles and build time.
-2. **The first screen's blob count,** once Highcourt is 160×100. Task 20 reports what the town gives per tier, for the existing owner decision.
-3. **The walls' look.** The owner chose stone walls and a palisade on 10 October, and both are drawn, but task.md still lists approving the look as an owner decision. Does the drawn art settle it?
+1. **The first screen's blob count,** once Highcourt is 176×112. Task 20 reports what the town gives per tier, for the existing owner decision.
+
+Settled on 10 October 2026, and open to the owner's overturning:
+- **The farm belt's depth:** the coordinator chose 176×112 and 152×96 (Ruling 1).
+- **The walls' look:** the owner said to draw the assets and then add them to the plans, so the drawn walls and palisade stand. Their previews went to the owner.
 
 ## The rest of M3.1: brief
 
