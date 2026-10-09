@@ -394,7 +394,8 @@ The rest:
 The owner asked on 9 October 2026 to see each country's people on the map, as a look-only crowd. It is made beside the world, not in it, so `worldFingerprint` and `worldMapBuffers` leave it out, and no sim rule reads it.
 
 - `crowdOf(map: WorldMap): MapCrowd`, in `worldgen`'s `crowd/`, places a dot per 100 people, and at least one per settlement, settlement by settlement in id order.
-  - A dot's home is a cell of its settlement's country, within a reach that grows with the settlement's dots. Its three later stops lie in the 3 × 3 block around the home, on the same country's land.
+  - A dot's home is a cell of its settlement's country, within a reach that grows with the settlement's dots: the nearer of two random yard cells, so the crowd thins toward its edge evenly on every side.
+  - Its stops 0 and 2 stand in the home cell, and its stops 1 and 3 in the home cell or the same country's cell north, east, south or west of it. So every straight leg stays on that country's land.
   - Every draw is `draw(seed, CROWD, …)`, with first keys from 0x100, clear of `place.py`'s.
 - **In `world-map.ts`:**
   - `CROWD_HUES`: sun, lilac, rose, ice, mint and silver, `spritekit.py`'s `BODY_HUES` order;

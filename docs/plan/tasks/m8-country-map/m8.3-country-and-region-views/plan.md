@@ -1581,7 +1581,7 @@ The owner's step is done: the owner picked the five on 9 October 2026, and Task 
 **What it makes.** `crowdOf(map: WorldMap): MapCrowd` places the owner's look-only crowd, settlement by settlement in id order:
 - a dot per 100 people, and at least one;
 - each dot's home is a cell of its settlement's country within a reach that grows with its dots. It takes the nearer of two draws, so the crowd thins toward its edge;
-- three more stops in the 3 × 3 block around the home, on the same country's land;
+- three more stops in the 3 × 3 block around the home, on the same country's land. The review changed both rules after this listing: homes take the nearer of the two draws by distance, since the sorted yard sent ties north and west (f1cbb14). Stops 0 and 2 stand in the home cell and stops 1 and 3 beside it, never diagonally, so no straight leg leaves the country's land (e035a7f). The code below is the first version;
 - each stop lies in the middle three quarters of its cell, in cells times `CROWD_Q`;
 - each dot gets a random body hue, a leg of 2.5–6 s and a start somewhere in its loop.
 
