@@ -16,6 +16,11 @@ jobs:
         with:
           node-version: 24
           cache: pnpm
+      # Playwright starts every web server, so this job builds the app too, which writes its atlas pages with Pillow.
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - run: pip install -r tools/requirements.txt
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm --filter @nomos/bench budget
@@ -45,6 +50,11 @@ jobs:
         with:
           node-version: 24
           cache: pnpm
+      # The app's build writes its atlas pages, with Pillow.
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - run: pip install -r tools/requirements.txt
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm --filter @nomos/web build

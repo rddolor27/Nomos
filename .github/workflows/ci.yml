@@ -39,9 +39,8 @@ jobs:
       - run: node packages/worldgen/scripts/sweep.ts
       # The ledger gate: two days per tier with the money invariants checked every tick, so a lost cent exits non-zero.
       - run: for tier in phone phone-plus desktop; do node tools/cli/src/main.ts --seed 7 --tier "$tier" --ticks 2880; done
-      # In this order: a Vite build empties dist/, so the atlas goes in after it, then every chunk is measured.
+      # The build writes the atlas pages too, so size-limit measures them with every chunk.
       - run: pnpm --filter @nomos/web build
-      - run: python tools/atlas/build_atlas.py --out apps/web/dist/atlas
       - run: pnpm --filter @nomos/web size
       - run: node tools/bench/src/chunks.ts
       - run: |
@@ -60,7 +59,7 @@ jobs:
         with:
           node-version: 24
           cache: pnpm
-      # The app's web server builds the map's atlas page, with Pillow.
+      # The app's web server builds the app, which writes its atlas pages with Pillow.
       - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
