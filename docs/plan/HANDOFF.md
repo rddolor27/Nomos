@@ -67,3 +67,8 @@ A living summary for the next session, appended as work lands. Start with `CLAUD
   - 3,008 walkers draw in 0.59 ms median in WebGL2; 600 under Canvas2D take 0.25 ms.
   - **The bug:** walkers pile into lines, because a capital has only about 8 people loops. The render engineer is giving the crowd its own loops, about one per 10 walkers, spread over every street, capped near one walker per two loop cells.
   - When the sizes land, `apps/web/test/map-worker.test.ts`'s width-48 assertion must change with them.
+- 10 Oct: **the piling is fixed** (86437eb). The crowd has its own loops over every street, and each cell's room is split among the loops through it.
+  - The coordinator then raised the density from one walker per two loop cells to one per cell (`CELLS_PER_WALKER = 1`), so the crowd roughly doubles: seed 14's capital had 755 at two cells a walker.
+  - The street-crowd and walkers tests pass, 10 of 10. The browser specs weren't rerun.
+  - Building the crowd adds 9–12 ms to a capital in Node.
+  - Optional: export `walkableGrid` from `walks.ts`, so `street-crowd.ts` stops restating the rule.
