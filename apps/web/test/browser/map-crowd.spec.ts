@@ -13,8 +13,8 @@ const { crowd: CROWD_HEX } = JSON.parse(
   readFileSync(new URL('../../../../packages/render-gl/src/map/map-colours.json', import.meta.url), 'utf8'),
 ) as { crowd: Record<string, string> };
 const DOT_ONLY = ['sun', 'rose', 'silver'].map((hue) => Number.parseInt(CROWD_HEX[hue].slice(1), 16));
-// The labels, bar, legend and focus ring lie over the canvas, so they hide while it is read.
-const CANVAS_ONLY = '.map-labels, .map-bar, .map-legend, #map::after { visibility: hidden; }';
+// The labels, bar, legend box and focus ring lie over the canvas, so they hide while it is read.
+const CANVAS_ONLY = '.map-labels, .ui-bar, .ui-info, #map::after { visibility: hidden; }';
 
 async function openMap(page: Page): Promise<void> {
   await page.goto(TOWN);

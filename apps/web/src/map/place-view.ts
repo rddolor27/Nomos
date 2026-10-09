@@ -15,6 +15,7 @@ import { PLACE_TILE_PX, type PlaceLayout, type PlaceReply } from '@nomos/sim-pro
 import type { PlaceInfo } from './goto.ts';
 import { bindMapInput, zoomAtCentre, type MapInputTarget } from './map-input.ts';
 import { Walkers } from './walkers.ts';
+import { OverflowMenu, addToolbarStyles, group, iconButton, zoomGroup } from '../panels/toolbar.ts';
 
 // What the town view's browser tests read, as window.__map exposes the map.
 interface PlaceHook {
@@ -69,6 +70,8 @@ interface Parts {
   // so the name stays on this wrapper and the canvas is hidden from assistive tech.
   picture: HTMLElement;
   canvas: HTMLCanvasElement;
+  // The status and Try again, at the bottom of the view.
+  info: HTMLElement;
 }
 
 // Made on the first entry and kept for the page, with the atlas; the renderer lives only while a place shows.
@@ -100,16 +103,12 @@ interface PlaceView {
   returnFocus: HTMLElement | null;
 }
 
-// The town view covers the map, its bar shaped like the map's (.map-bar), over the ground the pass fills a place with.
+// The town view covers the map, with the map's bar, over the ground the pass fills a place with.
 const GROUND = `#${OUTLINE.toString(16).padStart(6, '0')}`;
 const CSS = `
-#place { grid-area: 1 / 1; z-index: 3; position: relative; overflow: hidden; touch-action: none; background: ${GROUND}; }
-#place:focus-visible { outline: none; }
-#place:focus-visible::after { content: ""; position: absolute; inset: 0; z-index: 2; border: 3px solid #f7c948;
-  pointer-events: none; }
+#place { z-index: 3; background: ${GROUND}; }
 #place .place-picture { position: absolute; inset: 0; }
 #place canvas { position: absolute; top: 0; left: 0; }
-#place h2 { margin: 0; font-size: inherit; }
 `;
 
 const KEYS =
@@ -146,36 +145,41 @@ function make<K extends keyof HTMLElementTagNameMap>(tag: K, attributes: Record<
 }
 
 function buildParts(): Parts {
+  addToolbarStyles(document);
   const style = document.createElement('style');
   style.textContent = CSS;
   document.head.append(style);
   const parts: Parts = {
     section: make('section', {
       id: 'place',
+      class: 'ui-view',
       'aria-labelledby': 'place-title',
       'aria-describedby': 'place-keys place-status',
       tabindex: '0',
       hidden: '',
     }),
     keys: make('p', { id: 'place-keys', hidden: '' }, KEYS),
-    bar: make('div', { class: 'map-bar' }),
-    back: make('button', { type: 'button' }, 'Back to map'),
-    retry: make('button', { type: 'button', hidden: '' }, 'Try again'),
-    fit: make('button', { type: 'button' }, 'Fit'),
-    zoomIn: make('button', { type: 'button', class: 'map-zoom', 'aria-label': 'Zoom in' }, '+'),
-    zoomOut: make('button', { type: 'button', class: 'map-zoom', 'aria-label': 'Zoom out' }, '\u{2212}'),
+    bar: make('div', { class: 'ui-bar' }),
+    back: iconButton(document, '\u{2190}', 'Back to map', 'btn btn-quiet'),
+    retry: make('button', { type: 'button', class: 'btn btn-primary', hidden: '' }, 'Try again'),
+    fit: make('button', { type: 'button', class: 'btn' }, 'Fit'),
+    zoomIn: make('button', { type: 'button', class: 'btn', 'aria-label': 'Zoom in' }, '+'),
+    zoomOut: make('button', { type: 'button', class: 'btn', 'aria-label': 'Zoom out' }, '\u{2212}'),
     // The map's Pause dots, by the name its walkers go by here; both share one state.
-    pause: make('button', { type: 'button', 'aria-pressed': 'false' }, 'Pause people'),
+    pause: make('button', { type: 'button', class: 'btn', 'aria-pressed': 'false' }, 'Pause people'),
     title: make('h2', { id: 'place-title' }),
     about: make('p', {}),
     status: make('p', { id: 'place-status', role: 'status' }),
     picture: make('div', { class: 'place-picture', role: 'img' }),
     canvas: make('canvas', { 'aria-hidden': 'true' }),
+    info: make('div', { class: 'ui-info' }),
   };
   const { back, retry, fit, zoomIn, zoomOut, pause, title, about, status } = parts;
-  parts.bar.append(back, retry, fit, zoomIn, zoomOut, pause, title, about, status);
+  const more = new OverflowMenu(document, 'place-more', pause);
+  parts.bar.append(back, group(document, 'ui-title', title, about), zoomGroup(document, zoomOut, zoomIn, fit), more.root);
+  parts.info.append(group(document, 'ui-panel', status, retry));
   parts.picture.append(parts.canvas);
-  parts.section.append(parts.keys, parts.bar, parts.picture);
+  parts.section.append(parts.keys, parts.bar, parts.picture, parts.info);
   return parts;
 }
 
@@ -231,8 +235,8 @@ function bindView(view: PlaceView): void {
   parts.zoomIn.addEventListener('click', () => zoomAtCentre(parts.section, target, 1));
   parts.zoomOut.addEventListener('click', () => zoomAtCentre(parts.section, target, -1));
   parts.pause.addEventListener('click', () => togglePause(view));
-  // A drag captures the pointer on the section, which would take a bar button's click.
-  parts.bar.addEventListener('pointerdown', (event) => event.stopPropagation());
+  // A drag captures the pointer on the section, which would take a button's click.
+  for (const part of [parts.bar, parts.info]) part.addEventListener('pointerdown', (event) => event.stopPropagation());
   view.reducedMotion.addEventListener('change', () => onMotionPreference(view));
   bindMapInput(parts.section, target);
   observeDeviceSize(parts.section, (width, height, dpr) => onSize(view, width, height, dpr));

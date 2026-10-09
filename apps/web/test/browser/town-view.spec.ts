@@ -200,7 +200,7 @@ test.describe('in one engine', () => {
     const capital = await goToCapital(page);
     await page.getByRole('button', { name: `Enter ${capital}` }).focus();
     // Each press pans four cells, so a few leave every place behind.
-    const enter = page.locator('#map .map-bar button', { hasText: /^Enter / });
+    const enter = page.locator('#map .ui-info button', { hasText: /^Enter / });
     for (let press = 0; press < 20 && (await enter.isVisible()); press++) {
       await page.keyboard.press('ArrowRight');
       await page.waitForTimeout(100);

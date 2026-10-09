@@ -22,6 +22,7 @@ import { mountLabels, type Labels } from './labels.ts';
 import { legendRows, mountLegend } from './legend.ts';
 import { bindMapInput, zoomAtCentre, type MapInputTarget } from './map-input.ts';
 import type { PlaceHost } from './place-view.ts';
+import { OverflowMenu, addToolbarStyles, group, iconButton, zoomGroup } from '../panels/toolbar.ts';
 
 // What the map's browser tests read, as window.__app exposes the town.
 interface MapHook {
@@ -59,6 +60,8 @@ interface Parts {
   canvas: HTMLCanvasElement;
   labels: HTMLElement;
   legend: HTMLElement;
+  // The legend, the status and Enter, at the bottom of the map.
+  info: HTMLElement;
 }
 
 // A place asked of the map worker, which answers it or fails it in time.
@@ -124,28 +127,17 @@ const PAN_CELLS = 4;
 const PLACE_TIMEOUT_MS = 15_000;
 
 const WATER = `#${LINE_COLOURS.water.toString(16).padStart(6, '0')}`;
-// The map covers the town's view and HUD, so its bar and focus ring match theirs. Labels carry a dark outline to read on
-// any tile, and swatches a light edge for the darker country colours.
+// The bar, the focus ring and the buttons come from the toolbar and index.html. Labels carry a dark outline to read on any
+// tile, and swatches a light edge for the darker country colours.
 const CSS = `
-#map { grid-area: 1 / 1; z-index: 2; position: relative; overflow: hidden; touch-action: none; background: ${WATER}; }
-#map:focus-visible { outline: none; }
-#map:focus-visible::after { content: ""; position: absolute; inset: 0; z-index: 2; border: 3px solid #f7c948;
-  pointer-events: none; }
+#map { z-index: 2; background: ${WATER}; }
 #map canvas { position: absolute; top: 0; left: 0; }
-.map-bar { position: absolute; top: 0; left: 0; right: 0; z-index: 1; display: flex; flex-wrap: wrap; align-items: center;
-  gap: .3rem 1rem; padding: .4rem .75rem; background: rgb(26 28 36 / .88); }
-.map-bar button { font: inherit; min-width: 5.5em; padding: .2rem .8rem; }
-.map-bar .map-zoom { min-width: 2.5em; }
-.map-bar select { font: inherit; padding: .2rem .4rem; }
-.map-bar [aria-pressed="true"] { background: #f7c948; color: #1a1c24; }
-.map-bar p { margin: 0; }
 .map-labels { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
 .map-label { position: absolute; top: 0; left: 0; white-space: nowrap; font: 600 12px/1.2 system-ui, sans-serif;
-  text-shadow: -1px -1px #1a1c24, 1px -1px #1a1c24, -1px 1px #1a1c24, 1px 1px #1a1c24; }
+  text-shadow: -1px -1px var(--ui-ink), 1px -1px var(--ui-ink), -1px 1px var(--ui-ink), 1px 1px var(--ui-ink); }
 .map-country { font-size: 14px; letter-spacing: .12em; text-transform: uppercase; }
-.map-legend { position: absolute; left: .75rem; bottom: .75rem; z-index: 1; margin: 0; padding: .4rem .75rem;
-  list-style: none; background: rgb(26 28 36 / .88); }
-.map-swatch { display: inline-block; width: .8em; height: .8em; margin-right: .5em; outline: 1px solid #f6f0de;
+.map-legend { margin: 0; padding: 0; list-style: none; }
+.map-swatch { display: inline-block; width: .8em; height: .8em; margin-right: .5em; outline: 1px solid var(--ui-text);
   vertical-align: -.05em; }
 `;
 
@@ -180,36 +172,41 @@ function byId(doc: Document, id: string): HTMLElement {
 }
 
 function buildParts(doc: Document): Parts {
+  addToolbarStyles(doc);
   const style = doc.createElement('style');
   style.textContent = CSS;
   doc.head.append(style);
   const parts: Parts = {
     section: make(doc, 'section', {
       id: 'map',
+      class: 'ui-view',
       'aria-label': 'Map of the world',
       'aria-describedby': 'map-keys map-status',
       tabindex: '0',
       hidden: '',
     }),
     keys: make(doc, 'p', { id: 'map-keys', hidden: '' }, KEYS),
-    bar: make(doc, 'div', { class: 'map-bar' }),
-    close: make(doc, 'button', { type: 'button' }, 'Close map'),
-    fit: make(doc, 'button', { type: 'button' }, 'Fit'),
-    zoomIn: make(doc, 'button', { type: 'button', class: 'map-zoom', 'aria-label': 'Zoom in' }, '+'),
-    zoomOut: make(doc, 'button', { type: 'button', class: 'map-zoom', 'aria-label': 'Zoom out' }, '\u{2212}'),
-    flat: make(doc, 'button', { type: 'button', 'aria-pressed': 'false' }, 'Countries'),
-    pauseDots: make(doc, 'button', { type: 'button', 'aria-pressed': 'false' }, 'Pause dots'),
+    bar: make(doc, 'div', { class: 'ui-bar' }),
+    close: iconButton(doc, '\u{2715}', 'Close map', 'btn btn-quiet'),
+    fit: make(doc, 'button', { type: 'button', class: 'btn' }, 'Fit'),
+    zoomIn: make(doc, 'button', { type: 'button', class: 'btn', 'aria-label': 'Zoom in' }, '+'),
+    zoomOut: make(doc, 'button', { type: 'button', class: 'btn', 'aria-label': 'Zoom out' }, '\u{2212}'),
+    flat: make(doc, 'button', { type: 'button', class: 'btn', 'aria-pressed': 'false' }, 'Countries'),
+    pauseDots: make(doc, 'button', { type: 'button', class: 'btn', 'aria-pressed': 'false' }, 'Pause dots'),
     goTo: make(doc, 'select', { 'aria-label': 'Go to a settlement', disabled: '' }),
-    enter: make(doc, 'button', { type: 'button', hidden: '' }, 'Enter'),
+    enter: make(doc, 'button', { type: 'button', class: 'btn btn-primary', hidden: '' }, 'Enter'),
     status: make(doc, 'p', { id: 'map-status', role: 'status' }),
     canvas: make(doc, 'canvas', { role: 'img', 'aria-label': 'Map of the countries; the legend after it lists each one' }),
     labels: make(doc, 'div', { class: 'map-labels', 'aria-hidden': 'true' }),
     legend: make(doc, 'div', {}),
+    info: make(doc, 'div', { class: 'ui-info' }),
   };
   parts.goTo.append(make(doc, 'option', { value: '', disabled: '', hidden: '', selected: '' }, 'Go to…'));
-  const { close, fit, zoomIn, zoomOut, flat, pauseDots, goTo, enter, status } = parts;
-  parts.bar.append(close, fit, zoomIn, zoomOut, flat, pauseDots, goTo, enter, status);
-  parts.section.append(parts.keys, parts.bar, parts.canvas, parts.labels, parts.legend);
+  const { close, fit, zoomIn, zoomOut, flat, pauseDots, goTo, enter, status, legend } = parts;
+  const more = new OverflowMenu(doc, 'map-more', flat, pauseDots);
+  parts.bar.append(close, zoomGroup(doc, zoomOut, zoomIn, fit), goTo, more.root);
+  parts.info.append(enter, group(doc, 'ui-panel', status, legend));
+  parts.section.append(parts.keys, parts.bar, parts.canvas, parts.labels, parts.info);
   return parts;
 }
 
@@ -286,8 +283,8 @@ function bindPanel(panel: MapPanel): void {
   parts.enter.addEventListener('click', () => enter(panel, panel.focus, parts.enter));
   bindGoTo(panel, parts.goTo);
   // A drag captures the pointer on the section, which would take a bar button's click, and a press on the bar or the
-  // legend is no tap on the map, so both keep their pointers.
-  for (const part of [parts.bar, parts.legend]) part.addEventListener('pointerdown', (event) => event.stopPropagation());
+  // info box is no tap on the map, so both keep their pointers.
+  for (const part of [parts.bar, parts.info]) part.addEventListener('pointerdown', (event) => event.stopPropagation());
   panel.reducedMotion.addEventListener('change', () => onMotionPreference(panel));
   bindMapInput(parts.section, target);
   observeDeviceSize(parts.section, (width, height, dpr) => onSize(panel, width, height, dpr));
