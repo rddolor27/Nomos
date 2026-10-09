@@ -5,10 +5,14 @@ import table from './map-colours.json';
 // map-only: no body, building, soldier or police officer ever wears one (Countries rule 5).
 export const COUNTRY_COLOURS: readonly number[] = table.countries.map(rgbOf);
 
+// spritekit.py's palette OUTLINE, which test_worldgen.py holds the table's outline to: the dark outline characters wear
+// by day (web rules), and the ground placedraw.py fills a place with.
+export const OUTLINE = rgbOf(table.outline);
+
 // The crowd's body hues by CROWD_HUES index: spritekit.py's BODY_HUES bases, which test_worldgen.py holds them to,
-// and the dark outline characters wear by day (web rules).
+// and their outline.
 export const CROWD_COLOURS: readonly number[] = CROWD_HUES.map((hue) => rgbOf(table.crowd[hue]));
-export const CROWD_OUTLINE = rgbOf(table.outline);
+export const CROWD_OUTLINE = OUTLINE;
 
 export const LINE_COLOURS = {
   water: rgbOf(table.water),

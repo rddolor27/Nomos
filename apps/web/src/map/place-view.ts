@@ -1,5 +1,5 @@
 import { observeDeviceSize } from '@nomos/render-gl';
-import { loadAtlasPage, type AtlasPage } from '@nomos/render-gl/map';
+import { OUTLINE, loadAtlasPage, type AtlasPage } from '@nomos/render-gl/map';
 import {
   PLACE_SCALES,
   clampPlaceCamera,
@@ -100,9 +100,10 @@ interface PlaceView {
   returnFocus: HTMLElement | null;
 }
 
-// The town view covers the map, its bar shaped like the map's (.map-bar), over the place's own dark ground.
+// The town view covers the map, its bar shaped like the map's (.map-bar), over the ground the pass fills a place with.
+const GROUND = `#${OUTLINE.toString(16).padStart(6, '0')}`;
 const CSS = `
-#place { grid-area: 1 / 1; z-index: 3; position: relative; overflow: hidden; touch-action: none; background: #020202; }
+#place { grid-area: 1 / 1; z-index: 3; position: relative; overflow: hidden; touch-action: none; background: ${GROUND}; }
 #place:focus-visible { outline: none; }
 #place:focus-visible::after { content: ""; position: absolute; inset: 0; z-index: 2; border: 3px solid #f7c948;
   pointer-events: none; }

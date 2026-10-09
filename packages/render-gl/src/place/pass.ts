@@ -1,4 +1,4 @@
-import { CROWD_OUTLINE } from '../map/colours.ts';
+import { OUTLINE } from '../map/colours.ts';
 import type { AtlasPage } from '../map/frames.ts';
 import { link, nearestTexture } from '../map/gl.ts';
 import { INSTANCE_SHORTS, type PlaceSprites } from './sprites.ts';
@@ -51,8 +51,8 @@ void main() {
   colour = vec4(texel.rgb, 1.0);
 }`;
 
-// placedraw.py fills the place with the palette's OUTLINE, which map-colours.json keeps as the outline.
-const BACKGROUND = [CROWD_OUTLINE >> 16, (CROWD_OUTLINE >> 8) & 255, CROWD_OUTLINE & 255].map((channel) => channel / 255);
+// placedraw.py fills a place with the palette's OUTLINE.
+const BACKGROUND = [OUTLINE >> 16, (OUTLINE >> 8) & 255, OUTLINE & 255].map((channel) => channel / 255);
 
 export interface PlacePass {
   setAtlas(page: AtlasPage): void;

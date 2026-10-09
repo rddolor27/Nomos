@@ -1,4 +1,4 @@
-import { CROWD_OUTLINE } from '../map/colours.ts';
+import { OUTLINE } from '../map/colours.ts';
 import type { AtlasPage } from '../map/frames.ts';
 import { INSTANCE_SHORTS, type PlaceSprites } from './sprites.ts';
 
@@ -9,7 +9,8 @@ export interface Canvas2dPainter {
   dispose(): void;
 }
 
-const BACKGROUND = `#${CROWD_OUTLINE.toString(16).padStart(6, '0')}`;
+// placedraw.py fills a place with the palette's OUTLINE.
+const BACKGROUND = `#${OUTLINE.toString(16).padStart(6, '0')}`;
 
 // Sprites from..to of the list, in the WebGL2 pass's order, each one exact drawImage at whole device pixels, skipping
 // any that lies off the canvas. camX and camY are the view's snapped top-left.
