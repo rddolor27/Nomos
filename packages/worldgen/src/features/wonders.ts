@@ -151,7 +151,7 @@ function eligible(world: FeatureWorld, land: Land, cell: number): boolean {
   return land.water[cell] === 0 && land.town[cell] >= 2 && land.big[cell] >= 3 && framed(world, cell);
 }
 
-function crowded(x: number, y: number, placed: readonly Spot[]): boolean {
+export function crowded(x: number, y: number, placed: readonly Spot[]): boolean {
   for (let k = 0; k < placed.length; k++) {
     if (dist2(x, y, placed[k].x, placed[k].y) < WONDER_GAP2) return true;
   }
