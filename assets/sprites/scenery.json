@@ -2,13 +2,397 @@
   "image": "scenery.png",
   "size": [
     256,
-    112
+    243
   ],
   "tile": 16,
   "frames": {
-    "cliff_corner-left": {
-      "x": 133,
+    "bridge_country_horizontal_end-left": {
+      "x": 102,
       "y": 0,
+      "w": 16,
+      "h": 58,
+      "anchor": [
+        8,
+        39
+      ],
+      "snow": "bridge_country_horizontal_end-left_snow",
+      "footprint": [
+        1,
+        2
+      ],
+      "joins": "r",
+      "layer": "ground"
+    },
+    "bridge_country_horizontal_end-left_snow": {
+      "x": 119,
+      "y": 0,
+      "w": 16,
+      "h": 58,
+      "anchor": [
+        8,
+        39
+      ],
+      "layer": "snow",
+      "footprint": [
+        1,
+        2
+      ]
+    },
+    "bridge_country_horizontal_end-right": {
+      "x": 136,
+      "y": 0,
+      "w": 16,
+      "h": 58,
+      "anchor": [
+        8,
+        39
+      ],
+      "snow": "bridge_country_horizontal_end-right_snow",
+      "footprint": [
+        1,
+        2
+      ],
+      "joins": "l",
+      "layer": "ground"
+    },
+    "bridge_country_horizontal_end-right_snow": {
+      "x": 153,
+      "y": 0,
+      "w": 16,
+      "h": 58,
+      "anchor": [
+        8,
+        39
+      ],
+      "layer": "snow",
+      "footprint": [
+        1,
+        2
+      ]
+    },
+    "bridge_country_horizontal_span": {
+      "x": 170,
+      "y": 0,
+      "w": 16,
+      "h": 58,
+      "anchor": [
+        8,
+        39
+      ],
+      "snow": "bridge_country_horizontal_span_snow",
+      "footprint": [
+        1,
+        2
+      ],
+      "joins": "lr",
+      "layer": "ground"
+    },
+    "bridge_country_horizontal_span_snow": {
+      "x": 187,
+      "y": 0,
+      "w": 16,
+      "h": 58,
+      "anchor": [
+        8,
+        39
+      ],
+      "layer": "snow",
+      "footprint": [
+        1,
+        2
+      ]
+    },
+    "bridge_country_vertical_end-bottom": {
+      "x": 100,
+      "y": 75,
+      "w": 52,
+      "h": 16,
+      "anchor": [
+        26,
+        15
+      ],
+      "snow": "bridge_country_vertical_end-bottom_snow",
+      "footprint": [
+        2,
+        1
+      ],
+      "joins": "u",
+      "layer": "ground"
+    },
+    "bridge_country_vertical_end-bottom_snow": {
+      "x": 153,
+      "y": 75,
+      "w": 52,
+      "h": 16,
+      "anchor": [
+        26,
+        15
+      ],
+      "layer": "snow",
+      "footprint": [
+        2,
+        1
+      ]
+    },
+    "bridge_country_vertical_end-top": {
+      "x": 0,
+      "y": 108,
+      "w": 52,
+      "h": 16,
+      "anchor": [
+        26,
+        15
+      ],
+      "snow": "bridge_country_vertical_end-top_snow",
+      "footprint": [
+        2,
+        1
+      ],
+      "joins": "",
+      "layer": "ground"
+    },
+    "bridge_country_vertical_end-top_snow": {
+      "x": 53,
+      "y": 108,
+      "w": 52,
+      "h": 16,
+      "anchor": [
+        26,
+        15
+      ],
+      "layer": "snow",
+      "footprint": [
+        2,
+        1
+      ]
+    },
+    "bridge_country_vertical_span": {
+      "x": 106,
+      "y": 108,
+      "w": 52,
+      "h": 16,
+      "anchor": [
+        26,
+        15
+      ],
+      "snow": "bridge_country_vertical_span_snow",
+      "footprint": [
+        2,
+        1
+      ],
+      "joins": "u",
+      "layer": "ground"
+    },
+    "bridge_country_vertical_span_snow": {
+      "x": 159,
+      "y": 108,
+      "w": 52,
+      "h": 16,
+      "anchor": [
+        26,
+        15
+      ],
+      "layer": "snow",
+      "footprint": [
+        2,
+        1
+      ]
+    },
+    "bridge_main_horizontal_end-left": {
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 74,
+      "anchor": [
+        8,
+        55
+      ],
+      "snow": "bridge_main_horizontal_end-left_snow",
+      "footprint": [
+        1,
+        3
+      ],
+      "joins": "r",
+      "layer": "ground"
+    },
+    "bridge_main_horizontal_end-left_snow": {
+      "x": 17,
+      "y": 0,
+      "w": 16,
+      "h": 74,
+      "anchor": [
+        8,
+        55
+      ],
+      "layer": "snow",
+      "footprint": [
+        1,
+        3
+      ]
+    },
+    "bridge_main_horizontal_end-right": {
+      "x": 34,
+      "y": 0,
+      "w": 16,
+      "h": 74,
+      "anchor": [
+        8,
+        55
+      ],
+      "snow": "bridge_main_horizontal_end-right_snow",
+      "footprint": [
+        1,
+        3
+      ],
+      "joins": "l",
+      "layer": "ground"
+    },
+    "bridge_main_horizontal_end-right_snow": {
+      "x": 51,
+      "y": 0,
+      "w": 16,
+      "h": 74,
+      "anchor": [
+        8,
+        55
+      ],
+      "layer": "snow",
+      "footprint": [
+        1,
+        3
+      ]
+    },
+    "bridge_main_horizontal_span": {
+      "x": 68,
+      "y": 0,
+      "w": 16,
+      "h": 74,
+      "anchor": [
+        8,
+        55
+      ],
+      "snow": "bridge_main_horizontal_span_snow",
+      "footprint": [
+        1,
+        3
+      ],
+      "joins": "lr",
+      "layer": "ground"
+    },
+    "bridge_main_horizontal_span_snow": {
+      "x": 85,
+      "y": 0,
+      "w": 16,
+      "h": 74,
+      "anchor": [
+        8,
+        55
+      ],
+      "layer": "snow",
+      "footprint": [
+        1,
+        3
+      ]
+    },
+    "bridge_main_vertical_end-bottom": {
+      "x": 0,
+      "y": 125,
+      "w": 68,
+      "h": 16,
+      "anchor": [
+        34,
+        15
+      ],
+      "snow": "bridge_main_vertical_end-bottom_snow",
+      "footprint": [
+        3,
+        1
+      ],
+      "joins": "u",
+      "layer": "ground"
+    },
+    "bridge_main_vertical_end-bottom_snow": {
+      "x": 69,
+      "y": 125,
+      "w": 68,
+      "h": 16,
+      "anchor": [
+        34,
+        15
+      ],
+      "layer": "snow",
+      "footprint": [
+        3,
+        1
+      ]
+    },
+    "bridge_main_vertical_end-top": {
+      "x": 138,
+      "y": 125,
+      "w": 68,
+      "h": 16,
+      "anchor": [
+        34,
+        15
+      ],
+      "snow": "bridge_main_vertical_end-top_snow",
+      "footprint": [
+        3,
+        1
+      ],
+      "joins": "",
+      "layer": "ground"
+    },
+    "bridge_main_vertical_end-top_snow": {
+      "x": 0,
+      "y": 142,
+      "w": 68,
+      "h": 16,
+      "anchor": [
+        34,
+        15
+      ],
+      "layer": "snow",
+      "footprint": [
+        3,
+        1
+      ]
+    },
+    "bridge_main_vertical_span": {
+      "x": 69,
+      "y": 142,
+      "w": 68,
+      "h": 16,
+      "anchor": [
+        34,
+        15
+      ],
+      "snow": "bridge_main_vertical_span_snow",
+      "footprint": [
+        3,
+        1
+      ],
+      "joins": "u",
+      "layer": "ground"
+    },
+    "bridge_main_vertical_span_snow": {
+      "x": 138,
+      "y": 142,
+      "w": 68,
+      "h": 16,
+      "anchor": [
+        34,
+        15
+      ],
+      "layer": "snow",
+      "footprint": [
+        3,
+        1
+      ]
+    },
+    "cliff_corner-left": {
+      "x": 207,
+      "y": 142,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -17,8 +401,8 @@
       ]
     },
     "cliff_corner-right": {
-      "x": 150,
-      "y": 0,
+      "x": 224,
+      "y": 142,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -27,8 +411,8 @@
       ]
     },
     "cliff_face_0": {
-      "x": 167,
-      "y": 0,
+      "x": 0,
+      "y": 159,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -37,8 +421,8 @@
       ]
     },
     "cliff_face_1": {
-      "x": 184,
-      "y": 0,
+      "x": 17,
+      "y": 159,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -47,8 +431,8 @@
       ]
     },
     "cliff_foot": {
-      "x": 201,
-      "y": 0,
+      "x": 34,
+      "y": 159,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -57,8 +441,8 @@
       ]
     },
     "cliff_foot-water_0": {
-      "x": 218,
-      "y": 0,
+      "x": 51,
+      "y": 159,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -67,8 +451,8 @@
       ]
     },
     "cliff_foot-water_1": {
-      "x": 235,
-      "y": 0,
+      "x": 68,
+      "y": 159,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -77,8 +461,8 @@
       ]
     },
     "cliff_top": {
-      "x": 0,
-      "y": 33,
+      "x": 85,
+      "y": 159,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -87,8 +471,8 @@
       ]
     },
     "prop_beach-rocks": {
-      "x": 220,
-      "y": 84,
+      "x": 50,
+      "y": 227,
       "w": 20,
       "h": 13,
       "anchor": [
@@ -97,8 +481,8 @@
       ]
     },
     "prop_footbridge": {
-      "x": 187,
-      "y": 84,
+      "x": 17,
+      "y": 227,
       "w": 32,
       "h": 15,
       "anchor": [
@@ -108,8 +492,8 @@
       "layer": "ground"
     },
     "prop_lily-pads_0": {
-      "x": 0,
-      "y": 101,
+      "x": 71,
+      "y": 227,
       "w": 17,
       "h": 11,
       "anchor": [
@@ -119,8 +503,8 @@
       "layer": "ground"
     },
     "prop_lily-pads_1": {
-      "x": 18,
-      "y": 101,
+      "x": 89,
+      "y": 227,
       "w": 17,
       "h": 11,
       "anchor": [
@@ -130,8 +514,8 @@
       "layer": "ground"
     },
     "prop_picnic-table": {
-      "x": 17,
-      "y": 33,
+      "x": 102,
+      "y": 159,
       "w": 24,
       "h": 16,
       "anchor": [
@@ -140,8 +524,8 @@
       ]
     },
     "prop_reeds": {
-      "x": 42,
-      "y": 33,
+      "x": 127,
+      "y": 159,
       "w": 13,
       "h": 16,
       "anchor": [
@@ -150,8 +534,8 @@
       ]
     },
     "prop_stepping-stones": {
-      "x": 36,
-      "y": 101,
+      "x": 107,
+      "y": 227,
       "w": 25,
       "h": 7,
       "anchor": [
@@ -161,8 +545,8 @@
       "layer": "ground"
     },
     "prop_stone-steps": {
-      "x": 99,
-      "y": 0,
+      "x": 66,
+      "y": 75,
       "w": 14,
       "h": 23,
       "anchor": [
@@ -172,8 +556,8 @@
       "layer": "ground"
     },
     "prop_viewer": {
-      "x": 114,
-      "y": 0,
+      "x": 81,
+      "y": 75,
       "w": 18,
       "h": 19,
       "anchor": [
@@ -182,8 +566,8 @@
       ]
     },
     "prop_viewpoint-rail": {
-      "x": 56,
-      "y": 33,
+      "x": 141,
+      "y": 159,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -192,8 +576,8 @@
       ]
     },
     "shore_grass_e_0": {
-      "x": 73,
-      "y": 33,
+      "x": 158,
+      "y": 159,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -203,8 +587,8 @@
       "corners": "1010"
     },
     "shore_grass_e_1": {
-      "x": 90,
-      "y": 33,
+      "x": 175,
+      "y": 159,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -214,8 +598,8 @@
       "corners": "1010"
     },
     "shore_grass_n_0": {
-      "x": 107,
-      "y": 33,
+      "x": 192,
+      "y": 159,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -225,8 +609,8 @@
       "corners": "0011"
     },
     "shore_grass_n_1": {
-      "x": 124,
-      "y": 33,
+      "x": 209,
+      "y": 159,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -236,8 +620,8 @@
       "corners": "0011"
     },
     "shore_grass_ne-inner_0": {
-      "x": 141,
-      "y": 33,
+      "x": 226,
+      "y": 159,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -247,8 +631,8 @@
       "corners": "1011"
     },
     "shore_grass_ne-inner_1": {
-      "x": 158,
-      "y": 33,
+      "x": 0,
+      "y": 176,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -258,8 +642,8 @@
       "corners": "1011"
     },
     "shore_grass_ne-outer_0": {
-      "x": 175,
-      "y": 33,
+      "x": 17,
+      "y": 176,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -269,8 +653,8 @@
       "corners": "0010"
     },
     "shore_grass_ne-outer_1": {
-      "x": 192,
-      "y": 33,
+      "x": 34,
+      "y": 176,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -280,8 +664,8 @@
       "corners": "0010"
     },
     "shore_grass_nw-inner_0": {
-      "x": 209,
-      "y": 33,
+      "x": 51,
+      "y": 176,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -291,8 +675,8 @@
       "corners": "0111"
     },
     "shore_grass_nw-inner_1": {
-      "x": 226,
-      "y": 33,
+      "x": 68,
+      "y": 176,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -302,8 +686,8 @@
       "corners": "0111"
     },
     "shore_grass_nw-outer_0": {
-      "x": 0,
-      "y": 50,
+      "x": 85,
+      "y": 176,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -313,8 +697,8 @@
       "corners": "0001"
     },
     "shore_grass_nw-outer_1": {
-      "x": 17,
-      "y": 50,
+      "x": 102,
+      "y": 176,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -324,8 +708,8 @@
       "corners": "0001"
     },
     "shore_grass_s_0": {
-      "x": 34,
-      "y": 50,
+      "x": 119,
+      "y": 176,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -335,8 +719,8 @@
       "corners": "1100"
     },
     "shore_grass_s_1": {
-      "x": 51,
-      "y": 50,
+      "x": 136,
+      "y": 176,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -346,8 +730,8 @@
       "corners": "1100"
     },
     "shore_grass_se-inner_0": {
-      "x": 68,
-      "y": 50,
+      "x": 153,
+      "y": 176,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -357,8 +741,8 @@
       "corners": "1110"
     },
     "shore_grass_se-inner_1": {
-      "x": 85,
-      "y": 50,
+      "x": 170,
+      "y": 176,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -368,8 +752,8 @@
       "corners": "1110"
     },
     "shore_grass_se-outer_0": {
-      "x": 102,
-      "y": 50,
+      "x": 187,
+      "y": 176,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -379,8 +763,8 @@
       "corners": "1000"
     },
     "shore_grass_se-outer_1": {
-      "x": 119,
-      "y": 50,
+      "x": 204,
+      "y": 176,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -390,8 +774,8 @@
       "corners": "1000"
     },
     "shore_grass_sw-inner_0": {
-      "x": 136,
-      "y": 50,
+      "x": 221,
+      "y": 176,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -401,8 +785,8 @@
       "corners": "1101"
     },
     "shore_grass_sw-inner_1": {
-      "x": 153,
-      "y": 50,
+      "x": 238,
+      "y": 176,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -412,8 +796,8 @@
       "corners": "1101"
     },
     "shore_grass_sw-outer_0": {
-      "x": 170,
-      "y": 50,
+      "x": 0,
+      "y": 193,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -423,8 +807,8 @@
       "corners": "0100"
     },
     "shore_grass_sw-outer_1": {
-      "x": 187,
-      "y": 50,
+      "x": 17,
+      "y": 193,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -434,8 +818,8 @@
       "corners": "0100"
     },
     "shore_grass_w_0": {
-      "x": 204,
-      "y": 50,
+      "x": 34,
+      "y": 193,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -445,8 +829,8 @@
       "corners": "0101"
     },
     "shore_grass_w_1": {
-      "x": 221,
-      "y": 50,
+      "x": 51,
+      "y": 193,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -456,8 +840,8 @@
       "corners": "0101"
     },
     "shore_sand_e_0": {
-      "x": 238,
-      "y": 50,
+      "x": 68,
+      "y": 193,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -467,8 +851,8 @@
       "corners": "1010"
     },
     "shore_sand_e_1": {
-      "x": 0,
-      "y": 67,
+      "x": 85,
+      "y": 193,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -478,8 +862,8 @@
       "corners": "1010"
     },
     "shore_sand_n_0": {
-      "x": 17,
-      "y": 67,
+      "x": 102,
+      "y": 193,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -489,8 +873,8 @@
       "corners": "0011"
     },
     "shore_sand_n_1": {
-      "x": 34,
-      "y": 67,
+      "x": 119,
+      "y": 193,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -500,8 +884,8 @@
       "corners": "0011"
     },
     "shore_sand_ne-inner_0": {
-      "x": 51,
-      "y": 67,
+      "x": 136,
+      "y": 193,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -511,8 +895,8 @@
       "corners": "1011"
     },
     "shore_sand_ne-inner_1": {
-      "x": 68,
-      "y": 67,
+      "x": 153,
+      "y": 193,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -522,8 +906,8 @@
       "corners": "1011"
     },
     "shore_sand_ne-outer_0": {
-      "x": 85,
-      "y": 67,
+      "x": 170,
+      "y": 193,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -533,8 +917,8 @@
       "corners": "0010"
     },
     "shore_sand_ne-outer_1": {
-      "x": 102,
-      "y": 67,
+      "x": 187,
+      "y": 193,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -544,8 +928,8 @@
       "corners": "0010"
     },
     "shore_sand_nw-inner_0": {
-      "x": 119,
-      "y": 67,
+      "x": 204,
+      "y": 193,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -555,8 +939,8 @@
       "corners": "0111"
     },
     "shore_sand_nw-inner_1": {
-      "x": 136,
-      "y": 67,
+      "x": 221,
+      "y": 193,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -566,8 +950,8 @@
       "corners": "0111"
     },
     "shore_sand_nw-outer_0": {
-      "x": 153,
-      "y": 67,
+      "x": 238,
+      "y": 193,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -577,8 +961,8 @@
       "corners": "0001"
     },
     "shore_sand_nw-outer_1": {
-      "x": 170,
-      "y": 67,
+      "x": 0,
+      "y": 210,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -588,8 +972,8 @@
       "corners": "0001"
     },
     "shore_sand_s_0": {
-      "x": 187,
-      "y": 67,
+      "x": 17,
+      "y": 210,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -599,8 +983,8 @@
       "corners": "1100"
     },
     "shore_sand_s_1": {
-      "x": 204,
-      "y": 67,
+      "x": 34,
+      "y": 210,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -610,8 +994,8 @@
       "corners": "1100"
     },
     "shore_sand_se-inner_0": {
-      "x": 221,
-      "y": 67,
+      "x": 51,
+      "y": 210,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -621,8 +1005,8 @@
       "corners": "1110"
     },
     "shore_sand_se-inner_1": {
-      "x": 238,
-      "y": 67,
+      "x": 68,
+      "y": 210,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -632,8 +1016,8 @@
       "corners": "1110"
     },
     "shore_sand_se-outer_0": {
-      "x": 0,
-      "y": 84,
+      "x": 85,
+      "y": 210,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -643,8 +1027,8 @@
       "corners": "1000"
     },
     "shore_sand_se-outer_1": {
-      "x": 17,
-      "y": 84,
+      "x": 102,
+      "y": 210,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -654,8 +1038,8 @@
       "corners": "1000"
     },
     "shore_sand_sw-inner_0": {
-      "x": 34,
-      "y": 84,
+      "x": 119,
+      "y": 210,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -665,8 +1049,8 @@
       "corners": "1101"
     },
     "shore_sand_sw-inner_1": {
-      "x": 51,
-      "y": 84,
+      "x": 136,
+      "y": 210,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -676,8 +1060,8 @@
       "corners": "1101"
     },
     "shore_sand_sw-outer_0": {
-      "x": 68,
-      "y": 84,
+      "x": 153,
+      "y": 210,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -687,8 +1071,8 @@
       "corners": "0100"
     },
     "shore_sand_sw-outer_1": {
-      "x": 85,
-      "y": 84,
+      "x": 170,
+      "y": 210,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -698,8 +1082,8 @@
       "corners": "0100"
     },
     "shore_sand_w_0": {
-      "x": 102,
-      "y": 84,
+      "x": 187,
+      "y": 210,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -709,8 +1093,8 @@
       "corners": "0101"
     },
     "shore_sand_w_1": {
-      "x": 119,
-      "y": 84,
+      "x": 204,
+      "y": 210,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -720,8 +1104,8 @@
       "corners": "0101"
     },
     "terrain_meadow_0": {
-      "x": 136,
-      "y": 84,
+      "x": 221,
+      "y": 210,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -730,8 +1114,8 @@
       ]
     },
     "terrain_meadow_1": {
-      "x": 153,
-      "y": 84,
+      "x": 238,
+      "y": 210,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -740,8 +1124,8 @@
       ]
     },
     "terrain_meadow_2": {
-      "x": 170,
-      "y": 84,
+      "x": 0,
+      "y": 227,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -750,7 +1134,7 @@
       ]
     },
     "tree_autumn": {
-      "x": 0,
+      "x": 204,
       "y": 0,
       "w": 32,
       "h": 32,
@@ -760,8 +1144,8 @@
       ]
     },
     "tree_blossom": {
-      "x": 33,
-      "y": 0,
+      "x": 0,
+      "y": 75,
       "w": 32,
       "h": 32,
       "anchor": [
@@ -770,8 +1154,8 @@
       ]
     },
     "tree_palm": {
-      "x": 66,
-      "y": 0,
+      "x": 33,
+      "y": 75,
       "w": 32,
       "h": 32,
       "anchor": [

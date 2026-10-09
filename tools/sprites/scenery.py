@@ -24,11 +24,17 @@ at the north-east diagonal is _ne-inner. Land must then be at least two cells th
 shore tile has frames _0 and _1 that show terrain_water_0 and _1 pixel for pixel wherever
 water shows, so shores shimmer in step with open water.
 """
+from abc import ABC, abstractmethod
+
 import numpy as np
 from PIL import Image
 
 import nature
+from buildings import Canvas, add_with_snow, snowing
+from military import tops
+from seasons import snow_tile
 from spritekit import PALETTE, TILE, Sheet, add_outline, cmap, from_ascii, pad
+from walls import COURSE
 
 # nature.py's symbols plus foam, the sea-glass shallows off a beach and lilac flowers
 P = {**nature.P, **cmap(I='ICE_L', Q='MINT_S', q='MINT_D', B='LILAC_L', b='LILAC_S')}
@@ -1057,6 +1063,181 @@ def add_props(sheet):
         sheet.add(f'prop_lily-pads_{i}', outlined(rows), layer='ground')
 
 
+# --------------------------------------------------------------------------- bridges
+# Stone bridges carry main and country roads over rivers (owner, 10 October 2026); lanes keep the
+# footbridge. A piece is one tile of the road, its deck in the road's own surface between low
+# parapets, so a bridge is laid like the road it carries. Across a river running down the map the
+# deck runs across, and the south face shows an arch over every water tile; across a river running
+# across the map the deck runs down, seen from above, with a cutwater on both sides of every pier.
+# The end pieces stand on the two shore tiles, where pillars end the parapets. Every piece anchors
+# at the bottom centre of its footprint and draws with the ground, under people.
+
+ROADS = {'main': 3, 'country': 2}       # tiles across the deck
+VAULT = {3: (6, 9), 4: (4, 11)}         # an arch's opening, by rows under the crown: its first columns
+OPEN = (3, 12)                          # ...and below them, down to the river
+CUTWATER = [                            # a pier's cutwater pointing west, seen from above
+    '..KKK',
+    '.KKkk',
+    'KKkkk',
+    'Kkkkk',
+    'kkkkk',
+    'xkkkx',
+    '.xxxx',
+    '..xxx',
+]
+CUTWATER_EAST = ['KKK..', 'kkkK.', 'kkkkK', 'kkkkk', 'kkkkx', 'kkkxx', 'xxxx.', 'xxx..']
+
+
+def deck_surface(road, i):
+    return nature.CUT_STONE if road == 'main' else nature.GRAVEL[i % 2]
+
+
+def arch(c, top, bottom):
+    """A span's face under the deck: coursed stone round one arch, its vault in shadow and the river
+    showing below; piers stand on the tile edges, so arches side by side share them."""
+    c.tile(0, top, TILE - 1, bottom, COURSE, stagger=4)
+    crown = top + 2
+    for y in range(crown, bottom + 1):
+        x0, x1 = VAULT.get(y - crown + 3, OPEN)
+        c.put(x0 - 1, y, 'K')
+        c.put(x1 + 1, y, 'x')
+        c.hline(x0, x1, y, 'n' if y < crown + 5 else '_')
+    c.hline(VAULT[3][0] - 1, VAULT[3][1] + 1, crown - 1, 'K')
+    c.hline(VAULT[4][0] - 1, VAULT[3][0] - 1, crown, 'K')
+    c.hline(VAULT[3][1] + 1, VAULT[4][1] + 1, crown, 'x')
+
+
+def capped(c, x0, x1, y):
+    """A parapet's cap, seen from above: two rows of stone, or snow."""
+    lit, plain, shade = tops()
+    c.hline(x0, x1, y, lit)
+    c.hline(x0, x1, y + 1, shade if snowing() else plain)
+
+
+def pillar(c, x, top, base):
+    """A 4-px pillar ending a parapet: its cap, then its face down to its base."""
+    capped(c, x, x + 3, top)
+    c.rect(x, top + 2, x + 3, base, 'k')
+    c.vline(x, top + 2, base, 'K')
+    c.vline(x + 3, top + 2, base, 'x')
+    c.hline(x, x + 3, base, 'x')
+
+
+class BridgePiece(ABC):
+    """One tile of a bridge along its road. Subclasses draw the stonework round a deck they mark
+    with stone, so the outline rings the whole; image() then lays the road's surface on the deck."""
+
+    def __init__(self, road, axis, part, size, deck, anchor, footprint, joins):
+        self.road, self.part = road, part
+        self.name = f'bridge_{road}_{axis}_{part}'
+        self.size, self.deck, self.anchor = size, deck, anchor
+        self.footprint, self.joins = footprint, joins
+
+    @abstractmethod
+    def stone(self, c):
+        """Draw the parapets, faces and piers; the deck box is already filled."""
+
+    def tiles(self):
+        x0, y0, x1, y1 = self.deck
+        return [(x, y) for y in range(y0, y1, TILE) for x in range(x0, x1, TILE)]
+
+    def image(self):
+        c = Canvas(*self.size)
+        x0, y0, x1, y1 = self.deck
+        c.rect(x0, y0, x1 - 1, y1 - 1, 'k')
+        self.stone(c)
+        im = c.image()
+        for i, (x, y) in enumerate(self.tiles()):
+            im.paste(nature.tile(deck_surface(self.road, x // TILE + y // TILE)), (x, y))
+            if snowing():
+                im.alpha_composite(snow_tile('light', i), (x, y))
+        return im
+
+    def add_to(self, sheet):
+        add_with_snow(sheet, self.name, self.image(), self.image, anchor=self.anchor,
+                      footprint=self.footprint, joins=self.joins, layer='ground')
+
+
+class AcrossBridge(BridgePiece):
+    """A piece of a deck running across the map: the north parapet's inner face over the deck, the
+    south parapet's outer face under it, then a string course and the face of the bridge, which
+    over the banks slopes down into the ground."""
+
+    RISE, DROP = 8, 18
+
+    def __init__(self, road, part):
+        lanes = ROADS[road]
+        top, bottom = self.RISE, self.RISE + lanes * TILE
+        joins = {'span': 'lr', 'end-left': 'r', 'end-right': 'l'}[part]
+        super().__init__(road, 'horizontal', part, (TILE, bottom + self.DROP), (0, top, TILE, bottom),
+                         (TILE // 2, bottom - 1), [1, lanes], joins)
+
+    def stone(self, c):
+        top, b = self.RISE, self.deck[3] - 1
+        x0, x1 = {'span': (0, TILE - 1), 'end-left': (1, TILE - 1), 'end-right': (0, TILE - 2)}[self.part]
+        capped(c, x0, x1, top - 7)                                       # north parapet
+        c.tile(x0, top - 5, x1, top - 1, COURSE, stagger=4, oy=3)
+        capped(c, x0, x1, b - 2)                                         # south parapet
+        c.tile(x0, b, x1, b + 3, COURSE, stagger=4)
+        if self.part == 'span':
+            c.hline(0, TILE - 1, b + 4, 'K')                             # string course
+            c.hline(0, TILE - 1, b + 5, 'x')
+            arch(c, b + 6, b + self.DROP - 1)
+            return
+        left = self.part == 'end-left'
+        for x in range(3, TILE) if left else range(0, TILE - 3):         # the abutment's wing wall
+            depth = min(self.DROP - 1, 2 + (x if left else TILE - 1 - x))
+            c.put(x, b + 4, 'K')
+            c.put(x, b + 5, 'x')
+            c.tile(x, b + 6, x, b + depth, COURSE, stagger=4, ox=x)
+        px = 1 if left else TILE - 5
+        pillar(c, px, top - 9, top - 1)                                  # 2 px over the parapets
+        pillar(c, px, b - 4, b + 3)
+
+
+class DownBridge(BridgePiece):
+    """A piece of a deck running down the map, seen from above: a parapet each side and, on a span,
+    a pier's cutwater pointing up and down the river from both of them."""
+
+    SIDE = 10                                   # parapet and cutwater beside the deck, with the outline
+
+    def __init__(self, road, part):
+        lanes = ROADS[road]
+        w = lanes * TILE + 2 * self.SIDE
+        joins = {'span': 'u', 'end-top': '', 'end-bottom': 'u'}[part]
+        super().__init__(road, 'vertical', part, (w, TILE), (self.SIDE, 0, w - self.SIDE, TILE),
+                         (w // 2, TILE - 1), [lanes, 1], joins)
+
+    def stone(self, c):
+        west, east = self.deck[0] - 4, self.deck[2]
+        y0, y1 = {'span': (0, TILE - 1), 'end-top': (7, TILE - 1), 'end-bottom': (0, 8)}[self.part]
+        lit, plain, shade = tops()
+        for x, ramp in ((west, (lit, lit, plain, 'x')), (east, (lit, plain, plain, 'x'))):
+            for dx, ch in enumerate(ramp):
+                c.vline(x + dx, y0, y1, ch)
+            for y in (3, 11):
+                if y0 <= y <= y1:
+                    c.hline(x, x + 3, y, 'x')
+        if self.part == 'span':
+            c.stamp(west - 5, 4, CUTWATER)
+            c.stamp(east + 4, 4, CUTWATER_EAST)
+            return
+        py = 1 if self.part == 'end-top' else 9
+        for x in (west, east):
+            pillar(c, x, py, py + 5)
+
+
+BRIDGES = [cls(road, part) for road in ROADS
+           for cls, parts in ((AcrossBridge, ('end-left', 'span', 'end-right')),
+                              (DownBridge, ('end-top', 'span', 'end-bottom')))
+           for part in parts]
+
+
+def add_bridges(sheet):
+    for piece in BRIDGES:
+        piece.add_to(sheet)
+
+
 # --------------------------------------------------------------------------- trees
 # Crowns follow nature.py's trees: clumps lit on top, a dark rim where each tucks over the one
 # below, a deep underside. The blossom is a generic white-and-pink flowering tree; the autumn
@@ -1181,6 +1362,7 @@ def build():
     for i, rows in enumerate(MEADOWS):
         sheet.add(f'terrain_meadow_{i}', tile(rows))
     add_props(sheet)
+    add_bridges(sheet)
     add_trees(sheet)
     return sheet
 
