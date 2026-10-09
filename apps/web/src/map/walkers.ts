@@ -23,9 +23,19 @@ const UP = PLACE_FACINGS.indexOf('up');
 const LEFT = PLACE_FACINGS.indexOf('left');
 const RIGHT = PLACE_FACINGS.indexOf('right');
 
+// A corner of a loop after two rounds of Chaikin corner cutting: each pair is the art px to go back along the leg in,
+// then on along the leg out, from the tile's spot. A bend stays within 6 px of its spot, so it keeps to the loop's own
+// tiles and never meets the next corner's, a tile (16 px) on. A U-turn runs out and back along its one leg.
+const BEND = [
+  [6, 0],
+  [3, 1],
+  [1, 3],
+  [0, 6],
+] as const;
+
+// The way a walker moving dx, dy faces: along the dominant axis of its move, upright when they tie.
 function facingOf(dx: number, dy: number): number {
-  if (dx > 0) return RIGHT;
-  if (dx < 0) return LEFT;
+  if (Math.abs(dx) > Math.abs(dy)) return dx > 0 ? RIGHT : LEFT;
   return dy < 0 ? UP : DOWN;
 }
 
@@ -62,23 +72,116 @@ export function withCrowd(layout: PlaceLayout, crowd: PlaceCrowd, n: number): Pl
 const CROWD_SPOT_X = 8;
 const CROWD_SPOT_Y = 14;
 
+// Every loop's smoothed path, in one set of columns: loop q's points run from spans[q] to spans[q + 1] - 1, the last of
+// them its first again. Each has its art px x and y, and along, the art px walked to it from the loop's first point.
+interface Paths {
+  x: Int32Array;
+  y: Int32Array;
+  along: Float64Array;
+  spans: Int32Array;
+}
+
+// The points of the loops cut so far, before they go into typed arrays.
+interface Cut {
+  xs: number[];
+  ys: number[];
+  spans: number[];
+}
+
+function addPoint(cut: Cut, x: number, y: number): void {
+  cut.xs.push(x);
+  cut.ys.push(y);
+}
+
+function columnPx(cell: number, width: number, spot: number): number {
+  return (cell % width) * TILE + spot;
+}
+
+function rowPx(cell: number, width: number, spot: number): number {
+  return Math.floor(cell / width) * TILE + spot;
+}
+
+// A loop moves between neighbouring cells, so a step of delta cells is one column across (1 or -1) or one row down
+// (width or -width), and any other delta moves neither.
+function across(delta: number): number {
+  if (delta === 1) return 1;
+  return delta === -1 ? -1 : 0;
+}
+
+function down(delta: number, width: number): number {
+  if (delta === width) return 1;
+  return delta === -width ? -1 : 0;
+}
+
+// Cuts the corner of a loop at cell, reached from back and left for next. A straight run, whose steps cancel, has none.
+function cutCorner(cut: Cut, cell: number, back: number, next: number, width: number, spotX: number, spotY: number): void {
+  const toBack = back - cell;
+  const toNext = next - cell;
+  if (toBack + toNext === 0) return;
+  const x = columnPx(cell, width, spotX);
+  const y = rowPx(cell, width, spotY);
+  const backX = across(toBack);
+  const backY = down(toBack, width);
+  const nextX = across(toNext);
+  const nextY = down(toNext, width);
+  for (const [a, b] of BEND) addPoint(cut, x + a * backX + b * nextX, y + a * backY + b * nextY);
+}
+
+// Appends a loop's path, each tile's spot at spotX, spotY. Every corner is cut but a home's, the loop's first cell, which
+// stays a point so an owner's lap starts and ends where place.py put it.
+function cutLoop(cut: Cut, loop: Int32Array, width: number, spotX: number, spotY: number, home: boolean): void {
+  const n = loop.length;
+  const first = cut.xs.length;
+  if (home) addPoint(cut, columnPx(loop[0], width, spotX), rowPx(loop[0], width, spotY));
+  for (let i = home ? 1 : 0; i < n; i++) {
+    cutCorner(cut, loop[i], loop[(i + n - 1) % n], loop[(i + 1) % n], width, spotX, spotY);
+  }
+  addPoint(cut, cut.xs[first], cut.ys[first]);
+  cut.spans.push(cut.xs.length);
+}
+
+function pathsOf(cut: Cut): Paths {
+  const x = Int32Array.from(cut.xs);
+  const y = Int32Array.from(cut.ys);
+  const spans = Int32Array.from(cut.spans);
+  const along = new Float64Array(x.length);
+  for (let q = 0; q < spans.length - 1; q++) {
+    for (let i = spans[q] + 1; i < spans[q + 1]; i++) {
+      const dx = x[i] - x[i - 1];
+      const dy = y[i] - y[i - 1];
+      along[i] = along[i - 1] + Math.sqrt(dx * dx + dy * dy);
+    }
+  }
+  return { x, y, along, spans };
+}
+
+// The owners' loops, then the crowd's, each cut once.
+function cutPaths(layout: PlaceLayout, walks: PlaceWalks, crowd: PlaceCrowd | null): Paths {
+  const { x, y } = layout.people;
+  const cut: Cut = { xs: [], ys: [], spans: [0] };
+  walks.person.forEach((p, r) => {
+    const loop = walks.cells.subarray(walks.offsets[r], walks.offsets[r + 1]);
+    cutLoop(cut, loop, layout.width, x[p] % TILE, y[p] % TILE, true);
+  });
+  for (let r = 0; crowd && r < crowd.offsets.length - 1; r++) {
+    const loop = crowd.cells.subarray(crowd.offsets[r], crowd.offsets[r + 1]);
+    cutLoop(cut, loop, layout.width, CROWD_SPOT_X, CROWD_SPOT_Y, false);
+  }
+  return pathsOf(cut);
+}
+
 // The place's look-only walkers: each walk loop's owner, then any street crowd withCrowd appended, on the crowd's own
-// loops from their phases. Each walks its loop tile by tile at its own pace, an owner keeping its spot in the tile, so
-// every lap starts and ends where place.py put it. Its pose is walk while it moves, even for a stander that strolls, and
-// its walk frame steps with the distance walked. Everything is made once a place, so walk() allocates nothing.
+// loops from their phases. Each glides round its loop's path, which cuts the loop's corners, at its own pace, an owner
+// starting and ending each lap where place.py put it. Its pose is walk while it moves, even for a stander that strolls,
+// and it faces the dominant axis of its move, its walk frame stepping with the distance walked. Everything is made once
+// a place, so walk() allocates nothing.
 export class Walkers {
   private readonly people: PlacePeople;
-  private readonly width: number;
-  // The owners' loop cells, then the crowd's.
-  private readonly cells: Int32Array;
-  // Each walker's person, its loop's first cell in cells and its length, its phase in art px along it, its spot within
-  // a tile and its pace in art px a second.
+  private readonly paths: Paths;
+  // Each walker's person, its loop in paths, its phase in art px along the path and its pace in art px a second.
   private readonly persons: Uint16Array;
-  private readonly firsts: Int32Array;
-  private readonly lengths: Int32Array;
-  private readonly phases: Uint16Array;
-  private readonly inTileX: Int32Array;
-  private readonly inTileY: Int32Array;
+  private readonly loops: Int32Array;
+  private readonly phases: Float64Array;
   private readonly pace: Float64Array;
   // Where each walker starts, KEPT values a walker, to stand it back there.
   private readonly start: Int32Array;
@@ -89,20 +192,14 @@ export class Walkers {
     const count = owners + n;
     const first = layout.people.look.length - n;
     this.people = layout.people;
-    this.width = layout.width;
-    this.cells = new Int32Array(walks.cells.length + (crowd?.cells.length ?? 0));
-    this.cells.set(walks.cells);
-    if (crowd) this.cells.set(crowd.cells, walks.cells.length);
+    this.paths = cutPaths(layout, walks, crowd);
     this.persons = new Uint16Array(count);
-    this.firsts = new Int32Array(count);
-    this.lengths = new Int32Array(count);
-    this.phases = new Uint16Array(count);
-    this.inTileX = new Int32Array(count);
-    this.inTileY = new Int32Array(count);
+    this.loops = new Int32Array(count);
+    this.phases = new Float64Array(count);
     this.pace = new Float64Array(count);
     this.start = new Int32Array(KEPT * count);
     for (let r = 0; r < owners; r++) this.setOwner(r, walks);
-    for (let k = 0; k < n && crowd; k++) this.setCrowd(owners + k, first + k, crowd, k, walks.cells.length);
+    for (let k = 0; k < n && crowd; k++) this.setCrowd(owners + k, first + k, crowd, k, owners);
     for (let w = 0; w < count; w++) this.keep(w);
   }
 
@@ -133,26 +230,21 @@ export class Walkers {
     }
   }
 
+  // An owner walks its own loop from its first point, where place.py put it.
   private setOwner(r: number, walks: PlaceWalks): void {
-    const p = walks.person[r];
-    const { x, y } = this.people;
-    this.persons[r] = p;
-    this.firsts[r] = walks.offsets[r];
-    this.lengths[r] = walks.offsets[r + 1] - walks.offsets[r];
-    this.inTileX[r] = x[p] - TILE * Math.floor(x[p] / TILE);
-    this.inTileY[r] = y[p] - TILE * Math.floor(y[p] / TILE);
+    this.persons[r] = walks.person[r];
+    this.loops[r] = r;
     this.pace[r] = WALK_PX_PER_S + PACE_SPREAD[r % PACE_SPREAD.length];
   }
 
-  // A crowd walker starts at its phase along its loop, whose cells follow the owners' in cells.
-  private setCrowd(w: number, p: number, crowd: PlaceCrowd, k: number, after: number): void {
+  // A crowd walker starts at its phase along its loop, whose path follows the owners' in paths. The phase is in px along
+  // the loop tile by tile, which the cut corners shorten, so it scales to the same share of the path.
+  private setCrowd(w: number, p: number, crowd: PlaceCrowd, k: number, owners: number): void {
     const loop = crowd.loop[k];
+    const px = (crowd.offsets[loop + 1] - crowd.offsets[loop]) * TILE;
     this.persons[w] = p;
-    this.firsts[w] = after + crowd.offsets[loop];
-    this.lengths[w] = crowd.offsets[loop + 1] - crowd.offsets[loop];
-    this.phases[w] = crowd.phase[k];
-    this.inTileX[w] = CROWD_SPOT_X;
-    this.inTileY[w] = CROWD_SPOT_Y;
+    this.loops[w] = owners + loop;
+    this.phases[w] = (crowd.phase[k] * this.lap(owners + loop)) / px;
     this.pace[w] = WALK_PX_PER_S + PACE_SPREAD[w % PACE_SPREAD.length];
     this.walkLoop(w, 0);
   }
@@ -163,22 +255,32 @@ export class Walkers {
     this.start.set([x[p], y[p], pose[p], facing[p], step[p]], KEPT * w);
   }
 
+  // The art px round loop q's path.
+  private lap(q: number): number {
+    return this.paths.along[this.paths.spans[q + 1] - 1];
+  }
+
   private walkLoop(w: number, ms: number): void {
-    const first = this.firsts[w];
-    const length = this.lengths[w];
+    const { x, y, along, spans } = this.paths;
+    const q = this.loops[w];
+    const last = spans[q + 1] - 1;
     const walked = this.phases[w] + (ms * this.pace[w]) / 1000;
-    const along = walked % (length * TILE);
-    const leg = Math.floor(along / TILE);
-    const into = Math.floor(along - leg * TILE);
-    const from = this.cells[first + leg];
-    const to = this.cells[first + ((leg + 1) % length)];
-    const fromX = from % this.width;
-    const fromY = Math.floor(from / this.width);
-    const dx = (to % this.width) - fromX;
-    const dy = Math.floor(to / this.width) - fromY;
+    const at = walked % along[last];
+    // The edge of the path that holds at: along[lo] <= at < along[hi].
+    let lo = spans[q];
+    let hi = last;
+    while (hi - lo > 1) {
+      const mid = (lo + hi) >> 1;
+      if (along[mid] <= at) lo = mid;
+      else hi = mid;
+    }
+    const dx = x[hi] - x[lo];
+    const dy = y[hi] - y[lo];
+    const into = at - along[lo];
+    const edge = along[hi] - along[lo];
     const p = this.persons[w];
-    this.people.x[p] = fromX * TILE + this.inTileX[w] + dx * into;
-    this.people.y[p] = fromY * TILE + this.inTileY[w] + dy * into;
+    this.people.x[p] = x[lo] + Math.trunc((dx * into) / edge);
+    this.people.y[p] = y[lo] + Math.trunc((dy * into) / edge);
     this.people.pose[p] = WALK;
     this.people.facing[p] = facingOf(dx, dy);
     this.people.step[p] = Math.floor(walked / STRIDE_PX) % 2;
