@@ -29,6 +29,7 @@ export function answerGenerate(msg: MapAppMessage, now: () => number): MapAnswer
   const crowd = crowdOf(map);
   lap('crowd');
   const contexts = placeContexts(map);
+  lap('contexts');
   const transfer = [...worldMapBuffers(map), ...crowdBuffers(crowd)];
   return { reply: { type: 'world', map, names, crowd, stageMs }, transfer, contexts };
 }

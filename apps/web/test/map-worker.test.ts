@@ -14,7 +14,7 @@ describe('the map worker', { timeout: 60_000 }, () => {
     expect(reply.names.slice(0, 2)).toEqual(['country-1', 'country-2']);
     expect(reply.crowd.hue.length).toBeGreaterThan(0);
     expect(Object.keys(reply.stageMs)).toEqual([
-      'shape', 'rain', 'drain', 'climate', 'biomes', 'settle', 'countries', 'regions', 'farm', 'roads', 'lanes', 'features', 'names', 'crowd',
+      'shape', 'rain', 'drain', 'climate', 'biomes', 'settle', 'countries', 'regions', 'farm', 'roads', 'lanes', 'features', 'names', 'crowd', 'contexts',
     ]);
     expect(Object.values(reply.stageMs).every((ms) => ms === 2)).toBe(true);
     expect(new Set(transfer).size).toBe(transfer.length);
