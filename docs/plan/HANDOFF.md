@@ -84,3 +84,19 @@ A living summary for the next session, appended as work lands. Start with `CLAUD
   - re-measure the 2 ms bar with about 520 houses and 3,000 or more walkers (step 3);
   - check `engines.spec.ts`'s timeouts, since its places are about 7× larger.
 - The plan's "Part 2" text still says 96×56; the real sizes are above.
+- 10 Oct, **the owner's report on the first screen** (screenshot on :4173, desktop tier): 100,000 yellow dots cover the old 48×28 Highcourt, drawn as flat colour boxes. Town-view walkers turn only at right angles. The owner asked why the town view's art isn't on the first screen.
+
+## Top priority next session (owner, 10 October 2026)
+
+1. **Step 4: the starting town grows.** Re-export Highcourt at 128×80 (`python tools/worldgen/export_map.py`), update the replay hash and the sim tests, and so turn CI green again.
+2. **A sensible blob count on the first screen.** Scale the default agents to the town: about one per two walkable tiles, so roughly 3,000–4,000 on desktop.
+   - Keep the 10k, 25k and 100k budget runs, but only behind a query parameter or the bench, never as the default look.
+   - 100k agents need M6.1's big cities.
+3. **The first screen in the town view's art.** Draw Highcourt with the place pass: tiles, houses and props from its `place.py` layout, as the "Town" skin.
+   - Draw the sim's agents as blob sprites: looks from the visual word, facing from velocity, and walk frames. That is M1.3's sprite pass.
+   - Make it the default skin at town zoom, with Dots kept for zoomed out.
+4. **Walking in any direction in the town view.** Smooth each loop:
+   - walk straight between waypoints wherever the line stays on walkable tiles;
+   - otherwise cut corners diagonally;
+   - and face the true direction, as the sim's blobs already do.
+5. Then step 3, the 2 ms bar with the bigger places, and steps 5–6, walls and houses in towns.
