@@ -3,7 +3,7 @@
 Part of [M2 Economy](../milestone.md).
 
 - **Builds:**
-  - Lengnick households and firms: posted prices, labour search, Stone–Geary budgets, closed and fiat money, BAM entry and exit, and a wholesale call auction (R1);
+  - Lengnick households and firms: posted prices, labour search, Stone–Geary budgets, closed and fiat money, BAM entry and exit, and a wholesale call auction (R1). Stone–Geary budgets are built in M2.4, where there are goods to split, per the coordinator's ruling of 10 October 2026, since M2.1 has one good;
   - Lengnick's missing parameters, ξ = 0.01 and a separate ψ\_quant = 0.25, written integer-cent rounding rules, and start prices inside 1.025–1.15 × w/63 (R2);
   - a burn-in measured with MSER-5 rather than an assumed 1,000 months (R2);
   - household cash holdings chosen deliberately, a money-velocity chart, and a saving-rate target only when money is issued (R2).
