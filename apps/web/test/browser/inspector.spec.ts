@@ -2,7 +2,8 @@ import { readFileSync } from 'node:fs';
 import { SUBPIXELS, TILE_PX, createWorld, nearestAgent } from '@nomos/sim-core';
 import { personName } from '@nomos/sim-culture';
 import { parseMap } from '@nomos/sim-protocol';
-import { expect, test, type Page } from 'playwright/test';
+import type { Page } from 'playwright/test';
+import { expect, test } from '../../../../packages/render-gl/test/browser/scale.ts';
 import { WEB } from './web.ts';
 
 test.use({ baseURL: WEB });
@@ -162,14 +163,16 @@ test('shows the blob at the centre on Enter', async ({ page }) => {
   await expect(page.locator('#inspector')).toHaveText(answerAt(view, view.canvas[0] / 2, view.canvas[1] / 2));
 });
 
+// openAtScale launches the browser at 2x: a context's deviceScaleFactor alone is no real 2x in Chromium or Firefox.
 test.describe('on a 2x screen', () => {
-  test.use({ deviceScaleFactor: 2 });
-
-  test('finds the blob under a click after a zoom step', async ({ page }) => {
+  test('finds the blob under a click after a zoom step', async ({ openAtScale }) => {
+    const page = await openAtScale(2);
     await openPaused(page);
-    const before = (await viewOf(page)).camera.zoom;
+    const fitted = await viewOf(page);
+    expect(fitted.dpr).toBe(2);
+    expect(fitted.canvas).toEqual([2 * fitted.width, 2 * fitted.height]);
     await page.locator('#view').press('+');
-    await expect.poll(async () => (await viewOf(page)).camera.zoom).toBe(before + 1);
+    await expect.poll(async () => (await viewOf(page)).camera.zoom).toBe(fitted.camera.zoom + 1);
     const view = await viewOf(page);
     const [clientX, clientY] = blobPoint(view);
     await page.mouse.click(clientX, clientY);
