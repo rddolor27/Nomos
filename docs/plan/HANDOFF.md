@@ -226,3 +226,16 @@ If the session ended: check `git log` for those Task lines, and `git status` for
   - the inspector's "no blob within a tile".
   - In SwiftShader the town renders at about 4.5 fps.
 - **The economy, M2.1** (plan 1067f77): Tasks 2 (25d584c), 3 (ab081c9) and 4 (fb7d0f2) are done. Task 1, the state layout, is running. Wave 2 (Tasks 5–7), then Task 8, then one economy-review, determinism-review and QA pass.
+- 10 Oct: **M2.1 wave 1 is done.** Task 1, the state layout, landed in 6b1778e, 23e9fa2 and f47f06c.
+  - **New replay hashes** at seed 42, 1,000 ticks:
+    - CLI phone `3c786124`, which was `b3b2c251`;
+    - phone-plus `c12f0de5`, desktop `9ff63cde`;
+    - Highcourt phone `c0d9809e`, desktop `a0bf1ebe`.
+  - Only the hash moved: the old and new columns and accounts are identical.
+  - The desktop arena uses 11.87 of 64 MiB.
+  - Docs still showing `b3b2c251`, to fix in the final docs pass:
+    - `HANDOFF.md`;
+    - `interfaces.md:163`;
+    - the M8.1 plan at line 300;
+    - the M8.3 plan at lines 85 and 1844.
+  - Wave 2 started: Tasks 5 (firms, profits and fiat money), 6 (labour and wages) and 7 (consumption), on `sim-engineer` with Sonnet.
