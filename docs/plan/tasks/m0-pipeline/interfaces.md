@@ -290,7 +290,7 @@ M8.1 ports `tools/worldgen` to TypeScript, and M8.3 draws what it makes. The own
 
 | Folder | Files | Concern |
 | --- | --- | --- |
-| `src/` | `index.ts` | The barrel: `generateWorld`, `worldFingerprint`, `placeNames` and `StageTimer` |
+| `src/` | `index.ts` | The barrel: `generateWorld`, `worldFingerprint`, `placeNames`, `crowdOf` and `StageTimer` |
 | `random/` | `streams.ts`, `keyed.ts` | `rng.py`'s world streams, and its `chance` and `shuffled` |
 | `grid/` | `grid.ts`, `heap.ts` | `grid.py`'s neighbours, distances and parts, cell coordinates, and the binary heap behind every Dijkstra and A\* |
 | `terrain/` | `templates.ts`, `chains.ts`, `shape.ts` | `terrain.py` |
@@ -473,6 +473,10 @@ The Country and Region views draw a `WorldMap` with a renderer of their own, whi
   - it starts the map worker once per page, and keeps the world it answers for the rest of the page;
   - it fetches the atlas page beside it.
 - **Closing the map** resumes the town only if the map paused it, and gives focus back to the Map control. Escape closes it too.
+- **The toolbar** holds Close map, Fit, Zoom in and Zoom out, Countries, Pause dots, and a "Go to a settlement" list (owner, 9 October 2026).
+  - **Going to a settlement:** choose it from the list, grouped by country with the capital first, or click or tap it on the map. Either way, the view jumps there, centred, at the step nearest 64 CSS px a cell.
+  - **Pause dots** stands the crowd still, as reduced motion does.
+  - **The status line** is the map's live region. It says when the map is ready, and focusing the map reads it, through `aria-describedby`.
 - **Labels** are a fixed pool of DOM elements, moved by transforms whenever the camera moves:
   - the Country view labels countries, capitals and cities;
   - the Region view labels every settlement;

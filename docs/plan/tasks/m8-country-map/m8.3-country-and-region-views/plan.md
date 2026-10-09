@@ -66,6 +66,7 @@
   - **dots that wander near home,** on their own country's land.
 
   The page still opens on the town, with the map a click away.
+- **Zooming into any settlement, decided on 9 October 2026.** After trying the map, the owner asked to zoom into any settlement they want. They chose click to zoom: a click or tap on a town jumps the view there at close zoom, and a "Go to" list in the toolbar reaches any town by name. Opening a town as its own street view stays with M9. The same pass adds Zoom in and Zoom out buttons, and a Pause dots toggle (WCAG 2.2.2; agent ruling).
 
 ### Global constraints
 
