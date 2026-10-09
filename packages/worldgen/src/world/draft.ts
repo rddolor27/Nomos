@@ -1,3 +1,5 @@
+import type { Country } from '../countries/countries.ts';
+import type { Regions } from '../regions/regions.ts';
 import type { Settlement } from '../settle/settle.ts';
 
 export interface Spot {
@@ -21,4 +23,17 @@ export interface FeatureWorld {
   settlements: Settlement[];
   roads: number[][];
   bridges: number[];
+}
+
+// world.py's World, as generateWorld builds it before packing it as a WorldMap.
+export interface Draft extends FeatureWorld {
+  template: number;
+  wind: number;
+  cold: number;
+  lanes: number[][];
+  wonders: Spot[];
+  landmarks: Spot[];
+  country: Uint8Array;
+  countries: Country[];
+  zones: Regions;
 }

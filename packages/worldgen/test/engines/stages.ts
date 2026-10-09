@@ -24,6 +24,7 @@ import { lanes } from '../../src/routes/lanes.ts';
 import { survey } from '../../src/features/survey.ts';
 import { wonders } from '../../src/features/wonders.ts';
 import { landmarks } from '../../src/features/landmarks.ts';
+import { generateWorld, worldFingerprint } from '../../src/index.ts';
 import type { FeatureWorld } from '../../src/world/draft.ts';
 
 export function stagePrints(seed: number, size: WorldSize): Map<string, number> {
@@ -142,6 +143,8 @@ export function stagePrints(seed: number, size: WorldSize): Map<string, number> 
   prints.set('wonders', fold(rows(spots.map((p) => [p.kind, p.x, p.y]))));
   const own = landmarks(world, land, spots);
   prints.set('landmarks', fold(rows(own.map((p) => [p.kind, p.x, p.y])), paths(settlements.map((s) => s.landmarks))));
+
+  prints.set('world', worldFingerprint(generateWorld(seed, size)));
 
   return prints;
 }
