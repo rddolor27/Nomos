@@ -125,7 +125,9 @@ Skin B and Skin C arrive as `blobs/` and `town/` beside `dots/` (M1.3, M3.3). M8
 
 ## The world step (owner: M0.3)
 
-- **Creation:** `createWorld(seed: number, tier: Tier, ground?: Ground): World`, and `restoreWorld(seed, tier, state: ArrayBuffer, ground?: Ground): World` for checkpoints. A `World` holds the agent store, the ledgers, the tick counter, `world.ground`, and `world.blob`, the world's `Blob` handle, made once in `layoutWorld` (M0.7).
+- **Creation:** `createWorld(seed: number, tier: Tier, ground?: Ground, agents?: number): World`, and `restoreWorld(seed, tier, state: ArrayBuffer, ground?: Ground): World` for checkpoints. A `World` holds the agent store, the ledgers, the tick counter, `world.ground`, and `world.blob`, the world's `Blob` handle, made once in `layoutWorld` (M0.7).
+  - `agents` is how many blobs spawn, a whole number from 1 to the tier's count, which is the default. The layout always holds the tier's whole count, so a smaller town moves no offset and `restoreWorld` needs no count. `populate(world, people?)` throws `RangeError` outside that range. Blob `id` keys every spawn draw, so a smaller town is the first `agents` blobs of the full one.
+  - `townAgents(tier, ground): number` is how many a town holds: its walkable tiles divided by `TIER_TILES_PER_AGENT` (phone 4, phone-plus 3, desktop 2), rounded down, at least 1 and at most the tier's count. `walkableTiles(ground)` counts the open tiles. The owner asked on 10 October 2026 for a first screen of about one blob to two walkable tiles on desktop, and fewer on phones.
 - **Checks:** while `world.checks` is true, the default, `step` runs `checkInvariants` after every tick. Tests and the CLI keep the default. The worker sets it from `init.checks`, which the app sends as true only from development builds, because wallets make the check cost grow with population. `warmUp`'s throwaway world runs with checks off, as production does (M0.7).
 - **Ground (M0.4):** `{ width, height, walk: Uint8Array }` in `sim-core`, tiles row-major from the top-left, where nonzero means walkable. A `MapV1` is a `Ground`, so `sim-core` never imports `sim-protocol`.
   - The ground is an unhashed input: it stays out of the arena and the hash, and a restore must pass the same ground.
@@ -157,7 +159,8 @@ Skin B and Skin C arrive as `blobs/` and `town/` beside `dots/` (M1.3, M3.3). M8
 - `stateHash(world: World): number`: a 32-bit hash over every replay-relevant column and ledger, the value the determinism checks compare. M0.6 adds `stateHashExcept(world, skip: readonly ArrayBufferView[]): number`, of which `stateHash` is the case with nothing skipped, so no golden moves; the relabel test skips the culture columns.
 - `World.cultureUid`: a canonical `Uint8Array(MAX_CULTURES)` of stable culture uids, c + 1 per culture and 0 when unused. Culture-level draws key on it, never on the index (M0.6, R8).
 - Seed 42's replay hashes at tick 1,000, one per tier, live in `packages/sim-core/test/fixtures/goldens.json`, keyed `"<seed>/<tier>"`; the Node, Bun and browser checks all read it. A commit that moves the sim on purpose regenerates it with `node packages/sim-core/scripts/goldens.ts` (M0.6).
-- `Tier` is `'phone' | 'phone-plus' | 'desktop'`, with agent caps of 10,000, 25,000 and 100,000. `sim-protocol` re-exports `Tier` and `TIER_AGENTS` from its `messages.ts` (M0.3).
+- `Tier` is `'phone' | 'phone-plus' | 'desktop'`, with agent caps of 10,000, 25,000 and 100,000. `sim-protocol` re-exports `Tier`, `TIER_AGENTS` and `townAgents` from its `messages.ts` (M0.3).
+- Highcourt's replay hashes at tick 1,000, seed 42, on `town.nmap` at the town's own crowd, are pinned in `packages/sim-protocol/test/town-map.test.ts`: `83e5b191` for phone (1,690 blobs) and `4099e61d` for desktop (3,381). The goldens above run on the stand-in ground, so a new map moves only these.
 
 ## Agents and the Blob handle (owner: M0.7)
 
@@ -208,7 +211,7 @@ Skin B and Skin C arrive as `blobs/` and `town/` beside `dots/` (M1.3, M3.3). M8
 ## Worker messages (owner: M0.3)
 
 - App to worker:
-  - `{ type: 'init', seed, tier, map: ArrayBuffer, checks: boolean }`; `checks` sets `world.checks`, and the app sends true only from development builds (M0.7)
+  - `{ type: 'init', seed, tier, map: ArrayBuffer, checks: boolean, agents?: number }`; `checks` sets `world.checks`, and the app sends true only from development builds (M0.7). `agents` is passed to `createWorld`; leaving it out spawns the tier's whole count, as the bench and the harness do. The app sends `townAgents(tier, map)`, or the tier's whole count when the URL names the tier with `?tier=`, which is how the perf specs keep their 10,000, 25,000 and 100,000.
   - `{ type: 'pause' }` and `{ type: 'resume' }`
   - `{ type: 'return', buffer: ArrayBuffer }`
   - `{ type: 'checkpoint' }`, which the app sends on `pagehide`
