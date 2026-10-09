@@ -7,9 +7,11 @@ const goldens: PlaceGoldens = JSON.parse(
 );
 
 describe('the place port against the Python goldens', { timeout: 300_000 }, () => {
-  it('builds every place of the first 20 standard worlds stage for stage as place.py does', () => {
+  it('builds the pinned places and every place of the first 20 standard worlds stage for stage as place.py does', () => {
     const report = checkPlaces(goldens, 20);
     expect(report.failures.slice(0, 20)).toEqual([]);
-    expect(report.places).toBe(goldens.worlds.reduce((total, world) => total + world.places.length, 0));
+    const worldPlaces = goldens.worlds.reduce((total, world) => total + world.places.length, 0);
+    expect(goldens.pinned.length).toBeGreaterThan(0);
+    expect(report.places).toBe(goldens.pinned.length + worldPlaces);
   });
 });

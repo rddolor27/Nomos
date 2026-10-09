@@ -23,6 +23,8 @@ export interface PlaceGoldens {
   version: number;
   stages: { settlement: string[]; vista: string[] };
   kinds: string[];
+  // Hand-made places that reach what the golden worlds' places do not (place_goldens.py's PINNED).
+  pinned: { name: string; context: PlaceContext; prints: string }[];
   worlds: { seed: number; settlements: number; places: string[] }[];
 }
 
@@ -152,10 +154,12 @@ function checkPlace(report: PlaceReport, goldens: PlaceGoldens, label: string, c
   if (stage >= 0) report.failures.push(`${label} ${stages[stage]}: got ${got[stage]}, want ${wanted[stage]}`);
 }
 
-// Every place of the first `worlds` worlds against the goldens, each stopping at its first stage that differs. On the
-// first world the mirror's layout must match buildPlace's too, as place_goldens.py checks its own mirror.
+// The pinned places, then every place of the first `worlds` worlds, against the goldens, each stopping at its first
+// stage that differs. The pinned places and the first world's must also match buildPlace's layout, as place_goldens.py
+// checks its folding run against place.build.
 export function checkPlaces(goldens: PlaceGoldens, worlds: number): PlaceReport {
   const report: PlaceReport = { places: 0, failures: [] };
+  for (const pin of goldens.pinned) checkBuilt(report, goldens, `pinned ${pin.name}`, pin.context, pin.prints, true);
   goldens.worlds.slice(0, worlds).forEach((world, w) => {
     const contexts = placeContexts(generateWorld(world.seed, 'standard'));
     if (contexts.length !== world.places.length) {
@@ -163,12 +167,24 @@ export function checkPlaces(goldens: PlaceGoldens, worlds: number): PlaceReport 
       return;
     }
     contexts.forEach((ctx, i) => {
-      report.places++;
-      const label = `${hex(world.seed)} place ${i} (${ctx.name})`;
-      checkPlace(report, goldens, label, ctx, world.places[i]);
-      const mirrored = world.places[i].split(' ').at(-1);
-      if (w === 0 && hex(foldLayout(buildPlace(ctx).layout)) !== mirrored) report.failures.push(`${label}: the mirror drifts`);
+      checkBuilt(report, goldens, `${hex(world.seed)} place ${i} (${ctx.name})`, ctx, world.places[i], w === 0);
     });
   });
   return report;
+}
+
+function checkBuilt(
+  report: PlaceReport,
+  goldens: PlaceGoldens,
+  label: string,
+  ctx: PlaceContext,
+  want: string,
+  againstBuild: boolean,
+): void {
+  report.places++;
+  checkPlace(report, goldens, label, ctx, want);
+  const layoutPrint = want.split(' ').at(-1);
+  if (againstBuild && hex(foldLayout(buildPlace(ctx).layout)) !== layoutPrint) {
+    report.failures.push(`${label}: the folding run drifts from buildPlace`);
+  }
 }

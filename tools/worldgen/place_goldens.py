@@ -3,9 +3,9 @@
 Builds every place of the first WORLDS standard worlds, in world.place_contexts' order, settlements then wonders. Each
 place folds its context, its site after each of place.SETTLEMENT_STAGES, and its layout in the shape of sim-protocol's
 PlaceLayout, so a port that drifts names the stage where it starts. A vista folds only its context, its ground and its
-layout. The folding run must match place.build: on the first CHECKED worlds it compares each layout's fold with
-place.build's, and stops on a difference. Writes packages/worldgen/test/fixtures/place-goldens-v1.json. --check
-compares the committed file's first N worlds with a fresh run instead.
+layout. The folding run must match place.build: on the first CHECKED worlds and the PINNED places it compares each
+layout's fold with place.build's, and stops on a difference. Writes packages/worldgen/test/fixtures/place-goldens-v1.json.
+--check compares the committed file's PINNED places and first N worlds with a fresh run instead.
 """
 import argparse
 import json
@@ -18,6 +18,7 @@ sys.path.insert(0, str(HERE))
 
 import place as P  # noqa: E402
 from goldens import FIRST, fold  # noqa: E402
+from model import PlaceContext  # noqa: E402
 from place_fixtures import PEOPLE, context_fields, layout_codes, person_codes  # noqa: E402
 from world import generate, place_contexts  # noqa: E402
 
@@ -30,6 +31,27 @@ CHECKED = 1
 KINDS = ('grass', 'meadow', 'sand', 'water', 'path', 'paving', *P.CLIFFS, *P.CROPS, 'crop_pasture')
 STAGES = {'settlement': ('context', 'ground', 'water', 'centre', 'buildings', 'decor', 'nature', 'people', 'layout'),
           'vista': ('context', 'ground', 'layout')}
+# Hand-made places that reach what no place of the golden worlds does, pinned as place_fixtures.py pins its three, so
+# --check covers them on every run: a viaduct; a village's clock tower and fountain; ridges, a quarry or mine and goats
+# on hills, and ridges on a mountain; sea arches facing east and west; and a cliffed cove whose one river side runs to
+# the sea and leaves short cliff runs. cross's crossing with no extra tile is out of reach: a road never turns on,
+# into or out of water, and no path starts in water, so every crossing has a tile in line beyond it.
+PINNED = (
+    ('viaduct-town', PlaceContext(seed=1, name='Archway', biome='grassland', temperature=150, moisture=130,
+                                  tier='town', population=9000, river='ns', roads='ew', landmarks=('viaduct',))),
+    ('landmark-village', PlaceContext(seed=1, name='Belltop', biome='grassland', temperature=140, moisture=140,
+                                      tier='village', population=700, roads='ew', landmarks=('clock-tower', 'fountain'))),
+    ('hill-village', PlaceContext(seed=1, name='Goatfold', biome='hills', temperature=120, moisture=130,
+                                  tier='village', population=600, roads='ns', farmland='w')),
+    ('mountain-town', PlaceContext(seed=1, name='Scree', biome='mountain', temperature=90, moisture=140, tier='town',
+                                   population=6000, roads='ew')),
+    ('east-sea-arch', PlaceContext(seed=0x5EA7, name='Eastgate', biome='grassland', temperature=140, moisture=140,
+                                   sea='e', coast='cliffs', roads='w', wonder='sea-arch')),
+    ('west-sea-arch', PlaceContext(seed=0x5EA8, name='Westgate', biome='grassland', temperature=140, moisture=140,
+                                   sea='w', coast='beach', roads='e', wonder='sea-arch')),
+    ('cliff-cove', PlaceContext(seed=790928260, name='Cove', biome='grassland', temperature=140, moisture=150,
+                                tier='village', population=900, sea='sw', coast='cliffs', river='n', roads='n')),
+)
 
 
 def text(s):
@@ -95,16 +117,22 @@ def world_prints(job):
             'places': [place_prints(ctx, checked) for ctx in place_contexts(world)]}
 
 
+def pinned_prints(job):
+    name, ctx = job
+    return {'name': name, 'context': context_fields(ctx), 'prints': place_prints(ctx, True)}
+
+
 def build(worlds):
     jobs = [(FIRST + k, k < CHECKED) for k in range(worlds)]
     with ProcessPoolExecutor() as pool:
+        pinned = list(pool.map(pinned_prints, PINNED))
         made = list(pool.map(world_prints, jobs))
     return {'version': VERSION, 'stages': {kind: list(names) for kind, names in STAGES.items()}, 'kinds': list(KINDS),
-            'worlds': made}
+            'pinned': pinned, 'worlds': made}
 
 
 def check(worlds):
-    """The committed file's first `worlds` worlds against a fresh run, so CI can check a few quickly."""
+    """The committed file's pinned places and first `worlds` worlds against a fresh run, so CI can check quickly."""
     if not FIXTURE.exists():
         return False
     committed = json.loads(FIXTURE.read_text(encoding='utf-8'))
@@ -121,7 +149,7 @@ def main():
     name = FIXTURE.relative_to(ROOT).as_posix()
     if args.check:
         if check(args.worlds):
-            print(f'{name} matches on {args.worlds} worlds')
+            print(f'{name} matches on its {len(PINNED)} pinned places and {args.worlds} worlds')
             return 0
         print(f'{name} is out of date: run python tools/worldgen/place_goldens.py and commit the result', file=sys.stderr)
         return 1
@@ -130,7 +158,7 @@ def main():
     FIXTURE.parent.mkdir(parents=True, exist_ok=True)
     FIXTURE.write_text(text_, encoding='utf-8', newline='\n')
     places = sum(len(w['places']) for w in data['worlds'])
-    print(f'wrote {name}: {args.worlds} worlds, {places} places ({len(text_):,} bytes)')
+    print(f'wrote {name}: {len(PINNED)} pinned places, {args.worlds} worlds of {places} places ({len(text_):,} bytes)')
     return 0
 
 

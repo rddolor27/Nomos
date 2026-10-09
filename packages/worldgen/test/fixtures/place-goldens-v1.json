@@ -41,6 +41,153 @@
   "soil",
   "crop_pasture"
  ],
+ "pinned": [
+  {
+   "name": "viaduct-town",
+   "context": {
+    "seed": 1,
+    "name": "Archway",
+    "biome": "grassland",
+    "temperature": 150,
+    "moisture": 130,
+    "tier": "town",
+    "population": 9000,
+    "sea": "",
+    "coast": "",
+    "river": "ns",
+    "roads": "ew",
+    "farmland": "",
+    "landmarks": [
+     "viaduct"
+    ],
+    "wonder": null
+   },
+   "prints": "9db4b18f 19b7f87e 7b219812 d844d560 c9b53fdc 28a6adaf 978114b4 409b324d 38f8305a"
+  },
+  {
+   "name": "landmark-village",
+   "context": {
+    "seed": 1,
+    "name": "Belltop",
+    "biome": "grassland",
+    "temperature": 140,
+    "moisture": 140,
+    "tier": "village",
+    "population": 700,
+    "sea": "",
+    "coast": "",
+    "river": "",
+    "roads": "ew",
+    "farmland": "",
+    "landmarks": [
+     "clock-tower",
+     "fountain"
+    ],
+    "wonder": null
+   },
+   "prints": "28dd06e7 e6afc33c e6afc33c d49cba53 98b1ab59 5da5d223 2a2b492f 8a25ca5e e6595f4c"
+  },
+  {
+   "name": "hill-village",
+   "context": {
+    "seed": 1,
+    "name": "Goatfold",
+    "biome": "hills",
+    "temperature": 120,
+    "moisture": 130,
+    "tier": "village",
+    "population": 600,
+    "sea": "",
+    "coast": "",
+    "river": "",
+    "roads": "ns",
+    "farmland": "w",
+    "landmarks": [],
+    "wonder": null
+   },
+   "prints": "1e80b83b c8fb0767 5c9bc2ff f36087d3 e9beb157 402b542a 3ba8fe18 ecf5e6a9 d847347b"
+  },
+  {
+   "name": "mountain-town",
+   "context": {
+    "seed": 1,
+    "name": "Scree",
+    "biome": "mountain",
+    "temperature": 90,
+    "moisture": 140,
+    "tier": "town",
+    "population": 6000,
+    "sea": "",
+    "coast": "",
+    "river": "",
+    "roads": "ew",
+    "farmland": "",
+    "landmarks": [],
+    "wonder": null
+   },
+   "prints": "671bf923 380a7df6 3a5498e9 bea698bd 465465b6 4b685c63 145c2866 53bc6a4c 4a692e7a"
+  },
+  {
+   "name": "east-sea-arch",
+   "context": {
+    "seed": 24231,
+    "name": "Eastgate",
+    "biome": "grassland",
+    "temperature": 140,
+    "moisture": 140,
+    "tier": null,
+    "population": 0,
+    "sea": "e",
+    "coast": "cliffs",
+    "river": "",
+    "roads": "w",
+    "farmland": "",
+    "landmarks": [],
+    "wonder": "sea-arch"
+   },
+   "prints": "ad2fdbe6 5220c794 30e5fe14"
+  },
+  {
+   "name": "west-sea-arch",
+   "context": {
+    "seed": 24232,
+    "name": "Westgate",
+    "biome": "grassland",
+    "temperature": 140,
+    "moisture": 140,
+    "tier": null,
+    "population": 0,
+    "sea": "w",
+    "coast": "beach",
+    "river": "",
+    "roads": "e",
+    "farmland": "",
+    "landmarks": [],
+    "wonder": "sea-arch"
+   },
+   "prints": "4f9fa1d6 f3de0643 a1eca896"
+  },
+  {
+   "name": "cliff-cove",
+   "context": {
+    "seed": 790928260,
+    "name": "Cove",
+    "biome": "grassland",
+    "temperature": 140,
+    "moisture": 150,
+    "tier": "village",
+    "population": 900,
+    "sea": "sw",
+    "coast": "cliffs",
+    "river": "n",
+    "roads": "n",
+    "farmland": "",
+    "landmarks": [],
+    "wonder": null
+   },
+   "prints": "3554b489 46770b1c c97fd9ca 101cab7b f88589cf 771d301c 34a6495c 793180b3 5e3ca56f"
+  }
+ ],
  "worlds": [
   {
    "seed": 1592590337,
