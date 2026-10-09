@@ -58,19 +58,25 @@ export function withCrowd(layout: PlaceLayout, crowd: PlaceCrowd, n: number): Pl
   return { ...layout, people };
 }
 
-// The place's look-only walkers: each loop's owner, then any street crowd withCrowd appended, who share the loops from
-// their phases. Each walks its loop tile by tile at its own pace, keeping its loop owner's spot in the tile, so every lap
-// of an owner starts and ends where place.py put it. Its pose is walk while it moves, even for a stander that strolls,
-// and its walk frame steps with the distance walked. Everything is made once a place, so walk() allocates nothing.
+// Where a crowd walker stands within a tile, as place.py stands people: the tile's middle across, 14 px down.
+const CROWD_SPOT_X = 8;
+const CROWD_SPOT_Y = 14;
+
+// The place's look-only walkers: each walk loop's owner, then any street crowd withCrowd appended, on the crowd's own
+// loops from their phases. Each walks its loop tile by tile at its own pace, an owner keeping its spot in the tile, so
+// every lap starts and ends where place.py put it. Its pose is walk while it moves, even for a stander that strolls, and
+// its walk frame steps with the distance walked. Everything is made once a place, so walk() allocates nothing.
 export class Walkers {
   private readonly people: PlacePeople;
-  private readonly walks: PlaceWalks;
   private readonly width: number;
-  // Each walker's person, loop and phase in art px along it.
+  // The owners' loop cells, then the crowd's.
+  private readonly cells: Int32Array;
+  // Each walker's person, its loop's first cell in cells and its length, its phase in art px along it, its spot within
+  // a tile and its pace in art px a second.
   private readonly persons: Uint16Array;
-  private readonly loops: Uint16Array;
+  private readonly firsts: Int32Array;
+  private readonly lengths: Int32Array;
   private readonly phases: Uint16Array;
-  // Each loop's spot within its tile, from where its owner stands, and each walker's pace in art px a second.
   private readonly inTileX: Int32Array;
   private readonly inTileY: Int32Array;
   private readonly pace: Float64Array;
@@ -83,17 +89,20 @@ export class Walkers {
     const count = owners + n;
     const first = layout.people.look.length - n;
     this.people = layout.people;
-    this.walks = walks;
     this.width = layout.width;
+    this.cells = new Int32Array(walks.cells.length + (crowd?.cells.length ?? 0));
+    this.cells.set(walks.cells);
+    if (crowd) this.cells.set(crowd.cells, walks.cells.length);
     this.persons = new Uint16Array(count);
-    this.loops = new Uint16Array(count);
+    this.firsts = new Int32Array(count);
+    this.lengths = new Int32Array(count);
     this.phases = new Uint16Array(count);
-    this.inTileX = new Int32Array(owners);
-    this.inTileY = new Int32Array(owners);
+    this.inTileX = new Int32Array(count);
+    this.inTileY = new Int32Array(count);
     this.pace = new Float64Array(count);
     this.start = new Int32Array(KEPT * count);
-    for (let r = 0; r < owners; r++) this.setOwner(r);
-    for (let k = 0; k < n && crowd; k++) this.setCrowd(owners + k, first + k, crowd.loop[k], crowd.phase[k]);
+    for (let r = 0; r < owners; r++) this.setOwner(r, walks);
+    for (let k = 0; k < n && crowd; k++) this.setCrowd(owners + k, first + k, crowd, k, walks.cells.length);
     for (let w = 0; w < count; w++) this.keep(w);
   }
 
@@ -124,21 +133,26 @@ export class Walkers {
     }
   }
 
-  private setOwner(r: number): void {
-    const p = this.walks.person[r];
+  private setOwner(r: number, walks: PlaceWalks): void {
+    const p = walks.person[r];
     const { x, y } = this.people;
     this.persons[r] = p;
-    this.loops[r] = r;
+    this.firsts[r] = walks.offsets[r];
+    this.lengths[r] = walks.offsets[r + 1] - walks.offsets[r];
     this.inTileX[r] = x[p] - TILE * Math.floor(x[p] / TILE);
     this.inTileY[r] = y[p] - TILE * Math.floor(y[p] / TILE);
     this.pace[r] = WALK_PX_PER_S + PACE_SPREAD[r % PACE_SPREAD.length];
   }
 
-  // A crowd walker starts at its phase along its loop.
-  private setCrowd(w: number, p: number, loop: number, phase: number): void {
+  // A crowd walker starts at its phase along its loop, whose cells follow the owners' in cells.
+  private setCrowd(w: number, p: number, crowd: PlaceCrowd, k: number, after: number): void {
+    const loop = crowd.loop[k];
     this.persons[w] = p;
-    this.loops[w] = loop;
-    this.phases[w] = phase;
+    this.firsts[w] = after + crowd.offsets[loop];
+    this.lengths[w] = crowd.offsets[loop + 1] - crowd.offsets[loop];
+    this.phases[w] = crowd.phase[k];
+    this.inTileX[w] = CROWD_SPOT_X;
+    this.inTileY[w] = CROWD_SPOT_Y;
     this.pace[w] = WALK_PX_PER_S + PACE_SPREAD[w % PACE_SPREAD.length];
     this.walkLoop(w, 0);
   }
@@ -150,23 +164,21 @@ export class Walkers {
   }
 
   private walkLoop(w: number, ms: number): void {
-    const { cells, offsets } = this.walks;
-    const r = this.loops[w];
-    const first = offsets[r];
-    const length = offsets[r + 1] - first;
+    const first = this.firsts[w];
+    const length = this.lengths[w];
     const walked = this.phases[w] + (ms * this.pace[w]) / 1000;
     const along = walked % (length * TILE);
     const leg = Math.floor(along / TILE);
     const into = Math.floor(along - leg * TILE);
-    const from = cells[first + leg];
-    const to = cells[first + ((leg + 1) % length)];
+    const from = this.cells[first + leg];
+    const to = this.cells[first + ((leg + 1) % length)];
     const fromX = from % this.width;
     const fromY = Math.floor(from / this.width);
     const dx = (to % this.width) - fromX;
     const dy = Math.floor(to / this.width) - fromY;
     const p = this.persons[w];
-    this.people.x[p] = fromX * TILE + this.inTileX[r] + dx * into;
-    this.people.y[p] = fromY * TILE + this.inTileY[r] + dy * into;
+    this.people.x[p] = fromX * TILE + this.inTileX[w] + dx * into;
+    this.people.y[p] = fromY * TILE + this.inTileY[w] + dy * into;
     this.people.pose[p] = WALK;
     this.people.facing[p] = facingOf(dx, dy);
     this.people.step[p] = Math.floor(walked / STRIDE_PX) % 2;

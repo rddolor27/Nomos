@@ -91,19 +91,27 @@ describe('walkers', () => {
     expect([p.x[1], p.y[1], p.pose[1], p.facing[1], p.step[1]]).toEqual([40, 40, PLACE_POSES.indexOf('sit'), DOWN, 0]);
   });
 
-  it('starts the street crowd at its phases on the loops it shares, in walk pose', () => {
+  it('starts the street crowd at its phases on its own loop, in walk pose, at the middle of its tiles', () => {
     const { layout, walks } = square();
-    const crowd = { look: Uint8Array.of(3, 4), expression: Uint8Array.of(1, 2), loop: Uint16Array.of(0, 0), phase: Uint16Array.of(16, 40) };
+    // One crowd loop round the same square, (1, 1), (2, 1), (2, 2) and (1, 2).
+    const crowd = {
+      look: Uint8Array.of(3, 4),
+      expression: Uint8Array.of(1, 2),
+      loop: Uint16Array.of(0, 0),
+      phase: Uint16Array.of(16, 40),
+      offsets: Int32Array.of(0, 4),
+      cells: Int32Array.of(5, 6, 10, 9),
+    };
     const placed = withCrowd(layout, crowd, 2);
     const walkers = new Walkers(placed, walks, crowd, 2);
     const p = placed.people;
     expect(walkers.count).toBe(3);
     expect([2, 3].map((j) => [p.x[j], p.y[j], p.pose[j], p.facing[j], p.look[j], p.job[j]])).toEqual([
-      [38, 29, WALK, DOWN, 3, NO_CODE],
-      [30, 45, WALK, LEFT, 4, NO_CODE],
+      [40, 30, WALK, DOWN, 3, NO_CODE],
+      [32, 46, WALK, LEFT, 4, NO_CODE],
     ]);
     walkers.walk(msFor(4));
-    expect([p.x[2], p.y[2]]).toEqual([38, 33]);
+    expect([p.x[2], p.y[2]]).toEqual([40, 34]);
   });
 
   it('stands every walker back where place.py put it', () => {

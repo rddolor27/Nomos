@@ -28,6 +28,8 @@ function tinyPlace(): { layout: PlaceLayout; walks: PlaceWalks; crowd: PlaceCrow
     expression: new Uint8Array([1]),
     loop: new Uint16Array([0]),
     phase: new Uint16Array([5]),
+    offsets: new Int32Array([0, 2]),
+    cells: new Int32Array([0, 1]),
   };
   return { layout, walks, crowd };
 }

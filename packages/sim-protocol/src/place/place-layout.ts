@@ -55,13 +55,16 @@ export interface PlaceWalks {
   cells: Int32Array;
 }
 
-// The street crowd (M3.1 part 2): look-only walkers in proportion to the population, who walk PlaceWalks' loops too.
+// The street crowd (M3.1 part 2): look-only walkers in proportion to the population, on loops of their own spread over
+// the place. Crowd loop r steps through cells[offsets[r]] to cells[offsets[r + 1] - 1] and back, as PlaceWalks' loops do.
 // Walker k has look look[k] and expression expression[k], and follows loop loop[k], starting phase[k] art px along it.
 export interface PlaceCrowd {
   look: Uint8Array;
   expression: Uint8Array;
   loop: Uint16Array;
   phase: Uint16Array;
+  offsets: Int32Array;
+  cells: Int32Array;
 }
 
 // Place p is settlement p, or wonder p minus the settlement count: the order of tools/worldgen/world.py's place_contexts.
@@ -94,6 +97,8 @@ export function placeBuffers(layout: PlaceLayout, walks: PlaceWalks, crowd: Plac
     crowd.expression,
     crowd.loop,
     crowd.phase,
+    crowd.offsets,
+    crowd.cells,
   ];
   return views.map((view) => view.buffer as ArrayBuffer);
 }
