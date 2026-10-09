@@ -16,10 +16,6 @@ function fixture(name: string): (typeof fixtures.places)[number] {
   return place;
 }
 
-export function placePixels(name: string): PlacePixels {
-  return { ...fixture(name).pixels };
-}
-
 // A fresh layout each call, its own columns as the map worker transfers them, so a caller may move its people freely.
 export function placeLayout(name: string): PlaceLayout {
   const place = fixture(name);
