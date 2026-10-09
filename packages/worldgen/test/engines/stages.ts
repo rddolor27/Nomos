@@ -2,7 +2,7 @@
 // for line: each block runs a stage the way goldens.py opens world.generate up, and folds what it made. Each port task
 // appends its block before the return.
 import { WORLD_SIZES, type WorldSize } from '@nomos/sim-protocol/world-map';
-import { fold, type Part } from './fold.ts';
+import { fold, rows, type Part } from './fold.ts';
 import { falloffOf, landPermilleOf, templateOf } from '../../src/terrain/templates.ts';
 import { chains } from '../../src/terrain/chains.ts';
 import { cut, landOf, rawOf, reliefOf, riseOf, shape } from '../../src/terrain/shape.ts';
@@ -10,10 +10,11 @@ import { rain } from '../../src/climate/rain.ts';
 import { EROSION_PASSES, accumulate, erode, flood } from '../../src/drainage/flood.ts';
 import { lakes } from '../../src/drainage/lakes.ts';
 import { drain } from '../../src/drainage/drain.ts';
-import { union } from '../../src/grid/grid.ts';
+import { sum, union } from '../../src/grid/grid.ts';
 import { coasts, moisture, slopes, temperature } from '../../src/climate/climate.ts';
 import { biomes } from '../../src/climate/biomes.ts';
 import { habitability } from '../../src/settle/habitability.ts';
+import { settle } from '../../src/settle/settle.ts';
 
 export function stagePrints(seed: number, size: WorldSize): Map<string, number> {
   const [width, height] = WORLD_SIZES[size];
@@ -88,6 +89,10 @@ export function stagePrints(seed: number, size: WorldSize): Map<string, number> 
     slope,
   );
   prints.set('habitability', fold(slope, score));
+
+  const landCells = water.length - sum(water);
+  const settlements = settle(seed, width, height, score, landCells);
+  prints.set('settle', fold(rows(settlements.map((s) => [s.id, s.x, s.y, s.tier, s.population, s.uid]))));
 
   return prints;
 }
