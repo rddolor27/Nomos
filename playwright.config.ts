@@ -10,6 +10,8 @@ const CHROMIUM = {
   launchOptions: { args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] },
 };
 const FRAME_BUDGET = '**/test/browser/perf.spec.ts';
+// Build output and scratch copies of the repo under dist/ hold specs too, which must never run.
+const BUILT = '**/dist/**';
 
 export default defineConfig({
   testDir: '.',
@@ -18,11 +20,11 @@ export default defineConfig({
   reporter: process.env.CI ? [['dot'], ['html', { open: 'never' }]] : 'list',
   use: { baseURL: HARNESS },
   projects: [
-    { name: 'chromium', testIgnore: FRAME_BUDGET, use: CHROMIUM },
-    { name: 'firefox', testIgnore: FRAME_BUDGET, use: { browserName: 'firefox' } },
-    { name: 'webkit', testIgnore: FRAME_BUDGET, use: { browserName: 'webkit' } },
+    { name: 'chromium', testIgnore: [FRAME_BUDGET, BUILT], use: CHROMIUM },
+    { name: 'firefox', testIgnore: [FRAME_BUDGET, BUILT], use: { browserName: 'firefox' } },
+    { name: 'webkit', testIgnore: [FRAME_BUDGET, BUILT], use: { browserName: 'webkit' } },
     // Timed after every other project, and one file at a time, so no other browser contends for the CPU while it measures.
-    { name: 'perf', testMatch: FRAME_BUDGET, dependencies: ['chromium', 'firefox', 'webkit'], workers: 1, use: CHROMIUM },
+    { name: 'perf', testMatch: FRAME_BUDGET, testIgnore: BUILT, dependencies: ['chromium', 'firefox', 'webkit'], workers: 1, use: CHROMIUM },
   ],
   webServer: [
     {
