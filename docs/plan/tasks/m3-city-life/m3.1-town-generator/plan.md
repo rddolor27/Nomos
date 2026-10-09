@@ -172,6 +172,48 @@ This pulls M3.1's port forward, and starts M3.3's atlas pages and sprite drawing
 - `code-reviewer` over the whole change, and `/determinism-review` on the port;
 - screenshots for the owner, then the checkpoint.
 
+## Part 2: bigger places, the starting town, then walls and houses (owner, 10 October 2026)
+
+> **Status:** brief. Expand it into a step plan with the writing-plans skill before building.
+
+The owner found the town views too small and their crowds too thin. They asked for bigger places and a bigger starting town, then town walls with gates and more houses. In order:
+
+1. **Bigger places** (sim-engineer; asset-designer to tune the layout).
+   - `place.py`'s `SIZES` become 96×56 for a capital or city, 80×48 for a town, 64×40 for a village and 40×24 for a hamlet. Vistas stay 30×18.
+   - Retune `PLAZAS`, `BLOCK`, `REACH` and `HOUSES`, so the bigger districts fill with streets and houses rather than grass.
+   - Regenerate the goldens and fixtures, then port the change to TypeScript stage by stage.
+2. **Crowds by population** (sim-engineer).
+   - `CROWDS` becomes a count drawn from the settlement's population, banded by tier. On desktop that is about 150–300 for a capital or city, 60–120 for a town, 25–50 for a village and 10–20 for a hamlet.
+   - Phones show a share of each tier's count.
+   - Walk loops scale with the crowds, under a raised cell budget.
+3. **Budgets** (render-engineer): re-measure the place pass and the walkers against the 2 ms bar with the bigger crowds, in both backends.
+4. **The starting town** (sim-engineer, with senior-game-engineer).
+   - Highcourt, `export_map.py`'s pinned capital, is re-exported at 96×56 as `assets/maps/town.nmap`.
+   - The replay hash changes, so record the new one.
+   - Re-check the blob counts per tier against the tick budgets. The owner picks the counts (task.md).
+5. **Town walls with gates** (asset-designer, then sim-engineer).
+   - Mockups first, for the owner to pick.
+   - Then the wall, corner, tower and gate sprites in `tools/sprites`.
+   - `place.py` rings each capital and city with a wall, with a gate where each road enters, and the port follows.
+   - They are drawn look-only: no sim rule reads them yet. Nothing military carries a flag or heraldry (content rule 6).
+6. **More houses and props** (asset-designer). New house styles and sizes are drawn with equal care, so none reads as richer or poorer, along with the props the bigger towns need. The owner reviews a preview sheet first.
+
+**Rules for all of part 2:**
+- **Python stays the reference.** Every layout change lands in `place.py` first, with the goldens regenerated in the same commit; then the port matches it.
+- **Classes:** new game objects, such as a `Wall` or a `Gate`, are classes (`code.md`, owner, 10 October 2026). Crowds stay typed arrays.
+- **Version:** `WORLDGEN_VERSION` 1 is not frozen until M8.1's Task 34. Check before building whether the place layouts fall under that freeze.
+
+**Done when:**
+- each step's goldens match in TypeScript;
+- the town view stays under 2 ms for the biggest capital;
+- the starting town's new replay hash is recorded;
+- the owner has approved the wall and house mockups.
+
+**Risks:**
+- **Build time:** building a place takes about four times as long (27–32 ms warm for a capital today). Measure it in the worker.
+- **Walk loops:** bigger crowds mean more of them, so the 4,096-cell budget per place must rise.
+- **Hashes:** growing the starting town moves every replay hash, and some goldens in the sim tests.
+
 ## The rest of M3.1: brief
 
 > Expand this part into a step plan with the writing-plans skill before building it, against the code as it then stands.

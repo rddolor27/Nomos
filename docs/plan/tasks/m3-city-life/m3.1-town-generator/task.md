@@ -12,3 +12,16 @@ The port needs M0.1's keyed draw and noise, M0.4's binary map format and M0.5's 
   - the civic signals: teal-and-cream shop awnings with a gold coin sign, and home roofs chosen at random, never by wealth; art exists; wire it in (R3).
 - **Exit checks:**
   - one map, now the binary map rather than one LDtk file, drives both walkability and tiles: every walkable cell has a ground tile and every zone entity a building (R3, R9).
+- **Part 2, added by the owner on 10 October 2026,** built before M1 and ahead of the export above:
+  - **bigger places:** places at four times the area. A capital or city is 96×56 tiles, a town 80×48, a village 64×40 and a hamlet 40×24. The change lands in `place.py` first, then in the port;
+  - **crowds that grow with population:** on desktop, about 150–300 people in a capital or city, 60–120 in a town, 25–50 in a village and 10–20 in a hamlet. Phones show fewer;
+  - **the starting town:** Highcourt grows to the capital's new size and is re-exported as the binary map. Its blob counts per tier are re-checked against the tick budgets;
+  - **town walls with gates** around capitals and cities, with a gate where each road enters, drawn look-only;
+  - **more house styles and props.**
+- **Owner decision first:** the town walls' look, from the asset-designer's mockups, before the full sprite set is drawn.
+- **Owner decision first:** how many blobs the grown starting town holds on each device tier, within the tick budgets.
+- **Exit checks for part 2:**
+  - the per-stage goldens are regenerated, and the TypeScript port matches them;
+  - the town view's frame time stays under 2 ms for the biggest capital, in both backends;
+  - every crowd stays within its tier's range;
+  - walls never cross a road except at a gate.

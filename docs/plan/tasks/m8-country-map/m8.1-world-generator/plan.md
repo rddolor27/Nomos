@@ -2664,6 +2664,16 @@ with `import { landmarks } from '../../src/features/landmarks.ts';`.
 - **Review:** `/determinism-review` over `packages/worldgen`, then `code-reviewer` over the whole part.
 - **Record it:** the Started, Done and Actual cells in `milestone.md`, then the next checkpoint, committed alone as `docs(plan): add checkpoint NNNN`.
 
+### Task 36: The large world by default (senior; owner, 10 October 2026)
+
+The owner asked for a bigger world map. The map now opens the `large` size: 192 × 128 cells, four times the standard world. The generator and its goldens already cover that size. Run this task before Task 35 closes M8.1.
+
+- Make `large` the map's default size. Keep `standard` for tests and as a fallback.
+- Measure generation in the map worker against Task 31's budget, on desktop, and on phones when the owner sends the timings.
+- The crowd grows with the population, at one dot per 100 people. Re-check the Region view against the 2 ms bar.
+- Check the zoom ladder's Fit, the labels, the legend and the Go to list on a world four times the size. Fit on small screens is still the owner's deferred call.
+- **Done when:** the map opens a large world, the frame tests and size limits pass, and the generation time is recorded.
+
 ### Exit checks, and the tasks that prove them
 
 | Exit check (task.md) | Proved by |

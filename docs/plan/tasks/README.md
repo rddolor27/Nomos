@@ -6,7 +6,7 @@ Estimates are full-time days for one person coding by hand (unsourced estimates)
 
 | Milestone | Sub-milestones | Estimate |
 | --- | --- | --- |
-| [M0 Pipeline](m0-pipeline/milestone.md) | 7 | 23–35 days |
+| [M0 Pipeline](m0-pipeline/milestone.md) | 8 | 26–40 days |
 | [M1 Lab mode](m1-lab-mode/milestone.md) | 6 | 23.5–38 days |
 | [M2 Economy](m2-economy/milestone.md) | 7 | 26.5–43 days |
 | [M3 City life](m3-city-life/milestone.md) | 8 | 65.5–101 days |
@@ -15,10 +15,10 @@ Estimates are full-time days for one person coding by hand (unsourced estimates)
 | [M6 Scale and sharing](m6-scale-and-sharing/milestone.md) | 7 | 49–81 days |
 | [M7 Country of ledgers](m7-country-of-ledgers/milestone.md) | 7 | 37–59 days |
 | [M8 Country map](m8-country-map/milestone.md) | 8 | 52.5–82 days |
-| **Before launch, M0–M8** | | **341–535 days** |
+| **Before launch, M0–M8** | | **344–540 days** |
 | [M9 Zoom across scales](m9-zoom-across-scales/milestone.md) | 6 | 25–40 days |
 | [M10 Weather](m10-weather/milestone.md) | 4 | 16–27 days |
-| **Everything** | | **382–602 days** |
+| **Everything** | | **385–607 days** |
 
 The plan's own effort lines sum to about 221.5–340.5 days before launch, but many tasks that rounds 2, 6, 8 and 9 added carry no estimate there. These breakdowns estimate every task, which is why their sum is larger.
 
@@ -35,6 +35,7 @@ The plan's own effort lines sum to about 221.5–340.5 days before launch, but m
 | [M0.5 Web app](m0-pipeline/m0.5-web-app/task.md) | The page a visitor opens: first frame, HUD, charts, tiers, accessibility | 3–4 days | [step plan](m0-pipeline/m0.5-web-app/plan.md) |
 | [M0.6 Gates and guards](m0-pipeline/m0.6-gates-and-guards/task.md) | CI gates that enforce every rule the plan relies on | 3–5 days | [step plan](m0-pipeline/m0.6-gates-and-guards/plan.md) |
 | [M0.7 Modules and blob facts](m0-pipeline/m0.7-modules-and-blob-facts/task.md) | Module folders in every package, the `Blob` handle, and a name and a wallet for every blob, shown on click; walking in any direction, built first on 9 October 2026, falls outside this estimate | 5–8 days | [step plan](m0-pipeline/m0.7-modules-and-blob-facts/plan.md) |
+| [M0.8 UI look](m0-pipeline/m0.8-ui-look/task.md) | The owner's look for the app: one design system, clearer buttons and toolbars, one set of zoom controls, and charts a user can read (owner, 10 October 2026) | 3–5 days | [brief](m0-pipeline/m0.8-ui-look/plan.md) |
 
 ### Map first: M8.1 and M8.3, after M0 and before M1
 
@@ -182,11 +183,14 @@ Each must be settled before its sub-milestone starts. The task files give the co
 
 | Before | Decision |
 | --- | --- |
+| M0.8 | the look itself. The ui-designer shows two or three mockups, and the owner picks one before anything is built |
 | M1.2 | how long a lab day lasts at 1×. Round 1's engine runs discrete days with animated phases, while the calendar makes a day at 1× last 144 s |
 | M1.4 | whether the sounds pass a listen: the Sound tab asks the owner to play `dist/sounds/` before M1, above all the nine tracks against well-known jingles |
 | M1.4 | whether the synth renders at 22,050 Hz like the previews, or at the audio context's 44.1 or 48 kHz |
 | M1.6 | whether lab mode still goes public when M1 closes, as round 1 planned, now that launch waits for M8 (R9), which decides whether `v0.1.0` is announced |
 | M2.1 | what a month is on the 112-day year. Lengnick's firms decide monthly, and round 2's targets count months. A 21-day month, as in the paper, gives 5⅓ months a year; a 28-day season gives 4 (computed) |
+| M3.1 | the town walls' look, from the asset-designer's mockups, before the full sprite set is drawn |
+| M3.1 | how many blobs the grown starting town holds on each device tier, within the tick budgets |
 | M3.2 | soldiers are paid from taxes, which arrive only with M5's treasury (R1); choose a stopgap, such as M0.2's local-government account |
 | M3.3 | whether the optional human sheet survives content rule 1's one shared blob body; round 3 tied it to M1's playtest of the blob cast |
 | M3.7 | customs pass on at birth, but births, partner choice and ageing arrive only in M5. Pull minimal births forward, or test transmission on a harness until then |
