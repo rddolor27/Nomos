@@ -4,7 +4,8 @@ import type { Ground } from '../src/world/ground.ts';
 import { PHONE_MEMORY_BYTES } from '../src/memory/arena.ts';
 import { step } from '../src/step/step.ts';
 import { SPAWN } from '../src/random/streams.ts';
-import { checkpoint, createWorld, layoutWorld, populate, restoreWorld, stateHash, type World } from '../src/world/world.ts';
+import { checkpoint, restoreWorld, stateHash } from '../src/world/checkpoint.ts';
+import { createWorld, layoutWorld, populate, type World } from '../src/world/world.ts';
 import { run } from './run.ts';
 
 const TILE_Q8 = 16 * 256;

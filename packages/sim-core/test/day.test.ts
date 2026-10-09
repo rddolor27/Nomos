@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { logFocus, logInput } from '../src/day/day.ts';
 import { INPUT_CAPACITY, INPUT_FOCUS } from '../src/world/inputs.ts';
 import { step } from '../src/step/step.ts';
-import { checkpoint, createWorld, currentTick, restoreWorld, stateHash } from '../src/world/world.ts';
+import { checkpoint, restoreWorld, stateHash } from '../src/world/checkpoint.ts';
+import { createWorld, currentTick } from '../src/world/world.ts';
 import { run } from './run.ts';
 
 describe('the day boundary', () => {

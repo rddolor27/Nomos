@@ -8,17 +8,8 @@ import { SYSTEM_NAMES, step, type SystemTimer } from '../src/step/step.ts';
 import { SPAWN } from '../src/random/streams.ts';
 import { TIER_AGENTS, TIER_MEMORY_BYTES, type Tier } from '../src/memory/tiers.ts';
 import { WALK_X_Q8, WALK_Y_Q8, facingFor } from '../src/movement/walk.ts';
-import {
-  TICK,
-  checkpoint,
-  createWorld,
-  currentTick,
-  layoutWorld,
-  populate,
-  restoreWorld,
-  stateHash,
-  type World,
-} from '../src/world/world.ts';
+import { checkpoint, restoreWorld, stateHash } from '../src/world/checkpoint.ts';
+import { TICK, createWorld, currentTick, layoutWorld, populate, type World } from '../src/world/world.ts';
 import type { Goldens } from './engines/checks.ts';
 import { run } from './run.ts';
 

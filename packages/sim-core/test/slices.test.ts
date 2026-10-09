@@ -11,16 +11,8 @@ import {
 } from '../src/day/slices.ts';
 import { step } from '../src/step/step.ts';
 import { TIER_AGENTS, type Tier } from '../src/memory/tiers.ts';
-import {
-  RECORD_DAY,
-  RECORD_POPULATION,
-  RECORD_WALKING,
-  checkpoint,
-  committed,
-  createWorld,
-  restoreWorld,
-  stateHash,
-} from '../src/world/world.ts';
+import { checkpoint, restoreWorld, stateHash } from '../src/world/checkpoint.ts';
+import { RECORD_DAY, RECORD_POPULATION, RECORD_WALKING, committed, createWorld } from '../src/world/world.ts';
 import { run } from './run.ts';
 
 const TIERS: readonly Tier[] = ['phone', 'phone-plus', 'desktop'];

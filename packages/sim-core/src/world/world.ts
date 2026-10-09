@@ -1,6 +1,6 @@
 import { ACTION_WALK } from '../agents/actions.ts';
 import { createClaims, type Claims } from '../money/claims.ts';
-import { below, draw2, mix } from '../random/draw.ts';
+import { below, draw2 } from '../random/draw.ts';
 import { openCells, pointInTileQ8, standInGround, type Ground } from './ground.ts';
 import { createInputLog, type InputLog } from './inputs.ts';
 import { HOUSEHOLDS, createLedger, issue, sectorAccount, type Ledger } from '../money/ledger.ts';
@@ -135,42 +135,4 @@ export function committed(world: World, field: number): number {
 
 function frontRecord(world: World): number {
   return world.globals[RECORD_FRONT] * RECORD_FIELDS;
-}
-
-const NO_SKIP: readonly ArrayBufferView[] = [];
-
-export function stateHash(world: World): number {
-  return stateHashExcept(world, NO_SKIP);
-}
-
-// Skips each canonical region that starts where a given view does; the relabel test skips the culture regions (R8).
-// The one view this makes is fine here: the hash runs between ticks, never inside step.
-export function stateHashExcept(world: World, skip: readonly ArrayBufferView[]): number {
-  const words = new Uint32Array(world.arena.memory.buffer);
-  const regions = world.arena.canonical;
-  let h = 0;
-  for (let r = 0; r < regions.length; r += 2) {
-    if (startsAView(regions[r], skip)) continue;
-    const end = (regions[r] + regions[r + 1]) / 4;
-    for (let word = regions[r] / 4; word < end; word++) h = mix(h ^ words[word]);
-  }
-  return h;
-}
-
-function startsAView(byteOffset: number, views: readonly ArrayBufferView[]): boolean {
-  for (let v = 0; v < views.length; v++) if (views[v].byteOffset === byteOffset) return true;
-  return false;
-}
-
-export function checkpoint(world: World): ArrayBuffer {
-  return world.arena.memory.buffer.slice(0, world.arena.top);
-}
-
-export function restoreWorld(seed: number, tier: Tier, state: ArrayBuffer, ground?: Ground): World {
-  const world = layoutWorld(seed, tier, TIER_AGENTS[tier], TIER_MEMORY_BYTES[tier], ground);
-  if (state.byteLength !== world.arena.top) {
-    throw new RangeError(`a ${tier} checkpoint holds ${world.arena.top} bytes, not ${state.byteLength}`);
-  }
-  new Uint8Array(world.arena.memory.buffer).set(new Uint8Array(state));
-  return world;
 }

@@ -5,7 +5,8 @@ import { step } from '../../src/step/step.ts';
 import { LOOKS } from '../../src/agents/store.ts';
 import { LOOK } from '../../src/random/streams.ts';
 import type { Tier } from '../../src/memory/tiers.ts';
-import { createWorld, stateHash } from '../../src/world/world.ts';
+import { stateHash } from '../../src/world/checkpoint.ts';
+import { createWorld } from '../../src/world/world.ts';
 
 interface DrawCase {
   seed: number;
