@@ -33,6 +33,7 @@ jobs:
       - run: pnpm depcruise
       - run: pnpm test
       - run: node packages/worldgen/scripts/engines.ts
+      - run: node packages/worldgen/scripts/frozen.ts --check
       # The ledger gate: two days per tier with the money invariants checked every tick, so a lost cent exits non-zero.
       - run: for tier in phone phone-plus desktop; do node tools/cli/src/main.ts --seed 7 --tier "$tier" --ticks 2880; done
       # In this order: a Vite build empties dist/, so the atlas goes in after it, then every chunk is measured.
