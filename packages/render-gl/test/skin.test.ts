@@ -25,10 +25,11 @@ test('reads the skin parameter', () => {
   expect(['?skin=xyz', '?skin=', '', '?x=1'].map(skinFromQuery)).toEqual([null, null, null, null]);
 });
 
-test('falls back to dots', () => {
-  expect([SKINS, BUILT_SKINS]).toEqual([['dots', 'blobs', 'town'], ['dots']]);
+// The town is built, though its code loads after the first frame: the renderer draws dots for it until then.
+test('falls back to dots for the blobs alone', () => {
+  expect([SKINS, BUILT_SKINS]).toEqual([['dots', 'blobs', 'town'], ['dots', 'town']]);
   expect(builtSkin('blobs')).toBe('dots');
-  expect(builtSkin('town')).toBe('dots');
+  expect(builtSkin('town')).toBe('town');
   expect(builtSkin('dots')).toBe('dots');
 });
 

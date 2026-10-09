@@ -36,7 +36,8 @@ test('follows the parameter and the toggle', async ({ page }) => {
   const dotsDrawn = { skin: 'dots', dots: true };
 
   await expect(radio('Town')).toBeChecked();
-  await expect(output).toHaveText('Town is not built yet: showing dots');
+  await expect(output).toBeEmpty();
+  // The harness lends no town, so the town draws as dots.
   expect(await drawFrame(page)).toEqual(dotsDrawn);
 
   await radio('Dots').check();
@@ -58,4 +59,27 @@ test('follows the parameter and the toggle', async ({ page }) => {
   await expect(radio('Dots')).toBeChecked();
   await expect(output).toBeEmpty();
   expect(await drawFrame(page)).toEqual(dotsDrawn);
+});
+
+// A lent town draws instead of the dots for the town skin, and steps aside for any other, which the dots then draw.
+test('draws a lent town for the town skin alone', async ({ page }) => {
+  await page.goto('/?skin=town');
+  await page.evaluate(() => window.harness.boot({ agents: 1_000 }));
+  const radio = (name: string) => page.getByRole('radio', { name, exact: true });
+  await page.evaluate(() => {
+    window.harness.renderer?.setTown({ draw: (_camera, _alpha, view) => (view.drawnSkin === 'town' ? 7 : undefined) });
+  });
+  const drawn = (): Promise<[string | undefined, number | undefined]> =>
+    page.evaluate(() => {
+      window.harness.push(0);
+      window.harness.draw();
+      return [window.harness.renderer?.drawnSkin, window.harness.renderer?.drawnAgents];
+    });
+
+  expect(await drawn()).toEqual(['town', 7]);
+  await radio('Dots').check();
+  expect(await drawn()).toEqual(['dots', 1_000]);
+  expect(await drawFrame(page)).toEqual({ skin: 'dots', dots: true });
+  await radio('Town').check();
+  expect(await drawn()).toEqual(['town', 7]);
 });

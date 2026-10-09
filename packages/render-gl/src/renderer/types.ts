@@ -38,7 +38,25 @@ export interface WorldRenderer {
   // 'auto', the default, picks dots or town each draw from the tile's CSS size and the agents in view (R3); 'fixed'
   // draws the set skin.
   setLod(policy: 'auto' | 'fixed'): void;
+  // Lends the Town skin, which loads after the first frame; until then a draw that picks the town draws dots. The
+  // renderer never disposes it.
+  setTown(town: TownPainter): void;
   dispose(): void;
+}
+
+// What the renderer lends the town each draw: the skin it picked, the snapshots it keeps, and the view's device size.
+export interface TownView {
+  readonly drawnSkin: Skin;
+  readonly retained: Retained;
+  readonly canvas: HTMLCanvasElement;
+  readonly dpr: number;
+}
+
+// The Town skin, drawn on a canvas of its own over the dots' canvas. For the town it draws and returns the agents
+// drawn; for any other skin it hides its canvas and returns undefined, and the dots draw instead. Its code loads after
+// the first frame, so the renderer chunk holds only this hook.
+export interface TownPainter {
+  draw(camera: Camera, alpha: number, view: TownView): number | undefined;
 }
 
 // What the renderer keeps beyond any backend: both backends paint it, and a restored context is rebuilt from it.

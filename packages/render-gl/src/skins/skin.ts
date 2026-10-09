@@ -1,7 +1,8 @@
 export const SKINS = ['dots', 'blobs', 'town'] as const;
 export type Skin = (typeof SKINS)[number];
 
-export const BUILT_SKINS: readonly Skin[] = ['dots'];
+// The town loads after the first frame, and the renderer draws dots in its place until then.
+export const BUILT_SKINS: readonly Skin[] = ['dots', 'town'];
 
 function isSkin(value: string | null): value is Skin {
   return SKINS.some((skin) => skin === value);

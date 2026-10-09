@@ -3,7 +3,7 @@ import { cssPxPerTile, mapShareInView } from '../camera/camera.ts';
 import { createCanvas2dPainter } from '../backends/canvas2d.ts';
 import { minimapPixels } from '../dots/minimap.ts';
 import { autoSkin, builtSkin, type Skin } from '../skins/skin.ts';
-import type { Backend, Camera, Painter, RendererOptions, Retained, WorldRenderer } from './types.ts';
+import type { Backend, Camera, Painter, RendererOptions, Retained, TownPainter, WorldRenderer } from './types.ts';
 import { createGlPainter } from '../backends/webgl.ts';
 
 const RESTORE_TIMEOUT_MS = 3000;
@@ -21,10 +21,11 @@ interface RendererState {
   dpr: number;
   skin: Skin;
   lod: 'auto' | 'fixed';
-  // autoSkin's own last answer. While town is unbuilt the drawn skin stays dots, so feeding that back instead would
+  // autoSkin's own last answer. Until the town is lent the drawn skin stays dots, so feeding that back instead would
   // lose the hysteresis.
   level: 'dots' | 'town';
   drawnSkin: Skin;
+  town: TownPainter | null;
 }
 
 // Room doubles, so births regrow the copies and buffers only now and then.
@@ -67,9 +68,11 @@ function agentsInView(state: RendererState, camera: Camera): number {
 }
 
 function skinToDraw(state: RendererState, camera: Camera): Skin {
-  if (state.lod === 'fixed') return builtSkin(state.skin);
-  state.level = autoSkin(state.level, cssPxPerTile(camera.zoom, state.dpr), agentsInView(state, camera));
-  return builtSkin(state.level);
+  if (state.lod === 'auto') {
+    state.level = autoSkin(state.level, cssPxPerTile(camera.zoom, state.dpr), agentsInView(state, camera));
+  }
+  const skin = builtSkin(state.lod === 'fixed' ? state.skin : state.level);
+  return skin === 'town' && !state.town ? 'dots' : skin;
 }
 
 // A canvas that held a WebGL context never gives a 2D one, so the fallback draws on a shallow clone: every attribute,
@@ -104,6 +107,7 @@ export function createWorldRenderer(canvas: HTMLCanvasElement, options: Renderer
     lod: 'auto',
     level: 'dots',
     drawnSkin: 'dots',
+    town: null,
   };
 
   function watch(): void {
@@ -193,7 +197,8 @@ export function createWorldRenderer(canvas: HTMLCanvasElement, options: Renderer
       const painter = state.painter;
       if (!painter || state.lost || state.canvas.width === 0 || state.canvas.height === 0) return;
       state.drawnSkin = skinToDraw(state, camera);
-      state.drawn = painter.draw(camera, alpha);
+      // A lent town draws for the town skin, and steps aside, hiding its canvas, for any other.
+      state.drawn = state.town?.draw(camera, alpha, state) ?? painter.draw(camera, alpha);
     },
     setSkin(skin) {
       state.skin = skin;
@@ -201,6 +206,9 @@ export function createWorldRenderer(canvas: HTMLCanvasElement, options: Renderer
     },
     setLod(policy) {
       state.lod = policy;
+    },
+    setTown(town) {
+      state.town = town;
     },
     // The listeners go first: losing the context fires webglcontextlost, which would start the fallback timer.
     dispose() {
