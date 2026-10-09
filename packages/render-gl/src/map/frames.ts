@@ -7,6 +7,8 @@ export interface AtlasFrame {
   w: number;
   h: number;
   anchor: [number, number];
+  // A body frame's face offset in atlas.json, where the place pass draws its face and emote; no map frame has one.
+  face?: [number, number];
 }
 
 // Frames are keyed "<sheet>/<frame>" and found by name, never by atlas index (R9).
