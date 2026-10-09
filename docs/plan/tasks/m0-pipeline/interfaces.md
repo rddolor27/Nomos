@@ -95,7 +95,7 @@ Skin B and Skin C arrive as `blobs/` and `town/` beside `dots/` (M1.3, M3.3). M8
 | `app/` | `app.ts`, `boot.ts`, `lifecycle.ts`, `query.ts`, `tiers.ts` | The app shell: boot hand-off, worker link, query, tiers and the page lifecycle |
 | `view/` | `camera-input.ts` | Pointer and keyboard input on the view, and the click that inspects; it loads after the first frame, as the charts do (M0.7) |
 | `panels/` | `hud.ts`, `charts.ts`, `controls.ts`, `inspector.ts` (new) | The HUD, the lazy charts and controls, and the on-demand inspector |
-| `map/` | `generate.ts` and `map-worker.ts` (M8.1); `map-view.ts`, `map-input.ts`, `labels.ts` and `legend.ts` (M8.3) | The map: its worker, and the lazy view the Map control opens |
+| `map/` | `generate.ts` and `map-worker.ts` (M8.1); `map-view.ts`, `map-input.ts`, `labels.ts`, `legend.ts` and `crowd-motion.ts` (M8.3) | The map: its worker, and the lazy view the Map control opens |
 
 `apps/web/vite/` keeps the build plugins. Vite names a lazy chunk after its file, so the size-limit globs `charts-*.js` and `controls-*.js` hold after the move, and the view input's and the inspector's chunks need entries of their own.
 
@@ -303,6 +303,7 @@ M8.1 ports `tools/worldgen` to TypeScript, and M8.3 draws what it makes. The own
 | `features/` | `survey.ts`, `wonders.ts`, `landmarks.ts` | `features.py` |
 | `names/` | `place-names.ts`, `words.ts` (generated) | Place and country names |
 | `world/` | `draft.ts`, `generate.ts`, `fingerprint.ts` | The world being built, the pipeline, and `world.fingerprint` |
+| `crowd/` | `crowd.ts` | The map's look-only crowd, which Python lacks (M8.3) |
 
 - **Imports:** values only from `@nomos/sim-core/kernels` and `@nomos/sim-protocol/world-map`.
   - `kernels` gives the keyed draw, value noise and integer maths. M8.1 adds `mix`, `draw`, `below`, `value`, `fbm`, `floorDiv`, `floorMod` and a new `isqrt` to its exports.
@@ -388,10 +389,29 @@ The rest:
 - **Countries and regions are map facts:** no sim rule reads them (Countries).
 - **Names:** `placeNames(map: WorldMap): string[]` gives the K country names, then the n settlement names in id order. They are display text, outside the map and the fingerprint. Until the place-name table lands, they are stand-ins: `country-1`, and `capital-0` or `town-12` as Python names settlements.
 
+### The map crowd (owner: M8.3)
+
+The owner asked on 9 October 2026 to see each country's people on the map, as a look-only crowd. It is made beside the world, not in it, so `worldFingerprint` and `worldMapBuffers` leave it out, and no sim rule reads it.
+
+- `crowdOf(map: WorldMap): MapCrowd`, in `worldgen`'s `crowd/`, places a dot per 100 people, and at least one per settlement, settlement by settlement in id order.
+  - A dot's home is a cell of its settlement's country, within a reach that grows with the settlement's dots. Its three later stops lie in the 3 × 3 block around the home, on the same country's land.
+  - Every draw is `draw(seed, CROWD, …)`, with first keys from 0x100, clear of `place.py`'s.
+- **In `world-map.ts`:**
+  - `CROWD_HUES`: sun, lilac, rose, ice, mint and silver, `spritekit.py`'s `BODY_HUES` order;
+  - `CROWD_STOPS` is 4, and `CROWD_Q` is 256;
+  - `crowdBuffers(crowd)` lists its four buffers once each.
+
+| Field | Type | Holds |
+| --- | --- | --- |
+| `hue` | `Uint8Array` | Each dot's `CROWD_HUES` index |
+| `stops` | `Uint16Array` | `CROWD_STOPS` stops per dot, x then y, in cells times `CROWD_Q`: dot d's stop k is at `2 × (d × CROWD_STOPS + k)` |
+| `legMs` | `Uint16Array` | How long each leg of its loop takes, 2,500–6,000 ms |
+| `startMs` | `Uint16Array` | How far into its loop it starts, below `CROWD_STOPS × legMs` |
+
 ### Map worker messages
 
 - Page to map worker, `MapAppMessage`: `{ type: 'generate', seed: number, size: WorldSize }`.
-- Map worker to page, `MapWorkerMessage`: `{ type: 'world', map: WorldMap, names: string[], stageMs: Record<string, number> }`, with every buffer transferred. `stageMs` holds each `StageTimer` stage's milliseconds, plus `names`.
+- Map worker to page, `MapWorkerMessage`: `{ type: 'world', map: WorldMap, names: string[], stageMs: Record<string, number> }`, with every buffer transferred. `stageMs` holds each `StageTimer` stage's milliseconds, plus `names`. M8.3's Task 18 adds `crowd: MapCrowd`, timed as `crowd`, with its buffers transferred too.
 - A throw in the generator reaches the page as the Worker's `error` event, as the sim worker's do.
 - Both types live in `world-map.ts`.
 
@@ -434,12 +454,14 @@ The Country and Region views draw a `WorldMap` with a renderer of their own, whi
 - **`createMapRenderer(canvas: HTMLCanvasElement, options?: MapRendererOptions): MapRenderer`.**
   - `MapRendererOptions` is `{ backend?: 'auto' | 'canvas2d', restoreTimeoutMs?: number }`, as `RendererOptions` has them.
   - `MapRenderer` reads `backend`, `canvas` and `view`: the view the last draw showed.
-  - Its methods are `init()`, `resize(deviceWidth, deviceHeight, dpr)`, `setWorld(map: WorldMap)`, `setAtlas(page: AtlasPage)`, `setFlat(flat: boolean)`, `draw(camera: MapCamera)` and `dispose()`.
+  - Its methods are `init()`, `resize(deviceWidth, deviceHeight, dpr)`, `setWorld(map: WorldMap)`, `setAtlas(page: AtlasPage)`, `setFlat(flat: boolean)`, `setCrowd(hue: Uint8Array, xy: Float32Array)`, `draw(camera: MapCamera)` and `dispose()`.
+  - `setCrowd` takes each dot's `CROWD_HUES` index and its position, x then y, in fractional cells. The caller rewrites `xy` in place before each draw.
   - It falls back to Canvas2D when WebGL2 is missing, when a texture can't reach 3,072 px, or when a lost context stays lost for `restoreTimeoutMs`.
 - **What draws:**
   - **Before the atlas page,** and whenever `setFlat(true)`, it draws the flat Countries view: each country's land in its colour, with borders and icons.
   - **After the page:** each cell's tile, then rivers, sea lanes, roads, bridges, colour bands and border lines as pixel lines, then peaks, settlements, wonders and landmarks in row order, as `mapdraw.py` draws them.
-  - **The Canvas2D fallback** draws the flat fills, settlement icons and labels only.
+  - **The crowd,** in the Region view only, after the tiles and lines and before the icons. Each dot is a disc in its body hue, in whole device pixels that grow with zoom, with a 1-px dark outline from 4 px up.
+  - **The Canvas2D fallback** draws the flat fills, the crowd, settlement icons and labels only.
 - **Imports:** the map scene imports nothing from `render-gl`'s other folders, so no town module gains an export for it. Dependency-cruiser enforces this.
 
 ### In `web`
@@ -455,6 +477,9 @@ The Country and Region views draw a `WorldMap` with a renderer of their own, whi
   - the Region view labels every settlement;
   - a greedy pass, in that priority order, drops any label that would overlap one already shown.
 - **The legend** lists each country's colour, name, capital and settlement count. It is also the map's text alternative. Colour is never the only cue: each country's name is written on the map at Country zoom, and the legend names it beside its swatch.
+- **The crowd moves** through `map/crowd-motion.ts`'s `crowdAt(crowd, nowMs, xy)`.
+  - A dot stands for the first 40% of each leg, then walks straight to its next stop.
+  - The view runs a frame loop only while the Region view shows. Under `prefers-reduced-motion`, the dots stand at their time-0 places.
 - **Chunks:**
   - `map-view-*.js`, `map-worker-*.js` and `dist/atlas/map.webp` each get a size-limit entry;
   - `vite.config.ts`'s `render-gl` chunk group leaves out `src/map`, so the scene never joins the renderer chunk.
