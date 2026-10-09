@@ -47,10 +47,10 @@ function doorProblems(town: MapV1, entity: MapEntity, index: number): string[] {
 }
 
 describe('the town map', () => {
-  it('is the 48×28 capital', () => {
+  it('is the 128×80 capital', () => {
     const town = loadTown();
 
-    expect([town.width, town.height]).toEqual([48, 28]);
+    expect([town.width, town.height]).toEqual([128, 80]);
     expect(town.kinds.map((kind) => kind.name)).toEqual(
       expect.arrayContaining(['grass', 'water', 'path', 'paving', 'home', 'shop', 'civic', 'workplace']),
     );

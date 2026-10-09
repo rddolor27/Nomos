@@ -14,7 +14,7 @@ Random worlds for Nomos, drawn with the sprites in `tools/sprites`. It is the Py
   - `looks.png`: the world's first 48 people.
 - Country maps only: `python tools/worldgen/world.py`. Hand-made test places: `python tools/worldgen/place.py --demo`.
 - Check the generator: `python tools/worldgen/test_worldgen.py`. Add `--seeds 100 --size large` to check 100 large worlds.
-- Export the default town, Highcourt, as a binary map: `python tools/worldgen/export_map.py` writes `assets/maps/town.nmap` (seed `0xC0FFEE42`, 48×28 tiles) and refreshes `assets/LICENSES.md`. `--check` compares with the committed file and exits 1 on a difference.
+- Export the default town, Highcourt, as a binary map: `python tools/worldgen/export_map.py` writes `assets/maps/town.nmap` (seed `0xC0FFEE42`, 128×80 tiles) and refreshes `assets/LICENSES.md`. `--check` compares with the committed file and exits 1 on a difference.
 - `mapfile.py` writes map v1, the format [`parseMap`](../../packages/sim-protocol/src/map/map.ts) reads, and raises `ValueError` on any map `parseMap` would reject. Run it to write the 3×2 test fixture `packages/sim-protocol/test/fixtures/tiny.nmap`; `--check` compares.
 
 ## Randomness
