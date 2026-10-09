@@ -86,8 +86,7 @@ def text():
 def main():
     fresh = text()
     if '--check' in sys.argv:
-        # core.autocrlf may check the file out with CRLF line ends.
-        if FIXTURE.read_text(encoding='utf-8').replace('\r\n', '\n') != fresh:
+        if FIXTURE.read_text(encoding='utf-8') != fresh:
             sys.exit(f'{FIXTURE} differs from a fresh run of place.py and placedraw.py')
         print(f'{FIXTURE.name} matches')
         return
