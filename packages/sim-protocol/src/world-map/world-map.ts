@@ -93,6 +93,24 @@ export interface WorldMap {
   landmarks: { kind: Uint8Array; cell: Int32Array };
 }
 
+// The map's look-only crowd (owner, 9 October 2026): made beside the world but no part of it, so worldFingerprint and
+// worldMapBuffers leave it out, and no sim rule reads it. Hues keep spritekit.py's BODY_HUES order. Dot d's stop k is at
+// stops[2 * (d * CROWD_STOPS + k)], x then y, in cells times CROWD_Q.
+export const CROWD_HUES = ['sun', 'lilac', 'rose', 'ice', 'mint', 'silver'] as const;
+export const CROWD_STOPS = 4;
+export const CROWD_Q = 256;
+
+export interface MapCrowd {
+  hue: Uint8Array;
+  stops: Uint16Array;
+  legMs: Uint16Array;
+  startMs: Uint16Array;
+}
+
+export function crowdBuffers(crowd: MapCrowd): ArrayBuffer[] {
+  return [crowd.hue, crowd.stops, crowd.legMs, crowd.startMs].map((view) => view.buffer as ArrayBuffer);
+}
+
 export type MapAppMessage = { type: 'generate'; seed: number; size: WorldSize };
 export type MapWorkerMessage = { type: 'world'; map: WorldMap; names: string[]; stageMs: Record<string, number> };
 
