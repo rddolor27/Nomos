@@ -14,6 +14,7 @@ import {
 import type { MapAppMessage, MapWorkerMessage } from '@nomos/sim-protocol/world-map';
 import type { App } from '../app/app.ts';
 import { crowdAt } from './crowd-motion.ts';
+import { cameraOn, goToGroups, mountGoTo, settlementUnder } from './goto.ts';
 import { mountLabels, type Labels } from './labels.ts';
 import { legendRows, mountLegend } from './legend.ts';
 import { bindMapInput, zoomAtCentre, type MapInputTarget } from './map-input.ts';
@@ -44,6 +45,7 @@ interface Parts {
   zoomIn: HTMLButtonElement;
   zoomOut: HTMLButtonElement;
   flat: HTMLButtonElement;
+  goTo: HTMLSelectElement;
   status: HTMLElement;
   canvas: HTMLCanvasElement;
   labels: HTMLElement;
@@ -96,6 +98,7 @@ const CSS = `
   gap: .3rem 1rem; padding: .4rem .75rem; background: rgb(26 28 36 / .88); }
 .map-bar button { font: inherit; min-width: 5.5em; padding: .2rem .8rem; }
 .map-bar .map-zoom { min-width: 2.5em; }
+.map-bar select { font: inherit; padding: .2rem .4rem; }
 .map-bar [aria-pressed="true"] { background: #f7c948; color: #1a1c24; }
 .map-bar p { margin: 0; }
 .map-labels { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
@@ -157,12 +160,14 @@ function buildParts(doc: Document): Parts {
     zoomIn: make(doc, 'button', { type: 'button', class: 'map-zoom', 'aria-label': 'Zoom in' }, '+'),
     zoomOut: make(doc, 'button', { type: 'button', class: 'map-zoom', 'aria-label': 'Zoom out' }, '\u{2212}'),
     flat: make(doc, 'button', { type: 'button', 'aria-pressed': 'false' }, 'Countries'),
+    goTo: make(doc, 'select', { 'aria-label': 'Go to a settlement', disabled: '' }),
     status: make(doc, 'p', { role: 'status' }),
     canvas: make(doc, 'canvas', { role: 'img', 'aria-label': 'Map of the countries; the legend after it lists each one' }),
     labels: make(doc, 'div', { class: 'map-labels', 'aria-hidden': 'true' }),
     legend: make(doc, 'div', {}),
   };
-  parts.bar.append(parts.close, parts.fit, parts.zoomIn, parts.zoomOut, parts.flat, parts.status);
+  parts.goTo.append(make(doc, 'option', { value: '', disabled: '', hidden: '', selected: '' }, 'Go to…'));
+  parts.bar.append(parts.close, parts.fit, parts.zoomIn, parts.zoomOut, parts.flat, parts.goTo, parts.status);
   parts.section.append(parts.keys, parts.bar, parts.canvas, parts.labels, parts.legend);
   return parts;
 }
@@ -220,16 +225,31 @@ function bindPanel(panel: MapPanel): void {
     },
     fit: refit,
     close: () => close(panel),
+    tap: (deviceX, deviceY) => tapAt(panel, deviceX, deviceY),
   };
   parts.close.addEventListener('click', () => close(panel));
   parts.fit.addEventListener('click', refit);
   parts.zoomIn.addEventListener('click', () => zoomAtCentre(parts.section, target, 1));
   parts.zoomOut.addEventListener('click', () => zoomAtCentre(parts.section, target, -1));
   parts.flat.addEventListener('click', () => toggleFlat(panel));
-  // A drag captures the pointer on the section, which would take a bar button's click, so the bar keeps its pointers.
-  parts.bar.addEventListener('pointerdown', (event) => event.stopPropagation());
+  bindGoTo(panel, parts.goTo);
+  // A drag captures the pointer on the section, which would take a bar button's click, and a press on the bar or the
+  // legend is no tap on the map, so both keep their pointers.
+  for (const part of [parts.bar, parts.legend]) part.addEventListener('pointerdown', (event) => event.stopPropagation());
   bindMapInput(parts.section, target);
   observeDeviceSize(parts.section, (width, height, dpr) => onSize(panel, width, height, dpr));
+}
+
+// On a closed list, Windows and Linux browsers fire change at every arrow press, so the list keeps its choice until it
+// loses focus: then each press goes on to the next settlement. Its keys stay its own; only Escape closes the map.
+function bindGoTo(panel: MapPanel, list: HTMLSelectElement): void {
+  list.addEventListener('change', () => goTo(panel, Number(list.value)));
+  list.addEventListener('blur', () => {
+    list.value = '';
+  });
+  list.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') event.stopPropagation();
+  });
 }
 
 function show(panel: MapPanel, returnFocus: HTMLElement): void {
@@ -329,7 +349,22 @@ function adoptWorld(panel: MapPanel, world: MapWorkerMessage): void {
 function mountWorld(panel: MapPanel, world: MapWorkerMessage): void {
   panel.labels = mountLabels(panel.parts.labels, world.map, world.names);
   mountLegend(panel.parts.legend, legendRows(world.map, world.names));
+  mountGoTo(panel.parts.goTo, goToGroups(world.map, world.names));
   fit(panel);
+}
+
+// A tap near a settlement jumps there; a tap on empty map changes nothing.
+function tapAt(panel: MapPanel, deviceX: number, deviceY: number): void {
+  if (!panel.world) return;
+  const id = settlementUnder(panel.world.map, panel.camera, deviceX, deviceY, panel.dpr);
+  if (id >= 0) goTo(panel, id);
+}
+
+// The jump is instant: the view centres on the settlement at the close step, where its crowd walks.
+function goTo(panel: MapPanel, id: number): void {
+  if (!panel.world || panel.deviceWidth === 0 || panel.deviceHeight === 0) return;
+  panel.camera = cameraOn(panel.world.map, id, panel.deviceWidth, panel.deviceHeight, panel.dpr);
+  requestDraw(panel);
 }
 
 // Until the page arrives, or if it never does, the renderer draws the flat Countries view (Ruling 4).

@@ -5,10 +5,14 @@ export interface MapInputTarget {
   setCamera(camera: MapCamera): void;
   fit(): void;
   close(): void;
+  // A press that lifted without a drag, at its device point in the view.
+  tap(deviceX: number, deviceY: number): void;
 }
 
 // An arrow press moves four cells, so a large world takes about 50 presses to cross.
 const PAN_CELLS = 4;
+// A press that moves less than this, in CSS px, is a tap, and the map holds still until a drag passes it.
+const TAP_SLOP_PX = 5;
 // As the town's input: a mouse notch is 100 px in Chromium and 3 lines in Firefox, and a trackpad sends many small
 // deltas, so the wheel steps once per 40 px gathered in one gesture, a gesture being deltas under 250 ms apart.
 const WHEEL_STEP_PX = 40;
@@ -61,12 +65,16 @@ function onKey(view: HTMLElement, target: MapInputTarget, event: KeyboardEvent):
   event.preventDefault();
 }
 
-// Drag, wheel, pinch and keys, bound once when the map view is first made.
+// Drag, tap, wheel, pinch and keys, bound once when the map view is first made.
 export function bindMapInput(view: HTMLElement, target: MapInputTarget): void {
   const pointers = new Map<number, [number, number]>();
   let pinchAt = 0;
   let wheelPx = 0;
   let wheelAtMs = 0;
+  let pressX = 0;
+  let pressY = 0;
+  // A drag past the slop, or a second pointer, makes the press no tap.
+  let dragged = false;
 
   const onWheel = (event: WheelEvent): void => {
     event.preventDefault();
@@ -91,12 +99,22 @@ export function bindMapInput(view: HTMLElement, target: MapInputTarget): void {
     if (event.button !== 0 || pointers.size === 2) return;
     pointers.set(event.pointerId, [event.clientX, event.clientY]);
     view.setPointerCapture(event.pointerId);
-    if (pointers.size === 2) pinchAt = spread(pointers)[0];
+    if (pointers.size === 2) {
+      pinchAt = spread(pointers)[0];
+      dragged = true;
+      return;
+    }
+    pressX = event.clientX;
+    pressY = event.clientY;
+    dragged = false;
   };
-  // One pointer drags the map, so the camera moves the other way; two pointers pinch instead.
+  // One pointer drags the map once it passes the slop, so the camera moves the other way; two pointers pinch instead.
+  // Under the slop the pointer's last place stays at the press, so the drag's first step covers the whole way.
   const onMove = (event: PointerEvent): void => {
     const last = pointers.get(event.pointerId);
     if (!last) return;
+    if (!dragged && Math.hypot(event.clientX - pressX, event.clientY - pressY) < TAP_SLOP_PX) return;
+    dragged = true;
     pointers.set(event.pointerId, [event.clientX, event.clientY]);
     if (pointers.size === 2) {
       onPinch();
@@ -105,14 +123,21 @@ export function bindMapInput(view: HTMLElement, target: MapInputTarget): void {
     const dpr = devicePixelRatio;
     target.setCamera(panMapBy(target.camera(), (last[0] - event.clientX) * dpr, (last[1] - event.clientY) * dpr));
   };
-  const onEnd = (event: PointerEvent): void => {
+  const onUp = (event: PointerEvent): void => {
+    const tapped = !dragged && pointers.size === 1 && pointers.has(event.pointerId);
+    pointers.delete(event.pointerId);
+    if (!tapped) return;
+    const [x, y] = devicePoint(view, event.clientX, event.clientY);
+    target.tap(x, y);
+  };
+  const onCancel = (event: PointerEvent): void => {
     pointers.delete(event.pointerId);
   };
 
   view.addEventListener('wheel', onWheel, { passive: false });
   view.addEventListener('pointerdown', onDown);
   view.addEventListener('pointermove', onMove);
-  view.addEventListener('pointerup', onEnd);
-  view.addEventListener('pointercancel', onEnd);
+  view.addEventListener('pointerup', onUp);
+  view.addEventListener('pointercancel', onCancel);
   view.addEventListener('keydown', (event) => onKey(view, target, event));
 }

@@ -15,6 +15,8 @@ const FRAMES = 120;
 // thread; reduced motion would pause it too, but would also stop the crowd the Region frames move.
 const TOWN = '/?seed=42&tier=phone';
 const ATLAS_PAGE = /\/atlas\/map\.webp$/;
+// A press holds the map still for its first 5 CSS px, a tap's slop (map-input.ts), so the timed moves start past it.
+const TAP_SLOP_CSS_PX = 5;
 
 interface Summary {
   median: number;
@@ -58,7 +60,7 @@ async function timePan(page: Page): Promise<number[]> {
   const y = Math.round(box.y + box.height / 2);
   await page.mouse.move(x, y);
   await page.mouse.down();
-  const times = await page.evaluate(pan, { x, y, frames: FRAMES });
+  const times = await page.evaluate(pan, { x: x + TAP_SLOP_CSS_PX, y, frames: FRAMES });
   await page.mouse.up();
   expect(times.filter(Number.isNaN).length, 'pan steps the map drew no frame for').toBe(0);
   return times;
