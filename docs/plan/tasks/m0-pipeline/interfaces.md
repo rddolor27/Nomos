@@ -165,7 +165,9 @@ Skin B and Skin C arrive as `blobs/` and `town/` beside `dots/` (M1.3, M3.3).
   - `x` and `y` (Q8 sub-pixels), `vx` and `vy` (Q8 a tick), `heading`, `action` and `facing` read and write their columns, and code that sets `heading` also sets `vx`, `vy` and `facing`, which follow it;
   - `nameKey` (read-only), `wallet` (read-only, the row's account in `world.cash`) and `cash` (read-only, that account's balance in cents). Money moves only through `transfer`, `issue` and `retire`.
 - Column accessors carry their column's exact name, so the look and culture lints see every read. `Blob` has no `look` accessor, since no sim rule reads a look, and no culture accessors until a consumption system needs one.
-- **Per-tick loops** use the accessors or plain columns, and call no method per blob. A method per blob made the four-way `move` 2.0–2.8× slower, while accessors cost 7% (M0.7's brief, measured here in Node 24.18.0, V8 only); M0.7's A/B check re-measures on the free-heading `move`.
+- **Per-tick loops** use the accessors or plain columns, and call no method per blob. A method per blob made the four-way `move` 2.0–2.8× slower, while accessors cost 7% (M0.7's brief, measured here in Node 24.18.0, V8 only).
+  - M0.7's A/B check found accessors 1.05–1.20× slower on the free-heading `move` and up to 3.6× slower on the day slice's walker count (measured there, Node 24.18.0).
+  - Both loops therefore keep their columns, under the owner's 10% rule. The handle serves code that touches a few blobs a tick.
 - `nearestAgent(agents: AgentStore, xQ8: number, yQ8: number, radiusQ8: number): number`, in `agents/nearest.ts`: the nearest blob by squared distance within the radius, ties to the lower index, or −1. It serves the inspector between ticks.
 
 ## Wallets (owner: M0.7)

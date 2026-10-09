@@ -58,7 +58,7 @@ A task names the gates it runs, and a gate passes only as written here.
 
 - **G1, every task:** `pnpm test && pnpm lint && pnpm typecheck && pnpm depcruise && pnpm names` exits 0.
 - **G2, replay:**
-  - `node tools/cli/src/main.ts --seed 42 --tier phone --ticks 1000` prints `seed=42 tier=phone tick=1000 hash=` and the `42/phone` hash in `packages/sim-core/test/fixtures/goldens.json`, which is `caae4f61` until B1;
+  - `node tools/cli/src/main.ts --seed 42 --tier phone --ticks 1000` prints `seed=42 tier=phone tick=1000 hash=` and the `42/phone` hash in `packages/sim-core/test/fixtures/goldens.json`. It was `caae4f61` until B1 moved it to `ba8c436c`, and B6 moves it again;
   - `node packages/sim-core/scripts/engines.ts` ends `kernels 865 ok, goldens 3 ok`.
 - **G3, bytes,** for any change to a package the page bundles (`sim-core`, `sim-protocol`, `sim-worker`, `sim-culture`, `render-gl` or `apps/web`):
   1. `pnpm --filter @nomos/web build`;
@@ -317,7 +317,7 @@ The selectors and globs below were proven on 9 October with ESLint's `Linter`: 1
 **Interfaces:** Produces hot folders: every `sim-core` concern folder but `random/` and `memory/`, and `sim-protocol`'s `snapshot/`. `maths/apportion.ts` and `step/warm.ts` stay out. A new concern folder is hot from its first file, and cold code says so with a `COLD` name.
 
 - [ ] **Step 1: Write the failing tests** in `describe('the hot-path lint')`, with `HOT_CLASS = 'packages/sim-core/src/agents/planted.ts'`:
-  - `checks every method, getter and setter in a hot folder`: each `HOT_PLANTS` entry inside `` `export class Planted {\n  tick(a: Int32Array): void {\n    ${plant};\n  }\n}\n` `` gets `hotMessageCount` > 0. So do a getter `get value(): number { return [1].length; }`, a setter `set value(v: number) { g([v]); }` and `static tick(): void { g([1]); }`;
+  - `checks every method, getter and setter in a hot folder`: each `HOT_PLANTS` entry inside `` `export class Planted {\n  tick(a: Int32Array): void {\n    ${plant};\n  }\n}\n` `` gets `profileMessageCount` > 0, as in the hot-function test, since the sim profile catches the `BigInt` and `Math` plants. A getter `get value(): number { return [1].length; }`, a setter `set value(v: number) { g([v]); }` and `static tick(): void { g([1]); }` each get `hotMessageCount` > 0;
   - `allows constructors, cold methods and plain fields`: `constructor() { this.s = new Int32Array(4); g([1]); }`, `createScratch(): Int32Array { return new Int32Array(4); }` and the fields `private row = 0; private readonly s = new Int32Array(4);` get 0;
   - `rejects function-valued fields`: `tick = (a: Int32Array) => a[0];` and `tick = function (a: Int32Array) { return a[0]; };` get > 0;
   - `makes every sim-core folder hot but random/ and memory/`: `inTick('g([1])')` gets > 0 at `crime/planted.ts`, `consumption/planted.ts` and `money/planted.ts` under `packages/sim-core/src/`, and at `packages/sim-protocol/src/snapshot/planted.ts`. It gets 0 at `random/planted.ts`, `memory/planted.ts`, `maths/apportion.ts` and `step/warm.ts`, and at `packages/sim-protocol/src/messages/planted.ts`.
@@ -488,7 +488,28 @@ The owner's rule: a per-tick loop reads rows through the handle's accessors unle
 - [ ] **Step 3: Decide each loop on its own.** A loop switches to accessors when the fastest accessor sample, divided by the fastest column sample, is at most 1.10 at every tier in both runs. Otherwise it keeps its columns.
 - [ ] **Step 4: Record** the table for B4's commit body and the checkpoint: Node version, machine, fastest ms and ratio per tier and loop. Windows has no load average, so say so.
 
+**Result, 9 October 2026** (measured here):
+- **Conditions:** Node 24.18.0 on the Windows desktop, with no load average. Each figure is the fastest of 15 interleaved samples of 200 ticks, from one run with columns first and one with accessors first, and every pair of worlds ended in matching states.
+- **Grounds:** the all-open stand-in, which the budget gate uses, and the town map, which the app runs.
+- **Ratios** are accessor ÷ column, given as columns-first / accessors-first:
+
+| Loop | Ground | 10k | 25k | 100k |
+| --- | --- | --- | --- | --- |
+| `move`, whole | stand-in | 1.052 / 1.161 | 1.106 / 1.194 | 1.093 / 1.198 |
+| `move`, whole | town | 1.134 / 1.105 | 1.141 / 1.096 | 1.133 / 1.103 |
+| Walking loop alone | stand-in | 1.021 / 0.999 | 1.002 / 0.986 | 0.998 / 1.000 |
+| Walking loop alone | town | 1.119 / 1.109 | 1.109 / 1.101 | 1.101 / 1.102 |
+| Redraw loop alone | stand-in | 1.058 / 1.863 | 1.050 / 1.868 | 1.054 / 1.878 |
+| The day slice's walker count | stand-in | 2.116 / 1.779 | 3.621 / 3.571 | 1.309 / 1.236 |
+
+- **No loop stays within 1.10 at every tier in both runs.** So `move` and the day slice's walker count keep their columns, and so does `populate` (ruling 8). B4 changes no code.
+- **The walking loop alone** matches the brief's probe on open ground. On the town map, walls cost the handle 10–12%, and the redraw loop's cost depends on which variant V8 compiles first. The town's walker counts match the stand-in's within 0.15.
+- **A copy of the handle with `declare`d fields** measured worse, 1.14–1.33× on the whole `move`, so `Blob` stays as B2 built it.
+- **`move` before, unchanged after:** 0.054, 0.136 and 0.554 ms in Node (`pnpm --filter @nomos/bench budget`), and 0.055, 0.135 and 0.547 ms in Chromium 156.0.8078.4 (the budget spec), at 10k, 25k and 100k.
+
 ### Task B4: Per-tick loops through the handle (junior, from this code)
+
+**B3 decided on 9 October 2026 that no loop switches, so B4 changes no code: go on to B5.** The steps below stay as the record of what a passing A/B would have changed.
 
 **Files:** `src/movement/{walk,wander}.ts`, `src/world/world.ts` and `src/day/slices.ts`, as B3 decides, and a separate docs commit to `interfaces.md`.
 
@@ -834,6 +855,21 @@ These are the senior's rulings where the brief or the task was silent. The owner
 - **FMG's base names at commit `546c41d` are unverified here.** N2's build asserts all 33 by name.
 - **Production stops asserting the ledger every tick.** CI's ledger gate and the tests still do, at every tier.
 - **Classes are new in sim code.** L2's tests prove every selector, and B2's handle is the first class they check.
+
+## Open items
+
+- **How wallets roll up into sector accounts** (the senior's economy review of B1, 9 October 2026).
+  - B1 funds each blob's wallet and leaves `sectorAccount(0, HOUSEHOLDS)` at 0 by design, so a settlement's households account no longer equals its people's cash.
+  - M2.1 and M2.2 already ask whether household cash is an account beside its members' wallets, or their sum.
+  - M7.1's settlement ledgers and M9's fold must also say how wallets map to the households account. The brief proposed a city's wallets and the canonical settlement ledger as two `Ledger`s, the fold summing wallets into the households account.
+  - Needed before: M2.1's step plan.
+- **Left to M2,** as the brief listed:
+  - flows between wallets, and non-negative cash (checkpoint 0015);
+  - household cash as a multiple of monthly wages (M2.1);
+  - cash apportioned from the ledger record (M2.2);
+  - the wealth spread (M2.5).
+
+  Until then every wallet holds 100,000 cents, so wealth's Gini is 0 by design.
 
 ## Sources
 
