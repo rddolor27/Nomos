@@ -25,7 +25,7 @@ export function slips(
   return river[a] !== 0 && river[b] !== 0 && (receiver[a] === b || receiver[b] === a);
 }
 
-function wetCells(biome: Uint8Array): Uint8Array {
+export function wetCells(biome: Uint8Array): Uint8Array {
   const wet = new Uint8Array(biome.length);
   for (let i = 0; i < biome.length; i++) wet[i] = biome[i] === OCEAN || biome[i] === LAKE ? 1 : 0;
   return wet;
@@ -42,8 +42,21 @@ function stepCost(diagonal: boolean, enterCost: number, riverSize: number): numb
   return floorDiv((diagonal ? DIAGONAL : STRAIGHT) * enterCost, 16) + RIVER_STEP * riverSize;
 }
 
+function closed(open: Uint8Array | null, cell: number): boolean {
+  return open !== null && open[cell] === 0;
+}
+
+function plant(sources: readonly number[], cost: Int32Array, label: Int32Array, heap: MinHeap): void {
+  for (let k = 0; k < sources.length; k++) {
+    cost[sources[k]] = 0;
+    label[sources[k]] = k + 1;
+    heap.push(0, sources[k]);
+  }
+}
+
 // Each cell's cheapest source, water included, as labels 1.. in source order. The heap key (cost, cell) is unique, so a
-// tie goes to the source popped first, whatever the heap's internals.
+// tie goes to the source popped first, whatever the heap's internals. A cell whose open flag is 0 is never entered and
+// keeps label 0; null opens every cell, as countries.py grows.
 export function grow(
   width: number,
   height: number,
@@ -51,6 +64,7 @@ export function grow(
   river: Uint8Array,
   receiver: Int32Array,
   sources: readonly number[],
+  open: Uint8Array | null = null,
 ): Int32Array {
   const n = width * height;
   const nbrs = neighbours(width, height);
@@ -59,11 +73,7 @@ export function grow(
   const cost = new Int32Array(n).fill(FAR);
   const label = new Int32Array(n);
   const heap = new MinHeap(n);
-  for (let k = 0; k < sources.length; k++) {
-    cost[sources[k]] = 0;
-    label[sources[k]] = k + 1;
-    heap.push(0, sources[k]);
-  }
+  plant(sources, cost, label, heap);
   while (heap.size > 0) {
     heap.pop();
     const d = heap.a;
@@ -73,6 +83,7 @@ export function grow(
     const cy = yOf(c, width);
     for (let k = nbrs.start[c]; k < nbrs.start[c + 1]; k++) {
       const m = nbrs.cells[k];
+      if (closed(open, m)) continue;
       const dx = xOf(m, width) - cx;
       const dy = yOf(m, width) - cy;
       const diagonal = dx !== 0 && dy !== 0;
