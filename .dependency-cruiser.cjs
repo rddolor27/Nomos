@@ -11,6 +11,21 @@ module.exports = {
       to: { path: '^packages/sim-culture/', reachable: true },
     },
     {
+      name: 'culture-stays-in-consumption',
+      comment:
+        'R8: in sim-core only consumption/ and the barrel may reach sim-culture, so guarded code may import any other folder.',
+      severity: 'error',
+      from: { path: '^packages/sim-core/src/', pathNot: '^packages/sim-core/src/(consumption/|index\\.ts$)' },
+      to: { path: '^packages/sim-culture/', reachable: true },
+    },
+    {
+      name: 'names-only-in-the-inspector',
+      comment: 'R8, content rule 5: names reach the page only through the inspector, which loads on demand.',
+      severity: 'error',
+      from: { path: '^apps/web/src/', pathNot: '^apps/web/src/panels/inspector\\.ts$' },
+      to: { path: '^packages/sim-culture/' },
+    },
+    {
       name: 'culture-imports-kernels-only',
       comment: 'M0.6 Task 4: sim-culture takes sim-core values only through kernels.ts, so the packages stay acyclic.',
       severity: 'error',

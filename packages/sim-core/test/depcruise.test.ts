@@ -13,7 +13,7 @@ const WALL = fileURLToPath(new URL('./fixtures/wall/', import.meta.url));
 async function cruiseFrom(baseDir: string): Promise<ICruiseResult> {
   const options = await extractDepcruiseOptions(join(REPO, '.dependency-cruiser.cjs'));
   const tsConfig = extractTSConfig(join(REPO, options.tsConfig?.fileName ?? 'tsconfig.json'));
-  const { output } = await cruise(['packages'], { ...options, baseDir }, undefined, { tsConfig });
+  const { output } = await cruise(['packages', 'apps'], { ...options, baseDir }, undefined, { tsConfig });
   return output as ICruiseResult;
 }
 
@@ -53,6 +53,22 @@ describe('the culture wall in dependency-cruiser', { timeout: 30_000 }, () => {
     const cycles = violationsOf(result, 'no-cycles');
     expect(sourcesOf(cycles)).toEqual(['packages/sim-core/src/a.ts']);
     expect(cycles[0].cycle?.map((step) => step.name)).toContain('packages/sim-core/src/b.ts');
+  });
+
+  it('keeps culture in consumption and names in the inspector', async () => {
+    const result = await cruiseFrom(WALL);
+    expect(sourcesOf(violationsOf(result, 'culture-stays-in-consumption'))).toEqual([
+      'packages/sim-core/src/agents/barrel.ts',
+      'packages/sim-core/src/crime/direct.ts',
+      'packages/sim-core/src/housing/barrel.ts',
+      'packages/sim-core/src/kernels.ts',
+      'packages/sim-core/src/labour/value.ts',
+      'packages/sim-core/src/police/inline-type.ts',
+      'packages/sim-core/src/util/helpers.ts',
+      'packages/sim-core/src/wages/offer.ts',
+      'packages/sim-core/src/world.ts',
+    ]);
+    expect(sourcesOf(violationsOf(result, 'names-only-in-the-inspector'))).toEqual(['apps/web/src/panels/hud.ts']);
   });
 
   it('passes the real tree', async () => {
