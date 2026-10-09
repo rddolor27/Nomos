@@ -77,6 +77,16 @@
     "limit": "8 kB"
   },
   {
+    "name": "Town skin chunk",
+    "path": ["dist/assets/town-skin-*.js"],
+    "limit": "2 kB"
+  },
+  {
+    "name": "Scene chunks the views and the Town skin share",
+    "path": ["dist/assets/renderer-*.js", "dist/assets/lifecycle-*.js"],
+    "limit": "6 kB"
+  },
+  {
     "name": "Map worker chunk",
     "path": ["dist/assets/map-worker-*.js"],
     "limit": "17 kB"

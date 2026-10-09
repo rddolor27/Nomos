@@ -53,7 +53,7 @@ async function afterFirstFrame(app: App): Promise<void> {
   const chartsModule = import('./panels/charts.ts');
   const controlsModule = import('./panels/controls.ts');
   mountHud(element(document, '#hud'), app);
-  const { bindCameraInput } = await cameraInputModule;
+  const { bindCameraInput, loadTownSkin } = await cameraInputModule;
   bindCameraInput(element(document, '#view'), app);
   await nextTask();
   const { mountCharts } = await chartsModule;
@@ -63,6 +63,8 @@ async function afterFirstFrame(app: App): Promise<void> {
   const { mountControls } = await controlsModule;
   mountControls(app);
   performance.mark('app:interactive');
+  // Last, as nothing waits on it; its art and layout then load in idle time (web rules).
+  await loadTownSkin(app);
 }
 
 const search = location.search;

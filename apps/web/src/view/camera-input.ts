@@ -37,6 +37,13 @@ interface Drag {
 // demand). One per page, as bindCameraInput runs once.
 let inspectorReady: Promise<void> | null = null;
 
+// The Town skin's chunk, imported from this chunk rather than the entry, whose bytes the first frame waits on. main.ts
+// calls it once the page is interactive.
+export async function loadTownSkin(app: App): Promise<void> {
+  const { mountTownSkin } = await import('./town-skin.ts');
+  mountTownSkin(app);
+}
+
 export function isClick(dxCss: number, dyCss: number): boolean {
   return dxCss * dxCss + dyCss * dyCss < CLICK_CSS_PX * CLICK_CSS_PX;
 }

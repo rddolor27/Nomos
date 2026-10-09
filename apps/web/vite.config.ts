@@ -20,9 +20,11 @@ export default defineConfig({
         assetFileNames: ({ names }) =>
           names.some((name) => MAP_FILE.test(name)) ? 'assets/maps/[name]-[hash][extname]' : 'assets/[name]-[hash][extname]',
         // Its own chunk, so size-limit can gate the renderer apart from the HUD. [\\/] matches Windows paths too. The map
-        // and place scenes stay out, so they join the map view's and the town view's lazy chunks and the renderer chunk
-        // keeps its bytes (M8.3, M3.1).
-        codeSplitting: { groups: [{ name: 'render-gl', test: /[\\/]packages[\\/]render-gl[\\/](?!src[\\/](?:map|place))/ }] },
+        // and place scenes and the Town skin stay out, so they join their views' lazy chunks and the renderer chunk keeps
+        // its bytes (M8.3, M3.1, the Town skin).
+        codeSplitting: {
+          groups: [{ name: 'render-gl', test: /[\\/]packages[\\/]render-gl[\\/](?!src[\\/](?:map|place|town))/ }],
+        },
       },
     },
   },
