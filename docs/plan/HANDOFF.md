@@ -177,3 +177,10 @@ If the session ended: check `git log` for those Task lines, and `git status` for
     - `countries.md:46`;
     - the M3.1 plan at line 41, and the M0.4 plan at line 83.
   - Still running: the game engineer, on walking in any direction, and the render engineer, on the Town skin. Then the economy (M2), with up to 5 agents.
+- 10 Oct: **town walkers walk in any direction** (3cc98f0, in `walkers.ts` only).
+  - Each loop is cut twice, Chaikin style, within 6 px of its spots, so walkers stay on their own tiles.
+  - Facing follows the dominant axis. An owner's home cell stays an uncut point.
+  - `walk()` costs 0.07 ms a frame for 1,469 walkers.
+  - Follow-ups for the final test pass:
+    - the Town view chunk is at 7,692 of 8,000 B;
+    - `town-view-qa.spec.ts` should check a walker's tile against its loop's cells, rather than axis-aligned spots.
