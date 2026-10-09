@@ -1,6 +1,7 @@
 import { floorDiv } from '@nomos/sim-core/kernels';
 import { PLACE_TILE_PX as TILE } from '@nomos/sim-protocol/place';
 import { LOT, MARK, STREET, WORK } from './keys.ts';
+import { landmarkFrame } from './landmarks.ts';
 import { centreSpot, pave, straight } from './roads.ts';
 import { frame, OPEN, rise, type Cell, type Lot, type Site } from './site.ts';
 
@@ -158,7 +159,7 @@ export function placePlaza(site: Site): void {
   if (marks.includes('clock-tower')) {
     plazaPiece(site, 'landmarks', 'landmark_clock-tower', [left ? px + 1 : px + pw - 1, py + ph - 1], 1);
   }
-  if (marks.includes('fountain')) plazaPiece(site, 'landmarks', 'landmark_fountain_0', [site.cx, py + ph - 1], 2);
+  if (marks.includes('fountain')) plazaPiece(site, 'landmarks', landmarkFrame('fountain'), [site.cx, py + ph - 1], 2);
   const f = frame('buildings', 'shop_market-stall');
   const stalls = STALLS[site.ctx.tier ?? ''];
   for (let i = 0; i < stalls; i++) {
