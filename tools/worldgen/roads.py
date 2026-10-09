@@ -6,10 +6,10 @@ road costs half, so routes merge into trunks. Sea lanes then join the landmasses
 import heapq
 from math import isqrt
 
-from climate import CONIFER, DECIDUOUS, FARMLAND, GRASSLAND, HILLS, LAKE, MARSH, MOUNTAIN, OCEAN, PEAK, SAND
+from climate import CONIFER, DECIDUOUS, FARMLAND, GRASSLAND, HILLS, LAKE, MARSH, MOUNTAIN, OCEAN, PEAK, SAND, SNOW
 from grid import DIAG, ORTHO, dist2, neighbours, parts
 
-COVER = {GRASSLAND: 0, FARMLAND: 0, SAND: 6, DECIDUOUS: 8, CONIFER: 10, MARSH: 18, HILLS: 14,
+COVER = {GRASSLAND: 0, FARMLAND: 0, SAND: 6, DECIDUOUS: 8, CONIFER: 10, SNOW: 12, MARSH: 18, HILLS: 14,
          MOUNTAIN: 48, PEAK: 160}
 BRIDGE = 72
 STRAIGHT, DIAGONAL = 10, 14

@@ -25,6 +25,7 @@ from model import BIOMES, LANDMARKS, TIERS, WONDERS, PlaceContext  # noqa: E402
 from rng import PLACE, draw, mix, new_seed, parse_seed, seed_text  # noqa: E402
 
 DIST = HERE.parents[1] / 'dist' / 'worldgen'
+SIZES = {'standard': (96, 64), 'large': (192, 128)}
 # The cells on each side of a cell, diagonals included, for the sea a place faces.
 FACING = {'n': ((-1, -1), (0, -1), (1, -1)), 'e': ((1, -1), (1, 0), (1, 1)),
           's': ((-1, 1), (0, 1), (1, 1)), 'w': ((-1, -1), (-1, 0), (-1, 1))}

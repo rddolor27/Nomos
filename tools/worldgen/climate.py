@@ -7,13 +7,15 @@ from model import BIOMES
 from noise import fbm, value
 from rng import MOISTURE, TEMPERATURE, below
 
-OCEAN, LAKE, GRASSLAND, FARMLAND, DECIDUOUS, CONIFER, MARSH, SAND, HILLS, MOUNTAIN, PEAK = (
+OCEAN, LAKE, GRASSLAND, FARMLAND, DECIDUOUS, CONIFER, MARSH, SAND, HILLS, MOUNTAIN, PEAK, SNOW = (
     BIOMES.index(b) for b in ('ocean', 'lake', 'grassland', 'farmland', 'forest-deciduous', 'forest-conifer',
-                              'marsh', 'sand', 'hills', 'mountain', 'peak'))
+                              'marsh', 'sand', 'hills', 'mountain', 'peak', 'snow'))
 INLAND, BEACH, CLIFFS = range(3)
 COASTS = ('', 'beach', 'cliffs')
 
 HILLS_AT, MOUNTAIN_AT, PEAK_AT = 380, 500, 700
+# Round 9's threshold for cold lowland: high cold ground stays hills, mountain or peak.
+SNOW_BELOW = 40
 CLIFF_AT, BEACH_BELOW, MARSH_BELOW = 100, 70, 140
 WIND, WET, EDGE, COLD, SPAN, BEACHES = range(0x100, 0x106)
 
@@ -117,6 +119,8 @@ def biomes(seed, width, height, elevation, temperature, moisture, ocean, lake, r
             b = MOUNTAIN
         elif e >= HILLS_AT:
             b = HILLS
+        elif t < SNOW_BELOW:
+            b = SNOW
         elif t >= 165 and m < 85:
             b = SAND
         elif coast[i] == BEACH and e < BEACH_BELOW and t >= 70 and _sandy(seed, width, i, ocean, nbrs4):
@@ -135,7 +139,7 @@ def biomes(seed, width, height, elevation, temperature, moisture, ocean, lake, r
 
 def _despeckle(biome, nbrs):
     """A lone cell of a lowland cover takes its neighbours' most common cover."""
-    soft = (GRASSLAND, DECIDUOUS, CONIFER, MARSH, SAND)
+    soft = (GRASSLAND, DECIDUOUS, CONIFER, MARSH, SAND, SNOW)
     out = bytearray(biome)
     for i, b in enumerate(biome):
         if b in soft and not any(biome[m] == b for m in nbrs[i]):

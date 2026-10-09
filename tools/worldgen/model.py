@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 # Country biomes; each draws with the map sheet's tile of the same name, and both waters as water.
 BIOMES = ('ocean', 'lake', 'grassland', 'farmland', 'forest-deciduous', 'forest-conifer', 'marsh', 'sand',
-          'hills', 'mountain', 'peak')
+          'hills', 'mountain', 'peak', 'snow')
 TIERS = ('capital', 'city', 'town', 'village', 'hamlet')
 WONDERS = ('waterfall', 'giant-tree', 'sea-arch', 'stone-arch', 'hot-springs', 'geyser', 'crystal-cave',
            'caldera-lake', 'canyon-view', 'glacier', 'dune')
