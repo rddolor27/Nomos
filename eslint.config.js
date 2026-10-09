@@ -171,6 +171,18 @@ const CULTURE_SYNTAX = [
 // Each is banned bare and by subpath, such as react-dom/client; @pixi/* covers PixiJS v7's scoped packages.
 const FRAMEWORKS = ['react', 'react-dom', 'pixi.js', 'phaser'];
 
+const LAYOUT = 'interfaces.md, Layout: only entry files sit directly in src/, so put this file in a concern folder.';
+// Each package's exports, and what package scripts, CI and tests run or bundle by path (interfaces.md, Layout).
+const ENTRY_FILES = [
+  'packages/*/src/index.ts',
+  'packages/sim-core/src/kernels.ts',
+  'packages/sim-worker/src/worker.ts',
+  'apps/web/src/main.ts',
+  'tools/cli/src/main.ts',
+  'tools/bench/src/{alloc,assert-startup,browser-entry,budget,calibrate,chunks}.ts',
+  'tools/names/src/cli.ts',
+];
+
 export default defineConfig(
   // Round 7's prototypes under docs/ carry their own node_modules; .claude/ and .githooks/ hold CommonJS scripts outside
   // the workspace; .superpowers/ holds agents' scratch copies, which ESLint 10 would read as configs if named like one.
@@ -262,5 +274,12 @@ export default defineConfig(
         },
       ],
     },
+  },
+  {
+    // Its own copy of the core rule, so this ban stacks on the other profiles' instead of replacing them.
+    files: ['{packages,apps,tools}/*/src/*.ts'],
+    ignores: ENTRY_FILES,
+    plugins: { layout: { rules: { 'no-restricted-syntax': builtinRules.get('no-restricted-syntax') } } },
+    rules: { 'layout/no-restricted-syntax': ['error', { selector: 'Program', message: LAYOUT }] },
   },
 );

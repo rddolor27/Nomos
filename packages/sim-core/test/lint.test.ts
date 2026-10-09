@@ -24,6 +24,11 @@ async function genMessages(code: string, filePath: string): Promise<string[]> {
   return result.messages.filter((message) => message.ruleId?.startsWith('gen/')).map((message) => message.message);
 }
 
+async function layoutMessages(code: string, filePath: string): Promise<string[]> {
+  const [result] = await eslint.lintText(code, { filePath });
+  return result.messages.filter((message) => message.ruleId?.startsWith('layout/')).map((message) => message.message);
+}
+
 // A fresh install's first ESLint load took 6.4 s, past Vitest's 5 s default, and CI always starts fresh.
 describe('the sim-core lint profile', { timeout: 30_000 }, () => {
   it('rejects transcendental Math, ** and BigInt in sim-core source', async () => {
@@ -39,7 +44,7 @@ describe('the sim-core lint profile', { timeout: 30_000 }, () => {
       'new BigInt64Array(1)',
     ];
     for (const code of planted) {
-      expect(await profileMessageCount(code, 'packages/sim-core/src/planted.ts'), code).toBeGreaterThan(0);
+      expect(await profileMessageCount(code, 'packages/sim-core/src/memory/planted.ts'), code).toBeGreaterThan(0);
     }
   });
 
@@ -49,7 +54,7 @@ describe('the sim-core lint profile', { timeout: 30_000 }, () => {
 
   it('rejects reading the look column outside the store', async () => {
     for (const code of ['s.look[0]', 'const { look } = s', "s['look'][0]"]) {
-      expect(await profileMessageCount(code, 'packages/sim-core/src/planted.ts'), code).toBeGreaterThan(0);
+      expect(await profileMessageCount(code, 'packages/sim-core/src/memory/planted.ts'), code).toBeGreaterThan(0);
       expect(await profileMessageCount(code, 'packages/sim-core/src/agents/store.ts'), code).toBe(0);
     }
     for (const code of ['2 ** 3', 'BigInt(1)']) {
@@ -59,10 +64,10 @@ describe('the sim-core lint profile', { timeout: 30_000 }, () => {
 
   it('rejects multiplying by a raw rate outside money.ts', async () => {
     for (const code of ['c * ratePpm', 'c * l.ratePpm[0]', 'c * ratePpm[i]', 'c *= dailyRate']) {
-      expect(await profileMessageCount(code, 'packages/sim-core/src/planted.ts'), code).toBeGreaterThan(0);
+      expect(await profileMessageCount(code, 'packages/sim-core/src/memory/planted.ts'), code).toBeGreaterThan(0);
     }
     for (const code of ['units * price', 'mulPpm(a, b) * 2']) {
-      expect(await profileMessageCount(code, 'packages/sim-core/src/planted.ts'), code).toBe(0);
+      expect(await profileMessageCount(code, 'packages/sim-core/src/memory/planted.ts'), code).toBe(0);
     }
     expect(await profileMessageCount('c * ratePpm', 'packages/sim-core/src/money/ppm.ts')).toBe(0);
   });
@@ -79,17 +84,17 @@ describe('the sim-core lint profile', { timeout: 30_000 }, () => {
   });
 
   it('applies the sim profile to sim-protocol and sim-worker', async () => {
-    for (const pkg of ['sim-protocol', 'sim-worker']) {
+    for (const filePath of ['packages/sim-protocol/src/messages/planted.ts', 'packages/sim-worker/src/loop/planted.ts']) {
       for (const code of ['Math.sin(1)', '2 ** 3', 'BigInt(1)', 'c * ratePpm']) {
-        expect(await profileMessageCount(code, `packages/${pkg}/src/planted.ts`), `${pkg}: ${code}`).toBeGreaterThan(0);
+        expect(await profileMessageCount(code, filePath), `${filePath}: ${code}`).toBeGreaterThan(0);
       }
     }
-    expect(await profileMessageCount('s.look[0]', 'packages/sim-protocol/src/planted.ts')).toBe(0);
+    expect(await profileMessageCount('s.look[0]', 'packages/sim-protocol/src/messages/planted.ts')).toBe(0);
   });
 
   it('bans transcendental maths in every sim package', async () => {
     const files = [
-      'packages/sim-culture/src/planted.ts',
+      'packages/sim-culture/src/festivals/planted.ts',
       'packages/sim-protocol/src/map/map.ts',
       'packages/sim-core/src/random/draw.ts',
       'packages/sim-core/src/random/noise.ts',
@@ -99,14 +104,14 @@ describe('the sim-core lint profile', { timeout: 30_000 }, () => {
         expect(await profileMessageCount(code, filePath), `${filePath}: ${code}`).toBeGreaterThan(0);
       }
     }
-    expect(await profileMessageCount('s.look[0]', 'packages/sim-culture/src/planted.ts')).toBeGreaterThan(0);
+    expect(await profileMessageCount('s.look[0]', 'packages/sim-culture/src/festivals/planted.ts')).toBeGreaterThan(0);
     expect(await profileMessageCount('s.look[0]', 'packages/sim-protocol/src/map/map.ts')).toBe(0);
   });
 
   it('rejects sorting in sim code', async () => {
     const simFiles = [
-      'packages/sim-core/src/planted.ts',
-      'packages/sim-worker/src/planted.ts',
+      'packages/sim-core/src/memory/planted.ts',
+      'packages/sim-worker/src/loop/planted.ts',
       'packages/sim-core/src/agents/store.ts',
       'packages/sim-core/src/money/ppm.ts',
       'packages/sim-core/src/maths/apportion.ts',
@@ -225,7 +230,11 @@ describe('the generator lint', { timeout: 30_000 }, () => {
   });
 
   it('spares the helpers and other code', async () => {
-    const files = ['packages/sim-core/src/maths/int.ts', 'packages/sim-core/src/money/ledger.ts', 'packages/sim-core/src/planted.ts'];
+    const files = [
+      'packages/sim-core/src/maths/int.ts',
+      'packages/sim-core/src/money/ledger.ts',
+      'packages/sim-core/src/memory/planted.ts',
+    ];
     for (const filePath of files) {
       for (const code of [...BARE_DIVISIONS, ...BARE_REMAINDERS]) {
         expect(await genMessages(code, filePath), `${filePath}: ${code}`).toEqual([]);
@@ -233,6 +242,40 @@ describe('the generator lint', { timeout: 30_000 }, () => {
       for (const code of ['a / b', 'a % b']) {
         expect(await profileMessageCount(code, filePath), `${filePath}: ${code}`).toBe(0);
       }
+    }
+  });
+});
+
+// Each package's exports, and what package scripts, CI and tests run or bundle by path (interfaces.md, Layout).
+const ENTRIES = [
+  ...['sim-core', 'sim-protocol', 'sim-worker', 'sim-culture', 'render-gl'].map((pkg) => `packages/${pkg}/src/index.ts`),
+  'packages/sim-core/src/kernels.ts',
+  'packages/sim-worker/src/worker.ts',
+  'apps/web/src/main.ts',
+  'tools/cli/src/main.ts',
+  ...['alloc', 'assert-startup', 'browser-entry', 'budget', 'calibrate', 'chunks'].map((name) => `tools/bench/src/${name}.ts`),
+  'tools/names/src/cli.ts',
+];
+
+describe('the layout lint', { timeout: 30_000 }, () => {
+  it('reports any file at src/ that is no entry', async () => {
+    const strays = [
+      'packages/sim-core/src/planted.ts',
+      'packages/render-gl/src/planted.ts',
+      'apps/web/src/planted.ts',
+      'tools/bench/src/planted.ts',
+      'tools/names/src/planted.ts',
+    ];
+    for (const filePath of strays) {
+      expect(await layoutMessages('export const a = 1;\n', filePath), filePath).toEqual([
+        expect.stringContaining('concern folder'),
+      ]);
+    }
+  });
+
+  it('spares concern folders and entries', async () => {
+    for (const filePath of ['packages/sim-core/src/money/planted.ts', 'apps/web/src/panels/planted.ts', ...ENTRIES]) {
+      expect(await layoutMessages('export const a = 1;\n', filePath), filePath).toEqual([]);
     }
   });
 });
