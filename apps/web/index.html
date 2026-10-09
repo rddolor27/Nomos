@@ -6,31 +6,53 @@
     <title>Nomos</title>
     <link rel="icon" href="data:,">
     <style>
-      html, body { margin: 0; background: #464c5e; color: #f6f0de; font: 15px/1.4 system-ui, sans-serif; }
+      /* The UI's tokens, which every panel, bar and chart reads. The accent keeps clear of the body hues and role colours. */
+      :root { --ui-bg: #20242c; --ui-bar: rgb(24 27 34 / .94); --ui-raised: #2d333e; --ui-hover: #3a414e; --ui-line: #5d6678;
+        --ui-text: #f2eee3; --ui-muted: #a3aab8; --ui-accent: #f08a4b; --ui-accent-hover: #f6a46f; --ui-ink: #181b22;
+        --ui-r: 8px; --ui-h: 44px; --ui-small: 13px; color-scheme: dark; accent-color: var(--ui-accent); }
+      html, body { margin: 0; background: var(--ui-bg); color: var(--ui-text); font: 15px/1.4 system-ui, sans-serif; }
       body { display: grid; grid-template: 100vh / minmax(0, 1fr) 22rem; }
       /* The minifier keeps only a rule's last grid-template, which would drop the vh fallback, so dvh gets its own rule. */
       @supports (height: 100dvh) { body { grid-template: 100dvh / minmax(0, 1fr) 22rem; } }
-      #hud, #view { grid-area: 1 / 1; }
-      #hud { align-self: start; z-index: 1; display: flex; flex-wrap: wrap; align-items: center; gap: .3rem 1rem;
-        padding: .4rem .75rem; background: rgb(26 28 36 / .88); }
-      #hud button { font: inherit; min-width: 5.5em; padding: .2rem .8rem; }
+      [hidden] { display: none !important; }
+      .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: var(--ui-h);
+        min-height: var(--ui-h); padding: 0 16px; border: 1px solid var(--ui-line); border-radius: var(--ui-r);
+        background: var(--ui-raised); color: var(--ui-text); font: inherit; font-weight: 600; cursor: pointer;
+        transition: background-color .15s ease-out; }
+      .btn:not(:disabled):hover { background: var(--ui-hover); }
+      .btn-primary, .btn[aria-pressed="true"] { border-color: var(--ui-accent); background: var(--ui-accent); color: var(--ui-ink); }
+      .btn-primary:not(:disabled):hover, .btn[aria-pressed="true"]:hover { background: var(--ui-accent-hover); }
+      .btn-quiet { border-color: transparent; background: none; }
+      .btn:active { filter: brightness(.85); }
+      .btn:disabled { opacity: .5; cursor: not-allowed; }
+      .btn:focus-visible { outline: 3px solid var(--ui-accent); outline-offset: 2px; }
+      #hud, .ui-view { grid-area: 1 / 1; }
+      #hud { align-self: start; z-index: 1; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; padding: 8px;
+        background: var(--ui-bar); font-variant-numeric: tabular-nums; }
+      #play { min-width: 6.5em; }
       #hud p, #hud fieldset, #hud dl, #hud dd { margin: 0; border: 0; padding: 0; }
       #hud legend { float: left; padding: 0; }
-      #hud legend, #hud label { margin-right: .5rem; }
-      #hud dl, #hud dl div { display: flex; flex-wrap: wrap; gap: .2rem 1rem; }
-      #hud dl div { column-gap: .4rem; }
-      #view { position: relative; overflow: hidden; touch-action: none; }
-      /* The canvas covers #view's own outline and the HUD its top edge, so the focus ring is an overlay above both. */
-      #view:focus-visible { outline: none; }
-      #view:focus-visible::after { content: ""; position: absolute; inset: 0; z-index: 2; border: 3px solid #f7c948;
-        pointer-events: none; }
+      #hud legend, #hud label { margin-right: 8px; }
+      #hud dl, #hud dl div { display: flex; flex-wrap: wrap; gap: 4px 16px; }
+      #hud dl { color: var(--ui-muted); font-size: var(--ui-small); }
+      #hud dl div { column-gap: 6px; }
+      .ui-view { position: relative; overflow: hidden; touch-action: none; }
+      /* The canvas covers the view's own outline and the HUD its top edge, so the focus ring is an overlay above both. Its
+         dark inner edge keeps it clear on light art. */
+      .ui-view:focus-visible { outline: none; }
+      .ui-view:focus-visible::after { content: ""; position: absolute; inset: 0; z-index: 2; border: 3px solid var(--ui-accent);
+        box-shadow: inset 0 0 0 2px var(--ui-ink); pointer-events: none; }
       #world { position: absolute; top: 0; left: 0; }
-      #charts { overflow: auto; padding: 4.5rem .75rem 1rem; }
-      #charts figure { margin: 0 0 1rem; }
+      #charts { overflow: auto; padding: 72px 16px 16px; }
+      @media (prefers-reduced-motion: reduce) { .btn { transition: none; } }
       @media (max-width: 50rem) {
         body { grid-template: 80vh auto / 100%; }
         @supports (height: 100dvh) { body { grid-template: 80dvh auto / 100%; } }
-        #charts { padding-top: 1rem; }
+        /* One row that scrolls sideways, never rows over the town. */
+        #hud, #hud dl { flex-wrap: nowrap; }
+        #hud { overflow-x: auto; }
+        #hud > *, #hud dl div { flex: none; }
+        #charts { padding-top: 16px; }
         .lil-gui.lil-auto-place { position: static; }
       }
     </style>
@@ -38,10 +60,10 @@
   </head>
   <body>
     <header id="hud">
-      <button id="play" type="button" disabled>Pause</button>
+      <button id="play" class="btn btn-primary" type="button" disabled>Pause</button>
       <p id="status" role="alert"></p>
     </header>
-    <main id="view" tabindex="0">
+    <main id="view" class="ui-view" tabindex="0">
       <canvas id="world" role="img" aria-label="Town map with every agent as a dot"></canvas>
     </main>
     <section id="charts" aria-label="Charts"></section>

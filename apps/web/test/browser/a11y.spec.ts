@@ -6,7 +6,7 @@ test.use({ baseURL: WEB });
 
 const TOWN = '/?tier=phone';
 const BLOCKING = new Set(['serious', 'critical']);
-const RING = { color: [0xf7, 0xc9, 0x48], width: 3, tolerance: 8 };
+const RING = { color: [0xf0, 0x8a, 0x4b], width: 3, tolerance: 8 };
 const MAX_TABS = 30;
 const MIN_EDGE_SHARE = 0.9;
 

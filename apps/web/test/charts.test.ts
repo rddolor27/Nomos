@@ -2,8 +2,8 @@ import { contrastRatio } from '@nomos/render-gl';
 import { expect, test } from 'vitest';
 import { addSample, chartData, seriesOptions, tableCells, type Plot } from '../src/panels/charts.ts';
 
-// The page background in index.html, which is Skin A's STONE_D.
-const PAGE = 0x464c5e;
+// The page background in index.html, its --ui-bg token.
+const PAGE = 0x20242c;
 
 function plot(labels: string[]): Plot {
   return { caption: 'Tick time by system (ms)', labels, samples: [] };
