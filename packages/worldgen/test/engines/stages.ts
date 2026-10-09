@@ -4,6 +4,8 @@
 import { WORLD_SIZES, type WorldSize } from '@nomos/sim-protocol/world-map';
 import { fold } from './fold.ts';
 import { falloffOf, landPermilleOf, templateOf } from '../../src/terrain/templates.ts';
+import { chains } from '../../src/terrain/chains.ts';
+import { reliefOf, riseOf } from '../../src/terrain/shape.ts';
 
 export function stagePrints(seed: number, size: WorldSize): Map<string, number> {
   const [width, height] = WORLD_SIZES[size];
@@ -13,6 +15,12 @@ export function stagePrints(seed: number, size: WorldSize): Map<string, number> 
   const landPermille = landPermilleOf(seed, template);
   const falloff = falloffOf(seed, width, height, template, landPermille);
   prints.set('falloff', fold(template, landPermille, falloff));
+
+  const relief = reliefOf(seed, width, height);
+  prints.set('relief', fold(relief));
+  const { coastCut, rise } = riseOf(falloff, relief, landPermille);
+  const ridges = chains(seed, width, height, rise);
+  prints.set('chains', fold(coastCut, ridges));
 
   return prints;
 }
