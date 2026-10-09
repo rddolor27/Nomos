@@ -17,14 +17,15 @@ export function fitCamera(mapWidth: number, mapHeight: number, deviceWidth: numb
   return { x: (mapPxWidth - deviceWidth / zoom) / 2, y: (mapPxHeight - deviceHeight / zoom) / 2, zoom };
 }
 
+export function worldAt(camera: Camera, deviceX: number, deviceY: number): [number, number] {
+  return [camera.x + deviceX / camera.zoom, camera.y + deviceY / camera.zoom];
+}
+
 // Keeps the world point under the device pixel where it was, so the texel there stays put.
 export function zoomAt(camera: Camera, zoom: number, deviceX: number, deviceY: number): Camera {
   const next = clampZoom(zoom);
-  return {
-    x: camera.x + deviceX / camera.zoom - deviceX / next,
-    y: camera.y + deviceY / camera.zoom - deviceY / next,
-    zoom: next,
-  };
+  const [pointX, pointY] = worldAt(camera, deviceX, deviceY);
+  return { x: pointX - deviceX / next, y: pointY - deviceY / next, zoom: next };
 }
 
 // A positive delta moves the view right or down, so a drag passes the pointer's movement negated.

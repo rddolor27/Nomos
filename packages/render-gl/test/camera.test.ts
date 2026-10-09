@@ -1,10 +1,15 @@
 import { expect, test } from 'vitest';
-import { cssPxPerTile, fitCamera, mapShareInView, MAX_ZOOM, MIN_ZOOM, panBy, snapCamera, zoomAt } from '../src/camera/camera.ts';
-import type { Camera } from '../src/renderer/types.ts';
-
-function worldAt(camera: Camera, deviceX: number, deviceY: number): [number, number] {
-  return [camera.x + deviceX / camera.zoom, camera.y + deviceY / camera.zoom];
-}
+import {
+  cssPxPerTile,
+  fitCamera,
+  mapShareInView,
+  MAX_ZOOM,
+  MIN_ZOOM,
+  panBy,
+  snapCamera,
+  worldAt,
+  zoomAt,
+} from '../src/camera/camera.ts';
 
 test('fits the town', () => {
   expect(fitCamera(48, 28, 1280, 720)).toEqual({ x: -256, y: -136, zoom: 1 });
@@ -34,6 +39,13 @@ test('zooms about the pointer and back', () => {
     expect(x).toBeCloseTo(wantX, 9);
     expect(y).toBeCloseTo(wantY, 9);
   }
+});
+
+test('finds the world pixel under a device pixel', () => {
+  expect(worldAt({ x: 10, y: 20, zoom: 4 }, 8, 12)).toEqual([12, 23]);
+
+  const camera = { x: 3, y: 5, zoom: 2 };
+  expect(worldAt(zoomAt(camera, 4, 100, 60), 100, 60)).toEqual(worldAt(camera, 100, 60));
 });
 
 test('clamps zoom', () => {
