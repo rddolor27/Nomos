@@ -55,15 +55,19 @@ export function siteFor(ctx: PlaceContext): Site {
   return new Site(ctx, w, h);
 }
 
-// place.py's build_settlement, in the stage groups the goldens fold after (tools/worldgen/place_goldens.py).
+// place.py's SETTLEMENT_STAGES, build_settlement's stage groups in order. The goldens fingerprint the site after each
+// one (tools/worldgen/place_goldens.py).
+export const SETTLEMENT_STAGES: readonly ((site: Site) => void)[] = [
+  settleWater,
+  settleCentre,
+  settleBuildings,
+  decorate,
+  settleNature,
+  settlementPeople,
+];
+
 export function buildSettlement(site: Site): void {
-  settleWater(site);
-  settleCentre(site);
-  settleBuildings(site);
-  decorate(site);
-  plant(site);
-  herd(site);
-  settlementPeople(site);
+  for (const stage of SETTLEMENT_STAGES) stage(site);
 }
 
 // Sea, rivers and ponds kept off the middle of the place, then ridges on high ground.
@@ -102,6 +106,11 @@ export function settleBuildings(site: Site): void {
   placeHouses(site);
   if (ctx.tier === 'village' || ctx.tier === 'hamlet' || ctx.biome === 'farmland' || ctx.farmland) settleFields(site);
   if (ctx.landmarks.includes('windmill')) placeWindmill(site);
+}
+
+export function settleNature(site: Site): void {
+  plant(site);
+  herd(site);
 }
 
 // A hamlet's field, a village's three, or one for each side that faces farmland, and one more on farmland.

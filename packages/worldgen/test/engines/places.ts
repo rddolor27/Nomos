@@ -9,14 +9,10 @@ import {
   PLACE_POSES,
   type PlaceLayout,
 } from '@nomos/sim-protocol/place';
-import { herd } from '../../src/place/animals.ts';
-import { buildPlace, settleBuildings, settleCentre, settleWater, siteFor } from '../../src/place/build.ts';
+import { buildPlace, SETTLEMENT_STAGES, siteFor } from '../../src/place/build.ts';
 import type { PlaceContext } from '../../src/place/context.ts';
 import { placeContexts } from '../../src/place/contexts.ts';
-import { decorate } from '../../src/place/decor.ts';
 import { layoutOf } from '../../src/place/layout.ts';
-import { plant } from '../../src/place/nature.ts';
-import { settlementPeople } from '../../src/place/people.ts';
 import type { Person, Site, Sprite } from '../../src/place/site.ts';
 import { layGround } from '../../src/place/terrain.ts';
 import { buildVista } from '../../src/place/vista.ts';
@@ -55,19 +51,6 @@ const CONTEXT_FIELDS = [
   'landmarks',
   'wonder',
 ] as const;
-// build_settlement's stage groups, in place_goldens.py's order, each folded after it runs.
-const SETTLEMENT_STAGES: readonly ((site: Site) => void)[] = [
-  settleWater,
-  settleCentre,
-  settleBuildings,
-  decorate,
-  (site) => {
-    plant(site);
-    herd(site);
-  },
-  settlementPeople,
-];
-
 function text(s: string): number[] {
   return Array.from(s, (c) => c.charCodeAt(0));
 }

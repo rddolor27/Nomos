@@ -1,10 +1,10 @@
 """Per-stage golden fingerprints of place.py for the TypeScript port: python tools/worldgen/place_goldens.py [--worlds N] [--check]
 
 Builds every place of the first WORLDS standard worlds, in world.place_contexts' order, settlements then wonders. Each
-place folds its context, its site after each stage group of place.build_settlement, and its layout in the shape of
-sim-protocol's PlaceLayout, so a port that drifts names the stage where it starts. A vista folds only its context, its
-ground and its layout. The mirror must match place.build: on the first CHECKED worlds it compares each layout's fold
-with place.build's, and stops on a difference. Writes packages/worldgen/test/fixtures/place-goldens-v1.json. --check
+place folds its context, its site after each of place.SETTLEMENT_STAGES, and its layout in the shape of sim-protocol's
+PlaceLayout, so a port that drifts names the stage where it starts. A vista folds only its context, its ground and its
+layout. The folding run must match place.build: on the first CHECKED worlds it compares each layout's fold with
+place.build's, and stops on a difference. Writes packages/worldgen/test/fixtures/place-goldens-v1.json. --check
 compares the committed file's first N worlds with a fresh run instead.
 """
 import argparse
@@ -62,50 +62,13 @@ def fold_layout(layout):
 
 
 def settlement(ctx):
-    """place.build_site and build_settlement, line for line, with a fold after each stage group."""
+    """place.build_site with a fold after the ground and after each of build_settlement's stage groups."""
     site = P.Site(ctx, *P.SIZES[ctx.tier])
     P.lay_ground(site)
     prints = [fold_site(site)]
-    middle = (site.w // 4, site.h // 4, site.w * 3 // 4, site.h * 3 // 4)
-
-    def spare(x, y):
-        return middle[0] <= x < middle[2] and middle[1] <= y < middle[3]
-
-    sides = [s for s in 'nesw' if s in ctx.river]
-    P.lay_water(site, ctx.sea, ctx.coast == 'cliffs', 4 if ctx.tier in ('city', 'capital') else 3,
-                P.river_points(site, sides) if sides else [], spare)
-    if ctx.biome in ('hills', 'mountain', 'peak'):
-        P.lay_ridges(site, 1 if ctx.biome == 'hills' else 2, spare)
-    prints.append(fold_site(site))
-    if ctx.tier in P.PLAZAS:
-        P.lay_town(site)
-        P.lay_roads(site)
-        P.place_civic(site, P.CIVIC[ctx.tier][:1])
-        P.place_plaza(site)
-        P.place_civic(site, P.CIVIC[ctx.tier][1:])
-    else:
-        P.lay_village(site)
-        P.lay_roads(site)
-        P.place_village_shop(site)
-    prints.append(fold_site(site))
-    if ctx.sea and ctx.coast != 'cliffs':
-        P.place_dock(site)
-    P.place_landmarks(site)
-    P.place_works(site)
-    P.place_houses(site)
-    if ctx.tier in ('village', 'hamlet') or ctx.biome == 'farmland' or ctx.farmland:
-        fields = {'hamlet': 1, 'village': 3}.get(ctx.tier, len(ctx.farmland) or 1) + (ctx.biome == 'farmland')
-        P.place_fields(site, fields, ctx.biome in ('farmland', 'grassland', 'hills'))
-    if 'windmill' in ctx.landmarks:
-        P.place_windmill(site)
-    prints.append(fold_site(site))
-    P.decorate(site)
-    prints.append(fold_site(site))
-    P.plant(site)
-    P.herd(site)
-    prints.append(fold_site(site))
-    P.settlement_people(site)
-    prints.append(fold_site(site))
+    for stage in P.SETTLEMENT_STAGES:
+        stage(site)
+        prints.append(fold_site(site))
     return prints, site.layout()
 
 

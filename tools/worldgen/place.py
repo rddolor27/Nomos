@@ -1463,7 +1463,8 @@ def settlement_people(site):
 
 # ------------------------------------------------------------------------------------- the build
 
-def build_settlement(site):
+def settle_water(site):
+    """Sea, rivers and ponds kept off the middle of the place, then ridges on high ground."""
     ctx = site.ctx
     middle = (site.w // 4, site.h // 4, site.w * 3 // 4, site.h * 3 // 4)
 
@@ -1475,16 +1476,26 @@ def build_settlement(site):
               river_points(site, sides) if sides else [], spare)
     if ctx.biome in ('hills', 'mountain', 'peak'):
         lay_ridges(site, 1 if ctx.biome == 'hills' else 2, spare)
-    if ctx.tier in PLAZAS:
+
+
+def settle_centre(site):
+    """A town's plaza, streets, town hall, stalls and civic buildings, or a village's green, lanes and shop."""
+    tier = site.ctx.tier
+    if tier in PLAZAS:
         lay_town(site)
         lay_roads(site)
-        place_civic(site, CIVIC[ctx.tier][:1])
+        place_civic(site, CIVIC[tier][:1])
         place_plaza(site)
-        place_civic(site, CIVIC[ctx.tier][1:])
+        place_civic(site, CIVIC[tier][1:])
     else:
         lay_village(site)
         lay_roads(site)
         place_village_shop(site)
+
+
+def settle_buildings(site):
+    """The dock, landmarks, works, houses, fields and the windmill."""
+    ctx = site.ctx
     if ctx.sea and ctx.coast != 'cliffs':
         place_dock(site)
     place_landmarks(site)
@@ -1495,10 +1506,21 @@ def build_settlement(site):
         place_fields(site, fields, ctx.biome in ('farmland', 'grassland', 'hills'))
     if 'windmill' in ctx.landmarks:
         place_windmill(site)
-    decorate(site)
+
+
+def settle_nature(site):
     plant(site)
     herd(site)
-    settlement_people(site)
+
+
+# build_settlement's stage groups, in order. place_goldens.py fingerprints the site after each one, and the TypeScript
+# port runs the same list (packages/worldgen/src/place/build.ts).
+SETTLEMENT_STAGES = (settle_water, settle_centre, settle_buildings, decorate, settle_nature, settlement_people)
+
+
+def build_settlement(site):
+    for stage in SETTLEMENT_STAGES:
+        stage(site)
 
 
 def build_site(ctx):
