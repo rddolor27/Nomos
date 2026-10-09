@@ -273,7 +273,7 @@ test.describe('in one engine', () => {
     expect(await walker(page)).toEqual(still);
   });
 
-  test('tries the art again after it failed to load, on the next entry and on Try again', async ({ page }) => {
+  test('tries the art again after it failed to load, on the next entry and on Try again, keeping focus in the view', async ({ page }) => {
     // As vite preview answers a missing file: with its index page, and 200.
     const missing = (route: Route): Promise<void> =>
       route.fulfill({ status: 200, contentType: 'text/html', body: '<!doctype html><title>Nomos</title>' });
@@ -297,10 +297,14 @@ test.describe('in one engine', () => {
     await expect(status).toHaveText(`${capital} could not be drawn, as its art did not load.`);
 
     await page.unroute('**/atlas/atlas.json', missing);
-    await again.click();
+    await again.focus();
+    await page.keyboard.press('Enter');
     await placeShown(page);
     await expect(again).toBeHidden();
     await expect(status).toHaveText(new RegExp(`^${capital}, a capital of`));
+    await expect(page.getByRole('button', { name: 'Back to map' })).toBeFocused();
+    await page.keyboard.press('Escape');
+    await expect(page.locator('#place')).toBeHidden();
   });
 
   test('passes axe in the town view and on the map with Enter showing', async ({ page }) => {

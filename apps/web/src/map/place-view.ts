@@ -391,7 +391,11 @@ function statusText(view: PlaceView): string {
 function showStatus(view: PlaceView): void {
   const text = statusText(view);
   if (view.parts.status.textContent !== text) view.parts.status.textContent = text;
-  view.parts.retry.hidden = !view.failure && !view.pageFailed;
+  const { retry, back } = view.parts;
+  const hide = !view.failure && !view.pageFailed;
+  // Hiding Try again while it has focus, as after it succeeds, would drop focus to the page, and Escape with it.
+  if (hide && document.activeElement === retry) back.focus();
+  retry.hidden = hide;
 }
 
 function placeSize(layout: PlaceLayout): [number, number] {
