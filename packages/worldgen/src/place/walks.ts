@@ -13,8 +13,9 @@ const WAYPOINT = 0x112;
 const ROAMERS_PER_MILLE = 350;
 // Waypoints lie within this many steps of the walker's own tile, so a loop keeps to its neighbourhood.
 const REACH = 10;
-// A place's loops hold at most this many cells all told (M3.1's plan, Task 3); a loop past it is left out.
-const LOOP_CELLS = 4096;
+// A place's loops hold at most this many cells all told (M3.1's plan, Task 3); a loop past it is left out. The biggest
+// crowds, about 300 in a capital, walk about 9,000 cells, so the budget leaves room to grow.
+const LOOP_CELLS = 16_384;
 
 // The loops look-only walkers follow: place.py's walkers and a keyed share of its standers with no job, each a
 // closed walk from their own tile through 3 to 6 waypoints and back, on tiles people may walk on.

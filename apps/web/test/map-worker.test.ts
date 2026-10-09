@@ -33,7 +33,7 @@ describe('the map worker', { timeout: 60_000 }, () => {
     structuredClone(world.reply, { transfer: world.transfer });
     let now = 100;
     for (const [place, width] of [
-      [0, 48],
+      [0, 128],
       [settlements, 30],
     ]) {
       const answer = await answerPlace({ type: 'place', place }, world.contexts, () => (now += 7));

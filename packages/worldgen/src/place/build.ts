@@ -26,11 +26,11 @@ import { buildVista, VISTA_SIZE } from './vista.ts';
 import { placeWalks } from './walks.ts';
 
 const SIZES: Readonly<Record<string, readonly [number, number]>> = {
-  capital: [48, 28],
-  city: [48, 28],
-  town: [40, 24],
-  village: [32, 20],
-  hamlet: [32, 20],
+  capital: [128, 80],
+  city: [128, 80],
+  town: [112, 64],
+  village: [80, 48],
+  hamlet: [56, 32],
 };
 const FIELDS: Readonly<Record<string, number>> = { hamlet: 1, village: 3 };
 const ROCKY = ['hills', 'mountain', 'peak'];

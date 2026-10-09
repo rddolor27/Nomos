@@ -8,7 +8,7 @@ import { placeWalks } from '../src/place/walks.ts';
 
 const FIXTURE = new URL('../../render-gl/test/fixtures/places-v1.json', import.meta.url);
 const fixtures: { name: string; context: PlaceContext }[] = JSON.parse(readFileSync(FIXTURE, 'utf8')).places;
-const LOOP_CELLS = 4096;
+const LOOP_CELLS = 16_384;
 const WORLDS = 20;
 const FIRST_SEED = 0x5eed0001;
 

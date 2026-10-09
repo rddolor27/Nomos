@@ -27,13 +27,17 @@ from spritekit import ASSETS, TILE  # noqa: E402
 
 DEMO = ASSETS.parents[1] / 'dist' / 'worldgen' / 'demo'
 
-SIZES = {'capital': (48, 28), 'city': (48, 28), 'town': (40, 24), 'village': (32, 20), 'hamlet': (32, 20)}
+SIZES = {'capital': (128, 80), 'city': (128, 80), 'town': (112, 64), 'village': (80, 48), 'hamlet': (56, 32)}
 VISTA_SIZE = (30, 18)
-PLAZAS = {'capital': (16, 5), 'city': (14, 5), 'town': (12, 4)}
+PLAZAS = {'capital': (28, 8), 'city': (26, 8), 'town': (20, 6)}
 BLOCK = {'capital': 5, 'city': 5, 'town': 4}         # rows from one street to the next
-REACH = {'capital': 17, 'city': 15, 'town': 12}      # street length beyond the lanes beside the plaza
-HOUSES = {'capital': (20, 30), 'city': (20, 30), 'town': (12, 20), 'village': (6, 10), 'hamlet': (3, 5)}
-CROWDS = {'capital': (24, 40), 'city': (24, 40), 'town': (14, 24), 'village': (8, 14), 'hamlet': (4, 8)}
+REACH = {'capital': 42, 'city': 38, 'town': 30}      # street length beyond the lanes beside the plaza
+HOUSES = {'capital': (380, 520), 'city': (380, 520), 'town': (240, 340), 'village': (30, 50), 'hamlet': (8, 14)}
+MISSES = 6        # attempts in a row that find no lot, after which a place has no room left for houses
+CROWDS = {'capital': (150, 300), 'city': (150, 300), 'town': (60, 120), 'village': (25, 50), 'hamlet': (10, 20)}
+# The populations a crowd rises across: a tier's smallest settlement to ten times that, as settle.py's tiers divide them.
+CROWD_POPULATIONS = {'capital': (50_000, 500_000), 'city': (50_000, 500_000), 'town': (5_000, 50_000),
+                     'village': (500, 5_000), 'hamlet': (50, 500)}
 VISITORS = (4, 8)
 CIVIC = {'capital': ('civic_town-hall', 'civic_courthouse', 'civic_records-office', 'civic_police-station',
                      'civic_clinic', 'civic_school', 'shop_general', 'shop_warehouse'),
@@ -1066,9 +1070,9 @@ def place_houses(site):
     lo, hi = HOUSES[tier]
     count = lo + site.below(hi - lo + 1, FORM, 0)
     dense = tier in ('town', 'city', 'capital')
-    made = 0
+    made, misses = 0, 0
     for i in range(count * 3):
-        if made >= count:
+        if made >= count or misses >= MISSES:
             break
         forms = house_forms(site, i, dense, count - made)
         options = [forms]
@@ -1096,7 +1100,10 @@ def place_houses(site):
                 for path in spurs:
                     site.lay_path(path)
                 made += len(opts)
+                misses = 0
                 break
+        else:
+            misses += 1
 
 
 # ------------------------------------------------------------------------------------ fields, decor
@@ -1451,10 +1458,19 @@ def populate(site, count, jobs, spots, facing_hint=None, emotes=('heart', 'coin'
     site.people = people
 
 
-def settlement_people(site):
+def crowd_size(site):
+    """A crowd's size: three parts the settlement's population across its tier's band, one part a keyed wobble."""
     tier = site.ctx.tier
     lo, hi = CROWDS[tier]
-    count = lo + draw(site.ctx.seed, CROWD, COUNT) % (hi - lo + 1)
+    smallest, largest = CROWD_POPULATIONS[tier]
+    share = (min(max(site.ctx.population, smallest), largest) - smallest) * 1000 // (largest - smallest)
+    wobble = draw(site.ctx.seed, CROWD, COUNT) % 1000
+    return lo + (hi - lo) * (3 * share + wobble) // 4000
+
+
+def settlement_people(site):
+    tier = site.ctx.tier
+    count = crowd_size(site)
 
     def around(names, reach=1):
         tiles = []

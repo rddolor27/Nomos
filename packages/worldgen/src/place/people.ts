@@ -9,11 +9,19 @@ export type Job = readonly [job: string, tiles: readonly Cell[]];
 export type FacingHint = (i: number) => string;
 
 const CROWDS: Readonly<Record<string, readonly [lo: number, hi: number]>> = {
-  capital: [24, 40],
-  city: [24, 40],
-  town: [14, 24],
-  village: [8, 14],
-  hamlet: [4, 8],
+  capital: [150, 300],
+  city: [150, 300],
+  town: [60, 120],
+  village: [25, 50],
+  hamlet: [10, 20],
+};
+// The populations a crowd rises across: a tier's smallest settlement to ten times that, as settle.py's tiers divide them.
+const CROWD_POPULATIONS: Readonly<Record<string, readonly [smallest: number, largest: number]>> = {
+  capital: [50_000, 500_000],
+  city: [50_000, 500_000],
+  town: [5_000, 50_000],
+  village: [500, 5_000],
+  hamlet: [50, 500],
 };
 const EXPRESSIONS = [...new Array<string>(7).fill('neutral'), 'happy', 'happy', 'blink'];
 const EMOTES = ['heart', 'coin', 'food', 'question', 'sweat'];
@@ -126,10 +134,18 @@ function facingFor(crowd: Crowd, x: number, y: number, i: number, kind: string):
   return west || east ? ['left', 'right'][turn] : ['down', 'up'][turn];
 }
 
-export function settlementPeople(site: Site): void {
+// A crowd's size: three parts the settlement's population across its tier's band, one part a keyed wobble.
+function crowdSize(site: Site): number {
   const tier = site.ctx.tier ?? '';
   const [lo, hi] = CROWDS[tier];
-  const count = lo + crowdBelow(site, hi - lo + 1, COUNT);
+  const [smallest, largest] = CROWD_POPULATIONS[tier];
+  const grown = Math.min(Math.max(site.ctx.population, smallest), largest) - smallest;
+  const share = floorDiv(grown * 1000, largest - smallest);
+  return lo + floorDiv((hi - lo) * (3 * share + crowdBelow(site, 1000, COUNT)), 4000);
+}
+
+export function settlementPeople(site: Site): void {
+  const count = crowdSize(site);
   const spots: Cell[] = [];
   for (let y = 0; y < site.h; y++) {
     for (let x = 0; x < site.w; x++) {

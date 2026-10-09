@@ -7,11 +7,11 @@ import { frame, OPEN, rise, type Cell, type Lot, type Site } from './site.ts';
 
 type Pair = readonly [number, number];
 
-export const PLAZAS: Readonly<Record<string, Pair>> = { capital: [16, 5], city: [14, 5], town: [12, 4] };
+export const PLAZAS: Readonly<Record<string, Pair>> = { capital: [28, 8], city: [26, 8], town: [20, 6] };
 // Rows from one street to the next.
 const BLOCK: Readonly<Record<string, number>> = { capital: 5, city: 5, town: 4 };
 // Street length beyond the lanes beside the plaza.
-const REACH: Readonly<Record<string, number>> = { capital: 17, city: 15, town: 12 };
+const REACH: Readonly<Record<string, number>> = { capital: 42, city: 38, town: 30 };
 const CAPITAL_CIVIC = [
   'civic_town-hall',
   'civic_courthouse',
