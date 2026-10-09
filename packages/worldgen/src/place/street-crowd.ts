@@ -17,8 +17,9 @@ const MOST_LOOPS = 300;
 // Waypoints are drawn from this many hubs drawn anywhere on the roads, each with one breadth-first tree, so a capital's
 // crowd costs HUBS searches rather than one a leg.
 const HUBS = 48;
-// At most one walker per two loop cells, spaced evenly, so no line of overlapping blobs forms.
-const CELLS_PER_WALKER = 2;
+// At most one walker per loop cell, spaced evenly. Denser than one per two, because the owner wants busy streets
+// (10 October 2026), but still no line of overlapping blobs.
+const CELLS_PER_WALKER = 1;
 // A phase is art px along its loop, kept in a Uint16Array.
 const MOST_LOOP_CELLS = 4000;
 // First keys of the crowd's CROWD draws, clear of place.py's 1-6 and the walks' 0x110-0x112.
