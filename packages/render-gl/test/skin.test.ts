@@ -39,10 +39,10 @@ test('switches with hysteresis', () => {
     ['dots', 6.9, 100, 'town'],
     ['town', 5.2, 100, 'town'],
     ['town', 5.0, 100, 'dots'],
-    ['dots', 20, 426, 'dots'],
-    ['dots', 20, 425, 'town'],
-    ['town', 20, 575, 'town'],
-    ['town', 20, 576, 'dots'],
+    ['dots', 20, 4001, 'dots'],
+    ['dots', 20, 4000, 'town'],
+    ['town', 20, 4600, 'town'],
+    ['town', 20, 4601, 'dots'],
   ];
 
   expect(cases.map(([current, px, agents]) => autoSkin(current, px, agents))).toEqual(cases.map(([, , , level]) => level));
@@ -52,17 +52,17 @@ test('takes the coarser of tile size and headcount', () => {
   // Tile size and headcount disagree in the first four, so dots win; the last two sit on both limits at once.
   expect([
     autoSkin('dots', 6.0, 100),
-    autoSkin('dots', 20, 426),
-    autoSkin('town', 5.0, 575),
-    autoSkin('town', 20, 576),
-    autoSkin('dots', 6.9, 425),
-    autoSkin('town', 5.1, 575),
+    autoSkin('dots', 20, 4001),
+    autoSkin('town', 5.0, 4600),
+    autoSkin('town', 20, 4601),
+    autoSkin('dots', 6.9, 4000),
+    autoSkin('town', 5.1, 4600),
   ]).toEqual(['dots', 'dots', 'dots', 'dots', 'town', 'town']);
 });
 
 test('holds a skin inside the hysteresis band', () => {
   const zoom = [5.0, 6.0, 6.8, 6.9, 7.0, 6.5, 6.0, 5.5, 5.1, 5.0, 5.5].map((px): Sample => [px, 100]);
-  const crowd = [600, 450, 425, 500, 575, 576, 500, 425].map((agents): Sample => [20, agents]);
+  const crowd = [4700, 4200, 4000, 4300, 4600, 4601, 4300, 4000].map((agents): Sample => [20, agents]);
 
   expect(follow('dots', zoom)).toEqual(['dots', 'dots', 'dots', 'town', 'town', 'town', 'town', 'town', 'town', 'dots', 'dots']);
   expect(follow('dots', crowd)).toEqual(['dots', 'dots', 'town', 'town', 'town', 'dots', 'dots', 'town']);
@@ -72,7 +72,7 @@ test('enters the town from blobs on the terms it does from dots', () => {
   expect([
     autoSkin('blobs', 6.8, 100),
     autoSkin('blobs', 6.9, 100),
-    autoSkin('blobs', 20, 426),
-    autoSkin('blobs', 20, 425),
+    autoSkin('blobs', 20, 4001),
+    autoSkin('blobs', 20, 4000),
   ]).toEqual(['dots', 'town', 'dots', 'town']);
 });
