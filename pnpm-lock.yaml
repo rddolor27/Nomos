@@ -160,7 +160,11 @@ importers:
         specifier: workspace:*
         version: link:../../packages/sim-core
 
-  tools/names: {}
+  tools/names:
+    dependencies:
+      '@nomos/sim-core':
+        specifier: workspace:*
+        version: link:../../packages/sim-core
 
 packages:
 

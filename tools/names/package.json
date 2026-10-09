@@ -4,5 +4,8 @@
   "type": "module",
   "scripts": {
     "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@nomos/sim-core": "workspace:*"
   }
 }
