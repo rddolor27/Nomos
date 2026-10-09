@@ -107,3 +107,6 @@ A living summary for the next session, appended as work lands. Start with `CLAUD
   3. `render-engineer`: item 3, the first screen in the town view's art. That is a "Town" skin, with Highcourt's layout from the map worker and the sim's agents as blob sprites.
 
   If the session ended: check `git log` for those Task lines, and `git status` for unfinished work. Commit only green work, then push.
+- 10 Oct, the latest: **all three agents stopped at once on the account's weekly usage limit,** which resets on 15 October 2026 at 8:00 Asia/Manila.
+  - None of them changed a file: the tree is clean at 0733217, and everything is pushed.
+  - **Resume with "Top priority next session", items 1–4, above.** Give each agent its brief again; the work is unchanged.
