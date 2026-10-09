@@ -161,6 +161,37 @@ If the session ended: check `git log` for those Task lines, and `git status` for
   - `town.nmap` is 5.4 kB brotli;
   - the build, size and browser gates weren't run. They belong to `nomos-bd`'s step 4.
 
+**10 Oct: all the art landed, and the plan is written.**
+- **Art,** every frame name now in the plan's "The art contract":
+  - houses: 9272f2f, 1b34c9d, 454b80b and 35a5add;
+  - trades, farm buildings, the large civic set, the polish and the walled map icons: 6422411, f8201a3, 1434809, 3722777, 798f4f4, 7647598 and 7e59786;
+  - roads, crops, greens, the palisade and stone bridges: 88478c6, 8099986, fd04bcd, e298e55, be12d20, c06a4d0 and 95f41ed.
+  - The four previews in `docs/mockups/` went to the owner.
+- **Designers' calls for the owner to overturn:**
+  - houses: the corner houses' L-shaped wing, the cream doors, and handed pieces drawn at random rather than in pairs;
+  - terrain: the bridges' snow overlays, which cost 13 px of atlas; the palisade side gate as tall posts only; gates 2 wide, so a main road's third lane ends at the wall; and no watchtower on the palisade;
+  - buildings: `_large` rather than "grand"; the workshop is now a joiner's shop; a stone threshing barn; the capital icon shows a civic clock tower rather than a keep; and the watermill stands on an east bank only, with no wheel animation.
+- **Plan:** M3.1 Part 3, Tasks 9–21 (197f74e and f6f0239).
+- **The coordinator's rulings:**
+  - 176×112 for capitals and cities, and 152×96 for towns, for a deeper farm belt (72f0ea6), falling back to 160×100 and 140×80 if builds break Task 9's budget;
+  - the walls' look stands as drawn, at the owner's word.
+- **Clean-up commits:** b02c835 (`MAP_FRAMES` 93), a477031 (`LICENSES.md`), 2b69ec8 (`places-v1.json`, pixel hashes only).
+- **`interfaces.md`:** the planner's appendix is kept in Task 21 (f6ef4bc) and applied (16d4ef5).
+- **Running:**
+  - Task 9, the timing script (`sim-engineer`, Sonnet);
+  - Task 17, road classes (`sim-engineer`, Opus);
+  - Task 10, the atlas trim (`render-engineer`, Sonnet).
+- **Next:**
+  - Task 11 once Task 9 reports, then Tasks 12–16 in turn;
+  - Task 18 after Task 17;
+  - Task 19 after Tasks 11–16;
+  - then Task 20, and Task 21 with the single QA and review pass.
+- **Agreed with `nomos-bd`:**
+  - its Town skin landed, so render-gl is free for Tasks 18 and 19;
+  - Tasks 11–15 may edit `town-map.test.ts`, `map-worker.test.ts` and `tiers.test.ts`;
+  - every `place.py` change re-exports `town.nmap` in the same commit and keeps `town.test.ts` green;
+  - **don't touch `town-map.test.ts` until `nomos-bd`'s economy Task 1 lands** (it will message). After that, whoever commits second re-pins from the current tree, and nobody edits that file while it's dirty from the other session.
+
 ## The town view session (nomos-bd), continued
 
 - 10 Oct: **step 4 and the blob counts are done and pushed** (217980a, d5dfdff, d999ab7, dea6b06 and d6e3bdc).
