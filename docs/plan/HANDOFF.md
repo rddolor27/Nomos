@@ -100,3 +100,10 @@ A living summary for the next session, appended as work lands. Start with `CLAUD
    - otherwise cut corners diagonally;
    - and face the true direction, as the sim's blobs already do.
 5. Then step 3, the 2 ms bar with the bigger places, and steps 5–6, walls and houses in towns.
+
+- 10 Oct: the owner said "go ahead and implement, use what you need". Three agents started, at most three at a time:
+  1. `sim-engineer` (Sonnet): items 1 and 2, the starting town at 128×80 and a sensible blob count.
+  2. `senior-game-engineer` (Sonnet): item 4, walking in any direction, in `walkers.ts`.
+  3. `render-engineer`: item 3, the first screen in the town view's art. That is a "Town" skin, with Highcourt's layout from the map worker and the sim's agents as blob sprites.
+
+  If the session ended: check `git log` for those Task lines, and `git status` for unfinished work. Commit only green work, then push.
