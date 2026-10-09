@@ -1,5 +1,6 @@
+import { wetCells } from '../climate/biomes.ts';
 import { CAPITAL_TIERS } from '../countries/countries.ts';
-import { grow, wetCells } from '../countries/grow.ts';
+import { grow } from '../countries/grow.ts';
 import type { Settlement } from '../settle/settle.ts';
 
 // Provisional for M7.3 to adopt or revise (M8.1 plan, Ruling 10). Region r is index r - 1 of seat and country.

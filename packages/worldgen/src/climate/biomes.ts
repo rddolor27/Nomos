@@ -32,6 +32,13 @@ export const MARSH_BELOW = 140;
 // A sub-purpose on the MOISTURE stream, after rain.ts's WIND and WET (0x100, 0x101).
 export const BEACHES = 0x105;
 
+// 1 on the ocean and the lakes: the water roads never enter and countries pay to cross.
+export function wetCells(biome: Uint8Array): Uint8Array {
+  const wet = new Uint8Array(biome.length);
+  for (let i = 0; i < biome.length; i++) wet[i] = biome[i] === OCEAN || biome[i] === LAKE ? 1 : 0;
+  return wet;
+}
+
 // No cover claims the cell yet: a code can be 0 (the ocean), so a helper cannot signal it by falsiness.
 const NONE = -1;
 

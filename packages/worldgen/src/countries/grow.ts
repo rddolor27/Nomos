@@ -1,5 +1,5 @@
 import { floorDiv } from '@nomos/sim-core/kernels';
-import { LAKE, OCEAN } from '../climate/biomes.ts';
+import { wetCells } from '../climate/biomes.ts';
 import { neighbours, xOf, yOf } from '../grid/grid.ts';
 import { MinHeap } from '../grid/heap.ts';
 import { COVER, DIAGONAL, STRAIGHT } from '../routes/costs.ts';
@@ -23,12 +23,6 @@ export function slips(
 ): boolean {
   if (wet[c] === 0 && wet[m] === 0 && (wet[a] !== 0 || wet[b] !== 0)) return true;
   return river[a] !== 0 && river[b] !== 0 && (receiver[a] === b || receiver[b] === a);
-}
-
-export function wetCells(biome: Uint8Array): Uint8Array {
-  const wet = new Uint8Array(biome.length);
-  for (let i = 0; i < biome.length; i++) wet[i] = biome[i] === OCEAN || biome[i] === LAKE ? 1 : 0;
-  return wet;
 }
 
 function entryCosts(biome: Uint8Array, wet: Uint8Array): Int32Array {

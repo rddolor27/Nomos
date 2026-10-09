@@ -1,5 +1,5 @@
 import { floorDiv, isqrt } from '@nomos/sim-core/kernels';
-import { LAKE, OCEAN } from '../climate/biomes.ts';
+import { wetCells } from '../climate/biomes.ts';
 import { dist2, neighbours, parts } from '../grid/grid.ts';
 import { MinHeap } from '../grid/heap.ts';
 import type { Settlement } from '../settle/settle.ts';
@@ -12,8 +12,7 @@ type Link = readonly [to: number, tenths: number];
 
 // Each connected group of land cells, joined by their four sides, labelled 0, 1, ... in index order; -1 on water.
 export function landmasses(width: number, height: number, biome: Uint8Array): Int32Array {
-  const land = new Uint8Array(biome.length);
-  for (let i = 0; i < biome.length; i++) land[i] = biome[i] === OCEAN || biome[i] === LAKE ? 0 : 1;
+  const land = wetCells(biome).map((wet) => 1 - wet);
   return parts(neighbours(width, height, false), land).label;
 }
 
