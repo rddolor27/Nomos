@@ -28,6 +28,7 @@ jobs:
       - run: python tools/atlas/test_atlas.py
       - run: python tools/worldgen/goldens.py --check --seeds 3
       - run: python tools/worldgen/place_goldens.py --check --worlds 1
+      - run: python tools/worldgen/place_fixtures.py --check
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm names
