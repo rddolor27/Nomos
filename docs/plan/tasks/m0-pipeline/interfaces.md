@@ -87,7 +87,7 @@ The tables give the layout M0.7 builds, including the files it adds. A renamed f
 | `skins/` | `skin.ts`, `skin-toggle.ts` | Skin choice, the automatic policy and the toggle |
 | `dots/` | `dots.ts`, `colour.ts`, `minimap.ts`, `skin-a.json` | Skin A: dot shapes, its palette and contrast, and the minimap |
 
-Skin B and Skin C arrive as `blobs/` and `town/` beside `dots/` (M1.3, M3.3). M8.3 adds `map/`, the map scene, behind the `./map` export whose entry file is `src/map.ts`.
+Skin B and Skin C arrive as `blobs/` and `town/` beside `dots/` (M1.3, M3.3). M8.3 adds `map/`, the map scene, behind the `./map` export whose entry file is `src/map.ts`. M3.1 adds `place/`, the place pass, behind the `./place` export whose entry file is `src/place.ts`, and `map/lifecycle.ts`, the context-loss lifecycle the map and place renderers share.
 
 **`apps/web/src`**
 
@@ -449,7 +449,7 @@ The Country and Region views draw a `WorldMap` with a renderer of their own, whi
 - **Colours:** `map/map-colours.json` is the one table of the map's colours.
   - It holds the five country colours, the line colours, and the crowd's six body hues keyed by `CROWD_HUES` name with their dark `outline`. `tools/worldgen/mapdraw.py` reads the same file.
   - `COUNTRY_COLOURS` holds the five as `0xRRGGBB`, indexed by `WorldMap.countries.colour`. They appear only on map overlays and the legend (Countries rule 5).
-  - `CROWD_COLOURS` holds the six body hues as `0xRRGGBB` by `CROWD_HUES` index, and `CROWD_OUTLINE` the outline. `test_worldgen.py` holds them to `spritekit.py`'s `BODY_HUES` bases and `OUTLINE` (M8.3, Task 17).
+  - `CROWD_COLOURS` holds the six body hues as `0xRRGGBB` by `CROWD_HUES` index, and `CROWD_OUTLINE` the outline, which equals `OUTLINE`, the palette's outline that a place is drawn on (M3.1). `test_worldgen.py` holds them to `spritekit.py`'s `BODY_HUES` bases and `OUTLINE` (M8.3, Task 17).
   - The owner picked the five on 9 October 2026. In index order they are `#42F6FC` cyan, `#0000E4` blue, `#600090` deep violet, `#CC36D8` orchid and `#FC66FC` pink-violet.
   - A test keeps them, in D65 Lab and CIEDE2000, ≥ 15 from every palette colour, and ≥ 11.95 apart for normal, protan, deutan and tritan vision (M8.3, Task 14).
 - **Atlas page:** `tools/atlas` writes `map.webp`, `map.png` and `map.json` beside the town atlas. The page holds the 81 map-scale frames: terrain tiles, wonders and landmarks at both scales, and the settlement icons.
@@ -458,7 +458,7 @@ The Country and Region views draw a `WorldMap` with a renderer of their own, whi
   - `loadAtlasPage(jsonUrl, imageUrl): Promise<AtlasPage>` fetches the page.
   - Frames are found by name, never by atlas index (R9).
 - **`createMapRenderer(canvas: HTMLCanvasElement, options?: MapRendererOptions): MapRenderer`.**
-  - `MapRendererOptions` is `{ backend?: 'auto' | 'canvas2d', restoreTimeoutMs?: number }`, as `RendererOptions` has them.
+  - `MapRendererOptions` is `{ backend?: 'auto' | 'canvas2d', restoreTimeoutMs?: number }`, as `RendererOptions` has them. From M3.1 it is an alias of `LifecycleOptions`, in `map/lifecycle.ts`, whose `createLifecycle` runs init, the lost and restored events, the fallback, the canvas swap, resize and dispose for both the map and place renderers. `WorldRenderer` keeps its own, so first-load bytes don't change.
   - `MapRenderer` reads `backend`, `canvas` and `view`: the view the last draw showed.
   - Its methods are `init()`, `resize(deviceWidth, deviceHeight, dpr)`, `setWorld(map: WorldMap)`, `setAtlas(page: AtlasPage)`, `setFlat(flat: boolean)`, `setCrowd(hue: Uint8Array, xy: Float32Array)`, `draw(camera: MapCamera)` and `dispose()`.
   - `setCrowd` takes each dot's `CROWD_HUES` index and its position, x then y, in fractional cells. The caller rewrites `xy` in place before each draw.
@@ -478,10 +478,10 @@ The Country and Region views draw a `WorldMap` with a renderer of their own, whi
   - it starts the map worker once per page, and keeps the world it answers for the rest of the page;
   - it fetches the atlas page beside it.
 - **Closing the map** resumes the town only if the map paused it, and gives focus back to the Map control. Escape closes it too.
-- **The toolbar** holds Close map, Fit, Zoom in and Zoom out, Countries, Pause dots, and a "Go to a settlement" list (owner, 9 October 2026).
+- **The toolbar** holds Close map, Fit, Zoom in and Zoom out, Countries, Pause dots, and a "Go to a settlement" list (owner, 9 October 2026). From M3.1 it adds "Enter <name>" while a place is in focus (Places, below).
   - **Going to a settlement:** choose it from the list, grouped by country with the capital first, or click or tap it on the map. Either way, the view jumps there, centred, at the step nearest 64 CSS px a cell.
-    - `map/goto.ts` holds `goToGroups`, `mountGoTo`, `cameraOn` and `settlementUnder`, which finds a settlement within 1.5 cells or 12 CSS px of a tap.
-    - `MapInputTarget` gains `tap(deviceX, deviceY)`, called for a press that lifts having moved less than 5 CSS px.
+    - `map/goto.ts` holds `goToGroups`, `mountGoTo` and `cameraOn`. From M3.1, `placeUnder` replaces `settlementUnder`: it finds a settlement or wonder within 1.5 cells or 12 CSS px of a tap. `cameraOn` takes a place, and `placeInFocus`, `placeInfo` and `placeCount` serve the town view.
+    - `MapInputTarget` gains `tap(deviceX, deviceY)`, called for a press that lifts having moved less than 5 CSS px. From M3.1 it is `{ zoom, pan, arrowPx, fit, close, tap }`.
     - The list reads "Go to…" again after every jump.
   - **Pause dots** stands the crowd still, as reduced motion does.
   - **The status line** is the map's live region. It says when the map is ready, and focusing the map reads it, through `aria-describedby`.
@@ -495,7 +495,7 @@ The Country and Region views draw a `WorldMap` with a renderer of their own, whi
   - The view runs a frame loop only while the Region view shows. Under `prefers-reduced-motion`, the dots stand at their time-0 places.
 - **Chunks:**
   - `map-view-*.js`, `map-worker-*.js` and `dist/atlas/map.webp` each get a size-limit entry;
-  - `vite.config.ts`'s `render-gl` chunk group leaves out `src/map`, so the scene never joins the renderer chunk.
+  - `vite.config.ts`'s `render-gl` chunk group leaves out `src/map`, so the scene never joins the renderer chunk. From M3.1 it leaves out `src/place` too.
 
 ## Places (owner: M3.1)
 
@@ -558,3 +558,52 @@ The owner asked on 9 October 2026 to zoom into a settlement on the map and see t
 - The build fails if Python 3 or Pillow is missing (`pip install -r tools/requirements.txt`).
 - The step adds about 8 s a build, almost all of it in the lossless WebP encodes.
 - The first entry into a place loads `atlas/atlas.json` and `atlas/atlas.webp`; first load never does.
+
+### `@nomos/render-gl/place`
+
+- **Camera:** `PlaceCamera` is `{ x, y, scale }`.
+  - `x` and `y` are the art pixel at the view's top-left, and `scale` is whole device px per art px, one of `PLACE_SCALES`: 1, 2, 3, 4, 6, 8, 12 and 16. Every draw snaps the view to whole device px.
+  - Sizes below are in art px:
+    - `fitPlaceCamera(width, height, deviceWidth, deviceHeight)`;
+    - `openPlaceCamera(width, height, deviceWidth, deviceHeight, dpr)`: the fitted view, but never under 2 CSS px per art px;
+    - `zoomPlaceAt(camera, steps, deviceX, deviceY)` and `panPlaceBy(camera, dxDevice, dyDevice)`;
+    - `clampPlaceCamera(camera, width, height, deviceWidth, deviceHeight)`, which keeps the view's centre over the place.
+- **`createPlaceRenderer(canvas, options?: PlaceRendererOptions): PlaceRenderer`.**
+  - `PlaceRendererOptions` is `LifecycleOptions`, as the map's are.
+  - `PlaceRenderer` reads `backend` and `canvas`. Its methods are `init()`, `resize(deviceWidth, deviceHeight, dpr)`, `setAtlas(page: AtlasPage)`, `setPlace(layout: PlaceLayout)`, `draw(camera: PlaceCamera)` and `dispose()`.
+  - Callers move people by rewriting the layout's `x`, `y`, `pose`, `facing` and `step` before each draw. A camera is re-read only when a new camera object is passed.
+  - `draw` throws for a scale that isn't a whole number of 1 or more, and packing throws for a sitter facing up, which has no sprite, as `placedraw.py` would.
+- **What draws,** in `placedraw.py`'s order:
+  1. the `OUTLINE` background;
+  2. the tiles;
+  3. the ground sprites, sorted by y;
+  4. standing sprites and people together, sorted by y and then by order, standing sprites first.
+
+  A person's layers are the body, the pattern, the face at the body frame's `face` offset, the job item, and the emote at (7, face y − 15). People move every frame, so the pass re-sorts them in place, stably, with no allocation.
+- **Backends:** WebGL2 draws the whole place in one instanced draw, reading texels with `texelFetch`. Canvas2D caches the tiles and ground on an offscreen canvas.
+- **The pixel check:** at 1×, both backends match the SHA-256 of `placedraw.py`'s picture of each fixture, in Chromium, Firefox and WebKit. At 2×, a frame equals the 1× picture scaled up by nearest neighbour.
+- **Imports:** only `src/map`'s `frames.ts`, `gl.ts`, `colours.ts` and `lifecycle.ts`, and `sim-protocol`.
+
+### The town view in `web`
+
+- **Entering,** from the map's Region view:
+  - a place is in focus when it is the nearest to the view's centre within a tap's reach. "Enter <name>" shows while one is;
+  - at the map's closest step, zooming in again near a place opens it. The zoom point is the cursor, the pinch centre or the view's centre;
+  - a tap on the place in focus opens it, and a tap on any other place jumps there.
+- **The view:** `map/place-view.ts` mounts a `#place` section over the map, which goes inert beneath it and draws nothing while covered.
+  - It opens at `openPlaceCamera`'s scale.
+  - Its bar holds Back to map, Fit, + and −, and Pause people, which shares the map's Pause dots state, with the place's name, tier, population and country. A wonder is named by its kind, such as "Sea arch".
+- **Walkers:** `map/walkers.ts`'s `Walkers` move people round their loops at about 20 art px a second, with no allocation per frame.
+  - The walk frame changes every 8 px, and facing follows the way they go.
+  - A stander with a loop takes the walk pose while it moves.
+  - Pause people stops them, and reduced motion keeps everyone where `place.py` put them.
+- **Leaving:** Back to map, Escape, or zooming out past the smallest scale returns to the map as it was, with focus back where it was.
+- **Loading:**
+  - `place-view-*.js`, `place-builder-*.js` and the atlas load on the first entry only, and each chunk has a size-limit entry.
+  - The view sends one place request at a time, waits at most 15 s, and fails only the place a `PlaceError` names.
+  - A failed load of the art or the place shows Try again, and every later entry tries again.
+- **Accessibility:**
+  - the picture's `img` role and name sit on a wrapper that the canvas swaps keep;
+  - focus moves to Back to map on entry, and returns on exit;
+  - the status line reads the place: "<name>, a <tier> of N people in <country>: X people are out, Y of them walking."
+- **Test hooks:** `window.__map` gains `camera` and `map`, and `window.__place` is the town view's.
