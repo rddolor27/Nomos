@@ -449,10 +449,12 @@ function walking(view: PlaceView): boolean {
   return view.walkers !== null && view.walkers.count > 0 && !view.host.paused() && !view.reducedMotion.matches;
 }
 
-// The walkers' clock runs only on walking frames, so a pause or a hidden tab holds them where they stand.
+// The walkers' clock runs only on walking frames, so a pause or a hidden tab holds them where they stand. It counts whole
+// ms, small integers that never box into heap numbers as a frame's fractional times would.
 function walk(view: PlaceView, walkers: Walkers, nowMs: number): void {
-  if (view.lastWalkMs >= 0) view.walkedMs += Math.min(MOST_WALK_MS, Math.max(0, nowMs - view.lastWalkMs));
-  view.lastWalkMs = nowMs;
+  const now = Math.floor(nowMs);
+  if (view.lastWalkMs >= 0) view.walkedMs += Math.min(MOST_WALK_MS, Math.max(0, now - view.lastWalkMs));
+  view.lastWalkMs = now;
   walkers.walk(view.walkedMs);
 }
 
