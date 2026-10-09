@@ -1,10 +1,12 @@
 import {
   createWorld,
   currentTick,
+  issue,
   nearestAgent,
   restoreWorld,
   stateHash,
   step,
+  walletAccount,
   warmUp,
   type World,
 } from '@nomos/sim-core';
@@ -295,11 +297,14 @@ describe('the sim loop', () => {
 
   it('answers inspect with the nearest blob within a tile', () => {
     const page = fakePage();
-    const { agents } = page.world();
-    const agent = nearestAgent(agents, agents.x[0], agents.y[0], 4_096);
-    page.handle({ type: 'inspect', x: agents.x[0] / 256, y: agents.y[0] / 256 });
+    const { agents, cash } = page.world();
+    // A blob past the first, holding a balance no other wallet holds, so an answer from the wrong row or wallet shows.
+    const agent = 7;
+    issue(cash, walletAccount(cash, agent), 1_234);
+    expect(nearestAgent(agents, agents.x[agent], agents.y[agent], 4_096)).toBe(agent);
+    page.handle({ type: 'inspect', x: agents.x[agent] / 256, y: agents.y[agent] / 256 });
     expect(page.ofType('inspected')).toEqual([
-      { type: 'inspected', tick: 0, agent, nameKey: agents.nameKey[agent], cents: 100_000 },
+      { type: 'inspected', tick: 0, agent, nameKey: agents.nameKey[agent], cents: 101_234 },
     ]);
   });
 
