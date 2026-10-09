@@ -142,7 +142,21 @@ The designers' Task lines read "owner request, walled towns with roads by role a
 **Once they land, the coordinator:**
 - regenerates `assets/LICENSES.md` and `packages/render-gl/test/fixtures/places-v1.json`, since the polish changes pixels, and commits them;
 - fills the plan's frame-name placeholders from the designers' reports;
-- starts walking in any direction (`senior-game-engineer`, Sonnet);
+- applies the planner's `interfaces.md` changes in a docs commit of its own, after the other session's edit there lands;
 - then dispatches the plan's steps.
 
 If the session ended: check `git log` for those Task lines, and `git status` for unfinished work. Commit only green work.
+
+**Two sessions share this tree** (10 October 2026). The other session, `nomos-bd`, runs the first-screen round, and then M2. The two sessions agreed which files each owns, by message:
+- **`nomos-bd`** owns:
+  - Highcourt and the blob count: `packages/sim-core` (memory, world), sim-protocol messages, sim-worker, `apps/web/src/app/*` and `main.ts`;
+  - walking in any direction: `walkers.ts`;
+  - the first screen's "Town" skin: `packages/render-gl/**`, `apps/web/src/{app,view,panels}`, `apps/web/src/map/{map-worker,generate,place-builder}.ts`, `place-layout.ts` and `.size-limit.json`;
+  - `interfaces.md`, until its render-engineer's edit lands.
+- **This round** owns `tools/sprites/**`, the `assets/sprites` sheets, `docs/mockups/`, `tools/worldgen/place.py`, `packages/worldgen/src/place/**`, M3.1's `plan.md` and `task.md`, `places-v1.json` and `assets/LICENSES.md`.
+- **Waiting on `nomos-bd`:** the country map's two road styles and the 2 ms re-measure need render-gl. They start only after `nomos-bd` says its Town skin has landed.
+- **Agent 1 above stopped,** since `nomos-bd`'s sim-engineer made the Highcourt commit (217980a), and changed no files. Its gate run, with the other session's edits in the tree:
+  - every Python and Node gate passed, and `pnpm test` passed 632 of 634; the 2 failures were load timeouts in `day.test.ts`, which pass alone;
+  - the replay hash stays `b3b2c251`, because the CLI runs on the stand-in ground;
+  - `town.nmap` is 5.4 kB brotli;
+  - the build, size and browser gates weren't run. They belong to `nomos-bd`'s step 4.
