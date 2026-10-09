@@ -1,6 +1,7 @@
 import type { WorldMap } from '@nomos/sim-protocol/world-map';
 import type { MapCamera, MapView } from './camera.ts';
 import { COUNTRY_COLOURS, LINE_COLOURS } from './colours.ts';
+import { flatFills } from './fills.ts';
 import { tileFrame, type AtlasPage } from './frames.ts';
 import { link, nearestTexture } from './gl.ts';
 import { BAND, BORDER, DECK, LANE, RAIL, RIVER, ROAD, buildOverlay } from './overlay.ts';
@@ -138,19 +139,6 @@ function placeholder(gl: WebGL2RenderingContext, unit: number, integer: boolean)
   return texture;
 }
 
-function flatPixels(map: WorldMap): Uint8Array {
-  const out = new Uint8Array(4 * map.country.length);
-  for (let cell = 0; cell < map.country.length; cell++) {
-    const k = map.country[cell];
-    const colour = k === 0 ? LINE_COLOURS.water : COUNTRY_COLOURS[map.countries.colour[k - 1]];
-    out[4 * cell] = (colour >> 16) & 255;
-    out[4 * cell + 1] = (colour >> 8) & 255;
-    out[4 * cell + 2] = colour & 255;
-    out[4 * cell + 3] = 255;
-  }
-  return out;
-}
-
 // Each cell's tile origins on the page: the Country view's 8-px tile in R and G, the Region view's 16-px tile in B and A.
 function cellTiles(map: WorldMap, page: AtlasPage): Uint16Array {
   const out = new Uint16Array(4 * map.biome.length);
@@ -252,7 +240,7 @@ export function createBasePass(gl: WebGL2RenderingContext): BasePass {
   };
   return {
     setWorld(map) {
-      const pixels = flatPixels(map);
+      const pixels = flatFills(map);
       upload(state, FLAT_UNIT, state.flat, (context) =>
         context.texImage2D(context.TEXTURE_2D, 0, context.RGBA8, map.width, map.height, 0, context.RGBA, context.UNSIGNED_BYTE, pixels),
       );

@@ -15,10 +15,14 @@ import {
   RIVER,
   ROAD,
   buildOverlay,
+  createMapRenderer,
   tileFrame,
   type AtlasFrame,
   type AtlasPage,
+  type MapBackend,
   type MapCamera,
+  type MapRenderer,
+  type MapRendererOptions,
   type MapView,
 } from '../src/map.ts';
 import { tinyWorld } from '../test/tiny-world.ts';
@@ -54,6 +58,13 @@ export interface MapHarness {
   check(camera: MapCamera, view: MapView, flat: boolean): string[];
   pixel(x: number, y: number): string;
   readonly colours: { countries: string[]; border: string; water: string };
+  // A MapRenderer instead of the bare passes; world and atlas then feed it.
+  bootRenderer(width: number, height: number, options?: MapRendererOptions): MapBackend;
+  // Draws through the renderer and checks the frame against the reference for the backend it drew on.
+  render(camera: MapCamera, flat: boolean): { backend: MapBackend; view: MapView; swapped: boolean; wrong: string[] };
+  // False when the browser has no WEBGL_lose_context to lose with.
+  loseContext(): Promise<boolean>;
+  restoreContext(): Promise<void>;
 }
 
 declare global {
@@ -72,6 +83,8 @@ const SHEETS: [string, { frames: Record<string, { w: number; h: number; anchor: 
 let gl: WebGL2RenderingContext | null = null;
 let base: BasePass | null = null;
 let icons: IconsPass | null = null;
+let renderer: MapRenderer | null = null;
+let bootCanvas: HTMLCanvasElement | null = null;
 let world: WorldMap | null = null;
 let page: AtlasPage | null = null;
 // Frame names by their x on the test page, which lays every frame out in one row.
@@ -234,30 +247,73 @@ function readBack(context: WebGL2RenderingContext): void {
   for (let y = 0; y < height; y++) frame.set(bottomUp.subarray((height - 1 - y) * width * 4, (height - y) * width * 4), y * width * 4);
 }
 
+function read2d(canvas: HTMLCanvasElement): void {
+  const context = canvas.getContext('2d');
+  if (!context) throw new Error('no Canvas2D frame to read');
+  frame = new Uint8Array(context.getImageData(0, 0, canvas.width, canvas.height).data.buffer);
+}
+
 function booted(): { context: WebGL2RenderingContext; map: WorldMap } {
   if (!gl || !world) throw new Error('boot the map harness and give it a world first');
   return { context: gl, map: world };
 }
 
-function compare(context: WebGL2RenderingContext, map: WorldMap, camera: MapCamera, view: MapView, flat: boolean): string[] {
+// What WebGL2 draws: the base pass, then the icons.
+function glWant(map: WorldMap, view: MapView, flat: boolean): (ax: number, ay: number) => number {
   const overlay = buildOverlay(map, view);
   const sprites = page ? iconSprites(map, page, view) : new Int16Array(0);
   const drawnFlat = flat || !page;
+  return (ax, ay) => over(sprites, drawnFlat, ax, ay, under(map, overlay, view, drawnFlat, ax, ay));
+}
+
+// The settlements of iconSprites' list, in its order, which is row order.
+function townSprites(sprites: Int16Array): Int16Array {
+  const kept: number[] = [];
+  for (let at = 0; at < sprites.length; at += SPRITE_SHORTS) {
+    if ((namesAt.get(sprites[at + 2]) ?? '').startsWith('map/settlement_')) kept.push(...sprites.subarray(at, at + SPRITE_SHORTS));
+  }
+  return Int16Array.from(kept);
+}
+
+// What the Canvas2D fallback draws: flat fills, then the settlement icons.
+function canvasWant(map: WorldMap, view: MapView): (ax: number, ay: number) => number {
+  const tilePx = view === 'region' ? 16 : 8;
+  const sprites = page ? townSprites(iconSprites(map, page, view)) : new Int16Array(0);
+  return (ax, ay) => {
+    const inside = ax >= 0 && ay >= 0 && ax < map.width * tilePx && ay < map.height * tilePx;
+    const fill = inside ? flatColour(map, Math.floor(ay / tilePx) * map.width + Math.floor(ax / tilePx)) : LINE_COLOURS.water;
+    return over(sprites, false, ax, ay, fill);
+  };
+}
+
+function mismatches(width: number, camera: MapCamera, view: MapView, want: (ax: number, ay: number) => number): string[] {
   const scale = camera.cellPx / (view === 'region' ? 16 : 8);
   const camX = Math.round(camera.x * camera.cellPx);
   const camY = Math.round(camera.y * camera.cellPx);
-  const width = context.drawingBufferWidth;
   const wrong: string[] = [];
   for (let at = 0; at < frame.length && wrong.length < 10; at += 4) {
     const px = (at >> 2) % width;
     const py = Math.floor((at >> 2) / width);
-    const ax = Math.floor((px + camX) / scale);
-    const ay = Math.floor((py + camY) / scale);
-    const want = over(sprites, drawnFlat, ax, ay, under(map, overlay, view, drawnFlat, ax, ay));
+    const shown = want(Math.floor((px + camX) / scale), Math.floor((py + camY) / scale));
     const got = (frame[at] << 16) | (frame[at + 1] << 8) | frame[at + 2];
-    if (got !== want) wrong.push(`${px},${py}: got ${hex(got)}, want ${hex(want)}`);
+    if (got !== shown) wrong.push(`${px},${py}: got ${hex(got)}, want ${hex(shown)}`);
   }
   return wrong;
+}
+
+function rendered(): { drawn: MapRenderer; map: WorldMap } {
+  if (!renderer || !world) throw new Error('boot the renderer and give it a world first');
+  return { drawn: renderer, map: world };
+}
+
+function readRenderer(drawn: MapRenderer): void {
+  const context = drawn.backend === 'webgl2' ? drawn.canvas.getContext('webgl2') : null;
+  if (context) readBack(context);
+  else read2d(drawn.canvas);
+}
+
+function webglOf(canvas: HTMLCanvasElement | undefined): WebGL2RenderingContext | null {
+  return canvas?.getContext('webgl2') ?? null;
 }
 
 window.mapHarness = {
@@ -278,6 +334,7 @@ window.mapHarness = {
     world = worldOf(spec);
     base?.setWorld(world);
     icons?.setWorld(world);
+    renderer?.setWorld(world);
   },
   async atlas() {
     solid = tileNames();
@@ -295,13 +352,56 @@ window.mapHarness = {
     page = { image: await createImageBitmap(canvas), frames };
     base?.setAtlas(page);
     icons?.setAtlas(page);
+    renderer?.setAtlas(page);
   },
   check(camera, view, flat) {
     const { context, map } = booted();
     base?.draw(camera, view, flat);
     icons?.draw(camera, view, flat);
     readBack(context);
-    return compare(context, map, camera, view, flat);
+    return mismatches(context.drawingBufferWidth, camera, view, glWant(map, view, flat));
+  },
+  bootRenderer(width, height, options) {
+    renderer?.dispose();
+    gl = null;
+    base = null;
+    icons = null;
+    page = null;
+    bootCanvas = document.createElement('canvas');
+    document.body.replaceChildren(bootCanvas);
+    renderer = createMapRenderer(bootCanvas, options);
+    const backend = renderer.init();
+    renderer.resize(width, height, devicePixelRatio);
+    return backend;
+  },
+  render(camera, flat) {
+    const { drawn, map } = rendered();
+    drawn.setFlat(flat);
+    drawn.draw(camera);
+    readRenderer(drawn);
+    const want = drawn.backend === 'webgl2' ? glWant(map, drawn.view, flat) : canvasWant(map, drawn.view);
+    const wrong = mismatches(drawn.canvas.width, camera, drawn.view, want);
+    return { backend: drawn.backend, view: drawn.view, swapped: drawn.canvas !== bootCanvas, wrong };
+  },
+  // Chromium and WebKit mark a context restorable only after the lost event's listeners return, so wait a task.
+  async loseContext() {
+    const canvas = renderer?.canvas;
+    const lose = webglOf(canvas)?.getExtension('WEBGL_lose_context');
+    if (!canvas || !lose) return false;
+    const lost = new Promise((resolve) => {
+      canvas.addEventListener('webglcontextlost', () => setTimeout(resolve, 0), { once: true });
+    });
+    lose.loseContext();
+    await lost;
+    return true;
+  },
+  async restoreContext() {
+    const canvas = renderer?.canvas;
+    const lose = webglOf(canvas)?.getExtension('WEBGL_lose_context');
+    if (!canvas || !lose) return;
+    const restored = new Promise((resolve) => canvas.addEventListener('webglcontextrestored', resolve, { once: true }));
+    lose.restoreContext();
+    await restored;
   },
   pixel(x, y) {
     const width = gl?.drawingBufferWidth ?? 0;
