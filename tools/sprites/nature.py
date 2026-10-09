@@ -884,6 +884,84 @@ CART_LOADS = {
 }
 
 
+# Props for bigger towns. The notice board's sheets carry pictograms only, never words.
+NOTICE_BOARD = [
+    '..rrrrrrrrrrrr..',
+    '.rRRRRRRRRRRRRr.',
+    'rrrrrrrrrrrrrrrr',
+    '.dddddddddddddd.',
+    '.dLLLLLLLLLLLLd.',
+    '.dLCCCLLLLWWWLd.',
+    '.dLCaCLLLLWgWLd.',
+    '.dLCCCLCCCWWWLd.',
+    '.dLLLLLCxCLLLLd.',
+    '.dLLLLLCCCLLLLd.',
+    '.dLLLLLLLLLLLLd.',
+    '.dddddddddddddd.',
+    '..Lw........Lw..',
+    '..Lw........Lw..',
+    '..Lw........Lw..',
+    '..Lw........Lw..',
+    '..dd........dd..',
+]
+
+PLANTER = [
+    '....gG..Gg....',
+    '..PgGgk.gGgP..',
+    '.kgGPggkgPgGk.',
+    '.kggggkggggkk.',
+    'HHHHHHHHHHHHHh',
+    'Hhhhhhhhhhhhhx',
+    'Hhhxhhhhhxhhhx',
+    'Hhhhhhhhhhhhhx',
+    '.xxxxxxxxxxxx.',
+]
+
+TROUGH = [
+    'LLLLLLLLLLLLLLLw',
+    'LaAAaaaaaaaAaaad',
+    'LaaaaaAaaaaaaaad',
+    'wwwwwwwwwwwwwwwd',
+    'Lwwwwwdwwwwwwwwd',
+    'Lwwwwwdwwwwwwwwd',
+    'dddddddddddddddd',
+    '.Ld..........Ld.',
+]
+
+PUMP = [
+    '....HHh.....',
+    '...Hhhhx....',
+    'Lw.hhhhx....',
+    '.Lwhhhhxhhx.',
+    '..Lhhhhxxxx.',
+    '...hhhhx..x.',
+    '...hhhhx....',
+    '...hhhhx....',
+    '...hhhhx....',
+    '..HHHHHHh...',
+    '.Hhhhhhhhhx.',
+    '.xxxxxxxxxx.',
+]
+
+SACK = [
+    '..ss..',
+    '.sSSs.',
+    'SCCCCs',
+    'SCWCCs',
+    'SCCCSs',
+    '.ssss.',
+]
+SACK_PILE = ((3, 0), (0, 5), (6, 5))                       # back to front
+
+WOOD_END = [
+    '.ww.',
+    'wSLw',
+    'wLSd',
+    '.dd.',
+]
+WOOD_PILE = ((5, 0), (3, 4), (8, 4), (0, 8), (5, 8), (10, 8))
+
+
 # --------------------------------------------------------------------------- assembly
 
 def fence_piece(left=False, right=False, up=False):
@@ -896,6 +974,15 @@ def fence_piece(left=False, right=False, up=False):
     if up:
         out.alpha_composite(add_outline(grid(FENCE_RAIL_UP, (TILE, TILE))))
     out.alpha_composite(add_outline(grid(FENCE_POST, (TILE, TILE))))
+    return out
+
+
+def pile(part, places, size):
+    """Outlined copies of one part, stacked back to front, each keeping its own outline."""
+    out = grid(['.' * size[0]] * size[1])
+    piece = add_outline(pad(grid(part)))
+    for at in places:
+        out.alpha_composite(piece, at)
     return out
 
 
@@ -961,6 +1048,12 @@ def build():
     sheet.add('prop_signpost', outlined(SIGNPOST))
     sheet.add('prop_flower-patch', outlined(FLOWER_PATCH))
     sheet.add('prop_bush', outlined(BUSH))
+    sheet.add('prop_notice-board', outlined(NOTICE_BOARD))
+    sheet.add('prop_planter', outlined(PLANTER))
+    sheet.add('prop_trough', outlined(TROUGH))
+    sheet.add('prop_pump', outlined(PUMP))
+    sheet.add('prop_sacks', pile(SACK, SACK_PILE, (14, 13)))
+    sheet.add('prop_woodpile', pile(WOOD_END, WOOD_PILE, (16, 14)))
 
     # joins lists the sides a piece's rails reach; downward joins are drawn by the piece below
     sheet.add('prop_fence_post', fence_piece(), joins='')
