@@ -34,10 +34,8 @@ export default defineConfig({
     },
     {
       // The app's specs set baseURL to WEB. Reused outside CI as the harness is, so concurrent runs share one preview;
-      // a preview started by hand serves whatever it last built. The map's atlas page goes in after the build, which
-      // empties dist/, so the map's frame timing draws its tiles.
-      command:
-        'pnpm --filter @nomos/web build && python tools/atlas/build_atlas.py --out apps/web/dist/atlas && pnpm --filter @nomos/web preview',
+      // a preview started by hand serves whatever it last built.
+      command: 'pnpm --filter @nomos/web build && pnpm --filter @nomos/web preview',
       url: WEB,
       reuseExistingServer: !process.env.CI,
     },
