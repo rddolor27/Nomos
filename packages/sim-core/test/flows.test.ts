@@ -73,7 +73,7 @@ describe('plan, then apply', () => {
     }
     expect(visitedBackward).not.toEqual(visitedForward);
 
-    const ledger = createLedger(arena, SETTLEMENTS);
+    const ledger = createLedger(arena, SETTLEMENTS, 0);
     for (let account = 1; account < ledger.accounts; account++) issue(ledger, account, startingBalance(account));
     const plan = createFlowPlan(arena, 2 * ledger.accounts);
     for (let day = 0; day < DAYS; day++) {

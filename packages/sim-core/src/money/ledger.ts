@@ -14,16 +14,22 @@ export const POLICE_BUDGET = 3;
 
 export interface Ledger {
   readonly accounts: number;
+  readonly firstWallet: number;
   readonly balance: Float64Array;
 }
 
-export function createLedger(arena: Arena, settlements: number): Ledger {
-  const accounts = NATIONAL_ACCOUNTS + settlements * SECTORS;
-  return { accounts, balance: take(arena, Float64Array, accounts, true) };
+export function createLedger(arena: Arena, settlements: number, wallets: number): Ledger {
+  const firstWallet = NATIONAL_ACCOUNTS + settlements * SECTORS;
+  const accounts = firstWallet + wallets;
+  return { accounts, firstWallet, balance: take(arena, Float64Array, accounts, true) };
 }
 
 export function sectorAccount(settlement: number, sector: number): number {
   return NATIONAL_ACCOUNTS + settlement * SECTORS + sector;
+}
+
+export function walletAccount(ledger: Ledger, slot: number): number {
+  return ledger.firstWallet + slot;
 }
 
 // No checks: a bad account, fractional cents or a lost cent all surface in checkCash.

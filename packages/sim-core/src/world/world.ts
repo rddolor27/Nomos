@@ -3,7 +3,7 @@ import { createClaims, type Claims } from '../money/claims.ts';
 import { below, draw2 } from '../random/draw.ts';
 import { openCells, pointInTileQ8, standInGround, type Ground } from './ground.ts';
 import { createInputLog, type InputLog } from './inputs.ts';
-import { HOUSEHOLDS, createLedger, issue, sectorAccount, type Ledger } from '../money/ledger.ts';
+import { createLedger, issue, walletAccount, type Ledger } from '../money/ledger.ts';
 import { reserveArena, take, type Arena } from '../memory/arena.ts';
 import { MAX_CULTURES, addAgent, createAgentStore, type AgentStore } from '../agents/store.ts';
 import { SPAWN, STRIDE } from '../random/streams.ts';
@@ -28,7 +28,7 @@ export const RECORD_FIELDS = 3;
 const SETTLEMENTS = 8;
 const CULTURES = 4;
 const LOAN_CAPACITY = 4_096;
-const STARTING_CENTS = 100_000;
+export const OPENING_CENTS = 100_000;
 const NO_FOCUS = -1;
 // Three in four blobs spawn walking, the share that walking settles at (wander.ts), so the first seconds look like
 // the rest.
@@ -74,7 +74,7 @@ export function layoutWorld(
   const arena = reserveArena(memoryBytes);
   const globals = take(arena, Int32Array, GLOBAL_SLOTS, true);
   const store = createAgentStore(arena, agents);
-  const cash = createLedger(arena, SETTLEMENTS);
+  const cash = createLedger(arena, SETTLEMENTS, agents);
   const claims = createClaims(arena, cash, LOAN_CAPACITY);
   const record = take(arena, Int32Array, 2 * RECORD_FIELDS, true);
   const stride = createStride(arena, agents, STRIDE_DAYS, STRIDE);
@@ -110,6 +110,7 @@ export function populate(world: World): void {
   for (let c = 0; c < CULTURES; c++) world.cultureUid[c] = c + 1;
   for (let id = 0; id < people; id++) {
     const slot = addAgent(agents, seed, id, CULTURES, 0);
+    issue(world.cash, walletAccount(world.cash, slot), OPENING_CENTS);
     const cell = open[below(open.length, seed, SPAWN, id, 0)];
     const spot = draw2(seed, SPAWN, id, 1);
     agents.x[slot] = pointInTileQ8(cell % width, spot);
@@ -120,7 +121,6 @@ export function populate(world: World): void {
       setHeading(agents, slot, start >>> 24);
     }
   }
-  issue(world.cash, sectorAccount(0, HOUSEHOLDS), STARTING_CENTS * people);
   // Nothing is committed before the first day's last slice.
   world.record[frontRecord(world) + RECORD_DAY] = -1;
 }

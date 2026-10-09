@@ -12,7 +12,7 @@ function exactSum(values: Float64Array): bigint {
 describe('the claims ledger', () => {
   it('books a loan on both sides and services it', () => {
     const arena = reserveArena(65_536);
-    const cash = createLedger(arena, 1);
+    const cash = createLedger(arena, 1, 0);
     const claims = createClaims(arena, cash, 4);
     issue(cash, 16, 1_000_000);
 
@@ -37,7 +37,7 @@ describe('the claims ledger', () => {
 
   it('holds the claims and cash identities exactly every day', () => {
     const arena = reserveArena(131_072);
-    const cash = createLedger(arena, 10);
+    const cash = createLedger(arena, 10, 0);
     const claims = createClaims(arena, cash, 2_000);
     const sectorAccounts = cash.accounts - NATIONAL_ACCOUNTS;
 
@@ -74,7 +74,7 @@ describe('the claims ledger', () => {
 
   it('fails on NaN and on totals beyond exact cents', () => {
     const arena = reserveArena(65_536);
-    const cash = createLedger(arena, 1);
+    const cash = createLedger(arena, 1, 0);
     const claims = createClaims(arena, cash, 2);
     openLoan(claims, cash, 16, 17, 100, 0, 10);
 
@@ -90,7 +90,7 @@ describe('the claims ledger', () => {
 
   it('refuses full structures', () => {
     const arena = reserveArena(65_536);
-    const cash = createLedger(arena, 1);
+    const cash = createLedger(arena, 1, 0);
     const claims = createClaims(arena, cash, 2);
     openLoan(claims, cash, 16, 17, 100, 0, 10);
     openLoan(claims, cash, 17, 16, 50, 0, 10);
@@ -104,7 +104,7 @@ describe('the claims ledger', () => {
 
   it('lists every column, the count included, as canonical', () => {
     const arena = reserveArena(65_536);
-    const claims = createClaims(arena, createLedger(arena, 2), 10);
+    const claims = createClaims(arena, createLedger(arena, 2, 0), 10);
     const canonicalOffsets = arena.canonical.filter((_, i) => i % 2 === 0);
     for (const [name, column] of Object.entries(claims)) {
       if (ArrayBuffer.isView(column)) expect(canonicalOffsets, name).toContain(column.byteOffset);

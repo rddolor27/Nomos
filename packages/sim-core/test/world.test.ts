@@ -3,13 +3,22 @@ import { describe, expect, it } from 'vitest';
 import { ACTION_IDLE, ACTION_WALK, FACING_RIGHT, FACING_UP } from '../src/agents/actions.ts';
 import { draw2 } from '../src/random/draw.ts';
 import { CASH_NOT_ZERO, OK, checkInvariants } from '../src/money/invariants.ts';
-import { HOUSEHOLDS, MINT, sectorAccount } from '../src/money/ledger.ts';
+import { HOUSEHOLDS, MINT, sectorAccount, walletAccount } from '../src/money/ledger.ts';
 import { SYSTEM_NAMES, step, type SystemTimer } from '../src/step/step.ts';
 import { SPAWN } from '../src/random/streams.ts';
+import { TICKS_PER_DAY } from '../src/time/calendar.ts';
 import { TIER_AGENTS, TIER_MEMORY_BYTES, type Tier } from '../src/memory/tiers.ts';
 import { WALK_X_Q8, WALK_Y_Q8, facingFor } from '../src/movement/walk.ts';
 import { checkpoint, restoreWorld, stateHash } from '../src/world/checkpoint.ts';
-import { TICK, createWorld, currentTick, layoutWorld, populate, type World } from '../src/world/world.ts';
+import {
+  OPENING_CENTS,
+  TICK,
+  createWorld,
+  currentTick,
+  layoutWorld,
+  populate,
+  type World,
+} from '../src/world/world.ts';
 import type { Goldens } from './engines/checks.ts';
 import { run } from './run.ts';
 
@@ -45,6 +54,14 @@ function agentsMovingWrongly(world: World): number[] {
 function walkingShare(world: World): number {
   const { count, action } = world.agents;
   return action.subarray(0, count[0]).filter((a) => a === ACTION_WALK).length / count[0];
+}
+
+function walletsOffOpening(world: World): number[] {
+  const slots: number[] = [];
+  for (let i = 0; i < world.agents.count[0]; i++) {
+    if (world.cash.balance[walletAccount(world.cash, i)] !== OPENING_CENTS) slots.push(i);
+  }
+  return slots;
 }
 
 describe('the world step', () => {
@@ -156,20 +173,26 @@ describe('the world step', () => {
     expect(stateHash(world)).toBe(hash);
   });
 
-  it('fits every tier and issues the starting money through MINT', () => {
-    const households = sectorAccount(0, HOUSEHOLDS);
+  it('fits every tier and opens every wallet from MINT', () => {
+    expect(OPENING_CENTS).toBe(100_000);
     for (const tier of TIERS) {
       const world = createWorld(42, tier);
       const agents = TIER_AGENTS[tier];
       const balance = world.cash.balance;
       expect(world.agents.count[0], tier).toBe(agents);
       expect(world.arena.top, tier).toBeLessThanOrEqual(TIER_MEMORY_BYTES[tier]);
-      expect(balance[MINT], tier).toBe(-100_000 * agents);
-      expect(balance[households], tier).toBe(100_000 * agents);
-      expect(balance.filter((cents) => cents !== 0), tier).toHaveLength(2);
+      expect(balance[MINT], tier).toBe(-OPENING_CENTS * agents);
+      expect(walletsOffOpening(world), tier).toEqual([]);
+      expect(balance[sectorAccount(0, HOUSEHOLDS)], tier).toBe(0);
+      expect(balance.filter((cents) => cents !== 0), tier).toHaveLength(agents + 1);
       expect(checkInvariants(world.cash, world.claims), tier).toBe(OK);
     }
     expect(() => layoutWorld(42, 'phone', 10_000, 65_536)).toThrow(RangeError);
+  });
+
+  it('leaves every wallet as it opened after two days', () => {
+    const world = run(createWorld(42, 'phone'), 2 * TICKS_PER_DAY);
+    expect(walletsOffOpening(world)).toEqual([]);
   });
 
   it('laps the timer once per system per tick', () => {

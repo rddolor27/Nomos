@@ -15,13 +15,14 @@ import {
   retire,
   sectorAccount,
   transfer,
+  walletAccount,
 } from '../src/money/ledger.ts';
 import { reserveArena } from '../src/memory/arena.ts';
 
 const TRILLION = 1_000_000_000_000;
 
 function newLedger(settlements: number) {
-  return createLedger(reserveArena(65_536), settlements);
+  return createLedger(reserveArena(65_536), settlements, 0);
 }
 
 // A keyed amount in 0..10^12 - 1 cents, built from two 32-bit draws.
@@ -30,19 +31,19 @@ function keyedCents(tick: number, op: number): number {
 }
 
 describe('the cash ledger', () => {
-  it('lays out national accounts, then four sectors per settlement', () => {
+  it('lays out national accounts, then four sectors per settlement, then one wallet per slot', () => {
     expect([MINT, TREASURY, ROUNDING, NATIONAL_ACCOUNTS]).toEqual([0, 1, 2, 16]);
     expect([HOUSEHOLDS, FIRMS, LOCAL_GOVERNMENT, POLICE_BUDGET]).toEqual([0, 1, 2, 3]);
-    const cash = newLedger(3);
-    expect(cash.accounts).toBe(28);
-    expect(cash.balance).toHaveLength(28);
+    const cash = createLedger(reserveArena(65_536), 3, 5);
+    expect([cash.accounts, cash.firstWallet, walletAccount(cash, 0), walletAccount(cash, 4)]).toEqual([33, 28, 28, 32]);
+    expect(cash.balance).toHaveLength(33);
     expect(sectorAccount(0, HOUSEHOLDS)).toBe(16);
     expect(sectorAccount(2, POLICE_BUDGET)).toBe(27);
   });
 
   it('lists the balances as canonical', () => {
     const arena = reserveArena(65_536);
-    const cash = createLedger(arena, 3);
+    const cash = createLedger(arena, 3, 0);
     expect(arena.canonical).toEqual([cash.balance.byteOffset, cash.balance.byteLength]);
   });
 

@@ -19,7 +19,7 @@ function groupValue(reg: Registry, group: number): number {
 describe('the registry', () => {
   it('logs revaluations without moving a cent or MINT', () => {
     const arena = reserveArena(131_072);
-    const cash = createLedger(arena, 10);
+    const cash = createLedger(arena, 10, 0);
     const reg = createRegistry(arena, 300, GROUPS);
     for (let account = NATIONAL_ACCOUNTS; account < cash.accounts; account++) issue(cash, account, 1_000_000 + account);
 
