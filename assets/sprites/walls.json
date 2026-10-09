@@ -2,10 +2,227 @@
   "image": "walls.png",
   "size": [
     256,
-    81
+    120
   ],
   "tile": 16,
   "frames": {
+    "palisade_corner_left": {
+      "x": 67,
+      "y": 65,
+      "w": 16,
+      "h": 30,
+      "anchor": [
+        8,
+        29
+      ],
+      "snow": "palisade_corner_left_snow",
+      "footprint": [
+        1,
+        1
+      ],
+      "joins": "ur"
+    },
+    "palisade_corner_left_snow": {
+      "x": 84,
+      "y": 65,
+      "w": 16,
+      "h": 30,
+      "anchor": [
+        8,
+        29
+      ],
+      "layer": "snow",
+      "footprint": [
+        1,
+        1
+      ]
+    },
+    "palisade_corner_right": {
+      "x": 101,
+      "y": 65,
+      "w": 16,
+      "h": 30,
+      "anchor": [
+        8,
+        29
+      ],
+      "snow": "palisade_corner_right_snow",
+      "footprint": [
+        1,
+        1
+      ],
+      "joins": "ul"
+    },
+    "palisade_corner_right_snow": {
+      "x": 118,
+      "y": 65,
+      "w": 16,
+      "h": 30,
+      "anchor": [
+        8,
+        29
+      ],
+      "layer": "snow",
+      "footprint": [
+        1,
+        1
+      ]
+    },
+    "palisade_gate_front": {
+      "x": 200,
+      "y": 0,
+      "w": 32,
+      "h": 38,
+      "anchor": [
+        16,
+        37
+      ],
+      "snow": "palisade_gate_front_snow",
+      "footprint": [
+        2,
+        1
+      ],
+      "joins": "lr"
+    },
+    "palisade_gate_front_snow": {
+      "x": 0,
+      "y": 65,
+      "w": 32,
+      "h": 38,
+      "anchor": [
+        16,
+        37
+      ],
+      "layer": "snow",
+      "footprint": [
+        2,
+        1
+      ]
+    },
+    "palisade_gate_side-north": {
+      "x": 33,
+      "y": 65,
+      "w": 16,
+      "h": 38,
+      "anchor": [
+        8,
+        37
+      ],
+      "snow": "palisade_gate_side-north_snow",
+      "footprint": [
+        1,
+        1
+      ],
+      "joins": "u"
+    },
+    "palisade_gate_side-north_snow": {
+      "x": 50,
+      "y": 65,
+      "w": 16,
+      "h": 38,
+      "anchor": [
+        8,
+        37
+      ],
+      "layer": "snow",
+      "footprint": [
+        1,
+        1
+      ]
+    },
+    "palisade_gate_side-south": {
+      "x": 169,
+      "y": 65,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "snow": "palisade_gate_side-south_snow",
+      "footprint": [
+        1,
+        1
+      ],
+      "joins": ""
+    },
+    "palisade_gate_side-south_snow": {
+      "x": 186,
+      "y": 65,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "layer": "snow",
+      "footprint": [
+        1,
+        1
+      ]
+    },
+    "palisade_horizontal": {
+      "x": 135,
+      "y": 65,
+      "w": 16,
+      "h": 26,
+      "anchor": [
+        8,
+        25
+      ],
+      "snow": "palisade_horizontal_snow",
+      "footprint": [
+        1,
+        1
+      ],
+      "joins": "lr"
+    },
+    "palisade_horizontal_snow": {
+      "x": 152,
+      "y": 65,
+      "w": 16,
+      "h": 26,
+      "anchor": [
+        8,
+        25
+      ],
+      "layer": "snow",
+      "footprint": [
+        1,
+        1
+      ]
+    },
+    "palisade_vertical": {
+      "x": 203,
+      "y": 65,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "snow": "palisade_vertical_snow",
+      "footprint": [
+        1,
+        1
+      ],
+      "joins": "u"
+    },
+    "palisade_vertical_snow": {
+      "x": 220,
+      "y": 65,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ],
+      "layer": "snow",
+      "footprint": [
+        1,
+        1
+      ]
+    },
     "wall_gate_front": {
       "x": 66,
       "y": 0,
@@ -69,8 +286,8 @@
       ]
     },
     "wall_gate_side-south": {
-      "x": 200,
-      "y": 0,
+      "x": 237,
+      "y": 65,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -85,8 +302,8 @@
       "joins": ""
     },
     "wall_gate_side-south_snow": {
-      "x": 217,
-      "y": 0,
+      "x": 0,
+      "y": 104,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -161,8 +378,8 @@
       ]
     },
     "wall_vertical": {
-      "x": 234,
-      "y": 0,
+      "x": 17,
+      "y": 104,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -177,8 +394,8 @@
       "joins": "u"
     },
     "wall_vertical_snow": {
-      "x": 0,
-      "y": 65,
+      "x": 34,
+      "y": 104,
       "w": 16,
       "h": 16,
       "anchor": [

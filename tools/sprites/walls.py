@@ -1,5 +1,5 @@
 """Town walls: grey stone runs, square corner towers and gates for the walled capitals and cities
-of M3.1 part 2. They are drawn look-only: no sim rule reads them.
+of M3.1 part 2, and a log palisade for towns. They are drawn look-only: no sim rule reads them.
 
 GBA-era top-down pixel art in three-quarter view, lit from the top left, in the fort's coursed
 stone (military.py) and finished with the shared 1-px OUTLINE ring. Tops are drawn at full depth
@@ -230,7 +230,141 @@ class GatePier(WallPiece):
             c.hline(3, c.w - 4, y, 'x')
 
 
-PIECES = (Wall('horizontal'), Wall('vertical'), Tower(), Gate(), GatePier('north'), GatePier('south'))
+# ------------------------------------------------------------------ the palisade
+# Towns get a wall of sharpened logs (owner, 10 October 2026), laid out like the stone wall: a
+# horizontal run shows its face and a vertical run is drawn flat, as two staggered lines of points
+# seen from above. A thick post closes a run's end, the front gate is a 2-tile timber gateway in a
+# horizontal run, and a side gate is a 2-tile gap in a vertical run between a tall gatepost and
+# an end post; its door folds flat against the run, edge-on to the view.
+
+PALISADE_RISE = 10      # logs stand 24 px, lower than the stone wall
+POST_RISE = 14          # corner posts stand 4 px over the logs
+GATE_RISE = 22          # gateposts stand 36 px, giving the gateway 25 px of headroom
+DROP = (0, 1, 0, 2)     # how far each 4-px log's point sits under the tallest, repeating every tile
+LINE = 4                # left column of a vertical run's points; posts stand on the same 8 px
+
+
+def log(c, x, top, ground, width=4):
+    """An upright log sharpened to a point, lit on its left; under snowfall its point is capped."""
+    for y in range(top, ground + 1):
+        k = y - top
+        inset = max(0, (width - 2 - 2 * k) // 2)
+        x0, x1 = x + inset, x + width - 1 - inset
+        if snowing() and k < 2:
+            c.hline(x0, x1, y, 'W')
+            c.put(x1, y, 'I' if k else 'W')
+            continue
+        c.put(x0, y, 'L')
+        c.hline(x0 + 1, x1 - 1, y, 'w')
+        c.put(x1, y, 'd')
+
+
+def logs(c, x0, x1, top, ground):
+    for x in range(x0, x1, 4):
+        log(c, x, top + DROP[x // 4 % 4], ground)
+
+
+def beam(c, x0, x1, y):
+    """A binding beam across the logs, lit on top, with its shadow on the logs under it."""
+    c.hline(x0, x1, y, 'W' if snowing() else 'L')
+    c.hline(x0, x1, y + 1, 'w')
+    c.hline(x0, x1, y + 2, 'd')
+
+
+def points(c, y0, y1):
+    """A vertical run seen from above: each log's point shows over the one in front of it. The
+    second line is staggered 2 px and starts above y0, so its points join the tile above."""
+    for y in range(y0, y1, 4):
+        log(c, LINE, y, y + 3)
+    for y in range(y0 - 2, y1, 4):
+        log(c, LINE + 4, y, y + 3)
+
+
+def post(c, top, ground):
+    log(c, LINE, top, ground, width=8)
+
+
+def gatepost(c, x, width, ground):
+    """A post as tall as the gateway, lashed in two places."""
+    log(c, x, ground - 35, ground, width)
+    for y in (ground - 22, ground - 9):
+        c.hline(x + 1, x + width - 2, y, 'd')
+
+
+class Palisade(WallPiece):
+    """One tile of a run: across the view with its face, or down it, flat."""
+
+    def __init__(self, axis):
+        across = axis == 'horizontal'
+        super().__init__(f'palisade_{axis}', (1, 1), PALISADE_RISE if across else 0, 'lr' if across else 'u')
+        self.axis = axis
+
+    def draw(self, c):
+        if self.axis != 'horizontal':
+            points(c, 0, TILE)
+            return
+        ground = c.h - 2
+        logs(c, 0, TILE, ground - 23, ground)
+        beam(c, 0, TILE - 1, ground - 15)
+
+
+class PalisadeCorner(WallPiece):
+    """A thick post on a vertical run's line, closing the end of a horizontal run beside it."""
+
+    def __init__(self, side):
+        super().__init__(f'palisade_corner_{side}', (1, 1), POST_RISE, 'ur' if side == 'left' else 'ul')
+        self.side = side
+
+    def draw(self, c):
+        ground = c.h - 2
+        x0, x1 = (8, TILE) if self.side == 'left' else (0, 8)
+        logs(c, x0, x1, ground - 23, ground)
+        beam(c, x0, x1 - 1, ground - 15)
+        post(c, ground - 27, ground)
+
+
+class PalisadeGate(WallPiece):
+    """The front gate: gateposts and a lintel carrying a row of points, its leaves folded back."""
+
+    def __init__(self):
+        super().__init__('palisade_gate_front', (2, 1), GATE_RISE, 'lr')
+
+    def draw(self, c):
+        ground, right = c.h - 2, c.w - 6
+        lintel = ground - 27
+        logs(c, 6, right, lintel - 6, lintel - 1)
+        beam(c, 0, c.w - 1, lintel)
+        for x in (0, right):
+            gatepost(c, x, 6, ground)
+        for y in range(lintel + 3, ground + 1):                  # the leaves, folded back
+            band = y in (lintel + 7, ground - 5)
+            c.hline(6, 7, y, 'd' if band else 'w')
+            c.hline(right - 2, right - 1, y, 'd' if band else 'w')
+            if not band:
+                c.put(7, y, 'd')
+                c.put(right - 2, y, 'L')
+
+
+class PalisadeGatePost(WallPiece):
+    """One end of a side gate's 2-tile gap: a gatepost as tall as the front gate's at the north end,
+    and at the south end the flat run's last point, a thick end post."""
+
+    def __init__(self, end):
+        north = end == 'north'
+        super().__init__(f'palisade_gate_side-{end}', (1, 1), GATE_RISE if north else 0, 'u' if north else '')
+        self.north = north
+
+    def draw(self, c):
+        if self.north:
+            gatepost(c, LINE, 8, c.h - 2)
+            return
+        points(c, 8, TILE)
+        post(c, 1, 8)
+
+
+PIECES = (Wall('horizontal'), Wall('vertical'), Tower(), Gate(), GatePier('north'), GatePier('south'),
+          Palisade('horizontal'), Palisade('vertical'), PalisadeCorner('left'), PalisadeCorner('right'),
+          PalisadeGate(), PalisadeGatePost('north'), PalisadeGatePost('south'))
 
 
 def build():
