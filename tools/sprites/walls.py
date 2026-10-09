@@ -2,18 +2,18 @@
 of M3.1 part 2. They are drawn look-only: no sim rule reads them.
 
 GBA-era top-down pixel art in three-quarter view, lit from the top left, in the fort's coursed
-stone (military.py) and finished with the shared 1-px OUTLINE ring. Every top is drawn at full
-depth and raised by its height, so the pieces chain on the tile grid: a wall's walkway stands
-24 px up, over the 22-px blob, and the towers, gatehouse and gate piers stand 32 px up. Merlons
-repeat every 8 px, so a run of any length tiles.
+stone (military.py) and finished with the shared 1-px OUTLINE ring. Tops are drawn at full depth
+and raised by their height: a horizontal run's walkway stands 24 px up, over the 22-px blob, and
+the towers, gatehouse and side-gate pier stand 32 px up. Merlons repeat every 8 px, so a run of
+any length tiles.
 
-- A horizontal run tiles side by side (`joins` lr). In a vertical run each walkway covers the
-  face of the piece above it (`joins` u, as the fences do).
+- A horizontal run tiles side by side (`joins` lr) and shows its face. A vertical run is drawn
+  flat, its walkway over its own tiles (`joins` u, as the fences do): a raised top would hide a
+  side gate's road, as it hides whatever lies behind it.
 - Corner towers are 2x2 tiles, flush with the outside of both runs.
 - The front gate is a 2-tile gatehouse in a horizontal run: a stone arch with its doors open
-  against the passage. A side gate is a 2-tile gap in a vertical run between two piers, with the
-  open door on the north pier's face, because an arch over a sideways passage would hide the
-  road in this view.
+  against the passage. A side gate is a 2-tile gap in a vertical run: a tall pier at its north
+  end carries the open door on its face, and a flat end cap closes the walkway at its south end.
 - No flags, banners or heraldry (content rule 6).
 
 Build: python tools/sprites/walls.py
@@ -82,6 +82,14 @@ def deck(c, x0, y0, x1, y1):
         c.tile(x0, y0, x1, y1, ['KKKKKKKk'] * 3 + ['k' * 8], stagger=4)
 
 
+def walkway_down(c):
+    """A vertical run's walkway seen from above, over its own tile, with cols 0 and 15 left for the outline."""
+    side_parapet(c, 1, 0, TILE - 1, west=True)
+    deck(c, 3, 0, 12, TILE - 1)
+    c.vline(3, 0, TILE - 1, tops()[2])
+    side_parapet(c, 13, 0, TILE - 1, west=False)
+
+
 def face(c, x0, y0, x1, y1, edges=True):
     c.tile(x0, y0, x1, y1, COURSE, stagger=4)
     if edges:
@@ -122,26 +130,22 @@ class WallPiece(ABC):
 
 
 class Wall(WallPiece):
-    """One tile of a run, across the view or down it."""
+    """One tile of a run: across the view with its face, or down it, flat."""
 
     def __init__(self, axis):
-        super().__init__(f'wall_{axis}', (1, 1), WALL_RISE, 'lr' if axis == 'horizontal' else 'u')
+        across = axis == 'horizontal'
+        super().__init__(f'wall_{axis}', (1, 1), WALL_RISE if across else 0, 'lr' if across else 'u')
         self.axis = axis
 
     def draw(self, c):
-        shade = tops()[2]
-        if self.axis == 'horizontal':
-            parapet(c, 0, 1, TILE, run_merlon, far=True)
-            deck(c, 0, 4, TILE - 1, 12)
-            c.hline(0, TILE - 1, 4, shade)
-            parapet(c, 0, 13, TILE, run_merlon, far=False)
-            face(c, 0, TILE, TILE - 1, c.h - 2, edges=False)
+        if self.axis != 'horizontal':
+            walkway_down(c)
             return
-        side_parapet(c, 1, 0, TILE - 1, west=True)
-        deck(c, 3, 0, 12, TILE - 1)
-        c.vline(3, 0, TILE - 1, shade)
-        side_parapet(c, 13, 0, TILE - 1, west=False)
-        face(c, 1, TILE, TILE - 2, c.h - 2)
+        parapet(c, 0, 1, TILE, run_merlon, far=True)
+        deck(c, 0, 4, TILE - 1, 12)
+        c.hline(0, TILE - 1, 4, tops()[2])
+        parapet(c, 0, 13, TILE, run_merlon, far=False)
+        face(c, 0, TILE, TILE - 1, c.h - 2, edges=False)
 
 
 class Tower(WallPiece):
@@ -196,29 +200,34 @@ class Gate(WallPiece):
 
 
 class GatePier(WallPiece):
-    """A pier at one end of a side gate's 2-tile gap. The north pier's face carries the open door,
-    folded back against the passage."""
+    """One end of a side gate's 2-tile gap. The north end is a tall pier whose face carries the open
+    door, folded back against the passage; the south end caps the flat walkway with a parapet."""
 
     def __init__(self, end):
-        super().__init__(f'wall_gate_side-{end}', (1, 1), TALL_RISE, 'u' if end == 'north' else '')
-        self.door = end == 'north'
+        north = end == 'north'
+        super().__init__(f'wall_gate_side-{end}', (1, 1), TALL_RISE if north else 0, 'u' if north else '')
+        self.north = north
 
     def draw(self, c):
+        if not self.north:
+            walkway_down(c)
+            c.rect(1, 0, TILE - 2, 3, '_')
+            parapet(c, 1, 1, TILE - 2, rim(PIER_RIM), far=True)
+            return
         right, near, ground = c.w - 2, c.h - 1 - self.rise, c.h - 2
         parapet(c, 1, 1, right, rim(PIER_RIM), far=True)
         deck(c, 1, 4, right, near - 3)
         c.hline(1, right, 4, tops()[2])
         parapet(c, 1, near - 2, right, rim(PIER_RIM), far=False)
         face(c, 1, near + 1, right, ground)
-        if self.door:
-            top = ground - 17
-            c.rect(2, top, c.w - 3, ground, 'O')
-            c.rect(3, top + 1, c.w - 4, ground, 'w')
-            c.vline(3, top + 1, ground, 'L')
-            for x in (6, 9):
-                c.vline(x, top + 1, ground, 'd')
-            for y in (top + 4, ground - 4):
-                c.hline(3, c.w - 4, y, 'x')
+        top = ground - 17                                        # the open door
+        c.rect(2, top, c.w - 3, ground, 'O')
+        c.rect(3, top + 1, c.w - 4, ground, 'w')
+        c.vline(3, top + 1, ground, 'L')
+        for x in (6, 9):
+            c.vline(x, top + 1, ground, 'd')
+        for y in (top + 4, ground - 4):
+            c.hline(3, c.w - 4, y, 'x')
 
 
 PIECES = (Wall('horizontal'), Wall('vertical'), Tower(), Gate(), GatePier('north'), GatePier('south'))

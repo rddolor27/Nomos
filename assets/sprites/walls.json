@@ -2,7 +2,7 @@
   "image": "walls.png",
   "size": [
     256,
-    105
+    81
   ],
   "tile": 16,
   "frames": {
@@ -69,13 +69,13 @@
       ]
     },
     "wall_gate_side-south": {
-      "x": 166,
+      "x": 200,
       "y": 0,
       "w": 16,
-      "h": 48,
+      "h": 16,
       "anchor": [
         8,
-        47
+        15
       ],
       "snow": "wall_gate_side-south_snow",
       "footprint": [
@@ -85,13 +85,13 @@
       "joins": ""
     },
     "wall_gate_side-south_snow": {
-      "x": 183,
+      "x": 217,
       "y": 0,
       "w": 16,
-      "h": 48,
+      "h": 16,
       "anchor": [
         8,
-        47
+        15
       ],
       "layer": "snow",
       "footprint": [
@@ -100,7 +100,7 @@
       ]
     },
     "wall_horizontal": {
-      "x": 200,
+      "x": 166,
       "y": 0,
       "w": 16,
       "h": 40,
@@ -116,7 +116,7 @@
       "joins": "lr"
     },
     "wall_horizontal_snow": {
-      "x": 217,
+      "x": 183,
       "y": 0,
       "w": 16,
       "h": 40,
@@ -164,10 +164,10 @@
       "x": 234,
       "y": 0,
       "w": 16,
-      "h": 40,
+      "h": 16,
       "anchor": [
         8,
-        39
+        15
       ],
       "snow": "wall_vertical_snow",
       "footprint": [
@@ -180,10 +180,10 @@
       "x": 0,
       "y": 65,
       "w": 16,
-      "h": 40,
+      "h": 16,
       "anchor": [
         8,
-        39
+        15
       ],
       "layer": "snow",
       "footprint": [
