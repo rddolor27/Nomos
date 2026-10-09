@@ -1,7 +1,7 @@
 import { SPOILAGE_RULE, TICKS_PER_DAY, TIER_AGENTS, daySliceCount } from '@nomos/sim-core';
 import { describe, expect, it } from 'vitest';
-import { BUDGET_ROWS } from '../src/budgets.ts';
-import { BENCH_WARM_DAYS, SAMPLE_DAYS, sampleTier } from '../src/sample.ts';
+import { BUDGET_ROWS } from '../src/compute/budgets.ts';
+import { BENCH_WARM_DAYS, SAMPLE_DAYS, sampleTier } from '../src/compute/sample.ts';
 
 // sampleTier reads the clock five times a tick: at its start, at the day and move laps, and around the snapshot.
 const READS_PER_TICK = 5;

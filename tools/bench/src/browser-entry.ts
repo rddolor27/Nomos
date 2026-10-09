@@ -1,5 +1,5 @@
 import type { Tier } from '@nomos/sim-core';
-import { SAMPLE_DAYS, sampleTier } from './sample.ts';
+import { SAMPLE_DAYS, sampleTier } from './compute/sample.ts';
 
 // A module worker, as the sim runs in the app. It reports its own isolation, which sets its clock's resolution.
 self.onmessage = (event: MessageEvent<Tier>) => {

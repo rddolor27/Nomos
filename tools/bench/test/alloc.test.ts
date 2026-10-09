@@ -2,9 +2,9 @@ import { setFlagsFromString } from 'node:v8';
 import { runInNewContext } from 'node:vm';
 import { TICKS_PER_DAY } from '@nomos/sim-core';
 import { describe, expect, it } from 'vitest';
-import { allocationWindow, runTicks } from '../src/allocation.ts';
-import { MAX_HEAP_GROWTH_BYTES_PER_TICK, MAX_YOUNG_BYTES_PER_DAY } from '../src/budgets.ts';
-import { BENCH_WARM_DAYS, createBenchWorld, type BenchWorld } from '../src/sample.ts';
+import { allocationWindow, runTicks } from '../src/compute/allocation.ts';
+import { MAX_HEAP_GROWTH_BYTES_PER_TICK, MAX_YOUNG_BYTES_PER_DAY } from '../src/compute/budgets.ts';
+import { BENCH_WARM_DAYS, createBenchWorld, type BenchWorld } from '../src/compute/sample.ts';
 
 // Vitest runs without --expose-gc, so the tests expose gc themselves. Each window then starts from a full collection,
 // as the CLI's does, so no scavenge left due by earlier work can land in it.

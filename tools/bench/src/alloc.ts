@@ -1,8 +1,8 @@
 import { TICKS_PER_DAY, type Tier } from '@nomos/sim-core';
-import { allocationWindow, runTicks } from './allocation.ts';
-import { MAX_HEAP_GROWTH_BYTES_PER_TICK, MAX_YOUNG_BYTES_PER_DAY, TIERS } from './budgets.ts';
-import { readLoadavg } from './loadavg.ts';
-import { BENCH_WARM_DAYS, createBenchWorld } from './sample.ts';
+import { allocationWindow, runTicks } from './compute/allocation.ts';
+import { MAX_HEAP_GROWTH_BYTES_PER_TICK, MAX_YOUNG_BYTES_PER_DAY, TIERS } from './compute/budgets.ts';
+import { readLoadavg } from './machine/loadavg.ts';
+import { BENCH_WARM_DAYS, createBenchWorld } from './compute/sample.ts';
 
 interface TierAllocation {
   readonly tier: Tier;

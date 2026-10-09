@@ -1,6 +1,6 @@
 import type { Page } from 'playwright';
-import { computeBenchmarkIndex } from './benchmark-index.ts';
-import { readLoadavg } from './loadavg.ts';
+import { computeBenchmarkIndex } from './machine/benchmark-index.ts';
+import { readLoadavg } from './machine/loadavg.ts';
 
 // Lighthouse's mid-tier mobile bracket, where R5 set the startup budgets (load notes §2).
 export const TARGET_BENCHMARK_INDEX = 375;

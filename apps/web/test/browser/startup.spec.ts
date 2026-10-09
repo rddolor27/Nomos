@@ -1,7 +1,7 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { readLoadavg } from '@nomos/bench/src/loadavg.ts';
+import { readLoadavg } from '@nomos/bench/src/machine/loadavg.ts';
 import { expect, test, type Browser } from 'playwright/test';
 import { startServer } from '../serve.ts';
 

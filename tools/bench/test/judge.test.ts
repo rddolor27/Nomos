@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { MIN_SAMPLES, type BudgetRow } from '../src/budgets.ts';
-import { judge } from '../src/judge.ts';
+import { MIN_SAMPLES, type BudgetRow } from '../src/compute/budgets.ts';
+import { judge } from '../src/compute/judge.ts';
 
 const ROW: BudgetRow = { system: 'move', reduce: 'mean', rmMs: { phone: 0.1 } };
 

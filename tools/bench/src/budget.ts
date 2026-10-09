@@ -1,8 +1,8 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
-import { BUDGET_ROWS, TIERS } from './budgets.ts';
-import { formatVerdict, judge } from './judge.ts';
-import { readLoadavg } from './loadavg.ts';
-import { SAMPLE_DAYS, sampleTier } from './sample.ts';
+import { BUDGET_ROWS, TIERS } from './compute/budgets.ts';
+import { formatVerdict, judge } from './compute/judge.ts';
+import { readLoadavg } from './machine/loadavg.ts';
+import { SAMPLE_DAYS, sampleTier } from './compute/sample.ts';
 
 const RESULTS = new URL('../bench-results/', import.meta.url);
 

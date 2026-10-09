@@ -4,10 +4,10 @@ import { fileURLToPath } from 'node:url';
 import type { Tier } from '@nomos/sim-core';
 import { build } from 'esbuild';
 import { expect, test } from 'playwright/test';
-import { BUDGET_ROWS, TIERS } from '../../src/budgets.ts';
-import { formatVerdict, judge, type Verdict } from '../../src/judge.ts';
-import { readLoadavg } from '../../src/loadavg.ts';
-import { serveIsolated } from '../../src/serve-isolated.ts';
+import { BUDGET_ROWS, TIERS } from '../../src/compute/budgets.ts';
+import { formatVerdict, judge, type Verdict } from '../../src/compute/judge.ts';
+import { readLoadavg } from '../../src/machine/loadavg.ts';
+import { serveIsolated } from '../../src/compute/serve-isolated.ts';
 
 const ENTRY = fileURLToPath(new URL('../../src/browser-entry.ts', import.meta.url));
 const PAGE = '<!doctype html><meta charset="utf-8"><title>Nomos budget</title>';
