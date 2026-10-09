@@ -2654,6 +2654,7 @@ with `import { landmarks } from '../../src/features/landmarks.ts';`.
   - `WORLDGEN_VERSION` stays 1;
   - `tools/worldgen/README.md` says that version 1 is frozen, and that any change to the output now takes version 2, with new goldens beside the old.
 - **If the owner wants changes,** the senior adjusts the table's build seed or filter, regenerates, and asks again.
+- **Road classes come first if they can.** M3.1's plan, Part 3, Task 17 (owner, 10 October 2026) adds a `classes` stage to `goldens-v1.json` and changes the world fingerprint. If it hasn't landed when version 1 freezes, road classes take version 2, with `goldens-v2.json` beside v1; ask the owner first.
 - **Commit** `docs(worldgen): freeze world generator version 1`.
 
 ### Task 35: Close M8.1 (senior)

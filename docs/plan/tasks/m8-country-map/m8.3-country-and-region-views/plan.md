@@ -1974,6 +1974,10 @@ Every draw is `draw(map.seed, CROWD, …)`, with first keys from 0x100, clear of
     - the Countries toggle at a Region step.
   - Save them to `dist/qa/map-crowd/`, and report each file.
 
+### Highways, tracks and walled icons (owner, 10 October 2026)
+
+Planned in [M3.1's plan, Part 3](../../m3-city-life/m3.1-town-generator/plan.md), Tasks 17 and 18. Each road gains a class, and major roads draw as solid stone highways over the dotted dirt tracks. Capitals and cities draw walled icons, and towns palisaded ones, in both views.
+
 ### Exit checks, and the tasks that prove them
 
 | Exit check (task.md and brief) | Proved by |
