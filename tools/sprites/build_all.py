@@ -9,7 +9,7 @@ sys.path.insert(0, str(HERE.parent))
 
 from licenses import LICENSES, write_licenses  # noqa: E402
 
-CATEGORIES = ['animals', 'houses', 'buildings', 'nature', 'icons', 'characters', 'map', 'culture', 'landmarks', 'scenery', 'wonders', 'military', 'seasons']
+CATEGORIES = ['animals', 'houses', 'buildings', 'nature', 'icons', 'characters', 'map', 'culture', 'landmarks', 'scenery', 'wonders', 'military', 'walls', 'seasons']
 
 
 def main(names=None):

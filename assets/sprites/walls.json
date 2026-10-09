@@ -1,0 +1,195 @@
+{
+  "image": "walls.png",
+  "size": [
+    256,
+    105
+  ],
+  "tile": 16,
+  "frames": {
+    "wall_gate_front": {
+      "x": 66,
+      "y": 0,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "snow": "wall_gate_front_snow",
+      "footprint": [
+        2,
+        1
+      ],
+      "joins": "lr"
+    },
+    "wall_gate_front_snow": {
+      "x": 99,
+      "y": 0,
+      "w": 32,
+      "h": 48,
+      "anchor": [
+        16,
+        47
+      ],
+      "layer": "snow",
+      "footprint": [
+        2,
+        1
+      ]
+    },
+    "wall_gate_side-north": {
+      "x": 132,
+      "y": 0,
+      "w": 16,
+      "h": 48,
+      "anchor": [
+        8,
+        47
+      ],
+      "snow": "wall_gate_side-north_snow",
+      "footprint": [
+        1,
+        1
+      ],
+      "joins": "u"
+    },
+    "wall_gate_side-north_snow": {
+      "x": 149,
+      "y": 0,
+      "w": 16,
+      "h": 48,
+      "anchor": [
+        8,
+        47
+      ],
+      "layer": "snow",
+      "footprint": [
+        1,
+        1
+      ]
+    },
+    "wall_gate_side-south": {
+      "x": 166,
+      "y": 0,
+      "w": 16,
+      "h": 48,
+      "anchor": [
+        8,
+        47
+      ],
+      "snow": "wall_gate_side-south_snow",
+      "footprint": [
+        1,
+        1
+      ],
+      "joins": ""
+    },
+    "wall_gate_side-south_snow": {
+      "x": 183,
+      "y": 0,
+      "w": 16,
+      "h": 48,
+      "anchor": [
+        8,
+        47
+      ],
+      "layer": "snow",
+      "footprint": [
+        1,
+        1
+      ]
+    },
+    "wall_horizontal": {
+      "x": 200,
+      "y": 0,
+      "w": 16,
+      "h": 40,
+      "anchor": [
+        8,
+        39
+      ],
+      "snow": "wall_horizontal_snow",
+      "footprint": [
+        1,
+        1
+      ],
+      "joins": "lr"
+    },
+    "wall_horizontal_snow": {
+      "x": 217,
+      "y": 0,
+      "w": 16,
+      "h": 40,
+      "anchor": [
+        8,
+        39
+      ],
+      "layer": "snow",
+      "footprint": [
+        1,
+        1
+      ]
+    },
+    "wall_tower": {
+      "x": 0,
+      "y": 0,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "snow": "wall_tower_snow",
+      "footprint": [
+        2,
+        2
+      ]
+    },
+    "wall_tower_snow": {
+      "x": 33,
+      "y": 0,
+      "w": 32,
+      "h": 64,
+      "anchor": [
+        16,
+        63
+      ],
+      "layer": "snow",
+      "footprint": [
+        2,
+        2
+      ]
+    },
+    "wall_vertical": {
+      "x": 234,
+      "y": 0,
+      "w": 16,
+      "h": 40,
+      "anchor": [
+        8,
+        39
+      ],
+      "snow": "wall_vertical_snow",
+      "footprint": [
+        1,
+        1
+      ],
+      "joins": "u"
+    },
+    "wall_vertical_snow": {
+      "x": 0,
+      "y": 65,
+      "w": 16,
+      "h": 40,
+      "anchor": [
+        8,
+        39
+      ],
+      "layer": "snow",
+      "footprint": [
+        1,
+        1
+      ]
+    }
+  }
+}
