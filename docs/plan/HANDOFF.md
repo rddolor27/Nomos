@@ -110,3 +110,39 @@ A living summary for the next session, appended as work lands. Start with `CLAUD
 - 10 Oct, the latest: **all three agents stopped at once on the account's weekly usage limit,** which resets on 15 October 2026 at 8:00 Asia/Manila.
   - None of them changed a file: the tree is clean at 0733217, and everything is pushed.
   - **Resume with "Top priority next session", items 1–4, above.** Give each agent its brief again; the work is unchanged.
+
+## The walled-town round (owner, 10 October 2026)
+
+The owner asked for walls, a bell-curve town, farms, wider roads of several kinds and better building art. They answered two rounds of questions, and every answer below is final:
+
+1. **Bell curve means town density.** Each capital, city and town is packed round the plaza and thins toward the edge. Today a capital is as dense at its edge as in its middle.
+2. **Walls:** stone walls with towers for capitals and cities, a wooden palisade for towns, and none for villages and hamlets. Each wall rings the dense core, with a gate wherever a road enters.
+3. **Roads by role:**
+   - main road: 3 tiles of cut stone, gate to plaza;
+   - street: 2 tiles of cobbles, inside the walls;
+   - lane: 1 tile of dirt;
+   - country road: 2 tiles of gravel, outside the walls;
+   - farm track: 1 tile of dirt.
+4. **Order:** CI goes green first (Highcourt re-exported at 128×80). Then this round, with walking in any direction (item 4 above) alongside. The first-screen art and blob count (items 2 and 3) wait until the new layout settles, and Highcourt is re-exported again then.
+5. **Farms on the outskirts:** grain and vegetable strips, pastures with herds, orchards, and vineyards or rice paddies by climate.
+6. **Buildings:** corner houses, townhouses and cottages; an inn, bakery, smithy, stable, barn, granary and watermill; a grander civic set for capitals and cities; and a polish of today's art.
+7. **Extras:** suburbs along the roads beyond the gates, stone bridges on main roads, trees along main roads, greens inside the walls, and on the country map, two road classes and walled city icons.
+8. **Size:** places grow so the walled core keeps about 380–520 houses: capitals and cities about 160×100, and towns in proportion.
+9. The owner also said: spawn design agents and a planner as needed, and once the assets are made, add them to the plans.
+
+**Five agents started,** within the owner's limit of five:
+1. `sim-engineer` (Sonnet): CI green, re-exporting Highcourt. Task line "M3.1 Town generator, part 2, step 4: The starting town".
+2. `asset-designer`: road surfaces, stone bridges, the palisade, orchard, vineyard and paddy crops, and greens, in the nature, scenery, walls and seasons sheets. Preview: `docs/mockups/town_edge_preview.png`.
+3. `asset-designer`: the new house shapes and a polish, in the houses sheet. Preview: `docs/mockups/houses_preview.png`.
+4. `asset-designer`: trades, farm buildings, the grand civic set, a polish, and walled map icons, in the buildings, landmarks and map sheets. Previews: `docs/mockups/buildings_preview.png` and `map_icons_preview.png`.
+5. `sim-architect`: the step plan, as a new part of M3.1's `plan.md` after Part 2, plus `task.md`, `interfaces.md` and the country-map pieces. Frame names stay placeholders until the designers report.
+
+The designers' Task lines read "owner request, walled towns with roads by role and farms" or "owner request, new and improved building art".
+
+**Once they land, the coordinator:**
+- regenerates `assets/LICENSES.md` and `packages/render-gl/test/fixtures/places-v1.json`, since the polish changes pixels, and commits them;
+- fills the plan's frame-name placeholders from the designers' reports;
+- starts walking in any direction (`senior-game-engineer`, Sonnet);
+- then dispatches the plan's steps.
+
+If the session ended: check `git log` for those Task lines, and `git status` for unfinished work. Commit only green work.
