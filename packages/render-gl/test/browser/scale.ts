@@ -4,8 +4,9 @@ export { expect };
 
 export const DPRS = [1, 1.5, 2] as const;
 
-// A context's deviceScaleFactor alone moves devicePixelRatio but leaves devicePixelContentBoxSize in CSS pixels in
-// Chromium and Firefox (measured, Chromium 153 and Firefox 157 on Windows), so their browsers launch at the scale too.
+// A context's deviceScaleFactor alone is no real 2x in Chromium or Firefox: Chromium moves devicePixelRatio but leaves
+// devicePixelContentBoxSize in CSS pixels, and Firefox 157 kept devicePixelRatio at 1 in the inspector spec (measured,
+// Chromium 153 and 156 and Firefox 157 on Windows), so their browsers launch at the scale too.
 // WebKit has no devicePixelContentBoxSize, so its context alone suffices.
 function atScale(engine: PlaywrightWorkerOptions['browserName'], options: LaunchOptions, dpr: number): LaunchOptions {
   if (engine === 'chromium') return { ...options, args: [...(options.args ?? []), `--force-device-scale-factor=${dpr}`] };
