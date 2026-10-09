@@ -15,7 +15,7 @@ test('opens the map on demand, pauses the town, and resumes it on close', async 
   page.on('request', (request) => {
     if (MAP_CHUNK.test(request.url())) fetched.push(request.url());
   });
-  await page.goto('/?seed=42');
+  await page.goto('/?seed=42&tier=phone');
   await page.getByRole('button', { name: 'Map', exact: true }).waitFor();
   expect(fetched).toEqual([]);
   expect(await playing(page)).toBe(true);
@@ -33,7 +33,7 @@ test('opens the map on demand, pauses the town, and resumes it on close', async 
 });
 
 test('keeps the town paused on close when it was paused before', async ({ page }) => {
-  await page.goto('/?seed=42');
+  await page.goto('/?seed=42&tier=phone');
   await page.getByRole('button', { name: 'Pause' }).click();
   await page.getByRole('button', { name: 'Map', exact: true }).click();
   await page.getByRole('button', { name: 'Close map' }).click();
