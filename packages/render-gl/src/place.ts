@@ -1,2 +1,10 @@
-export * from './place/camera.ts';
+export {
+  PLACE_SCALES,
+  clampPlaceCamera,
+  fitPlaceCamera,
+  openPlaceCamera,
+  panPlaceBy,
+  zoomPlaceAt,
+  type PlaceCamera,
+} from './place/camera.ts';
 export { createPlaceRenderer, type PlaceBackend, type PlaceRenderer, type PlaceRendererOptions } from './place/renderer.ts';
