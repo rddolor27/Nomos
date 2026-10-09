@@ -13,7 +13,7 @@ M0's sub-milestones are planned in parallel, so the names and layouts they share
 | `@nomos/web` | `apps/web` | The page: load path, HUD, charts, the inspector, tiers and accessibility | M0.5, inspector in M0.7 |
 | `@nomos/cli` | `tools/cli` | Headless runs and replay hashes in Node, through sim-core's world step | M0.3 |
 | `@nomos/bench` | `tools/bench` | The CI budget, allocation and startup gates | M0.6 |
-| `@nomos/sim-culture` | `packages/sim-culture` | Culture code, walled off from crime, police, labour, wage, wealth, ability, housing and migration code; it also turns name keys into names | M0.6, names in M0.7 |
+| `@nomos/sim-culture` | `packages/sim-culture` | Culture code, walled off from crime, police, labour, wage, wealth, money, ability, housing and migration code; it also turns name keys into names | M0.6, names in M0.7 |
 | `@nomos/names` | `tools/names` | The name lint, its real-world fixture, the shared mixed sound set, the person-name filter and the culture text lint; M3.7 extends it | M0.6, sound set and person-name filter in M0.7 |
 | `@nomos/worldgen` | `packages/worldgen` | The TypeScript port of `tools/worldgen`: a seeded world of countries as a `WorldMap`, and its place names. It runs only in the map worker | M8.1 |
 
@@ -33,7 +33,7 @@ The world step lives in `sim-core`, so headless runs and the worker run the same
 
 The owner decided on 9 October 2026 that every package groups its source into module folders by concern. The rules:
 - **Entry files only at `src/`:** `index.ts`, a subpath export such as `kernels.ts`, and any file that a package script, CI or a test runs or bundles by path. Every other source file sits in a concern folder directly under `src/`, and a lint reports any that doesn't.
-- **One level of concern folders.** The culture wall matches `packages/sim-*/src/<concern>/`, so `crime`, `police`, `labour`, `wages`, `wealth`, `ability`, `housing` and `migration` are each a top-level folder when they arrive, never nested in another folder.
+- **One level of concern folders.** The culture wall matches `packages/sim-*/src/<concern>/`, so `crime`, `police`, `labour`, `wages`, `wealth`, `money`, `ability`, `housing` and `migration` are each a top-level folder when they arrive, never nested in another folder. `money/` is guarded as wealth, since every wallet lives there (M0.7 review).
 - **Named for the concern,** never for a kind of code such as `utils/`. A concern may start with one file and grows in place, so paths and lint globs stay stable.
 - **Imports by path inside a package.** A source module imports another folder's module by its path; only other packages and tests use `index.ts`.
 - **The barrel caveat:** `sim-core`'s `index.ts` re-exports `consumption/stand-in.ts`, which imports `sim-culture`, so the barrel reaches `sim-culture`. In `sim-core`, only `consumption/` and `index.ts` may reach `sim-culture`, which dependency-cruiser enforces; M2.6 adds `step/` when the step first calls consumption. Guarded code elsewhere imports `@nomos/sim-core/kernels` or module paths, never the barrel.
@@ -275,7 +275,8 @@ The map doesn't draw through `WorldRenderer`. M8.3's `MapRenderer` has a canvas 
   - `franchise`: M0.6's franchise ban, and creature-style words ending in "mon";
   - `real-world`: M0.6's real-world fixture;
   - `place` and `species`: the franchise's distinctive town and city names and its species names, from Wikidata (CC0), at edit distance 1 up to 5 letters and 2 above;
-  - `profanity`: LDNOOBW's 21 Latin-script lists (CC BY 4.0), exact for 3-letter entries and by substring for 4 or more.
+  - `profanity`: LDNOOBW's 21 Latin-script lists (CC BY 4.0), exact for 3-letter entries and by substring for 4 or more;
+  - `denied`: words a reviewer read in the table that the lists miss, matched exactly, from `tools/names/fixtures/denied.txt` (M0.7 review). They are common words in major Latin-script languages, slang or rude words in any language, brand, product and franchise names, faith terms and famous people. Real place names stay, because a place name as a person's name is ordinary.
 
   M3.7 adds real festival names and runs it over places and festivals.
 
