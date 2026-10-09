@@ -1,11 +1,12 @@
 import { defineConfig } from 'vite';
+import { atlasPages } from './vite/atlas.ts';
 import { earlyBoot } from './vite/early-boot.ts';
 import { headersFile } from './vite/headers.ts';
 
 const MAP_FILE = /\.nmap$/;
 
 export default defineConfig({
-  plugins: [earlyBoot(), headersFile()],
+  plugins: [earlyBoot(), headersFile(), atlasPages()],
   worker: { format: 'es' },
   build: {
     target: 'es2022',
@@ -13,6 +14,8 @@ export default defineConfig({
     // The boot script fetches the map by its URL, so even a tiny map must never be inlined as a data URL.
     assetsInlineLimit: 0,
     rolldownOptions: {
+      // The atlas pages take nearly all of every build by design, so the slow-plugin warning would fire on each one.
+      checks: { bundlerTimings: false },
       output: {
         assetFileNames: ({ names }) =>
           names.some((name) => MAP_FILE.test(name)) ? 'assets/maps/[name]-[hash][extname]' : 'assets/[name]-[hash][extname]',
