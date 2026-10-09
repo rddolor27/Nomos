@@ -58,3 +58,7 @@ A living summary for the next session, appended as work lands. Start with `CLAUD
 - 10 Oct: **the owner wants far more blobs per settlement,** since the sim aims at 100k and later a million.
   - Planned as M3.1 part 2, step 2b, the street crowd: TypeScript-only walkers on the walk loops, about one per 100–200 residents, up to 3,000 on desktop and 600 on phones.
   - It runs after steps 1 and 2, with `render-engineer`.
+- 10 Oct: the owner asked for **bigger settlements still,** and for the street crowd now.
+  - The sim engineer was asked for capital and city 128×80, town 112×64, village 80×48 and hamlet 56×32, as long as a capital builds in about 150 ms warm or less; otherwise the largest that fits.
+  - The render engineer started the street crowd: `packages/worldgen/src/place/street-crowd.ts`, `place-builder.ts`, `walkers.ts` and the place pass's buffers. Up to 3,000 walkers on desktop and 600 on phones.
+  - If the session ended: check `git log` for "Bigger places and crowds" and "The street crowd", and `git status` for unfinished work. Commit only green work, then push.
