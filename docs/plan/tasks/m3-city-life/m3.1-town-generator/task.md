@@ -13,11 +13,11 @@ The port needs M0.1's keyed draw and noise, M0.4's binary map format and M0.5's 
 - **Exit checks:**
   - one map, now the binary map rather than one LDtk file, drives both walkability and tiles: every walkable cell has a ground tile and every zone entity a building (R3, R9).
 - **Part 2, added by the owner on 10 October 2026,** built before M1 and ahead of the export above:
-  - **bigger places:** places at four times the area. A capital or city is 96×56 tiles, a town 80×48, a village 64×40 and a hamlet 40×24. The change lands in `place.py` first, then in the port;
+  - **bigger places:** places at four times the area or more. A capital or city landed at 128×80 tiles, a town 112×64, a village 80×48 and a hamlet 56×32. The change lands in `place.py` first, then in the port;
   - **crowds that grow with population:** on desktop, about 150–300 people in a capital or city, 60–120 in a town, 25–50 in a village and 10–20 in a hamlet. Phones show fewer;
   - **the starting town:** Highcourt grows to the capital's new size and is re-exported as the binary map. Its blob counts per tier are re-checked against the tick budgets;
-  - **town walls with gates** around capitals and cities, with a gate where each road enters, drawn look-only;
-  - **more house styles and props.**
+  - **town walls with gates** around capitals and cities, with a gate where each road enters, drawn look-only. Part 3 replaces this;
+  - **more house styles and props.** Part 3 replaces this.
 - **Owner decision first:** the town walls' look, from the asset-designer's mockups, before the full sprite set is drawn.
 - **Owner decision first:** how many blobs the grown starting town holds on each device tier, within the tick budgets.
 - **Exit checks for part 2:**
@@ -25,3 +25,37 @@ The port needs M0.1's keyed draw and noise, M0.4's binary map format and M0.5's 
   - the town view's frame time stays under 2 ms for the biggest capital, in both backends;
   - every crowd stays within its tier's range;
   - walls never cross a road except at a gate.
+- **Part 3, added by the owner on 10 October 2026,** builds walled towns, roads by role and farms, in place of part 2's walls and houses:
+  - **sizes:** a capital or city is 160×100 tiles and a town 140×80, while villages, hamlets and vistas keep theirs;
+  - **walls:** stone walls with towers round capitals and cities, a palisade round towns, and none round villages and hamlets, with a gate wherever a road enters;
+  - **roads by role:**
+    - 3-tile cut-stone main roads from the gates to the plaza, lined with trees;
+    - 2-tile cobbled streets inside the wall, and 1-tile dirt lanes;
+    - 2-tile gravel country roads outside it, and 1-tile farm tracks;
+    - stone bridges on main and country roads;
+  - **a bell-curve town:**
+    - townhouse terraces, with corner houses where they meet streets, and apartments, packed round the plaza;
+    - row terraces and detached houses toward the wall, then cabins, huts and farmhouses in suburbs along the roads;
+    - greens and gardens; an inn, bakery, smithy and stable; and a large civic set in capitals and cities;
+  - **a farm belt by climate:** strips of grain and vegetables, pastures with herds, orchards, vineyards on warm, dry land and rice paddies on hot, wet land, with farm tracks, barns, granaries and a watermill;
+  - **the country map:** major roads drawn as stone highways and minor ones as dirt tracks, and walled icons for capitals, cities and towns.
+- **Exit checks for part 3,** over every place of the first 20 standard worlds unless one is named:
+  - places measure 160×100 for a capital or city, 140×80 for a town, 80×48 for a village and 56×32 for a hamlet, and vistas 30×18;
+  - every capital and city has a stone wall, every town a palisade, and no village or hamlet a wall;
+  - no wall piece stands on a road, water or a bank, and every road crossing the wall's line is a 2-tile gate;
+  - every map-edge road and every gate joins the plaza by road;
+  - cut stone and cobbles lie only inside the wall's line, and gravel only on or past it;
+  - every water tile under a road carries a footbridge or a stone bridge;
+  - every main road with 12 or more cells inside the wall has at least 2 trees beside it;
+  - the median capital or city holds 380–520 houses inside its wall, and the median town 240–340;
+  - houses cover more land by the plaza than by the wall, and more inside the wall than past it, by the medians;
+  - 5–20% of a walled place's houses stand past its wall, in the median, each within 3 tiles of a road;
+  - each house material and roof appears in every zone at half to twice its overall share;
+  - vineyards grow only where temperature ≥ 150 and moisture < 120, rice only where temperature ≥ 170 and moisture ≥ 160, and neither in a desert place;
+  - a place's crowd loops hold at most 131,072 cells, and its people's loops at most 16,384;
+  - a warm capital or city builds, crowd included, within 2× the median before the round, and its worst within 2.5× the worst before it;
+  - every country road has a class, and on each landmass the major roads join every town, city and capital;
+  - each capital, city and town shows its walled icon in both map views;
+  - the town atlas page holds no snow or night frame, and stays under 1,920 px tall;
+  - the place goldens, the place fixtures and `town.nmap` are regenerated, and the port and `town.test.ts` match them;
+  - the town view of a capital stays under 2 ms a frame, in WebGL2 and in Canvas2D.
