@@ -209,10 +209,20 @@ def map_colours_match_the_palette():
     from mapdraw import MAP_COLOURS
     from spritekit import PALETTE
     names = {'water': 'WATER', 'river': 'WATER', 'lane': 'WATER_L', 'road': 'WOOD', 'deck': 'WOOD_L', 'rail': 'WOOD_D',
-             'border': 'OUTLINE'}
+             'border': 'OUTLINE', 'outline': 'OUTLINE'}
     wanted = {key: '#' + bytes(PALETTE[name]).hex().upper() for key, name in names.items()}
     return [f'{key} is {MAP_COLOURS[key]}, but the palette gives {colour}' for key, colour in wanted.items()
             if MAP_COLOURS[key] != colour]
+
+
+def crowd_hues_are_the_body_hues():
+    """The map crowd's six hues (M8.3, Task 17) are spritekit's BODY_HUES bases, in BODY_HUES order, which
+    sim-protocol's CROWD_HUES keeps and render-gl's map-crowd test holds the table's keys to."""
+    from mapdraw import MAP_COLOURS
+    from spritekit import BODY_HUES, PALETTE
+    wanted = [(hue, '#' + bytes(PALETTE[tones[0]]).hex().upper()) for hue, tones in BODY_HUES.items()]
+    got = list(MAP_COLOURS['crowd'].items())
+    return [] if got == wanted else [f'crowd hues {got}, but spritekit gives {wanted}']
 
 
 # The country colours' bars (M8.3 plan, Rulings 11-13), in CIEDE2000 on D65 Lab. The pair bar is the swatch sheet's
@@ -374,7 +384,8 @@ CHECKS = [snow_on_cold_lowland, lone_snow_melts, snow_is_uninhabitable, snow_pla
           count_is_three_to_five, capitals_spaced_in_population_order, grow_breaks_ties_by_cost_then_cell,
           grow_bends_to_mountains, island_joins_the_cheaper_crossing, diagonal_never_slips,
           small_countries_pass_their_capital_on, fingerprint_covers_countries, fingerprints_are_pinned,
-          borders_draw_on_cell_edges, map_colours_match_the_palette, ciede2000_matches_sharma, country_colours_keep_apart,
+          borders_draw_on_cell_edges, map_colours_match_the_palette, crowd_hues_are_the_body_hues,
+          ciede2000_matches_sharma, country_colours_keep_apart,
           colour_check_bites, previews_write, town_roads_never_draw_as_water]
 WORLD_CHECKS = [snow_lies_on_cold_lowland, countries_cover_the_land, stage_only_retiers_capitals]
 
