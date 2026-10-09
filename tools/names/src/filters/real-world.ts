@@ -22,7 +22,7 @@ export function loadRealWorld(): RealWorld {
   return world;
 }
 
-function allowedEdits(word: string): number {
+export function allowedEdits(word: string): number {
   return word.length <= ONE_EDIT_MAX_LETTERS ? 1 : 2;
 }
 
