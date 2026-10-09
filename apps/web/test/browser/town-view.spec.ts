@@ -195,6 +195,20 @@ test.describe('in one engine', () => {
     await expect(page.locator('#map [role="status"]')).toHaveText(/^\d countries; the legend lists them\.$/);
   });
 
+  test('keeps focus on the map when the arrow keys pan the Enter button away', async ({ page }) => {
+    await openMap(page);
+    const capital = await goToCapital(page);
+    await page.getByRole('button', { name: `Enter ${capital}` }).focus();
+    // Each press pans four cells, so a few leave every place behind.
+    const enter = page.locator('#map .map-bar button', { hasText: /^Enter / });
+    for (let press = 0; press < 20 && (await enter.isVisible()); press++) {
+      await page.keyboard.press('ArrowRight');
+      await page.waitForTimeout(100);
+    }
+    await expect(enter).toBeHidden();
+    await expect(page.locator('#map')).toBeFocused();
+  });
+
   test('opens the settlement in focus on a tap, and Back to map returns', async ({ page }) => {
     await openMap(page);
     await goToCapital(page);

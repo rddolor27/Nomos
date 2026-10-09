@@ -608,8 +608,11 @@ function updateFocus(panel: MapPanel, world: MapWorkerMessage, view: MapView): v
   const focus = view === 'region' ? placeInFocus(world.map, panel.camera, panel.deviceWidth, panel.deviceHeight, panel.dpr) : -1;
   if (focus === panel.focus) return;
   panel.focus = focus;
-  panel.parts.enter.hidden = focus < 0;
-  if (focus >= 0) panel.parts.enter.textContent = `Enter ${placeInfo(world.map, world.names, focus).name}`;
+  const { enter, section } = panel.parts;
+  // Hiding the button while it has focus, as arrow keys pressed on it pan the map, would drop focus to the page.
+  if (focus < 0 && document.activeElement === enter) section.focus();
+  enter.hidden = focus < 0;
+  if (focus >= 0) enter.textContent = `Enter ${placeInfo(world.map, world.names, focus).name}`;
 }
 
 function drawNow(panel: MapPanel, nowMs: number): void {
