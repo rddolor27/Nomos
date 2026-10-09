@@ -45,6 +45,7 @@ interface Parts {
   zoomIn: HTMLButtonElement;
   zoomOut: HTMLButtonElement;
   flat: HTMLButtonElement;
+  pauseDots: HTMLButtonElement;
   goTo: HTMLSelectElement;
   status: HTMLElement;
   canvas: HTMLCanvasElement;
@@ -69,6 +70,11 @@ interface MapPanel {
   world: MapWorkerMessage | null;
   // Each dot's place, x then y in cells, which crowdAt rewrites in place while the crowd walks.
   xy: Float32Array;
+  // Pause dots stops the crowd's clock: the time it has stood is taken off the frame time, so it walks on from where it
+  // stood.
+  dotsPaused: boolean;
+  pausedAtMs: number;
+  stoodMs: number;
   making: boolean;
   failure: string;
   page: AtlasPage | null;
@@ -160,6 +166,7 @@ function buildParts(doc: Document): Parts {
     zoomIn: make(doc, 'button', { type: 'button', class: 'map-zoom', 'aria-label': 'Zoom in' }, '+'),
     zoomOut: make(doc, 'button', { type: 'button', class: 'map-zoom', 'aria-label': 'Zoom out' }, '\u{2212}'),
     flat: make(doc, 'button', { type: 'button', 'aria-pressed': 'false' }, 'Countries'),
+    pauseDots: make(doc, 'button', { type: 'button', 'aria-pressed': 'false' }, 'Pause dots'),
     goTo: make(doc, 'select', { 'aria-label': 'Go to a settlement', disabled: '' }),
     status: make(doc, 'p', { role: 'status' }),
     canvas: make(doc, 'canvas', { role: 'img', 'aria-label': 'Map of the countries; the legend after it lists each one' }),
@@ -167,7 +174,8 @@ function buildParts(doc: Document): Parts {
     legend: make(doc, 'div', {}),
   };
   parts.goTo.append(make(doc, 'option', { value: '', disabled: '', hidden: '', selected: '' }, 'Go to…'));
-  parts.bar.append(parts.close, parts.fit, parts.zoomIn, parts.zoomOut, parts.flat, parts.goTo, parts.status);
+  const { close, fit, zoomIn, zoomOut, flat, pauseDots, goTo, status } = parts;
+  parts.bar.append(close, fit, zoomIn, zoomOut, flat, pauseDots, goTo, status);
   parts.section.append(parts.keys, parts.bar, parts.canvas, parts.labels, parts.legend);
   return parts;
 }
@@ -192,6 +200,9 @@ function createPanel(app: App): MapPanel {
     resumeTown: false,
     world: null,
     xy: new Float32Array(0),
+    dotsPaused: false,
+    pausedAtMs: 0,
+    stoodMs: 0,
     making: false,
     failure: '',
     page: null,
@@ -232,6 +243,7 @@ function bindPanel(panel: MapPanel): void {
   parts.zoomIn.addEventListener('click', () => zoomAtCentre(parts.section, target, 1));
   parts.zoomOut.addEventListener('click', () => zoomAtCentre(parts.section, target, -1));
   parts.flat.addEventListener('click', () => toggleFlat(panel));
+  parts.pauseDots.addEventListener('click', () => togglePauseDots(panel));
   bindGoTo(panel, parts.goTo);
   // A drag captures the pointer on the section, which would take a bar button's click, and a press on the bar or the
   // legend is no tap on the map, so both keep their pointers.
@@ -409,6 +421,15 @@ function toggleFlat(panel: MapPanel): void {
   requestDraw(panel);
 }
 
+// WCAG 2.2.2: anything that moves for over five seconds can be paused (agent ruling).
+function togglePauseDots(panel: MapPanel): void {
+  panel.dotsPaused = !panel.dotsPaused;
+  panel.parts.pauseDots.setAttribute('aria-pressed', String(panel.dotsPaused));
+  if (panel.dotsPaused) panel.pausedAtMs = performance.now();
+  else panel.stoodMs += performance.now() - panel.pausedAtMs;
+  requestDraw(panel);
+}
+
 // Drawn at once, inside the observer, so a resized canvas never shows a blank frame before the next one.
 function onSize(panel: MapPanel, width: number, height: number, dpr: number): void {
   panel.deviceWidth = width;
@@ -430,7 +451,8 @@ function requestDraw(panel: MapPanel): void {
 
 // The crowd walks only where it is drawn, in the Region view, which mapViewFor predicts as the renderer will choose it.
 function walking(panel: MapPanel, renderer: MapRenderer): boolean {
-  return !panel.reducedMotion.matches && mapViewFor(renderer.view, panel.camera.cellPx, panel.dpr) === 'region';
+  if (panel.dotsPaused || panel.reducedMotion.matches) return false;
+  return mapViewFor(renderer.view, panel.camera.cellPx, panel.dpr) === 'region';
 }
 
 function drawNow(panel: MapPanel, nowMs: number): void {
@@ -438,7 +460,7 @@ function drawNow(panel: MapPanel, nowMs: number): void {
   if (!renderer || !labels || !world || panel.deviceWidth === 0 || panel.deviceHeight === 0) return;
   const startMs = performance.now();
   const walks = walking(panel, renderer);
-  if (walks) crowdAt(world.crowd, nowMs, panel.xy);
+  if (walks) crowdAt(world.crowd, nowMs - panel.stoodMs, panel.xy);
   renderer.draw(camera);
   labels.update(camera, renderer.view, panel.deviceWidth / dpr, panel.deviceHeight / dpr, dpr);
   panel.hook.frameMs = performance.now() - startMs;

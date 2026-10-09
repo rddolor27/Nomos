@@ -69,6 +69,19 @@ test("zooms with the bar's buttons into the Region view, where the crowd draws, 
   await expect.poll(() => crowd(page)).toMatchObject({ view: 'country', crowdDrawn: false });
 });
 
+test('stands every dot still while Pause dots is pressed, and walks them on when it is released', async ({ page }) => {
+  await openMap(page);
+  await zoomOnCapital(page);
+  const pause = page.getByRole('button', { name: 'Pause dots' });
+  const canvas = page.locator('#map canvas');
+  await pause.click();
+  await expect(pause).toHaveAttribute('aria-pressed', 'true');
+  expect(await movesWithin(canvas, 1000)).toBe(false);
+  await pause.click();
+  await expect(pause).toHaveAttribute('aria-pressed', 'false');
+  expect(await movesWithin(canvas, 1000)).toBe(true);
+});
+
 test('keeps every dot still under reduced motion', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await openMap(page);
