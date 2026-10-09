@@ -44,6 +44,11 @@ def outlined(rows):
     return add_outline(pad(grid(rows)))
 
 
+def transposed(rows):
+    """The grid mirrored on its diagonal, so a run across the tile runs down it."""
+    return [''.join(row[x] for row in rows) for x in range(len(rows[0]))]
+
+
 # --------------------------------------------------------------------------- terrain
 # Every detail stays inside its tile, so the three grass variants mix in any order.
 
@@ -238,6 +243,133 @@ PASTURE = [
     'gWggggGgGggggGgG',
     'gkggggkGkggggkGk',
     'gggggggkggggggkg',
+]
+
+# --------------------------------------------------------------------------- roads
+# Roads by role (owner, 10 October 2026): cut stone for main roads, cobbles for streets, gravel for
+# country roads and a rutted track between fields; lanes keep terrain_dirt-path. Like the dirt path
+# and the paving they have no edge tiles: every tile ends cleanly against grass, so a road of any
+# width is a plain run of one surface.
+
+# Dressed grey slabs in two courses, each lit on its top-left corner, with 1-px joints.
+CUT_STONE = [
+    'ccHHHHhccHHHHHHh',
+    'cHHHHHhcHHHHhHHh',
+    'HHHHHHhHHHHHHHHh',
+    'HHhHHHhHHHHHHHHh',
+    'HHHHHHhHHHHHHHHh',
+    'HHHHHHhHHHHHHhHh',
+    'HHHHHhhHHHHHHHhh',
+    'hhhhhhhhhhhhhhhh',
+    'HHhccHHHHHhccHHH',
+    'HHhcHHHHHHhcHHHH',
+    'HHhHHHHhHHhHHHHH',
+    'HHhHHHHHHHhHHHHH',
+    'HHhHHHHHHHhHHHhH',
+    'HHhHHHHHHHhHHHHH',
+    'HhhHHHHHHhhHHHHH',
+    'hhhhhhhhhhhhhhhh',
+]
+
+# Round grey cobbles bedded in sand, each lit on its top-left; stones run across the tile edges.
+COBBLES = [
+    [
+        'cHccsscccssccchs',
+        'cHHHsscHHhscHHhs',
+        'cHhhschHHhsshhhs',
+        'csssssshhsssssss',
+        'ssccccssssccccss',
+        'ccHHHHHcscHHHHhs',
+        'sshHHHHhscHHHHhs',
+        'csshhhsssshhhhss',
+        'Hhsssssccssssssc',
+        'HHHcsccHHHcsccss',
+        'cHHhscHHHHsscHhs',
+        'shsssshhhssshhhs',
+        'sssccssssscssshh',
+        'sccHHHcsccHHcsss',
+        'sshhhHhschHhhsss',
+        'cssssssssssssscs',
+    ],
+    [
+        'ccHcssssccHhsccs',
+        'sHHHhsscHHHsschs',
+        'scHHHhschhsscHHh',
+        'sshhssssssscHHHh',
+        'sssssccccsschhhs',
+        'ccsscHHHHsssssss',
+        'HHhscHHHhscccssc',
+        'HHhssHhhsscHHhsc',
+        'hhhhsssssshhHhss',
+        'sssssscccssshhhs',
+        'cccccscHHHcsssss',
+        'sHHHhsshHHHssccs',
+        'scHHHssshhsscHHh',
+        'sshhsscsssscHHHh',
+        'hsssscHHcssshhhh',
+        'ssssshHssscsssss',
+    ],
+]
+
+# Pale grit with pebbles of grey, cream and sand, each pebble lit above its shadow.
+GRAVEL = [
+    [
+        'cccccWcccccscscc',
+        'hcchcchcscccccsc',
+        'cccccScccccscWcc',
+        'cccHccsccWcccchc',
+        'csccxccccchccccc',
+        'cccsccccHcccchcW',
+        'hccccCcccxCccccc',
+        'cccccchhccchsccC',
+        'hccCccccccHccccc',
+        'cccchccchcchccWc',
+        'chccccWcccccccch',
+        'cccHccchccscHccc',
+        'HcccxHccccccchcc',
+        'cxcCccxcccHccccc',
+        'cccchccHccchchcH',
+        'xchcccccxccccccc',
+    ],
+    [
+        'cscccCcccxcccccc',
+        'ccsCcchHccWcScsc',
+        'Cccchcccxcchcscc',
+        'chcccccHccccWccc',
+        'cccWchccxcscchcS',
+        'sccchccccccccccc',
+        'ccccccschcccCccc',
+        'ccHccccsccHcchcc',
+        'HcchccScccchcWcc',
+        'cxcccccscccccchc',
+        'cccchcccccWccccc',
+        'hcccccScscchcccc',
+        'cchccccscsccccHc',
+        'SccccHccccccccch',
+        'cssccchcccWccScc',
+        'ccccccccHcchccsh',
+    ],
+]
+
+# Two wheel ruts with grass along the crown, running across the tile; the vertical track is its
+# transpose. Lay terrain_dirt-path where tracks cross or turn.
+FARM_TRACK = [
+    'sssssgsssssssssL',
+    'ssLssssssssSssss',
+    'sssssssLssssssss',
+    'sSssssssssssLsss',
+    'ssssssssssssssss',
+    'sgssssgssskssssg',
+    'ggksggggkgggkgsg',
+    'gGgggkggGggggGgk',
+    'ggkgGgggggkggggg',
+    'gsgggsgkggsgggsg',
+    'ssssssssssssssss',
+    'sssLssssssSsssss',
+    'ssssssssLsssssss',
+    'sssssSssssssssLs',
+    'ssssssssssssssss',
+    'ssgsssssssgsssss',
 ]
 
 # --------------------------------------------------------------------------- crops
@@ -1015,6 +1147,13 @@ def build():
     sheet.add('terrain_soil-tilled', soil)
     for i, rows in enumerate(WATER):
         sheet.add(f'terrain_water_{i}', tile(rows))
+    sheet.add('terrain_cut-stone', tile(CUT_STONE))
+    for i, rows in enumerate(COBBLES):
+        sheet.add(f'terrain_cobbles_{i}', tile(rows))
+    for i, rows in enumerate(GRAVEL):
+        sheet.add(f'terrain_gravel_{i}', tile(rows))
+    sheet.add('terrain_farm-track_horizontal', tile(FARM_TRACK))
+    sheet.add('terrain_farm-track_vertical', tile(transposed(FARM_TRACK)))
 
     sheet.add('crop_grain_seedling', over(soil, GRAIN_SEEDLING))
     sheet.add('crop_grain_growing', over(soil, GRAIN_GROWING))

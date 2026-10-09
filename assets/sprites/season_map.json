@@ -12,7 +12,8 @@
       "scenery/terrain_meadow_*",
       "nature/crop_pasture",
       "scenery/shore_*",
-      "scenery/cliff_*"
+      "scenery/cliff_*",
+      "nature/terrain_farm-track_*"
     ],
     "foliage": [
       "nature/tree_deciduous_*",
@@ -130,7 +131,11 @@
     ],
     "on_road": [
       "nature/terrain_dirt-path",
-      "nature/terrain_paving"
+      "nature/terrain_paving",
+      "nature/terrain_cut-stone",
+      "nature/terrain_cobbles_*",
+      "nature/terrain_gravel_*",
+      "nature/terrain_farm-track_*"
     ],
     "sprites": {
       "nature/tree_conifer": "seasons/tree_conifer_snow"
