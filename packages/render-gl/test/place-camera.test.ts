@@ -25,8 +25,10 @@ describe('the place camera', () => {
     expect(openPlaceCamera(...CAPITAL, 1170, 2532, 3)).toMatchObject({ scale: 6 });
     // At DPR 1.25, 2.5 device px rounds up to the step of 3.
     expect(openPlaceCamera(...CAPITAL, 1600, 900, 1.25)).toMatchObject({ scale: 3 });
-    // A village fits a large view at 4, past the readable 2, and opens fitted.
-    expect(openPlaceCamera(512, 320, 2560, 1440, 1)).toMatchObject({ scale: 4 });
+    // A village would fit a large view whole at 4; it opens at 6, covering the view rather than sitting small inside it.
+    expect(openPlaceCamera(512, 320, 2560, 1440, 1)).toMatchObject({ scale: 6 });
+    // A place too small to cover the view at any step opens at the largest.
+    expect(openPlaceCamera(16, 16, 2560, 1440, 1)).toMatchObject({ scale: 16 });
   });
 
   it('zooms along the scales, keeping the art pixel under the point where it was', () => {

@@ -35,10 +35,15 @@ export function fitPlaceCamera(width: number, height: number, deviceWidth: numbe
 
 // The fitted view, but never under 2 CSS px per art px: a place too big for the view at that scale overflows it,
 // centred, and is panned.
+// A place opens covering the whole view, never as a small box inside it (owner, 10 October 2026): the smallest step at
+// which it covers the view, and never under OPEN_CSS_PX CSS px an art px. Fit still shows it whole.
 export function openPlaceCamera(width: number, height: number, deviceWidth: number, deviceHeight: number, dpr: number): PlaceCamera {
-  const fitted = fitPlaceCamera(width, height, deviceWidth, deviceHeight);
-  const readable = PLACE_SCALES.find((step) => step >= OPEN_CSS_PX * dpr) ?? PLACE_SCALES[PLACE_SCALES.length - 1];
-  return fitted.scale >= readable ? fitted : centred(width, height, deviceWidth, deviceHeight, readable);
+  const largest = PLACE_SCALES[PLACE_SCALES.length - 1];
+  const readable = PLACE_SCALES.find((step) => step >= OPEN_CSS_PX * dpr) ?? largest;
+  const covers = PLACE_SCALES.find(
+    (step) => step >= readable && width * step >= deviceWidth && height * step >= deviceHeight,
+  );
+  return centred(width, height, deviceWidth, deviceHeight, covers ?? largest);
 }
 
 // Moves steps along PLACE_SCALES, keeping the art pixel under the device point where it was.
