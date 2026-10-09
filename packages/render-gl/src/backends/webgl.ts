@@ -30,7 +30,9 @@ void main() {
 }`;
 
 // Each device pixel, counted from the top-left, shows world pixel floor((pixel + camDev) / zoom), and its tile is one
-// texelFetch, so no colour is interpolated (R3 rendering notes §4). Off the map the clear shows.
+// texelFetch, so no colour is interpolated (R3 rendering notes §4). Off the map the clear shows. GLSL integer division
+// never rounds a negative quotient down, so floorDiv divides only non-negative numbers. Comments stay out of the shader
+// strings, which ship in the first-load renderer chunk.
 const MAP_FRAGMENT = `#version 300 es
 precision highp float;
 precision highp int;
@@ -40,7 +42,6 @@ uniform int u_zoom;
 uniform int u_rows;
 out vec4 colour;
 
-// GLSL integer division never rounds a negative quotient down, so only non-negative numbers are divided.
 int floorDiv(int a, int b) {
   return a >= 0 ? a / b : -((b - 1 - a) / b);
 }
@@ -52,7 +53,8 @@ void main() {
   colour = vec4(texelFetch(u_minimap, world >> ${TILE_SHIFT}, 0).rgb, 1.0);
 }`;
 
-// One instance per agent: a (fill + 2)-pixel square on the texel its interpolated position falls in.
+// One instance per agent: a (fill + 2)-pixel square on the texel its interpolated position falls in. In edgeAt, the
+// minimap's alpha flags the grounds that take the outline; elsewhere, and off the map, a dot takes the rim.
 const DOTS_VERTEX = `#version 300 es
 precision highp float;
 precision highp int;
@@ -81,7 +83,6 @@ int roleOf(uint word) {
   return job == u_policeJob ? 2 : 0;
 }
 
-// The minimap's alpha flags the grounds that take the outline; elsewhere, and off the map, a dot takes the rim.
 vec3 edgeAt(ivec2 texel) {
   ivec2 tile = texel >> ${TILE_SHIFT};
   if (any(lessThan(texel, ivec2(0))) || any(greaterThanEqual(tile, textureSize(u_minimap, 0)))) return u_rim;
