@@ -337,7 +337,7 @@ Written when M0.7 closes. Part 1 settles the countries stage, snow and the previ
 - **Verify first:** map-generation times in browser workers and on phones. They set the phone tier for the map.
 - **The Python reference changed before the port starts.** Countries and snow change its outputs. Regenerate goldens and mockups together, and freeze version 1 only after the owner's preview review.
 - **Sea cliffs form only on south coasts** in place views, an open item since checkpoint 0001. It moved to M8.8 with its new cliff faces (Part 1, Ruling 2).
-- **Island worlds may put every capital on one island,** and the others then join by sea. Previews of archipelago and twin-isles seeds decide whether capitals need a landmass rule.
+- **Island worlds may put every capital on one island,** and the others then join by sea. The owner reviewed the previews on 9 October 2026 and kept this: capitals go to the largest towns wherever they are, with no landmass rule. The owner also kept straight or 45° borders on open plains.
 - **A 1,024-word table repeats across worlds.** A large world names up to about 240 places and countries, so two worlds share about a quarter of their names (computed). Grow the table, or add a second word for the largest places, only if previews show it.
 
 ### Open questions
@@ -345,7 +345,7 @@ Written when M0.7 closes. Part 1 settles the countries stage, snow and the previ
 - **Measure:** Does a large 192×128 world fit 400 ms with A\* routes and two Dijkstra passes? R9 timed only terrain, at about 8 ms at 96×64. Its 21–87 ms standard-world estimate becomes 84–348 ms at four times the cells (computed). Suggested: time each stage in Chromium in the first week, since A\* grows faster than the cell count. Needed before: building.
 - **Measure:** What are map-generation times in browser workers on phones? They set the map's phone tier. Suggested: one mid-range Android phone and one iPhone. Needed before: the step plan.
 - **Design:** How many regions does each country hold? R4's max(4, settlements ÷ 40) gives 4–6 regions on a whole large world, about one per country (computed from R9's 182–237 places), while the market areas of each country's towns would give about 4–6 per country. Suggested: M8.1 sets a provisional count, which M7.3's region tier adopts or revises. Needed before: the step plan.
-- **Owner review:** 10 large-world previews and a sample of 100 generated names, before version 1 freezes, as the owner listens to every new sound. Needed before: the freeze.
+- **Owner review:** 10 large-world previews and a sample of 100 generated names, before version 1 freezes, as the owner listens to every new sound. The owner approved the previews on 9 October 2026; the 100 names follow once M0.7's sound set lets places be named. Needed before: the freeze.
 
 ### Implementation notes
 
