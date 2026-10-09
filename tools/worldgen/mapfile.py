@@ -1,8 +1,8 @@
 """Writes map v1, the one binary map the worker and the renderer both read (plan: M0.4 Task 1).
 
 Little-endian: a 16-byte header, the terrain kinds, the frame names, the terrain, walk and tile grids
-(row-major from the top-left), then 18-byte entities. packages/sim-protocol/src/map.ts parses it, and
-write_map raises ValueError on every rule that parser checks, so a map that reaches disk loads.
+(row-major from the top-left), then 18-byte entities. packages/sim-protocol/src/map/map.ts parses it,
+and write_map raises ValueError on every rule that parser checks, so a map that reaches disk loads.
 Run `python tools/worldgen/mapfile.py` to write the 3x2 test fixture, or with --check to compare it
 with the committed file.
 """
