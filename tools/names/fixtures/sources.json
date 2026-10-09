@@ -46,5 +46,12 @@
     "date": "2026-10-09",
     "licence": "CC-BY-4.0",
     "count": 1438
+  },
+  "name-bases": {
+    "query": "https://raw.githubusercontent.com/Azgaar/Fantasy-Map-Generator/546c41d37e1daf842df620139e3228553e2f0847/src/data/name-bases.ts",
+    "date": "2026-10-09",
+    "licence": "MIT",
+    "count": 7240,
+    "credit": "Name bases by Azgaar (real-world), Dopu (fantasy) and Avengium (additional), as name-bases.ts credits them; Nomos uses the 32 real-world bases and Levantine."
   }
 }

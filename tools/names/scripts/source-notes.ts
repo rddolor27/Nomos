@@ -6,6 +6,7 @@ export interface SourceNote {
   readonly date: string;
   readonly licence: string;
   readonly count: number;
+  readonly credit?: string;
 }
 
 const SOURCES = new URL('sources.json', FIXTURES);
