@@ -15,6 +15,9 @@ const FLOOR_DIV =
   'Generator port (R9 traps 3 and 4): / is float division and Python floors, so use floorDiv, or a shift for a power of two.';
 const FLOOR_MOD =
   "Generator port (R9 trap 1): % keeps the dividend's sign where Python's follows the divisor's, so use floorMod, or (x >>> 0) % n.";
+const PORT_MATHS =
+  "Generator port (R9): tools/worldgen's maths is integer only, so use isqrt, floorDiv or floorMod, never a rounding.";
+const TOTAL_ORDER = 'Generator port (M8.1): sort only with a comparator, a total order with ties broken by cell index.';
 const NO_FRAMEWORKS =
   'web rules, Rendering and Load order: one custom WebGL2 renderer, so no PixiJS or Phaser; the HUD is vanilla TypeScript and richer UI uses Solid or Preact, never React.';
 const NO_CULTURE_IMPORT =
@@ -133,9 +136,10 @@ const HOT_SYNTAX = [
   },
 ];
 
-// The generator code that exists: the keyed draw, value noise and the map parser. M8.1 adds packages/worldgen/src,
-// built before M1 (owner, 9 October 2026).
-const GENERATOR_FILES = ['packages/sim-core/src/random/{draw,noise}.ts', 'packages/sim-protocol/src/map/map.ts'];
+// The generator code: the keyed draw, value noise, the map parser and the world generator, M8.1's port of
+// tools/worldgen, built before M1 (owner, 9 October 2026).
+const WORLDGEN = 'packages/worldgen/src/**/*.ts';
+const GENERATOR_FILES = ['packages/sim-core/src/random/{draw,noise}.ts', 'packages/sim-protocol/src/map/map.ts', WORLDGEN];
 // % is allowed on an unsigned left operand, where JS and Python agree.
 const GEN_SYNTAX = [
   { selector: "BinaryExpression[operator='/']", message: FLOOR_DIV },
@@ -235,6 +239,24 @@ export default defineConfig(
     ignores: NOT_HOT,
     plugins: { hot: { rules: { 'no-restricted-syntax': builtinRules.get('no-restricted-syntax') } } },
     rules: { 'hot/no-restricted-syntax': ['error', ...HOT_SYNTAX] },
+  },
+  {
+    // The generator is no sim package, so it takes the sim maths bans by name, plus the port's own (M8.1).
+    files: [WORLDGEN],
+    rules: {
+      'no-restricted-properties': [
+        'error',
+        ...TRANSCENDENTAL_MATH.map((property) => ({ object: 'Math', property, message: EXACT_MATHS })),
+        { object: 'Math', property: 'random', message: KEYED_DRAW },
+        ...['sqrt', 'trunc', 'round', 'ceil', 'fround'].map((property) => ({ object: 'Math', property, message: PORT_MATHS })),
+      ],
+      'no-restricted-syntax': [
+        'error',
+        ...MATH_SYNTAX,
+        ...BIGINT_SYNTAX,
+        { selector: 'CallExpression[callee.property.name=/^(sort|toSorted)$/][arguments.length=0]', message: TOTAL_ORDER },
+      ],
+    },
   },
   {
     // Its own copy of the core rule too, so these bans stack on the sim profile's.

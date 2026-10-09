@@ -55,6 +55,25 @@ module.exports = {
       to: { path: '^apps/web/src/', pathNot: '^apps/web/src/map/' },
     },
     {
+      name: 'worldgen-imports-kernels-only',
+      comment:
+        'M8.1: the generator takes sim-core values only through kernels.ts and sim-protocol only through its world-map codes, so it stays pure and small.',
+      severity: 'error',
+      from: { path: '^packages/worldgen/src/' },
+      to: {
+        path: '^packages/',
+        pathNot: '^packages/worldgen/|^packages/sim-core/src/kernels\\.ts$|^packages/sim-protocol/src/world-map/world-map\\.ts$',
+      },
+    },
+    {
+      name: 'worldgen-only-in-the-map-worker',
+      comment:
+        'M8.1, owner (9 October 2026): the map runs in a worker of its own, so no page module but the map worker may reach the generator.',
+      severity: 'error',
+      from: { path: '^apps/web/src/', pathNot: '^apps/web/src/map/(map-worker|generate)\\.ts$' },
+      to: { path: '^packages/worldgen/', reachable: true },
+    },
+    {
       name: 'no-cycles',
       comment: 'A cycle makes the load order, and so any module-level setup, depend on the entry point.',
       severity: 'error',
