@@ -378,7 +378,7 @@ The rest:
 | `regions.seat`, `regions.country` | `Int32Array`, `Uint8Array` | Region r is index r − 1: its seat's settlement id, and its country |
 | `roads`, `lanes` | `PathTable` | One path of cells per road route or sea lane, as `{ offsets: Int32Array, cells: Int32Array }`: path p is `cells[offsets[p]]` up to `cells[offsets[p + 1] − 1]` |
 | `bridges` | `Int32Array` | River cells that roads cross, ascending |
-| `wonders.kind`, `wonders.cell` | `Uint8Array`, `Int32Array` | `WONDER_NAMES` indices, 4–8 a world, in placement order |
+| `wonders.kind`, `wonders.cell` | `Uint8Array`, `Int32Array` | `WONDER_NAMES` indices, 4–8 a world, or 3 where the land has no fourth site, in placement order |
 | `landmarks.kind`, `landmarks.cell` | `Uint8Array`, `Int32Array` | Landmarks on cells of their own (lighthouses, viaducts and observatories), as `LANDMARK_NAMES` indices |
 
 - **Transfer:** every typed array owns its own `ArrayBuffer`, of exactly its length. So `worldMapBuffers(map): ArrayBuffer[]` lists each buffer once, and the map worker transfers them all.
