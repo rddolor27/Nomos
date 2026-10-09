@@ -10,6 +10,8 @@ import { rain } from '../../src/climate/rain.ts';
 import { EROSION_PASSES, accumulate, erode, flood } from '../../src/drainage/flood.ts';
 import { lakes } from '../../src/drainage/lakes.ts';
 import { drain } from '../../src/drainage/drain.ts';
+import { union } from '../../src/grid/grid.ts';
+import { coasts, moisture, temperature } from '../../src/climate/climate.ts';
 
 export function stagePrints(seed: number, size: WorldSize): Map<string, number> {
   const [width, height] = WORLD_SIZES[size];
@@ -51,6 +53,12 @@ export function stagePrints(seed: number, size: WorldSize): Map<string, number> 
   prints.set('lakes', fold(settled.filled, settled.receiver, settled.order, pools.lake, pools.terminal, pools.level));
   const drained = drain(seed, width, height, shaped.elevation, shaped.ocean, rained.rain);
   prints.set('drain', fold(drained.elevation, drained.lake, drained.receiver, drained.flow, drained.river));
+
+  const water = union(shaped.ocean, drained.lake);
+  const warmth = temperature(seed, width, height, drained.elevation);
+  const wetness = moisture(seed, width, height, rained.rain, water, drained.river);
+  const coast = coasts(width, height, drained.elevation, shaped.ocean);
+  prints.set('climate', fold(warmth.cold, warmth.temperature, wetness, coast));
 
   return prints;
 }
