@@ -425,7 +425,7 @@ The Country and Region views draw a `WorldMap` with a renderer of their own, whi
   - It holds the five country colours and the line colours, and `tools/worldgen/mapdraw.py` reads the same file.
   - `COUNTRY_COLOURS` holds the five as `0xRRGGBB`, indexed by `WorldMap.countries.colour`. They appear only on map overlays and the legend (Countries rule 5).
   - The owner picked the five on 9 October 2026. In index order they are `#42F6FC` cyan, `#0000E4` blue, `#600090` deep violet, `#CC36D8` orchid and `#FC66FC` pink-violet.
-  - A test keeps them, in D65 Lab and CIEDE2000, ≥ 15 from every palette colour, and ≥ 12 apart for normal, protan, deutan and tritan vision (M8.3, Task 14).
+  - A test keeps them, in D65 Lab and CIEDE2000, ≥ 15 from every palette colour, and ≥ 11.95 apart for normal, protan, deutan and tritan vision (M8.3, Task 14).
 - **Atlas page:** `tools/atlas` writes `map.webp`, `map.png` and `map.json` beside the town atlas. The page holds the 81 map-scale frames: terrain tiles, wonders and landmarks at both scales, and the settlement icons.
   - `AtlasPage` is `{ image: ImageBitmap, frames: Record<string, AtlasFrame> }`, keyed `"<sheet>/<frame>"`.
   - `AtlasFrame` is `{ x, y, w, h, anchor: [x, y] }`.

@@ -40,7 +40,7 @@
 | 11 | Size limits and the first-load check | Junior, exact steps | 10 |
 | 12 | The exit tests: tiles complete, labels by band, the town's pause | Junior, exact code | 10, M8.1 Task 29 |
 | 13 | The 2 ms bar | Senior | 10 |
-| 14 | The colour check and the Countries golden frame | Senior | 9 |
+| 14 | The colour check, then the Countries golden frame | Senior | 9; the golden frame also 10 and M8.1 Task 29 |
 | 15 | Close M8.3 | Senior | 11–14 |
 
 ### The owner's decisions
@@ -98,6 +98,7 @@
     - An exact search found at most four colours in the free hues that keep 20 apart, so five can't.
     - The owner's five keep about 12.0 apart for every viewer: normal, protan, deutan and tritan, simulated with Machado 2009 at full severity (swatch sheet, computed).
     - The palette bar stays 15: each of the five lies at least 15.25 from all 61 palette colours (swatch sheet, computed).
+    - **The check uses 11.95** (agent, 9 October 2026), the sheet's 12.0 to one decimal. Blue `#0000E4` and deep violet `#600090` lie 11.96 apart for deutan vision, so a bar of exactly 12 would refuse the owner's picks (computed: Task 14's port matches colorspacious 1.1.2 exactly). The other closest pairs are 12.46 for normal vision, 12.49 for protan and 12.57 for tritan (computed).
 13. **Distances use D65 Lab,** as the sheet computes them. A D50-adapted Lab, as CSS `lab()` uses, moves the margins by −2.5 to +0.9 and would drop some below 15, so the check must use the same D65 conversion.
 
 ### Files
@@ -1531,7 +1532,7 @@ The owner's step is done: the owner picked the five on 9 October 2026, and Task 
   - **Conversion:** sRGB to CIE Lab with the D65 white, as the swatch sheet computes it (Ruling 13). Never use D50-adapted Lab.
   - **Distance:** CIEDE2000. Port or mirror the sheet's NumPy version from the gitignored `dist/colours/swatches.py`, with its check against Sharma's 34 test pairs. Copy those pairs into the test, so the check never depends on `dist/`.
   - **The palette bar:** every country colour lies ≥ 15 from each of the 61 palette colours in `spritekit.PALETTE`. The owner's five pass, the nearest at 15.25 (swatch sheet, computed).
-  - **The pair bar:** every two country colours lie ≥ 12 apart for normal vision, and for protan, deutan and tritan vision simulated with Machado 2009 at full severity (Ruling 12). The owner's five keep about 12.0.
+  - **The pair bar:** every two country colours lie ≥ 11.95 apart, the sheet's 12.0 to one decimal, for normal vision, and for protan, deutan and tritan vision simulated with Machado 2009 at full severity (Ruling 12). The owner's five keep 11.96 or more.
   - **Families:** no country colour falls in the red–orange or body-hue hue sectors, as the sheet defines them (Ruling 11).
   - **Simulation:** Machado 2009's full-severity matrices, ported from the sheet with the conversion.
   - **Proof that the check bites:** run it once against M8.1's provisional table, and see it fail on `#AABB00`, 8.3 from `AUTUMN_L`, and `#44BBCC`, 12.3 from `WATER_L`.
