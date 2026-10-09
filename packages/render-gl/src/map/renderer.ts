@@ -5,15 +5,11 @@ import { createCanvas2dPainter } from './canvas2d.ts';
 import { createCrowdPass } from './crowd.ts';
 import type { AtlasPage } from './frames.ts';
 import { createIconsPass } from './icons.ts';
+import { createLifecycle, type Backend, type LifecycleOptions } from './lifecycle.ts';
 
-export type MapBackend = 'webgl2' | 'canvas2d';
+export type MapBackend = Backend;
 
-export interface MapRendererOptions {
-  // 'canvas2d' skips WebGL2, as the town's ?canvas asks; 'auto' is the default.
-  backend?: 'auto' | 'canvas2d';
-  // How long a lost WebGL2 context may stay lost before Canvas2D takes over; 3,000 ms by default.
-  restoreTimeoutMs?: number;
-}
+export type MapRendererOptions = LifecycleOptions;
 
 export interface MapRenderer {
   // The requested backend until init settles it.
@@ -49,13 +45,8 @@ interface Crowd {
   readonly xy: Float32Array;
 }
 
+// What the map keeps for any painter, made at init or after a lost context.
 interface MapState {
-  readonly options: MapRendererOptions;
-  canvas: HTMLCanvasElement;
-  painter: MapPainter | null;
-  backend: MapBackend;
-  lost: boolean;
-  timer: ReturnType<typeof setTimeout> | undefined;
   dpr: number;
   view: MapView;
   flat: boolean;
@@ -73,7 +64,6 @@ const CONTEXT: WebGLContextAttributes = {
   stencil: false,
   preserveDrawingBuffer: false,
 };
-const RESTORE_TIMEOUT_MS = 3000;
 // A large world's Region overlay is 192 cells of 16 px across (Ruling 3).
 const MIN_TEXTURE_PX = 3072;
 
@@ -111,135 +101,55 @@ function createGlPainter(canvas: HTMLCanvasElement): MapPainter | null {
   };
 }
 
-// The fallback always draws flat, whatever setFlat asks, so its draw takes no flag.
-function canvas2d(canvas: HTMLCanvasElement): MapPainter {
-  const painter = createCanvas2dPainter(canvas);
-  if (!painter) throw new Error('this browser offers neither WebGL2 nor Canvas2D for the map');
-  return painter;
-}
-
-// A canvas that held a WebGL context never gives a 2D one, so the fallback draws on a shallow clone.
-function replaceCanvas(old: HTMLCanvasElement): HTMLCanvasElement {
-  const next = old.cloneNode(false) as HTMLCanvasElement;
-  old.replaceWith(next);
-  return next;
-}
-
-// A new painter starts from what the renderer kept, at init and after a lost context.
-function adopt(state: MapState, painter: MapPainter): MapPainter {
+// A new painter starts from what the map kept.
+function adopt(state: MapState, painter: MapPainter): void {
   if (state.world) painter.setWorld(state.world);
   if (state.page) painter.setAtlas(state.page);
   if (state.crowd) painter.setCrowd(state.crowd.hue, state.crowd.xy);
-  return painter;
-}
-
-function openGl(state: MapState): MapPainter | null {
-  try {
-    const painter = createGlPainter(state.canvas);
-    return painter ? adopt(state, painter) : null;
-  } catch {
-    // A shader that failed to link, or textures too small: the canvas now holds a WebGL context, so swap it.
-    state.canvas = replaceCanvas(state.canvas);
-    return null;
-  }
 }
 
 export function createMapRenderer(canvas: HTMLCanvasElement, options: MapRendererOptions = {}): MapRenderer {
-  const state: MapState = {
-    options,
-    canvas,
-    painter: null,
-    backend: options.backend === 'canvas2d' ? 'canvas2d' : 'webgl2',
-    lost: false,
-    timer: undefined,
-    dpr: 1,
-    view: 'country',
-    flat: false,
-    camera: null,
-    world: null,
-    page: null,
-    crowd: null,
-  };
+  const state: MapState = { dpr: 1, view: 'country', flat: false, camera: null, world: null, page: null, crowd: null };
+  const life = createLifecycle<MapPainter>(canvas, options, {
+    openGl: createGlPainter,
+    // The fallback always draws flat, whatever setFlat asks, so its draw takes no flag.
+    open2d: createCanvas2dPainter,
+    adopt: (painter) => adopt(state, painter),
+    redraw: () => redraw(),
+  });
 
   function redraw(): void {
-    const { painter, camera, canvas } = state;
-    if (!painter || !camera || state.lost || canvas.width === 0 || canvas.height === 0) return;
+    const { painter, canvas } = life;
+    const { camera } = state;
+    if (!painter || !camera || canvas.width === 0 || canvas.height === 0) return;
     state.view = mapViewFor(state.view, camera.cellPx, state.dpr);
     painter.draw(camera, state.view, state.flat);
   }
 
-  function fallBack(): void {
-    unwatch();
-    state.canvas = replaceCanvas(state.canvas);
-    state.painter = adopt(state, canvas2d(state.canvas));
-    state.backend = 'canvas2d';
-    state.lost = false;
-    redraw();
-  }
-
-  // Without preventDefault the browser never restores the context.
-  function onLost(event: Event): void {
-    event.preventDefault();
-    state.lost = true;
-    state.timer = setTimeout(fallBack, options.restoreTimeoutMs ?? RESTORE_TIMEOUT_MS);
-  }
-
-  function onRestored(): void {
-    clearTimeout(state.timer);
-    const painter = openGl(state);
-    if (!painter) {
-      fallBack();
-      return;
-    }
-    state.painter = painter;
-    state.lost = false;
-    redraw();
-  }
-
-  function watch(): void {
-    state.canvas.addEventListener('webglcontextlost', onLost);
-    state.canvas.addEventListener('webglcontextrestored', onRestored);
-  }
-
-  function unwatch(): void {
-    state.canvas.removeEventListener('webglcontextlost', onLost);
-    state.canvas.removeEventListener('webglcontextrestored', onRestored);
-  }
-
   return {
     get backend() {
-      return state.backend;
+      return life.backend;
     },
     get canvas() {
-      return state.canvas;
+      return life.canvas;
     },
     get view() {
       return state.view;
     },
     init() {
-      if (options.backend !== 'canvas2d') state.painter = openGl(state);
-      if (state.painter) {
-        watch();
-        return 'webgl2';
-      }
-      state.painter = adopt(state, canvas2d(state.canvas));
-      state.backend = 'canvas2d';
-      return 'canvas2d';
+      return life.init();
     },
     resize(deviceWidth, deviceHeight, dpr) {
-      state.canvas.width = deviceWidth;
-      state.canvas.height = deviceHeight;
-      state.canvas.style.width = `${deviceWidth / dpr}px`;
-      state.canvas.style.height = `${deviceHeight / dpr}px`;
+      life.resize(deviceWidth, deviceHeight, dpr);
       state.dpr = dpr;
     },
     setWorld(map) {
       state.world = map;
-      if (!state.lost) state.painter?.setWorld(map);
+      life.painter?.setWorld(map);
     },
     setAtlas(page) {
       state.page = page;
-      if (!state.lost) state.painter?.setAtlas(page);
+      life.painter?.setAtlas(page);
     },
     setFlat(flat) {
       state.flat = flat;
@@ -247,18 +157,14 @@ export function createMapRenderer(canvas: HTMLCanvasElement, options: MapRendere
     setCrowd(hue, xy) {
       if (xy.length !== 2 * hue.length) throw new Error('setCrowd takes an x and a y for each hue');
       state.crowd = { hue, xy };
-      if (!state.lost) state.painter?.setCrowd(hue, xy);
+      life.painter?.setCrowd(hue, xy);
     },
     draw(camera) {
       state.camera = camera;
       redraw();
     },
-    // The listeners go first: losing the context fires webglcontextlost, which would start the fallback timer.
     dispose() {
-      unwatch();
-      clearTimeout(state.timer);
-      state.painter?.dispose();
-      state.painter = null;
+      life.dispose();
     },
   };
 }

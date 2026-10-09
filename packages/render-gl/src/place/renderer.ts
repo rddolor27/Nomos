@@ -1,19 +1,15 @@
 import type { PlaceLayout } from '@nomos/sim-protocol/place';
 import type { AtlasPage } from '../map/frames.ts';
+import { createLifecycle, type Backend, type LifecycleOptions } from '../map/lifecycle.ts';
 import { snapToDevice, type PlaceCamera } from './camera.ts';
 import { createCanvas2dPainter } from './canvas2d.ts';
 import { createPlacePass } from './pass.ts';
 import { personFrames, type PersonFrames } from './people.ts';
 import { PlaceSprites } from './sprites.ts';
 
-export type PlaceBackend = 'webgl2' | 'canvas2d';
+export type PlaceBackend = Backend;
 
-export interface PlaceRendererOptions {
-  // 'canvas2d' skips WebGL2, as the town's ?canvas asks; 'auto' is the default.
-  backend?: 'auto' | 'canvas2d';
-  // How long a lost WebGL2 context may stay lost before Canvas2D takes over; 3,000 ms by default.
-  restoreTimeoutMs?: number;
-}
+export type PlaceRendererOptions = LifecycleOptions;
 
 export interface PlaceRenderer {
   // The requested backend until init settles it.
@@ -40,13 +36,8 @@ interface PlacePainter {
   dispose(): void;
 }
 
+// What the place keeps for any painter, made at init or after a lost context.
 interface PlaceState {
-  readonly options: PlaceRendererOptions;
-  canvas: HTMLCanvasElement;
-  painter: PlacePainter | null;
-  backend: PlaceBackend;
-  lost: boolean;
-  timer: ReturnType<typeof setTimeout> | undefined;
   // The last camera draw received, which a painter made after a lost context draws at once: the app draws on demand.
   camera: PlaceCamera | null;
   // That camera snapped to whole device px once, not once a frame: a fractional camera's x and y box into heap numbers
@@ -67,7 +58,6 @@ const CONTEXT: WebGLContextAttributes = {
   stencil: false,
   preserveDrawingBuffer: false,
 };
-const RESTORE_TIMEOUT_MS = 3000;
 
 function createGlPainter(canvas: HTMLCanvasElement): PlacePainter | null {
   const gl = canvas.getContext('webgl2', CONTEXT);
@@ -87,36 +77,6 @@ function createGlPainter(canvas: HTMLCanvasElement): PlacePainter | null {
   };
 }
 
-function canvas2d(canvas: HTMLCanvasElement): PlacePainter {
-  const painter = createCanvas2dPainter(canvas);
-  if (!painter) throw new Error('this browser offers neither WebGL2 nor Canvas2D for the place');
-  return painter;
-}
-
-// A canvas that held a WebGL context never gives a 2D one, so the fallback draws on a shallow clone.
-function replaceCanvas(old: HTMLCanvasElement): HTMLCanvasElement {
-  const next = old.cloneNode(false) as HTMLCanvasElement;
-  old.replaceWith(next);
-  return next;
-}
-
-// A new painter starts from what the renderer kept, at init and after a lost context.
-function adopt(state: PlaceState, painter: PlacePainter): PlacePainter {
-  if (state.page) painter.setAtlas(state.page);
-  return painter;
-}
-
-function openGl(state: PlaceState): PlacePainter | null {
-  try {
-    const painter = createGlPainter(state.canvas);
-    return painter ? adopt(state, painter) : null;
-  } catch {
-    // A shader that failed to link: the canvas now holds a WebGL context, so swap it.
-    state.canvas = replaceCanvas(state.canvas);
-    return null;
-  }
-}
-
 function spritesOf(state: PlaceState): PlaceSprites | null {
   const { page, people, layout } = state;
   return page && people && layout ? new PlaceSprites(layout, page.frames, people) : null;
@@ -129,96 +89,42 @@ function checkScale(camera: PlaceCamera): void {
 }
 
 export function createPlaceRenderer(canvas: HTMLCanvasElement, options: PlaceRendererOptions = {}): PlaceRenderer {
-  const state: PlaceState = {
-    options,
-    canvas,
-    painter: null,
-    backend: options.backend === 'canvas2d' ? 'canvas2d' : 'webgl2',
-    lost: false,
-    timer: undefined,
-    camera: null,
-    scale: 1,
-    left: 0,
-    top: 0,
-    page: null,
-    people: null,
-    layout: null,
-    sprites: null,
-  };
+  const state: PlaceState = { camera: null, scale: 1, left: 0, top: 0, page: null, people: null, layout: null, sprites: null };
+  const life = createLifecycle<PlacePainter>(canvas, options, {
+    openGl: createGlPainter,
+    open2d: createCanvas2dPainter,
+    // A new painter starts from the page the place kept; the sprites it draws come with each draw.
+    adopt: (painter) => {
+      if (state.page) painter.setAtlas(state.page);
+    },
+    redraw: () => redraw(),
+  });
 
   function redraw(): void {
-    const { painter, camera, canvas, sprites } = state;
-    if (!painter || !camera || state.lost || canvas.width === 0 || canvas.height === 0) return;
-    sprites?.pack();
-    painter.draw(sprites, state.scale, state.left, state.top);
-  }
-
-  function fallBack(): void {
-    unwatch();
-    state.canvas = replaceCanvas(state.canvas);
-    state.painter = adopt(state, canvas2d(state.canvas));
-    state.backend = 'canvas2d';
-    state.lost = false;
-    redraw();
-  }
-
-  // Without preventDefault the browser never restores the context.
-  function onLost(event: Event): void {
-    event.preventDefault();
-    state.lost = true;
-    state.timer = setTimeout(fallBack, options.restoreTimeoutMs ?? RESTORE_TIMEOUT_MS);
-  }
-
-  function onRestored(): void {
-    clearTimeout(state.timer);
-    const painter = openGl(state);
-    if (!painter) {
-      fallBack();
-      return;
-    }
-    state.painter = painter;
-    state.lost = false;
-    redraw();
-  }
-
-  function watch(): void {
-    state.canvas.addEventListener('webglcontextlost', onLost);
-    state.canvas.addEventListener('webglcontextrestored', onRestored);
-  }
-
-  function unwatch(): void {
-    state.canvas.removeEventListener('webglcontextlost', onLost);
-    state.canvas.removeEventListener('webglcontextrestored', onRestored);
+    const { painter, canvas } = life;
+    if (!painter || !state.camera || canvas.width === 0 || canvas.height === 0) return;
+    state.sprites?.pack();
+    painter.draw(state.sprites, state.scale, state.left, state.top);
   }
 
   return {
     get backend() {
-      return state.backend;
+      return life.backend;
     },
     get canvas() {
-      return state.canvas;
+      return life.canvas;
     },
     init() {
-      if (options.backend !== 'canvas2d') state.painter = openGl(state);
-      if (state.painter) {
-        watch();
-        return 'webgl2';
-      }
-      state.painter = adopt(state, canvas2d(state.canvas));
-      state.backend = 'canvas2d';
-      return 'canvas2d';
+      return life.init();
     },
     resize(deviceWidth, deviceHeight, dpr) {
-      state.canvas.width = deviceWidth;
-      state.canvas.height = deviceHeight;
-      state.canvas.style.width = `${deviceWidth / dpr}px`;
-      state.canvas.style.height = `${deviceHeight / dpr}px`;
+      life.resize(deviceWidth, deviceHeight, dpr);
     },
     setAtlas(page) {
       state.page = page;
       state.people = personFrames(page.frames);
       state.sprites = spritesOf(state);
-      if (!state.lost) state.painter?.setAtlas(page);
+      life.painter?.setAtlas(page);
     },
     setPlace(layout) {
       state.layout = layout;
@@ -234,12 +140,8 @@ export function createPlaceRenderer(canvas: HTMLCanvasElement, options: PlaceRen
       }
       redraw();
     },
-    // The listeners go first: losing the context fires webglcontextlost, which would start the fallback timer.
     dispose() {
-      unwatch();
-      clearTimeout(state.timer);
-      state.painter?.dispose();
-      state.painter = null;
+      life.dispose();
     },
   };
 }
