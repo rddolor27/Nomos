@@ -16,6 +16,8 @@ import { biomes } from '../../src/climate/biomes.ts';
 import { habitability } from '../../src/settle/habitability.ts';
 import { settle } from '../../src/settle/settle.ts';
 import { found } from '../../src/countries/countries.ts';
+import { farm } from '../../src/settle/farm.ts';
+import { landmasses, routeGraph } from '../../src/routes/graph.ts';
 
 export function stagePrints(seed: number, size: WorldSize): Map<string, number> {
   const [width, height] = WORLD_SIZES[size];
@@ -98,6 +100,11 @@ export function stagePrints(seed: number, size: WorldSize): Map<string, number> 
   const founded = found(seed, width, height, biome, drained.river, drained.receiver, settlements, landCells);
   const nations = rows(founded.countries.map((c) => [c.id, c.capital, c.colour]));
   prints.set('countries', fold(founded.country, nations, settlements.map((s) => s.tier)));
+
+  const farmed = farm(seed, width, biome, settlements);
+  prints.set('farm', fold(farmed));
+  const mass = landmasses(width, height, farmed);
+  prints.set('routes', fold(rows(routeGraph(settlements, settlements.map((s) => mass[s.uid])))));
 
   return prints;
 }
