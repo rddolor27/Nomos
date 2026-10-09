@@ -1,8 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
-import { placeBuffers, type PlaceError, type PlaceReply } from '@nomos/sim-protocol/place';
+import { layoutBuffers, placeBuffers, type PlaceError, type PlaceReply } from '@nomos/sim-protocol/place';
 import { crowdBuffers } from '@nomos/sim-protocol/world-map';
 import { buildPlace, worldFingerprint } from '@nomos/worldgen';
-import { answerGenerate, answerPlace } from '../src/map/generate.ts';
+import { answerGenerate, answerPlace, answerTown } from '../src/map/generate.ts';
+import { TOWN } from '../src/map/town.ts';
 
 describe('the map worker', { timeout: 60_000 }, () => {
   it('answers generate with the world, its names and its timings, every buffer listed', () => {
@@ -96,6 +97,35 @@ describe('the map worker', { timeout: 60_000 }, () => {
       place: 0,
       message: 'no sprite wonders/wonder_volcano in the place frame table',
     });
+  });
+
+  // The first screen's Town skin asks for Highcourt alone, before any world, through the same lazy builder.
+  it('answers town with Highcourt, every buffer listed, before any world', async () => {
+    let now = 10;
+    const { reply, transfer } = await answerTown(() => (now += 5));
+    if (reply.type === 'town-error') throw new Error(reply.message);
+
+    expect(reply).toMatchObject({ type: 'town', ms: 5 });
+    expect(reply.layout).toEqual(buildPlace(TOWN).layout);
+    expect(transfer).toEqual(layoutBuffers(reply.layout));
+    expect(new Set(transfer).size).toBe(transfer.length);
+    structuredClone(reply, { transfer });
+    expect(reply.layout.tiles.byteLength).toBe(0);
+  });
+
+  it('posts the town to a request before any world', async () => {
+    const { scope, posted } = workerScope();
+    vi.stubGlobal('self', scope);
+    try {
+      vi.resetModules();
+      await import('../src/map/map-worker.ts');
+      scope.onmessage?.({ data: { type: 'town' } });
+      await vi.waitFor(() => expect(posted).toHaveLength(1));
+      expect(posted[0].type).toBe('town');
+    } finally {
+      vi.unstubAllGlobals();
+      vi.resetModules();
+    }
   });
 
   it('posts a place-error for a request before any world', async () => {

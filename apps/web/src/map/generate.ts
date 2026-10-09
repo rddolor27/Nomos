@@ -1,4 +1,4 @@
-import type { PlaceError, PlaceReply, PlaceRequest } from '@nomos/sim-protocol/place';
+import type { PlaceError, PlaceReply, PlaceRequest, TownError, TownReply } from '@nomos/sim-protocol/place';
 import { crowdBuffers, worldMapBuffers, type MapAppMessage, type MapWorkerMessage } from '@nomos/sim-protocol/world-map';
 import { crowdOf, generateWorld, placeContexts, placeNames, type PlaceContext } from '@nomos/worldgen';
 
@@ -11,6 +11,11 @@ export interface MapAnswer {
 
 export interface PlaceAnswer {
   reply: PlaceReply | PlaceError;
+  transfer: ArrayBuffer[];
+}
+
+export interface TownAnswer {
+  reply: TownReply | TownError;
   transfer: ArrayBuffer[];
 }
 
@@ -47,8 +52,22 @@ export async function answerPlace(
     const { buildPlaceAnswer } = await import('./place-builder.ts');
     return buildPlaceAnswer(msg.place, ctx, now);
   } catch (error) {
-    return placeError(msg.place, error instanceof Error ? error.message : String(error));
+    return placeError(msg.place, messageOf(error));
   }
+}
+
+// Its third: Highcourt for the first screen's Town skin, through the same lazy builder, or a town-error, never a throw.
+export async function answerTown(now: () => number): Promise<TownAnswer> {
+  try {
+    const { buildTownAnswer } = await import('./place-builder.ts');
+    return buildTownAnswer(now);
+  } catch (error) {
+    return { reply: { type: 'town-error', message: messageOf(error) }, transfer: [] };
+  }
+}
+
+function messageOf(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
 }
 
 function placeError(place: number, message: string): PlaceAnswer {
