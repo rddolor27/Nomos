@@ -17,5 +17,5 @@ Needs: M8.1's `WorldMap` and names, M0.4's renderer, camera and skin switch, M0.
   - that the page still opens on the town, with the map a click away and loaded on demand;
   - a crowd on the map, from four choices: a look-only crowd rather than live agents; dots that appear on zoom; random body hues; and wandering near home.
 - **Exit checks:**
-  - Country and Region views take ≤ 2 ms of main-thread render time per frame in CI's software-GL Chromium, a proposed bar (R4);
+  - Country and Region views take ≤ 2 ms of main-thread render time per frame in CI's software-GL Chromium, a bar the owner accepted on 9 October 2026 (R4);
   - every crowd dot stands on its own country's land near its settlement. Dots show only from the Region view in and stand still under reduced motion, and neither the first load nor the town's hash changes.

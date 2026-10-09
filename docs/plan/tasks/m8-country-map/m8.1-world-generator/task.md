@@ -16,5 +16,5 @@ Needs: M0's keyed draw, integer noise and five-engine harness, M0.6's generator 
 - **Verify first:** map-generation times in browser workers and on phones, which set the phone tier for the map. Day-step and spawn times follow in M7 and M9.
 - **Exit checks:**
   - a standard 96×64 world generates in ≤ 100 ms and a large 192×128 world in ≤ 400 ms in desktop Chromium, with per-stage fingerprints matching the Python goldens in Node, Bun, Chromium, Firefox and WebKit (R4, R9);
-  - over 100 seeds of each size, every world has 3–5 countries, every land cell and settlement belongs to exactly one, and each country holds at least 3 settlements (Countries);
+  - over 100 seeds of each size, every world has 3–5 countries, every land cell and settlement belongs to exactly one, and each country holds at least 3 settlements (Countries). Beyond those seeds, standard 5EED0215 has a country of 2, as Python makes it, 1 world in 1,000; the owner accepted that on 9 October 2026;
   - the name filter passes 1,000 seeds: every place and country name passes, and none repeats within a world (R4, Countries).

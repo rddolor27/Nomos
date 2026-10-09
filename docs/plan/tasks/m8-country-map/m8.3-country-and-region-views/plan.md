@@ -57,7 +57,8 @@
   - K, `#FC66FC` pink-violet.
 
   Task 2 writes them into `map-colours.json`, the one table that `render-gl` and `mapdraw.py` read. They replace M8.1's provisional five, which failed the palette bar twice: `#AABB00` lies 8.3 from `AUTUMN_L` and `#44BBCC` 12.3 from `WATER_L` (swatch sheet, computed). No test hard-codes a country colour: each reads the table. Task 14 adds the colour check and the golden frame.
-- **The 2 ms bar, still open.** Task 13's spec holds it as `MAP_FRAME_MS = 2`, marked proposed. If the owner sets another bar, only that constant changes, and no earlier task waits on it.
+- **The 2 ms bar, accepted on 9 October 2026.** Task 13's spec holds it as `MAP_FRAME_MS = 2`.
+- **Fit on small screens, deferred by the owner on 9 October 2026.** At 1x and a 1,280 × 800 map section, the smallest step, 8 device px a cell, can't show a whole large world, so Fit cuts its edge rows, mostly sea. A flat step below 8 would fix it; the owner chose to leave it for now.
 - **The map crowd, decided on 9 October 2026.** The owner asked to see each country's people on the map, and chose:
   - **a look-only crowd:** a dot per 100 people, about 10,000 on a large world (computed from `settle`'s population rule: 5,000–16,000). It comes from the seed, with no names, money or sim, so the town's replay never moves;
   - **dots that appear on zoom:** none in the Country view; from the Region view in, growing with zoom until each one can be followed;
@@ -1534,7 +1535,7 @@ Labels are DOM, so only their placement runs in Node. Task 10 mounts them, and T
 
 - **The spec** runs in Playwright's `perf` project: Chromium on SwiftShader, after every other project, as `perf.spec.ts` names it.
 - **What it times.** It opens the map at seed 42 and waits for the atlas page. It then pans by script one device pixel a frame for 240 frames, half in each view, with labels on. Each frame's main-thread time is `renderer.draw` plus `labels.update`, read from `window.__map.frameMs`. In the Region half, that time also covers moving the crowd and drawing it (Task 18).
-- **The bar:** `const MAP_FRAME_MS = 2;`, with the comment `// Proposed (M8.3 task.md); the owner's answer replaces it.` The spec checks the median against it, and records the median, p95 and largest as annotations.
+- **The bar:** `const MAP_FRAME_MS = 2;`, with the comment `// The owner accepted 2 ms on 9 October 2026 (M8.3 task.md).` The spec checks the median against it, and records the median, p95 and largest as annotations.
 - **The atlas page.** The Playwright web server's build has no atlas page. For this spec, its `webServer` command for the app builds it first: `pnpm --filter @nomos/web build && python tools/atlas/build_atlas.py --out apps/web/dist/atlas && pnpm --filter @nomos/web preview`. CI's `browser` job then needs Python with Pillow: add `actions/setup-python` and `pip install -r tools/requirements.txt` to it.
 - **If the bar fails,** profile it. Labels and the overlay upload are the likely costs, so write label styles only on change and build each overlay once. Report the measured figures with the engine and the load average (docs rules).
 - **Commit** `test(web): time the map's frames against the proposed 2 ms bar`.
@@ -1976,7 +1977,7 @@ Every draw is `draw(map.seed, CROWD, …)`, with first keys from 0x100, clear of
 
 | Exit check (task.md and brief) | Proved by |
 | --- | --- |
-| Country and Region views take ≤ 2 ms of main-thread render time per frame in CI's software-GL Chromium, a proposed bar | Task 13 |
+| Country and Region views take ≤ 2 ms of main-thread render time per frame in CI's software-GL Chromium, a bar the owner accepted | Task 13 |
 | The bytes before the first frame and the startup gate stay within limits, and no map chunk loads before the Map control is pressed | Tasks 10, 11 and 12 |
 | Every biome, settlement tier, wonder and landmark the generator emits has a frame on the map page | Tasks 1, 3 and 12 |
 | Seed 42's Countries view matches its golden frame; every border edge draws; the legend lists every country with its name and capital | Task 14 |
