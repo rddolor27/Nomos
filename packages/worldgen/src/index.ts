@@ -5,4 +5,5 @@ export { crowdOf } from './crowd/crowd.ts';
 export { buildPlace, buildSite } from './place/build.ts';
 export { placeContexts } from './place/contexts.ts';
 export { layoutOf } from './place/layout.ts';
+export { placeWalks } from './place/walks.ts';
 export type { PlaceContext } from './place/context.ts';
