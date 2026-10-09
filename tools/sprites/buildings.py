@@ -116,10 +116,11 @@ class Canvas:
 
 
 class Sprite:
-    """A finished drawing: the canvas plus the footprint in tiles and an optional anchor."""
+    """A finished drawing: the canvas plus the footprint in tiles, an optional anchor and, for the
+    buildings added in October 2026, the pixel where people enter."""
 
-    def __init__(self, c, footprint, anchor=None):
-        self.c, self.footprint, self.anchor = c, footprint, anchor
+    def __init__(self, c, footprint, anchor=None, door=None):
+        self.c, self.footprint, self.anchor, self.door = c, footprint, anchor, door
 
 
 def _hash(x, y):
@@ -339,14 +340,14 @@ def wall(c, x0, x1, y0, y1, ramp, tex='plaster', plinth='stone'):
 class Building(Sprite):
     """A standard shell: a hipped roof over a front wall, `w` tiles wide and two tiles deep."""
 
-    def __init__(self, w_tiles, roof_rows=ROOF, overhang=2, top=0, depth=2):
+    def __init__(self, w_tiles, roof_rows=ROOF, overhang=2, top=0, depth=2, wall_rows=WALL, door=False):
         self.W = w_tiles * TILE
-        self.H = top + roof_rows + WALL + 3
-        super().__init__(Canvas(self.W, self.H), [w_tiles, depth])
+        self.H = top + roof_rows + wall_rows + 3
         self.top = top
         self.E = top + 1 + roof_rows          # eave line row
         self.g = self.H - 2                   # ground row (last wall row)
         self.wx0, self.wx1 = 1 + overhang, self.W - 2 - overhang
+        super().__init__(Canvas(self.W, self.H), [w_tiles, depth], door=[self.W // 2, self.g] if door else None)
 
     def roof(self, ramp, tex):
         roof_hip(self.c, 1, self.W - 2, self.top + 1, self.E - 1, ramp, tex)
@@ -1323,6 +1324,288 @@ def workshop():
     return b
 
 
+# ------------------------------------------------------------------ trades
+# The businesses M2's economy needs. Each sign is a board with a pictogram, never a word.
+BED = [                 # inn: a bed with a pillow and a plum blanket
+    'w........',
+    'wWW......',
+    'wWWUUUUUw',
+    'wUUUUUUUw',
+    'wdddddddw',
+    'w.......w',
+]
+
+LOAF = [                # bakery: a scored loaf
+    '...sSSSSs...',
+    '.sSSCSSCSSs.',
+    'sSSCSSCSSCSs',
+    'sSSSSSSSSSSs',
+    '.ssssssssss.',
+]
+
+ANVIL = [               # smithy: an anvil, horn to the left
+    '...KKKKKKKKk',
+    'kKKkkkkkkkkx',
+    '..xxkkkkkxx.',
+    '....xkkkx...',
+    '...xkkkkkx..',
+    '..xxxxxxxxx.',
+]
+
+LANTERN = [
+    '.OOO.',
+    'OxxxO',
+    'OYWYO',
+    'OYYyO',
+    'OxxxO',
+    '.OOO.',
+]
+
+BENCH = [
+    'OOOOOOOOOOOO',
+    'OLLLLLLLLLwO',
+    'OwwwwwwwwwdO',
+    'OOOOOOOOOOOO',
+    '.OdO....OdO.',
+    '.OdO....OdO.',
+    '.OOO....OOO.',
+]
+
+FLOWER_BOX = [          # flowers over a wooden box, on the sill of a 10-px window
+    'GPgGWgGYgPGg',
+    'OLwwwwwwwwdO',
+    'OOOOOOOOOOOO',
+]
+
+BREAD_BASKET = [
+    '.OSOSOSO.',
+    'OSCSSCSsO',
+    'OOOOOOOOO',
+    'OLwLwLwdO',
+    '.OwLwLdO.',
+    '..OOOOO..',
+]
+
+TROUGH = [              # a water trough on legs, as wide as a stall door
+    'OOOOOOOOOOOOOO',
+    'OLAAAAAAAAAAwO',
+    'OwwwwwwwwwwwdO',
+    'OOOOOOOOOOOOOO',
+    '.OdO......OdO.',
+    '.OdO......OdO.',
+]
+
+HORSE_HEAD = [          # looking out over a stall door, muzzle to the left
+    '.......OO.O.',
+    '......OLwOdO',
+    '.....OLLwwdO',
+    '....OLLwwwdO',
+    '...OLwwnwwdO',
+    '..OLwwwwwwdO',
+    '.OCwwwwwwddO',
+    'OCCCwwwwddO.',
+    'OCCOwwwddO..',
+    '.OO.OwwdO...',
+    '....OwwdO...',
+]
+
+HAYLOFT = [             # a loft door open on the hay, under a dormer's roof
+    'OOOOOOOOOOOOOOOOOO',
+    'OwLOOOOOOOOOOOOwdO',
+    'OwLOSCSSCSSSCSOwdO',
+    'OwLOSSCSSsSSSSOwdO',
+    'OwLOOOOOOOOOOOOwdO',
+    'OOOOOOOOOOOOOOOOOO',
+]
+
+ANVIL_ON_STUMP = [
+    'OOOOOOOOOOO.',
+    'OKKKKKKKKkxO',
+    '.OOkkkkkxOO.',
+    '..OOkkxOO...',
+    '.OLwwwwdO...',
+    '.OLwwwwdO...',
+    '.OwwwwwdO...',
+    '.OOOOOOOO...',
+]
+
+HEARTH = [              # a brick forge, coals glowing on top
+    'OOOOOOOOOOOO',
+    'OrRYWWYRrRrO',
+    'OOOOOOOOOOOO',
+    'ORRrRRRrRRrO',
+    'OrrrrrrrrrrO',
+    'ORrRRRrRRRrO',
+    'OrrrrrrrrrrO',
+    'ORRRrRRRrRrO',
+    'OOOOOOOOOOOO',
+]
+
+TUB = BARREL[:1] + ['OAAAAAAO'] + BARREL[2:]    # a barrel brimming with water
+
+
+def sign_board(pict):
+    """A small wooden board with a cream face and the pictogram on it."""
+    w, h = len(pict[0]) + 4, len(pict) + 4
+    rows = ['O' * w, 'O' + 'L' * (w - 3) + 'wO']
+    rows += ['OL' + 'C' * (w - 4) + 'dO'] * (h - 4)
+    rows += ['O' + 'w' * (w - 3) + 'dO', 'O' * w]
+    rows = [list(r) for r in rows]
+    for y, row in enumerate(pict):
+        for x, ch in enumerate(row):
+            if ch != '.':
+                rows[2 + y][2 + x] = ch
+    return [''.join(r) for r in rows]
+
+
+def hanging_sign(c, x, y, pict):
+    """A sign board hung on two short chains from a wooden bracket fixed to the wall at its left end."""
+    board = sign_board(pict)
+    bw = len(board[0])
+    c.prop(x, y, ['O' * (bw + 1), 'O' + 'L' * (bw - 1) + 'O', 'O' + 'w' * (bw - 2) + 'dO', 'O' * (bw + 1)])
+    for cx in (x + 3, x + bw - 3):
+        c.put(cx, y + 4, 'x')
+    c.prop(x + 1, y + 5, board)
+
+
+def stack(c, x, y, h, smoke=False):
+    """A stone chimney: a lit cap over h rows of stack; snow settles on the cap."""
+    c.prop(x, y, ['OOOOOOOO', 'OKKKKKkO', 'OkkkkkxO', 'OOOOOOOO'] + ['.OKkkxO.'] * h)
+    if _snowing:
+        c.hline(x + 1, x + 6, y + 1, 'W')
+        c.hline(x + 1, x + 6, y + 2, 'I')
+    if smoke:
+        c.prop(x + 1, y - len(SMOKE), SMOKE)
+
+
+def stall_door():
+    """A stable's half door: a braced lower leaf under the open upper leaf and the dark stall."""
+    rows = ['O' * 14] + ['O' + 'n' * 12 + 'O'] * 6
+    rows += ['O' * 14, 'OLLLLLLLLLLLwO'] + ['OLwwwwwwwwwwdO'] * 4
+    rows = [list(r) for r in rows]
+    for i in range(4):
+        rows[9 + i][3 + 2 * i] = 'd'
+        rows[9 + i][4 + 2 * i] = 'd'
+    return [''.join(r) for r in rows]
+
+
+def gablet(c, x, y, w, front, ramp):
+    """A small gabled dormer on a roof face: its roof in the roof's ramp, or snow, with `front`
+    stamped under it. (x, y) is the top left of its roof."""
+    H, B, D = ('W', 'W', 'I') if _snowing else (RAMPS[ramp]['H'], RAMPS[ramp]['B'], RAMPS[ramp]['D'])
+    half = w // 2
+    for i in range(half):
+        y0 = y + half - 1 - i
+        c.put(x + i, y0, 'O')
+        c.put(x + w - 1 - i, y0, 'O')
+        for yy in range(y0 + 1, y + half + 1):
+            c.put(x + i, yy, H if i < half // 2 else B)
+            c.put(x + w - 1 - i, yy, D)
+    c.hline(x, x + w - 1, y + half, D)
+    c.prop(x + 1, y + half + 1, front)
+
+
+def inn():
+    b = Building(5, roof_rows=20, top=6, wall_rows=37, door=True)
+    c = b.c
+    W, E, g = b.W, b.E, b.g
+    jetty = E + 15
+    ux0, ux1 = b.wx0 - 1, b.wx1 + 1                          # the upper storey overhangs a pixel
+    roof_hip(c, 1, W - 2, b.top + 1, E - 1, 'terracotta', 'tile')
+    c.hline(ux0, ux1, E, 'O')
+    wall(c, ux0, ux1, E + 1, jetty - 1, 'cream', plinth=None)
+    c.hline(ux0, ux1, E + 1, 'd')
+    for px in (ux0, 21, 39, 57, ux1 - 1):                     # half-timbered: posts between the windows
+        c.vline(px, E + 1, jetty - 1, 'w')
+        c.vline(px + 1, E + 1, jetty - 1, 'd')
+    for x in (8, 26, 44, 62):
+        b.window(x, 'C', y=E + 2, sill=None)
+        c.prop(x - 1, E + 11, FLOWER_BOX)
+    for row, ch in enumerate('wdO'):
+        c.hline(ux0, ux1, jetty + row, ch)
+    wall(c, b.wx0, b.wx1, jetty + 3, g, 'sand')
+    b.doorway()
+    b.window(6, 'w', y=jetty + 6)
+    b.window(W - 15, 'w', y=jetty + 6)
+    c.ground(5, BENCH)
+    c.prop(b.door_x() - 7, jetty + 5, LANTERN)
+    c.ground(b.door_x() + 20, BARREL)
+    hanging_sign(c, b.door_x() + 18, jetty + 3, BED)
+    stack(c, 12, 0, 5)
+    stack(c, W - 20, 0, 5)
+    return b
+
+
+def bakery():
+    b = Building(4, top=10, door=True)
+    c = b.c
+    W, E = b.W, b.E
+    b.roof('shingle', 'shingle')
+    b.wall('cream')
+    stack(c, W - 21, b.top - 1, 5, smoke=True)
+    b.doorway()
+    x0 = b.wx0 + 2                                            # loaves on show under an awning
+    c.stamp(x0, E + 7, window('w', w=16, h=11))
+    c.hline(x0, x0 + 15, E + 18, 'w')
+    c.swap(x0, E + 19, x0 + 15, E + 19, SHADE)
+    for i, x in enumerate(range(x0 + 2, x0 + 14, 4)):
+        c.rect(x, E + 9, x + 2, E + 10, 'S')
+        c.put(x + 2, E + 10, 's')
+        c.rect(x, E + 14, x + 2, E + 15, 'S' if i % 2 else 's')
+    c.prop(b.wx0, E, awning(20, 'R', 'r', 'C', 'c', h=6))
+    c.prop(W // 2 - 8, E - 11, sign_board(LOAF))
+    b.window(b.wx1 - 13, 'w', sill='w')
+    c.ground(b.wx1 - 9, SACK)
+    c.ground(b.door_x() + 20, BREAD_BASKET)
+    return b
+
+
+def smithy():
+    b = Building(4, top=9, door=True)
+    c = b.c
+    W, E, g = b.W, b.E, b.g
+    b.roof('slate', 'slate')
+    b.wall('stone', 'stone', plinth=None)
+    stack(c, 7, b.top - 2, 8, smoke=True)
+    ox0, ox1 = 19, 46                                         # open front on the forge
+    c.rect(ox0, g - DOOR_H + 1, ox1, g, 'O')
+    c.rect(ox0 + 1, g - DOOR_H + 2, ox1 - 1, g, 'd')
+    c.hline(ox0 + 1, ox1 - 1, g - DOOR_H + 2, 'n')
+    hx = ox0 + 2
+    for x, y in ((hx + 1, g - 12), (hx + 10, g - 12), (hx + 2, g - 10), (hx + 9, g - 10)):
+        c.put(x, y, 'r')                                      # glow on the back wall
+    c.prop(hx + 1, g - 16, ['.OOOOOOOO.', 'OKKKKKKKkO', 'OkkkkkkkxO', '.OOOOOOOO.'])   # hood
+    c.vline(hx + 5, g - 12, g - 10, 'x')
+    c.prop(hx, g - 9, HEARTH)
+    c.prop(hx + 11, g - 9, ['OOOO..', 'OLwdO.', 'OwwddO', 'OwwddO', '.OdO..', '..O...'])   # bellows
+    for x in (ox1 - 6, ox1 - 3):                              # tongs and hammers on the back wall
+        c.vline(x, g - 14, g - 8, 'x')
+        c.put(x - 1, g - 14, 'k')
+    c.prop(W // 2 - 8, E - 11, sign_board(ANVIL))
+    c.ground(ox1 + 2, ANVIL_ON_STUMP)
+    c.ground(b.wx0 + 3, TUB)
+    for x in (b.wx0 + 4, b.wx0 + 10):                         # shoes hung on the wall
+        c.stamp(x, E + 5, ['OOOO', 'OkOk', 'OxOx', '.OO.'])
+    return b
+
+
+def stable():
+    b = Building(5, top=6, door=True)
+    c = b.c
+    W, E, g = b.W, b.E, b.g
+    b.roof('thatch', 'thatch')
+    b.wall('wood', 'vboard', plinth=None)
+    big_doors(c, W // 2 - 13, g, 26)
+    c.stamp(W // 2 - 2, E + 1, ['xk.kx', 'xk.kx', '.xkx.'])   # a shoe nailed over the doors is the sign
+    for x in (b.wx0 + 5, b.wx1 - 18):
+        c.stamp(x, g - 12, stall_door())
+    c.prop(b.wx0 + 4, g - 17, HORSE_HEAD)
+    gablet(c, W // 2 - 10, b.top + 1, 20, HAYLOFT, 'thatch')
+    c.prop(b.wx0 + 5, g - 5, TROUGH)                          # its top rail is the stall door's
+    c.ground(b.wx1 - 10, HAY)
+    return b
+
+
 SPRITES = [
     ('civic_clinic', clinic),
     ('civic_police-station', police),
@@ -1343,6 +1626,10 @@ SPRITES = [
     ('work_mine', mine),
     ('work_fuel-works', fuel_works),
     ('work_workshop', workshop),
+    ('shop_inn', inn),
+    ('shop_bakery', bakery),
+    ('work_smithy', smithy),
+    ('work_stable', stable),
 ]
 
 
@@ -1352,7 +1639,8 @@ def build():
         s = fn()
         im = s.c.image()
         anchor = s.anchor or (im.width // 2, im.height - 1)
-        add_with_snow(sheet, name, im, lambda: fn().c.image(), anchor=anchor, footprint=s.footprint)
+        door = {'door': s.door} if s.door else {}
+        add_with_snow(sheet, name, im, lambda: fn().c.image(), anchor=anchor, footprint=s.footprint, **door)
     return sheet
 
 
