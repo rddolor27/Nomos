@@ -184,3 +184,14 @@ If the session ended: check `git log` for those Task lines, and `git status` for
   - Follow-ups for the final test pass:
     - the Town view chunk is at 7,692 of 8,000 B;
     - `town-view-qa.spec.ts` should check a walker's tile against its loop's cells, rather than axis-aligned spots.
+- 10 Oct: **the first screen draws in the town view's art** (b012157 to b2d3b9e, nine commits).
+  - The Town skin draws Highcourt's layout, built in the map worker, with the sim's blobs as sprites.
+  - Frame times: 0.49 ms with 3,381 blobs on desktop, and 1.25 ms with 10,000.
+  - The coordinator raised auto-skin's town cap from 425 to 4,000 blobs in view, and from 575 to 4,600 to stay, so Auto opens the first screen as Town. The perf tiers' 10k and more stay Dots, and so does a phone fitted to the whole town, until the user zooms in.
+- **Flagged broken since the 128×80 map,** for the final minor test pass:
+  - the render-gl goldens at three DPRs;
+  - the minimap colours;
+  - "caps Canvas2D at 5,000";
+  - the inspector's "no blob within a tile".
+  - In SwiftShader the town renders at about 4.5 fps.
+- **The economy, M2.1** (plan 1067f77): Tasks 2 (25d584c), 3 (ab081c9) and 4 (fb7d0f2) are done. Task 1, the state layout, is running. Wave 2 (Tasks 5–7), then Task 8, then one economy-review, determinism-review and QA pass.
