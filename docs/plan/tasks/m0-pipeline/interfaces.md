@@ -85,7 +85,7 @@ The tables give the layout M0.7 builds, including the files it adds. A renamed f
 | `skins/` | `skin.ts`, `skin-toggle.ts` | Skin choice, the automatic policy and the toggle |
 | `dots/` | `dots.ts`, `colour.ts`, `minimap.ts`, `skin-a.json` | Skin A: dot shapes, its palette and contrast, and the minimap |
 
-Skin B and Skin C arrive as `blobs/` and `town/` beside `dots/` (M1.3, M3.3).
+Skin B and Skin C arrive as `blobs/` and `town/` beside `dots/` (M1.3, M3.3). M8.3 adds `map/`, the map scene, behind the `./map` export whose entry file is `src/map.ts`.
 
 **`apps/web/src`**
 
@@ -95,6 +95,7 @@ Skin B and Skin C arrive as `blobs/` and `town/` beside `dots/` (M1.3, M3.3).
 | `app/` | `app.ts`, `boot.ts`, `lifecycle.ts`, `query.ts`, `tiers.ts` | The app shell: boot hand-off, worker link, query, tiers and the page lifecycle |
 | `view/` | `camera-input.ts` | Pointer and keyboard input on the view, and the click that inspects; it loads after the first frame, as the charts do (M0.7) |
 | `panels/` | `hud.ts`, `charts.ts`, `controls.ts`, `inspector.ts` (new) | The HUD, the lazy charts and controls, and the on-demand inspector |
+| `map/` | `generate.ts` and `map-worker.ts` (M8.1); `map-view.ts`, `map-input.ts`, `labels.ts` and `legend.ts` (M8.3) | The map: its worker, and the lazy view the Map control opens |
 
 `apps/web/vite/` keeps the build plugins. Vite names a lazy chunk after its file, so the size-limit globs `charts-*.js` and `controls-*.js` hold after the move, and the view input's and the inspector's chunks need entries of their own.
 
@@ -239,6 +240,8 @@ Skin B and Skin C arrive as `blobs/` and `town/` beside `dots/` (M1.3, M3.3).
 - A manifest names its frames and never holds an atlas index; the atlas build places them (R9).
 
 ## WorldRenderer (owner: M0.4)
+
+The map doesn't draw through `WorldRenderer`. M8.3's `MapRenderer` has a canvas and a context of its own, behind the lazy `./map` export, so the renderer chunk keeps its bytes (see The map scene).
 
 - In `render-gl`: `createWorldRenderer(canvas: HTMLCanvasElement, options: RendererOptions): WorldRenderer`.
   - `RendererOptions` is `{ release(buffer: ArrayBuffer): void; backend?: 'auto' | 'canvas2d'; restoreTimeoutMs?: number }`. `'canvas2d'` skips WebGL2, as `?canvas` asks. A lost WebGL2 context falls back to Canvas2D after `restoreTimeoutMs`, 3,000 ms by default.
@@ -397,5 +400,59 @@ The rest:
 - **In `web`,** only `src/map/generate.ts`, which answers a `generate` message, and `src/map/map-worker.ts`, which binds it to the worker's messages, may reach `@nomos/worldgen`.
   - The page starts the worker with `new Worker(new URL('./map-worker.ts', import.meta.url), { type: 'module', name: 'map' })`.
   - So Vite builds it as its own chunk, `map-worker-*.js`, whose name never matches the sim worker's `worker-*.js` glob.
-- **`render-gl`** gains a `./map` export, the lazy map scene, with its entry file at `src/map.ts`. It imports only `sim-protocol`, and M8.3 defines its API.
+- **`render-gl`** gains a `./map` export, the lazy map scene, with its entry file at `src/map.ts`. It imports only `sim-protocol`, and its API is The map scene, below.
 - **Nothing of the map reaches the first load** (owner, 9 October 2026). The entry, sim worker and renderer chunks keep their bytes, and the Map control mounts from a chunk that already loads after the first frame.
+
+## The map scene (owner: M8.3)
+
+The Country and Region views draw a `WorldMap` with a renderer of their own, which loads only when the Map control is pressed.
+
+### `@nomos/render-gl/map`
+
+- **Camera:** `MapCamera` is `{ x, y, cellPx }`.
+  - `x` and `y` are the cell at the view's top-left, fractional.
+  - `cellPx` is whole device pixels per cell, one of `MAP_CELL_PX`: 8, 16, 32, 48, 64, 96 and 128. Every step past 8 is a multiple of 16, so both views draw their art at whole scales.
+  - `fitMapCamera(width, height, deviceWidth, deviceHeight)` gives the largest step that shows every cell, centred, or 8 when none does.
+  - `zoomMapAt(camera, steps, deviceX, deviceY)` moves along `MAP_CELL_PX`, keeping the cell under the point where it was.
+  - `panMapBy(camera, dxDevice, dyDevice)` moves the view right or down for a positive delta.
+  - `cameraDevice(camera)` gives the view's top-left in whole device pixels, which every draw snaps to.
+  - All four return a new camera.
+- **Views:** `MapView` is `'country' | 'region'`.
+  - The Country view draws the `map8_` art at `cellPx / 8`, and the Region view the `map16_` art at `cellPx / 16`.
+  - `mapViewFor(current, cellPx, dpr)` switches to the Region view at 16 CSS px a cell, with `autoSkin`'s 15% hysteresis: it enters at 18.4 and stays down to 13.6. At 8 device px a cell it is always the Country view.
+- **Colours:** `map/map-colours.json` is the one table of the map's colours.
+  - It holds the five country colours and the line colours, and `tools/worldgen/mapdraw.py` reads the same file.
+  - `COUNTRY_COLOURS` holds the five as `0xRRGGBB`, indexed by `WorldMap.countries.colour`. They appear only on map overlays and the legend (Countries rule 5).
+  - The owner picks the five from a swatch sheet; until then the table holds M8.1's provisional ones.
+- **Atlas page:** `tools/atlas` writes `map.webp`, `map.png` and `map.json` beside the town atlas. The page holds the 81 map-scale frames: terrain tiles, wonders and landmarks at both scales, and the settlement icons.
+  - `AtlasPage` is `{ image: ImageBitmap, frames: Record<string, AtlasFrame> }`, keyed `"<sheet>/<frame>"`.
+  - `AtlasFrame` is `{ x, y, w, h, anchor: [x, y] }`.
+  - `loadAtlasPage(jsonUrl, imageUrl): Promise<AtlasPage>` fetches the page.
+  - Frames are found by name, never by atlas index (R9).
+- **`createMapRenderer(canvas: HTMLCanvasElement, options?: MapRendererOptions): MapRenderer`.**
+  - `MapRendererOptions` is `{ backend?: 'auto' | 'canvas2d', restoreTimeoutMs?: number }`, as `RendererOptions` has them.
+  - `MapRenderer` reads `backend`, `canvas` and `view`: the view the last draw showed.
+  - Its methods are `init()`, `resize(deviceWidth, deviceHeight, dpr)`, `setWorld(map: WorldMap)`, `setAtlas(page: AtlasPage)`, `setFlat(flat: boolean)`, `draw(camera: MapCamera)` and `dispose()`.
+  - It falls back to Canvas2D when WebGL2 is missing, when a texture can't reach 3,072 px, or when a lost context stays lost for `restoreTimeoutMs`.
+- **What draws:**
+  - **Before the atlas page,** and whenever `setFlat(true)`, it draws the flat Countries view: each country's land in its colour, with borders and icons.
+  - **After the page:** each cell's tile, then rivers, sea lanes, roads, bridges, colour bands and border lines as pixel lines, then peaks, settlements, wonders and landmarks in row order, as `mapdraw.py` draws them.
+  - **The Canvas2D fallback** draws the flat fills, settlement icons and labels only.
+- **Imports:** the map scene imports nothing from `render-gl`'s other folders, so no town module gains an export for it. Dependency-cruiser enforces this.
+
+### In `web`
+
+- **The Map control** sits in the lazy controls chunk, so the entry chunk gains no byte. It imports `map/map-view.ts`, whose chunk holds the map scene, labels, legend and input.
+- **Opening the map:**
+  - it pauses the town if it was playing, and makes the town's view and HUD inert under the map;
+  - it starts the map worker once per page, and keeps the world it answers for the rest of the page;
+  - it fetches the atlas page beside it.
+- **Closing the map** resumes the town only if the map paused it, and gives focus back to the Map control. Escape closes it too.
+- **Labels** are a fixed pool of DOM elements, moved by transforms whenever the camera moves:
+  - the Country view labels countries, capitals and cities;
+  - the Region view labels every settlement;
+  - a greedy pass, in that priority order, drops any label that would overlap one already shown.
+- **The legend** lists each country's colour, name, capital and settlement count. It is also the map's text alternative.
+- **Chunks:**
+  - `map-view-*.js`, `map-worker-*.js` and `dist/atlas/map.webp` each get a size-limit entry;
+  - `vite.config.ts`'s `render-gl` chunk group leaves out `src/map`, so the scene never joins the renderer chunk.

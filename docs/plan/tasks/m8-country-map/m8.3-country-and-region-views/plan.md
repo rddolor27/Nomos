@@ -1,90 +1,1269 @@
-# M8.3 Country and Region views: implementation brief
+# M8.3 Country and Region views: implementation plan
 
-> **Status:** brief. Before building, expand it into a step-by-step plan with the writing-plans skill, in this file, against the code as it then stands. It is built right after M8.1, before M1 (owner, 9 October 2026).
+> **For agentic workers:** REQUIRED SUB-SKILL: Use executing-plans to implement this plan task by task. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+> **Status:** step plan (9 October 2026), expanded from the brief while M8.1's port runs, as the owner asked for the map now. Tasks 1–6 need only M8.1's Task 9, the world-map codes, and can run beside M8.1's ports. Task 10 and later need M8.1's whole `WorldMap` and its map worker.
 
 **Task:** [task.md](task.md)
 
-## Approach
+**Goal:** a Map control, pressed after the town has loaded, opens the world of 3–5 countries as Country and Region views: pixel-art tiles, rivers, roads, sea lanes, bridges, borders with colour bands, icons, labels and a legend, with pan and zoom. A flat Countries view draws without the atlas. Nothing of it reaches the town's first load, and a frame takes ≤ 2 ms of main-thread time.
 
-- **The town stays the first frame; the map opens on demand.** A "Map" control loads the map's chunks only when pressed, so the 100 KB before the first frame and the startup gate don't move (R5). The owner decides whether the page should open on the map instead (below).
-- **A map worker of its own.** It runs M8.1's `generateWorld(seed, 'large')` and `placeNames`, then posts the `WorldMap` and the names with every buffer transferred.
-  - The sim worker's chunk, capped at 15 kB, never carries the generator.
-  - The seed is the page's `?seed`, so a link shows the same world.
-  - The map is display data, not sim state, so nothing in it is hashed or saved yet.
-  - M8.6's live preview later reuses this worker.
-- **The town pauses while the map shows,** as it does when the tab is hidden, and resumes on return only if it was playing. Nobody watches it then, and it would spend battery on phones (agent ruling).
-- **One renderer, two scenes.** The map draws through M0.4's `WorldRenderer` as a second scene, so one canvas, one context, one context-loss path and one Canvas2D fallback serve the town and the map. The map scene's code loads lazily from `@nomos/render-gl/map`, so the renderer chunk stays under its 10 kB limit. The step plan updates `WorldRenderer` in [interfaces.md](../../m0-pipeline/interfaces.md).
-- **What the map shows,** in this order:
-  1. **Terrain:** the `map8_` and `map16_` tile for each cell's biome, with the keyed grassland and farmland variants `mapdraw.py` uses, and peaks as overlays.
-  2. **Lines:** rivers, roads, sea lanes and bridge decks as pixel lines, as `mapdraw.py` draws them. Round 9 keeps them as lines, since 66.5% of river links and 40.1% of road steps are diagonal (R9).
-  3. **Countries:** a neutral border line along cell edges between countries, with a band of each side's map colour, 1 px wide in the Country view and 2 px in the Region view.
-  4. **Icons:** settlements by tier, each country's capital with the capital icon, then wonders and landmarks, drawn in row order.
-  5. **Labels by band (R4):** the Country view shows country names, capitals and cities; the Region view shows every settlement. Labels are culled by priority, country first, so none overlap.
-  6. **The legend,** in the HUD: each country's colour swatch, name, capital and number of towns. It is also the text alternative for screen readers.
-- **The flat Countries view.** A toggle fills each country's land with its map colour and the sea with water, keeping borders, icons and labels. It needs no atlas, so it is also what draws while the map atlas page loads. M8.4 later makes it one of its map modes.
-- **The tile pass (R3, R9).** A tile-index texture, read with `texelFetch`, draws the cells in one quad per chunk. The map atlas page holds the 83 map-scale frames, about 17,657 px of art (measured here), so it fits one 256×128 page. M3.3 later adds animated tiles, the town's chunks and its pages.
-- **One camera over cells.** M0.4's `fitCamera`, `zoomAt` and `panBy` work in cells. The view switches from Country (8-px tiles) to Region (16-px tiles) by CSS pixels per cell, with `autoSkin`'s 15% hysteresis. Tiles draw only at whole-number scales, so the pixel art stays crisp.
-- **Input and access.** M0.5's `bindCameraInput` gives drag, wheel, pinch, arrow keys and +/−. A fit button shows the whole world. Under reduced motion, zoom cuts rather than animates.
+**Architecture:**
+- **A renderer of its own.** `@nomos/render-gl/map` holds `MapRenderer`, with its own canvas, its own WebGL2 context and its own Canvas2D fallback. `WorldRenderer` and the renderer chunk stay as they are.
+- **Two GL passes a frame.**
+  - The base pass is one triangle over the viewport. Each device pixel finds its cell and art pixel, and reads three textures with `texelFetch`: the cell's tile, the overlay of lines, borders and bands, and the atlas page.
+  - The icons pass then draws every peak, settlement, wonder and landmark as one instanced draw, in row order.
+- **The overlay is built once per view on the CPU.** It holds each art pixel's palette index, at 8 px a cell for the Country view and 16 for the Region view. `overlay.ts` ports `mapdraw.py`'s line drawing, so the views draw what the previews draw.
+- **One camera over cells.** Zoom steps along a ladder of device pixels per cell, so every texel lands on whole device pixels. The Country view gives way to the Region view at 16 CSS px a cell, with 15% hysteresis.
+- **The page.** Labels and the legend are DOM in `apps/web`'s lazy map view. The view starts the map worker once, keeps its world, and pauses the town while the map shows.
 
-## Packages and files
+**Tech stack:** TypeScript 6, WebGL2 (GLSL ES 3.00), Canvas2D, Vitest 5, Playwright with SwiftShader Chromium, Vite 8 and size-limit; Python 3.12 or later with Pillow for the atlas page.
 
-All paths follow M0.7's layout: concern folders under `src/`, with entry files at `src/` only, as its lint requires.
-- `apps/web/src/map/`:
-  - `open.ts`: the Map control, the lazy entry and the town's pause;
-  - `worker.ts`: the map worker around `generateWorld` and `placeNames`;
-  - `legend.ts` and `labels.ts`: the legend and a fixed pool of label elements.
-- `packages/render-gl/src/map/`: `tiles.ts`, `lines.ts`, `countries.ts`, `icons.ts` and `scene.ts`, behind a `./map` subpath export whose entry file sits at `src/`.
-- `tools/atlas/build_atlas.py`: writes the map page apart from the rest, with one frame table for both.
-- `apps/web/.size-limit.json`: entries for the map view chunk, the map worker chunk and the map atlas page, with limits set from the first build plus headroom, as M0.5 set its stand-ins. M0.6's chunk gate fails on any chunk left ungated.
-- The dependency-cruiser config: `web` may import `@nomos/worldgen` from its map worker only.
+**Spec:** [task.md](task.md); [interfaces.md, The map scene](../../m0-pipeline/interfaces.md#the-map-scene-owner-m83) and The world map; `tools/worldgen/mapdraw.py` for what each view draws; R4's world-map notes for label bands; R3's rendering notes for the tile pass.
 
-## Interfaces and data
+### Who does what
 
-- **Map scene:** `createMapScene(map: WorldMap, names: string[], page: AtlasPage)`, handed to `WorldRenderer`, which draws it and restores it after a context loss.
-- **View state:** `'country' | 'region'` here. M8.5 adds the focus state, and M9 adds settlement, district and street.
-- **Country colours:** one table of five RGB values, read by `render-gl` and `tools/worldgen/mapdraw.py`. M8.1's colour index points into it.
-- **Map icon table:** settlement tier, landmark and wonder → frame name, from the manifests. M8.8 adds military places and coast overlays.
+"Junior" tasks run from this plan alone: type the code given exactly, run the steps, and stop before the commit for the coordinator's check. "Senior" tasks need judgment; the plan gives their design and done-checks.
 
-## Method and sources
+| Task | What | Who | Needs |
+| --- | --- | --- | --- |
+| 1 | The map atlas page | Junior, exact code | — |
+| 2 | The `./map` export: camera, colours and dependency rules | Junior, exact code | — |
+| 3 | Frame names and the atlas page loader | Junior, exact code | 1, 2, M8.1 Task 9 |
+| 4 | The overlay: rivers, routes, bridges, borders and bands | Junior, exact code | 2, M8.1 Task 9 |
+| 5 | Label placement | Junior, exact code | 2, M8.1 Task 9 |
+| 6 | The legend and map input | Junior, exact code | 2, M8.1 Task 9 |
+| 7 | The base pass: tiles, flat fills and the overlay | Senior | 3, 4 |
+| 8 | The icons pass | Senior | 7 |
+| 9 | `MapRenderer`: views, context loss and the Canvas2D fallback | Senior | 8 |
+| 10 | The Map control and the lazy map view | Senior | 5, 6, 9, M8.1 Task 30 |
+| 11 | Size limits and the first-load check | Junior, exact steps | 10 |
+| 12 | The exit tests: tiles complete, labels by band, the town's pause | Junior, exact code | 10, M8.1 Task 29 |
+| 13 | The 2 ms bar | Senior | 10 |
+| 14 | The owner's five colours and the Countries golden frame | Senior and owner | 9, the owner's pick |
+| 15 | Close M8.3 | Senior | 11–14 |
 
-- **Tiles and the square-grid views:** the [R9 report](../../../../research/round-9-maps-and-world-builder/report.md), "The country uses the square grid".
-- **Map levels, icons and label bands:** [R4 world map notes](../../../../research/round-4-multi-scale/notes/world-maps.md), the four levels.
-- **Tile pass and atlas pages:** [R3 rendering notes](../../../../research/round-3-2d-look/notes/rendering-tooling.md), and the Performance budget's "Images" and "Load order".
-- **What the previews draw:** `tools/worldgen/mapdraw.py`.
+### The owner's open decisions, taken as parameters
 
-## Tests for the exit checks
+Neither decision blocks a task before the one that needs it.
+- **The five country colours.** Task 2 puts the provisional five of M8.1's Part 1, Ruling 5, into `map-colours.json`, the one table that `render-gl` and `mapdraw.py` read. No test hard-codes a country colour: each reads the table. Task 14 writes the owner's picks into that one file, then regenerates the Countries golden frame.
+- **The 2 ms bar.** Task 13's spec holds it as `MAP_FRAME_MS = 2`, marked proposed. If the owner sets another bar, only that constant changes.
 
-- `views render within 2 ms`: Country and Region views take ≤ 2 ms of main-thread render time per frame in CI's software-GL Chromium, a proposed bar, timed while panning with labels on.
-- `first frame untouched`: the before-the-first-frame bytes and the startup gate stay within their limits, and no map chunk loads before the Map control is pressed.
-- `tiles complete`: every biome, settlement tier, wonder and landmark the generator emits over 100 worlds has a frame on the map atlas page.
-- `countries drawn`: a golden frame of seed 42's Countries view; every border edge is drawn, and the legend lists every country with its name and capital.
-- `labels by band`: the Country view shows only country, capital and city labels, the Region view every settlement's, and no two labels overlap.
-- `town pauses and resumes`: opening the map pauses the town; closing it resumes the town only if it was playing.
+### Global constraints
 
-## Risks and unknowns
+- **Nothing of the map reaches the first load** (owner, 9 October 2026):
+  - the entry, sim worker and renderer chunks keep their bytes;
+  - `render-gl/src/map/` imports nothing from `render-gl`'s other folders, and `apps/web/src/map/` takes only types from the town's modules. Dependency-cruiser enforces both from Task 2;
+  - every task that changes `apps/web` or `render-gl` ends with Task 11's byte check.
+- **Web rules:** whole device-pixel zoom steps, a snapped camera and no CSS scaling; the Canvas2D fallback keeps working; the map's chunks load only when the Map control is pressed.
+- **`code.md` and the lints:** concern folders, complexity ≤ 10 and depth ≤ 4, and comments only for a why.
+- **Other agents share this tree:**
+  - stage with `git add <paths>` and commit with `git commit -- <paths>`, checking `git diff` of every shared file first;
+  - never `git add -A`, `git stash`, `git push` or `--no-verify`;
+  - commit under `git -c user.name=rddolor27 -c user.email=80044625+rddolor27@users.noreply.github.com commit`, with each body starting `Task: M8.3 Country and Region views, task N: <title>`;
+  - a junior stops before its commit step, and the coordinator checks the diff and commits with the message given.
+- **Gates before every commit:** `pnpm test && pnpm lint && pnpm typecheck && pnpm depcruise && pnpm names`. A browser task adds `pnpm test:browser`, and a Python task its own script.
+- **The sim never moves:** `node tools/cli/src/main.ts --seed 42 --tier phone --ticks 1000` prints `hash=b3b2c251`.
 
-- **Labels are the hard part of the 2 ms bar.** Culling runs whenever the camera moves, so it must allocate nothing per frame.
-- **The renderer chunk is capped at 10 kB.** Keep every map pass in the lazy chunk.
-- **Phones take longer to generate.** Desktop is about twice as fast as a budget Android phone under the plan's multipliers, so a 400 ms desktop world may take about 0.8 s there (inference). Show a progress line in the map's place meanwhile.
+### Rulings (agent, 9 October 2026; the owner can overturn them)
 
-## Open questions
+1. **The map has its own renderer.** The brief proposed drawing the map through `WorldRenderer` as a second scene. With 234 B left under the town's stand-in, any change there could cost first-load bytes. So the map gets a renderer of its own, in the lazy chunk, with a canvas and a context of its own. The town's renderer keeps its context while the map shows; the map's renderer frees its own on close.
+2. **The camera's ladder** is 8, 16, 32, 48, 64, 96 and 128 device pixels per cell. Every step past 8 is a multiple of 16, so either view draws at a whole scale. The views switch at 16 CSS px a cell, where Region art first shows each art pixel at one CSS pixel or more, with `autoSkin`'s 15% hysteresis.
+3. **One overlay texture a view.** Lines, bridges, borders and bands are painted into a byte per art pixel. That is 1.5 MB for the Country view and 6.3 MB for the Region view of a large world (computed), each built and uploaded once, when its view first draws. A device whose textures stop below 3,072 px draws the map in Canvas2D. WebGL2 only promises 2,048 px, though desktop and recent phone GPUs offer 4,096 or more (inference).
+4. **The atlas page is a build product,** like the town atlas.
+   - `tools/atlas` writes `map.webp`, `map.png` and `map.json` beside it: 81 frames on a 256 × 91 px page, with the WebP at 3,860 bytes (measured here).
+   - The app fetches the page when the map opens. Until it arrives, or if it is missing, the flat Countries view draws.
+   - Local runs build it with `python tools/atlas/build_atlas.py --out apps/web/dist/atlas` after `pnpm --filter @nomos/web build`, as CI already does.
+5. **Colours in one JSON file,** `packages/render-gl/src/map/map-colours.json`. It holds the five country colours and the water and line colours, and `mapdraw.py` reads its country colours from it.
+6. **Labels are DOM,** as the brief suggested:
+   - a fixed pool of spans, measured once and moved by transforms only when the camera moves;
+   - bands follow R4: the Country view labels countries, capitals and cities, and the Region view labels every settlement;
+   - a greedy pass in that order drops any label that would overlap one already placed.
+7. **The Map control mounts from the lazy controls chunk,** as a lil-gui button, so the entry chunk gains no byte.
+8. **The town pauses while the map shows,** through `app.setPaused(true)`, and resumes on close only if the map paused it. The town's view and HUD go `inert` under the map, so the HUD's stale Play label is never seen or read. The map section covers both.
+9. **One world per page.** The map worker answers once and is then terminated. The map view keeps the `WorldMap` and names for every later opening, since the seed never changes within a page.
+10. **The Canvas2D fallback** draws the flat fills, from a one-pixel-per-cell image scaled without smoothing, then the settlement icons and the labels. Borders show as colour edges, as the brief allowed.
 
-- **Owner, decided on 9 October 2026: option (a),** five map-only colours that the owner picks from a swatch sheet. Which five colours do countries take? The sprite palette holds 61 of its 64 colours. Of the free hues, nearly all belong to body hues, police navy, merchant teal, crime reds and oranges, black, the gold coin or the eight culture emblems. Options:
-  - (a) a map-only table of five colours outside the sprite palette, used only on map overlays and the legend, and tested to stay at CIEDE2000 ≥ 15 from all 47 reserved colours and outside the red–orange and body-hue families. 6,976 of 79,507 colours on a 6-step RGB grid pass the distance bar (computed here);
-  - (b) raise the palette cap from 64 to 66 and add the five as palette entries;
-  - (c) five existing palette tones, accepting closeness to terrain and emblem colours.
+### Files
 
-  The owner chose (a). No sprite ever uses a country colour, so the table can sit outside the palette. Still needed before building: the five picks from the swatch sheet.
-- **Owner, decided on 9 October 2026: the town,** with the map a click away. Does the page open on the town, with the map a click away, or on the map? Opening on the map puts the generator and map chunks before the first frame, likely past the 35 kB initial-JS limit: 16.2 kB today plus an estimated 15–25 kB (unsourced estimate). Suggested: the town, until the map links to the streets in M9. Needed before: the step plan.
-- **Owner:** Is the proposed bar of 2 ms main-thread render time per frame in software-GL Chromium accepted? It is the only exit check here. Suggested: accept it, timed while panning with labels on. Needed before: building.
-- **Design:** Labels as DOM elements or a pixel font in the atlas? DOM text is crisp, reads to screen readers and costs no atlas space. Suggested: a fixed pool of DOM labels moved by transforms, updated only when the camera moves. Needed before: the step plan.
+- `tools/atlas/build_atlas.py` and `test_atlas.py` (Task 1).
+- `tools/worldgen/mapdraw.py` and `test_worldgen.py` (Task 2).
+- `packages/render-gl/`:
+  - `package.json`, gaining the `./map` export;
+  - `src/map.ts`, the entry;
+  - `src/map/`: `camera.ts`, `colours.ts`, `map-colours.json`, `frames.ts`, `overlay.ts`, `gl.ts`, `base-pass.ts`, `icons.ts`, `canvas2d.ts` and `renderer.ts`;
+  - tests in `test/`, and harness hooks in `harness/`.
+- `apps/web/`:
+  - `src/map/map-view.ts`, `map-input.ts`, `labels.ts` and `legend.ts`;
+  - `src/panels/controls.ts`, `vite.config.ts` and `.size-limit.json`;
+  - tests in `test/` and `test/browser/`.
+- Root: `eslint.config.js` and `.dependency-cruiser.cjs` (Task 2).
 
-## Implementation notes
+### Task 1: The map atlas page (junior, exact code)
 
-Suggestions for the step plan, which makes the final call.
+**Files:** modify `tools/atlas/build_atlas.py`, `tools/atlas/test_atlas.py` and `apps/web/.size-limit.json` (shared).
 
-- **Build order:** the map worker and the flat Countries view first, then the map atlas page and the tile pass, timed against 2 ms. Then lines, icons, country bands, labels and the legend, then the Region view and the Canvas2D fallback.
-- **Reuse:** M0.4's renderer, camera helpers and `autoSkin`; M0.5's lazy loading, `bindCameraInput` and atlas stub; M8.1's `WorldMap` and names; the existing `map8_` and `map16_` frames.
-- **Keep it simple:** label bands are a fixed table of zoom ranges per kind, with no layout beyond culling. The Canvas2D fallback draws the flat Countries view, icons and labels only.
-- **Pitfalls:** the flat view must never wait for the atlas. Frames are looked up by name, never by atlas index (R9). The map worker must transfer its buffers, or a large world is copied on the main thread.
-- **Hard and easy parts:** labels within 2 ms and the line pass need care; the legend, the flat view and wiring the existing icons are mechanical.
+- [ ] **Step 1: The failing check.** In `tools/atlas/test_atlas.py`:
+  - change the import to `from build_atlas import ATLAS_WIDTH, MAP_PAGE_WIDTH, MAP_PREFIXES, MAX_HEIGHT, pack  # noqa: E402`;
+  - give `pixel_problems` two parameters: `def pixel_problems(index, expected, out, images=IMAGES, every=SAMPLE_EVERY):`. In its body, `IMAGES` becomes `images`, and `sorted(expected)[::SAMPLE_EVERY]` becomes `sorted(expected)[::every]`;
+  - add this function after `built_problems`:
+
+    ```python
+    def map_page_problems(out):
+        """The map page holds exactly the map-scale frames, within MAP_PAGE_WIDTH, each pixel for pixel."""
+        expected = {key: frame for key, frame in manifest_frames().items() if key.startswith(MAP_PREFIXES)}
+        index = json.loads((out / 'map.json').read_text(encoding='utf-8'))
+        width, height = index['size']
+        problems = [f'{key}: in map.json but no map frame' for key in index['frames'] if key not in expected]
+        problems += [f'{key}: missing from map.json' for key in expected if key not in index['frames']]
+        if width > MAP_PAGE_WIDTH:
+            problems.append(f'the map page is {width} px wide, over {MAP_PAGE_WIDTH}')
+        if not problems:
+            problems = placement_problems(index, expected) + pixel_problems(index, expected, out, ('map.webp', 'map.png'), 1)
+        print(f'{len(expected)} map frames on a {width} x {height} page')
+        return problems
+    ```
+
+  - in `main`, change `problems += built_problems(Path(tmp))` to `problems += built_problems(Path(tmp)) + map_page_problems(Path(tmp))`.
+- [ ] **Step 2: Run** `python tools/atlas/test_atlas.py`. Expected: an `ImportError` on `MAP_PAGE_WIDTH`.
+- [ ] **Step 3: The page.** In `tools/atlas/build_atlas.py`:
+  - add after `GAP = 1`:
+
+    ```python
+    # The map scene's own page (M8.3): terrain tiles, wonders and landmarks at both map scales, and the settlement icons,
+    # so the map never waits for the whole atlas.
+    MAP_PAGE_WIDTH = 256
+    MAP_PREFIXES = ('map/map8_', 'map/map16_', 'map/settlement_', 'wonders/map8_', 'wonders/map16_', 'landmarks/map8_',
+                    'landmarks/map16_')
+    ```
+
+  - give `pack` a `width=ATLAS_WIDTH` parameter and use it in place of `ATLAS_WIDTH` in its body: in both checks and both error messages, as in `f'atlas would be {width} x {height} px, over {MAX_HEIGHT} px tall'`. Its docstring says "into `width` px";
+  - make `compose(frames, places, width, height)`, with `Image.new('RGBA', (width, height), (0, 0, 0, 0))`;
+  - give `write_atlas` a last parameter, `name='atlas'`, and name its three files `f'{name}.webp'`, `f'{name}.png'` and `f'{name}.json'`;
+  - add before `main`:
+
+    ```python
+    def build_page(frames, width, out, name):
+        places, height = pack({f.key: (f.w, f.h) for f in frames}, width)
+        optimised = write_atlas(compose(frames, places, width, height), frames, places, out, name)
+        print(f'{name}: {len(frames)} frames packed into {width} x {height} px in {out}')
+        for suffix in ('webp', 'png'):
+            print(f'{name}.{suffix}: {(out / f"{name}.{suffix}").stat().st_size:,} bytes')
+        return optimised
+    ```
+
+  - replace `main`'s body after `frames = read_frames()` with:
+
+    ```python
+        try:
+            optimised = build_page(frames, ATLAS_WIDTH, out, 'atlas')
+            build_page([f for f in frames if f.key.startswith(MAP_PREFIXES)], MAP_PAGE_WIDTH, out, 'map')
+        except ValueError as error:
+            sys.exit(f'atlas: {error}')
+        print('the PNGs went through oxipng' if optimised else 'oxipng is not installed: the PNGs are as Pillow wrote them')
+    ```
+
+  - add to the module docstring: "It also writes the map scene's page, map.webp, map.png and map.json (M8.3)."
+- [ ] **Step 4: Gate the page.** CI builds the atlas into `apps/web/dist/atlas`, and `tools/bench/src/chunks.ts` fails on any WebP without a size-limit entry. So add, after the `Atlas` entry in `apps/web/.size-limit.json`:
+
+  ```json
+  {
+    "name": "Map atlas page",
+    "path": ["dist/atlas/map.webp"],
+    "brotli": false,
+    "limit": "8 kB"
+  }
+  ```
+
+- [ ] **Step 5: Run** `python tools/atlas/test_atlas.py`. Expected: `map: 81 frames packed into 256 x 91 px`, `81 map frames on a 256 x 91 page` and `ok`. Then:
+  1. `pnpm --filter @nomos/web build`;
+  2. `python tools/atlas/build_atlas.py --out apps/web/dist/atlas`;
+  3. `pnpm --filter @nomos/web size` passes, with the map page near 3.9 kB;
+  4. `node tools/bench/src/chunks.ts` prints `0 ungated chunks`.
+- [ ] **Step 6: Commit** `feat(atlas): pack the map scene's own atlas page`, with the three files.
+
+### Task 2: The `./map` export: camera, colours and dependency rules (junior, exact code)
+
+**Files:** modify `packages/render-gl/package.json`, `tools/worldgen/mapdraw.py`, `tools/worldgen/test_worldgen.py`, `eslint.config.js` and `.dependency-cruiser.cjs` (both shared); create `packages/render-gl/src/map.ts`, `src/map/camera.ts`, `src/map/colours.ts`, `src/map/map-colours.json`, `test/map-camera.test.ts` and `test/map-colours.test.ts`.
+
+- [ ] **Step 1: Write the failing tests.** `packages/render-gl/test/map-camera.test.ts`:
+
+  ```ts
+  import { describe, expect, it } from 'vitest';
+  import { MAP_CELL_PX, cameraDevice, fitMapCamera, mapViewFor, panMapBy, zoomMapAt } from '../src/map.ts';
+
+  describe('the map camera', () => {
+    it('fits the largest step that shows every cell, centred', () => {
+      expect(fitMapCamera(192, 128, 1600, 1100)).toEqual({ x: -4, y: -4.75, cellPx: 8 });
+      expect(fitMapCamera(192, 128, 3200, 2100).cellPx).toBe(16);
+      expect(fitMapCamera(192, 128, 800, 600).cellPx).toBe(8);
+    });
+
+    it('zooms along the ladder about a point, and stops at its ends', () => {
+      expect(zoomMapAt({ x: 10, y: 20, cellPx: 16 }, 1, 320, 160)).toEqual({ x: 20, y: 25, cellPx: 32 });
+      expect(zoomMapAt({ x: 10, y: 20, cellPx: 16 }, -5, 0, 0).cellPx).toBe(8);
+      expect(zoomMapAt({ x: 0, y: 0, cellPx: 128 }, 3, 0, 0).cellPx).toBe(128);
+    });
+
+    it('pans and snaps in device pixels', () => {
+      expect(panMapBy({ x: 1, y: 2, cellPx: 32 }, 64, -32)).toEqual({ x: 3, y: 1, cellPx: 32 });
+      expect(cameraDevice({ x: 1.26, y: -0.5, cellPx: 16 })).toEqual([20, -8]);
+    });
+
+    it('gives way to the Region view at 16 CSS px a cell, with 15% hysteresis', () => {
+      expect(mapViewFor('country', 16, 1)).toBe('country');
+      expect(mapViewFor('region', 16, 1)).toBe('region');
+      expect(mapViewFor('country', 32, 1)).toBe('region');
+      expect(mapViewFor('region', 8, 1)).toBe('country');
+      expect(mapViewFor('country', 32, 2)).toBe('country');
+      expect(mapViewFor('region', 32, 2)).toBe('region');
+      expect(mapViewFor('region', 16, 2)).toBe('country');
+      expect(mapViewFor('country', 48, 2)).toBe('region');
+    });
+
+    it('draws either view at a whole scale on every step', () => {
+      for (const cellPx of MAP_CELL_PX) {
+        for (const current of ['country', 'region'] as const) {
+          for (const dpr of [1, 1.5, 2, 3]) {
+            const art = mapViewFor(current, cellPx, dpr) === 'region' ? 16 : 8;
+            expect(cellPx % art, `${cellPx} px at dpr ${dpr} from ${current}`).toBe(0);
+          }
+        }
+      }
+    });
+  });
+  ```
+
+  `packages/render-gl/test/map-colours.test.ts`:
+
+  ```ts
+  import { describe, expect, it } from 'vitest';
+  import { COUNTRY_COLOURS, LINE_COLOURS } from '../src/map.ts';
+
+  describe('the map colours', () => {
+    it('holds five distinct country colours, none of them a line colour', () => {
+      expect(COUNTRY_COLOURS).toHaveLength(5);
+      expect(new Set(COUNTRY_COLOURS).size).toBe(5);
+      for (const colour of COUNTRY_COLOURS) expect(Object.values(LINE_COLOURS)).not.toContain(colour);
+    });
+  });
+  ```
+
+  In `tools/worldgen/test_worldgen.py`, add this check and put it in `CHECKS` after `borders_draw_on_cell_edges`:
+
+  ```python
+  def map_colours_match_the_palette():
+      """map-colours.json, which render-gl's map scene shares, holds the palette's water and line colours."""
+      from mapdraw import MAP_COLOURS
+      from spritekit import PALETTE
+      names = {'water': 'WATER', 'river': 'WATER', 'lane': 'WATER_L', 'road': 'WOOD', 'deck': 'WOOD_L', 'rail': 'WOOD_D',
+               'border': 'OUTLINE'}
+      wanted = {key: '#' + bytes(PALETTE[name]).hex().upper() for key, name in names.items()}
+      return [f'{key} is {MAP_COLOURS[key]}, but the palette gives {colour}' for key, colour in wanted.items()
+              if MAP_COLOURS[key] != colour]
+  ```
+
+- [ ] **Step 2: Run** `pnpm exec vitest run packages/render-gl/test/map-camera.test.ts packages/render-gl/test/map-colours.test.ts`, and `python tools/worldgen/test_worldgen.py`. Expected: failures, since nothing exists yet.
+- [ ] **Step 3: The colours.** `packages/render-gl/src/map/map-colours.json`, holding Part 1's provisional country colours and `spritekit`'s palette colours for the rest:
+
+  ```json
+  {
+    "countries": ["#0000DD", "#AABB00", "#334422", "#EE00DD", "#44BBCC"],
+    "water": "#3C7CD0",
+    "river": "#3C7CD0",
+    "lane": "#7CC4F0",
+    "road": "#784C2C",
+    "deck": "#A86C3C",
+    "rail": "#4C2E1C",
+    "border": "#020202"
+  }
+  ```
+
+  `packages/render-gl/src/map/colours.ts`:
+
+  ```ts
+  import table from './map-colours.json';
+
+  // One table with tools/worldgen/mapdraw.py's previews. Country colours are map-only: no body, building, soldier or police
+  // officer ever wears one (Countries rule 5). The owner's five picks replace the provisional ones in the JSON (Task 14).
+  export const COUNTRY_COLOURS: readonly number[] = table.countries.map(rgbOf);
+
+  export const LINE_COLOURS = {
+    water: rgbOf(table.water),
+    river: rgbOf(table.river),
+    lane: rgbOf(table.lane),
+    road: rgbOf(table.road),
+    deck: rgbOf(table.deck),
+    rail: rgbOf(table.rail),
+    border: rgbOf(table.border),
+  };
+
+  function rgbOf(hex: string): number {
+    return Number.parseInt(hex.slice(1), 16);
+  }
+  ```
+
+  In `tools/worldgen/mapdraw.py`, add `import json` beside `import sys`, and replace the comment and `COUNTRY_COLOURS` lines with:
+
+  ```python
+  ROOT = HERE.parents[1]
+  # One table with render-gl's map scene (M8.3). Countries.Country.colour indexes its five country colours, which stay
+  # outside the sprite palette (M8.1 plan, Ruling 5) until the owner's picks replace them.
+  MAP_COLOURS = json.loads((ROOT / 'packages' / 'render-gl' / 'src' / 'map' / 'map-colours.json').read_text(encoding='utf-8'))
+  COUNTRY_COLOURS = tuple(tuple(int(colour[k:k + 2], 16) for k in (1, 3, 5)) for colour in MAP_COLOURS['countries'])
+  ```
+
+- [ ] **Step 4: The camera.** `packages/render-gl/src/map/camera.ts`:
+
+  ```ts
+  // x and y are the cell at the view's top-left, fractional; cellPx is whole device pixels per cell, from MAP_CELL_PX.
+  export interface MapCamera {
+    x: number;
+    y: number;
+    cellPx: number;
+  }
+
+  export type MapView = 'country' | 'region';
+
+  // Every step past the first is a multiple of 16, so both views draw their art at whole scales: the Country view's 8-px
+  // tiles at cellPx / 8 and the Region view's 16-px tiles at cellPx / 16.
+  export const MAP_CELL_PX: readonly number[] = [8, 16, 32, 48, 64, 96, 128];
+
+  // Region art shows each art pixel at one CSS pixel or more from 16 CSS px a cell. As autoSkin does, a switch needs 15%
+  // past that, so a camera resting on the limit never flickers (R4).
+  const REGION_ENTER_CSS_PX = 18.4;
+  const REGION_STAY_CSS_PX = 13.6;
+
+  export function mapViewFor(current: MapView, cellPx: number, dpr: number): MapView {
+    if (cellPx < 16) return 'country';
+    const limit = current === 'region' ? REGION_STAY_CSS_PX : REGION_ENTER_CSS_PX;
+    return cellPx / dpr >= limit ? 'region' : 'country';
+  }
+
+  // The largest step that shows every cell, centred; a view too small for any still gets the smallest.
+  export function fitMapCamera(width: number, height: number, deviceWidth: number, deviceHeight: number): MapCamera {
+    let cellPx = MAP_CELL_PX[0];
+    for (const step of MAP_CELL_PX) {
+      if (step * width <= deviceWidth && step * height <= deviceHeight) cellPx = step;
+    }
+    return { x: (width - deviceWidth / cellPx) / 2, y: (height - deviceHeight / cellPx) / 2, cellPx };
+  }
+
+  // Moves steps along MAP_CELL_PX, keeping the cell under the device point where it was.
+  export function zoomMapAt(camera: MapCamera, steps: number, deviceX: number, deviceY: number): MapCamera {
+    const at = Math.max(0, MAP_CELL_PX.indexOf(camera.cellPx));
+    const next = MAP_CELL_PX[Math.min(MAP_CELL_PX.length - 1, Math.max(0, at + steps))];
+    const pointX = camera.x + deviceX / camera.cellPx;
+    const pointY = camera.y + deviceY / camera.cellPx;
+    return { x: pointX - deviceX / next, y: pointY - deviceY / next, cellPx: next };
+  }
+
+  // A positive delta moves the view right or down, as the town's panBy does.
+  export function panMapBy(camera: MapCamera, dxDevice: number, dyDevice: number): MapCamera {
+    return { x: camera.x + dxDevice / camera.cellPx, y: camera.y + dyDevice / camera.cellPx, cellPx: camera.cellPx };
+  }
+
+  // The view's top-left in whole device pixels, which every draw snaps to, so each texel lands on whole pixels.
+  export function cameraDevice(camera: MapCamera): [number, number] {
+    return [Math.round(camera.x * camera.cellPx), Math.round(camera.y * camera.cellPx)];
+  }
+  ```
+
+  `packages/render-gl/src/map.ts`, the entry; later tasks add a line each:
+
+  ```ts
+  export * from './map/camera.ts';
+  export * from './map/colours.ts';
+  ```
+
+  In `packages/render-gl/package.json`, add `"./map": "./src/map.ts"` to `exports`, after `"."`.
+- [ ] **Step 5: The rules.**
+  - In `eslint.config.js`, add `'packages/render-gl/src/map.ts',` to `ENTRY_FILES`, after `'packages/sim-core/src/kernels.ts',`.
+  - In `.dependency-cruiser.cjs`, add before `no-cycles`:
+
+    ```js
+    {
+      name: 'map-scene-stands-alone',
+      comment:
+        "M8.3: the lazy map scene imports nothing from render-gl's town folders, so the renderer chunk never gains an export for it.",
+      severity: 'error',
+      from: { path: '^packages/render-gl/src/map(\\.ts$|/)' },
+      to: { path: '^packages/render-gl/src/', pathNot: '^packages/render-gl/src/map(\\.ts$|/)' },
+    },
+    {
+      name: 'map-view-takes-only-types-from-the-town',
+      comment: 'M8.3: the map view reaches the town only through `import type`, so the entry chunk never gains an export for it.',
+      severity: 'error',
+      from: { path: '^apps/web/src/map/' },
+      to: { path: '^apps/web/src/', pathNot: '^apps/web/src/map/' },
+    },
+    ```
+
+- [ ] **Step 6: Run** the Step 2 commands, then the gates. Expected: all pass, `mapdraw.py`'s previews unchanged, since the colours are the same. Then plant `import '../dots/colour.ts';` at the top of `src/map/camera.ts`, and run `pnpm depcruise`. Expected: one `map-scene-stands-alone` error. Remove the line.
+- [ ] **Step 7: Commit** `feat(render-gl): add the map export with its camera and colours`, with every file above.
+
+### Task 3: Frame names and the atlas page loader (junior, exact code)
+
+**Files:** create `packages/render-gl/src/map/frames.ts` and `test/map-frames.test.ts`; modify `src/map.ts`.
+
+- [ ] **Step 1: Write the failing test,** `packages/render-gl/test/map-frames.test.ts`:
+
+  ```ts
+  import { readFileSync } from 'node:fs';
+  import { BIOME_NAMES, LANDMARK_NAMES, TIER_NAMES, WONDER_NAMES } from '@nomos/sim-protocol/world-map';
+  import { describe, expect, it } from 'vitest';
+  import { landmarkFrame, peakFrame, settlementFrame, tileFrame, wonderFrame, type MapView } from '../src/map.ts';
+
+  const known = new Set(
+    ['map', 'wonders', 'landmarks'].flatMap((sheet) => {
+      const manifest = JSON.parse(readFileSync(new URL(`../../../assets/sprites/${sheet}.json`, import.meta.url), 'utf8'));
+      return Object.keys(manifest.frames).map((name) => `${sheet}/${name}`);
+    }),
+  );
+  const VIEWS: MapView[] = ['country', 'region'];
+
+  function everyName(): string[] {
+    const names = TIER_NAMES.map((_, tier) => settlementFrame(tier));
+    for (const view of VIEWS) {
+      for (let biome = 0; biome < BIOME_NAMES.length; biome++) {
+        for (let variant = 0; variant < 4; variant++) {
+          names.push(tileFrame(biome, variant, view));
+          names.push(peakFrame(biome, variant, view) ?? tileFrame(biome, variant, view));
+        }
+      }
+      WONDER_NAMES.forEach((_, kind) => names.push(wonderFrame(kind, view)));
+      LANDMARK_NAMES.forEach((_, kind) => names.push(landmarkFrame(kind, view)));
+    }
+    return names;
+  }
+
+  describe('the map frames', () => {
+    it('names a frame the sprite manifests hold, for every code in both views', () => {
+      expect(everyName().filter((name) => !known.has(name))).toEqual([]);
+    });
+
+    it('picks tiles and peaks as mapdraw.py does', () => {
+      expect(tileFrame(BIOME_NAMES.indexOf('lake'), 3, 'region')).toBe('map/map16_water_0');
+      expect(tileFrame(BIOME_NAMES.indexOf('grassland'), 3, 'country')).toBe('map/map8_grassland_1');
+      expect(tileFrame(BIOME_NAMES.indexOf('peak'), 0, 'country')).toBe('map/map8_mountain');
+      expect(peakFrame(BIOME_NAMES.indexOf('peak'), 0, 'country')).toBe('map/map8_peak');
+      expect(peakFrame(BIOME_NAMES.indexOf('mountain'), 2, 'country')).toBeNull();
+      expect(peakFrame(BIOME_NAMES.indexOf('mountain'), 2, 'region')).toBe('map/map16_peak-low');
+      expect(peakFrame(BIOME_NAMES.indexOf('mountain'), 1, 'region')).toBeNull();
+    });
+  });
+  ```
+
+- [ ] **Step 2: Run** `pnpm exec vitest run packages/render-gl/test/map-frames.test.ts`. Expected: fails, since `frames.ts` doesn't exist.
+- [ ] **Step 3: Write `packages/render-gl/src/map/frames.ts`:**
+
+  ```ts
+  import { BIOME_NAMES, LANDMARK_NAMES, TIER_NAMES, WONDER_NAMES } from '@nomos/sim-protocol/world-map';
+  import type { MapView } from './camera.ts';
+
+  export interface AtlasFrame {
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+    anchor: [number, number];
+  }
+
+  // Frames are keyed "<sheet>/<frame>" and found by name, never by atlas index (R9).
+  export interface AtlasPage {
+    image: ImageBitmap;
+    frames: Readonly<Record<string, AtlasFrame>>;
+  }
+
+  function artPx(view: MapView): number {
+    return view === 'region' ? 16 : 8;
+  }
+
+  // mapdraw.py's _tile: both waters draw as water, a peak's cell as mountain under its peak, and grassland and farmland
+  // take the variant's bit 0.
+  export function tileFrame(biome: number, variant: number, view: MapView): string {
+    const name = BIOME_NAMES[biome];
+    const px = artPx(view);
+    if (name === 'ocean' || name === 'lake') return `map/map${px}_water_0`;
+    if (name === 'peak') return `map/map${px}_mountain`;
+    if (name === 'grassland' || name === 'farmland') return `map/map${px}_${name}_${variant & 1}`;
+    return `map/map${px}_${name}`;
+  }
+
+  // mapdraw.py's _overlays: every peak rises over its tile, and in the Region view a low peak rises over each mountain
+  // whose variant has bit 1.
+  export function peakFrame(biome: number, variant: number, view: MapView): string | null {
+    const name = BIOME_NAMES[biome];
+    if (name === 'peak') return `map/map${artPx(view)}_peak`;
+    return name === 'mountain' && view === 'region' && (variant & 2) !== 0 ? 'map/map16_peak-low' : null;
+  }
+
+  export function settlementFrame(tier: number): string {
+    return `map/settlement_${TIER_NAMES[tier]}`;
+  }
+
+  export function wonderFrame(kind: number, view: MapView): string {
+    return `wonders/map${artPx(view)}_wonder_${WONDER_NAMES[kind]}`;
+  }
+
+  export function landmarkFrame(kind: number, view: MapView): string {
+    return `landmarks/map${artPx(view)}_landmark_${LANDMARK_NAMES[kind]}`;
+  }
+
+  async function fetchOk(url: string): Promise<Response> {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`${url}: ${response.status}`);
+    return response;
+  }
+
+  // The page tools/atlas writes beside the town atlas: map.json holds the frame table and map.webp the pixels.
+  export async function loadAtlasPage(jsonUrl: string, imageUrl: string): Promise<AtlasPage> {
+    const [index, pixels] = await Promise.all([
+      fetchOk(jsonUrl).then((response) => response.json() as Promise<{ frames: Record<string, AtlasFrame> }>),
+      fetchOk(imageUrl).then((response) => response.blob()),
+    ]);
+    return { image: await createImageBitmap(pixels), frames: index.frames };
+  }
+  ```
+
+  Add `export * from './map/frames.ts';` to `src/map.ts`.
+- [ ] **Step 4: Run** the Step 2 command, then the gates. Expected: all pass. `loadAtlasPage` is proved in a browser by Task 10.
+- [ ] **Step 5: Commit** `feat(render-gl): name the map's frames and load its atlas page`.
+
+### Task 4: The overlay: rivers, routes, bridges, borders and bands (junior, exact code)
+
+**Files:** create `packages/render-gl/src/map/overlay.ts`, `test/tiny-world.ts` and `test/map-overlay.test.ts`; modify `src/map.ts`.
+
+The overlay ports `mapdraw.py`'s `_rivers`, `_routes`, `_dots`, `_bridges`, `_edges`, `_strip` and `_borders` to one byte per art pixel. It draws in their order, so later marks cover earlier ones. Rivers step as `_dots` does rather than as Pillow's wide lines, since no golden ties the two. This code was run against the expected pixels below (measured here).
+
+- [ ] **Step 1: A world for tests,** `packages/render-gl/test/tiny-world.ts`, which Tasks 5, 6 and 12 reuse:
+
+  ```ts
+  import type { WorldMap } from '@nomos/sim-protocol/world-map';
+
+  // A grassland world of one country, with nothing on it; a test patches in what it needs.
+  export function tinyWorld(width: number, height: number, patch: Partial<WorldMap> = {}): WorldMap {
+    const cells = width * height;
+    const none = (): WorldMap['roads'] => ({ offsets: new Int32Array([0]), cells: new Int32Array(0) });
+    return {
+      version: 1,
+      seed: 1,
+      width,
+      height,
+      template: 0,
+      wind: 0,
+      cold: 0,
+      elevation: new Int16Array(cells).fill(100),
+      biome: new Uint8Array(cells).fill(2),
+      temperature: new Uint8Array(cells).fill(120),
+      moisture: new Uint8Array(cells).fill(120),
+      river: new Uint8Array(cells),
+      receiver: new Int32Array(cells).fill(-1),
+      coast: new Uint8Array(cells),
+      variant: new Uint8Array(cells),
+      country: new Uint8Array(cells).fill(1),
+      region: new Uint16Array(cells).fill(1),
+      market: new Uint16Array(cells).fill(1),
+      settlements: {
+        cell: new Int32Array(0),
+        tier: new Uint8Array(0),
+        population: new Int32Array(0),
+        country: new Uint8Array(0),
+        region: new Uint16Array(0),
+        landmarks: new Uint8Array(0),
+      },
+      countries: { capital: new Int32Array([0]), colour: new Uint8Array([0]) },
+      regions: { seat: new Int32Array([0]), country: new Uint8Array([1]) },
+      roads: none(),
+      lanes: none(),
+      bridges: new Int32Array(0),
+      wonders: { kind: new Uint8Array(0), cell: new Int32Array(0) },
+      landmarks: { kind: new Uint8Array(0), cell: new Int32Array(0) },
+      ...patch,
+    };
+  }
+  ```
+
+- [ ] **Step 2: Write the failing test,** `packages/render-gl/test/map-overlay.test.ts`:
+
+  ```ts
+  import { describe, expect, it } from 'vitest';
+  import { BAND, BORDER, DECK, RAIL, RIVER, ROAD, buildOverlay, type Overlay } from '../src/map.ts';
+  import { tinyWorld } from './tiny-world.ts';
+
+  function row(o: Overlay, y: number, x0: number, x1: number): number[] {
+    return [...o.pixels.subarray(y * o.width + x0, y * o.width + x1 + 1)];
+  }
+
+  function column(o: Overlay, x: number, y0: number, y1: number): number[] {
+    const out: number[] = [];
+    for (let y = y0; y <= y1; y++) out.push(o.pixels[y * o.width + x]);
+    return out;
+  }
+
+  const TWO = { country: new Uint8Array([1, 2]), countries: { capital: new Int32Array([0, 1]), colour: new Uint8Array([0, 1]) } };
+  const FLOW = { river: new Uint8Array([1, 0, 0]), receiver: new Int32Array([1, -1, -1]) };
+  const ROAD_0_1 = { roads: { offsets: new Int32Array([0, 2]), cells: new Int32Array([0, 1]) } };
+  const BRIDGED = { roads: { offsets: new Int32Array([0, 3]), cells: new Int32Array([0, 1, 2]) }, bridges: new Int32Array([1]) };
+
+  describe('the map overlay', () => {
+    it("draws borders on cell edges, as test_worldgen.py checks the previews'", () => {
+      const narrow = buildOverlay(tinyWorld(2, 1, TWO), 'country');
+      for (let y = 0; y < 8; y++) expect(row(narrow, y, 5, 9)).toEqual([0, BAND, BORDER, BAND + 1, 0]);
+      const wide = buildOverlay(tinyWorld(2, 1, TWO), 'region');
+      for (let y = 0; y < 16; y++) expect(row(wide, y, 12, 19)).toEqual([0, BAND, BAND, BORDER, BORDER, BAND + 1, BAND + 1, 0]);
+      const stacked = buildOverlay(tinyWorld(1, 2, TWO), 'country');
+      for (let x = 0; x < 8; x++) expect(column(stacked, x, 5, 9)).toEqual([0, BAND, BORDER, BAND + 1, 0]);
+      const coast = buildOverlay(tinyWorld(3, 1, { ...TWO, country: new Uint8Array([1, 0, 2]) }), 'country');
+      expect(coast.pixels.every((value) => value === 0)).toBe(true);
+    });
+
+    it('draws a river from centre to centre, a pixel wider at size 3', () => {
+      const thin = buildOverlay(tinyWorld(3, 1, FLOW), 'country');
+      expect(row(thin, 4, 3, 13)).toEqual([0, ...Array<number>(9).fill(RIVER), 0]);
+      expect(thin.pixels.filter((value) => value === RIVER)).toHaveLength(9);
+      const broad = buildOverlay(tinyWorld(3, 1, { ...FLOW, river: new Uint8Array([3, 0, 0]) }), 'region');
+      expect(row(broad, 8, 7, 27)).toEqual([0, ...Array<number>(19).fill(RIVER), 0]);
+      expect(broad.pixels.filter((value) => value === RIVER)).toHaveLength(57);
+    });
+
+    it('dashes roads, and draws them over sea lanes', () => {
+      const dotted = [ROAD, 0, ROAD, 0, ROAD, 0, ROAD, 0, ROAD];
+      expect(row(buildOverlay(tinyWorld(2, 1, ROAD_0_1), 'country'), 4, 4, 12)).toEqual(dotted);
+      const both = { ...ROAD_0_1, lanes: ROAD_0_1.roads };
+      expect(row(buildOverlay(tinyWorld(2, 1, both), 'country'), 4, 4, 12)).toEqual(dotted);
+      const region = row(buildOverlay(tinyWorld(2, 1, ROAD_0_1), 'region'), 8, 7, 26);
+      expect(region).toEqual([0, 3, 3, 3, 0, 3, 3, 3, 0, 3, 3, 3, 0, 3, 3, 3, 0, 3, 3, 0].map((v) => (v ? ROAD : 0)));
+    });
+
+    it('lays a bridge deck along its road, with a rail round it', () => {
+      const level = buildOverlay(tinyWorld(3, 1, BRIDGED), 'country');
+      expect(row(level, 3, 10, 13)).toEqual([RAIL, RAIL, RAIL, RAIL]);
+      expect(row(level, 4, 10, 13)).toEqual([RAIL, DECK, DECK, RAIL]);
+      expect(row(level, 5, 10, 13)).toEqual([RAIL, RAIL, RAIL, RAIL]);
+      const upright = buildOverlay(tinyWorld(1, 3, BRIDGED), 'country');
+      expect(column(upright, 4, 10, 13)).toEqual([RAIL, DECK, DECK, RAIL]);
+      expect(row(upright, 10, 3, 5)).toEqual([RAIL, RAIL, RAIL]);
+    });
+  });
+  ```
+
+- [ ] **Step 3: Run** `pnpm exec vitest run packages/render-gl/test/map-overlay.test.ts`. Expected: fails, since `overlay.ts` doesn't exist.
+- [ ] **Step 4: Write `packages/render-gl/src/map/overlay.ts`:**
+
+  ```ts
+  import { BIOME_NAMES, type PathTable, type WorldMap } from '@nomos/sim-protocol/world-map';
+  import type { MapView } from './camera.ts';
+
+  // Palette indices, in mapdraw.py's drawing order; 0 is none. Country colour c's band is BAND + c. The flat Countries
+  // view hides RIVER to RAIL, as countries.png draws neither water nor routes over its fills.
+  export const RIVER = 1;
+  export const LANE = 2;
+  export const ROAD = 3;
+  export const DECK = 4;
+  export const RAIL = 5;
+  export const BORDER = 6;
+  export const BAND = 7;
+
+  // One view's overlay in art pixels: 8 a cell in the Country view and 16 in the Region view.
+  export interface Overlay {
+    readonly width: number;
+    readonly height: number;
+    readonly pixels: Uint8Array;
+  }
+
+  const LAKE = BIOME_NAMES.indexOf('lake');
+
+  // mapdraw.py's sizes in each view: the river's width, the routes' dash, gap and thickness, the bridge deck along and
+  // across its road, and the border's line and bands.
+  const MARKS = {
+    country: { tilePx: 8, river: 1, dash: 1, gap: 1, thick: 1, along: 4, across: 3, line: 1, band: 1 },
+    region: { tilePx: 16, river: 2, dash: 2, gap: 2, thick: 2, along: 8, across: 5, line: 2, band: 2 },
+  } as const;
+
+  type Marks = (typeof MARKS)[MapView];
+
+  interface Pen {
+    readonly map: WorldMap;
+    readonly marks: Marks;
+    readonly out: Overlay;
+  }
+
+  function fill(pen: Pen, x0: number, y0: number, x1: number, y1: number, value: number): void {
+    const { width, height, pixels } = pen.out;
+    for (let y = Math.max(0, y0); y <= Math.min(height - 1, y1); y++) {
+      for (let x = Math.max(0, x0); x <= Math.min(width - 1, x1); x++) pixels[y * width + x] = value;
+    }
+  }
+
+  function centre(pen: Pen, cell: number): [number, number] {
+    const { tilePx } = pen.marks;
+    const x = cell % pen.map.width;
+    return [x * tilePx + (tilePx >> 1), ((cell - x) / pen.map.width) * tilePx + (tilePx >> 1)];
+  }
+
+  // mapdraw.py's _dots: a size-px square at each step from centre to centre, kept where k % period < dash. A river is
+  // dash 1 of period 1: every step.
+  function stroke(pen: Pen, a: number, b: number, size: number, dash: number, period: number, value: number): void {
+    const [ax, ay] = centre(pen, a);
+    const [bx, by] = centre(pen, b);
+    const steps = Math.max(Math.abs(bx - ax), Math.abs(by - ay));
+    for (let k = 0; k <= steps; k++) {
+      if (k % period >= dash) continue;
+      const x = ax + Math.floor(((bx - ax) * k) / steps);
+      const y = ay + Math.floor(((by - ay) * k) / steps);
+      fill(pen, x, y, x + size - 1, y + size - 1, value);
+    }
+  }
+
+  // mapdraw.py's _rivers: each river cell to its receiver, and a lake to a river it feeds; size-3 rivers a pixel wider.
+  function drawRivers(pen: Pen): void {
+    const { river, receiver, biome } = pen.map;
+    for (let cell = 0; cell < receiver.length; cell++) {
+      const to = receiver[cell];
+      if (to < 0 || !(river[cell] || (biome[cell] === LAKE && river[to]))) continue;
+      stroke(pen, cell, to, pen.marks.river + Number(river[cell] === 3), 1, 1, RIVER);
+    }
+  }
+
+  function drawRoutes(pen: Pen, table: PathTable, value: number): void {
+    const { thick, dash, gap } = pen.marks;
+    for (let p = 0; p + 1 < table.offsets.length; p++) {
+      for (let k = table.offsets[p]; k + 1 < table.offsets[p + 1]; k++) {
+        stroke(pen, table.cells[k], table.cells[k + 1], thick, dash, dash + gap, value);
+      }
+    }
+  }
+
+  // mapdraw.py's _bridges: a road runs flat at a cell when, at the cell's first visit, its neighbours along the road lie
+  // further apart across than down.
+  function flatRoads(map: WorldMap): Map<number, boolean> {
+    const { offsets, cells } = map.roads;
+    const flat = new Map<number, boolean>();
+    for (let p = 0; p + 1 < offsets.length; p++) {
+      const first = offsets[p];
+      const last = offsets[p + 1] - 1;
+      for (let k = first; k <= last; k++) {
+        if (flat.has(cells[k])) continue;
+        const a = cells[Math.max(first, k - 1)];
+        const b = cells[Math.min(last, k + 1)];
+        const across = Math.abs((b % map.width) - (a % map.width));
+        flat.set(cells[k], across >= Math.abs(Math.floor(b / map.width) - Math.floor(a / map.width)));
+      }
+    }
+    return flat;
+  }
+
+  // A deck laid along its road, with a rail round its edge.
+  function drawBridges(pen: Pen): void {
+    const flat = flatRoads(pen.map);
+    const { along, across } = pen.marks;
+    for (const cell of pen.map.bridges) {
+      const [x, y] = centre(pen, cell);
+      const [dx, dy] = flat.get(cell) ? [along, across] : [across, along];
+      const x0 = x - (dx >> 1);
+      const y0 = y - (dy >> 1);
+      const x1 = x + ((dx - 1) >> 1);
+      const y1 = y + ((dy - 1) >> 1);
+      fill(pen, x0, y0, x1, y1, RAIL);
+      fill(pen, x0 + 1, y0 + 1, x1 - 1, y1 - 1, DECK);
+    }
+  }
+
+  // mapdraw.py's _strip: width px across, from start px past the edge east of the cell (vertical) or south of it.
+  function strip(pen: Pen, cell: number, vertical: boolean, start: number, width: number, value: number): void {
+    const { tilePx } = pen.marks;
+    const x = (cell % pen.map.width) * tilePx;
+    const y = Math.floor(cell / pen.map.width) * tilePx;
+    if (vertical) fill(pen, x + tilePx + start, y, x + tilePx + start + width - 1, y + tilePx - 1, value);
+    else fill(pen, x, y + tilePx + start, x + tilePx - 1, y + tilePx + start + width - 1, value);
+  }
+
+  // mapdraw.py's _edges: [cell, neighbour, vertical] for each land edge between two countries, looking east and south.
+  function borderEdges(map: WorldMap): [number, number, boolean][] {
+    const { width, height, country } = map;
+    const out: [number, number, boolean][] = [];
+    for (let cell = 0; cell < country.length; cell++) {
+      const k = country[cell];
+      if (k === 0) continue;
+      const east = country[cell + 1];
+      if ((cell % width) + 1 < width && east !== 0 && east !== k) out.push([cell, cell + 1, true]);
+      const south = country[cell + width];
+      if (Math.floor(cell / width) + 1 < height && south !== 0 && south !== k) out.push([cell, cell + width, false]);
+    }
+    return out;
+  }
+
+  // mapdraw.py's _borders: a band of each side's colour, then a neutral line over every edge, so lines run unbroken
+  // over the corners.
+  function drawBorders(pen: Pen): void {
+    const { line, band } = pen.marks;
+    const { country, countries } = pen.map;
+    const bandOf = (cell: number): number => BAND + countries.colour[country[cell] - 1];
+    const edges = borderEdges(pen.map);
+    const near = -((line + 1) >> 1);
+    for (const [cell, other, vertical] of edges) {
+      strip(pen, cell, vertical, near - band, band, bandOf(cell));
+      strip(pen, cell, vertical, line >> 1, band, bandOf(other));
+    }
+    for (const [cell, , vertical] of edges) strip(pen, cell, vertical, near, line, BORDER);
+  }
+
+  export function buildOverlay(map: WorldMap, view: MapView): Overlay {
+    const marks = MARKS[view];
+    const width = map.width * marks.tilePx;
+    const height = map.height * marks.tilePx;
+    const pen: Pen = { map, marks, out: { width, height, pixels: new Uint8Array(width * height) } };
+    drawRivers(pen);
+    drawRoutes(pen, map.lanes, LANE);
+    drawRoutes(pen, map.roads, ROAD);
+    drawBridges(pen);
+    drawBorders(pen);
+    return pen.out;
+  }
+  ```
+
+  Add `export * from './map/overlay.ts';` to `src/map.ts`.
+- [ ] **Step 5: Run** the Step 3 command, then the gates. Expected: all pass.
+- [ ] **Step 6: Commit** `feat(render-gl): paint the map's lines and borders into an overlay`.
+
+### Task 5: Label placement (junior, exact code)
+
+**Files:** create `apps/web/src/map/labels.ts` and `apps/web/test/map-labels.test.ts`.
+
+Labels are DOM, so only their placement runs in Node. Task 10 mounts them, and Task 12 checks them in a browser. The placement was run against the test below (measured here).
+
+- [ ] **Step 1: Write the failing test,** `apps/web/test/map-labels.test.ts`. A 10 × 10 world has country 1 west of x 5 and country 2 east of it, a capital at (2, 2), a city at (7, 2), a village at (3, 2) and a hamlet at (7, 7):
+
+  ```ts
+  import { describe, expect, it } from 'vitest';
+  import { tinyWorld } from '../../../packages/render-gl/test/tiny-world.ts';
+  import { labelSet, placeLabels } from '../src/map/labels.ts';
+
+  function twoCountries(): ReturnType<typeof tinyWorld> {
+    const country = new Uint8Array(100).map((_, cell) => (cell % 10 < 5 ? 1 : 2));
+    return tinyWorld(10, 10, {
+      country,
+      countries: { capital: new Int32Array([0, 1]), colour: new Uint8Array([0, 1]) },
+      settlements: {
+        cell: new Int32Array([22, 27, 23, 77]),
+        tier: new Uint8Array([0, 1, 3, 4]),
+        population: new Int32Array([90_000, 60_000, 900, 100]),
+        country: new Uint8Array([1, 2, 1, 2]),
+        region: new Uint16Array(4),
+        landmarks: new Uint8Array(12).fill(255),
+      },
+    });
+  }
+
+  describe('label placement', () => {
+    const set = labelSet(twoCountries());
+    set.width.fill(40);
+    set.height.fill(12);
+    const x = new Float64Array(set.count);
+    const y = new Float64Array(set.count);
+
+    it('takes countries first, then settlements by tier and id', () => {
+      expect([...set.name]).toEqual([0, 1, 2, 3, 4, 5]);
+    });
+
+    it('labels countries, capitals and cities in the Country view', () => {
+      expect(placeLabels(set, 'country', { x: 0, y: 0, cellPx: 16 }, 1, 160, 160, x, y)).toBe(4);
+      expect([...x]).toEqual([20, 100, 20, 100, Number.NaN, Number.NaN]);
+      expect([...y]).toEqual([74, 74, 48, 48, Number.NaN, Number.NaN]);
+    });
+
+    it('labels every settlement in the Region view, dropping one that would overlap', () => {
+      expect(placeLabels(set, 'region', { x: 0, y: 0, cellPx: 16 }, 1, 160, 160, x, y)).toBe(3);
+      expect([...x]).toEqual([Number.NaN, Number.NaN, 20, 100, Number.NaN, 100]);
+      expect([...y]).toEqual([Number.NaN, Number.NaN, 48, 48, Number.NaN, 128]);
+    });
+
+    it('hides labels off the view', () => {
+      expect(placeLabels(set, 'region', { x: 20, y: 0, cellPx: 16 }, 1, 160, 160, x, y)).toBe(0);
+    });
+  });
+  ```
+
+- [ ] **Step 2: Run** `pnpm exec vitest run apps/web/test/map-labels.test.ts`. Expected: fails, since `labels.ts` doesn't exist.
+- [ ] **Step 3: Write `apps/web/src/map/labels.ts`:**
+
+  ```ts
+  import type { MapCamera, MapView } from '@nomos/render-gl/map';
+  import { TIER_NAMES, type WorldMap } from '@nomos/sim-protocol/world-map';
+
+  const CITY = TIER_NAMES.indexOf('city');
+
+  // Every candidate label in R4's priority order: the countries, then settlements by tier and then id. name indexes
+  // placeNames' list; anchors are in cells; width and height are CSS px, measured once by mountLabels.
+  export interface LabelSet {
+    readonly count: number;
+    readonly name: Int32Array;
+    readonly anchorX: Float64Array;
+    readonly anchorY: Float64Array;
+    // 1 for a country's name, centred on its land; 0 for a settlement's, hung below its cell.
+    readonly centred: Uint8Array;
+    readonly inCountry: Uint8Array;
+    readonly inRegion: Uint8Array;
+    readonly width: Float64Array;
+    readonly height: Float64Array;
+    // The boxes a pass has placed, four numbers each, so a pass allocates nothing.
+    readonly placed: Float64Array;
+  }
+
+  export interface Labels {
+    update(camera: MapCamera, view: MapView, cssWidth: number, cssHeight: number, dpr: number): void;
+  }
+
+  function emptySet(count: number): LabelSet {
+    return {
+      count,
+      name: new Int32Array(count),
+      anchorX: new Float64Array(count),
+      anchorY: new Float64Array(count),
+      centred: new Uint8Array(count),
+      inCountry: new Uint8Array(count),
+      inRegion: new Uint8Array(count),
+      width: new Float64Array(count),
+      height: new Float64Array(count),
+      placed: new Float64Array(4 * count),
+    };
+  }
+
+  // A country's name sits at the mean of its land cells' centres.
+  function addCountries(set: LabelSet, map: WorldMap): void {
+    const countries = map.countries.capital.length;
+    const sumX = new Float64Array(countries + 1);
+    const sumY = new Float64Array(countries + 1);
+    const cells = new Float64Array(countries + 1);
+    for (let cell = 0; cell < map.country.length; cell++) {
+      const k = map.country[cell];
+      if (k === 0) continue;
+      sumX[k] += (cell % map.width) + 0.5;
+      sumY[k] += Math.floor(cell / map.width) + 0.5;
+      cells[k]++;
+    }
+    for (let k = 1; k <= countries; k++) {
+      set.name[k - 1] = k - 1;
+      set.anchorX[k - 1] = sumX[k] / cells[k];
+      set.anchorY[k - 1] = sumY[k] / cells[k];
+      set.centred[k - 1] = 1;
+      set.inCountry[k - 1] = 1;
+    }
+  }
+
+  function addSettlements(set: LabelSet, map: WorldMap): void {
+    const { cell, tier } = map.settlements;
+    const countries = map.countries.capital.length;
+    const order = Array.from(tier, (_, id) => id).sort((a, b) => tier[a] - tier[b] || a - b);
+    order.forEach((id, rank) => {
+      const i = countries + rank;
+      set.name[i] = countries + id;
+      set.anchorX[i] = (cell[id] % map.width) + 0.5;
+      set.anchorY[i] = Math.floor(cell[id] / map.width) + 1;
+      set.inCountry[i] = tier[id] <= CITY ? 1 : 0;
+      set.inRegion[i] = 1;
+    });
+  }
+
+  export function labelSet(map: WorldMap): LabelSet {
+    const set = emptySet(map.countries.capital.length + map.settlements.tier.length);
+    addCountries(set, map);
+    addSettlements(set, map);
+    return set;
+  }
+
+  function overlaps(boxes: Float64Array, count: number, left: number, top: number, right: number, bottom: number): boolean {
+    for (let b = 0; b < count; b++) {
+      const at = 4 * b;
+      if (left < boxes[at + 2] && boxes[at] < right && top < boxes[at + 3] && boxes[at + 1] < bottom) return true;
+    }
+    return false;
+  }
+
+  // Writes each label's top-left in whole CSS px into x and y, or NaN when it hides, and returns how many show. Labels go
+  // in priority order, and one is dropped when it would overlap a label already placed.
+  export function placeLabels(
+    set: LabelSet,
+    view: MapView,
+    camera: MapCamera,
+    dpr: number,
+    cssWidth: number,
+    cssHeight: number,
+    x: Float64Array,
+    y: Float64Array,
+  ): number {
+    const cssPerCell = camera.cellPx / dpr;
+    const shown = view === 'country' ? set.inCountry : set.inRegion;
+    let placed = 0;
+    for (let i = 0; i < set.count; i++) {
+      x[i] = Number.NaN;
+      y[i] = Number.NaN;
+      if (!shown[i]) continue;
+      const left = Math.round((set.anchorX[i] - camera.x) * cssPerCell - set.width[i] / 2);
+      const top = Math.round((set.anchorY[i] - camera.y) * cssPerCell - (set.centred[i] ? set.height[i] / 2 : 0));
+      const right = left + set.width[i];
+      const bottom = top + set.height[i];
+      if (right <= 0 || bottom <= 0 || left >= cssWidth || top >= cssHeight) continue;
+      if (overlaps(set.placed, placed, left, top, right, bottom)) continue;
+      set.placed[4 * placed] = left;
+      set.placed[4 * placed + 1] = top;
+      set.placed[4 * placed + 2] = right;
+      set.placed[4 * placed + 3] = bottom;
+      x[i] = left;
+      y[i] = top;
+      placed++;
+    }
+    return placed;
+  }
+
+  function moveLabel(span: HTMLSpanElement, i: number, x: number, y: number, shown: Float64Array): void {
+    if (Number.isNaN(x)) {
+      if (!Number.isNaN(shown[2 * i])) span.style.visibility = 'hidden';
+      shown[2 * i] = Number.NaN;
+      return;
+    }
+    if (x === shown[2 * i] && y === shown[2 * i + 1]) return;
+    if (Number.isNaN(shown[2 * i])) span.style.visibility = 'visible';
+    span.style.transform = `translate(${x}px, ${y}px)`;
+    shown[2 * i] = x;
+    shown[2 * i + 1] = y;
+  }
+
+  // One span per candidate, measured once while the map shows; a span's style is written only when its place changes.
+  export function mountLabels(layer: HTMLElement, map: WorldMap, names: readonly string[]): Labels {
+    const set = labelSet(map);
+    const spans: HTMLSpanElement[] = [];
+    for (let i = 0; i < set.count; i++) {
+      const span = layer.ownerDocument.createElement('span');
+      span.className = set.centred[i] ? 'map-label map-country' : 'map-label';
+      span.textContent = names[set.name[i]];
+      span.style.visibility = 'hidden';
+      spans.push(span);
+    }
+    layer.replaceChildren(...spans);
+    spans.forEach((span, i) => {
+      set.width[i] = span.offsetWidth;
+      set.height[i] = span.offsetHeight;
+    });
+    const x = new Float64Array(set.count);
+    const y = new Float64Array(set.count);
+    const shown = new Float64Array(2 * set.count).fill(Number.NaN);
+    return {
+      update(camera, view, cssWidth, cssHeight, dpr) {
+        placeLabels(set, view, camera, dpr, cssWidth, cssHeight, x, y);
+        for (let i = 0; i < set.count; i++) moveLabel(spans[i], i, x[i], y[i], shown);
+      },
+    };
+  }
+  ```
+
+- [ ] **Step 4: Run** the Step 2 command, then the gates. Expected: all pass.
+- [ ] **Step 5: Commit** `feat(web): place the map's labels by band without overlaps`.
+
+### Task 6: The legend and map input (junior, exact code)
+
+**Files:** create `apps/web/src/map/legend.ts`, `apps/web/src/map/map-input.ts` and `apps/web/test/map-legend.test.ts`.
+
+- [ ] **Step 1: Write the failing test,** `apps/web/test/map-legend.test.ts`. The names are `placeNames`' stand-ins, which pass the name lint:
+
+  ```ts
+  import { COUNTRY_COLOURS } from '@nomos/render-gl/map';
+  import { describe, expect, it } from 'vitest';
+  import { tinyWorld } from '../../../packages/render-gl/test/tiny-world.ts';
+  import { legendRows } from '../src/map/legend.ts';
+
+  describe('the map legend', () => {
+    it("lists each country's colour, name, capital and settlement count", () => {
+      const map = tinyWorld(4, 1, {
+        country: new Uint8Array([1, 1, 2, 2]),
+        countries: { capital: new Int32Array([1, 0]), colour: new Uint8Array([3, 0]) },
+        settlements: {
+          cell: new Int32Array([2, 0, 1]),
+          tier: new Uint8Array([0, 0, 3]),
+          population: new Int32Array([90_000, 60_000, 900]),
+          country: new Uint8Array([2, 1, 1]),
+          region: new Uint16Array(3),
+          landmarks: new Uint8Array(9).fill(255),
+        },
+      });
+      const names = ['country-1', 'country-2', 'capital-0', 'capital-1', 'village-2'];
+      expect(legendRows(map, names)).toEqual([
+        { name: 'country-1', colour: COUNTRY_COLOURS[3], capital: 'capital-1', settlements: 2 },
+        { name: 'country-2', colour: COUNTRY_COLOURS[0], capital: 'capital-0', settlements: 1 },
+      ]);
+    });
+  });
+  ```
+
+- [ ] **Step 2: Run** `pnpm exec vitest run apps/web/test/map-legend.test.ts`. Expected: fails, since `legend.ts` doesn't exist.
+- [ ] **Step 3: Write `apps/web/src/map/legend.ts`:**
+
+  ```ts
+  import { COUNTRY_COLOURS } from '@nomos/render-gl/map';
+  import type { WorldMap } from '@nomos/sim-protocol/world-map';
+
+  export interface LegendRow {
+    name: string;
+    colour: number;
+    capital: string;
+    settlements: number;
+  }
+
+  // names is placeNames' list: the countries, then the settlements in id order.
+  export function legendRows(map: WorldMap, names: readonly string[]): LegendRow[] {
+    const countries = map.countries.capital.length;
+    const held = new Int32Array(countries + 1);
+    for (const k of map.settlements.country) held[k]++;
+    const rows: LegendRow[] = [];
+    for (let k = 1; k <= countries; k++) {
+      rows.push({
+        name: names[k - 1],
+        colour: COUNTRY_COLOURS[map.countries.colour[k - 1]],
+        capital: names[countries + map.countries.capital[k - 1]],
+        settlements: held[k],
+      });
+    }
+    return rows;
+  }
+
+  // The map's text alternative too: a screen reader hears each country with its capital and count.
+  export function mountLegend(root: HTMLElement, rows: readonly LegendRow[]): void {
+    const doc = root.ownerDocument;
+    const list = doc.createElement('ul');
+    list.className = 'map-legend';
+    for (const row of rows) {
+      const swatch = doc.createElement('span');
+      swatch.className = 'map-swatch';
+      swatch.setAttribute('aria-hidden', 'true');
+      swatch.style.background = `#${row.colour.toString(16).padStart(6, '0')}`;
+      const item = doc.createElement('li');
+      item.append(swatch, `${row.name}: capital ${row.capital}, ${row.settlements} settlements`);
+      list.append(item);
+    }
+    root.replaceChildren(list);
+  }
+  ```
+
+- [ ] **Step 4: Write `apps/web/src/map/map-input.ts`.** It has no Node test; Task 12 drives it in a browser.
+
+  ```ts
+  import { panMapBy, zoomMapAt, type MapCamera } from '@nomos/render-gl/map';
+
+  export interface MapInputTarget {
+    camera(): MapCamera;
+    setCamera(camera: MapCamera): void;
+    fit(): void;
+    close(): void;
+  }
+
+  // An arrow press moves four cells, so a large world takes about 50 presses to cross.
+  const PAN_CELLS = 4;
+  // As the town's input: a mouse notch is 100 px in Chromium and 3 lines in Firefox, and a trackpad sends many small
+  // deltas, so the wheel steps once per 40 px gathered in one gesture, a gesture being deltas under 250 ms apart.
+  const WHEEL_STEP_PX = 40;
+  const WHEEL_GESTURE_MS = 250;
+  const WHEEL_UNIT_PX = [1, 16, 400];
+  // Two pointers step the zoom whenever they spread or close by a quarter.
+  const PINCH_STEP = 1.25;
+  const PAN_KEYS = new Map<string, [number, number]>([
+    ['ArrowLeft', [-1, 0]],
+    ['ArrowRight', [1, 0]],
+    ['ArrowUp', [0, -1]],
+    ['ArrowDown', [0, 1]],
+  ]);
+  const ZOOM_KEYS = new Map<string, number>([
+    ['+', 1],
+    ['=', 1],
+    ['-', -1],
+  ]);
+
+  function devicePoint(view: HTMLElement, clientX: number, clientY: number): [number, number] {
+    const box = view.getBoundingClientRect();
+    return [(clientX - box.left) * devicePixelRatio, (clientY - box.top) * devicePixelRatio];
+  }
+
+  // The two pointers' distance, and their midpoint in client px.
+  function spread(pointers: Map<number, [number, number]>): [number, number, number] {
+    const [a, b] = [...pointers.values()];
+    return [Math.hypot(a[0] - b[0], a[1] - b[1]), (a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+  }
+
+  function onKey(view: HTMLElement, target: MapInputTarget, event: KeyboardEvent): void {
+    // Ctrl or Cmd with plus and minus zooms the browser, which stays the browser's.
+    if (event.ctrlKey || event.metaKey || event.altKey) return;
+    const camera = target.camera();
+    const pan = PAN_KEYS.get(event.key);
+    const zoom = ZOOM_KEYS.get(event.key);
+    const step = PAN_CELLS * camera.cellPx;
+    if (pan) target.setCamera(panMapBy(camera, pan[0] * step, pan[1] * step));
+    else if (zoom) target.setCamera(zoomMapAt(camera, zoom, (view.clientWidth * devicePixelRatio) / 2, (view.clientHeight * devicePixelRatio) / 2));
+    else if (event.key === 'Home') target.fit();
+    else if (event.key === 'Escape') target.close();
+    else return;
+    event.preventDefault();
+  }
+
+  // Drag, wheel, pinch and keys, bound once when the map view is first made.
+  export function bindMapInput(view: HTMLElement, target: MapInputTarget): void {
+    const pointers = new Map<number, [number, number]>();
+    let pinchAt = 0;
+    let wheelPx = 0;
+    let wheelAtMs = 0;
+
+    const onWheel = (event: WheelEvent): void => {
+      event.preventDefault();
+      const px = event.deltaY * WHEEL_UNIT_PX[event.deltaMode];
+      const sameGesture = event.timeStamp - wheelAtMs < WHEEL_GESTURE_MS && Math.sign(px) === Math.sign(wheelPx);
+      wheelPx = sameGesture ? wheelPx + px : px;
+      wheelAtMs = event.timeStamp;
+      if (Math.abs(wheelPx) < WHEEL_STEP_PX) return;
+      const [x, y] = devicePoint(view, event.clientX, event.clientY);
+      target.setCamera(zoomMapAt(target.camera(), -Math.sign(wheelPx), x, y));
+      wheelPx = 0;
+    };
+    const onPinch = (): void => {
+      const [distance, midX, midY] = spread(pointers);
+      const ratio = distance / pinchAt;
+      if (ratio < PINCH_STEP && ratio > 1 / PINCH_STEP) return;
+      const [x, y] = devicePoint(view, midX, midY);
+      target.setCamera(zoomMapAt(target.camera(), ratio > 1 ? 1 : -1, x, y));
+      pinchAt = distance;
+    };
+    const onDown = (event: PointerEvent): void => {
+      if (event.button !== 0 || pointers.size === 2) return;
+      pointers.set(event.pointerId, [event.clientX, event.clientY]);
+      view.setPointerCapture(event.pointerId);
+      if (pointers.size === 2) pinchAt = spread(pointers)[0];
+    };
+    // One pointer drags the map, so the camera moves the other way; two pointers pinch instead.
+    const onMove = (event: PointerEvent): void => {
+      const last = pointers.get(event.pointerId);
+      if (!last) return;
+      pointers.set(event.pointerId, [event.clientX, event.clientY]);
+      if (pointers.size === 2) {
+        onPinch();
+        return;
+      }
+      const dpr = devicePixelRatio;
+      target.setCamera(panMapBy(target.camera(), (last[0] - event.clientX) * dpr, (last[1] - event.clientY) * dpr));
+    };
+    const onEnd = (event: PointerEvent): void => {
+      pointers.delete(event.pointerId);
+    };
+
+    view.addEventListener('wheel', onWheel, { passive: false });
+    view.addEventListener('pointerdown', onDown);
+    view.addEventListener('pointermove', onMove);
+    view.addEventListener('pointerup', onEnd);
+    view.addEventListener('pointercancel', onEnd);
+    view.addEventListener('keydown', (event) => onKey(view, target, event));
+  }
+  ```
+
+- [ ] **Step 5: Run** the Step 2 command, then the gates. Expected: all pass.
+- [ ] **Step 6: Commit** `feat(web): list the countries in a legend and bind the map's input`.
+
+### Tasks 7–15
+
+Expanded in the next commit of this plan: the base pass, the icons pass, `MapRenderer` and its fallback, the map view, size limits, the exit tests, the 2 ms bar, the owner's colours and the close.
