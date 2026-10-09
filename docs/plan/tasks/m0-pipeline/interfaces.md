@@ -15,6 +15,7 @@ M0's sub-milestones are planned in parallel, so the names and layouts they share
 | `@nomos/bench` | `tools/bench` | The CI budget, allocation and startup gates | M0.6 |
 | `@nomos/sim-culture` | `packages/sim-culture` | Culture code, walled off from crime, police, labour, wage, wealth, ability, housing and migration code; it also turns name keys into names | M0.6, names in M0.7 |
 | `@nomos/names` | `tools/names` | The name lint, its real-world fixture, the shared mixed sound set, the person-name filter and the culture text lint; M3.7 extends it | M0.6, sound set and person-name filter in M0.7 |
+| `@nomos/worldgen` | `packages/worldgen` | The TypeScript port of `tools/worldgen`: a seeded world of countries as a `WorldMap`, and its place names. It runs only in the map worker | M8.1 |
 
 Dependencies point one way:
 - `sim-core` ← `sim-protocol` ← `sim-worker`;
@@ -23,7 +24,8 @@ Dependencies point one way:
 - `cli` imports `sim-core` and `sim-protocol`;
 - `sim-culture` imports values only from the `@nomos/sim-core/kernels` subpath (the draws, `DAYS_PER_YEAR`, the stream ids `CULTURE` and `FESTIVAL`, and the culture column helpers), whose modules never import it. `sim-core`'s `consumption/` and its orchestration call `sim-culture`, and dependency-cruiser keeps modules acyclic (M0.6);
 - `web` imports `sim-culture` only in `src/panels/inspector.ts`, which loads on demand, for `personName` (M0.7);
-- `tools/names` writes `sim-culture`'s generated `naming/words.ts` and checks it; no package imports `tools/names` at run time. `names` imports `@nomos/sim-core/kernels`, for the keyed draw that picks its sounds (M0.7).
+- `tools/names` writes `sim-culture`'s generated `naming/words.ts` and checks it; no package imports `tools/names` at run time. `names` imports `@nomos/sim-core/kernels`, for the keyed draw that picks its sounds (M0.7);
+- `worldgen` imports values only from `@nomos/sim-core/kernels` and `@nomos/sim-protocol/world-map`. In `web`, only the map worker's modules reach it, and `render-gl`'s `./map` export draws its output (M8.1, below).
 
 The world step lives in `sim-core`, so headless runs and the worker run the same code.
 
@@ -273,3 +275,127 @@ Skin B and Skin C arrive as `blobs/` and `town/` beside `dots/` (M1.3, M3.3).
   - `profanity`: LDNOOBW's 21 Latin-script lists (CC BY 4.0), exact for 3-letter entries and by substring for 4 or more.
 
   M3.7 adds real festival names and runs it over places and festivals.
+
+## The world map (owner: M8.1)
+
+M8.1 ports `tools/worldgen` to TypeScript, and M8.3 draws what it makes. The owner decided on 9 October 2026 that the map opens from a button, loads on demand and runs in a worker of its own, so the town stays the first view.
+
+### The package
+
+`@nomos/worldgen` is pure TypeScript with no DOM. Its concern folders mirror `tools/worldgen`'s modules, so each Python function has one obvious home:
+
+| Folder | Files | Concern |
+| --- | --- | --- |
+| `src/` | `index.ts` | The barrel: `generateWorld`, `worldFingerprint`, `placeNames` and `StageTimer` |
+| `random/` | `streams.ts`, `keyed.ts` | `rng.py`'s world streams, and its `chance` and `shuffled` |
+| `grid/` | `grid.ts`, `heap.ts` | `grid.py`'s neighbours, distances and parts, cell coordinates, and the binary heap behind every Dijkstra and A\* |
+| `terrain/` | `templates.ts`, `chains.ts`, `shape.ts` | `terrain.py` |
+| `climate/` | `rain.ts`, `climate.ts`, `biomes.ts` | `climate.py` |
+| `drainage/` | `flood.ts`, `lakes.ts`, `drain.ts` | `drainage.py` |
+| `settle/` | `habitability.ts`, `settle.ts`, `farm.ts` | `settle.py` |
+| `countries/` | `countries.ts`, `grow.ts` | `countries.py`; `grow` serves regions too |
+| `regions/` | `regions.ts` | Regions inside countries, and market territories across them; Python has neither |
+| `routes/` | `costs.ts`, `graph.ts`, `roads.ts`, `lanes.ts` | `roads.py`, whose step costs countries share |
+| `features/` | `survey.ts`, `wonders.ts`, `landmarks.ts` | `features.py` |
+| `names/` | `place-names.ts`, `words.ts` (generated) | Place and country names |
+| `world/` | `draft.ts`, `generate.ts`, `fingerprint.ts` | The world being built, the pipeline, and `world.fingerprint` |
+
+- **Imports:** values only from `@nomos/sim-core/kernels` and `@nomos/sim-protocol/world-map`.
+  - `kernels` gives the keyed draw, value noise and integer maths. M8.1 adds `mix`, `draw`, `below`, `value`, `fbm`, `floorDiv`, `floorMod` and a new `isqrt` to its exports.
+  - `world-map` is a leaf module holding the codes and the `WorldMap` type, so each code has one home.
+- **Lints:** M0.6's generator profile covers `packages/worldgen/src`:
+  - no transcendental `Math`, `Math.random`, `**` or `BigInt`, and none of `Math.sqrt`, `trunc`, `round` or `ceil`, since Python's integer maths has no rounding;
+  - no bare `/` or `%`: `floorDiv`, `floorMod`, or `(x >>> 0) % n` on an unsigned draw;
+  - `sort` only with a comparator, which must be a total order with ties broken by cell index.
+- **Version:** `WORLDGEN_VERSION` is 1. Version 1 freezes after the owner hears 100 sample place names; after that, any change to the output takes a new version and new goldens.
+
+### Generating
+
+- `generateWorld(seed: number, size: WorldSize, timer?: StageTimer): WorldMap` makes the world `tools/worldgen`'s `world.generate(seed, *SIZES[size])` makes. The seed is read as uint32.
+- `worldFingerprint(map: WorldMap): number` equals Python's `world.fingerprint` for the same world.
+- `StageTimer` is `{ lap(stage: string): void }`, called as each stage ends: `shape`, `rain`, `drain`, `climate`, `biomes`, `settle`, `countries`, `regions`, `farm`, `roads`, `lanes` and `features`. The package reads no clock itself.
+- **Goldens:**
+  - `tools/worldgen/goldens.py` writes one fingerprint per stage for 100 seeds of each size into `packages/worldgen/test/fixtures/goldens-v1.json`. The file defines the stages and their fold.
+  - Regions and names, which Python lacks, are frozen from TypeScript in `frozen-v1.json`.
+
+### `WorldMap`
+
+In `sim-protocol`'s `world-map/world-map.ts`, exported as `@nomos/sim-protocol/world-map`. Codes are indices into its name tables, which keep `tools/worldgen`'s order:
+- `WORLD_SIZES`: `standard` is 96 × 64 cells and `large` 192 × 128, and `WorldSize` is either name;
+- `TEMPLATE_NAMES`: continent, peninsula, coast, archipelago, twin-isles;
+- `SIDE_NAMES`: n, e, s, w;
+- `BIOME_NAMES`: ocean, lake, grassland, farmland, forest-deciduous, forest-conifer, marsh, sand, hills, mountain, peak, snow;
+- `COAST_NAMES`: inland, beach, cliffs;
+- `TIER_NAMES`: capital, city, town, village, hamlet;
+- `WONDER_NAMES` and `LANDMARK_NAMES`: `model.py`'s `WONDERS` and `LANDMARKS`.
+
+Per world:
+
+| Field | Type | Holds |
+| --- | --- | --- |
+| `version` | `number` | `WORLDGEN_VERSION` |
+| `seed` | `number` | The uint32 seed |
+| `width`, `height` | `number` | Cells |
+| `template` | `number` | A `TEMPLATE_NAMES` index |
+| `wind` | `number` | The `SIDE_NAMES` index of the side the rain wind blows from |
+| `cold` | `number` | The `SIDE_NAMES` index of the cold edge, 0 or 2 |
+
+Per cell, row-major from the top-left, cell = y × width + x:
+
+| Field | Type | Holds |
+| --- | --- | --- |
+| `elevation` | `Int16Array` | Land 1 to 1,000 above sea level; water −1,000 to 0 |
+| `biome` | `Uint8Array` | A `BIOME_NAMES` index, farmland included |
+| `temperature`, `moisture` | `Uint8Array` | 0–255, cold to hot and dry to wet |
+| `river` | `Uint8Array` | 0, or a river's size, 1–3 |
+| `receiver` | `Int32Array` | The cell its water flows to, or −1 |
+| `coast` | `Uint8Array` | A `COAST_NAMES` index |
+| `variant` | `Uint8Array` | `draw(seed, SHAPE, 0x200, cell) & 3`, as `mapdraw.py` draws: bit 0 picks the grassland or farmland tile, and bit 1 adds a low peak to a 16-px mountain. So `render-gl` needs no draw |
+| `country` | `Uint8Array` | 0 for water, else 1–K |
+| `region` | `Uint16Array` | 0 for water, else 1–R |
+| `market` | `Uint16Array` | 0 for water, else the region id of the seat whose market serves the cell |
+
+Settlements, n of them in id order: id 0 is the largest, and populations never rise with id.
+
+| Field | Type | Holds |
+| --- | --- | --- |
+| `settlements.cell` | `Int32Array` | Its cell, which is also its uid |
+| `settlements.tier` | `Uint8Array` | A `TIER_NAMES` index; every capital has tier 0 |
+| `settlements.population` | `Int32Array` | People |
+| `settlements.country`, `settlements.region` | `Uint8Array`, `Uint16Array` | Those of its cell |
+| `settlements.landmarks` | `Uint8Array` | `LANDMARK_SLOTS` (3) per settlement: `LANDMARK_NAMES` indices from slot 0, then `NO_LANDMARK` (255) |
+
+The rest:
+
+| Field | Type | Holds |
+| --- | --- | --- |
+| `countries.capital`, `countries.colour` | `Int32Array`, `Uint8Array` | Country k is index k − 1, with K = 3–5: its capital's settlement id, and its colour, 0–4, an index into M8.3's five map colours |
+| `regions.seat`, `regions.country` | `Int32Array`, `Uint8Array` | Region r is index r − 1: its seat's settlement id, and its country |
+| `roads`, `lanes` | `PathTable` | One path of cells per road route or sea lane, as `{ offsets: Int32Array, cells: Int32Array }`: path p is `cells[offsets[p]]` up to `cells[offsets[p + 1] − 1]` |
+| `bridges` | `Int32Array` | River cells that roads cross, ascending |
+| `wonders.kind`, `wonders.cell` | `Uint8Array`, `Int32Array` | `WONDER_NAMES` indices, 4–8 a world, in placement order |
+| `landmarks.kind`, `landmarks.cell` | `Uint8Array`, `Int32Array` | Landmarks on cells of their own (lighthouses, viaducts and observatories), as `LANDMARK_NAMES` indices |
+
+- **Transfer:** every typed array owns its own `ArrayBuffer`, of exactly its length. So `worldMapBuffers(map): ArrayBuffer[]` lists each buffer once, and the map worker transfers them all.
+- **Regions** are provisional, and M7.3 adopts or revises them:
+  - every settlement of tier capital, city or town seats one region, in id order;
+  - each country's regions grow from its seats by the countries' growth, over its own land and any water;
+  - market territories grow from the same seats with no fence, since trade crosses borders.
+- **Countries and regions are map facts:** no sim rule reads them (Countries).
+- **Names:** `placeNames(map: WorldMap): string[]` gives the K country names, then the n settlement names in id order. They are display text, outside the map and the fingerprint. Until the place-name table lands, they are stand-ins: `country-1`, and `capital-0` or `town-12` as Python names settlements.
+
+### Map worker messages
+
+- Page to map worker, `MapAppMessage`: `{ type: 'generate', seed: number, size: WorldSize }`.
+- Map worker to page, `MapWorkerMessage`: `{ type: 'world', map: WorldMap, names: string[], stageMs: Record<string, number> }`, with every buffer transferred. `stageMs` holds each `StageTimer` stage's milliseconds, plus `names`.
+- A throw in the generator reaches the page as the Worker's `error` event, as the sim worker's do.
+- Both types live in `world-map.ts`.
+
+### Who imports what
+
+- `worldgen` imports values only from `@nomos/sim-core/kernels` and `@nomos/sim-protocol/world-map`, and nothing imports it but the map worker and tests. Dependency-cruiser enforces both.
+- **In `web`,** only `src/map/generate.ts`, which answers a `generate` message, and `src/map/map-worker.ts`, which binds it to the worker's messages, may reach `@nomos/worldgen`.
+  - The page starts the worker with `new Worker(new URL('./map-worker.ts', import.meta.url), { type: 'module', name: 'map' })`.
+  - So Vite builds it as its own chunk, `map-worker-*.js`, whose name never matches the sim worker's `worker-*.js` glob.
+- **`render-gl`** gains a `./map` export, the lazy map scene, with its entry file at `src/map.ts`. It imports only `sim-protocol`, and M8.3 defines its API.
+- **Nothing of the map reaches the first load** (owner, 9 October 2026). The entry, sim worker and renderer chunks keep their bytes, and the Map control mounts from a chunk that already loads after the first frame.
