@@ -62,3 +62,8 @@ A living summary for the next session, appended as work lands. Start with `CLAUD
   - The sim engineer was asked for capital and city 128×80, town 112×64, village 80×48 and hamlet 56×32, as long as a capital builds in about 150 ms warm or less; otherwise the largest that fits.
   - The render engineer started the street crowd: `packages/worldgen/src/place/street-crowd.ts`, `place-builder.ts`, `walkers.ts` and the place pass's buffers. Up to 3,000 walkers on desktop and 600 on phones.
   - If the session ended: check `git log` for "Bigger places and crowds" and "The street crowd", and `git status` for unfinished work. Commit only green work, then push.
+- 10 Oct: **the street crowd landed** (06d6713 and 8c18e75): one walker per 150 residents, up to 3,000.
+  - A new `PlaceCrowd` contract, with `placeBuffers(layout, walks, crowd)`.
+  - 3,008 walkers draw in 0.59 ms median in WebGL2; 600 under Canvas2D take 0.25 ms.
+  - **The bug:** walkers pile into lines, because a capital has only about 8 people loops. The render engineer is giving the crowd its own loops, about one per 10 walkers, spread over every street, capped near one walker per two loop cells.
+  - When the sizes land, `apps/web/test/map-worker.test.ts`'s width-48 assertion must change with them.
