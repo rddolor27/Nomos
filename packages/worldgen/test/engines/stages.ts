@@ -6,6 +6,7 @@ import { fold } from './fold.ts';
 import { falloffOf, landPermilleOf, templateOf } from '../../src/terrain/templates.ts';
 import { chains } from '../../src/terrain/chains.ts';
 import { cut, landOf, rawOf, reliefOf, riseOf, shape } from '../../src/terrain/shape.ts';
+import { rain } from '../../src/climate/rain.ts';
 
 export function stagePrints(seed: number, size: WorldSize): Map<string, number> {
   const [width, height] = WORLD_SIZES[size];
@@ -28,6 +29,9 @@ export function stagePrints(seed: number, size: WorldSize): Map<string, number> 
   prints.set('land', fold(landOf(raw, sea, width, height)));
   const shaped = shape(seed, width, height);
   prints.set('shape', fold(shaped.template, shaped.elevation, shaped.ocean));
+
+  const rained = rain(seed, width, height, shaped.elevation, shaped.ocean);
+  prints.set('rain', fold(rained.wind, rained.rain));
 
   return prints;
 }
