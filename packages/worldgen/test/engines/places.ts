@@ -35,6 +35,10 @@ export interface PlaceReport {
   failures: string[];
 }
 
+// The engine harness's share of the place goldens: two worlds, 102 places, about 2 s in Node, so Bun's job and each
+// browser's add only a few seconds. Vitest checks all 20 worlds in Node.
+export const ENGINE_WORLDS = 2;
+
 const CONTEXT_FIELDS = [
   'seed',
   'name',

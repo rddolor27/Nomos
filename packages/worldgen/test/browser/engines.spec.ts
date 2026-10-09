@@ -3,10 +3,13 @@ import { fileURLToPath } from 'node:url';
 import { build } from 'esbuild';
 import { expect, test } from 'playwright/test';
 import type { Goldens, WorldCounts } from '../engines/checks.ts';
+import type { PlaceGoldens } from '../engines/places.ts';
 
 declare const nomosWorldgen: typeof import('../engines/checks.ts');
+declare const nomosPlaces: typeof import('../engines/places.ts');
 
 const CHECKS = fileURLToPath(new URL('../engines/checks.ts', import.meta.url));
+const PLACES = fileURLToPath(new URL('../engines/places.ts', import.meta.url));
 function readFixture(name: string): Goldens {
   return JSON.parse(readFileSync(new URL(`../fixtures/${name}`, import.meta.url), 'utf8'));
 }
@@ -38,3 +41,20 @@ for (const [size, counts] of SIZES) {
     expect(report.failures).toEqual([]);
   });
 }
+
+// The place port's share: every place of the first ENGINE_WORLDS worlds, stage for stage (M3.1, Task 1).
+test("builds the first worlds' places as place.py does", async ({ page, browser, browserName }) => {
+  test.setTimeout(60_000);
+  const placeGoldens: PlaceGoldens = JSON.parse(
+    readFileSync(new URL('../fixtures/place-goldens-v1.json', import.meta.url), 'utf8'),
+  );
+  const bundle = await build({ entryPoints: [PLACES], bundle: true, write: false, format: 'iife', globalName: 'nomosPlaces' });
+  await page.addScriptTag({ content: bundle.outputFiles[0].text });
+  const report = await page.evaluate(
+    (fixture) => nomosPlaces.checkPlaces(fixture, nomosPlaces.ENGINE_WORLDS),
+    placeGoldens,
+  );
+  test.info().annotations.push({ type: 'engine', description: `${browserName} ${browser.version()}` });
+  expect(report.failures).toEqual([]);
+  expect(report.places).toBeGreaterThan(0);
+});
