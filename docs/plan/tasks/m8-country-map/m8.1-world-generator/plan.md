@@ -45,6 +45,7 @@
 3. **Snow is uninhabitable,** like peaks: `settle.BASE` gets no snow row. Cold lowland below temperature 40 was 536 of 45,869 land cells, in 4 of 16 worlds, and held 1 of 764 settlements (measured here, standard seeds `5eed0001`–`5eed0010`).
 4. **The snow tiles wait for `tools/sprites`.** `map8_snow` and `map16_snow` belong in `tools/sprites/map.py`, outside this session's boundary (Task 6). Until then `mapdraw.py` fills snow cells with a flat stand-in colour.
 5. **Provisional colours:** `#0000DD`, `#AABB00`, `#334422`, `#EE00DD` and `#44BBCC`. Each is CIEDE2000 ≥ 15 from 42 palette colours taken as the reserved set: 24 body-hue tones, police navy, merchant teal, the crime reds, orange and gold, black and the 8 emblem colours. They are at least 41.5 apart from each other (computed here, a 16-step RGB grid without red–orange hues). The owner's pick at M8.3 replaces them.
+6. **A capital whose country is too small is passed over.** In the first 100-seed sweep, 5 of 100 standard worlds held a country of only 1 or 2 settlements (measured here, seeds `5eed0001`–`5eed0064`). Five capitals rarely fit a standard world at the starting spacing, so it shrinks and capitals crowd. `found` now passes over a capital whose country would hold fewer than 3 settlements, the least populous first and never the largest settlement. The next town in line takes its place, and the countries regrow. K stays as drawn.
 
 ### Files
 
@@ -164,7 +165,7 @@
   - `fingerprint_covers_countries`: a second `generate` of the same seed gives the same fingerprint. Changing one land cell's country, or one colour, changes it.
 - [ ] **Step 2: Run** the test script. Expected: `AttributeError: 'World' object has no attribute 'country'`.
 - [ ] **Step 3: Implement.**
-  - `found` draws `count(seed)` and calls `capitals`, then `grow` with the capitals' cells. It zeroes the water and takes `shuffled(range(COLOURS), seed, COUNTRY, COLOUR)[k - 1]` as country k's colour.
+  - `found` draws `count(seed)` and calls `capitals`, then `grow` with the capitals' cells. While a country other than the first holds fewer than `MIN_SETTLEMENTS = 3` settlements, it passes over that country's capital, the least populous first, and picks and grows again (Ruling 6, checked by `small_countries_pass_their_capital_on`). It zeroes the water and takes `shuffled(range(COLOURS), seed, COUNTRY, COLOUR)[k - 1]` as country k's colour.
   - In `generate`, compute `land` once and call `countries.found` between `settle.settle` and `settle.farm`.
   - `fingerprint` feeds, after the landmarks, `len(world.countries)` with each country's capital and colour, then `len(world.country)` and the column.
   - `summary` adds one line per country: `country 1: capital-0 at (101,57), colour 2, 3,012 land cells (25%), 47 settlements`.
