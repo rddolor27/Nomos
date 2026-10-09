@@ -1,4 +1,4 @@
-"""Checks Skin A's colours: each one in packages/render-gl/src/skin-a.json is the spritekit.PALETTE entry it names,
+"""Checks Skin A's colours: each one in packages/render-gl/src/dots/skin-a.json is the spritekit.PALETTE entry it names,
 and the three role colours stay apart under colour blindness. Run: python tools/sprites/test_skin_a.py"""
 import itertools
 import json
@@ -11,7 +11,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from spritekit import PALETTE  # noqa: E402
 
-SKIN_A = Path(__file__).resolve().parents[2] / 'packages' / 'render-gl' / 'src' / 'skin-a.json'
+SKIN_A = Path(__file__).resolve().parents[2] / 'packages' / 'render-gl' / 'src' / 'dots' / 'skin-a.json'
 ROLES = ('citizen', 'merchant', 'police')
 MIN_DELTA_E = 20
 # Round 3's method: severity 100 simulates dichromacy, the hardest case for telling two colours apart.

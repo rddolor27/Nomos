@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { BUILT_SKINS, SKINS, autoSkin, builtSkin, skinFromQuery, type Skin } from '../src/skin.ts';
+import { BUILT_SKINS, SKINS, autoSkin, builtSkin, skinFromQuery, type Skin } from '../src/skins/skin.ts';
 
 type Level = 'dots' | 'town';
 type Sample = [pxPerTile: number, agentsInView: number];

@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { parseMap } from '@nomos/sim-protocol';
 import { expect, test } from 'vitest';
-import { BACKGROUND, OUTLINE, RIM, contrastRatio, edgeFor } from '../src/colour.ts';
+import { BACKGROUND, OUTLINE, RIM, contrastRatio, edgeFor } from '../src/dots/colour.ts';
 
 const TOWN = new URL('../../../assets/maps/town.nmap', import.meta.url);
 

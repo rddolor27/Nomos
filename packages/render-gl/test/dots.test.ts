@@ -11,7 +11,7 @@ import {
   dotMask,
   roleOfJob,
   type Shape,
-} from '../src/dots.ts';
+} from '../src/dots/dots.ts';
 
 const SHAPES: Shape[] = ['circle', 'square', 'diamond'];
 

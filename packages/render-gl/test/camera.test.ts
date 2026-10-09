@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
-import { cssPxPerTile, fitCamera, mapShareInView, MAX_ZOOM, MIN_ZOOM, panBy, snapCamera, zoomAt } from '../src/camera.ts';
-import type { Camera } from '../src/types.ts';
+import { cssPxPerTile, fitCamera, mapShareInView, MAX_ZOOM, MIN_ZOOM, panBy, snapCamera, zoomAt } from '../src/camera/camera.ts';
+import type { Camera } from '../src/renderer/types.ts';
 
 function worldAt(camera: Camera, deviceX: number, deviceY: number): [number, number] {
   return [camera.x + deviceX / camera.zoom, camera.y + deviceY / camera.zoom];

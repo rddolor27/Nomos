@@ -1,5 +1,5 @@
 import type { MapV1 } from '@nomos/sim-protocol';
-import type { Skin } from './skin.ts';
+import type { Skin } from '../skins/skin.ts';
 
 export type Backend = 'webgl2' | 'canvas2d';
 

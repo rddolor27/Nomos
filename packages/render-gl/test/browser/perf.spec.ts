@@ -1,6 +1,6 @@
 import { loadavg, platform } from 'node:os';
 import { expect, test } from 'playwright/test';
-import { fitCamera } from '../../src/camera.ts';
+import { fitCamera } from '../../src/camera/camera.ts';
 
 const AGENTS = 10_000;
 const CSS: [number, number] = [1280, 720];

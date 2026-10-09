@@ -1,8 +1,8 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { TILE_PX } from '@nomos/sim-protocol';
 import type { Page } from 'playwright/test';
-import { snapCamera } from '../../src/camera.ts';
-import type { Camera } from '../../src/types.ts';
+import { snapCamera } from '../../src/camera/camera.ts';
+import type { Camera } from '../../src/renderer/types.ts';
 import { DPRS, expect, test } from './scale.ts';
 
 const GOLDEN = new URL('../golden/skin-a.json', import.meta.url);

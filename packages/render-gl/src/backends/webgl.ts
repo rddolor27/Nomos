@@ -1,9 +1,9 @@
 import { SNAPSHOT_BYTES, TILE_PX, jobId } from '@nomos/sim-protocol';
-import { MAX_ZOOM, MIN_ZOOM } from './camera.ts';
-import { BACKGROUND, OUTLINE, RIM, rgbOf } from './colour.ts';
-import { JUMP_PX, MASK_FILL, MASK_GROUND, ROLES, ROLE_SHAPE, dotFill, dotMask } from './dots.ts';
-import skinA from './skin-a.json';
-import type { Camera, Painter, Retained } from './types.ts';
+import { MAX_ZOOM, MIN_ZOOM } from '../camera/camera.ts';
+import { BACKGROUND, OUTLINE, RIM, rgbOf } from '../dots/colour.ts';
+import { JUMP_PX, MASK_FILL, MASK_GROUND, ROLES, ROLE_SHAPE, dotFill, dotMask } from '../dots/dots.ts';
+import skinA from '../dots/skin-a.json';
+import type { Camera, Painter, Retained } from '../renderer/types.ts';
 
 const CONTEXT: WebGLContextAttributes = {
   alpha: false,

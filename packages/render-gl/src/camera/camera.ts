@@ -1,5 +1,5 @@
 import { TILE_PX } from '@nomos/sim-protocol';
-import type { Camera } from './types.ts';
+import type { Camera } from '../renderer/types.ts';
 
 // Device pixels per texel; the zoom is always whole.
 export const MIN_ZOOM = 1;

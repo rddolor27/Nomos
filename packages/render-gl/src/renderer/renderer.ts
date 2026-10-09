@@ -1,10 +1,10 @@
 import { SNAPSHOT_BYTES } from '@nomos/sim-protocol';
-import { cssPxPerTile, mapShareInView } from './camera.ts';
-import { createCanvas2dPainter } from './canvas2d.ts';
-import { minimapPixels } from './minimap.ts';
-import { autoSkin, builtSkin, type Skin } from './skin.ts';
+import { cssPxPerTile, mapShareInView } from '../camera/camera.ts';
+import { createCanvas2dPainter } from '../backends/canvas2d.ts';
+import { minimapPixels } from '../dots/minimap.ts';
+import { autoSkin, builtSkin, type Skin } from '../skins/skin.ts';
 import type { Backend, Camera, Painter, RendererOptions, Retained, WorldRenderer } from './types.ts';
-import { createGlPainter } from './webgl.ts';
+import { createGlPainter } from '../backends/webgl.ts';
 
 const RESTORE_TIMEOUT_MS = 3000;
 
