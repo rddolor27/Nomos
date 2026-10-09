@@ -1,6 +1,6 @@
 import { createWorld } from '@nomos/sim-core';
 import { parseMap, type AppMessage } from '@nomos/sim-protocol';
-import { createSimLoop } from './loop.ts';
+import { createSimLoop } from './loop/loop.ts';
 
 // One channel serves every yield: a posted message wakes the next turn without setTimeout's nested 4 ms clamp (R2 §2).
 const channel = new MessageChannel();
