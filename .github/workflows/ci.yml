@@ -58,6 +58,11 @@ jobs:
         with:
           node-version: 24
           cache: pnpm
+      # The app's web server builds the map's atlas page, with Pillow.
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - run: pip install -r tools/requirements.txt
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec playwright install --with-deps chromium firefox webkit
       - run: pnpm test:browser
