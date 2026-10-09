@@ -3170,11 +3170,13 @@
     ]
   ],
   "streams": {
+    "COUNTRY": 13,
     "CROWD": 12,
     "ELEVATION": 2,
     "LANDMARK": 9,
     "LOOK": 11,
     "MOISTURE": 5,
+    "NAME": 14,
     "PLACE": 10,
     "RIDGES": 3,
     "ROAD": 7,

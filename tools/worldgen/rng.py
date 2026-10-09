@@ -10,7 +10,7 @@ MASK = 0xFFFFFFFF
 
 # One stream per purpose, so adding draws to one stage never shifts another. Append only.
 SHAPE, ELEVATION, RIDGES, TEMPERATURE, MOISTURE, SETTLEMENT, ROAD, WONDER, LANDMARK, PLACE, LOOK, CROWD = range(1, 13)
-# Next world streams: COUNTRY = 13 (countries.py until the port), then NAME = 14.
+COUNTRY, NAME = 13, 14
 
 
 def mix(x):

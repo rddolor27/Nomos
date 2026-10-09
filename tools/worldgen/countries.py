@@ -10,11 +10,8 @@ from math import isqrt
 from climate import LAKE, OCEAN
 from grid import dist2, neighbours
 from roads import COVER, DIAGONAL, STRAIGHT
-from rng import below, shuffled
+from rng import COUNTRY, below, shuffled
 
-# The countries' world stream. It joins rng.py's list with the TypeScript port, because vectors.py
-# records every stream there into sim-core's kernel fixtures (M8.1 plan, Ruling 1).
-COUNTRY = 13
 COUNT, COLOUR = range(2)
 COLOURS = 5
 CAPITAL_TIERS = ('capital', 'city', 'town')
