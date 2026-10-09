@@ -187,18 +187,16 @@ function overlayFor(state: PassState, world: WorldMap, view: MapView): WebGLText
   return texture;
 }
 
+function bindUnit(gl: WebGL2RenderingContext, unit: number, texture: WebGLTexture): void {
+  gl.activeTexture(gl.TEXTURE0 + unit);
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+}
+
 function bindTextures(state: PassState, overlay: WebGLTexture): void {
-  const gl = state.gl;
-  const bound: [number, WebGLTexture][] = [
-    [ATLAS_UNIT, state.atlas],
-    [CELLS_UNIT, state.cells],
-    [FLAT_UNIT, state.flat],
-    [OVERLAY_UNIT, overlay],
-  ];
-  for (const [unit, texture] of bound) {
-    gl.activeTexture(gl.TEXTURE0 + unit);
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-  }
+  bindUnit(state.gl, ATLAS_UNIT, state.atlas);
+  bindUnit(state.gl, CELLS_UNIT, state.cells);
+  bindUnit(state.gl, FLAT_UNIT, state.flat);
+  bindUnit(state.gl, OVERLAY_UNIT, overlay);
 }
 
 function drawPass(state: PassState, world: WorldMap, camera: MapCamera, view: MapView, flat: boolean): void {
