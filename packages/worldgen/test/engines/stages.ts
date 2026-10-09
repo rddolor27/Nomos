@@ -2,11 +2,12 @@
 // for line: each block runs a stage the way goldens.py opens world.generate up, and folds what it made. Each port task
 // appends its block before the return.
 import { WORLD_SIZES, type WorldSize } from '@nomos/sim-protocol/world-map';
-import { fold } from './fold.ts';
+import { fold, type Part } from './fold.ts';
 import { falloffOf, landPermilleOf, templateOf } from '../../src/terrain/templates.ts';
 import { chains } from '../../src/terrain/chains.ts';
 import { cut, landOf, rawOf, reliefOf, riseOf, shape } from '../../src/terrain/shape.ts';
 import { rain } from '../../src/climate/rain.ts';
+import { EROSION_PASSES, accumulate, erode, flood } from '../../src/drainage/flood.ts';
 
 export function stagePrints(seed: number, size: WorldSize): Map<string, number> {
   const [width, height] = WORLD_SIZES[size];
@@ -32,6 +33,16 @@ export function stagePrints(seed: number, size: WorldSize): Map<string, number> 
 
   const rained = rain(seed, width, height, shaped.elevation, shaped.ocean);
   prints.set('rain', fold(rained.wind, rained.rain));
+
+  let eroded = shaped.elevation;
+  const passes: Part[] = [];
+  for (let pass = 0; pass < EROSION_PASSES; pass++) {
+    const flooded = flood(seed, width, height, eroded, shaped.ocean);
+    const flow = accumulate(flooded.order, flooded.receiver, rained.rain, shaped.ocean);
+    eroded = erode(eroded, flooded.filled, flooded.receiver, flow, shaped.ocean);
+    passes.push(flooded.filled, flooded.receiver, flooded.order, flow, eroded);
+  }
+  prints.set('erode', fold(...passes));
 
   return prints;
 }
