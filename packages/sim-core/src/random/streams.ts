@@ -9,6 +9,13 @@ export const WANDER = AGENT_SALT + 3;
 export const STRIDE = AGENT_SALT + 4;
 export const FESTIVAL = AGENT_SALT + 5;
 export const PERSON_NAME = AGENT_SALT + 6;
+// One stream per economy folder that draws, so a change in one folder never shifts another's draws (M2.1).
+export const FIRM_DRAW = AGENT_SALT + 7;
+export const WAGE_DRAW = AGENT_SALT + 8;
+export const LABOUR_DRAW = AGENT_SALT + 9;
+export const SHOP_DRAW = AGENT_SALT + 10;
+export const WEALTH_DRAW = AGENT_SALT + 11;
+export const START_DRAW = AGENT_SALT + 12;
 
 export function layerOf(stream: number): 'world' | 'agent' | 'ledger' {
   if (stream < AGENT_SALT) return 'world';

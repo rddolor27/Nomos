@@ -7,6 +7,8 @@ export const DAYS_PER_WEEK = 7;
 export const DAYS_PER_SEASON = 28;
 export const DAYS_PER_YEAR = 112;
 export const TICKS_PER_YEAR = TICKS_PER_DAY * DAYS_PER_YEAR;
+// Lengnick's month (owner, 10 October 2026); it ignores weeks and seasons, and 112 days hold 5 and a third of them.
+export const DAYS_PER_MONTH = 21;
 
 const WORKDAYS_PER_WEEK = 5;
 
@@ -32,6 +34,14 @@ export function seasonOf(day: number): number {
 
 export function dayOfSeason(day: number): number {
   return floorMod(dayOfYear(day), DAYS_PER_SEASON) + 1;
+}
+
+export function monthOf(day: number): number {
+  return floorDiv(day, DAYS_PER_MONTH);
+}
+
+export function dayOfMonth(day: number): number {
+  return floorMod(day, DAYS_PER_MONTH);
 }
 
 export function weekdayOf(day: number): number {

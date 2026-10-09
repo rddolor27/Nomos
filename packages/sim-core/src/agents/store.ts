@@ -4,6 +4,8 @@ import { CULTURE, LOOK, PERSON_NAME } from '../random/streams.ts';
 
 export const LOOKS = 96;
 export const MAX_CULTURES = 8;
+// The firms a household buys from, the 7 of Lengnick's model.
+export const SUPPLIERS = 7;
 
 export const CUSTOM_FOOD = 0;
 export const CUSTOM_FESTIVAL = 1;
