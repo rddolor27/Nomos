@@ -12,10 +12,12 @@ export type AppMessage =
   | { type: 'pause' }
   | { type: 'resume' }
   | { type: 'checkpoint' } // a worker cannot see pagehide, so the app asks for the checkpoint
+  | { type: 'inspect'; x: number; y: number } // world pixels; a read-only query, answered even while a run plays
   | { type: 'return'; buffer: ArrayBuffer };
 
 export type WorkerMessage =
   | { type: 'ready'; agents: number }
   | { type: 'snapshot'; tick: number; count: number; buffer: ArrayBuffer }
   | { type: 'stats'; tick: number; systemMs: Record<string, number> } // keyed by SYSTEM_NAMES plus 'snapshot'
-  | { type: 'checkpoint'; tick: number; state: ArrayBuffer };
+  | { type: 'checkpoint'; tick: number; state: ArrayBuffer }
+  | { type: 'inspected'; tick: number; agent: number; nameKey: number; cents: number }; // agent -1: no blob within a tile

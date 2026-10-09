@@ -1,4 +1,13 @@
-import { createWorld, currentTick, restoreWorld, stateHash, step, warmUp, type World } from '@nomos/sim-core';
+import {
+  createWorld,
+  currentTick,
+  nearestAgent,
+  restoreWorld,
+  stateHash,
+  step,
+  warmUp,
+  type World,
+} from '@nomos/sim-core';
 import { bindPageLifecycle, type AppMessage, type WorkerMessage } from '@nomos/sim-protocol';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { SLEEP_MIN_MS, STATS_MS, createSimLoop, type LoopHost } from '../src/index.ts';
@@ -282,6 +291,41 @@ describe('the sim loop', () => {
       expect(Object.keys(systemMs)).toEqual(['day', 'move', 'snapshot']);
       expect(Object.values(systemMs).every((ms) => Number.isFinite(ms) && ms >= 0)).toBe(true);
     }
+  });
+
+  it('answers inspect with the nearest blob within a tile', () => {
+    const page = fakePage();
+    const { agents } = page.world();
+    const agent = nearestAgent(agents, agents.x[0], agents.y[0], 4_096);
+    page.handle({ type: 'inspect', x: agents.x[0] / 256, y: agents.y[0] / 256 });
+    expect(page.ofType('inspected')).toEqual([
+      { type: 'inspected', tick: 0, agent, nameKey: agents.nameKey[agent], cents: 100_000 },
+    ]);
+  });
+
+  it('answers -1 off the map', () => {
+    const page = fakePage();
+    page.handle({ type: 'inspect', x: -1_000, y: -1_000 });
+    expect(page.ofType('inspected')).toEqual([{ type: 'inspected', tick: 0, agent: -1, nameKey: 0, cents: 0 }]);
+  });
+
+  it('ignores inspect before init', () => {
+    const page = fakePage({ init: false });
+    page.handle({ type: 'inspect', x: 0, y: 0 });
+    expect(page.posted).toEqual([]);
+  });
+
+  it('answers while the run plays', () => {
+    const page = fakePage();
+    page.handle({ type: 'resume' });
+    page.advance(500);
+    const { agents } = page.world();
+    page.handle({ type: 'inspect', x: agents.x[0] / 256, y: agents.y[0] / 256 });
+    const [answer] = page.ofType('inspected');
+    expect(page.tick()).toBe(5);
+    expect(answer.tick).toBe(page.tick());
+    page.advance(500);
+    expect(page.tick()).toBe(10);
   });
 
   it('treats a repeated pause or resume as one', () => {

@@ -1,7 +1,10 @@
 import {
+  SUBPIXELS,
   SYSTEM_NAMES,
+  TILE_PX,
   checkpoint,
   currentTick,
+  nearestAgent,
   step,
   warmUp,
   type SystemTimer,
@@ -25,6 +28,8 @@ export const MAX_GAP_MS = 250;
 export const STATS_MS = 250;
 // A shorter wait yields through the MessageChannel instead, since setTimeout clamps nested waits to 4 ms (R2 §2).
 export const SLEEP_MIN_MS = 4;
+// One tile.
+const INSPECT_RADIUS_Q8 = TILE_PX * SUBPIXELS;
 
 export interface LoopHost {
   now(): number;
@@ -86,6 +91,7 @@ export function createSimLoop(host: LoopHost, cpuSlowdown = 1): { handle(msg: Ap
     if (msg.type === 'pause') running = false;
     else if (msg.type === 'resume') resume();
     else if (msg.type === 'checkpoint') postCheckpoint(session.world);
+    else if (msg.type === 'inspect') postInspected(session.world, msg.x, msg.y);
     else giveBack(session.pool, msg.buffer);
   }
 
@@ -173,6 +179,18 @@ export function createSimLoop(host: LoopHost, cpuSlowdown = 1): { handle(msg: Ap
   function postCheckpoint(world: World): void {
     const state = checkpoint(world);
     post({ type: 'checkpoint', tick: currentTick(world), state }, [state]);
+  }
+
+  function postInspected(world: World, x: number, y: number): void {
+    const tick = currentTick(world);
+    const agent = nearestAgent(world.agents, Math.round(x * SUBPIXELS), Math.round(y * SUBPIXELS), INSPECT_RADIUS_Q8);
+    if (agent < 0) {
+      post({ type: 'inspected', tick, agent, nameKey: 0, cents: 0 }, noTransfer);
+      return;
+    }
+    const blob = world.blob;
+    blob.at(agent);
+    post({ type: 'inspected', tick, agent, nameKey: blob.nameKey, cents: blob.cash }, noTransfer);
   }
 
   // Waits before the post rather than after the handler, which would come too late: init posts ready and the spawn

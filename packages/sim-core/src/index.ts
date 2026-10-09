@@ -6,6 +6,7 @@ export * from './memory/arena.ts';
 export * from './world/space.ts';
 export * from './agents/store.ts';
 export * from './agents/blob.ts';
+export * from './agents/nearest.ts';
 export * from './random/streams.ts';
 export * from './money/ledger.ts';
 export * from './money/invariants.ts';
