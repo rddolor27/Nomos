@@ -112,7 +112,13 @@ export function crowdBuffers(crowd: MapCrowd): ArrayBuffer[] {
 }
 
 export type MapAppMessage = { type: 'generate'; seed: number; size: WorldSize };
-export type MapWorkerMessage = { type: 'world'; map: WorldMap; names: string[]; stageMs: Record<string, number> };
+export type MapWorkerMessage = {
+  type: 'world';
+  map: WorldMap;
+  names: string[];
+  crowd: MapCrowd;
+  stageMs: Record<string, number>;
+};
 
 // Every column owns its buffer, so each is listed once and the map worker can transfer them all.
 export function worldMapBuffers(map: WorldMap): ArrayBuffer[] {

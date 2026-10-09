@@ -50,6 +50,9 @@ importers:
       '@nomos/sim-worker':
         specifier: workspace:*
         version: link:../../packages/sim-worker
+      '@nomos/worldgen':
+        specifier: workspace:*
+        version: link:../../packages/worldgen
       lil-gui:
         specifier: 0.21.0
         version: 0.21.0

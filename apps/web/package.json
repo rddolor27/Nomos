@@ -14,6 +14,7 @@
     "@nomos/sim-culture": "workspace:*",
     "@nomos/sim-protocol": "workspace:*",
     "@nomos/sim-worker": "workspace:*",
+    "@nomos/worldgen": "workspace:*",
     "lil-gui": "0.21.0",
     "uplot": "1.6.32"
   },
