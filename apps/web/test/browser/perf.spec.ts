@@ -30,13 +30,16 @@ interface Drawn {
   height: number;
 }
 
-// Chromium's mouse is pointer 1, which timePan's press holds, so these moves drag the map right. Each move asks for the
-// map's frame before asking for its reading, so the reading runs after the map's draw; a frame the map never drew reads
-// NaN.
-function pan({ x, y, frames }: { x: number; y: number; frames: number }): Promise<number[]> {
-  const hook = window.__map;
-  const section = document.getElementById('map');
-  if (!hook || !section) throw new Error('the map is not open');
+// The map, or the town view over it.
+type Timed = 'map' | 'place';
+
+// Chromium's mouse is pointer 1, which timePan's press holds, so these moves drag the view right. Each move asks for the
+// view's frame before asking for its reading, so the reading runs after the view's draw; a frame the view never drew
+// reads NaN.
+function pan({ x, y, frames, view }: { x: number; y: number; frames: number; view: Timed }): Promise<number[]> {
+  const hook = view === 'map' ? window.__map : window.__place;
+  const section = document.getElementById(view);
+  if (!hook || !section) throw new Error(`the ${view} view is not open`);
   const times: number[] = [];
   return new Promise((resolve) => {
     const step = (): void => {
@@ -53,17 +56,29 @@ function pan({ x, y, frames }: { x: number; y: number; frames: number }): Promis
   });
 }
 
-async function timePan(page: Page): Promise<number[]> {
-  const box = await page.locator('#map').boundingBox();
-  if (!box) throw new Error('the map is not on screen');
+async function timePan(page: Page, view: Timed = 'map'): Promise<number[]> {
+  const box = await page.locator(`#${view}`).boundingBox();
+  if (!box) throw new Error(`the ${view} view is not on screen`);
   const x = Math.round(box.x + box.width / 2);
   const y = Math.round(box.y + box.height / 2);
   await page.mouse.move(x, y);
   await page.mouse.down();
-  const times = await page.evaluate(pan, { x: x + TAP_SLOP_CSS_PX, y, frames: FRAMES });
+  const times = await page.evaluate(pan, { x: x + TAP_SLOP_CSS_PX, y, frames: FRAMES, view });
   await page.mouse.up();
-  expect(times.filter(Number.isNaN).length, 'pan steps the map drew no frame for').toBe(0);
+  expect(times.filter(Number.isNaN).length, `pan steps the ${view} view drew no frame for`).toBe(0);
   return times;
+}
+
+// The first country's capital, the largest kind of place, entered from the Go to list and its Enter button.
+async function enterCapital(page: Page, query: string): Promise<void> {
+  await page.goto(query);
+  await page.getByRole('button', { name: 'Map', exact: true }).click();
+  await expect(page.locator('#map .map-legend li')).not.toHaveCount(0, { timeout: 60_000 });
+  const list = page.getByRole('combobox', { name: 'Go to a settlement' });
+  const capital = (await list.locator('optgroup').first().locator('option').first().textContent()) ?? '';
+  await list.selectOption({ label: capital });
+  await page.getByRole('button', { name: `Enter ${capital}` }).click();
+  await expect.poll(() => page.evaluate(() => window.__place?.ready), { timeout: 30_000 }).toBe(true);
 }
 
 // Labels come in priority order, so the first settlement labelled in the Country view is a capital, its label hung
@@ -140,4 +155,35 @@ test('pans the Country and Region views within 2 ms a frame', async ({ page, bro
   console.log(notes.map(({ type, description }) => `${type}: ${description}`).join('; '));
   expect.soft(country.median, "the Country view's median frame, in ms").toBeLessThanOrEqual(MAP_FRAME_MS);
   expect.soft(region.median, "the Region view's median frame, in ms").toBeLessThanOrEqual(MAP_FRAME_MS);
+});
+
+// The town view lives in the map's panel, so the map's 2 ms bar holds for it too (M3.1 Task 7). Its walkers walk while
+// the drag pans the capital; ?canvas draws the town, the map and the town view in Canvas2D.
+test('pans the town view of a capital within 2 ms a frame, in WebGL2 and in Canvas2D', async ({ page, browser }) => {
+  test.setTimeout(240_000);
+  await enterCapital(page, TOWN);
+  const webgl = summarise(await timePan(page, 'place'));
+  const shown = await page.evaluate(() => {
+    const canvas = document.querySelector<HTMLCanvasElement>('#place canvas');
+    return { backend: window.__place?.backend, walkers: window.__place?.walkers ?? 0, size: `${canvas?.width} x ${canvas?.height}` };
+  });
+  await enterCapital(page, `${TOWN}&canvas`);
+  const canvas = summarise(await timePan(page, 'place'));
+  const fallback = await page.evaluate(() => window.__place?.backend);
+  expect([shown.backend, fallback]).toEqual(['webgl2', 'canvas2d']);
+
+  const notes = [
+    { type: 'Town view, WebGL2', description: `${inMs(webgl)}, with ${shown.walkers} walkers walking` },
+    { type: 'Town view, Canvas2D', description: inMs(canvas) },
+    { type: 'canvas', description: `${shown.size} device px at DPR 1, at 2 device px per art px; desktop CPU, unthrottled` },
+    { type: 'browser', description: `Chromium ${browser.version()}` },
+    {
+      type: 'load average',
+      description: `${readLoadavg() ?? 'none kept on Windows'} (${platform()}, ${cpus().length} logical CPUs)`,
+    },
+  ];
+  test.info().annotations.push(...notes);
+  console.log(notes.map(({ type, description }) => `${type}: ${description}`).join('; '));
+  expect.soft(webgl.median, "the town view's median WebGL2 frame, in ms").toBeLessThanOrEqual(MAP_FRAME_MS);
+  expect.soft(canvas.median, "the town view's median Canvas2D frame, in ms").toBeLessThanOrEqual(MAP_FRAME_MS);
 });
