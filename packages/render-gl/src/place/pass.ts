@@ -1,7 +1,7 @@
 import { CROWD_OUTLINE } from '../map/colours.ts';
 import type { AtlasPage } from '../map/frames.ts';
 import { link, nearestTexture } from '../map/gl.ts';
-import type { PlaceCamera } from './camera.ts';
+import { snapToDevice, type PlaceCamera } from './camera.ts';
 import { INSTANCE_SHORTS, type PlaceSprites } from './sprites.ts';
 
 const DST = 0;
@@ -124,7 +124,7 @@ export function createPlacePass(gl: WebGL2RenderingContext): PlacePass {
       gl.bindVertexArray(vao);
       gl.activeTexture(gl.TEXTURE0 + ATLAS_UNIT);
       gl.bindTexture(gl.TEXTURE_2D, atlas);
-      gl.uniform2i(camDev, Math.round(camera.x * camera.scale), Math.round(camera.y * camera.scale));
+      gl.uniform2i(camDev, snapToDevice(camera.x, camera.scale), snapToDevice(camera.y, camera.scale));
       gl.uniform1i(scale, camera.scale);
       gl.uniform2i(viewport, gl.drawingBufferWidth, gl.drawingBufferHeight);
       gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, sprites.count);
