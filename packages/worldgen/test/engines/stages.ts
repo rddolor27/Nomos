@@ -2,7 +2,7 @@
 // for line: each block runs a stage the way goldens.py opens world.generate up, and folds what it made. Each port task
 // appends its block before the return.
 import { WORLD_SIZES, type WorldSize } from '@nomos/sim-protocol/world-map';
-import { fold, rows, type Part } from './fold.ts';
+import { fold, paths, rows, type Part } from './fold.ts';
 import { falloffOf, landPermilleOf, templateOf } from '../../src/terrain/templates.ts';
 import { chains } from '../../src/terrain/chains.ts';
 import { cut, landOf, rawOf, reliefOf, riseOf, shape } from '../../src/terrain/shape.ts';
@@ -19,6 +19,7 @@ import { found } from '../../src/countries/countries.ts';
 import { regions } from '../../src/regions/regions.ts';
 import { farm } from '../../src/settle/farm.ts';
 import { landmasses, routeGraph } from '../../src/routes/graph.ts';
+import { buildRoads } from '../../src/routes/roads.ts';
 
 export function stagePrints(seed: number, size: WorldSize): Map<string, number> {
   const [width, height] = WORLD_SIZES[size];
@@ -110,6 +111,8 @@ export function stagePrints(seed: number, size: WorldSize): Map<string, number> 
   prints.set('farm', fold(farmed));
   const mass = landmasses(width, height, farmed);
   prints.set('routes', fold(rows(routeGraph(settlements, settlements.map((s) => mass[s.uid])))));
+  const built = buildRoads(width, height, farmed, drained.elevation, drained.river, drained.receiver, settlements);
+  prints.set('roads', fold(paths(built.roads), built.bridges));
 
   return prints;
 }
