@@ -19,6 +19,7 @@ Concept mockups for the browser society simulation, in a GBA/DS-era top-down pix
 | `blob_looks.png` | Image 12: the same world's first 48 people, each with a random hue, eye shape and pattern, turned four ways so the patterns show (scaled 3×), made the same way |
 | `seasons_showcase.png` | Image 13: the same world's capital in spring, summer, autumn and mid-winter (left to right, top to bottom; 1×), drawn by `tools/worldgen/generate.py` with `assets/sprites/season_map.json`: palette and sprite swaps, and snow on the ground, trees and roofs; no third-party art |
 | `town_walls_preview.png` | Image 14: a small walled town of the stone wall pieces, with corner towers, a front gate and a side gate, and the weatherboard and rubble houses and the town props inside it and beside it, drawn by `tools/sprites/showcase_walls.py` from the original sprites in `assets/sprites/` (scaled 2×); no third-party art |
+| `houses_preview.png` | Image 15: the new house shapes, each in a few styles and roofs: gabled townhouse terraces, corner houses with a side street, small cabins, handed row pieces, and snow and lit windows; then today's shapes before their polish (the houses sheet at commit `edb2589`) and after. Drawn by `tools/sprites/showcase_houses.py` from the original sprites in `assets/sprites/` (scaled 2×); no third-party art |
 
 ## Captions
 
