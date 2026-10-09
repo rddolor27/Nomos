@@ -167,6 +167,16 @@ function inTick(statement: string): string {
   return `export function tick(a: Int32Array): void {\n  ${statement};\n}\n`;
 }
 
+const HOT_CLASS = 'packages/sim-core/src/agents/planted.ts';
+
+function inMethod(statement: string): string {
+  return `export class Planted {\n  tick(a: Int32Array): void {\n    ${statement};\n  }\n}\n`;
+}
+
+function inClass(members: string): string {
+  return `export class Planted {\n  ${members}\n}\n`;
+}
+
 describe('the hot-path lint', { timeout: 30_000 }, () => {
   it('rejects every allocation and clock in a hot function', async () => {
     for (const plant of HOT_PLANTS) {
@@ -204,6 +214,59 @@ describe('the hot-path lint', { timeout: 30_000 }, () => {
     }
     for (const code of HOT_FILE_PLANTS) {
       expect(await hotMessageCount(code, 'packages/sim-core/src/step/warm.ts'), code).toBe(0);
+    }
+  });
+
+  it('checks every method, getter and setter in a hot folder', async () => {
+    for (const plant of HOT_PLANTS) {
+      expect(await profileMessageCount(inMethod(plant), HOT_CLASS), plant).toBeGreaterThan(0);
+    }
+    const members = [
+      'get value(): number {\n    return [1].length;\n  }',
+      'set value(v: number) {\n    g([v]);\n  }',
+      'static tick(): void {\n    g([1]);\n  }',
+    ];
+    for (const member of members) {
+      expect(await hotMessageCount(inClass(member), HOT_CLASS), member).toBeGreaterThan(0);
+    }
+  });
+
+  it('allows constructors, cold methods and plain fields', async () => {
+    const members = [
+      's: Int32Array;\n  constructor() {\n    this.s = new Int32Array(4);\n    g([1]);\n  }',
+      'createScratch(): Int32Array {\n    return new Int32Array(4);\n  }',
+      'private row = 0;\n  private readonly s = new Int32Array(4);',
+    ];
+    for (const member of members) {
+      expect(await hotMessageCount(inClass(member), HOT_CLASS), member).toBe(0);
+    }
+  });
+
+  it('rejects function-valued fields', async () => {
+    for (const member of ['tick = (a: Int32Array) => a[0];', 'tick = function (a: Int32Array) {\n    return a[0];\n  };']) {
+      expect(await hotMessageCount(inClass(member), HOT_CLASS), member).toBeGreaterThan(0);
+    }
+  });
+
+  it('makes every sim-core folder hot but random/ and memory/', async () => {
+    const hot = [
+      'packages/sim-core/src/crime/planted.ts',
+      'packages/sim-core/src/consumption/planted.ts',
+      'packages/sim-core/src/money/planted.ts',
+      'packages/sim-protocol/src/snapshot/planted.ts',
+    ];
+    for (const filePath of hot) {
+      expect(await hotMessageCount(inTick('g([1])'), filePath), filePath).toBeGreaterThan(0);
+    }
+    const cold = [
+      'packages/sim-core/src/random/planted.ts',
+      'packages/sim-core/src/memory/planted.ts',
+      'packages/sim-core/src/maths/apportion.ts',
+      'packages/sim-core/src/step/warm.ts',
+      'packages/sim-protocol/src/messages/planted.ts',
+    ];
+    for (const filePath of cold) {
+      expect(await hotMessageCount(inTick('g([1])'), filePath), filePath).toBe(0);
     }
   });
 });

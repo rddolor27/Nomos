@@ -63,24 +63,21 @@ function syntaxBansWithout(exempt) {
   return ['error', ...SYNTAX_GROUPS.filter((group) => group !== exempt).flat()];
 }
 
-// The per-tick list's one home: M0.3's step and snapshot writer and the functions they call every tick, ground.ts
-// for move's walkableAt. draw.ts (its variadic draw and below serve non-tick code) and apportion.ts (BigInt) stay out.
-const HOT_FILES = [
-  'packages/sim-core/src/world/{world,checkpoint,ground,inputs,space}.ts',
-  'packages/sim-core/src/movement/{wander,walk}.ts',
-  'packages/sim-core/src/step/step.ts',
-  'packages/sim-core/src/day/{day,slices,stride}.ts',
-  'packages/sim-core/src/money/{ledger,ppm,claims,registry,flows,invariants,histogram}.ts',
-  'packages/sim-core/src/maths/{int,split,log2}.ts',
-  'packages/sim-core/src/time/calendar.ts',
-  'packages/sim-core/src/agents/store.ts',
-  'packages/sim-protocol/src/snapshot/{snapshot,visual}.ts',
+// Every sim-core concern folder is per-tick code by default, so a new one is linted from its first file, and cold code
+// says so with a COLD name. random/ (the variadic draw and below serve non-tick code), memory/ (take makes the views at
+// creation), apportion.ts (BigInt, R4) and warm.ts (a throwaway world) never run per tick.
+const HOT_FOLDERS = ['packages/sim-core/src/*/**/*.ts', 'packages/sim-protocol/src/snapshot/**/*.ts'];
+const NOT_HOT = [
+  'packages/sim-core/src/{random,memory}/**',
+  'packages/sim-core/src/maths/apportion.ts',
+  'packages/sim-core/src/step/warm.ts',
 ];
 // Functions in hot files that run only at creation, restore or failure, or between ticks, so they may allocate. A name
 // matches whole, so one that only starts with a cold word, such as createdToday or failures, stays hot.
 const COLD =
   '/^((create|layout|restore|fail)[A-Z][A-Za-z0-9]*|populate|checkpoint|giveBack|stateHash|stateHashExcept|openCells|standInGround)$/';
-const IN_HOT = `FunctionDeclaration:not([id.name=${COLD}])`;
+// A constructor runs once per world, so it may allocate; every other method, getter and setter is checked.
+const IN_HOT = `:matches(FunctionDeclaration:not([id.name=${COLD}]), MethodDefinition:not([kind='constructor']):not([key.name=${COLD}]) > FunctionExpression)`;
 const ARRAY_METHODS =
   '/^(map|filter|reduce|forEach|flatMap|some|every|find|slice|subarray|concat|splice|push|pop|shift|unshift|from|of|entries|keys|values|join|split)$/';
 const STRING_METHODS = '/^(toString|toFixed|toPrecision)$/';
@@ -130,8 +127,9 @@ const HOT_SYNTAX = [
   {
     // Anywhere in a hot file, so that no per-tick function escapes the checks above.
     selector:
-      ':matches(VariableDeclarator, Property, ExportDefaultDeclaration, AssignmentExpression) > :matches(ArrowFunctionExpression, FunctionExpression)',
-    message: 'sim-core rules, Hot paths: declare functions in hot files with function, so the hot-path lint sees them.',
+      ':matches(VariableDeclarator, Property, PropertyDefinition, ExportDefaultDeclaration, AssignmentExpression) > :matches(ArrowFunctionExpression, FunctionExpression)',
+    message:
+      'sim-core rules, Hot paths: declare functions in hot files with function or as class methods, so the hot-path lint sees them.',
   },
 ];
 
@@ -232,7 +230,8 @@ export default defineConfig(
   },
   {
     // Its own copy of the core rule, so these bans stack on the sim profile's instead of replacing them.
-    files: HOT_FILES,
+    files: HOT_FOLDERS,
+    ignores: NOT_HOT,
     plugins: { hot: { rules: { 'no-restricted-syntax': builtinRules.get('no-restricted-syntax') } } },
     rules: { 'hot/no-restricted-syntax': ['error', ...HOT_SYNTAX] },
   },
