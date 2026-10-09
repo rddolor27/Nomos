@@ -95,7 +95,7 @@ Skin B and Skin C arrive as `blobs/` and `town/` beside `dots/` (M1.3, M3.3). M8
 | --- | --- | --- |
 | `src/` | `main.ts` | The entry `index.html` loads |
 | `app/` | `app.ts`, `boot.ts`, `lifecycle.ts`, `query.ts`, `tiers.ts` | The app shell: boot hand-off, worker link, query, tiers and the page lifecycle |
-| `view/` | `camera-input.ts`; `town-skin.ts` (the Town skin) | Pointer and keyboard input on the view, and the click that inspects; it loads after the first frame, as the charts do (M0.7). The Town skin's loader, which loads in idle time after that |
+| `view/` | `camera-input.ts`; `town-skin.ts` (the Town skin) | Pointer and keyboard input on the view, and the click that inspects; it loads after the first frame, as the charts do (M0.7). `camera-input.ts` also imports the Town skin's loader, `town-skin.ts`, once the page is interactive |
 | `panels/` | `hud.ts`, `charts.ts`, `controls.ts`, `inspector.ts` (new) | The HUD, the lazy charts and controls, and the on-demand inspector |
 | `map/` | `generate.ts` and `map-worker.ts` (M8.1); `map-view.ts`, `map-input.ts`, `labels.ts`, `legend.ts`, `crowd-motion.ts` and `goto.ts` (M8.3); `place-builder.ts`, `place-view.ts` and `walkers.ts` (M3.1); `town.ts` (the Town skin) | The map: its worker and the worker's lazy place builder, the lazy view the Map control opens, and the town view a place opens into. `town.ts` pins Highcourt's place context for the builder |
 
@@ -623,7 +623,7 @@ The owner asked on 10 October 2026 for the town view's art on the first screen. 
 
 - **`TownPainter`,** in `renderer/types.ts`: `draw(camera: Camera, alpha: number, view: TownView): number | undefined`. `TownView` is what the renderer lends each draw: `drawnSkin`, `retained` (the two latest snapshots), `canvas` and `dpr`.
   - When `drawnSkin` is the town, it draws and returns the agents drawn. Otherwise it hides its canvas and returns undefined, and the renderer draws the dots.
-  - The first-load renderer chunk gains only this hook, `setTown`, `BUILT_SKINS` and the town check in the skin choice.
+  - The first-load renderer chunk gains only this hook, `setTown`, `BUILT_SKINS`, the town check in the skin choice, and the word readers the people use, `lookOf`, `actionOf` and `facingOf`, since `sim-protocol`'s `visual.ts` sits in that chunk.
 - **`TownSkin`,** the `./town` export, is a `TownPainter`: `new TownSkin(canvas: HTMLCanvasElement, layout: PlaceLayout, page: AtlasPage, options?: LifecycleOptions)`.
   - It draws through a `createPlaceRenderer` of its own, on its own canvas over the dots' canvas, at `{ x: camera.x, y: camera.y, scale: camera.zoom }`, since a world px is an art px. Its canvas takes the dots' canvas's device size and dpr whenever they change.
   - While it shows, the dots' canvas is hidden, so assistive tech meets one picture.
@@ -639,10 +639,10 @@ The owner asked on 10 October 2026 for the town view's art on the first screen. 
 
 ### In `web`
 
-- **Loading:** after `app:interactive`, in idle time, `main.ts` imports `view/town-skin.ts`, which builds as its own chunk, `town-skin-*.js`, with a size-limit entry. Its `mountTownSkin(app)`:
+- **Loading:** after `app:interactive`, `main.ts` calls `loadTownSkin(app)` from the camera input's chunk, which imports `view/town-skin.ts`, so the entry chunk holds no import of its own. `town-skin.ts` builds as its own chunk, `town-skin-*.js`. Its `mountTownSkin(app)`:
   - adds `<canvas id="town">` to `#view` after `#world`, hidden, as an image named for the town;
-  - starts a map worker, sends a `TownRequest`, and terminates the worker once it answers;
-  - loads `atlas/atlas.json` and `atlas/atlas.webp`, as the town view does;
+  - in idle time, through `requestIdleCallback` or a timeout where Safari lacks it, starts a map worker, sends a `TownRequest`, and terminates the worker once it answers;
+  - loads `atlas/atlas.json` and `atlas/atlas.webp` at the same time, as the town view does;
   - once both are in, makes a `TownSkin` on the app renderer's backend, so `?canvas` draws it in Canvas2D, lends it with `app.renderer.setTown` and redraws.
   - A failed load keeps the dots and logs why.
 - **Skins:** the HUD's toggle is unchanged.
@@ -650,4 +650,6 @@ The owner asked on 10 October 2026 for the town view's art on the first screen. 
   - Dots and Town fix the skin, and Blobs still shows dots.
   - Until the town is lent, Town and Auto draw dots.
 - **Chunks:** `vite.config.ts`'s `render-gl` chunk group leaves out `src/town` too, so the town never joins the renderer chunk.
+  - The town view, the map view and the Town skin share the place renderer and the scenes' common modules, which so build as shared chunks, `renderer-*.js` and `lifecycle-*.js`.
+  - size-limit gates `town-skin-*.js` and those two shared chunks, each with an entry.
 - **Test hooks:** none new. `window.__app.renderer.drawnSkin` reads `town` once the town draws.
