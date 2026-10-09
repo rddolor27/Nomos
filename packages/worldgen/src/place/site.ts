@@ -1,6 +1,7 @@
-import { draw, fbm, floorDiv } from '@nomos/sim-core/kernels';
+import { below as keyedBelow, draw, fbm, floorDiv } from '@nomos/sim-core/kernels';
 import { PLACE_TILE_PX as TILE } from '@nomos/sim-protocol/place';
 import { xOf, yOf } from '../grid/grid.ts';
+import { chance as keyedChance } from '../random/keyed.ts';
 import { PLACE } from '../random/streams.ts';
 import type { PlaceContext } from './context.ts';
 import { FRAMES } from './frames.ts';
@@ -190,11 +191,11 @@ export class Site {
   }
 
   below(n: number, sub: number, ...key: number[]): number {
-    return (this.draw(sub, ...key) >>> 0) % n;
+    return keyedBelow(n, this.ctx.seed, PLACE, sub, ...key);
   }
 
   chance(perMille: number, sub: number, ...key: number[]): boolean {
-    return (this.draw(sub, ...key) >>> 0) % 1000 < perMille;
+    return keyedChance(perMille, this.ctx.seed, PLACE, sub, ...key);
   }
 
   pick<T>(items: readonly T[], sub: number, ...key: number[]): T {
