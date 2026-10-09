@@ -110,11 +110,14 @@ def place_prints(ctx, checked):
     return ' '.join(f'{v:08x}' for v in (fold_context(ctx), *prints, last))
 
 
-def world_prints(job):
-    seed, checked = job
+def world_contexts(seed):
     world = generate(seed)
-    return {'seed': seed, 'settlements': len(world.settlements),
-            'places': [place_prints(ctx, checked) for ctx in place_contexts(world)]}
+    return len(world.settlements), place_contexts(world)
+
+
+def place_job(job):
+    ctx, checked = job
+    return place_prints(ctx, checked)
 
 
 def pinned_prints(job):
@@ -123,10 +126,15 @@ def pinned_prints(job):
 
 
 def build(worlds):
-    jobs = [(FIRST + k, k < CHECKED) for k in range(worlds)]
+    seeds = [FIRST + k for k in range(worlds)]
     with ProcessPoolExecutor() as pool:
         pinned = list(pool.map(pinned_prints, PINNED))
-        made = list(pool.map(world_prints, jobs))
+        found = list(pool.map(world_contexts, seeds))
+        # One place to a job, so that a world's capital and cities build beside its hamlets, not one after another.
+        jobs = [(ctx, k < CHECKED) for k, (_, contexts) in enumerate(found) for ctx in contexts]
+        prints = iter(pool.map(place_job, jobs))
+        made = [{'seed': seed, 'settlements': settlements, 'places': [next(prints) for _ in contexts]}
+                for seed, (settlements, contexts) in zip(seeds, found)]
     return {'version': VERSION, 'stages': {kind: list(names) for kind, names in STAGES.items()}, 'kinds': list(KINDS),
             'pinned': pinned, 'worlds': made}
 
