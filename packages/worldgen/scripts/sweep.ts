@@ -123,6 +123,9 @@ function settlementCountries(map: WorldMap): string[] {
     } else {
       held[country]++;
     }
+    const region = settlements.region[s];
+    const cellRegion = map.region[settlements.cell[s]];
+    if (region !== cellRegion) out.push(`settlement ${s} is in region ${region}, its cell in ${cellRegion}`);
   }
   for (let n = 1; n <= k; n++) {
     if (held[n] < MIN_HELD) out.push(`country ${n} holds ${held[n]} settlements`);

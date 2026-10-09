@@ -8,6 +8,12 @@ describe('generateWorld', { timeout: 60_000 }, () => {
     expect(worldFingerprint(generateWorld(0x5eed0001, 'large'))).toBe(0x867cd479);
   });
 
+  // The fingerprint leaves the variant column out, so pin it on its own: mapdraw.py's draw & 3 gives the same values.
+  it("makes Python's tile variants", () => {
+    const { variant } = generateWorld(0x5eed0001, 'standard');
+    expect([0, 1, 2, 3, 1000, 6143].map((cell) => variant[cell])).toEqual([3, 3, 0, 2, 1, 0]);
+  });
+
   it('times every stage in order', () => {
     const laps: string[] = [];
     generateWorld(0x5eed0002, 'standard', { lap: (stage) => laps.push(stage) });
