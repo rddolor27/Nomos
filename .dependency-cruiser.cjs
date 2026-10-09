@@ -40,6 +40,21 @@ module.exports = {
       to: { path: '^packages/sim-culture/', reachable: true },
     },
     {
+      name: 'map-scene-stands-alone',
+      comment:
+        "M8.3: the lazy map scene imports nothing from render-gl's town folders, so the renderer chunk never gains an export for it.",
+      severity: 'error',
+      from: { path: '^packages/render-gl/src/map(\\.ts$|/)' },
+      to: { path: '^packages/render-gl/src/', pathNot: '^packages/render-gl/src/map(\\.ts$|/)' },
+    },
+    {
+      name: 'map-view-takes-only-types-from-the-town',
+      comment: 'M8.3: the map view reaches the town only through `import type`, so the entry chunk never gains an export for it.',
+      severity: 'error',
+      from: { path: '^apps/web/src/map/' },
+      to: { path: '^apps/web/src/', pathNot: '^apps/web/src/map/' },
+    },
+    {
       name: 'no-cycles',
       comment: 'A cycle makes the load order, and so any module-level setup, depend on the entry point.',
       severity: 'error',

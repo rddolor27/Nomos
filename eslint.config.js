@@ -174,6 +174,7 @@ const LAYOUT = 'interfaces.md, Layout: only entry files sit directly in src/, so
 const ENTRY_FILES = [
   'packages/*/src/index.ts',
   'packages/sim-core/src/kernels.ts',
+  'packages/render-gl/src/map.ts',
   'packages/sim-worker/src/worker.ts',
   'apps/web/src/main.ts',
   'tools/cli/src/main.ts',

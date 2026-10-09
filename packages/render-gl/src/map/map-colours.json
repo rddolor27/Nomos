@@ -1,0 +1,10 @@
+{
+  "countries": ["#42F6FC", "#0000E4", "#600090", "#CC36D8", "#FC66FC"],
+  "water": "#3C7CD0",
+  "river": "#3C7CD0",
+  "lane": "#7CC4F0",
+  "road": "#784C2C",
+  "deck": "#A86C3C",
+  "rail": "#4C2E1C",
+  "border": "#020202"
+}

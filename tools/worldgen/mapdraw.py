@@ -3,6 +3,7 @@ tiles) and the flat Countries view, from the map, wonders and landmarks sprite s
 marks drawn here use spritekit.PALETTE colours, except the country colours, which are map-only by
 the owner's choice; images are saved at 2x with nearest scaling.
 """
+import json
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -23,9 +24,11 @@ SCALE = 2
 VARIANT = 0x200
 RIVER, ROAD, DECK, RAIL = PALETTE['WATER'], PALETTE['WOOD'], PALETTE['WOOD_L'], PALETTE['WOOD_D']
 LANE = PALETTE['WATER_L']
-# Provisional, outside the sprite palette, until the owner picks five from a swatch sheet at M8.3
-# (M8.1 plan, Ruling 5). Countries.Country.colour indexes this table.
-COUNTRY_COLOURS = ((0x00, 0x00, 0xDD), (0xAA, 0xBB, 0x00), (0x33, 0x44, 0x22), (0xEE, 0x00, 0xDD), (0x44, 0xBB, 0xCC))
+ROOT = HERE.parents[1]
+# One table with render-gl's map scene (M8.3). Countries.Country.colour indexes its five country colours, the owner's
+# picks of 9 October 2026, which stay outside the sprite palette.
+MAP_COLOURS = json.loads((ROOT / 'packages' / 'render-gl' / 'src' / 'map' / 'map-colours.json').read_text(encoding='utf-8'))
+COUNTRY_COLOURS = tuple(tuple(int(colour[k:k + 2], 16) for k in (1, 3, 5)) for colour in MAP_COLOURS['countries'])
 BORDER = PALETTE['OUTLINE']
 PEAKS, ICONS, TOWNS = range(3)
 

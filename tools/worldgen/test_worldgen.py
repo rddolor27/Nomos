@@ -201,6 +201,17 @@ def borders_draw_on_cell_edges():
     return problems[:6]
 
 
+def map_colours_match_the_palette():
+    """map-colours.json, which render-gl's map scene shares, holds the palette's water and line colours."""
+    from mapdraw import MAP_COLOURS
+    from spritekit import PALETTE
+    names = {'water': 'WATER', 'river': 'WATER', 'lane': 'WATER_L', 'road': 'WOOD', 'deck': 'WOOD_L', 'rail': 'WOOD_D',
+             'border': 'OUTLINE'}
+    wanted = {key: '#' + bytes(PALETTE[name]).hex().upper() for key, name in names.items()}
+    return [f'{key} is {MAP_COLOURS[key]}, but the palette gives {colour}' for key, colour in wanted.items()
+            if MAP_COLOURS[key] != colour]
+
+
 def previews_write():
     w = world('standard', FIRST)
     sizes = {}
@@ -275,7 +286,7 @@ CHECKS = [snow_on_cold_lowland, lone_snow_melts, snow_is_uninhabitable, snow_pla
           count_is_three_to_five, capitals_spaced_in_population_order, grow_breaks_ties_by_cost_then_cell,
           grow_bends_to_mountains, island_joins_the_cheaper_crossing, diagonal_never_slips,
           small_countries_pass_their_capital_on, fingerprint_covers_countries, fingerprints_are_pinned,
-          borders_draw_on_cell_edges, previews_write, town_roads_never_draw_as_water]
+          borders_draw_on_cell_edges, map_colours_match_the_palette, previews_write, town_roads_never_draw_as_water]
 WORLD_CHECKS = [snow_lies_on_cold_lowland, countries_cover_the_land, stage_only_retiers_capitals]
 
 
