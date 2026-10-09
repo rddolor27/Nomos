@@ -176,7 +176,12 @@ This pulls M3.1's port forward, and starts M3.3's atlas pages and sprite drawing
 
 > **Status:** brief. Expand it into a step plan with the writing-plans skill before building.
 
-The owner found the town views too small and their crowds too thin. They asked for bigger places and a bigger starting town, then town walls with gates and more houses. In order:
+The owner found the town views too small and their crowds too thin. They asked for bigger places and a bigger starting town, then town walls with gates and more houses. Later on 10 October they set the order:
+- M8.1's Task 36, the large world with more settlements, goes first;
+- then steps 1, 2 and 4 below, so places and crowds grow in proportion;
+- then the walls and houses. Their sprites already exist (checkpoint 0031).
+
+The steps, in order:
 
 1. **Bigger places** (sim-engineer; asset-designer to tune the layout).
    - `place.py`'s `SIZES` become 96×56 for a capital or city, 80×48 for a town, 64×40 for a village and 40×24 for a hamlet. Vistas stay 30×18.
