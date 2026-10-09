@@ -1,2 +1,2 @@
-export * from './festivals.ts';
-export * from './relabel.ts';
+export * from './festivals/festivals.ts';
+export * from './relabel/relabel.ts';
