@@ -1,11 +1,11 @@
 import { CROWD_OUTLINE } from '../map/colours.ts';
 import type { AtlasPage } from '../map/frames.ts';
-import { snapToDevice, type PlaceCamera } from './camera.ts';
 import { INSTANCE_SHORTS, type PlaceSprites } from './sprites.ts';
 
+// left and top are the view's top-left in whole device px.
 export interface Canvas2dPainter {
   setAtlas(page: AtlasPage): void;
-  draw(sprites: PlaceSprites | null, camera: PlaceCamera): void;
+  draw(sprites: PlaceSprites | null, scale: number, left: number, top: number): void;
   dispose(): void;
 }
 
@@ -60,7 +60,7 @@ export function createCanvas2dPainter(canvas: HTMLCanvasElement): Canvas2dPainte
       painted = null;
     },
     // A resize resets the context, so smoothing goes off on every draw.
-    draw(sprites, camera) {
+    draw(sprites, scale, left, top) {
       context.imageSmoothingEnabled = false;
       context.fillStyle = BACKGROUND;
       context.fillRect(0, 0, canvas.width, canvas.height);
@@ -69,13 +69,10 @@ export function createCanvas2dPainter(canvas: HTMLCanvasElement): Canvas2dPainte
         paintFixed(fixed, image, sprites);
         painted = sprites;
       }
-      const { scale } = camera;
       const { width, height } = sprites;
-      const camX = snapToDevice(camera.x, scale);
-      const camY = snapToDevice(camera.y, scale);
       // Taken from 0 rather than negated, which would make -0 of a 0 and box it on every frame.
-      context.drawImage(fixed, 0, 0, width, height, 0 - camX, 0 - camY, width * scale, height * scale);
-      drawSprites(context, image, sprites, scale, camX, camY, sprites.fixed, sprites.count);
+      context.drawImage(fixed, 0, 0, width, height, 0 - left, 0 - top, width * scale, height * scale);
+      drawSprites(context, image, sprites, scale, left, top, sprites.fixed, sprites.count);
     },
     dispose() {
       image = null;

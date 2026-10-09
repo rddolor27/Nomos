@@ -1,6 +1,6 @@
 import type { PlaceLayout } from '@nomos/sim-protocol/place';
 import type { AtlasPage } from '../map/frames.ts';
-import type { PlaceCamera } from './camera.ts';
+import { snapToDevice, type PlaceCamera } from './camera.ts';
 import { createCanvas2dPainter } from './canvas2d.ts';
 import { createPlacePass } from './pass.ts';
 import { personFrames, type PersonFrames } from './people.ts';
@@ -28,13 +28,15 @@ export interface PlaceRenderer {
   // Every draw reads the people's columns again, so the caller moves people by rewriting x, y, pose, facing and step
   // in place before it draws.
   setPlace(layout: PlaceLayout): void;
+  // A camera is read only when it is not the last one drawn, so each move takes a new camera, as the helpers give.
   draw(camera: PlaceCamera): void;
   dispose(): void;
 }
 
+// left and top are the view's top-left in whole device px.
 interface PlacePainter {
   setAtlas(page: AtlasPage): void;
-  draw(sprites: PlaceSprites | null, camera: PlaceCamera): void;
+  draw(sprites: PlaceSprites | null, scale: number, left: number, top: number): void;
   dispose(): void;
 }
 
@@ -47,6 +49,11 @@ interface PlaceState {
   timer: ReturnType<typeof setTimeout> | undefined;
   // The last camera draw received, which a painter made after a lost context draws at once: the app draws on demand.
   camera: PlaceCamera | null;
+  // That camera snapped to whole device px once, not once a frame: a fractional camera's x and y box into heap numbers
+  // whenever they are read and passed on.
+  scale: number;
+  left: number;
+  top: number;
   page: AtlasPage | null;
   people: PersonFrames | null;
   layout: PlaceLayout | null;
@@ -70,8 +77,8 @@ function createGlPainter(canvas: HTMLCanvasElement): PlacePainter | null {
     setAtlas(page) {
       pass.setAtlas(page);
     },
-    draw(sprites, camera) {
-      pass.draw(sprites, camera);
+    draw(sprites, scale, left, top) {
+      pass.draw(sprites, scale, left, top);
     },
     dispose() {
       pass.dispose();
@@ -130,6 +137,9 @@ export function createPlaceRenderer(canvas: HTMLCanvasElement, options: PlaceRen
     lost: false,
     timer: undefined,
     camera: null,
+    scale: 1,
+    left: 0,
+    top: 0,
     page: null,
     people: null,
     layout: null,
@@ -140,7 +150,7 @@ export function createPlaceRenderer(canvas: HTMLCanvasElement, options: PlaceRen
     const { painter, camera, canvas, sprites } = state;
     if (!painter || !camera || state.lost || canvas.width === 0 || canvas.height === 0) return;
     sprites?.pack();
-    painter.draw(sprites, camera);
+    painter.draw(sprites, state.scale, state.left, state.top);
   }
 
   function fallBack(): void {
@@ -215,8 +225,13 @@ export function createPlaceRenderer(canvas: HTMLCanvasElement, options: PlaceRen
       state.sprites = spritesOf(state);
     },
     draw(camera) {
-      checkScale(camera);
-      state.camera = camera;
+      if (camera !== state.camera) {
+        checkScale(camera);
+        state.camera = camera;
+        state.scale = camera.scale;
+        state.left = snapToDevice(camera.x, camera.scale);
+        state.top = snapToDevice(camera.y, camera.scale);
+      }
       redraw();
     },
     // The listeners go first: losing the context fires webglcontextlost, which would start the fallback timer.

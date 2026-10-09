@@ -1,7 +1,6 @@
 import { CROWD_OUTLINE } from '../map/colours.ts';
 import type { AtlasPage } from '../map/frames.ts';
 import { link, nearestTexture } from '../map/gl.ts';
-import { snapToDevice, type PlaceCamera } from './camera.ts';
 import { INSTANCE_SHORTS, type PlaceSprites } from './sprites.ts';
 
 const DST = 0;
@@ -57,8 +56,9 @@ const BACKGROUND = [CROWD_OUTLINE >> 16, (CROWD_OUTLINE >> 8) & 255, CROWD_OUTLI
 
 export interface PlacePass {
   setAtlas(page: AtlasPage): void;
-  // Clears to the background, then draws every sprite packed; without sprites or a page, only the background.
-  draw(sprites: PlaceSprites | null, camera: PlaceCamera): void;
+  // Clears to the background, then draws every sprite packed; without sprites or a page, only the background. left and
+  // top are the view's top-left in whole device px.
+  draw(sprites: PlaceSprites | null, scale: number, left: number, top: number): void;
   dispose(): void;
 }
 
@@ -115,7 +115,7 @@ export function createPlacePass(gl: WebGL2RenderingContext): PlacePass {
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, gl.RGBA, gl.UNSIGNED_BYTE, page.image);
       paged = true;
     },
-    draw(sprites, camera) {
+    draw(sprites, artScale, left, top) {
       gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
       gl.clear(gl.COLOR_BUFFER_BIT);
       if (!sprites || !paged) return;
@@ -124,8 +124,8 @@ export function createPlacePass(gl: WebGL2RenderingContext): PlacePass {
       gl.bindVertexArray(vao);
       gl.activeTexture(gl.TEXTURE0 + ATLAS_UNIT);
       gl.bindTexture(gl.TEXTURE_2D, atlas);
-      gl.uniform2i(camDev, snapToDevice(camera.x, camera.scale), snapToDevice(camera.y, camera.scale));
-      gl.uniform1i(scale, camera.scale);
+      gl.uniform2i(camDev, left, top);
+      gl.uniform1i(scale, artScale);
       gl.uniform2i(viewport, gl.drawingBufferWidth, gl.drawingBufferHeight);
       gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, sprites.count);
       gl.bindVertexArray(null);
