@@ -2,6 +2,7 @@ import type { WorldMap } from '@nomos/sim-protocol/world-map';
 import { createBasePass } from './base-pass.ts';
 import { mapViewFor, type MapCamera, type MapView } from './camera.ts';
 import { createCanvas2dPainter } from './canvas2d.ts';
+import { createCrowdPass } from './crowd.ts';
 import type { AtlasPage } from './frames.ts';
 import { createIconsPass } from './icons.ts';
 
@@ -28,6 +29,9 @@ export interface MapRenderer {
   // Until a page arrives, WebGL2 draws the flat view.
   setAtlas(page: AtlasPage): void;
   setFlat(flat: boolean): void;
+  // Each dot's CROWD_HUES index, and its x then y in fractional cells, which the caller rewrites in place before each
+  // draw. The Region view draws them; the Country view never does (owner, 9 October 2026).
+  setCrowd(hue: Uint8Array, xy: Float32Array): void;
   draw(camera: MapCamera): void;
   dispose(): void;
 }
@@ -35,8 +39,14 @@ export interface MapRenderer {
 interface MapPainter {
   setWorld(map: WorldMap): void;
   setAtlas(page: AtlasPage): void;
+  setCrowd(hue: Uint8Array, xy: Float32Array): void;
   draw(camera: MapCamera, view: MapView, flat: boolean): void;
   dispose(): void;
+}
+
+interface Crowd {
+  readonly hue: Uint8Array;
+  readonly xy: Float32Array;
 }
 
 interface MapState {
@@ -51,6 +61,7 @@ interface MapState {
   flat: boolean;
   world: WorldMap | null;
   page: AtlasPage | null;
+  crowd: Crowd | null;
 }
 
 const CONTEXT: WebGLContextAttributes = {
@@ -69,6 +80,7 @@ function createGlPainter(canvas: HTMLCanvasElement): MapPainter | null {
   if (!gl) return null;
   if (gl.getParameter(gl.MAX_TEXTURE_SIZE) < MIN_TEXTURE_PX) throw new Error('WebGL2 textures here stop below 3,072 px');
   const base = createBasePass(gl);
+  const crowd = createCrowdPass(gl);
   const icons = createIconsPass(gl);
   return {
     setWorld(map) {
@@ -79,12 +91,18 @@ function createGlPainter(canvas: HTMLCanvasElement): MapPainter | null {
       base.setAtlas(page);
       icons.setAtlas(page);
     },
+    setCrowd(hue, xy) {
+      crowd.setCrowd(hue, xy);
+    },
+    // The crowd goes under the icons, so every settlement stays in sight.
     draw(camera, view, flat) {
       base.draw(camera, view, flat);
+      if (view === 'region') crowd.draw(camera);
       icons.draw(camera, view, flat);
     },
     dispose() {
       base.dispose();
+      crowd.dispose();
       icons.dispose();
       gl.getExtension('WEBGL_lose_context')?.loseContext();
     },
@@ -109,6 +127,7 @@ function replaceCanvas(old: HTMLCanvasElement): HTMLCanvasElement {
 function adopt(state: MapState, painter: MapPainter): MapPainter {
   if (state.world) painter.setWorld(state.world);
   if (state.page) painter.setAtlas(state.page);
+  if (state.crowd) painter.setCrowd(state.crowd.hue, state.crowd.xy);
   return painter;
 }
 
@@ -136,6 +155,7 @@ export function createMapRenderer(canvas: HTMLCanvasElement, options: MapRendere
     flat: false,
     world: null,
     page: null,
+    crowd: null,
   };
 
   function fallBack(): void {
@@ -211,6 +231,11 @@ export function createMapRenderer(canvas: HTMLCanvasElement, options: MapRendere
     },
     setFlat(flat) {
       state.flat = flat;
+    },
+    setCrowd(hue, xy) {
+      if (xy.length !== 2 * hue.length) throw new Error('setCrowd takes an x and a y for each hue');
+      state.crowd = { hue, xy };
+      if (!state.lost) state.painter?.setCrowd(hue, xy);
     },
     draw(camera) {
       const painter = state.painter;

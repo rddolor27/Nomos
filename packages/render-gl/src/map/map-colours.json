@@ -6,5 +6,14 @@
   "road": "#784C2C",
   "deck": "#A86C3C",
   "rail": "#4C2E1C",
-  "border": "#020202"
+  "border": "#020202",
+  "crowd": {
+    "sun": "#F7C948",
+    "lilac": "#BEA0EA",
+    "rose": "#F696C4",
+    "ice": "#AAD4F8",
+    "mint": "#96E2C4",
+    "silver": "#CED2E2"
+  },
+  "outline": "#020202"
 }
