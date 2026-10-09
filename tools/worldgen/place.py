@@ -307,12 +307,44 @@ class Site:
             frontier = nxt
         return None
 
+    def spur_reach(self, limit):
+        """The tiles a spur of at most `limit` steps can start from: roads, and tiles within `limit` of a dry road."""
+        near = grid(self.w, self.h, False)
+        for y in range(self.h):
+            for x in range(self.w):
+                if not self.road[y][x]:
+                    continue
+                near[y][x] = True
+                if self.water(x, y):
+                    continue
+                for dy in range(-limit, limit + 1):
+                    span = limit - abs(dy)
+                    for nx in range(max(0, x - span), min(self.w, x + span + 1)):
+                        if 0 <= y + dy < self.h:
+                            near[y + dy][nx] = True
+        return near
+
     def find_lot(self, fw, fh, up, doors, target, spur=0, ground_ok=None, margin=1, salt=0):
         """The cheapest footprint whose doors reach a road; doors are pixel offsets from its left."""
         ok = ground_ok or self.buildable
+        reach = self.spur_reach(spur) if doors else None
         best = None
-        for ty in range(0, self.h - fh):
-            for tx in range(0, self.w - fw + 1):
+        # A lot costs at least 8 a step of gap to the target, so the scan takes the rows and columns nearest it first and
+        # stops once the gap alone costs more than the best lot so far. Budget: a capital builds in about 150 ms in Node,
+        # where a full scan for each of 200 houses took 480 ms. Equal costs go to the first tile in reading order.
+        rows = sorted(range(0, self.h - fh), key=lambda ty: (abs(ty + fh - target[1]), ty))
+        cols = sorted(range(0, self.w - fw + 1), key=lambda tx: (abs(tx + fw // 2 - target[0]), tx))
+        for ty in rows:
+            row_gap = abs(ty + fh - target[1])
+            if best and row_gap * 8 > best[0]:
+                break
+            for tx in cols:
+                gap = row_gap + abs(tx + fw // 2 - target[0])
+                if best and gap * 8 > best[0]:
+                    break
+                if reach is not None and not all(self.inside(tx + dx // TILE, ty + fh) and reach[ty + fh][tx + dx // TILE]
+                                                 for dx in doors):
+                    continue
                 if not self.fits(tx, ty, fw, fh, up, ok, margin):
                     continue
                 avoid = {(cx, cy) for cy in range(ty, ty + fh) for cx in range(tx, tx + fw)}
@@ -324,9 +356,8 @@ class Site:
                     spurs.append(path)
                     avoid |= set(path)
                 else:
-                    gap = abs(tx + fw // 2 - target[0]) + abs(ty + fh - target[1])
                     cost = gap * 8 + sum(map(len, spurs)) * 6 + self.below(8, LOT, salt, tx, ty)
-                    if best is None or cost < best[0]:
+                    if best is None or (cost, ty, tx) < (best[0], best[2], best[1]):
                         best = (cost, tx, ty, spurs)
         return best
 
