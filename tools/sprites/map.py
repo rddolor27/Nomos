@@ -631,6 +631,243 @@ def settlements():
     return out
 
 
+# --------------------------------------------------------------------------- walled settlements
+# Stone walls for capitals and cities and a log palisade for towns (owner, 10 October 2026), at
+# both map scales. The map8 icons keep about the size of the icons above, which they stand in for
+# on the Country view; the map16 icons are larger, for the Region view's 16-px cells. Size alone
+# ranks them: a palisade for a town, a stone wall with two front towers for a city, four towers
+# and a civic hall for the capital. Their tower is a civic clock tower, so nothing reads as royal,
+# military or religious, and no wall carries a flag or banner. The houses are the ones above.
+
+def merlons(w):
+    """A crenellated top edge: merlons two wide with one-pixel gaps, the last one shaded."""
+    row = ''.join('H' if x % 3 < 2 else '.' for x in range(w))
+    return row[:-1] + ('h' if row[-1] == 'H' else '.')
+
+
+def stone_wall(w, h=4):
+    """A run of wall seen from the front: merlons, a lit coping, then its face."""
+    return [merlons(w), 'H' * (w - 2) + 'hh'] + ['h' * (w - 1) + 'x'] * (h - 2)
+
+
+def stone_side(h):
+    """A side wall running toward the viewer, seen from above."""
+    return ['Hh'] * h
+
+
+def square_tower(w, h):
+    """A square tower: crenellated top, a lit left face and a slit window."""
+    rows = [merlons(w), 'H' * (w - 2) + 'hx', 'x' * w] + ['H' + 'h' * (w - 2) + 'x'] * (h - 3)
+    rows = [list(r) for r in rows]
+    rows[5][w // 2] = rows[6][w // 2] = 'n'
+    return [''.join(r) for r in rows]
+
+
+def gatehouse(w, h):
+    """A raised block over the gate: crenellated, its arched way through closed by plank doors."""
+    rows = [merlons(w), 'H' * (w - 2) + 'hx', 'x' * w] + ['H' + 'h' * (w - 2) + 'x'] * (h - 3)
+    rows = [list(r) for r in rows]
+    g0, g1 = 2, w - 3
+    for y in range(4, h):
+        for x in range(g0, g1 + 1):
+            if y == 4 and x in (g0, g1):
+                continue
+            rows[y][x] = 'n' if y == 4 or x in (g0, g1) else ('d' if x == w // 2 else 'w')
+    return [''.join(r) for r in rows]
+
+
+def palisade_row(w, h):
+    """Pointed logs side by side, each lit on its left, with a rail across them."""
+    rows = [''.join('L' if x % 3 == 1 else '.' for x in range(w))]
+    for y in range(1, h):
+        rows.append('w' * w if y == 2 else ''.join('Lwd'[x % 3] for x in range(w)))
+    return rows
+
+
+def palisade_side(h):
+    """A side run of logs toward the viewer, seen from above."""
+    return ['Lw' if y % 3 else 'wd' for y in range(h)]
+
+
+def palisade_front(w, h, gate_w):
+    """A front run of logs round a gate: two tall posts and a dark way through, the doors open."""
+    rows = [['.'] * w] + [list(r) for r in palisade_row(w, h)]
+    g0, g1 = (w - gate_w) // 2, (w - gate_w) // 2 + gate_w - 1
+    for y in range(h + 1):
+        rows[y][g0], rows[y][g1] = 'L', 'd'
+        if y:
+            for x in range(g0 + 1, g1):
+                rows[y][x] = 'w' if y > 2 and x in (g0 + 1, g1 - 1) else 'n'
+    return [''.join(r) for r in rows]
+
+
+CLOCK_TOWER16 = [
+    '...Hx...',
+    '..HHhx..',
+    '.HHhhxx.',
+    'HHhhhhxx',
+    'xxxxxxxx',
+    'SWWWWWWs',
+    'SWWdWWWs',
+    'SWWddWWs',
+    'SWWWWWWs',
+    'SSSSSSSs',
+    'SSSnnSSs',
+    'SSSnnSSs',
+    'SSSSSSSs',
+    'SSSSSSSs',
+]
+CLOCK_TOWER8 = [
+    '..Hx..',
+    '.HHhx.',
+    'HHhhxx',
+    'SWdWWs',
+    'SWWWWs',
+    'SSnSSs',
+    'SSSSSs',
+    'SSSSSs',
+]
+# The capital's civic hall: the town hall's sand walls and terracotta roof, wider than a house.
+HALL16 = [
+    '.RRRRRRRRRRRRRRr.',
+    'RRRRRRRRRRRRRRRrr',
+    'RRRRRRRRRRRRRRrrr',
+    'rrrrrrrrrrrrrrrrr',
+    '.SSSSSSSSSSSSSSs.',
+    '.SdSSdSSddSSdSds.',
+    '.SdSSdSSddSSdSds.',
+]
+HALL8 = [
+    '.RRRRRRRRRRr.',
+    'RRRRRRRRRRRrr',
+    'rrrrrrrrrrrrr',
+    '.SSdSSddSSds.',
+    '.SSdSSddSSds.',
+]
+
+
+def court(w, h):
+    """The paved yard inside a stone wall."""
+    return Image.new('RGBA', (w, h), (*PALETTE[GROUND_COURT], 255))
+
+
+def unbox(im, colour):
+    """Where three or four parts' outlines meet, a pixel can end up boxed in by outline on all four
+    sides; give it the dark tone of the wall's material instead, so outlines stay one pixel wide."""
+    a = np.array(im)
+    o = (a[:, :, 3] > 0) & (a[:, :, :3] == PALETTE['OUTLINE']).all(axis=2)
+    boxed = np.zeros_like(o)
+    boxed[1:-1, 1:-1] = o[1:-1, 1:-1] & o[:-2, 1:-1] & o[2:, 1:-1] & o[1:-1, :-2] & o[1:-1, 2:]
+    a[boxed, :3] = PALETTE[colour]
+    return Image.fromarray(a)
+
+
+def walled_settlements():
+    gable, wide = outlined(HOUSE_GABLE), outlined(HOUSE_WIDE)
+    out = {}
+    tower = outlined(square_tower(8, 12))
+    out['map16_settlement_capital-walled'] = stack((52, 46), [
+        (outlined(stone_wall(38)), (6, 8)),
+        (tower, (0, 2)),
+        (tower, (42, 2)),
+        (court(36, 24), (8, 13)),
+        (outlined(stone_side(15)), (3, 15)),
+        (outlined(stone_side(15)), (45, 15)),
+        (outlined(CLOCK_TOWER16), (21, 0)),
+        (outlined(HALL16), (16, 12)),
+        (wide, (5, 11)),
+        (gable, (37, 10)),
+        (gable, (7, 18)),
+        (wide, (34, 19)),
+        (gable, (18, 21)),
+        (wide, (25, 22)),
+        (wide, (7, 26)),
+        (gable, (36, 26)),
+        (outlined(stone_wall(38, 5)), (6, 37)),
+        (outlined(gatehouse(12, 10)), (19, 33)),
+        (tower, (0, 32)),
+        (tower, (42, 32)),
+    ])
+    tower = outlined(square_tower(7, 11))
+    out['map16_settlement_city-walled'] = stack((44, 40), [
+        (outlined(stone_wall(36)), (3, 7)),
+        (court(30, 20), (7, 12)),
+        (outlined(stone_side(16)), (3, 10)),
+        (outlined(stone_side(16)), (37, 10)),
+        (outlined(CLOCK_TOWER16), (18, 0)),
+        (wide, (5, 10)),
+        (gable, (28, 9)),
+        (gable, (7, 16)),
+        (wide, (16, 15)),
+        (gable, (28, 17)),
+        (wide, (8, 22)),
+        (gable, (22, 22)),
+        (outlined(stone_wall(32, 5)), (5, 31)),
+        (outlined(gatehouse(10, 9)), (17, 28)),
+        (tower, (0, 27)),
+        (tower, (35, 27)),
+    ])
+    out['map16_settlement_town-palisade'] = stack((40, 32), [
+        (outlined(palisade_row(34, 4)), (3, 2)),
+        (outlined(palisade_side(20)), (2, 5)),
+        (outlined(palisade_side(20)), (36, 5)),
+        (gable, (6, 2)),
+        (wide, (24, 4)),
+        (wide, (6, 10)),
+        (gable, (19, 9)),
+        (gable, (28, 13)),
+        (wide, (12, 16)),
+        (outlined(palisade_front(34, 5, 8)), (3, 24)),
+    ])
+    tower = outlined(square_tower(5, 8))
+    out['map8_settlement_capital-walled'] = stack((32, 31), [
+        (outlined(stone_wall(24, 3)), (4, 4)),
+        (tower, (0, 1)),
+        (tower, (25, 1)),
+        (court(22, 15), (5, 8)),
+        (outlined(stone_side(14)), (2, 8)),
+        (outlined(stone_side(14)), (26, 8)),
+        (outlined(CLOCK_TOWER8), (12, 0)),
+        (outlined(HALL8), (9, 7)),
+        (gable, (3, 8)),
+        (gable, (20, 8)),
+        (wide, (3, 14)),
+        (wide, (17, 14)),
+        (outlined(stone_wall(24, 4)), (4, 22)),
+        (outlined(gatehouse(8, 7)), (12, 20)),
+        (tower, (0, 20)),
+        (tower, (25, 20)),
+    ])
+    tower = outlined(square_tower(5, 7))
+    out['map8_settlement_city-walled'] = stack((30, 28), [
+        (outlined(stone_wall(24, 3)), (2, 4)),
+        (court(20, 14), (5, 7)),
+        (outlined(stone_side(14)), (2, 6)),
+        (outlined(stone_side(14)), (24, 6)),
+        (outlined(CLOCK_TOWER8), (11, 0)),
+        (wide, (3, 6)),
+        (gable, (18, 6)),
+        (gable, (5, 12)),
+        (wide, (15, 13)),
+        (outlined(stone_wall(22, 4)), (4, 20)),
+        (outlined(gatehouse(8, 7)), (11, 18)),
+        (tower, (0, 18)),
+        (tower, (23, 18)),
+    ])
+    out['map8_settlement_town-palisade'] = stack((29, 23), [
+        (outlined(palisade_row(25, 3)), (2, 1)),
+        (outlined(palisade_side(14)), (1, 4)),
+        (outlined(palisade_side(14)), (25, 4)),
+        (gable, (8, 1)),
+        (wide, (15, 3)),
+        (wide, (3, 6)),
+        (gable, (16, 9)),
+        (wide, (6, 11)),
+        (outlined(palisade_front(25, 4, 7)), (2, 16)),
+    ])
+    return out
+
+
 # --------------------------------------------------------------------------- highlight ring
 
 def ellipse_ring(w, h, cx, cy, rx, ry):
@@ -843,6 +1080,11 @@ def build():
         sheet.add(f'settlement_{size}', icon)
         ring, anchor = highlight(icon)
         sheet.add(f'settlement_highlight_{size}', ring, anchor=anchor, target=f'settlement_{size}')
+    for name, icon in walled_settlements().items():
+        icon = unbox(icon, 'WOOD_D' if name.endswith('palisade') else 'STONE_D')
+        sheet.add(name, icon)
+        ring, anchor = highlight(icon)
+        sheet.add(name.replace('_settlement_', '_settlement_highlight_'), ring, anchor=anchor, target=name)
 
     # Movers: anchored on the ground or waterline under their middle
     cart = grid(CARAVAN, (12, 8))

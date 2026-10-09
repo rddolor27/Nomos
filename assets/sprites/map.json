@@ -2,13 +2,13 @@
   "image": "map.png",
   "size": [
     256,
-    72
+    137
   ],
   "tile": 16,
   "frames": {
     "boat_left": {
-      "x": 36,
-      "y": 49,
+      "x": 59,
+      "y": 113,
       "w": 12,
       "h": 12,
       "anchor": [
@@ -17,8 +17,8 @@
       ]
     },
     "boat_right": {
-      "x": 49,
-      "y": 49,
+      "x": 72,
+      "y": 113,
       "w": 12,
       "h": 12,
       "anchor": [
@@ -27,8 +27,8 @@
       ]
     },
     "caravan_left": {
-      "x": 139,
-      "y": 49,
+      "x": 162,
+      "y": 113,
       "w": 12,
       "h": 8,
       "anchor": [
@@ -37,8 +37,8 @@
       ]
     },
     "caravan_right": {
-      "x": 152,
-      "y": 49,
+      "x": 175,
+      "y": 113,
       "w": 12,
       "h": 8,
       "anchor": [
@@ -47,8 +47,8 @@
       ]
     },
     "map16_farmland_0": {
-      "x": 109,
-      "y": 0,
+      "x": 66,
+      "y": 76,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -57,8 +57,8 @@
       ]
     },
     "map16_farmland_1": {
-      "x": 126,
-      "y": 0,
+      "x": 83,
+      "y": 76,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -67,8 +67,8 @@
       ]
     },
     "map16_forest-conifer": {
-      "x": 143,
-      "y": 0,
+      "x": 100,
+      "y": 76,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -77,8 +77,8 @@
       ]
     },
     "map16_forest-deciduous": {
-      "x": 160,
-      "y": 0,
+      "x": 117,
+      "y": 76,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -87,8 +87,8 @@
       ]
     },
     "map16_grassland_0": {
-      "x": 177,
-      "y": 0,
+      "x": 134,
+      "y": 76,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -97,8 +97,8 @@
       ]
     },
     "map16_grassland_1": {
-      "x": 194,
-      "y": 0,
+      "x": 151,
+      "y": 76,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -107,8 +107,8 @@
       ]
     },
     "map16_hills": {
-      "x": 211,
-      "y": 0,
+      "x": 168,
+      "y": 76,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -117,8 +117,8 @@
       ]
     },
     "map16_marsh": {
-      "x": 228,
-      "y": 0,
+      "x": 185,
+      "y": 76,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -127,8 +127,8 @@
       ]
     },
     "map16_mountain": {
-      "x": 0,
-      "y": 32,
+      "x": 202,
+      "y": 76,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -137,8 +137,8 @@
       ]
     },
     "map16_peak": {
-      "x": 64,
-      "y": 0,
+      "x": 92,
+      "y": 47,
       "w": 16,
       "h": 24,
       "anchor": [
@@ -148,8 +148,8 @@
       "overlay": true
     },
     "map16_peak-low": {
-      "x": 17,
-      "y": 32,
+      "x": 219,
+      "y": 76,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -159,8 +159,8 @@
       "overlay": true
     },
     "map16_sand": {
-      "x": 34,
-      "y": 32,
+      "x": 236,
+      "y": 76,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -168,9 +168,72 @@
         15
       ]
     },
+    "map16_settlement_capital-walled": {
+      "x": 0,
+      "y": 0,
+      "w": 52,
+      "h": 46,
+      "anchor": [
+        26,
+        45
+      ]
+    },
+    "map16_settlement_city-walled": {
+      "x": 53,
+      "y": 0,
+      "w": 44,
+      "h": 40,
+      "anchor": [
+        22,
+        39
+      ]
+    },
+    "map16_settlement_highlight_capital-walled": {
+      "x": 31,
+      "y": 47,
+      "w": 60,
+      "h": 25,
+      "anchor": [
+        30,
+        17
+      ],
+      "target": "map16_settlement_capital-walled"
+    },
+    "map16_settlement_highlight_city-walled": {
+      "x": 188,
+      "y": 47,
+      "w": 52,
+      "h": 20,
+      "anchor": [
+        26,
+        13
+      ],
+      "target": "map16_settlement_city-walled"
+    },
+    "map16_settlement_highlight_town-palisade": {
+      "x": 109,
+      "y": 47,
+      "w": 48,
+      "h": 23,
+      "anchor": [
+        24,
+        16
+      ],
+      "target": "map16_settlement_town-palisade"
+    },
+    "map16_settlement_town-palisade": {
+      "x": 98,
+      "y": 0,
+      "w": 40,
+      "h": 32,
+      "anchor": [
+        20,
+        31
+      ]
+    },
     "map16_snow": {
-      "x": 51,
-      "y": 32,
+      "x": 0,
+      "y": 96,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -179,8 +242,8 @@
       ]
     },
     "map16_water_0": {
-      "x": 68,
-      "y": 32,
+      "x": 17,
+      "y": 96,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -189,8 +252,8 @@
       ]
     },
     "map16_water_1": {
-      "x": 85,
-      "y": 32,
+      "x": 34,
+      "y": 96,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -199,8 +262,8 @@
       ]
     },
     "map8_farmland_0": {
-      "x": 165,
-      "y": 49,
+      "x": 188,
+      "y": 113,
       "w": 8,
       "h": 8,
       "anchor": [
@@ -209,8 +272,8 @@
       ]
     },
     "map8_farmland_1": {
-      "x": 174,
-      "y": 49,
+      "x": 197,
+      "y": 113,
       "w": 8,
       "h": 8,
       "anchor": [
@@ -219,8 +282,8 @@
       ]
     },
     "map8_forest-conifer": {
-      "x": 183,
-      "y": 49,
+      "x": 206,
+      "y": 113,
       "w": 8,
       "h": 8,
       "anchor": [
@@ -229,8 +292,8 @@
       ]
     },
     "map8_forest-deciduous": {
-      "x": 192,
-      "y": 49,
+      "x": 215,
+      "y": 113,
       "w": 8,
       "h": 8,
       "anchor": [
@@ -239,8 +302,8 @@
       ]
     },
     "map8_grassland_0": {
-      "x": 201,
-      "y": 49,
+      "x": 224,
+      "y": 113,
       "w": 8,
       "h": 8,
       "anchor": [
@@ -249,8 +312,8 @@
       ]
     },
     "map8_grassland_1": {
-      "x": 210,
-      "y": 49,
+      "x": 233,
+      "y": 113,
       "w": 8,
       "h": 8,
       "anchor": [
@@ -259,8 +322,8 @@
       ]
     },
     "map8_hills": {
-      "x": 219,
-      "y": 49,
+      "x": 242,
+      "y": 113,
       "w": 8,
       "h": 8,
       "anchor": [
@@ -269,8 +332,8 @@
       ]
     },
     "map8_marsh": {
-      "x": 228,
-      "y": 49,
+      "x": 0,
+      "y": 129,
       "w": 8,
       "h": 8,
       "anchor": [
@@ -279,8 +342,8 @@
       ]
     },
     "map8_mountain": {
-      "x": 237,
-      "y": 49,
+      "x": 9,
+      "y": 129,
       "w": 8,
       "h": 8,
       "anchor": [
@@ -289,8 +352,8 @@
       ]
     },
     "map8_peak": {
-      "x": 98,
-      "y": 49,
+      "x": 121,
+      "y": 113,
       "w": 8,
       "h": 10,
       "anchor": [
@@ -300,8 +363,8 @@
       "overlay": true
     },
     "map8_sand": {
-      "x": 246,
-      "y": 49,
+      "x": 18,
+      "y": 129,
       "w": 8,
       "h": 8,
       "anchor": [
@@ -309,9 +372,72 @@
         7
       ]
     },
-    "map8_snow": {
+    "map8_settlement_capital-walled": {
+      "x": 139,
+      "y": 0,
+      "w": 32,
+      "h": 31,
+      "anchor": [
+        16,
+        30
+      ]
+    },
+    "map8_settlement_city-walled": {
       "x": 0,
-      "y": 64,
+      "y": 47,
+      "w": 30,
+      "h": 28,
+      "anchor": [
+        15,
+        27
+      ]
+    },
+    "map8_settlement_highlight_capital-walled": {
+      "x": 51,
+      "y": 96,
+      "w": 40,
+      "h": 16,
+      "anchor": [
+        20,
+        10
+      ],
+      "target": "map8_settlement_capital-walled"
+    },
+    "map8_settlement_highlight_city-walled": {
+      "x": 92,
+      "y": 96,
+      "w": 38,
+      "h": 16,
+      "anchor": [
+        19,
+        10
+      ],
+      "target": "map8_settlement_city-walled"
+    },
+    "map8_settlement_highlight_town-palisade": {
+      "x": 28,
+      "y": 76,
+      "w": 37,
+      "h": 17,
+      "anchor": [
+        18,
+        11
+      ],
+      "target": "map8_settlement_town-palisade"
+    },
+    "map8_settlement_town-palisade": {
+      "x": 158,
+      "y": 47,
+      "w": 29,
+      "h": 23,
+      "anchor": [
+        14,
+        22
+      ]
+    },
+    "map8_snow": {
+      "x": 27,
+      "y": 129,
       "w": 8,
       "h": 8,
       "anchor": [
@@ -320,8 +446,8 @@
       ]
     },
     "map8_water_0": {
-      "x": 9,
-      "y": 64,
+      "x": 36,
+      "y": 129,
       "w": 8,
       "h": 8,
       "anchor": [
@@ -330,8 +456,8 @@
       ]
     },
     "map8_water_1": {
-      "x": 18,
-      "y": 64,
+      "x": 45,
+      "y": 129,
       "w": 8,
       "h": 8,
       "anchor": [
@@ -340,8 +466,8 @@
       ]
     },
     "pin_arrest": {
-      "x": 62,
-      "y": 49,
+      "x": 85,
+      "y": 113,
       "w": 8,
       "h": 12,
       "anchor": [
@@ -350,8 +476,8 @@
       ]
     },
     "pin_crime-recorded": {
-      "x": 71,
-      "y": 49,
+      "x": 94,
+      "y": 113,
       "w": 8,
       "h": 12,
       "anchor": [
@@ -360,8 +486,8 @@
       ]
     },
     "pin_crime-true": {
-      "x": 80,
-      "y": 49,
+      "x": 103,
+      "y": 113,
       "w": 8,
       "h": 12,
       "anchor": [
@@ -371,8 +497,8 @@
       "view": "true"
     },
     "pin_report": {
-      "x": 89,
-      "y": 49,
+      "x": 112,
+      "y": 113,
       "w": 8,
       "h": 12,
       "anchor": [
@@ -381,7 +507,7 @@
       ]
     },
     "settlement_capital": {
-      "x": 0,
+      "x": 172,
       "y": 0,
       "w": 32,
       "h": 31,
@@ -391,7 +517,7 @@
       ]
     },
     "settlement_city": {
-      "x": 33,
+      "x": 205,
       "y": 0,
       "w": 30,
       "h": 29,
@@ -401,8 +527,8 @@
       ]
     },
     "settlement_hamlet": {
-      "x": 107,
-      "y": 49,
+      "x": 130,
+      "y": 113,
       "w": 11,
       "h": 10,
       "anchor": [
@@ -411,8 +537,8 @@
       ]
     },
     "settlement_highlight_capital": {
-      "x": 102,
-      "y": 32,
+      "x": 131,
+      "y": 96,
       "w": 40,
       "h": 16,
       "anchor": [
@@ -422,8 +548,8 @@
       "target": "settlement_capital"
     },
     "settlement_highlight_city": {
-      "x": 143,
-      "y": 32,
+      "x": 172,
+      "y": 96,
       "w": 38,
       "h": 16,
       "anchor": [
@@ -433,8 +559,8 @@
       "target": "settlement_city"
     },
     "settlement_highlight_hamlet": {
-      "x": 119,
-      "y": 49,
+      "x": 142,
+      "y": 113,
       "w": 19,
       "h": 10,
       "anchor": [
@@ -444,8 +570,8 @@
       "target": "settlement_hamlet"
     },
     "settlement_highlight_town": {
-      "x": 0,
-      "y": 49,
+      "x": 23,
+      "y": 113,
       "w": 35,
       "h": 14,
       "anchor": [
@@ -455,8 +581,8 @@
       "target": "settlement_town"
     },
     "settlement_highlight_village": {
-      "x": 182,
-      "y": 32,
+      "x": 211,
+      "y": 96,
       "w": 30,
       "h": 15,
       "anchor": [
@@ -466,8 +592,8 @@
       "target": "settlement_village"
     },
     "settlement_town": {
-      "x": 81,
-      "y": 0,
+      "x": 0,
+      "y": 76,
       "w": 27,
       "h": 19,
       "anchor": [
@@ -476,8 +602,8 @@
       ]
     },
     "settlement_village": {
-      "x": 213,
-      "y": 32,
+      "x": 0,
+      "y": 113,
       "w": 22,
       "h": 15,
       "anchor": [
