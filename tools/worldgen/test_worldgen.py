@@ -13,10 +13,11 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
 import place  # noqa: E402
-from climate import GRASSLAND, HILLS, HILLS_AT, SNOW, SNOW_BELOW, biomes  # noqa: E402
+from climate import GRASSLAND, HILLS, HILLS_AT, MOUNTAIN, OCEAN, SNOW, SNOW_BELOW, biomes  # noqa: E402
+from countries import capitals, count, grow  # noqa: E402
 from grid import neighbours  # noqa: E402
 from model import PlaceContext  # noqa: E402
-from settle import habitability  # noqa: E402
+from settle import Settlement, habitability  # noqa: E402
 from world import SIZES, generate  # noqa: E402
 
 FIRST = 0x5EED0001
@@ -74,6 +75,55 @@ def snow_falls_on_a_cold_world():
     return [] if SNOW in world(*SNOWY).biome else [f'no snow on {SNOWY[0]} {SNOWY[1]:08x}']
 
 
+def count_is_three_to_five():
+    counts = {count(seed) for seed in range(1000)}
+    return [] if counts == {3, 4, 5} else [f'counts {sorted(counts)}, want 3, 4 and 5']
+
+
+def capitals_spaced_in_population_order():
+    towns = [Settlement(0, 0, 0, 'capital', 90_000), Settlement(1, 1, 0, 'city', 60_000),
+             Settlement(2, 10, 0, 'town', 9_000), Settlement(3, 20, 0, 'village', 900),
+             Settlement(4, 0, 10, 'town', 6_000)]
+    cases = (((3, 300), [0, 2, 4]), ((3, 900), [0, 2, 4]), ((5, 300), [0, 1, 2, 4]))
+    return [f'capitals(k={k}, land={land}) = {got}, want {want}'
+            for (k, land), want in cases if (got := capitals(towns, k, land)) != want]
+
+
+def grow_on(width, height, biome, sources, river=None, receiver=None):
+    n = width * height
+    return grow(width, height, bytearray(biome), river or bytearray(n), receiver or [-1] * n, sources)
+
+
+def grow_breaks_ties_by_cost_then_cell():
+    got = grow_on(7, 1, [GRASSLAND] * 7, [0, 6])
+    return [] if got == [1, 1, 1, 1, 2, 2, 2] else [f'labels {got}, want [1, 1, 1, 1, 2, 2, 2]']
+
+
+def grow_bends_to_mountains():
+    biome = [GRASSLAND] * 7
+    biome[2] = MOUNTAIN
+    got = grow_on(7, 1, biome, [0, 6])
+    return [] if got == [1, 1, 1, 2, 2, 2, 2] else [f'labels {got}, want [1, 1, 1, 2, 2, 2, 2]']
+
+
+def island_joins_the_cheaper_crossing():
+    g, o = GRASSLAND, OCEAN
+    got = grow_on(9, 1, [g, g, g, o, g, o, o, g, g], [0, 8])
+    return [] if got[4] == 1 else [f'the island at cell 4 joins {got[4]} across two cells of sea, not 1 across one']
+
+
+def diagonal_never_slips():
+    river, receiver = bytearray(9), [-1] * 9
+    river[1] = river[3] = 1
+    receiver[1] = 3
+    strait = [GRASSLAND] * 9
+    strait[1] = strait[3] = OCEAN
+    cases = (('open ground', grow_on(3, 3, [GRASSLAND] * 9, [0, 8]), 1),
+             ('a river between', grow_on(3, 3, [GRASSLAND] * 9, [0, 8], river, receiver), 2),
+             ('a strait between', grow_on(3, 3, strait, [0, 8]), 2))
+    return [f'{name}: cell 4 joins {labels[4]}, want {want}' for name, labels, want in cases if labels[4] != want]
+
+
 def snow_lies_on_cold_lowland(w):
     """Snow is lowland, and it or a neighbour is colder than SNOW_BELOW, since despeckling lets a lone
     cell a little warmer join the snow around it."""
@@ -84,7 +134,9 @@ def snow_lies_on_cold_lowland(w):
             and (w.elevation[i] >= HILLS_AT or min(w.temperature[k] for k in (i, *nbrs[i])) >= SNOW_BELOW)]
 
 
-CHECKS = [snow_on_cold_lowland, lone_snow_melts, snow_is_uninhabitable, snow_places_build, snow_falls_on_a_cold_world]
+CHECKS = [snow_on_cold_lowland, lone_snow_melts, snow_is_uninhabitable, snow_places_build, snow_falls_on_a_cold_world,
+          count_is_three_to_five, capitals_spaced_in_population_order, grow_breaks_ties_by_cost_then_cell,
+          grow_bends_to_mountains, island_joins_the_cheaper_crossing, diagonal_never_slips]
 WORLD_CHECKS = [snow_lies_on_cold_lowland]
 
 
