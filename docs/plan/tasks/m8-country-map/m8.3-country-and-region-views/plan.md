@@ -1264,6 +1264,290 @@ Labels are DOM, so only their placement runs in Node. Task 10 mounts them, and T
 - [ ] **Step 5: Run** the Step 2 command, then the gates. Expected: all pass.
 - [ ] **Step 6: Commit** `feat(web): list the countries in a legend and bind the map's input`.
 
-### Tasks 7–15
+### Task 7: The base pass: tiles, flat fills and the overlay (senior)
 
-Expanded in the next commit of this plan: the base pass, the icons pass, `MapRenderer` and its fallback, the map view, size limits, the exit tests, the 2 ms bar, the owner's colours and the close.
+**Files:** create `packages/render-gl/src/map/gl.ts`, `src/map/base-pass.ts`, `harness/map.html`, `harness/map.ts` and `test/browser/map-base.spec.ts`.
+
+- **`gl.ts`** holds the map's own `compile`, `link` and nearest-filtered texture helpers. It is a second copy of `backends/webgl.ts`'s, kept apart so the renderer chunk never exports them (Ruling 1).
+- **Textures, made by `base-pass.ts`:**
+  - `cells`, RGBA16UI, one texel per cell: the atlas origin of the cell's 8-px tile in R and G, and of its 16-px tile in B and A, from `tileFrame` and the page's frame table;
+  - `flat`, RGBA8, one texel per cell: the country's colour on land, and `LINE_COLOURS.water` on water;
+  - `overlay`, R8UI at art resolution: the current view's `buildOverlay`;
+  - `atlas`, RGBA8: the page's bitmap.
+- **The fragment shader,** on one triangle over the viewport, as the town's minimap pass draws:
+  - each device pixel's art pixel is `floorDiv(pixel + camDev, scale)`, with `scale = cellPx / tilePx`, and its cell is that over `tilePx`;
+  - off the map it shows the water colour;
+  - a non-zero overlay index shows its palette colour: 1–5 the line colours, 6 the border and 7–11 the country colours. In flat mode it skips indices 1–5;
+  - otherwise it shows the flat colour in flat mode, or else the atlas texel at the tile's origin plus the art pixel's place in its cell.
+- **`createBasePass(gl)`** returns `{ setWorld(map), setAtlas(page), setView(view, overlay), draw(camera, flat, deviceWidth, deviceHeight), dispose() }`. It allocates nothing per draw.
+- **The harness page,** `harness/map.html` with `harness/map.ts`:
+  - it boots a canvas at a CSS size and exposes `window.mapHarness` with `boot`, `world(map)`, `atlas(page)`, `draw(camera, flat)` and `pixel(x, y)`;
+  - `pixel` reads one device pixel through `readPixels` straight after a draw, so the drawing buffer needs no preserving;
+  - its test atlas is built in the page: one 16 × 16 block of a known colour per frame name, so every check can predict each pixel.
+- **Checks,** in `map-base.spec.ts`, on `tinyWorld`s, in all three browsers:
+  - a cell's pixels in both views show its tile's colour, at scales 1 and 2;
+  - a river's, a road's, a band's and a border's pixels show their palette colours;
+  - flat mode shows country colours and water, and hides rivers and roads;
+  - a fractional camera still puts whole texels on whole device pixels.
+- **Commit** `feat(render-gl): draw the map's tiles, fills and lines in one pass`.
+
+### Task 8: The icons pass (senior)
+
+**Files:** create `packages/render-gl/src/map/icons.ts` and `test/browser/map-icons.spec.ts`; modify `src/map/base-pass.ts` only if they must share a buffer.
+
+- **Instances per view,** built once a view and a page are both there, as `mapdraw.py`'s `_overlays`, `_beside` and `_place` draw them:
+  - the peaks from `peakFrame`, though the flat view draws none, as `countries.png` doesn't;
+  - wonders and own-cell landmarks, at their cells;
+  - settlements, at their tiers' frames;
+  - in the Region view, each settlement's in-place landmarks, lighthouses aside, in free land cells beside it, by `_beside`'s rule.
+- **Sorted** by (row, layer, column, frame name), so equal rows draw peaks, then icons, then towns, as `_place` does.
+- **Placed** with each frame's anchor on the cell's bottom-centre: art x `gx · tilePx + tilePx / 2 − ax`, and art y `gy · tilePx + tilePx − 1 − ay`.
+- **One instanced draw:** each instance carries its art-pixel corner and its atlas rectangle. The fragment shader reads the atlas with `texelFetch` and discards alpha 0, so the pass needs no blending.
+- **Checks:** an icon's pixels land where the anchor rule says, and a lower row's icon covers a higher row's.
+- **Commit** `feat(render-gl): draw the map's peaks and icons in one instanced pass`.
+
+### Task 9: `MapRenderer`: views, context loss and the Canvas2D fallback (senior)
+
+**Files:** create `packages/render-gl/src/map/renderer.ts`, `src/map/canvas2d.ts` and `test/browser/map-renderer.spec.ts`; modify `src/map.ts`.
+
+- **`createMapRenderer(canvas, options)`,** as interfaces.md's The map scene has it:
+  - `draw` picks the view with `mapViewFor` against the last view drawn, builds that view's overlay and instances on first use, and draws the base pass, then the icons;
+  - a view's overlay is uploaded once and then dropped on the CPU side, and rebuilt from the world after a context loss.
+- **Canvas2D,** when:
+  - WebGL2 is missing, or a shader fails to link;
+  - `MAX_TEXTURE_SIZE` is below 3,072, too small for the Region overlay of a large world (Ruling 3);
+  - a lost context stays lost for `restoreTimeoutMs`, 3,000 ms by default, as `WorldRenderer` falls back.
+- **The Canvas2D painter** draws:
+  - the flat fills, from a one-pixel-per-cell image drawn at `cellPx` with smoothing off;
+  - settlement icons from the page's bitmap, once it is there;
+  - the water colour off the map.
+- **`dispose`** deletes every GL object and loses the context, since the town's renderer keeps its own.
+- **Checks:**
+  - `backend: 'canvas2d'` draws flat colours where a WebGL draw would;
+  - `WEBGL_lose_context` then restore gives the same pixels as before;
+  - a loss left unrestored falls back after the timeout, as `fallback.spec.ts` does for the town.
+- **Commit** `feat(render-gl): add the MapRenderer with its Canvas2D fallback`.
+
+### Task 10: The Map control and the lazy map view (senior)
+
+**Files:** create `apps/web/src/map/map-view.ts`; modify `apps/web/src/panels/controls.ts` and `apps/web/vite.config.ts`.
+
+- **First, record the first-load bytes.** Run `pnpm --filter @nomos/web build` before any edit, and note the byte sizes of `apps/web/dist/assets/index-*.js`, `render-gl-*.js` and `worker-*.js`.
+- **The control.** `mountControls` gains a lil-gui button named "Map". It runs `import('../map/map-view.ts').then(({ openMap }) => openMap(app, button))`, where `button` is that control's element, which gets focus back on close.
+- **`vite.config.ts`:** the `render-gl` chunk group's test becomes `/[\\/]packages[\\/]render-gl[\\/](?!src[\\/]map)/`, so the map scene joins the map view's lazy chunk instead.
+- **`openMap(app, returnFocus)`:**
+  - **The section.** On the first call, it builds the section once and keeps it: `<section id="map" aria-label="Map of the world" tabindex="0">`, in `#view`'s grid area above the HUD. It holds:
+    - a toolbar of "Close map", "Fit", and a "Countries" toggle with `aria-pressed`;
+    - a status line with `role="status"`;
+    - the canvas, with `role="img"` and an `aria-label` that points to the legend;
+    - an `aria-hidden` labels layer, and the legend.
+
+    Its CSS is a `<style>` element it adds once: the labels' outlined text and the swatches, with `touch-action: none` on the section.
+  - **The pause.** It notes whether the town was playing and calls `app.setPaused(true)`. It sets `inert` on `#view` and `#hud`, shows the section and focuses it.
+  - **The world.** Unless it already has one, it starts the worker with `new Worker(new URL('./map-worker.ts', import.meta.url), { type: 'module', name: 'map' })`. It posts `{ type: 'generate', seed: app.seed, size: 'large' }` and shows "Making the map…" until the answer. On the answer it:
+    - terminates the worker and keeps the world and its names (Ruling 9);
+    - hands the world to the renderer, and mounts the labels, now that they can be measured, and the legend;
+    - fits the camera, and draws.
+  - **The atlas page.** It calls `loadAtlasPage(new URL('atlas/map.json', document.baseURI).href, new URL('atlas/map.webp', document.baseURI).href)` beside the worker. On success it calls `setAtlas` and draws again. On failure it says in the status line that the map shows flat colours.
+  - **Drawing.** It draws on demand. A camera change, a resize or a toggle asks for one animation frame, in which it calls `renderer.draw(camera)` and then `labels.update(camera, renderer.view, ...)`. `observeDeviceSize`, from `@nomos/render-gl`, sizes the canvas; the entry chunk already imports it, so the renderer chunk gains no export.
+  - **Input.** `bindMapInput` on the section, with `fit` and `close`.
+  - **Closing,** by the button or Escape: hide the section, drop `inert`, call `app.setPaused(false)` only if the town was playing, and focus `returnFocus`.
+  - **Testing hook.** It sets `window.__map` to `{ open, view, frameMs }` for Tasks 12 and 13, as `window.__app` exposes the town.
+- **The bytes after.** Build again. The three first-load chunks must have the byte sizes noted above, exactly: a lazy chunk's new hash has the same length, so only real code can change them. If one changed and no other commit explains it, find the import that pulled code in.
+- **Commit** `feat(web): open the map from a button, in a lazy view of its own`.
+
+### Task 11: Size limits and the first-load check (junior, exact steps)
+
+**Files:** modify `apps/web/.size-limit.json` (shared).
+
+- [ ] **Step 1: Build and measure.** Run `pnpm --filter @nomos/web build`, then `python tools/atlas/build_atlas.py --out apps/web/dist/atlas`, then `node tools/bench/src/chunks.ts`. Expected: two ungated chunks, `dist/assets/map-view-*.js` and `dist/assets/map-worker-*.js`.
+- [ ] **Step 2: Gate them.** Add two entries after `Inspector chunk`, `"Map view chunk"` with path `["dist/assets/map-view-*.js"]` and `"Map worker chunk"` with path `["dist/assets/map-worker-*.js"]`. Set each limit to its brotli size from `pnpm --filter @nomos/web size` plus 25%, rounded up to the next 0.5 kB, as M0.5 set its stand-ins.
+- [ ] **Step 3: Run** `pnpm --filter @nomos/web size` and `node tools/bench/src/chunks.ts`. Expected: every limit passes, `Initial JS, M0 stand-in` included, and `0 ungated chunks`.
+- [ ] **Step 4: The startup gate.** `node tools/bench/src/calibrate.ts`, then `pnpm --filter @nomos/web startup`. Expected: first frame and interactive within their limits, as before Task 10. Record the medians beside the CPU rate in the report.
+- [ ] **Step 5: Commit** `build(web): gate the map view and map worker chunks`.
+
+### Task 12: The exit tests: tiles complete, labels by band, the town's pause (junior, exact code)
+
+**Files:** create `apps/web/test/map-exits.test.ts` and `apps/web/test/browser/map.spec.ts`.
+
+- [ ] **Step 1: `apps/web/test/map-exits.test.ts`,** in Node:
+
+  ```ts
+  import { readFileSync } from 'node:fs';
+  import { landmarkFrame, peakFrame, settlementFrame, tileFrame, wonderFrame, type MapView } from '@nomos/render-gl/map';
+  import { NO_LANDMARK, type WorldMap } from '@nomos/sim-protocol/world-map';
+  import { generateWorld } from '@nomos/worldgen';
+  import { describe, expect, it } from 'vitest';
+  import { labelSet, placeLabels } from '../src/map/labels.ts';
+
+  // The map page holds every map-scale frame (tools/atlas/test_atlas.py), so the manifests stand in for it here.
+  const known = new Set(
+    ['map', 'wonders', 'landmarks'].flatMap((sheet) => {
+      const manifest = JSON.parse(readFileSync(new URL(`../../../assets/sprites/${sheet}.json`, import.meta.url), 'utf8'));
+      return Object.keys(manifest.frames).map((name) => `${sheet}/${name}`);
+    }),
+  );
+  const VIEWS: MapView[] = ['country', 'region'];
+  const WORLDS: [number, 'standard' | 'large'][] = [
+    ...Array.from({ length: 10 }, (_, k): [number, 'standard'] => [0x5eed0001 + k, 'standard']),
+    [0x5eed0001, 'large'],
+    [0x5eed0002, 'large'],
+  ];
+
+  function framesOf(map: WorldMap, view: MapView): string[] {
+    const names: string[] = [];
+    for (let cell = 0; cell < map.biome.length; cell++) {
+      names.push(tileFrame(map.biome[cell], map.variant[cell], view));
+      const peak = peakFrame(map.biome[cell], map.variant[cell], view);
+      if (peak) names.push(peak);
+    }
+    map.settlements.tier.forEach((tier) => names.push(settlementFrame(tier)));
+    map.wonders.kind.forEach((kind) => names.push(wonderFrame(kind, view)));
+    map.landmarks.kind.forEach((kind) => names.push(landmarkFrame(kind, view)));
+    for (const kind of map.settlements.landmarks) {
+      if (kind !== NO_LANDMARK) names.push(landmarkFrame(kind, view));
+    }
+    return names;
+  }
+
+  describe('the map exit checks', { timeout: 120_000 }, () => {
+    it('has a frame for every tile, icon and landmark the generator makes', () => {
+      for (const [seed, size] of WORLDS) {
+        const map = generateWorld(seed, size);
+        for (const view of VIEWS) expect(framesOf(map, view).filter((name) => !known.has(name)), `${size} ${seed}`).toEqual([]);
+      }
+    });
+
+    it('labels by band, with no two labels overlapping', () => {
+      for (const [seed, size] of WORLDS) {
+        const map = generateWorld(seed, size);
+        const set = labelSet(map);
+        set.width.fill(60);
+        set.height.fill(14);
+        const x = new Float64Array(set.count);
+        const y = new Float64Array(set.count);
+        const countries = map.countries.capital.length;
+        for (const [view, cellPx] of [['country', 8], ['region', 32]] as const) {
+          placeLabels(set, view, { x: 0, y: 0, cellPx }, 1, map.width * cellPx, map.height * cellPx, x, y);
+          for (let i = 0; i < set.count; i++) {
+            if (Number.isNaN(x[i])) continue;
+            const settlement = set.name[i] - countries;
+            if (view === 'region') expect(settlement, `${size} ${seed}: a country in the Region view`).toBeGreaterThanOrEqual(0);
+            else expect(settlement < 0 || map.settlements.tier[settlement] <= 1, `${size} ${seed}: label ${i}`).toBe(true);
+            for (let j = 0; j < i; j++) {
+              if (Number.isNaN(x[j])) continue;
+              const apart = x[i] >= x[j] + 60 || x[j] >= x[i] + 60 || y[i] >= y[j] + 14 || y[j] >= y[i] + 14;
+              expect(apart, `${size} ${seed}: labels ${j} and ${i} overlap`).toBe(true);
+            }
+          }
+        }
+      }
+    });
+  });
+  ```
+
+- [ ] **Step 2: `apps/web/test/browser/map.spec.ts`,** on the built app, in Chromium:
+
+  ```ts
+  import { expect, test, type Page } from 'playwright/test';
+  import { WEB } from './web.ts';
+
+  test.use({ baseURL: WEB });
+
+  const MAP_CHUNK = /\/(map-view|map-worker)-[^/]+\.js$|\/atlas\/map\.(json|webp)$/;
+
+  async function playing(page: Page): Promise<boolean> {
+    return page.evaluate(() => window.__app?.paused === false);
+  }
+
+  test('opens the map on demand, pauses the town, and resumes it on close', async ({ page }) => {
+    test.setTimeout(60_000);
+    const fetched: string[] = [];
+    page.on('request', (request) => {
+      if (MAP_CHUNK.test(request.url())) fetched.push(request.url());
+    });
+    await page.goto('/?seed=42');
+    await page.getByRole('button', { name: 'Map', exact: true }).waitFor();
+    expect(fetched).toEqual([]);
+    expect(await playing(page)).toBe(true);
+    await page.getByRole('button', { name: 'Map', exact: true }).click();
+    const map = page.locator('#map');
+    await expect(map).toBeVisible();
+    await expect(page.locator('#map .map-legend li')).not.toHaveCount(0, { timeout: 30_000 });
+    expect(await playing(page)).toBe(false);
+    expect(fetched.some((url) => url.includes('map-view-'))).toBe(true);
+    await expect(page.locator('#view')).toHaveAttribute('inert', '');
+    await map.press('Escape');
+    await expect(map).toBeHidden();
+    expect(await playing(page)).toBe(true);
+    await expect(page.locator('#view')).not.toHaveAttribute('inert', '');
+  });
+
+  test('keeps the town paused on close when it was paused before', async ({ page }) => {
+    await page.goto('/?seed=42');
+    await page.getByRole('button', { name: 'Pause' }).click();
+    await page.getByRole('button', { name: 'Map', exact: true }).click();
+    await page.getByRole('button', { name: 'Close map' }).click();
+    expect(await playing(page)).toBe(false);
+  });
+  ```
+
+  The legend can only fill once M8.1's worker answers. Without the atlas page, which the Playwright web server's build doesn't make, the map shows the flat view and says so in its status line. These tests depend on neither.
+- [ ] **Step 3: Run** `pnpm exec vitest run apps/web/test/map-exits.test.ts`, then `pnpm exec playwright test apps/web/test/browser/map.spec.ts --project=chromium`. Expected: all pass. A failure points at Task 10's wiring: report it to the senior.
+- [ ] **Step 4: Commit** `test(web): check the map's frames, label bands and the town's pause`.
+
+### Task 13: The 2 ms bar (senior)
+
+**Files:** create `apps/web/test/browser/perf.spec.ts`; modify `playwright.config.ts` and `.github/workflows/ci.yml` (both shared).
+
+- **The spec** runs in Playwright's `perf` project: Chromium on SwiftShader, after every other project, as `perf.spec.ts` names it.
+- **What it times.** It opens the map at seed 42 and waits for the atlas page. It then pans by script one device pixel a frame for 240 frames, half in each view, with labels on. Each frame's main-thread time is `renderer.draw` plus `labels.update`, read from `window.__map.frameMs`.
+- **The bar:** `const MAP_FRAME_MS = 2;`, with the comment `// Proposed (M8.3 task.md); the owner's answer replaces it.` The spec checks the median against it, and records the median, p95 and largest as annotations.
+- **The atlas page.** The Playwright web server's build has no atlas page. For this spec, its `webServer` command for the app builds it first: `pnpm --filter @nomos/web build && python tools/atlas/build_atlas.py --out apps/web/dist/atlas && pnpm --filter @nomos/web preview`. CI's `browser` job then needs Python with Pillow: add `actions/setup-python` and `pip install -r tools/requirements.txt` to it.
+- **If the bar fails,** profile it. Labels and the overlay upload are the likely costs, so write label styles only on change and build each overlay once. Report the measured figures with the engine and the load average (docs rules).
+- **Commit** `test(web): time the map's frames against the proposed 2 ms bar`.
+
+### Task 14: The owner's five colours and the Countries golden frame (senior and owner)
+
+**Needs** the owner's five picks from the swatch sheet.
+
+- **Write the picks** into `map-colours.json`'s `countries`, in the owner's order. That is the only file that changes for the colours, and both `render-gl` and `mapdraw.py` read it.
+- **Check them against the reserved colours.** Move the swatch sheet's CIEDE2000 check into `tools/worldgen/test_worldgen.py`: every country colour stays ≥ 15 from each of the 47 reserved colours, and ≥ 15 from the other four. The reserved colours are the body hues, police navy, merchant teal, the crime reds and oranges, black and the eight emblem colours. Part 1's Ruling 5 lists 42 of them.
+- **A golden frame** of seed 42's flat Countries view, at a fixed 1,280 × 800 CSS size, in `apps/web/test/browser/map-golden.spec.ts`:
+  - it compares a hash of the canvas pixels with `apps/web/test/golden/map-countries.json`;
+  - `UPDATE_GOLDEN=1` rewrites the hash, as `render-gl`'s golden spec does;
+  - it also checks that every land edge between two countries draws its border colour, and that the legend lists every country with its name and capital.
+- **Regenerate the previews** with `python tools/worldgen/generate.py --size large --seed 5eed0001`, and have the owner look once.
+- **Commits:** `feat(render-gl): give countries the owner's five map colours`, then `test(web): pin the Countries view of seed 42`.
+
+### Task 15: Close M8.3 (senior)
+
+- **Prove every exit check** with `verification-before-completion`, through `senior-qa`:
+  - the 2 ms bar (Task 13);
+  - the first frame and bytes (Tasks 10 and 11);
+  - complete tiles, labels by band and the town's pause (Task 12);
+  - the countries drawn (Task 14).
+- **Review:** `code-reviewer` over the whole part, and `web-accessibility` over the map section: focus order, the legend as text alternative, Escape, and the reduced-motion start.
+- **Docs,** in a separate docs commit:
+  - interfaces.md for anything the code refined;
+  - the Started, Done and Actual cells in `milestone.md`;
+  - `tools/worldgen/README.md`'s note that `country.png` and the map scene share `map-colours.json`.
+- **Checkpoint:** the next one, committed alone.
+
+### Exit checks, and the tasks that prove them
+
+| Exit check (task.md and brief) | Proved by |
+| --- | --- |
+| Country and Region views take ≤ 2 ms of main-thread render time per frame in CI's software-GL Chromium, a proposed bar | Task 13 |
+| The bytes before the first frame and the startup gate stay within limits, and no map chunk loads before the Map control is pressed | Tasks 10, 11 and 12 |
+| Every biome, settlement tier, wonder and landmark the generator emits has a frame on the map page | Tasks 1, 3 and 12 |
+| Seed 42's Countries view matches its golden frame; every border edge draws; the legend lists every country with its name and capital | Task 14 |
+| The Country view labels only countries, capitals and cities, the Region view every settlement, and no two labels overlap | Tasks 5 and 12 |
+| Opening the map pauses the town; closing it resumes the town only if it was playing | Task 12 |
+
+### Risks
+
+- **Labels are the hard part of 2 ms.** They are measured once, and a frame writes a style only when a label moves. If panning still passes 2 ms, the next step is moving labels by one transform on their layer, between steps of the camera.
+- **The Region overlay is 6.3 MB of texture.** A device that can't hold it draws the map in Canvas2D (Ruling 3). M9's larger worlds will need tiled overlays.
+- **The chunk group.** If Vite's group regex ever stops excluding `src/map`, the scene lands in the renderer chunk. Task 10's byte check and the renderer chunk's 10 kB limit both catch that.
+- **Two WebGL contexts** live while the map shows, the town's and the map's. Browsers allow many more, and the map frees its own on dispose.
