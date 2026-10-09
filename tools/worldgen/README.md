@@ -44,6 +44,7 @@ Random worlds for Nomos, drawn with the sprites in `tools/sprites`. It is the Py
 6. **Countries** (`countries.py`):
    - 3–5 per world, by a keyed draw. They are map facts only: no other stage reads them.
    - Capitals: the largest settlement, then each town or larger in population order, spaced at least isqrt(land ÷ countries) cells apart. The spacing shrinks by a quarter until all fit, and each capital takes the capital tier before farmland is laid out.
+   - A capital whose country would hold fewer than 3 settlements is passed over for the next town in line, so every country holds at least 3.
    - One multi-source Dijkstra grows every country from its capital. Steps cost more through forest, hills and mountains, more again into rivers, and far more over sea and lakes. So borders bend to mountains, lakes, rivers and coasts, and an island without a capital joins the country with the cheapest crossing.
    - Ties break by (cost, cell), so a port draws the same borders. A diagonal step may not slip across a river or a one-cell strait.
    - Every land cell and settlement belongs to one country; water to none. Each country's map colour comes from a keyed shuffle of five provisional colours, until the owner picks the final five.
