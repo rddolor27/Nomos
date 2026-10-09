@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatCents } from '../src/panels/cents.ts';
+import { formatCents } from '../src/panels/inspector.ts';
 import { isClick } from '../src/view/camera-input.ts';
 
 describe('the inspector', () => {
