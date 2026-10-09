@@ -1,7 +1,8 @@
 """Checks the atlas build against the sprite manifests. Run: python tools/atlas/test_atlas.py
 
-Every manifest frame must be packed once and no two may overlap, every 37th frame must keep its pixels in both the WebP
-and the PNG, no side may pass 2,048 px, and a pack too big for 2,048 x 2,048 must fail."""
+Every manifest frame must be packed once with its size, anchor and any face offset, and no two may overlap, every 37th
+frame must keep its pixels in both the WebP and the PNG, no side may pass 2,048 px, and a pack too big for
+2,048 x 2,048 must fail."""
 import json
 import subprocess
 import sys
@@ -30,14 +31,16 @@ def load_rgba(path):
 
 
 def manifest_frames():
-    """key -> (sheet, x, y, w, h, anchor) for every frame of every manifest, read without the build's help."""
+    """key -> (sheet, x, y, w, h, anchor, face) for every frame of every manifest, read without the build's help; face
+    is None where a frame has no face offset."""
     frames = {}
     for path in sorted(SPRITES.glob('*.json')):
         if path.name == NOT_A_MANIFEST:
             continue
         manifest = json.loads(path.read_text(encoding='utf-8'))
         for name, f in manifest['frames'].items():
-            frames[f'{path.stem}/{name}'] = (SPRITES / manifest['image'], f['x'], f['y'], f['w'], f['h'], f['anchor'])
+            frames[f'{path.stem}/{name}'] = (SPRITES / manifest['image'], f['x'], f['y'], f['w'], f['h'], f['anchor'],
+                                             f.get('face'))
     return frames
 
 
@@ -85,9 +88,9 @@ def placement_problems(index, expected):
     for key, p in index['frames'].items():
         if key not in expected:
             continue
-        _, _, _, w, h, anchor = expected[key]
-        if (p['w'], p['h'], p['anchor']) != (w, h, anchor):
-            problems.append(f'{key}: size or anchor differs from its manifest')
+        _, _, _, w, h, anchor, face = expected[key]
+        if (p['w'], p['h'], p['anchor'], p.get('face')) != (w, h, anchor, face):
+            problems.append(f'{key}: size, anchor or face offset differs from its manifest')
         elif p['x'] < 0 or p['y'] < 0 or p['x'] + w > width or p['y'] + h > height:
             problems.append(f'{key}: lies outside the atlas')
         else:
@@ -102,7 +105,7 @@ def pixel_problems(index, expected, out, images=IMAGES, every=SAMPLE_EVERY):
     sheets = {}
     atlases = {name: load_rgba(out / name) for name in images}
     for key in sorted(expected)[::every]:
-        sheet_path, x, y, w, h, _ = expected[key]
+        sheet_path, x, y, w, h, _, _ = expected[key]
         if sheet_path not in sheets:
             sheets[sheet_path] = load_rgba(sheet_path)
         source = sheets[sheet_path].crop((x, y, x + w, y + h))

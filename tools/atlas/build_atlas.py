@@ -1,7 +1,8 @@
 """Packs every sprite frame of every manifest into one atlas (plan: M0.5 Task 3).
 
 Run `python tools/atlas/build_atlas.py [--out DIR]`, default dist/atlas/. It writes atlas.webp (lossless), atlas.png
-(shrunk by oxipng when that is installed) and atlas.json, each frame's place keyed "<category>/<name>". It also writes the
+(shrunk by oxipng when that is installed) and atlas.json, each frame's place keyed "<category>/<name>", with the body
+frames' face offsets that the place pass needs (M3.1). It also writes the
 map scene's page, map.webp, map.png and map.json (M8.3). Frames are packed, not sheets, because houses.png alone is
 2,316 px tall. The output is a build product and is never committed.
 """
@@ -36,6 +37,8 @@ class Frame(NamedTuple):
     w: int
     h: int
     anchor: list
+    # A body frame's face offset, where tools/worldgen/placedraw.py draws its face and emote; None for other frames.
+    face: list | None
 
 
 def read_frames():
@@ -46,7 +49,7 @@ def read_frames():
         manifest = json.loads(path.read_text(encoding='utf-8'))
         sheet = SPRITES / manifest['image']
         for name, f in manifest['frames'].items():
-            frames.append(Frame(f'{path.stem}/{name}', sheet, f['x'], f['y'], f['w'], f['h'], f['anchor']))
+            frames.append(Frame(f'{path.stem}/{name}', sheet, f['x'], f['y'], f['w'], f['h'], f['anchor'], f.get('face')))
     return frames
 
 
@@ -80,6 +83,13 @@ def compose(frames, places, width, height):
     return atlas
 
 
+def frame_entry(f, place):
+    entry = {'x': place[0], 'y': place[1], 'w': f.w, 'h': f.h, 'anchor': f.anchor}
+    if f.face is not None:
+        entry['face'] = f.face
+    return entry
+
+
 def write_atlas(atlas, frames, places, out, name='atlas'):
     out.mkdir(parents=True, exist_ok=True)
     atlas.save(out / f'{name}.webp', lossless=True, quality=100, method=6)
@@ -90,8 +100,7 @@ def write_atlas(atlas, frames, places, out, name='atlas'):
         subprocess.run([oxipng, '-o', 'max', '--strip', 'safe', '--alpha', str(png)], check=True)
     index = {
         'size': [atlas.width, atlas.height],
-        'frames': {f.key: {'x': places[f.key][0], 'y': places[f.key][1], 'w': f.w, 'h': f.h, 'anchor': f.anchor}
-                   for f in sorted(frames)},
+        'frames': {f.key: frame_entry(f, places[f.key]) for f in sorted(frames)},
     }
     (out / f'{name}.json').write_text(json.dumps(index, separators=(',', ':')), encoding='utf-8')
     return bool(oxipng)
