@@ -152,6 +152,24 @@ export function unionCells(a: ArrayLike<number>, b: ArrayLike<number>): number[]
   return cells;
 }
 
+// The compass side a step leaves by; a diagonal takes whichever of its two sides is free.
+export function side(dx: number, dy: number, taken: string): string {
+  const vertical = signLetter(dy, 'n', 's');
+  const horizontal = signLetter(dx, 'w', 'e');
+  if (!vertical || !horizontal) return vertical || horizontal;
+  return taken.includes(vertical) && !taken.includes(horizontal) ? horizontal : vertical;
+}
+
+function signLetter(d: number, negative: string, positive: string): string {
+  if (d < 0) return negative;
+  return d > 0 ? positive : '';
+}
+
+// The sides among letters, each once, in 'nesw' order.
+export function sidesText(letters: string): string {
+  return [...'nesw'].filter((s) => letters.includes(s)).join('');
+}
+
 export function sum(values: ArrayLike<number>): number {
   let total = 0;
   for (let i = 0; i < values.length; i++) total += values[i];
