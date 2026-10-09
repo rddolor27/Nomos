@@ -13,7 +13,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(HERE.parent / 'sprites'))
 
-from climate import FARMLAND, GRASSLAND, LAKE, MOUNTAIN, OCEAN, PEAK, SNOW  # noqa: E402
+from climate import FARMLAND, GRASSLAND, LAKE, MOUNTAIN, OCEAN, PEAK  # noqa: E402
 from model import BIOMES  # noqa: E402
 from rng import SHAPE, draw  # noqa: E402
 from showcase import Sheets  # noqa: E402
@@ -23,8 +23,6 @@ SCALE = 2
 VARIANT = 0x200
 RIVER, ROAD, DECK, RAIL = PALETTE['WATER'], PALETTE['WOOD'], PALETTE['WOOD_L'], PALETTE['WOOD_D']
 LANE = PALETTE['WATER_L']
-# Stands in for map8_snow and map16_snow until tools/sprites draws them (M8.1 plan, Task 6).
-SNOW_FILL = PALETTE['WHITE'] + (255,)
 # Provisional, outside the sprite palette, until the owner picks five from a swatch sheet at M8.3
 # (M8.1 plan, Ruling 5). Countries.Country.colour indexes this table.
 COUNTRY_COLOURS = ((0x00, 0x00, 0xDD), (0xAA, 0xBB, 0x00), (0x33, 0x44, 0x22), (0xEE, 0x00, 0xDD), (0x44, 0xBB, 0xCC))
@@ -80,9 +78,6 @@ def _terrain(view, sprite):
     for y in range(view.rows):
         for x in range(view.cols):
             i = (view.y0 + y) * w.width + view.x0 + x
-            if w.biome[i] == SNOW:
-                image.paste(SNOW_FILL, (x * size, y * size, x * size + size, y * size + size))
-                continue
             im, _ = sprite('map', _tile(w, i, size))
             image.alpha_composite(im, (x * size, y * size))
     return image
