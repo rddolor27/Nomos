@@ -6,9 +6,9 @@ Estimates are full-time days for one person coding by hand (unsourced estimates)
 
 | Sub-milestone | Delivers | Estimate | Started | Done | Actual |
 | --- | --- | --- | --- | --- | --- |
-| [M3.1 Town generator](m3.1-town-generator/task.md) | The TypeScript place generator: a 256² town from a seed, with walkability and entities in the binary map | 7.5–11 days | 9 Oct 2026, 21:49 (step plan for the place port and the owner's town view committed) | | |
+| [M3.1 Town generator](m3.1-town-generator/task.md) | The TypeScript place generator: a 256² town from a seed, with walkability and entities in the binary map | 7.5–11 days | 9 Oct 2026, 21:49 (step plan for the place port and the owner's town view committed) | | About 500 min so far, 1–5 agents, computed from commit times with usage pauses excluded. Parts 2 and 3, added by the owner on 10 October 2026, fall outside the estimate |
 | [M3.2 Daily routines](m3.2-daily-routines/task.md) | Agents who work, shop, eat and sleep on schedule, and the inspector that explains them | 12–18 days | | | |
-| [M3.3 Skin C town](m3.3-skin-c-town/task.md) | The pixel-art town: tiles, roofs, light periods, automatic skins, the phone path and the follow-cam | 5–7.5 days | | | |
+| [M3.3 Skin C town](m3.3-skin-c-town/task.md) | The pixel-art town: tiles, roofs, light periods, automatic skins, the phone path and the follow-cam | 5–7.5 days | 10 Oct 2026, 03:35 (early: the first screen's Town skin) | | About 90 min so far, 1 agent, on the Town skin |
 | [M3.4 Build mode and default town](m3.4-build-mode-and-default-town/task.md) | The owner's Build mode, and the hand-edited default town within budget on phones | 11–17 days | | | |
 | [M3.5 Food and harvest](m3.5-food-and-harvest/task.md) | Pantries, shelf lives, a food-insecurity tally and one grain harvest a year | 6–9 days | | | |
 | [M3.6 Wellbeing and housing](m3.6-wellbeing-and-housing/task.md) | Life satisfaction with named drivers, and homes that are owned, rented or mortgaged | 8–12 days | | | |
