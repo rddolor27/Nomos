@@ -1,3 +1,4 @@
+import { TILE_PX } from '@nomos/sim-protocol';
 import { expect, test } from 'playwright/test';
 
 const AGENTS = 4_000;
@@ -160,13 +161,18 @@ test('matches WebGL2 pixel for pixel', async ({ page }) => {
 });
 
 test('caps Canvas2D at 5,000 agents', async ({ page }) => {
-  const result = await page.evaluate(async () => {
+  const result = await page.evaluate(async (tilePx) => {
     const harness = window.harness;
-    const backend = await harness.boot({ css: [768, 448], agents: 10_000, backend: 'canvas2d' });
+    await harness.boot();
+    const map = harness.map;
+    if (!map) throw new Error('boot set no map');
+    // The whole map in view, so all 10,000 agents are, whatever the town's size.
+    const css: [number, number] = [map.width * tilePx, map.height * tilePx];
+    const backend = await harness.boot({ css, agents: 10_000, backend: 'canvas2d' });
     harness.push(0);
     harness.view({ x: 0, y: 0, zoom: 1 });
     harness.draw();
     return { backend, drawn: harness.renderer?.drawnAgents };
-  });
+  }, TILE_PX);
   expect(result).toEqual({ backend: 'canvas2d', drawn: 5_000 });
 });
