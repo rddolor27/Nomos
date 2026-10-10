@@ -1,4 +1,4 @@
-import type { Tier } from '@nomos/sim-core';
+import { DAYS_PER_MONTH, type Tier } from '@nomos/sim-core';
 
 // A system's budget in reference-machine ms a tick, keyed by scale so that M7 can add 1k and 10k country rows. A mean
 // row gates the day's average tick and a max row its worst, as the day slices need (R6).
@@ -29,6 +29,12 @@ export const TIERS: readonly Tier[] = ['phone', 'phone-plus', 'desktop'];
 // Medians drifted 10.8% between runs on a shared machine, so the gate judges the fastest of at least 9 samples (R5).
 export const MIN_SAMPLES = 9;
 export const TOLERANCE = 0.1;
+
+// The days the allocation gate measures, a window of one day each, in order, after the bench's warm days. Day 1 is a plain
+// day. Day 20 is a month's last, where a town's economy runs its 7 month-end systems and the month record, and day 21 the
+// next month's first, where it runs its 5 month-start systems: every system but the year record, due on day 111 (M2.2b's
+// review).
+export const ALLOCATION_DAYS: readonly number[] = [1, DAYS_PER_MONTH - 1, DAYS_PER_MONTH];
 
 // The allocation gate's limit beside its zero scavenges (R5).
 export const MAX_HEAP_GROWTH_BYTES_PER_TICK = 65_536;

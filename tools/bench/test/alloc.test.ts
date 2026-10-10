@@ -1,9 +1,9 @@
 import { setFlagsFromString } from 'node:v8';
 import { runInNewContext } from 'node:vm';
-import { TICKS_PER_DAY } from '@nomos/sim-core';
+import { DAYS_PER_MONTH, TICKS_PER_DAY, dayOfMonth } from '@nomos/sim-core';
 import { describe, expect, it } from 'vitest';
 import { allocationWindow, runTicks } from '../src/compute/allocation.ts';
-import { MAX_HEAP_GROWTH_BYTES_PER_TICK, MAX_YOUNG_BYTES_PER_DAY } from '../src/compute/budgets.ts';
+import { ALLOCATION_DAYS, MAX_HEAP_GROWTH_BYTES_PER_TICK, MAX_YOUNG_BYTES_PER_DAY } from '../src/compute/budgets.ts';
 import { BENCH_WARM_DAYS, createBenchWorld, type BenchWorld } from '../src/compute/sample.ts';
 
 // Vitest runs without --expose-gc, so the tests expose gc themselves. Each window then starts from a full collection,
@@ -45,5 +45,19 @@ describe('the allocation window', { timeout: 120_000 }, () => {
     });
     expect(scavenges).toBe(0);
     expect(youngBytes).toBeGreaterThan(MAX_YOUNG_BYTES_PER_DAY);
+  });
+});
+
+// A plain day runs 4 of the economy's 18 systems. A month's last day adds the 7 month-end systems and the month record, and
+// its next day the 5 month-start systems, so the gate needs both.
+describe('the allocation days', () => {
+  it('are a plain day, a month end and the next month start', () => {
+    expect(ALLOCATION_DAYS).toEqual([1, 20, 21]);
+    expect(ALLOCATION_DAYS.map((day) => dayOfMonth(day))).toEqual([1, DAYS_PER_MONTH - 1, 0]);
+  });
+
+  it('come in order and after the warm days, which the gate walks through once', () => {
+    expect(ALLOCATION_DAYS[0]).toBeGreaterThanOrEqual(BENCH_WARM_DAYS);
+    expect(ALLOCATION_DAYS.every((day, i) => i === 0 || day > ALLOCATION_DAYS[i - 1])).toBe(true);
   });
 });
