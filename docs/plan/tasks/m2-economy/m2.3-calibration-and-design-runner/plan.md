@@ -90,6 +90,12 @@ The owner let the coordinator settle M2.3's open questions. These rulings are th
     - Police share is recorded and does nothing until M4.
     - No nightly workflow yet: M1.1 owns `nightly.yml`, and the full grid runs by hand.
 17. **No `name` or `version` on a preset.** Each cell's `meta.json` records the preset's name, its full params and the commit.
+18. **The city's burn-in comes from a 40,000-day run** (coordinator, 10 October 2026).
+    - The 20,000-day run found no truncation of the city's mean price in its first half, only 9,975 days of the unemployment share (seeds 1–5, Node 24.18.0, measured here).
+    - A second-half truncation means the run was too short, and lengthening it is MSER-5's standard remedy.
+    - Over 40,000 days, MSER-5 cuts 11,530 days of the mean price and 10,900 of the unemployment share, so `burnInDays` is 17,295 (measured here).
+    - After day 11,000 the mean price still drifts down about 0.06% per 1,000 days (measured here).
+    - Measured after day 17,295 on seeds 1–20, all six tier-1 targets hold, with more room than after day 10,000. Seeds 1001–1050 were still unseen.
 
 ## The two presets
 
@@ -327,7 +333,7 @@ No two tasks in a wave share a file:
 - [ ] **Sweep:** `design --grid tools/cli/grids/sweep.json --out dist/design/sweep`, then `targets dist/design/sweep --filter`. Report the passing share and the tier-1 targets no point meets. Under 0.5% passing, stop and report (Ruling 12).
 - [ ] **Refine** the best passing point on seeds 1–20. If any tier-1 target doesn't hold, try the next. Single-knob nudges stay inside the sweep's passing region, each recorded with its reason.
 - [ ] **Freeze `CITY`** in `economy/city.ts`, each tuned value with a one-line "why" that names its trade-off.
-- [ ] **Burn-in:** `node tools/cli/src/main.ts economy --preset city --burn-in --seeds 5 --seed 1 --days 20000`, then write `CITY.burnInDays` with a "measured here" comment giving the seeds, the Node version and the date. If a truncation falls in the second half, stop and report. Commit `feat(sim-core): calibrate the city preset`.
+- [ ] **Burn-in:** `node tools/cli/src/main.ts economy --preset city --burn-in --seeds 5 --seed 1 --days 40000` (Ruling 18), then write `CITY.burnInDays` with a "measured here" comment giving the seeds, the run length, the Node version and the date. If a truncation falls in the second half, stop and report. Commit `feat(sim-core): calibrate the city preset`.
 - [ ] **Confirm once:** run both confirmation grids and `targets` on each. Never change `CITY` after seeing them; a re-tune confirms on seeds 2001–2050.
 - [ ] **The long test,** `tools/cli/test/city-targets.test.ts`, under `ECONOMY_LONG=1`, runs `confirm-city.json` and judges it.
   - Every tier-1 target holds, except the confirmation's gaps, each listed in the test with its measured verdict and a one-line reason.
