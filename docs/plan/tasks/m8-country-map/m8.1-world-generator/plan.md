@@ -298,7 +298,7 @@ Tasks 24–28 don't touch Task 23's files, so they may run while the senior buil
 - **Commits:** `git -c user.name=rddolor27 -c user.email=80044625+rddolor27@users.noreply.github.com commit`, each body starting `Task: M8.1 World generator, part 2: the TypeScript port`. Code and docs never share a commit.
 - **Gates before every commit:** `pnpm test && pnpm lint && pnpm typecheck && pnpm depcruise && pnpm names`. From Task 12, also `node packages/worldgen/scripts/engines.ts`. A Python task also runs `python tools/worldgen/test_worldgen.py` and `vectors.py`, `mapfile.py` and `export_map.py` with `--check`.
 - **The sim never moves:** `node tools/cli/src/main.ts --seed 42 --tier phone --ticks 1000` prints the hash on `main` when the task starts. That was `b3b2c251` when this plan was written, and `746a06a3` at f3892e5 on 10 October 2026 (measured here).
-- **Nothing reaches the first load.** The town has 234 B left under its 17 kB stand-in. No task here may add a byte to the entry, sim worker or renderer chunks.
+- **Nothing reaches the first load.** The town's first-load JS was 17.47 kB of its 18 kB stand-in at 955d2fb, counting the shared `app` chunk (measured here). No task here may add a byte to the entry, `app`, sim worker or renderer chunks.
 - **A test that fails in another agent's files** may be their work in progress. Rerun once, and report it if it persists.
 
 ### Porting rules
