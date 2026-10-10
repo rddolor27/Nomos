@@ -1,16 +1,21 @@
 import {
+  ECONOMY_TICKS,
+  STAT_PRICE_MEAN,
+  TICKS_PER_DAY,
+  createTown,
   createWorld,
   currentTick,
   issue,
   nearestAgent,
   restoreWorld,
+  standInGround,
   stateHash,
   step,
   walletAccount,
   warmUp,
   type World,
 } from '@nomos/sim-core';
-import { bindPageLifecycle, type AppMessage, type WorkerMessage } from '@nomos/sim-protocol';
+import { TICK_MS, bindPageLifecycle, type AppMessage, type WorkerMessage } from '@nomos/sim-protocol';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { SLEEP_MIN_MS, STATS_MS, createSimLoop, type LoopHost } from '../src/index.ts';
 
@@ -28,9 +33,12 @@ type Posted<T extends WorkerMessage['type']> = Extract<WorkerMessage, { type: T 
 type FakeDoc = EventTarget & { visibilityState: string };
 type Page = ReturnType<typeof fakePage>;
 
+const TOWN_PEOPLE = 300;
+
 // A manual clock and the loop's one pending callback. Scheduling a second turn while one is pending throws, so every
-// test also checks that only one loop ever runs.
-function fakePage({ init = true } = {}) {
+// test also checks that only one loop ever runs. The world is a town of TOWN_PEOPLE when town is set, and the plain
+// world of createWorld otherwise.
+function fakePage({ init = true, town = false } = {}) {
   let clock = 0;
   let pending: { at: number; fn: () => void } | null = null;
   let world: World | null = null;
@@ -55,7 +63,10 @@ function fakePage({ init = true } = {}) {
     },
     // Cloned and transferred as postMessage would, so reused message objects and returned buffers behave as in a browser.
     post: (msg, transfer) => posted.push(structuredClone(msg, { transfer })),
-    makeWorld: (seed, tier, _map, agents) => (world = createWorld(seed, tier, undefined, agents)),
+    makeWorld: (seed, tier, _map, agents) =>
+      (world = town
+        ? createTown(seed, tier, standInGround(), agents ?? TOWN_PEOPLE)
+        : createWorld(seed, tier, undefined, agents)),
   };
   const loop = createSimLoop(host);
 
@@ -304,6 +315,33 @@ describe('the sim loop', () => {
       expect(Object.keys(systemMs)).toEqual(['day', 'move', 'economy', 'snapshot']);
       expect(Object.values(systemMs).every((ms) => Number.isFinite(ms) && ms >= 0)).toBe(true);
     }
+  });
+
+  it("posts a town's economy once after each day's last economy tick", () => {
+    const page = fakePage({ town: true });
+    page.handle({ type: 'resume' });
+    page.advance((ECONOMY_TICKS - 1) * TICK_MS);
+    expect([page.tick(), page.ofType('economy')]).toEqual([ECONOMY_TICKS - 1, []]);
+
+    page.advance(TICK_MS);
+    expect(page.tick()).toBe(ECONOMY_TICKS);
+    const [first, ...others] = page.ofType('economy');
+    expect(others).toEqual([]);
+    expect([first.day, first.days, first.trades]).toEqual([0, 1, 16]);
+    expect(first.meanPriceCents[0]).toBe(page.world().economyScratch.stats[STAT_PRICE_MEAN]);
+
+    page.advance(TICKS_PER_DAY * TICK_MS);
+    const posted = page.ofType('economy');
+    expect(posted.map(({ day, days }) => [day, days])).toEqual([[0, 1], [1, 2]]);
+    expect(posted[1].meanPriceCents[0]).toBe(first.meanPriceCents[0]);
+  });
+
+  it('posts no economy from a world that is not a town', () => {
+    const page = fakePage();
+    page.handle({ type: 'resume' });
+    page.advance((ECONOMY_TICKS + 2) * TICK_MS);
+    expect(page.tick()).toBe(ECONOMY_TICKS + 2);
+    expect(page.ofType('economy')).toEqual([]);
   });
 
   it('answers inspect with the nearest blob within a tile', () => {

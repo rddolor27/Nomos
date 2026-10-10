@@ -13,11 +13,15 @@ import {
 } from '@nomos/sim-core';
 import {
   TICK_MS,
+  createEconomyFeed,
   createSnapshotPool,
+  economyDayEnded,
   giveBack,
   takeView,
+  writeEconomyFeed,
   writeSnapshot,
   type AppMessage,
+  type EconomyMessage,
   type SnapshotPool,
   type WorkerMessage,
 } from '@nomos/sim-protocol';
@@ -43,6 +47,8 @@ export interface LoopHost {
 interface Session {
   readonly world: World;
   readonly pool: SnapshotPool;
+  // Made with the world, so a new run starts its days over; a world that is not a town never writes it.
+  readonly feed: EconomyMessage;
 }
 
 type SnapshotMessage = Extract<WorkerMessage, { type: 'snapshot' }>;
@@ -101,7 +107,7 @@ export function createSimLoop(host: LoopHost, cpuSlowdown = 1): { handle(msg: Ap
     const world = host.makeWorld(seed, tier, map, agents);
     world.checks = checks;
     const pool = createSnapshotPool(world.agents.capacity);
-    session = { world, pool };
+    session = { world, pool, feed: createEconomyFeed() };
     post({ type: 'ready', agents: world.agents.count[0] }, []);
     // The spawn, so a page that starts paused, as under reduced motion, still draws its agents (M0.5).
     postSnapshot(world, pool);
@@ -130,14 +136,20 @@ export function createSimLoop(host: LoopHost, cpuSlowdown = 1): { handle(msg: Ap
     accMs = Math.min(accMs + (startMs - lastMs), MAX_GAP_MS);
     lastMs = startMs;
     let ticks = 0;
+    let dayEnded = false;
     while (accMs >= TICK_MS && host.now() - startMs < MAX_TURN_MS) {
       lapMs = host.now();
       step(world, timer);
       accMs -= TICK_MS;
       ticks++;
+      if (economyDayEnded(world)) {
+        writeEconomyFeed(world, session.feed);
+        dayEnded = true;
+      }
     }
     ticksTimed += ticks;
     if (ticks > 0) postSnapshot(world, session.pool);
+    if (dayEnded) post(session.feed, noTransfer);
     if (startMs - statsFromMs >= STATS_MS) postStats(world, startMs);
     scheduleTurn(TICK_MS - accMs);
   }
