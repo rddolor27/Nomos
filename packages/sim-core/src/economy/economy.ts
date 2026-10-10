@@ -57,8 +57,9 @@ function startSystem(world: World, params: EconomyParams, month: number, k: numb
     case 3:
       searchJobs(world, params, month);
       break;
-    default:
+    case 4:
       planConsumption(world, params);
+      break;
   }
 }
 
@@ -89,8 +90,9 @@ function endSystem(world: World, params: EconomyParams, month: number, k: number
     case 5:
       layOffExiting(world);
       break;
-    default:
+    case 6:
       issueFiat(world, params, month);
+      break;
   }
 }
 

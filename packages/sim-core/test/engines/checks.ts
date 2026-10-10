@@ -120,7 +120,8 @@ export function economyHash(seed: number, tier: Tier, months: number): string {
   return stateHash(world).toString(16).padStart(8, '0');
 }
 
-// A spawned town runs CITY inside the step, so this replays its walking start, its movement and the economy's days together.
+// A spawned town runs CITY inside the step, so this replays its walking start, its movement and as much of the economy as
+// the ticks reach.
 export function townHash(seed: number, tier: Tier, people: number, ticks: number): string {
   const world = createTown(seed, tier, standInGround(), people);
   for (let tick = 0; tick < ticks; tick++) step(world);
