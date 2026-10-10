@@ -192,6 +192,16 @@ If the session ended: check `git log` for those Task lines, and `git status` for
   - every `place.py` change re-exports `town.nmap` in the same commit and keeps `town.test.ts` green;
   - **don't touch `town-map.test.ts` until `nomos-bd`'s economy Task 1 lands** (it will message). After that, whoever commits second re-pins from the current tree, and nobody edits that file while it's dirty from the other session.
 
+**10 Oct, 09:45: resumed after the session limit,** which stopped Tasks 9, 10 and 17 at 04:5x before they changed a file.
+- `nomos-bd`'s economy Task 1 has landed (23e9fa2 and f47f06c), so `town-map.test.ts` is free. The CLI hash is now `3c786124`, moved by the economy, and Task 20 expects whatever is on `main`.
+- **Task 9 is done** (2664baa). The coordinator finished the agent's draft, and recorded the baseline in the plan (b035a86): capital median 118 ms and worst 129 ms, so the budgets are 236 ms and 321 ms.
+- **Running:**
+  - Task 11, roads by role, sizes and the town plan (`sim-engineer`, Opus);
+  - Task 17, road classes (`sim-engineer`, Opus);
+  - Task 10, the atlas trim (`render-engineer`, Sonnet).
+  Tasks 11 and 17 share `packages/worldgen` but not files, and each was told how to tell the other's half-finished state from its own.
+- **If the session ends:** check `git log` for "task 11", "task 17" and "task 10" commits, and `git status` for unfinished work in those files. Restart only the tasks that have no commit.
+
 ## The town view session (nomos-bd), continued
 
 - 10 Oct: **step 4 and the blob counts are done and pushed** (217980a, d5dfdff, d999ab7, dea6b06 and d6e3bdc).
