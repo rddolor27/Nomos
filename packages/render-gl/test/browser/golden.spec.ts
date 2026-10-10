@@ -10,9 +10,6 @@ const UPDATE = process.env.UPDATE_GOLDEN === '1';
 const ZOOMS = [1, 2, 3, 4];
 const AGENTS = 10_000;
 const CSS = [320, 180];
-// CANVAS2D_AGENT_CAP. The z1-d2 view holds about 6,000 agents, so there Canvas2D must draw exactly the cap instead.
-const CANVAS2D_CAP = 5_000;
-const CAPPED_VIEW = 'z1-d2';
 // A histogram of palette colours tolerates a stray pixel but catches a wrong shape, colour or snap (R3).
 const SLACK_PIXELS = 8;
 const SLACK_SHARE = 0.005;
@@ -30,7 +27,6 @@ interface Frame {
   zoom: number;
   choice: 'auto' | 'canvas2d';
   stats: FrameStats;
-  drawn: number;
 }
 
 function keyOf(zoom: number, dpr: number): string {
@@ -83,7 +79,7 @@ async function drawFrames(page: Page, width: number, height: number): Promise<Fr
           harness.push(0);
           harness.view(camera);
           const stats = harness.draw();
-          frames.push({ zoom: camera.zoom, choice, stats, drawn: harness.renderer?.drawnAgents ?? 0 });
+          frames.push({ zoom: camera.zoom, choice, stats });
         }
       }
       return frames;
@@ -106,12 +102,10 @@ function mismatches(counts: Counts, golden: Counts): string[] {
   return out;
 }
 
+// Every view holds fewer agents than Canvas2D's cap of 5,000, so both backends match one golden; fallback.spec.ts checks
+// the cap.
 function checkFrame(frame: Frame, key: string, golden: FrameStats | undefined): void {
   const label = `${key} on ${frame.stats.backend}`;
-  if (frame.stats.backend === 'canvas2d' && key === CAPPED_VIEW) {
-    expect(frame.drawn, label).toBe(CANVAS2D_CAP);
-    return;
-  }
   if (!golden) throw new Error(`no golden for ${key}: run pnpm --filter @nomos/render-gl golden`);
   expect(mismatches(frame.stats.counts, golden.counts), label).toEqual([]);
 }
