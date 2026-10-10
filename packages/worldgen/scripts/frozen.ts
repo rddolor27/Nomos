@@ -4,7 +4,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import type { Goldens } from '../test/engines/checks.ts';
 import { stagePrints } from '../test/engines/stages.ts';
 
-const STAGES = ['regions'];
+const STAGES = ['regions', 'names'];
 const GOLDENS = new URL('../test/fixtures/goldens-v1.json', import.meta.url);
 const FROZEN = new URL('../test/fixtures/frozen-v1.json', import.meta.url);
 

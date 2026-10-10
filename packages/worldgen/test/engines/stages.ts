@@ -26,6 +26,7 @@ import { survey } from '../../src/features/survey.ts';
 import { wonders } from '../../src/features/wonders.ts';
 import { landmarks } from '../../src/features/landmarks.ts';
 import { generateWorld, worldFingerprint } from '../../src/index.ts';
+import { placeWordIndexes } from '../../src/names/place-names.ts';
 import type { FeatureWorld } from '../../src/world/draft.ts';
 
 export function stagePrints(seed: number, size: WorldSize): Map<string, number> {
@@ -146,7 +147,10 @@ export function stagePrints(seed: number, size: WorldSize): Map<string, number> 
   const own = landmarks(world, land, spots);
   prints.set('landmarks', fold(rows(own.map((p) => [p.kind, p.x, p.y])), paths(settlements.map((s) => s.landmarks))));
 
-  prints.set('world', worldFingerprint(generateWorld(seed, size)));
+  const map = generateWorld(seed, size);
+  prints.set('world', worldFingerprint(map));
+  // Python has no names, so frozen-v1.json holds this print: the fold of each name's index into PLACE_WORDS.
+  prints.set('names', fold(placeWordIndexes(map)));
 
   return prints;
 }
