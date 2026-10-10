@@ -1,6 +1,8 @@
 # World generator
 
-Random worlds for Nomos, drawn with the sprites in `tools/sprites`. It is the Python reference for the sim's TypeScript world generator and a preview of how the art fits together.
+Random worlds for Nomos, drawn with the sprites in `tools/sprites`. It was the Python reference for the TypeScript world generator in `packages/worldgen`, and it still previews how the art fits together.
+
+> **Frozen (owner, 10 October 2026).** The program runs in TypeScript, and Python builds only assets, so new map and town work goes in `packages/worldgen`. This generator no longer changes and no check runs it. Its saved outputs (the goldens, the place fixtures, the kernel vectors and `assets/maps/town.nmap`) still check the TypeScript for the parts they cover, until a deliberate change moves an output's regeneration to TypeScript, as `packages/worldgen/scripts/frozen.ts` does.
 
 - Make a new world: `python tools/worldgen/generate.py`. Every run draws a new seed and prints it with a summary.
 - Rebuild a world: `python tools/worldgen/generate.py --seed 5eed0001`.
