@@ -38,8 +38,8 @@ CHECKED = 2
 FOLD_SEED = 0x57A6E
 SIDES = 'nesw'
 STAGES = ('falloff', 'relief', 'chains', 'raw', 'land', 'shape', 'rain', 'erode', 'lakes', 'drain', 'climate',
-          'biomes', 'habitability', 'settle', 'countries', 'farm', 'routes', 'roads', 'lanes', 'survey', 'wonders',
-          'landmarks', 'world')
+          'biomes', 'habitability', 'settle', 'countries', 'farm', 'routes', 'roads', 'classes', 'lanes', 'survey',
+          'wonders', 'landmarks', 'world')
 
 
 def fold(*parts_):
@@ -148,6 +148,8 @@ def stages(size, seed, check):
     out['routes'] = fold(rows(roads.route_graph(w.settlements, [mass[s.uid] for s in w.settlements])))
     w.roads, w.bridges = roads.build(width, height, w.biome, w.elevation, w.river, w.receiver, w.settlements)
     out['roads'] = fold(paths(w.roads), w.bridges)
+    w.road_class = roads.classes(width, height, w.biome, w.settlements, w.roads)
+    out['classes'] = fold(w.road_class)
     w.lanes = roads.lanes(width, height, w.biome, w.settlements)
     out['lanes'] = fold(paths(w.lanes))
     survey = features.survey(w)

@@ -30,6 +30,7 @@ from grid import neighbours  # noqa: E402
 from mapdraw import BORDER, COUNTRY_COLOURS, View, _borders, countries_png, country_png, region_png  # noqa: E402
 from mapfile import WALK_ROAD  # noqa: E402
 from model import PlaceContext  # noqa: E402
+from roads import landmasses  # noqa: E402
 from settle import Settlement, habitability  # noqa: E402
 from world import SIZES, fingerprint, generate  # noqa: E402
 
@@ -38,7 +39,7 @@ SNOWY = ('standard', 0x5EED000A)
 SAMPLE = [('standard', FIRST), ('standard', FIRST + 1), ('standard', FIRST + 2), SNOWY, ('large', FIRST)]
 # Pinned after the M8.1 preview tuning; a deliberate change to any stage updates them, and goldens.py
 # replaces them when version 1 freezes.
-PINNED = {('standard', FIRST): 0x1EC8F880, ('large', FIRST): 0x867CD479}
+PINNED = {('standard', FIRST): 0x4A765CE2, ('large', FIRST): 0x88B0BDAC}
 
 
 @lru_cache(maxsize=8)
@@ -380,6 +381,33 @@ def snow_lies_on_cold_lowland(w):
             and (w.elevation[i] >= HILLS_AT or min(w.temperature[k] for k in (i, *nbrs[i])) >= SNOW_BELOW)]
 
 
+def major_roads_join_the_towns(w):
+    """Every road is minor (0) or major (1), and on each landmass the major roads' cells join every capital, city
+    and town to the first of them."""
+    problems = [] if len(w.road_class) == len(w.roads) and set(w.road_class) <= {0, 1} else [
+        f'{len(w.road_class)} classes, {sorted(set(w.road_class))}, for {len(w.roads)} roads']
+    root = list(range(w.width * w.height))
+
+    def find(c):
+        while root[c] != c:
+            root[c] = root[root[c]]
+            c = root[c]
+        return c
+
+    for path, major in zip(w.roads, w.road_class):
+        if major:
+            for a, b in zip(path, path[1:]):
+                root[find(a)] = find(b)
+    mass = landmasses(w.width, w.height, w.biome)
+    first = {}
+    for s in w.settlements:
+        if s.tier in ('capital', 'city', 'town'):
+            hub = first.setdefault(mass[s.uid], s)
+            if find(s.uid) != find(hub.uid):
+                problems.append(f'{s.tier}-{s.id} has no major road to {hub.tier}-{hub.id}')
+    return problems
+
+
 CHECKS = [snow_on_cold_lowland, lone_snow_melts, snow_is_uninhabitable, snow_places_build, snow_falls_on_a_cold_world,
           count_is_three_to_five, capitals_spaced_in_population_order, grow_breaks_ties_by_cost_then_cell,
           grow_bends_to_mountains, island_joins_the_cheaper_crossing, diagonal_never_slips,
@@ -387,7 +415,8 @@ CHECKS = [snow_on_cold_lowland, lone_snow_melts, snow_is_uninhabitable, snow_pla
           borders_draw_on_cell_edges, map_colours_match_the_palette, crowd_hues_are_the_body_hues,
           ciede2000_matches_sharma, country_colours_keep_apart,
           colour_check_bites, previews_write, town_roads_never_draw_as_water]
-WORLD_CHECKS = [snow_lies_on_cold_lowland, countries_cover_the_land, stage_only_retiers_capitals]
+WORLD_CHECKS = [snow_lies_on_cold_lowland, countries_cover_the_land, stage_only_retiers_capitals,
+                major_roads_join_the_towns]
 
 
 def main():

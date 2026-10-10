@@ -59,6 +59,7 @@ function tinyWorld(seed: number, places: readonly Place[] = PLACES): WorldMap {
     regions: { seat: new Int32Array(0), country: new Uint8Array(0) },
     roads: { offsets: new Int32Array(1), cells: new Int32Array(0) },
     lanes: { offsets: new Int32Array(1), cells: new Int32Array(0) },
+    roadClass: new Uint8Array(0),
     bridges: new Int32Array(0),
     wonders: { kind: new Uint8Array(0), cell: new Int32Array(0) },
     landmarks: { kind: new Uint8Array(0), cell: new Int32Array(0) },

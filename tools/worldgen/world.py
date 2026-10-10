@@ -49,6 +49,7 @@ class World:
     coast: bytearray = field(default_factory=bytearray)     # climate.INLAND, BEACH or CLIFFS
     settlements: list = field(default_factory=list)
     roads: list = field(default_factory=list)
+    road_class: bytearray = field(default_factory=bytearray)    # per road: roads.MINOR or MAJOR
     bridges: list = field(default_factory=list)
     lanes: list = field(default_factory=list)            # sea lanes between landmasses, port to port
     wonders: list = field(default_factory=list)
@@ -74,6 +75,7 @@ def generate(seed, width=96, height=64):
     w.country, w.countries = countries.found(seed, width, height, w.biome, w.river, w.receiver, w.settlements, land)
     w.biome = settle.farm(seed, width, w.biome, w.settlements)
     w.roads, w.bridges = roads.build(width, height, w.biome, w.elevation, w.river, w.receiver, w.settlements)
+    w.road_class = roads.classes(width, height, w.biome, w.settlements, w.roads)
     w.lanes = roads.lanes(width, height, w.biome, w.settlements)
     land = features.survey(w)
     w.wonders = features.wonders(w, land)
@@ -138,6 +140,7 @@ def fingerprint(world):
         feed(len(paths))
         for path in paths:
             feed(len(path), *path)
+    feed(len(world.road_class), *world.road_class)
     feed(len(world.bridges), *world.bridges)
     feed(len(world.wonders), *(v for p in world.wonders for v in (WONDERS.index(p.kind), p.x, p.y)))
     feed(len(world.landmarks), *(v for p in world.landmarks for v in (LANDMARKS.index(p.kind), p.x, p.y)))

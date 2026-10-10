@@ -50,6 +50,9 @@ export const LANDMARK_NAMES = [
 ] as const;
 export const LANDMARK_SLOTS = 3;
 export const NO_LANDMARK = 255;
+// A road's class: major roads are the cheapest chains of roads joining the towns, cities and capitals that a spanning
+// tree links on each landmass.
+export const ROAD_CLASS_NAMES = ['minor', 'major'] as const;
 
 // Path p is cells[offsets[p]] up to cells[offsets[p + 1] - 1].
 export interface PathTable {
@@ -88,6 +91,7 @@ export interface WorldMap {
   regions: { seat: Int32Array; country: Uint8Array };
   roads: PathTable;
   lanes: PathTable;
+  roadClass: Uint8Array;
   bridges: Int32Array;
   wonders: { kind: Uint8Array; cell: Int32Array };
   landmarks: { kind: Uint8Array; cell: Int32Array };
@@ -149,6 +153,7 @@ export function worldMapBuffers(map: WorldMap): ArrayBuffer[] {
     roads.cells,
     lanes.offsets,
     lanes.cells,
+    map.roadClass,
     map.bridges,
     wonders.kind,
     wonders.cell,

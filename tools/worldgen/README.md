@@ -52,6 +52,7 @@ Random worlds for Nomos, drawn with the sprites in `tools/sprites`. It is the Py
    - A spanning tree per landmass, plus shortcuts where the detour passes 1.5×.
    - Each road is routed by A* over the terrain, and reusing a road costs half, so routes merge into trunks.
    - Bridges go where roads cross rivers.
+   - Each road is major or minor. On each landmass a spanning tree links the capitals, cities and towns, and the cheapest chain of roads between each linked pair is major.
    - Sea lanes join the landmasses port to port: a spanning tree whose links are the closest pairs of ports.
 8. **Natural wonders** (`features.py`):
    - 4–8 per world, each kind at most once, tried in a keyed order.

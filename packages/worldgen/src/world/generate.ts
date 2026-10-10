@@ -19,6 +19,7 @@ import { wonders } from '../features/wonders.ts';
 import { sum, union } from '../grid/grid.ts';
 import { SHAPE } from '../random/streams.ts';
 import { regions } from '../regions/regions.ts';
+import { roadClasses } from '../routes/classes.ts';
 import { lanes } from '../routes/lanes.ts';
 import { buildRoads } from '../routes/roads.ts';
 import { farm } from '../settle/farm.ts';
@@ -65,6 +66,7 @@ export function generateWorld(seed: number, size: WorldSize, timer: StageTimer =
   const farmed = farm(uint, width, biome, settlements);
   timer.lap('farm');
   const built = buildRoads(width, height, farmed, elevation, river, receiver, settlements);
+  const roadClass = roadClasses(width, height, farmed, settlements, built.roads);
   timer.lap('roads');
   const sailed = lanes(width, height, farmed, settlements);
   timer.lap('lanes');
@@ -84,6 +86,7 @@ export function generateWorld(seed: number, size: WorldSize, timer: StageTimer =
     coast,
     settlements,
     roads: built.roads,
+    roadClass,
     bridges: built.bridges,
     lanes: sailed,
     wonders: [],
@@ -160,6 +163,7 @@ function pack(draft: Draft): WorldMap {
     regions: { seat: zones.seat, country: zones.country },
     roads: pathTable(draft.roads),
     lanes: pathTable(draft.lanes),
+    roadClass: draft.roadClass,
     bridges: Int32Array.from(draft.bridges),
     wonders: spotColumns(draft.wonders, width),
     landmarks: spotColumns(draft.landmarks, width),

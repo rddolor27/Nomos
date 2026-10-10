@@ -10,7 +10,7 @@ describe('the map worker', { timeout: 60_000 }, () => {
     let now = 0;
     const { reply, transfer } = answerGenerate({ type: 'generate', seed: 0x5eed0001, size: 'standard' }, () => (now += 2));
     expect(reply.type).toBe('world');
-    expect(worldFingerprint(reply.map)).toBe(0x1ec8f880);
+    expect(worldFingerprint(reply.map)).toBe(0x4a765ce2);
     expect(reply.names).toHaveLength(reply.map.countries.capital.length + reply.map.settlements.cell.length);
     expect(reply.names.slice(0, 2)).toEqual(['country-1', 'country-2']);
     expect(reply.crowd.hue.length).toBeGreaterThan(0);
@@ -21,7 +21,7 @@ describe('the map worker', { timeout: 60_000 }, () => {
     expect(new Set(transfer).size).toBe(transfer.length);
     const moved = structuredClone(reply, { transfer });
     expect(crowdBuffers(reply.crowd).every((b) => b.byteLength === 0)).toBe(true);
-    expect(worldFingerprint(moved.map)).toBe(0x1ec8f880);
+    expect(worldFingerprint(moved.map)).toBe(0x4a765ce2);
   });
 
   // Place p is settlement p, or wonder p minus the settlement count, as world.py's place_contexts orders them. The

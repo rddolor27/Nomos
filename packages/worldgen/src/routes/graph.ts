@@ -49,9 +49,15 @@ function join(edges: [number, number][], links: Link[][], a: number, b: number, 
   links[b].push([a, tenths]);
 }
 
-// Kruskal's tree over the pairs, nearest first. A pair that closes a loop within SPAN2 is left over, in order, as a
+// Kruskal's tree over the pairs, nearest first. A pair that closes a loop within span2 is left over, in order, as a
 // candidate for an extra.
-function spanningTree(pairs: readonly Pair[], count: number, edges: [number, number][], links: Link[][]): Pair[] {
+function spanningTree(
+  pairs: readonly Pair[],
+  count: number,
+  edges: [number, number][],
+  links: Link[][],
+  span2: number,
+): Pair[] {
   const root = new Int32Array(count);
   for (let i = 0; i < count; i++) root[i] = i;
   const rest: Pair[] = [];
@@ -62,7 +68,7 @@ function spanningTree(pairs: readonly Pair[], count: number, edges: [number, num
     if (ra !== rb) {
       root[ra] = rb;
       join(edges, links, a, b, tenthsOf(d2));
-    } else if (d2 <= SPAN2) {
+    } else if (d2 <= span2) {
       rest.push(pair);
     }
   }
@@ -107,12 +113,16 @@ function addSpanners(rest: readonly Pair[], edges: [number, number][], links: Li
   }
 }
 
-// Route edges (a, b) by settlement index: a spanning tree per landmass, then the shortest extra pairs within SPAN2
-// whose way round the graph is over 1.5 times the straight line.
-export function routeGraph(settlements: readonly Settlement[], mass: readonly number[]): [number, number][] {
+// Route edges (a, b) by settlement index: a spanning tree per landmass, then the shortest extra pairs within span2
+// whose way round the graph is over 1.5 times the straight line. With span2 = 0 it is the spanning tree alone.
+export function routeGraph(
+  settlements: readonly Settlement[],
+  mass: readonly number[],
+  span2 = SPAN2,
+): [number, number][] {
   const links: Link[][] = settlements.map(() => []);
   const edges: [number, number][] = [];
-  const rest = spanningTree(pairsOnOneLandmass(settlements, mass), settlements.length, edges, links);
+  const rest = spanningTree(pairsOnOneLandmass(settlements, mass), settlements.length, edges, links, span2);
   addSpanners(rest, edges, links);
   return edges;
 }

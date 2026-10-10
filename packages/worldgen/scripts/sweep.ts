@@ -1,11 +1,19 @@
-// M8.1's exit sweeps, over the same seeds from 5EED0001 every run: node packages/worldgen/scripts/sweep.ts. Countries
-// and regions are checked on the first 100 seeds of each size, wonders on 1,000 standard seeds. Prints the worlds made
-// and the problems found, and exits 1 on any problem.
-import { BIOME_NAMES, TIER_NAMES, WONDER_NAMES, type WorldMap, type WorldSize } from '@nomos/sim-protocol/world-map';
+// M8.1's exit sweeps, over the same seeds from 5EED0001 every run: node packages/worldgen/scripts/sweep.ts. Countries,
+// regions and road classes are checked on the first 100 seeds of each size, wonders on 1,000 standard seeds. Prints the
+// worlds made, the problems found and the major roads among the classed ones, and exits 1 on any problem.
+import {
+  BIOME_NAMES,
+  ROAD_CLASS_NAMES,
+  TIER_NAMES,
+  WONDER_NAMES,
+  type WorldMap,
+  type WorldSize,
+} from '@nomos/sim-protocol/world-map';
 import { survey } from '../src/features/survey.ts';
 import { dist2, xOf, yOf } from '../src/grid/grid.ts';
 import { generateWorld } from '../src/index.ts';
 import { featureWorldOf } from '../test/feature-world.ts';
+import { cutOffHubs, unclassedRoads } from '../test/major-roads.ts';
 
 const FIRST_SEED = 0x5eed0001;
 const SIZES: readonly WorldSize[] = ['standard', 'large'];
@@ -26,6 +34,7 @@ const OCEAN = BIOME_NAMES.indexOf('ocean');
 const LAKE = BIOME_NAMES.indexOf('lake');
 const CAPITAL = TIER_NAMES.indexOf('capital');
 const TOWN = TIER_NAMES.indexOf('town');
+const MAJOR = ROAD_CLASS_NAMES.indexOf('major');
 const HOT_WONDERS = [
   WONDER_NAMES.indexOf('hot-springs'),
   WONDER_NAMES.indexOf('geyser'),
@@ -192,33 +201,48 @@ function wonderProblems(map: WorldMap): string[] {
 }
 
 function problemsOf(map: WorldMap, size: WorldSize, index: number): string[] {
-  const found = index < STRUCTURE_WORLDS ? [...countryProblems(map), ...regionProblems(map)] : [];
+  const found =
+    index < STRUCTURE_WORLDS
+      ? [...countryProblems(map), ...regionProblems(map), ...unclassedRoads(map), ...cutOffHubs(map)]
+      : [];
   return size === 'standard' ? [...found, ...wonderProblems(map)] : found;
 }
 
-function sweep(): { worlds: number; problems: string[] } {
+function majorRoads(map: WorldMap): number {
+  return map.roadClass.filter((roadClass) => roadClass === MAJOR).length;
+}
+
+function sweep(): { worlds: number; problems: string[]; roads: number; major: number } {
   const problems: string[] = [];
   let worlds = 0;
+  let roads = 0;
+  let major = 0;
   for (const size of SIZES) {
     for (let index = 0; index < WORLDS[size]; index++) {
       const seed = FIRST_SEED + index;
       const name = `${size} ${seed.toString(16)}`;
-      for (const problem of problemsOf(generateWorld(seed, size), size, index)) problems.push(`${name}: ${problem}`);
+      const map = generateWorld(seed, size);
+      for (const problem of problemsOf(map, size, index)) problems.push(`${name}: ${problem}`);
+      if (index < STRUCTURE_WORLDS) {
+        roads += map.roadClass.length;
+        major += majorRoads(map);
+      }
       worlds++;
     }
   }
-  return { worlds, problems };
+  return { worlds, problems, roads, major };
 }
 
 const runtime = `node ${process.versions.node}`;
 const started = performance.now();
-const { worlds, problems } = sweep();
+const { worlds, problems, roads, major } = sweep();
 const seconds = ((performance.now() - started) / 1000).toFixed(1);
+const classed = `${roads} roads classed, ${major} major and ${roads - major} minor`;
 if (problems.length > 0) {
   const shown = problems.slice(0, 20).join('\n  ');
   const noun = problems.length === 1 ? 'problem' : 'problems';
-  console.error(`${runtime}: ${problems.length} ${noun} in ${worlds} worlds, ${seconds} s:\n  ${shown}`);
+  console.error(`${runtime}: ${problems.length} ${noun} in ${worlds} worlds, ${seconds} s, ${classed}:\n  ${shown}`);
   process.exitCode = 1;
 } else {
-  console.log(`${runtime}: ${worlds} worlds, 0 problems, ${seconds} s`);
+  console.log(`${runtime}: ${worlds} worlds, 0 problems, ${seconds} s, ${classed}`);
 }

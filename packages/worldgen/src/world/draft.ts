@@ -30,6 +30,7 @@ export interface Draft extends FeatureWorld {
   template: number;
   wind: number;
   cold: number;
+  roadClass: Uint8Array;
   lanes: number[][];
   wonders: Spot[];
   landmarks: Spot[];

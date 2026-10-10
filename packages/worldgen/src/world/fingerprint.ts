@@ -9,6 +9,7 @@ export function worldFingerprint(map: WorldMap): number {
   }
   h = feedSettlements(h, map);
   h = feedPaths(feedPaths(h, map.roads), map.lanes);
+  h = feedColumn(h, map.roadClass);
   h = feedColumn(h, map.bridges);
   h = feedSpots(h, map.wonders.kind, map.wonders.cell, map.width);
   h = feedSpots(h, map.landmarks.kind, map.landmarks.cell, map.width);

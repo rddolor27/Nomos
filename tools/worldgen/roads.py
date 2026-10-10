@@ -1,7 +1,8 @@
 """Roads: a route graph per landmass (Kruskal's minimum spanning tree plus spanner extras where
 the graph detour passes 1.5x), each route then walked cell by cell with A* over slope, height
 and cover. Water stops roads except at river crossings, which become bridges, and reusing a
-road costs half, so routes merge into trunks. Sea lanes then join the landmasses, port to port.
+road costs half, so routes merge into trunks. Each road then takes a class: major where it
+joins the towns, minor elsewhere. Sea lanes then join the landmasses, port to port.
 """
 import heapq
 from math import isqrt
@@ -14,15 +15,18 @@ COVER = {GRASSLAND: 0, FARMLAND: 0, SAND: 6, DECIDUOUS: 8, CONIFER: 10, SNOW: 12
 BRIDGE = 72
 STRAIGHT, DIAGONAL = 10, 14
 SPAN2 = 14 * 14
+MINOR, MAJOR = 0, 1
+HUBS = ('capital', 'city', 'town')
 
 
 def landmasses(width, height, biome):
     return parts(neighbours(width, height, False), bytearray(b not in (OCEAN, LAKE) for b in biome))[0]
 
 
-def route_graph(settlements, mass):
+def route_graph(settlements, mass, span2=SPAN2):
     """Route edges (a, b) by settlement index: a spanning tree per landmass, then the shortest
-    extra pairs within SPAN2 whose way round the graph is over 1.5x the straight line."""
+    extra pairs within span2 whose way round the graph is over 1.5x the straight line. With
+    span2=0 it is the spanning tree alone."""
     n = len(settlements)
     pairs = sorted((dist2(s.x, s.y, t.x, t.y), a, b)
                    for a, s in enumerate(settlements) for b, t in enumerate(settlements)
@@ -44,7 +48,7 @@ def route_graph(settlements, mass):
             edges.append((a, b))
             links[a].append((b, isqrt(d2 * 100)))
             links[b].append((a, isqrt(d2 * 100)))
-        elif d2 <= SPAN2:
+        elif d2 <= span2:
             rest.append((d2, a, b))
     for d2, a, b in rest:
         direct = isqrt(d2 * 100)
@@ -147,6 +151,50 @@ def build(width, height, biome, elevation, river, receiver, settlements):
     homes = set(cells)
     bridges = sorted(c for c in range(width * height) if road[c] and river[c] and c not in homes)
     return roads, bridges
+
+
+def classes(width, height, biome, settlements, roads):
+    """One class per road, MINOR or MAJOR. On each landmass a spanning tree links the capitals,
+    cities and towns, and the cheapest chain of roads between each linked pair is major."""
+    label = landmasses(width, height, biome)
+    hubs = [i for i, s in enumerate(settlements) if s.tier in HUBS]
+    tree = route_graph([settlements[i] for i in hubs], [label[settlements[i].uid] for i in hubs], span2=0)
+    at = {s.uid: i for i, s in enumerate(settlements)}
+    links = [[] for _ in settlements]
+    for r, path in enumerate(roads):
+        a, b = at[path[0]], at[path[-1]]
+        links[a].append((b, len(path) - 1, r))
+        links[b].append((a, len(path) - 1, r))
+    out = bytearray(len(roads))
+    for a, b in tree:
+        for r in _chain(links, hubs[a], hubs[b]):
+            out[r] = MAJOR
+    return out
+
+
+def _chain(links, start, goal):
+    """The roads along the cheapest way between two settlements: Dijkstra over the roads, each
+    weighted by its steps, with ties to the lower settlement index."""
+    best = {start: 0}
+    came = {start: (-1, -1)}
+    heap = [(0, start)]
+    while heap:
+        d, c = heapq.heappop(heap)
+        if c == goal:
+            break
+        if d > best[c]:
+            continue
+        for m, steps, r in links[c]:
+            if d + steps < best.get(m, d + steps + 1):
+                best[m] = d + steps
+                came[m] = (c, r)
+                heapq.heappush(heap, (d + steps, m))
+    out = []
+    c = goal
+    while came[c][0] >= 0:
+        c, r = came[c]
+        out.append(r)
+    return out
 
 
 def lanes(width, height, biome, settlements):
