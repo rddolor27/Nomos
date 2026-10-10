@@ -12,7 +12,7 @@
   },
   {
     "name": "Initial JS",
-    "path": ["dist/assets/index-*.js", "dist/assets/render-gl-*.js", "dist/assets/worker-*.js"],
+    "path": ["dist/assets/index-*.js", "dist/assets/app-*.js", "dist/assets/render-gl-*.js", "dist/assets/worker-*.js"],
     "limit": "35 kB"
   },
   {
@@ -20,6 +20,7 @@
     "path": [
       "dist/index.html",
       "dist/assets/index-*.js",
+      "dist/assets/app-*.js",
       "dist/assets/render-gl-*.js",
       "dist/assets/worker-*.js",
       "dist/assets/maps/town-*.nmap"
@@ -103,7 +104,7 @@
   },
   {
     "name": "Initial JS, M0 stand-in",
-    "path": ["dist/assets/index-*.js", "dist/assets/render-gl-*.js", "dist/assets/worker-*.js"],
+    "path": ["dist/assets/index-*.js", "dist/assets/app-*.js", "dist/assets/render-gl-*.js", "dist/assets/worker-*.js"],
     "limit": "18 kB"
   },
   {
