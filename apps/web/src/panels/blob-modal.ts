@@ -94,8 +94,8 @@ export class BlobModal {
     });
   }
 
-  // The Town skin's atlas page, which the page fetches once. A card shown before it arrives is drawn as it does; a page that
-  // cannot load it keeps the card without its picture.
+  // The Town skin's atlas page, which the page fetches once. A card shown before it arrives gets its picture the moment it
+  // does, and a page that cannot load it keeps the card without one.
   private loadPortrait(): void {
     townAtlas()
       .then((page) => {
