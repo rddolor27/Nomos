@@ -154,6 +154,8 @@ describe.runIf(LONG)('the spawn burn-in comparison (ECONOMY_LONG=1)', () => {
 
     console.log(report(source, hand, spawn));
 
+    // Without this, two arms that never burn in would both median at RUN_DAYS and pass.
+    expect(median(hand.burnInDays), 'the hand-built start burns in within the run').toBeLessThan(RUN_DAYS);
     expect(median(spawn.burnInDays), 'the median spawned burn-in is no longer').toBeLessThanOrEqual(
       median(hand.burnInDays),
     );
