@@ -25,6 +25,7 @@ import {
 } from '@nomos/sim-core';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { listCells, parseGrid } from '../src/design/grid.ts';
+import { runPool } from '../src/design/pool.ts';
 import { PRESETS } from '../src/economy/presets.ts';
 import { SUMMARY_COLUMNS } from '../src/targets/summarize.ts';
 
@@ -283,13 +284,31 @@ describe('the design command', { timeout: 300_000 }, () => {
     expect(run.stdout).toMatch(/^unemployment_mean\s+1\s+0\.04 to 0\.09\s+0\.\d+/m);
   });
 
-  it('ends the run with exit code 1 when a worker fails', () => {
-    const out = join(work, 'blocked');
-    mkdirSync(out);
-    writeFileSync(join(out, 'p000-n1000-x0-k0-s1'), 'a file where the cell folder goes');
-    const run = design(handGrid, out, 2);
-    expect(run.status).toBe(1);
-    expect(run.stderr).toContain('p000-n1000-x0-k0-s1');
+  it("rejects with the failing cell's name when a worker fails, and reports no cell as done", async () => {
+    // A spawn cell without R* fails in its worker before it writes anything, which --out's check leaves no other way to cause.
+    const cells = listCells(parseGrid(JSON.parse(readFileSync(SMOKE, 'utf8'))));
+    const done: string[] = [];
+    const pool = runPool(cells, { out: work, commit: 'test', record: undefined }, 2, (result) => done.push(result.name));
+    await expect(pool).rejects.toThrow(/p000-n\d+-x0-k\d-s\d starts from a spawn, which needs R\*/);
+    expect(done).toEqual([]);
+  });
+
+  it('refuses an --out folder that already holds files before any cell runs, and takes an empty one', () => {
+    const used = join(work, 'hand-1');
+    const filesBefore = filesOf(used);
+    const refused = design(handGrid, used, 1);
+    expect(refused.status).toBe(1);
+    expect(refused.stderr).toContain(`--out ${used} must be a new or empty folder`);
+    expect(refused.stdout).toBe('');
+    expect(filesOf(used)).toEqual(filesBefore);
+
+    const oneCell = join(work, 'one-cell.json');
+    writeFileSync(oneCell, JSON.stringify({ ...JSON.parse(readFileSync(handGrid, 'utf8')), seeds: [1], sizes: [1000], shocks: [BASE.shocks[0]] }));
+    const empty = join(work, 'empty');
+    mkdirSync(empty);
+    const taken = design(oneCell, empty, 1);
+    expect(taken.status, taken.stderr).toBe(0);
+    expect(filesOf(empty)).toHaveLength(FILES_PER_CELL);
   });
 
   it('refuses a missing --grid or --out, a bad --threads and a bad grid, naming what is wrong', () => {

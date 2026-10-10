@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, readFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, readdirSync } from 'node:fs';
 import { availableParallelism } from 'node:os';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -34,6 +34,13 @@ function largestFirst(cells: readonly Cell[]): Cell[] {
   return [...cells].sort((a, b) => b.size - a.size);
 }
 
+// A run over an older one would leave the two runs' cells in one folder, and targets would judge them together.
+function requireNewOrEmpty(out: string): void {
+  if (existsSync(out) && readdirSync(out).length > 0) {
+    throw new RangeError(`--out ${out} must be a new or empty folder, so that no run mixes with an older one`);
+  }
+}
+
 export async function runDesign(args: readonly string[]): Promise<void> {
   const { values } = parseArgs({
     args: [...args],
@@ -45,6 +52,7 @@ export async function runDesign(args: readonly string[]): Promise<void> {
   const threads =
     values.threads === undefined ? Math.max(1, availableParallelism() - 1) : wholeNumber('threads', values.threads, 1, MAX_THREADS);
   const grid = parseGrid(JSON.parse(readFileSync(values.grid, 'utf8')));
+  requireNewOrEmpty(values.out);
   const cells = listCells(grid);
   const record = grid.start === 'spawn' ? settledRecord(PRESETS[grid.preset]) : undefined;
   mkdirSync(values.out, { recursive: true });
