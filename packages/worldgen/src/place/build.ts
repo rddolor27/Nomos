@@ -6,7 +6,7 @@ import { decorate, placeFields } from './decor.ts';
 import { placeHouses } from './houses.ts';
 import { placeLandmarks, placeWindmill } from './landmarks.ts';
 import { layoutOf } from './layout.ts';
-import { plant } from './nature.ts';
+import { plant, plantAvenues } from './nature.ts';
 import { settlementPeople } from './people.ts';
 import { layRoads } from './roads.ts';
 import {
@@ -26,9 +26,9 @@ import { buildVista, VISTA_SIZE } from './vista.ts';
 import { placeWalks } from './walks.ts';
 
 const SIZES: Readonly<Record<string, readonly [number, number]>> = {
-  capital: [128, 80],
-  city: [128, 80],
-  town: [112, 64],
+  capital: [176, 112],
+  city: [176, 112],
+  town: [152, 96],
   village: [80, 48],
   hamlet: [56, 32],
 };
@@ -84,7 +84,7 @@ export function settleWater(site: Site): void {
   if (ROCKY.includes(ctx.biome)) layRidges(site, ctx.biome === 'hills' ? 1 : 2, spare);
 }
 
-// A town's plaza, streets, town hall, stalls and civic buildings, or a village's green, lanes and shop.
+// A town's plaza, ring, roads, avenues, town hall, stalls and civic buildings, or a village's green, roads and shop.
 export function settleCentre(site: Site): void {
   const tier = site.ctx.tier ?? '';
   if (!(tier in PLAZAS)) {
@@ -93,7 +93,7 @@ export function settleCentre(site: Site): void {
     placeVillageShop(site);
     return;
   }
-  layTown(site);
+  plantAvenues(site, layTown(site));
   layRoads(site);
   placeCivic(site, CIVIC[tier].slice(0, 1));
   placePlaza(site);

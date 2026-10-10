@@ -73,11 +73,12 @@ export function placeFields(site: Site, count: number, pasture: boolean): void {
 }
 
 function bestField(site: Site, i: number, fw: number, fh: number): Cell | null {
+  const open = bareTiles(site);
   let best: [cost: number, tx: number, ty: number] | null = null;
   for (let ty = 1; ty < site.h - fh; ty++) {
     for (let tx = 1; tx < site.w - fw; tx++) {
       const gap = Math.abs(tx + floorDiv(fw, 2) - site.cx) + Math.abs(ty + floorDiv(fh, 2) - site.cy);
-      if (gap < 7 || !ringBare(site, tx, ty, fw, fh)) continue;
+      if (gap < 7 || !ringBare(site, open, tx, ty, fw, fh)) continue;
       const cost = gap * 3 - fieldPull(site, tx, ty, fw, fh) + site.below(10, FIELD, i, tx, ty);
       if (best === null || cost < best[0]) best = [cost, tx, ty];
     }
@@ -85,11 +86,21 @@ function bestField(site: Site, i: number, fw: number, fh: number): Cell | null {
   return best === null ? null : [best[1], best[2]];
 }
 
+// bare() of every tile, worked out once a search, which asks of each tile up to 40 times. Budget: a capital or city
+// builds within twice Task 9's median (M3.1's plan, Part 3), and asking tile by tile cost about 40 ms of it.
+function bareTiles(site: Site): Uint8Array {
+  const open = new Uint8Array(site.w * site.h);
+  for (let y = 0; y < site.h; y++) {
+    for (let x = 0; x < site.w; x++) open[site.at(x, y)] = bare(site, x, y) ? 1 : 0;
+  }
+  return open;
+}
+
 // The field and the ring its fence stands on are all bare ground.
-function ringBare(site: Site, tx: number, ty: number, fw: number, fh: number): boolean {
+function ringBare(site: Site, open: Uint8Array, tx: number, ty: number, fw: number, fh: number): boolean {
   for (let y = ty - 1; y < ty + fh + 1; y++) {
     for (let x = tx - 1; x < tx + fw + 1; x++) {
-      if (!bare(site, x, y)) return false;
+      if (!open[site.at(x, y)]) return false;
     }
   }
   return true;

@@ -18,6 +18,8 @@ export const FIELD = 16;
 export const HERD = 17;
 export const DECOR = 18;
 export const INLET = 19;
+// Part 3's plan gives 20-23 and 25 to its later tasks.
+export const AVENUE = 24;
 
 // place.py's first keys of the CROWD draws on a place's seed.
 export const SPOT = 1;

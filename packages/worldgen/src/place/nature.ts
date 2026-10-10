@@ -1,7 +1,7 @@
 import { floorDiv } from '@nomos/sim-core/kernels';
 import { PLACE_TILE_PX as TILE } from '@nomos/sim-protocol/place';
 import { bare } from './decor.ts';
-import { SCATTER, TREE } from './keys.ts';
+import { AVENUE, SCATTER, TREE } from './keys.ts';
 import { DIRS, OPEN, threshold, type Cell, type Site } from './site.ts';
 
 interface Weighted {
@@ -68,6 +68,27 @@ export function choose(site: Site, mix: readonly Weighted[], sub: number, ...key
     r -= item.weight;
   }
   return mix[mix.length - 1];
+}
+
+// Trees along each main road, 2 tiles off its middle on either side, at every fourth cell from the seventh out.
+export function plantAvenues(site: Site, mains: readonly (readonly Cell[])[]): void {
+  const mix = treeMix(site);
+  for (const cells of mains) {
+    const northSouth = cells.length > 0 && cells[0][0] === cells[cells.length - 1][0];
+    const dx = northSouth ? 2 : 0;
+    const dy = northSouth ? 0 : 2;
+    for (let k = 6; k < cells.length; k += 4) {
+      const [x, y] = cells[k];
+      plantAvenueTree(site, mix, x - dx, y - dy);
+      plantAvenueTree(site, mix, x + dx, y + dy);
+    }
+  }
+}
+
+function plantAvenueTree(site: Site, mix: readonly Weighted[], x: number, y: number): void {
+  if (!bare(site, x, y)) return;
+  const tree = choose(site, mix, AVENUE, x, y);
+  site.tree(tree.category, tree.name, x, y);
 }
 
 // Tiles within reach of a road or a building, where only garden trees grow.

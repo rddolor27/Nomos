@@ -3,10 +3,11 @@ import { buildSite } from '../src/place/build.ts';
 import type { PlaceContext } from '../src/place/context.ts';
 
 // M3.1 part 2, steps 1 and 2: places four times and more the size of the first ones, and crowds that follow population.
+// Part 3 grew walled places again, so a farm belt lies round each ring (Ruling 1).
 const TIERS: readonly (readonly [tier: string, size: readonly [number, number], crowd: readonly [number, number]])[] = [
-  ['capital', [128, 80], [150, 300]],
-  ['city', [128, 80], [150, 300]],
-  ['town', [112, 64], [60, 120]],
+  ['capital', [176, 112], [150, 300]],
+  ['city', [176, 112], [150, 300]],
+  ['town', [152, 96], [60, 120]],
   ['village', [80, 48], [25, 50]],
   ['hamlet', [56, 32], [10, 20]],
 ];

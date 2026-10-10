@@ -22,6 +22,10 @@ const USED: Record<string, readonly string[]> = {
     'tree_deciduous_mature', 'tree_deciduous_stump', 'tree_deciduous_young', 'tree_fruit', 'tree_log',
   ],
   scenery: [
+    'bridge_country_horizontal_end-left', 'bridge_country_horizontal_end-right', 'bridge_country_horizontal_span',
+    'bridge_country_vertical_end-bottom', 'bridge_country_vertical_end-top', 'bridge_country_vertical_span',
+    'bridge_main_horizontal_end-left', 'bridge_main_horizontal_end-right', 'bridge_main_horizontal_span',
+    'bridge_main_vertical_end-bottom', 'bridge_main_vertical_end-top', 'bridge_main_vertical_span',
     'prop_beach-rocks', 'prop_picnic-table', 'prop_reeds', 'prop_viewer', 'prop_viewpoint-rail', 'tree_autumn',
     'tree_blossom', 'tree_palm',
   ],

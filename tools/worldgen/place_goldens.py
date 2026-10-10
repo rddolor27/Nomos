@@ -28,7 +28,8 @@ VERSION = 1
 WORLDS = 20
 CHECKED = 1
 # Terrain kinds by code, for the site folds. The kind of any tile is one of these.
-KINDS = ('grass', 'meadow', 'sand', 'water', 'path', 'paving', *P.CLIFFS, *P.CROPS, 'crop_pasture')
+KINDS = ('grass', 'meadow', 'sand', 'water', 'path', 'paving', *P.CLIFFS, *P.CROPS, 'crop_pasture', 'stone', 'cobble',
+         'gravel', 'track')
 STAGES = {'settlement': ('context', 'ground', 'water', 'centre', 'buildings', 'decor', 'nature', 'people', 'layout'),
           'vista': ('context', 'ground', 'layout')}
 # Hand-made places that reach what no place of the golden worlds does, pinned as place_fixtures.py pins its three, so

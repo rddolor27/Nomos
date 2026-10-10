@@ -105,12 +105,12 @@ function clearBehind(site: Site, x: number, y: number): boolean {
   return true;
 }
 
-// An end of the viaduct stands on dry, open land or a dirt path.
+// An end of the viaduct stands on dry, open land, a lane or a farm track, never on a wider road.
 function endFree(site: Site, cx: number, y: number): boolean {
   if (!site.inside(cx, y)) return false;
   const c = site.at(cx, y);
   if (site.solid[c] !== null || site.water(cx, y) || CLIFFS.includes(site.kind[c])) return false;
-  return !(site.road[c] && site.kind[c] !== 'path');
+  return !site.road[c] || site.kind[c] === 'path' || site.kind[c] === 'track';
 }
 
 function underViaduct(name: string, sx: number, sy: number, x: number, y: number): boolean {

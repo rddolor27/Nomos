@@ -21,7 +21,10 @@ const NATURE_TILES: Readonly<Record<string, string>> = {
   paving: 'terrain_paving',
   path: 'terrain_dirt-path',
   soil: 'terrain_soil-tilled',
+  stone: 'terrain_cut-stone',
 };
+// Road kinds drawn in two variants, mixed by position.
+const VARIED_TILES: Readonly<Record<string, string>> = { cobble: 'terrain_cobbles', gravel: 'terrain_gravel' };
 
 // The shore rule of tools/sprites/showcase_wonders.py: a land tile takes its shape from its water neighbours.
 export function tileFor(site: Site, x: number, y: number): Tile {
@@ -57,5 +60,7 @@ function dryTile(kind: string, x: number, y: number): Tile {
   if (kind === 'cliff_face') return ['scenery', `cliff_face_${floorMod(x * 3 + y, 2)}`];
   if (kind === 'cliff_foot-water') return ['scenery', 'cliff_foot-water_0'];
   if (CLIFFS.includes(kind)) return ['scenery', kind];
+  const varied = VARIED_TILES[kind];
+  if (varied) return ['nature', `${varied}_${floorMod(floorMod(x * 7 + y * 13, 5), 2)}`];
   return ['nature', NATURE_TILES[kind] ?? kind];
 }

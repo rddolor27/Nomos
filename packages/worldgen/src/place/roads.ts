@@ -3,12 +3,24 @@ import { PLACE_TILE_PX as TILE } from '@nomos/sim-protocol/place';
 import { MinHeap } from '../grid/heap.ts';
 import { xOf, yOf } from '../grid/grid.ts';
 import { ROUTE } from './keys.ts';
-import { DIRS, OPEN, type Cell, type CellTest, type Site } from './site.ts';
+import { DIRS, OPEN, RANK, type Cell, type CellTest, type Site } from './site.ts';
 import { edgeCell } from './terrain.ts';
 
 // The heading of a road that enters from each side.
 export const INWARD: Readonly<Record<string, number>> = { n: 2, e: 3, s: 0, w: 1 };
 const TURN_COST = 15;
+// A road's width in tiles and its kind, by its role in the place (owner, 10 October 2026).
+export const ROADS: Readonly<Record<string, readonly [width: number, kind: string]>> = {
+  main: [3, 'stone'],
+  street: [2, 'cobble'],
+  country: [2, 'gravel'],
+  track: [1, 'track'],
+  lane: [1, 'path'],
+};
+const BRIDGE_ENDS: Readonly<Record<string, readonly [first: string, last: string]>> = {
+  horizontal: ['end-left', 'end-right'],
+  vertical: ['end-top', 'end-bottom'],
+};
 
 // A search state: a tile and the heading the road arrived on, as a cell index times four plus the heading.
 function stateOf(site: Site, x: number, y: number, heading: number): number {
@@ -119,34 +131,119 @@ function endsWet(site: Site, [x, y]: Cell): boolean {
   return site.water(x, y) || (site.wet4(x, y) && !site.road[site.at(x, y)]);
 }
 
-// Lays a road along cells in order; river crossings get footbridges or a paved causeway.
-export function pave(site: Site, cells: readonly Cell[]): void {
-  const spans = waterSpans(site, cells);
+// Lays one road tile. A tile keeps the highest-ranked kind laid on it and water stays water, and a tile no road may cross
+// is left alone unless it is a road already.
+export function layRoad(site: Site, x: number, y: number, kind: string): void {
+  if (!site.inside(x, y)) return;
+  const c = site.at(x, y);
+  if (site.step(x, y) === null && !site.road[c]) return;
+  site.road[c] = 1;
+  const rank = RANK.indexOf(site.kind[c]);
+  if (OPEN.includes(site.kind[c]) || (rank >= 0 && rank < RANK.indexOf(kind))) site.kind[c] = kind;
+}
+
+// Lays a road of its role's width along cells in order, each cell the middle of the road. A lane or track crosses a
+// river on footbridges or a paved causeway, a wider road on a stone bridge.
+export function pave(site: Site, cells: readonly Cell[], role = 'lane'): void {
+  const [width, kind] = ROADS[role];
+  const spans = wetSpans(site, cells, width);
+  if (width === 1) {
+    layNarrow(site, cells, spans, kind);
+    return;
+  }
+  for (const [x, y] of cells) laySquare(site, x, y, width, kind);
+  for (const [a, b] of spans) bridge(site, cells.slice(a, b + 1), role);
+}
+
+function layNarrow(site: Site, cells: readonly Cell[], spans: readonly [number, number][], kind: string): void {
   const crossing = new Set<number>();
   for (const [a, b] of spans) {
     for (let k = a; k <= b; k++) crossing.add(k);
   }
-  site.layPath(cells.filter((_, k) => !crossing.has(k)));
+  cells.forEach(([x, y], k) => {
+    if (!crossing.has(k)) layRoad(site, x, y, kind);
+  });
   for (const [a, b] of spans) {
     cross(site, cells.slice(a, b + 1), b + 1 < cells.length ? cells[b + 1] : null, a > 0 ? cells[a - 1] : null);
   }
 }
 
-// Each run of water along cells, widened by the land tile at either end.
-function waterSpans(site: Site, cells: readonly Cell[]): [number, number][] {
+// The square of road a wide road lays round one middle cell, leaving water to its bridges.
+function laySquare(site: Site, x: number, y: number, width: number, kind: string): void {
+  const back = floorDiv(width - 1, 2);
+  for (let sy = y - back; sy < y - back + width; sy++) {
+    for (let sx = x - back; sx < x - back + width; sx++) {
+      if (!site.water(sx, sy)) layRoad(site, sx, sy, kind);
+    }
+  }
+}
+
+// A stone bridge where a wide road crosses water in a straight line, as route and straight keep it: a piece across the
+// road at each cell, its ends on the shore either side and spans between. A piece makes the water under it road, and is
+// left out where another piece lies (plan, Part 3, Ruling 6).
+function bridge(site: Site, span: readonly Cell[], role: string): void {
+  const [width, kind] = ROADS[role];
+  const back = floorDiv(width - 1, 2);
+  const horizontal = span[0][1] === span[span.length - 1][1];
+  const axis = horizontal ? 'horizontal' : 'vertical';
+  const along = span.map(([x, y]) => (horizontal ? x : y));
+  const lo = Math.min(...along);
+  const hi = Math.max(...along);
+  span.forEach(([x, y], i) => {
+    const tx = horizontal ? x : x - back;
+    const ty = horizontal ? y - back : y;
+    const tiles = pieceTiles(site, tx, ty, horizontal, width);
+    if (tiles.some(([cx, cy]) => site.bridged[site.at(cx, cy)])) return;
+    for (const [cx, cy] of tiles) {
+      site.bridged[site.at(cx, cy)] = 1;
+      layRoad(site, cx, cy, kind);
+    }
+    site.cover('scenery', `bridge_${role}_${axis}_${pieceOf(along[i], lo, hi, BRIDGE_ENDS[axis])}`, tx, ty, true);
+  });
+}
+
+// The tiles a bridge piece lies over inside the place: down a column of a road along x, across a row of one along y.
+function pieceTiles(site: Site, tx: number, ty: number, horizontal: boolean, width: number): Cell[] {
+  const tiles: Cell[] = [];
+  for (let k = 0; k < width; k++) {
+    const x = horizontal ? tx : tx + k;
+    const y = horizontal ? ty + k : ty;
+    if (site.inside(x, y)) tiles.push([x, y]);
+  }
+  return tiles;
+}
+
+function pieceOf(t: number, lo: number, hi: number, [first, last]: readonly [string, string]): string {
+  if (t === lo) return first;
+  return t === hi ? last : 'span';
+}
+
+// Each run of cells whose square of road holds water a road may cross, widened by a cell at either end, as its first
+// and last index: where the road crosses water. A lane's square is its own tile.
+function wetSpans(site: Site, cells: readonly Cell[], width: number): [number, number][] {
   const spans: [number, number][] = [];
   let i = 0;
   while (i < cells.length) {
-    if (!site.water(...cells[i])) {
+    if (!wetSquare(site, cells[i], width)) {
       i++;
       continue;
     }
     let j = i;
-    while (j < cells.length && site.water(...cells[j])) j++;
+    while (j < cells.length && wetSquare(site, cells[j], width)) j++;
     spans.push([Math.max(i - 1, 0), Math.min(j, cells.length - 1)]);
     i = j;
   }
   return spans;
+}
+
+function wetSquare(site: Site, [x, y]: Cell, width: number): boolean {
+  const back = floorDiv(width - 1, 2);
+  for (let sy = y - back; sy < y - back + width; sy++) {
+    for (let sx = x - back; sx < x - back + width; sx++) {
+      if (site.water(sx, sy) && site.step(sx, sy) !== null) return true;
+    }
+  }
+  return false;
 }
 
 export function cross(site: Site, span: readonly Cell[], after: Cell | null, before: Cell | null): void {
@@ -192,19 +289,23 @@ function nearestFirst(lo: number, hi: number): number[] {
   return out.sort((p, q) => Math.abs(p) - Math.abs(q) || p - q);
 }
 
-export function layRoads(site: Site): void {
+// The sides the map's roads come in by, off the sea, or one keyed side where none do.
+export function roadSides(site: Site): string[] {
   const ctx = site.ctx;
-  let sides = [...'nesw'].filter((s) => ctx.roads.includes(s) && !ctx.sea.includes(s));
-  if (sides.length === 0) {
-    const dry = [...'nesw'].filter((s) => !ctx.sea.includes(s));
-    sides = [site.pick(dry.length > 0 ? dry : ['n'], ROUTE, 0)];
-  }
-  sides.forEach((side, i) => {
+  const sides = [...'nesw'].filter((s) => ctx.roads.includes(s) && !ctx.sea.includes(s));
+  if (sides.length > 0) return sides;
+  const dry = [...'nesw'].filter((s) => !ctx.sea.includes(s));
+  return [site.pick(dry.length > 0 ? dry : ['n'], ROUTE, 0)];
+}
+
+// A country road in from each road side to the nearest road; past a wall's ring that is a main road's end.
+export function layRoads(site: Site): void {
+  roadSides(site).forEach((side, i) => {
     const start = roadEntry(site, side, i + 1);
     if (start === null) return;
     const path = route(site, start, INWARD[side], (x, y) => site.road[site.at(x, y)] === 1);
     if (path === null) return;
-    pave(site, path);
+    pave(site, path, 'country');
     site.entries.push({ side, x: start[0], y: start[1] });
   });
 }

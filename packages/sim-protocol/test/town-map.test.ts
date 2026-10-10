@@ -48,10 +48,10 @@ function doorProblems(town: MapV1, entity: MapEntity, index: number): string[] {
 }
 
 describe('the town map', () => {
-  it('is the 128×80 capital', () => {
+  it('is the 176×112 capital', () => {
     const town = loadTown();
 
-    expect([town.width, town.height]).toEqual([128, 80]);
+    expect([town.width, town.height]).toEqual([176, 112]);
     expect(town.kinds.map((kind) => kind.name)).toEqual(
       expect.arrayContaining(['grass', 'water', 'path', 'paving', 'home', 'shop', 'civic', 'workplace']),
     );
@@ -92,7 +92,7 @@ describe('the town map', () => {
       hashes[tier] = stateHash(world).toString(16).padStart(8, '0');
     }
 
-    expect(hashes).toEqual({ phone: 'c0d9809e', desktop: 'a0bf1ebe' });
+    expect(hashes).toEqual({ phone: 'dd30b5fd', desktop: '39f5b5ea' });
   });
 
   it('fits the map budget', () => {

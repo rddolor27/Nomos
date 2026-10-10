@@ -6,6 +6,7 @@ import { PLACE } from '../random/streams.ts';
 import type { PlaceContext } from './context.ts';
 import { FRAMES } from './frames.ts';
 import { LOT } from './keys.ts';
+import type { Wall } from './walls.ts';
 
 export type Cell = readonly [x: number, y: number];
 export type Rect = readonly [tx: number, ty: number, fw: number, fh: number];
@@ -82,6 +83,8 @@ export const CLIFFS: readonly string[] = [
   'cliff_foot',
   'cliff_foot-water',
 ];
+// Road kinds, lowest first: a road tile keeps the highest-ranked kind laid on it.
+export const RANK: readonly string[] = ['path', 'track', 'gravel', 'cobble', 'stone', 'paving'];
 export const DIRS: readonly Cell[] = [
   [0, -1],
   [1, 0],
@@ -160,8 +163,10 @@ export class Site {
   readonly shade: Uint8Array;
   // Under a tree crown, above its trunk.
   readonly crown: Uint8Array;
-  // Kept clear: plaza, green, fields, the view of a wonder.
+  // Kept clear: plaza, green, fields, the view of a wonder, a wall's line.
   readonly keep: Uint8Array;
+  // Under a stone bridge piece.
+  readonly bridged: Uint8Array;
   ground: Sprite[] = [];
   readonly standing: Sprite[] = [];
   // Cliffs laid over water: top row, face rows and foot kind.
@@ -169,6 +174,7 @@ export class Site {
   cx: number;
   cy: number;
   plaza: Rect | null = null;
+  wall: Wall | null = null;
   green: Cell[] = [];
   readonly entries: { side: string; x: number; y: number }[] = [];
   // Footprints by sprite name, in order of first building, as place.py's dict keeps them.
@@ -191,6 +197,7 @@ export class Site {
     this.shade = new Uint8Array(n);
     this.crown = new Uint8Array(n);
     this.keep = new Uint8Array(n);
+    this.bridged = new Uint8Array(n);
     this.cx = floorDiv(w, 2);
     this.cy = floorDiv(h, 2);
   }
@@ -270,7 +277,7 @@ export class Site {
   standable(x: number, y: number): boolean {
     const c = this.at(x, y);
     const k = this.kind[c];
-    const ground = OPEN.includes(k) || k === 'path' || k === 'paving';
+    const ground = OPEN.includes(k) || RANK.includes(k);
     return ground && this.solid[c] === null && !this.shade[c] && !this.crown[c] && !this.bank(x, y);
   }
 
@@ -305,7 +312,14 @@ export class Site {
     const rects = this.places.get(name);
     if (rects) rects.push([tx, ty, fw, fh]);
     else this.places.set(name, [[tx, ty, fw, fh]]);
-    this.put(category, name, tx * TILE + floorDiv(fw * TILE, 2), (ty + fh) * TILE - 1);
+    this.cover(category, name, tx, ty);
+  }
+
+  // A footprinted sprite anchored as build anchors one, at its footprint's bottom middle, over tiles it leaves as they
+  // are: a bridge, or a gate over a road.
+  cover(category: string, name: string, tx: number, ty: number, ground = false): void {
+    const f = frame(category, name);
+    this.put(category, name, tx * TILE + floorDiv(f.footprintW * TILE, 2), (ty + f.footprintH) * TILE - 1, ground);
   }
 
   // A prop centred on one tile, or on two side by side when wide.
@@ -338,9 +352,11 @@ export class Site {
     }
   }
 
+  // place.py's order is ground, margin, then above. What stands nearby is checked first here, since most lots a search
+  // tries are taken and the ground test costs most. Budget: a capital or city builds within twice Task 9's median.
   fits(tx: number, ty: number, fw: number, fh: number, up: number, groundOk: CellTest): boolean {
     if (tx < 0 || ty - up < 0 || tx + fw > this.w || ty + fh > this.h) return false;
-    return this.groundFits(tx, ty, fw, fh, groundOk) && this.clearAround(tx, ty, fw, fh) && this.clearAbove(tx, ty, fw, up);
+    return this.clearAround(tx, ty, fw, fh) && this.clearAbove(tx, ty, fw, up) && this.groundFits(tx, ty, fw, fh, groundOk);
   }
 
   // Free tiles leading from (x, y) to a road, at most limit of them, or null.
@@ -410,8 +426,10 @@ export class Site {
     return best;
   }
 
-  // The tiles a spur of at most `limit` steps can start from: roads, and tiles within `limit` of a dry road.
+  // The tiles a spur of at most `limit` steps can start from: roads, and tiles within `limit` of a dry road. A spur of
+  // none starts on a road, so the road grid serves as it is.
   private spurReach(limit: number): Uint8Array {
+    if (limit === 0) return this.road;
     const near = new Uint8Array(this.w * this.h);
     for (let y = 0; y < this.h; y++) {
       for (let x = 0; x < this.w; x++) {

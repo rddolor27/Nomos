@@ -27,11 +27,19 @@ from spritekit import ASSETS, TILE  # noqa: E402
 
 DEMO = ASSETS.parents[1] / 'dist' / 'worldgen' / 'demo'
 
-SIZES = {'capital': (128, 80), 'city': (128, 80), 'town': (112, 64), 'village': (80, 48), 'hamlet': (56, 32)}
+SIZES = {'capital': (176, 112), 'city': (176, 112), 'town': (152, 96), 'village': (80, 48), 'hamlet': (56, 32)}
 VISTA_SIZE = (30, 18)
 PLAZAS = {'capital': (28, 8), 'city': (26, 8), 'town': (20, 6)}
-BLOCK = {'capital': 5, 'city': 5, 'town': 4}         # rows from one street to the next
-REACH = {'capital': 42, 'city': 38, 'town': 30}      # street length beyond the lanes beside the plaza
+# A wall ring's half-sizes round the plaza's centre, each edge kept BELT_MIN tiles inside the place for the farm belt.
+RINGS = {'capital': (64, 40), 'city': (64, 40), 'town': (56, 30)}
+BELT_MIN = 6
+BLOCK = 6          # rows from one street to the next
+CROSS = 24         # columns from one cross street to the next
+# A road's width in tiles and its kind, by its role in the place (owner, 10 October 2026).
+ROADS = {'main': (3, 'stone'), 'street': (2, 'cobble'), 'country': (2, 'gravel'), 'track': (1, 'track'),
+         'lane': (1, 'path')}
+RANK = ('path', 'track', 'gravel', 'cobble', 'stone', 'paving')   # road kinds, lowest first
+BRIDGE_ENDS = {'horizontal': ('end-left', 'end-right'), 'vertical': ('end-top', 'end-bottom')}
 HOUSES = {'capital': (380, 520), 'city': (380, 520), 'town': (240, 340), 'village': (30, 50), 'hamlet': (8, 14)}
 MISSES = 6        # attempts in a row that find no lot, after which a place has no room left for houses
 CROWDS = {'capital': (150, 300), 'city': (150, 300), 'town': (60, 120), 'village': (25, 50), 'hamlet': (10, 20)}
@@ -65,6 +73,7 @@ PROP_Y, BEAST_Y, PERSON_Y = 12, 13, 14   # anchor rows in a tile: people draw in
 # First keys of the PLACE and CROWD draws, one per purpose, so each stage draws on its own.
 (GROUND, SEA, RIVER, POND, RIDGE, ROUTE, STREET, LOT, STYLE, FORM, WORK, MARK, VISTA, TREE,
  SCATTER, FIELD, HERD, DECOR, INLET) = range(1, 20)
+AVENUE = 24        # Part 3's plan gives 20-23 and 25 to its later tasks
 SPOT, POSE, FACE, JOB, EMOTE, COUNT = range(1, 7)
 
 _frames = {}
@@ -153,11 +162,13 @@ class Site:
         self.big = grid(w, h, False)      # footprints of buildings, houses, landmarks and wonders
         self.shade = grid(w, h, False)    # under a big sprite's image, above its footprint
         self.crown = grid(w, h, False)    # under a tree crown, above its trunk
-        self.keep = grid(w, h, False)     # kept clear: plaza, green, fields, the view of a wonder
+        self.keep = grid(w, h, False)     # kept clear: plaza, green, fields, the view of a wonder, a wall's line
+        self.bridged = grid(w, h, False)  # under a stone bridge piece
         self.ground, self.standing = [], []
         self.bands = []                   # (top row, face rows, foot kind) of cliffs laid over water
         self.cx, self.cy = w // 2, h // 2
         self.plaza = None
+        self.wall = None
         self.green = []
         self.entries = []
         self.places = {}                  # name -> list of footprint rects (tx, ty, fw, fh)
@@ -207,7 +218,7 @@ class Site:
 
     def standable(self, x, y):
         k = self.kind[y][x]
-        return ((k in OPEN or k in ('path', 'paving')) and not self.solid[y][x] and not self.shade[y][x]
+        return ((k in OPEN or k in RANK) and not self.solid[y][x] and not self.shade[y][x]
                 and not self.crown[y][x] and not self.bank(x, y))
 
     def step(self, x, y):
@@ -228,7 +239,6 @@ class Site:
         """A footprinted sprite with its footprint's top-left tile at (tx, ty)."""
         f = frame(category, name)
         fw, fh = f['footprint']
-        x, y = tx * TILE + fw * TILE // 2, (ty + fh) * TILE - 1
         for cy in range(ty, ty + fh):
             for cx in range(tx, tx + fw):
                 self.solid[cy][cx] = name
@@ -237,7 +247,13 @@ class Site:
             for cx in range(tx, tx + fw):
                 self.shade[cy][cx] = True
         self.places.setdefault(name, []).append((tx, ty, fw, fh))
-        self.put(category, name, x, y)
+        self.cover(category, name, tx, ty)
+
+    def cover(self, category, name, tx, ty, ground=False):
+        """A footprinted sprite anchored as build anchors one, at its footprint's bottom middle, over tiles it leaves
+        as they are: a bridge, or a gate over a road."""
+        fw, fh = frame(category, name)['footprint']
+        self.put(category, name, tx * TILE + fw * TILE // 2, (ty + fh) * TILE - 1, ground)
 
     def prop(self, category, name, tx, ty, wide=False):
         """A prop centred on one tile, or on two side by side when wide."""
@@ -379,6 +395,31 @@ class Site:
         return Layout(self.w, self.h, [row[:] for row in self.kind], tiles, self.ground, self.standing, self.people)
 
 
+class Wall:
+    """The ring a walled town keeps for its wall: a line round the rectangle from (x0, y0) to (x1, y1)."""
+
+    def __init__(self, x0, y0, x1, y1, material):
+        self.x0, self.y0, self.x1, self.y1 = x0, y0, x1, y1
+        self.material = material
+
+    def inset(self, x, y):
+        """How many tiles (x, y) lies inside the ring line: 0 on it, and less than 0 outside."""
+        return min(x - self.x0, self.x1 - x, y - self.y0, self.y1 - y)
+
+    def contains(self, x, y):
+        return self.inset(x, y) > 0
+
+    def on_line(self, x, y):
+        return self.inset(x, y) == 0
+
+    def reserve(self, site):
+        """Keeps every tile of the line that no road crosses, so nothing is built where the wall will stand."""
+        for y in range(self.y0, self.y1 + 1):
+            for x in range(self.x0, self.x1 + 1):
+                if self.on_line(x, y) and not site.road[y][x]:
+                    site.keep[y][x] = True
+
+
 def tile_for(site, x, y):
     """The shore rule of showcase_wonders.py: a land tile takes its shape from its water neighbours."""
     kind = site.kind[y][x]
@@ -406,8 +447,11 @@ def tile_for(site, x, y):
         return 'scenery', 'cliff_foot-water_0'
     if kind in CLIFFS:
         return 'scenery', kind
+    if kind in ('cobble', 'gravel'):
+        variant = (x * 7 + y * 13) % 5 % 2
+        return 'nature', f'terrain_cobbles_{variant}' if kind == 'cobble' else f'terrain_gravel_{variant}'
     return 'nature', {'sand': 'terrain_sand', 'paving': 'terrain_paving', 'path': 'terrain_dirt-path',
-                      'soil': 'terrain_soil-tilled'}.get(kind, kind)
+                      'soil': 'terrain_soil-tilled', 'stone': 'terrain_cut-stone'}.get(kind, kind)
 
 
 # ------------------------------------------------------------------------------------------ terrain
@@ -684,23 +728,83 @@ def straight(site, a, b):
     return cells
 
 
-def pave(site, cells):
-    """Lays a road along cells in order; river crossings get footbridges or a paved causeway."""
+def lay_road(site, x, y, kind):
+    """Lays one road tile. A tile keeps the highest-ranked kind laid on it and water stays water, and a tile no road may
+    cross is left alone unless it is a road already."""
+    if not site.inside(x, y) or (site.step(x, y) is None and not site.road[y][x]):
+        return
+    site.road[y][x] = True
+    k = site.kind[y][x]
+    if k in OPEN or (k in RANK and RANK.index(k) < RANK.index(kind)):
+        site.kind[y][x] = kind
+
+
+def pave(site, cells, role='lane'):
+    """Lays a road of its role's width along cells in order, each cell the middle of the road. A lane or track crosses a
+    river on footbridges or a paved causeway, a wider road on a stone bridge."""
+    width, kind = ROADS[role]
+    spans = wet_spans(site, cells, width)
+    if width == 1:
+        crossing = {k for a, b in spans for k in range(a, b + 1)}
+        for k, (x, y) in enumerate(cells):
+            if k not in crossing:
+                lay_road(site, x, y, kind)
+        for a, b in spans:
+            cross(site, cells[a:b + 1], cells[b + 1] if b + 1 < len(cells) else None,
+                  cells[a - 1] if a > 0 else None)
+        return
+    back = (width - 1) // 2
+    for x, y in cells:
+        for sy in range(y - back, y - back + width):
+            for sx in range(x - back, x - back + width):
+                if not site.water(sx, sy):
+                    lay_road(site, sx, sy, kind)
+    for a, b in spans:
+        bridge(site, cells[a:b + 1], role)
+
+
+def wet_spans(site, cells, width):
+    """Each run of cells whose square of road holds water a road may cross, widened by a cell at either end, as its first
+    and last index: where the road crosses water. A lane's square is its own tile."""
+    back = (width - 1) // 2
+    wet = [any(site.water(sx, sy) and site.step(sx, sy) is not None
+               for sy in range(y - back, y - back + width) for sx in range(x - back, x - back + width))
+           for x, y in cells]
     spans, i = [], 0
     while i < len(cells):
-        if site.water(*cells[i]):
+        if wet[i]:
             j = i
-            while j < len(cells) and site.water(*cells[j]):
+            while j < len(cells) and wet[j]:
                 j += 1
             spans.append((max(i - 1, 0), min(j, len(cells) - 1)))
             i = j
         else:
             i += 1
-    crossing = {k for a, b in spans for k in range(a, b + 1)}
-    site.lay_path([c for k, c in enumerate(cells) if k not in crossing])
-    for a, b in spans:
-        cross(site, cells[a:b + 1], cells[b + 1] if b + 1 < len(cells) else None,
-              cells[a - 1] if a > 0 else None)
+    return spans
+
+
+def bridge(site, span, role):
+    """A stone bridge where a wide road crosses water in a straight line, as route and straight keep it: a piece across
+    the road at each cell, its ends on the shore either side and spans between. A piece makes the water under it road,
+    and is left out where another piece lies (plan, Part 3, Ruling 6)."""
+    width, kind = ROADS[role]
+    back = (width - 1) // 2
+    horizontal = span[0][1] == span[-1][1]
+    axis = 'horizontal' if horizontal else 'vertical'
+    first, last = BRIDGE_ENDS[axis]
+    along = [x if horizontal else y for x, y in span]
+    lo, hi = min(along), max(along)
+    for (x, y), t in zip(span, along):
+        part = first if t == lo else last if t == hi else 'span'
+        tx, ty = (x, y - back) if horizontal else (x - back, y)
+        tiles = [(tx, ty + k) if horizontal else (tx + k, ty) for k in range(width)]
+        tiles = [(cx, cy) for cx, cy in tiles if site.inside(cx, cy)]
+        if any(site.bridged[cy][cx] for cx, cy in tiles):
+            continue
+        for cx, cy in tiles:
+            site.bridged[cy][cx] = True
+            lay_road(site, cx, cy, kind)
+        site.cover('scenery', f'bridge_{role}_{axis}_{part}', tx, ty, ground=True)
 
 
 def cross(site, span, after, before):
@@ -735,18 +839,22 @@ def road_entry(site, side, salt):
     return None
 
 
-def lay_roads(site):
+def road_sides(site):
+    """The sides the map's roads come in by, off the sea, or one keyed side where none do."""
     ctx = site.ctx
     sides = [s for s in 'nesw' if s in ctx.roads and s not in ctx.sea]
-    if not sides:
-        sides = [site.pick([s for s in 'nesw' if s not in ctx.sea] or ['n'], ROUTE, 0)]
-    for i, side in enumerate(sides):
+    return sides or [site.pick([s for s in 'nesw' if s not in ctx.sea] or ['n'], ROUTE, 0)]
+
+
+def lay_roads(site):
+    """A country road in from each road side to the nearest road; past a wall's ring that is a main road's end."""
+    for i, side in enumerate(road_sides(site)):
         start = road_entry(site, side, i + 1)
         if start is None:
             continue
         path = route(site, start, INWARD[side], lambda x, y: site.road[y][x])
         if path:
-            pave(site, path)
+            pave(site, path, 'country')
             site.entries.append((side, start))
 
 
@@ -772,6 +880,8 @@ def centre_spot(site, cw, ch, above, below, side):
 # --------------------------------------------------------------------------------------- settlement
 
 def lay_town(site):
+    """The plaza, the ring kept for the wall, the main roads out through it and the streets inside. Returns each main
+    road's cells, from the plaza out."""
     tier = site.ctx.tier
     pw, ph = PLAZAS[tier]
     px, py = centre_spot(site, pw, ph, 4, 2, 3)
@@ -782,27 +892,52 @@ def lay_town(site):
             site.kind[y][x] = 'paving'
             site.road[y][x] = True
             site.keep[y][x] = True
-    gap = BLOCK[tier]
-    rows = [(py, 0), (py + ph - 1, 0)]
-    k, r = 1, py - gap
-    while r >= 1:
-        rows.append((r, k))
-        k, r = k + 1, r - gap
-    k, r = 1, py + ph - 1 + gap
-    while r <= site.h - 2:
-        rows.append((r, k))
-        k, r = k + 1, r + gap
-    top, bottom = min(r for r, _ in rows), max(r for r, _ in rows)
-    for x in (px - 1, px + pw):
-        pave(site, straight(site, (x, py), (x, top)))
-        pave(site, straight(site, (x, py + 1), (x, bottom)))
-    for r, k in rows:
-        if k and site.road[r][px - 1]:
-            pave(site, straight(site, (px - 1, r), (px + pw, r)))
-        for x, step in ((px - 1, -1), (px + pw, 1)):
-            if site.road[r][x]:
-                reach = REACH[tier] - 2 * k + site.below(5, STREET, r, step) - 2
-                pave(site, straight(site, (x, r), (min(site.w - 2, max(1, x + step * reach)), r)))
+    hx, hy = RINGS[tier]
+    site.wall = Wall(max(BELT_MIN, site.cx - hx), max(BELT_MIN, site.cy - hy),
+                     min(site.w - 1 - BELT_MIN, site.cx + hx), min(site.h - 1 - BELT_MIN, site.cy + hy),
+                     'stone' if tier in ('capital', 'city') else 'palisade')
+    mains = lay_spokes(site)
+    lay_streets(site)
+    site.wall.reserve(site)
+    return mains
+
+
+def lay_spokes(site):
+    """A main road from the plaza's edge to each road side, along its middle column or row, that narrows to a country
+    road from a tile inside the ring line to 2 tiles past it, as wide as the gate. Returns each one's main-road cells."""
+    px, py, pw, ph = site.plaza
+    cx, cy, wall = site.cx, site.cy, site.wall
+    ends = {'n': ((cx, py - 1), (cx, wall.y0 - 2)), 'e': ((px + pw, cy), (wall.x1 + 2, cy)),
+            's': ((cx, py + ph), (cx, wall.y1 + 2)), 'w': ((px - 1, cy), (wall.x0 - 2, cy))}
+    mains = []
+    for side in road_sides(site):
+        cells = straight(site, *ends[side])
+        k = next((k for k, (x, y) in enumerate(cells) if wall.inset(x, y) < 2), len(cells))
+        pave(site, cells[:k], 'main')
+        pave(site, cells[k:], 'country')
+        mains.append(cells[:k])
+    return mains
+
+
+def lay_streets(site):
+    """Cobbled streets in a grid inside the ring: rows every BLOCK tiles north and south of the plaza, and columns beside
+    it and every CROSS tiles out. Each runs from 2 tiles inside one ring line to 2 inside the other and skips water, so
+    a town's bridges are its main roads'."""
+    px, py, pw, ph = site.plaza
+    wall = site.wall
+    for r in [*range(py - BLOCK, wall.y0 + 1, -BLOCK), *range(py + ph - 2 + BLOCK, wall.y1 - 2, BLOCK)]:
+        for x in range(wall.x0 + 2, wall.x1 - 1):
+            lay_street(site, x, r)
+            lay_street(site, x, r + 1)
+    for c in [*range(px - 2, wall.x0 + 1, -CROSS), *range(px + pw, wall.x1 - 2, CROSS)]:
+        for y in range(wall.y0 + 2, wall.y1 - 1):
+            lay_street(site, c, y)
+            lay_street(site, c + 1, y)
+
+
+def lay_street(site, x, y):
+    if not site.water(x, y):
+        lay_road(site, x, y, ROADS['street'][1])
 
 
 def lay_village(site):
@@ -981,7 +1116,7 @@ def viaduct(site):
                 continue
             ends = list(range(x - 4, x)) + list(range(x + 2, x + 6))
             if any(not site.inside(cx, y) or site.solid[y][cx] or site.water(cx, y) or site.kind[y][cx] in CLIFFS
-                   or (site.road[y][cx] and site.kind[y][cx] != 'path') for cx in ends):
+                   or (site.road[y][cx] and site.kind[y][cx] not in ('path', 'track')) for cx in ends):
                 continue
             if any(site.shade[y][cx] for cx in range(x - 4, x + 6)):
                 continue
@@ -1261,6 +1396,17 @@ def choose(site, mix, sub, *key):
     return mix[-1][0]
 
 
+def plant_avenues(site, mains):
+    """Trees along each main road, 2 tiles off its middle on either side, at every fourth cell from the seventh out."""
+    mix = tree_mix(site)
+    for cells in mains:
+        dx, dy = (2, 0) if cells and cells[0][0] == cells[-1][0] else (0, 2)
+        for x, y in cells[6::4]:
+            for tx, ty in ((x - dx, y - dy), (x + dx, y + dy)):
+                if site.free(tx, ty) and not site.crown[ty][tx]:
+                    site.tree(*choose(site, mix, AVENUE, tx, ty), tx, ty)
+
+
 def near_built(site, reach):
     """Tiles within `reach` of a road or a building, where only garden trees grow."""
     near = grid(site.w, site.h, False)
@@ -1526,10 +1672,11 @@ def settle_water(site):
 
 
 def settle_centre(site):
-    """A town's plaza, streets, town hall, stalls and civic buildings, or a village's green, lanes and shop."""
+    """A town's plaza, ring, roads, avenues, town hall, stalls and civic buildings, or a village's green, roads and
+    shop."""
     tier = site.ctx.tier
     if tier in PLAZAS:
-        lay_town(site)
+        plant_avenues(site, lay_town(site))
         lay_roads(site)
         place_civic(site, CIVIC[tier][:1])
         place_plaza(site)

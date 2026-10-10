@@ -12,26 +12,28 @@ const FOOTBRIDGE: { w: number; anchor: [number, number] } = JSON.parse(readFileS
 const WORLDS = 20;
 const FIRST_SEED = 0x5eed0001;
 
-// The tiles a footbridge lies over: its picture's span, on the row of its anchor.
+// The tiles a bridge lies over: a footbridge's picture span on the row of its anchor, or a stone bridge piece's
+// footprint.
 function bridgedTiles(layout: PlaceLayout): Set<number> {
   const tiles = new Set<number>();
   for (let at = 0; at < layout.ground.length; at += 3) {
-    if (layout.frames[layout.ground[at]] !== 'scenery/prop_footbridge') continue;
-    const left = layout.ground[at + 1] - FOOTBRIDGE.anchor[0];
-    const row = Math.floor(layout.ground[at + 2] / TILE);
-    for (let x = left; x < left + FOOTBRIDGE.w; x += TILE) tiles.add(row * layout.width + Math.floor(x / TILE));
+    const drawn = layout.frames[layout.ground[at]];
+    const x = layout.ground[at + 1];
+    const y = layout.ground[at + 2];
+    if (drawn.startsWith('scenery/bridge_')) {
+      for (const tile of footprintOf(layout, drawn, x, y)) tiles.add(tile);
+    }
+    if (drawn !== 'scenery/prop_footbridge') continue;
+    const left = x - FOOTBRIDGE.anchor[0];
+    for (let fx = left; fx < left + FOOTBRIDGE.w; fx += TILE) tiles.add(Math.floor(y / TILE) * layout.width + Math.floor(fx / TILE));
   }
   return tiles;
 }
 
-// A building's footprint, from its anchor at the footprint's bottom middle, or else the one tile a sprite's anchor is on.
-function heldBy(layout: PlaceLayout, at: number): number[] {
-  const [category, name] = layout.frames[layout.standing[at]].split('/');
-  const x = layout.standing[at + 1];
-  const y = layout.standing[at + 2];
-  const sized = category === 'houses' || `${category}/${name}` in FRAMES;
-  const f = sized ? frame(category, name) : null;
-  if (!f || f.footprintW === 0) return [Math.floor(y / TILE) * layout.width + Math.floor(x / TILE)];
+// A footprinted sprite's tiles, from its anchor at the footprint's bottom middle.
+function footprintOf(layout: PlaceLayout, drawn: string, x: number, y: number): number[] {
+  const [category, name] = drawn.split('/');
+  const f = frame(category, name);
   const left = (x - Math.floor((f.footprintW * TILE) / 2)) / TILE;
   const top = (y + 1) / TILE - f.footprintH;
   const tiles: number[] = [];
@@ -39,6 +41,17 @@ function heldBy(layout: PlaceLayout, at: number): number[] {
     for (let tx = left; tx < left + f.footprintW; tx++) tiles.push(ty * layout.width + tx);
   }
   return tiles;
+}
+
+// A building's footprint, or else the one tile a sprite's anchor is on.
+function heldBy(layout: PlaceLayout, at: number): number[] {
+  const drawn = layout.frames[layout.standing[at]];
+  const [category, name] = drawn.split('/');
+  const x = layout.standing[at + 1];
+  const y = layout.standing[at + 2];
+  const sized = category === 'houses' || drawn in FRAMES;
+  if (!sized || frame(category, name).footprintW === 0) return [Math.floor(y / TILE) * layout.width + Math.floor(x / TILE)];
+  return footprintOf(layout, drawn, x, y);
 }
 
 function heldTiles(layout: PlaceLayout): Map<number, string> {
@@ -64,7 +77,7 @@ function crossings(label: string, layout: PlaceLayout, walks: PlaceWalks): strin
 }
 
 describe('walk loops, judged by what the town view draws', { timeout: 300_000 }, () => {
-  it(`never cross water without a footbridge, a cliff or a standing sprite, in every place of the first ${WORLDS} standard worlds`, () => {
+  it(`never cross water without a bridge, a cliff or a standing sprite, in every place of the first ${WORLDS} standard worlds`, () => {
     const problems: string[] = [];
     let cells = 0;
     for (let k = 0; k < WORLDS; k++) {

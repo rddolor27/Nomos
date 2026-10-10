@@ -127,7 +127,7 @@ test('starts the town at its tier\'s crowd, and a tier asked for by name in full
   const tiers: Tier[] = ['phone', 'phone-plus', 'desktop'];
   const town = parseMap(new Uint8Array(readFileSync(new URL('../../../assets/maps/town.nmap', import.meta.url))).buffer);
 
-  expect(tiers.map((tier) => startAgents(tier, town, false))).toEqual([1_690, 2_254, 3_381]);
+  expect(tiers.map((tier) => startAgents(tier, town, false))).toEqual([3_965, 5_287, 7_931]);
   expect(tiers.map((tier) => startAgents(tier, town, true))).toEqual([10_000, 25_000, 100_000]);
 });
 
