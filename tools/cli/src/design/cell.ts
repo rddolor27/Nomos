@@ -1,11 +1,8 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import {
-  DAYS_PER_MONTH,
   FLOW_LOG_SCHEMA,
   LEDGER_FIELDS,
-  LEDGER_PRICE,
-  LEDGER_WAGE,
   STATS,
   STAT_NAMES,
   TIER_AGENTS,
@@ -13,18 +10,14 @@ import {
   createStandInHomes,
   createWorld,
   economyDay,
-  foldToLedger,
   layoutWorld,
+  scaleRecord,
   spawnFromLedger,
   startEconomy,
-  type EconomyParams,
   type World,
 } from '@nomos/sim-core';
-import { PRESETS } from '../economy/presets.ts';
 import type { Cell } from './grid.ts';
 
-// R* comes from this seed's hand-built city (M2.2 Ruling 12).
-const SOURCE_SEED = 42;
 // A stand-in home sleeps 6, so a home to every 3 people holds the city twice over, as in M2.2.
 const PEOPLE_PER_HOME = 3;
 // The flow log has one district until M3.1 brings districts.
@@ -48,22 +41,6 @@ export interface CellResult {
   readonly milliseconds: number;
 }
 
-// R*: the preset's hand-built city, run to the first month end on or after its burn-in, and folded into a ledger record.
-export function settledRecord(preset: EconomyParams): Float64Array {
-  const world = createWorld(SOURCE_SEED, 'phone', undefined, preset.households);
-  startEconomy(world, preset);
-  const days = Math.ceil(preset.burnInDays / DAYS_PER_MONTH) * DAYS_PER_MONTH;
-  for (let day = 0; day < days; day++) economyDay(world, preset, day);
-  const record = new Float64Array(LEDGER_FIELDS);
-  foldToLedger(world, record);
-  return record;
-}
-
-// Every field is a count or a total but price and wage, which are means (M2.2 Ruling 4).
-function scaledRecord(record: Float64Array, factor: number): Float64Array {
-  return record.map((value, field) => (field === LEDGER_PRICE || field === LEDGER_WAGE ? value : value * factor));
-}
-
 function startedWorld(cell: Cell, record: Float64Array | undefined): World {
   if (cell.start === 'hand') {
     const world = createWorld(cell.seed, cell.tier, undefined, cell.size);
@@ -73,7 +50,8 @@ function startedWorld(cell: Cell, record: Float64Array | undefined): World {
   if (record === undefined) throw new RangeError(`${cell.name} starts from a spawn, which needs R*`);
   const world = layoutWorld(cell.seed, cell.tier, TIER_AGENTS[cell.tier], TIER_MEMORY_BYTES[cell.tier]);
   const homes = createStandInHomes(world.ground, Math.ceil(cell.size / PEOPLE_PER_HOME));
-  const scaled = scaledRecord(record, cell.size / PRESETS[cell.preset].households);
+  const scaled = new Float64Array(LEDGER_FIELDS);
+  scaleRecord(record, cell.size, scaled);
   spawnFromLedger(world, scaled, homes, cell.params, 0, 0);
   return world;
 }

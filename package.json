@@ -11,7 +11,7 @@
     "test": "vitest run",
     "test:browser": "playwright test",
     "test:py": "python tools/checks.py",
-    "test:headless": "node packages/worldgen/scripts/frozen.ts --check && node packages/worldgen/scripts/sweep.ts && node tools/cli/src/main.ts --seed 7 --tier phone --ticks 2880 && node tools/cli/src/main.ts --seed 7 --tier phone-plus --ticks 2880 && node tools/cli/src/main.ts --seed 7 --tier desktop --ticks 2880",
+    "test:headless": "node packages/worldgen/scripts/frozen.ts --check && node packages/sim-core/scripts/city-record.ts --check && node packages/worldgen/scripts/sweep.ts && node tools/cli/src/main.ts --seed 7 --tier phone --ticks 2880 && node tools/cli/src/main.ts --seed 7 --tier phone-plus --ticks 2880 && node tools/cli/src/main.ts --seed 7 --tier desktop --ticks 2880",
     "lint": "eslint .",
     "typecheck": "pnpm -r --if-present run typecheck",
     "depcruise": "depcruise packages apps tools --config .dependency-cruiser.cjs",

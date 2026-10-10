@@ -43,6 +43,27 @@ export function populationOf(record: Float64Array): number {
   return people;
 }
 
+// A town of people from a record of any size: every count and total scales by people over the record's population, rounded
+// down, and price and wage stay, since they are means. The people the rounding drops join as one-person households out of
+// work, and a town keeps SUPPLIERS firms, as many as a household buys from. out takes all 14 fields.
+export function scaleRecord(record: Float64Array, people: number, out: Float64Array): void {
+  const base = populationOf(record);
+  for (let field = 0; field < LEDGER_FIELDS; field++) {
+    out[field] = field === LEDGER_PRICE || field === LEDGER_WAGE ? record[field] : scaledDown(record[field], people, base);
+  }
+  out[LEDGER_FIRMS] = Math.max(SUPPLIERS, out[LEDGER_FIRMS]);
+  out[LEDGER_UNEMPLOYED] = people - out[LEDGER_EMPLOYED];
+  out[LEDGER_HOUSEHOLDS] += people - populationOf(out);
+}
+
+// Floor of value x people / base. Splitting value at base keeps each product exact, which value x people alone is not once it
+// passes 2^53.
+function scaledDown(value: number, people: number, base: number): number {
+  const whole = Math.floor(value / base);
+  const rest = value - whole * base;
+  return whole * people + Math.floor((rest * people) / base);
+}
+
 // What spawn needs of a record to build a city that folds back into it. The world gives the room: agent and firm slots.
 export function checkRecord(record: Float64Array, world: World): void {
   for (let field = 0; field < LEDGER_FIELDS; field++) requireWhole(record, field);

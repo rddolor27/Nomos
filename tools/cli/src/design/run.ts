@@ -4,9 +4,10 @@ import { availableParallelism } from 'node:os';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
+import { settledRecord } from '@nomos/sim-core';
 import { PRESETS } from '../economy/presets.ts';
 import { wholeNumber } from '../economy/run.ts';
-import { settledRecord, type CellResult } from './cell.ts';
+import type { CellResult } from './cell.ts';
 import { listCells, parseGrid, type Cell } from './grid.ts';
 import { runPool } from './pool.ts';
 

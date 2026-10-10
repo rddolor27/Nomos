@@ -40,6 +40,8 @@ export * from './economy/city.ts';
 export * from './economy/stats.ts';
 export * from './economy/start.ts';
 export * from './economy/economy.ts';
+export * from './economy/settled.ts';
+export * from './economy/city-record.ts';
 export * from './economy/mser5.ts';
 export * from './households/store.ts';
 export * from './spawn/homes.ts';
