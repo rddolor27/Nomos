@@ -161,7 +161,7 @@ describe('the economy statistics', () => {
   it('number their slots from 0 without a gap or a repeat', () => {
     const slots = Object.entries(stats)
       .filter(([name]) => name.startsWith('STAT_'))
-      .map(([, slot]) => slot);
+      .map(([, slot]) => slot as number);
     expect(slots.sort((a, b) => a - b)).toEqual(Array.from({ length: stats.STATS }, (_, slot) => slot));
     expect(stats.STATS).toBe(17);
   });
