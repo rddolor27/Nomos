@@ -1,7 +1,7 @@
 import type { EconomyParams } from '../economy/params.ts';
 import { STAT_ABOVE_MARKUP, STAT_PRICE_CHANGES, STAT_PRICE_CHANGE_PPM } from '../economy/stats.ts';
 import { PPM, mulPpm, mulPpmUp } from '../money/ppm.ts';
-import { draw3 } from '../random/draw.ts';
+import { drawBelow3 } from '../random/draw.ts';
 import { FIRM_DRAW } from '../random/streams.ts';
 import { DAYS_PER_MONTH } from '../time/calendar.ts';
 import type { World } from '../world/world.ts';
@@ -69,8 +69,8 @@ function cutPrice(params: EconomyParams, price: number, eta: number, wage: numbe
 
 // Lengnick's theta and vartheta: with chance priceChancePpm the step is eta ppm, uniform over 0 to priceStepPpm, else 0.
 function priceStep(seed: number, params: EconomyParams, month: number, f: number): number {
-  if (draw3(seed, FIRM_DRAW, month, f, PRICE_CHANCE) % PPM >= params.priceChancePpm) return 0;
-  return draw3(seed, FIRM_DRAW, month, f, PRICE_STEP) % (params.priceStepPpm + 1);
+  if (drawBelow3(seed, FIRM_DRAW, month, f, PRICE_CHANCE, PPM) >= params.priceChancePpm) return 0;
+  return drawBelow3(seed, FIRM_DRAW, month, f, PRICE_STEP, params.priceStepPpm + 1);
 }
 
 // A18: the wage over a worker's month of output, rounded up, and never under a cent.

@@ -4,7 +4,7 @@ import { clearPurchases, logPurchase } from '../economy/scratch.ts';
 import { STAT_SALES_CENTS, STAT_SALES_UNITS } from '../economy/stats.ts';
 import { floorDiv } from '../maths/int.ts';
 import { firmAccount, transfer, walletAccount } from '../money/ledger.ts';
-import { draw3 } from '../random/draw.ts';
+import { drawBelow3 } from '../random/draw.ts';
 import { keyedShuffle } from '../random/shuffle.ts';
 import { SHOP_DRAW } from '../random/streams.ts';
 import { DAYS_PER_MONTH, dayOfMonth } from '../time/calendar.ts';
@@ -50,7 +50,7 @@ function buyFrom(world: World, household: number, link: number, unmet: number): 
 }
 
 function shopFor(world: World, household: number, wanted: number, day: number): void {
-  const visitOrder = draw3(world.seed, SHOP_DRAW, day, household, SHOP_VISIT) % VISIT_ORDERS;
+  const visitOrder = drawBelow3(world.seed, SHOP_DRAW, day, household, SHOP_VISIT, VISIT_ORDERS);
   const step = 1 + floorDiv(visitOrder, SUPPLIERS);
   let link = visitOrder % SUPPLIERS;
   let unmet = wanted;

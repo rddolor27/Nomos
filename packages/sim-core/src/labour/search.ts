@@ -1,7 +1,7 @@
 import type { EconomyParams } from '../economy/params.ts';
 import { STAT_HIRES, STAT_JOB_VISITS, STAT_SWITCHES } from '../economy/stats.ts';
 import { PPM } from '../money/ppm.ts';
-import { draw2, draw3, draw4 } from '../random/draw.ts';
+import { drawBelow2, drawBelow3, drawBelow4 } from '../random/draw.ts';
 import { keyedShuffle } from '../random/shuffle.ts';
 import { LABOUR_DRAW } from '../random/streams.ts';
 import type { World } from '../world/world.ts';
@@ -16,12 +16,12 @@ const SLOW_SEARCHER = 4;
 // never on a look, a culture, a household, a wallet or anyone else's trait, and no column holds it, so nothing can show it.
 export function isSlowSearcher(seed: number, person: number, slowSearcherPpm: number): boolean {
   if (slowSearcherPpm === 0) return false;
-  return draw2(seed, LABOUR_DRAW, person, SLOW_SEARCHER) % PPM < slowSearcherPpm;
+  return drawBelow2(seed, LABOUR_DRAW, person, SLOW_SEARCHER, PPM) < slowSearcherPpm;
 }
 
 // A firm row drawn with replacement for sample k of a household's search in a month (A13).
 export function sampledFirm(seed: number, month: number, household: number, sample: number, firms: number): number {
-  return draw4(seed, LABOUR_DRAW, month, household, sample, SAMPLE) % firms;
+  return drawBelow4(seed, LABOUR_DRAW, month, household, sample, SAMPLE, firms);
 }
 
 // A hire ends the spell, so a layoff before the month's end starts a new one rather than carrying the old count on.
@@ -56,7 +56,7 @@ function searchEmployed(world: World, params: EconomyParams, month: number, hous
   const firms = world.firms;
   const own = world.agents.employer[household];
   const underpaid = firms.wage[own] < world.agents.reservationWage[household];
-  if (!underpaid && draw3(world.seed, LABOUR_DRAW, month, household, LOOK) % PPM >= params.onJobSearchPpm) return;
+  if (!underpaid && drawBelow3(world.seed, LABOUR_DRAW, month, household, LOOK, PPM) >= params.onJobSearchPpm) return;
   const f = sampledFirm(world.seed, month, household, 0, firms.count[0]);
   if (firms.vacancy[f] === 0 || firms.wage[f] <= firms.wage[own]) return;
   firms.employees[own]--;

@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { below, draw, draw1, draw2, draw3, draw4, mix } from '../src/index.ts';
+import { below, draw, draw1, draw2, draw3, draw4, drawBelow2, drawBelow3, drawBelow4, mix } from '../src/index.ts';
 
 interface DrawCase {
   seed: number;
@@ -81,6 +81,39 @@ describe('the keyed draw', () => {
       for (let id = 0; id < MILLION; id++) counts[(draw2(42, s1, id, 0) >>> 30) * 4 + (draw2(42, s2, id, 0) >>> 30)]++;
       expect(chiSquared(counts, MILLION), `streams ${s1} and ${s2}`).toBeLessThan(CHI2_CRITICAL);
     }
+  });
+
+  // draw2, draw3 and draw4 of (42, 7, 1, 2, 3, 4) are 2382762689, 3601021315 and 2665985769, all 2^31 or more.
+  it('reduces a draw of 2^31 or more below n exactly', () => {
+    expect(drawBelow2(42, 7, 1, 2, 1_000_000)).toBe(762_689);
+    expect(drawBelow3(42, 7, 1, 2, 3, 1_000_000)).toBe(21_315);
+    expect(drawBelow4(42, 7, 1, 2, 3, 4, 1_000_000)).toBe(985_769);
+  });
+
+  it('gives drawBelowN the value of drawN % n for 20,000 keys, seeds and moduli', () => {
+    const seeds = [0, 42, 0x80000000, 0xffffffff];
+    const moduli = [1, 2, 7, 42, 1_000, 1_000_000, 65_537, 0x7fffffff, 0xffffffff];
+    let wrong = 0;
+    let high = 0;
+    for (let i = 0; i < 20_000; i++) {
+      const seed = seeds[i % seeds.length];
+      const n = moduli[i % moduli.length];
+      // Keys that are negative, 2^31 or more, and small, as the callers' months, ids and draw words are.
+      const a = i - 10_000;
+      const b = Math.imul(i, 0x9e3779b1);
+      const c = i % 21;
+      const d = 0xdeadbeef + i;
+      const two = draw2(seed, 9, a, b);
+      const three = draw3(seed, 9, a, b, c);
+      const four = draw4(seed, 9, a, b, c, d);
+      if (two >= 2 ** 31) high++;
+      if (drawBelow2(seed, 9, a, b, n) !== two % n) wrong++;
+      if (drawBelow3(seed, 9, a, b, c, n) !== three % n) wrong++;
+      if (drawBelow4(seed, 9, a, b, c, d, n) !== four % n) wrong++;
+    }
+    expect(wrong).toBe(0);
+    // About half the draws, so the test does cover the values that would be boxed.
+    expect(high).toBeGreaterThan(9_000);
   });
 
   // task.md, Verify first: the prototype's seed ^ entity only shuffled draws between seeds that differ in low bits.

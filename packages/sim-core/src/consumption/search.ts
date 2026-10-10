@@ -1,7 +1,7 @@
 import { SUPPLIERS } from '../agents/store.ts';
 import type { EconomyParams } from '../economy/params.ts';
 import { PPM, mulPpm } from '../money/ppm.ts';
-import { draw3 } from '../random/draw.ts';
+import { drawBelow3 } from '../random/draw.ts';
 import { SHOP_DRAW } from '../random/streams.ts';
 import type { World } from '../world/world.ts';
 
@@ -13,8 +13,8 @@ export const STOCKOUT_CHANCE = 3;
 export const STOCKOUT_LINK = 4;
 export const STOCKOUT_FIRM = 5;
 
-function chance(drawn: number, ppm: number): boolean {
-  return drawn % PPM < ppm;
+function chance(seed: number, month: number, household: number, purpose: number, ppm: number): boolean {
+  return drawBelow3(seed, SHOP_DRAW, month, household, purpose, PPM) < ppm;
 }
 
 function fillWorkerPrefix(employees: Int32Array, prefix: Int32Array, firms: number): number {
@@ -26,12 +26,13 @@ function fillWorkerPrefix(employees: Int32Array, prefix: Int32Array, firms: numb
   return workers;
 }
 
-// A firm in proportion to its workers: the first row whose running sum passes the ticket. Uniform while nobody works.
-function firmByWorkers(world: World, workers: number, drawn: number): number {
+// A firm in proportion to its workers: the first row whose running sum passes the ticket, which is the household's draw for
+// this purpose below the worker count. Uniform while nobody works.
+function firmByWorkers(world: World, workers: number, month: number, household: number, purpose: number): number {
   const firms = world.firms.count[0];
-  if (workers === 0) return drawn % firms;
+  if (workers === 0) return drawBelow3(world.seed, SHOP_DRAW, month, household, purpose, firms);
   const prefix = world.economyScratch.firmPrefix;
-  const ticket = drawn % workers;
+  const ticket = drawBelow3(world.seed, SHOP_DRAW, month, household, purpose, workers);
   let low = 0;
   let high = firms - 1;
   while (low < high) {
@@ -71,8 +72,8 @@ function nthSet(bits: number, n: number): number {
 function searchCheaper(world: World, params: EconomyParams, month: number, household: number, workers: number): void {
   const { seed, agents, firms } = world;
   const first = household * SUPPLIERS;
-  const link = draw3(seed, SHOP_DRAW, month, household, PRICE_LINK) % SUPPLIERS;
-  const newcomer = firmByWorkers(world, workers, draw3(seed, SHOP_DRAW, month, household, PRICE_FIRM));
+  const link = drawBelow3(seed, SHOP_DRAW, month, household, PRICE_LINK, SUPPLIERS);
+  const newcomer = firmByWorkers(world, workers, month, household, PRICE_FIRM);
   if (isLinked(agents.suppliers, first, newcomer)) return;
   const linkedPrice = firms.price[agents.suppliers[first + link]];
   if (firms.price[newcomer] + mulPpm(linkedPrice, params.cheaperPpm) <= linkedPrice) {
@@ -87,8 +88,8 @@ function searchStockedOut(world: World, month: number, household: number, worker
   const stockedOut = agents.stockedOut[household];
   if (stockedOut === 0) return;
   const first = household * SUPPLIERS;
-  const pick = draw3(seed, SHOP_DRAW, month, household, STOCKOUT_LINK) % countSet(stockedOut);
-  const newcomer = firmByWorkers(world, workers, draw3(seed, SHOP_DRAW, month, household, STOCKOUT_FIRM));
+  const pick = drawBelow3(seed, SHOP_DRAW, month, household, STOCKOUT_LINK, countSet(stockedOut));
+  const newcomer = firmByWorkers(world, workers, month, household, STOCKOUT_FIRM);
   if (!isLinked(agents.suppliers, first, newcomer)) agents.suppliers[first + nthSet(stockedOut, pick)] = newcomer;
 }
 
@@ -97,10 +98,10 @@ export function searchShops(world: World, params: EconomyParams, month: number):
   const workers = fillWorkerPrefix(firms.employees, economyScratch.firmPrefix, firms.count[0]);
   const households = agents.count[0];
   for (let i = 0; i < households; i++) {
-    if (chance(draw3(seed, SHOP_DRAW, month, i, PRICE_CHANCE), params.priceSearchPpm)) {
+    if (chance(seed, month, i, PRICE_CHANCE, params.priceSearchPpm)) {
       searchCheaper(world, params, month, i, workers);
     }
-    if (chance(draw3(seed, SHOP_DRAW, month, i, STOCKOUT_CHANCE), params.stockoutSearchPpm)) {
+    if (chance(seed, month, i, STOCKOUT_CHANCE, params.stockoutSearchPpm)) {
       searchStockedOut(world, month, i, workers);
     }
     agents.stockedOut[i] = 0;

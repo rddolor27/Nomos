@@ -1,6 +1,6 @@
 import type { EconomyParams } from '../economy/params.ts';
 import { mulPpm } from '../money/ppm.ts';
-import { draw3 } from '../random/draw.ts';
+import { drawBelow3 } from '../random/draw.ts';
 import { WAGE_DRAW } from '../random/streams.ts';
 import type { World } from '../world/world.ts';
 
@@ -9,7 +9,7 @@ const MIN_WAGE_CENTS = 1;
 
 // R1: a step is uniform over 0 to delta ppm of the wage, floored by mulPpm like every rate.
 function stepPpm(seed: number, month: number, firm: number, maxPpm: number): number {
-  return draw3(seed, WAGE_DRAW, month, firm, STEP) % (maxPpm + 1);
+  return drawBelow3(seed, WAGE_DRAW, month, firm, STEP, maxPpm + 1);
 }
 
 // Reads last month's vacancy, so it runs before decideFirms clears it. A vacancy still open raises the wage; wageCutMonths

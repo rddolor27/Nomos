@@ -1,5 +1,5 @@
 import { STAT_FIRINGS } from '../economy/stats.ts';
-import { draw3 } from '../random/draw.ts';
+import { drawBelow3 } from '../random/draw.ts';
 import { LABOUR_DRAW } from '../random/streams.ts';
 import type { World } from '../world/world.ts';
 
@@ -11,7 +11,7 @@ const NO_FIRM = -1;
 // Which of a firm's workers, counted from 1 in household order, to lay off; 0 when it has no notice or no workers.
 function layoffPlace(seed: number, month: number, firm: number, notice: number, employees: number): number {
   if (notice === 0 || employees === 0) return 0;
-  return 1 + (draw3(seed, LABOUR_DRAW, month, firm, LAYOFF) % employees);
+  return 1 + drawBelow3(seed, LABOUR_DRAW, month, firm, LAYOFF, employees);
 }
 
 // A14: a notice set at month start takes effect at month end, after wages, and lays off one keyed-random worker.
