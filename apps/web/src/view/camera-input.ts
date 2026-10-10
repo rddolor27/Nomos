@@ -1,6 +1,8 @@
-import { panBy, worldAt, zoomAt } from '@nomos/render-gl';
-import type { AppMessage } from '@nomos/sim-protocol';
+import { fitCamera, panBy, worldAt, zoomAt, type Camera } from '@nomos/render-gl';
+import { TILE_PX, type AppMessage } from '@nomos/sim-protocol';
 import { element, type App } from '../app/app.ts';
+import { Pinch } from './pinch.ts';
+import { ZoomBar } from './zoom-bar.ts';
 
 // One tile per arrow press.
 const PAN_WORLD_PX = 16;
@@ -48,9 +50,25 @@ export function isClick(dxCss: number, dyCss: number): boolean {
   return dxCss * dxCss + dyCss * dyCss < CLICK_CSS_PX * CLICK_CSS_PX;
 }
 
-function devicePoint(view: HTMLElement, event: MouseEvent): [number, number] {
+// The app fits the town once, centred, as the view first measures, and keeps no map. Until the camera moves, that fit
+// still holds the town's size, since x = (town - device / zoom) / 2.
+export function townTiles(camera: Camera, deviceWidth: number, deviceHeight: number): [number, number] {
+  return [(2 * camera.x + deviceWidth / camera.zoom) / TILE_PX, (2 * camera.y + deviceHeight / camera.zoom) / TILE_PX];
+}
+
+function devicePoint(view: HTMLElement, clientX: number, clientY: number): [number, number] {
   const box = view.getBoundingClientRect();
-  return [(event.clientX - box.left) * devicePixelRatio, (event.clientY - box.top) * devicePixelRatio];
+  return [(clientX - box.left) * devicePixelRatio, (clientY - box.top) * devicePixelRatio];
+}
+
+function zoomBy(app: App, steps: number, deviceX: number, deviceY: number): void {
+  app.camera = zoomAt(app.camera, app.camera.zoom + steps, deviceX, deviceY);
+}
+
+// The zoom keys and the zoom buttons both zoom about the view's centre.
+function zoomAtCentre(app: App, steps: number): void {
+  const { width, height } = app.renderer.canvas;
+  zoomBy(app, steps, width / 2, height / 2);
 }
 
 function inspectAt(app: App, deviceX: number, deviceY: number): void {
@@ -62,15 +80,17 @@ function inspectAt(app: App, deviceX: number, deviceY: number): void {
   inspectorReady.then(() => app.worker.postMessage(message)).catch((error: unknown) => console.error(error));
 }
 
-function onKey(app: App, event: KeyboardEvent): void {
+function onKey(app: App, fit: () => void, event: KeyboardEvent): void {
   // Ctrl or Cmd with plus and minus zooms the browser, which stays the browser's.
   if (event.ctrlKey || event.metaKey || event.altKey) return;
   const pan = PAN_KEYS.get(event.key);
   const zoom = ZOOM_KEYS.get(event.key);
   const { canvas } = app.renderer;
   if (pan) app.camera = panBy(app.camera, pan[0] * PAN_WORLD_PX * app.camera.zoom, pan[1] * PAN_WORLD_PX * app.camera.zoom);
-  else if (zoom) app.camera = zoomAt(app.camera, app.camera.zoom + zoom, canvas.width / 2, canvas.height / 2);
-  else if (event.key === 'Enter') inspectAt(app, canvas.width / 2, canvas.height / 2);
+  else if (zoom) zoomAtCentre(app, zoom);
+  else if (event.key === 'Home') fit();
+  // A button in the view keeps its own Enter.
+  else if (event.key === 'Enter' && event.target === event.currentTarget) inspectAt(app, canvas.width / 2, canvas.height / 2);
   else return;
   event.preventDefault();
 }
@@ -79,7 +99,14 @@ export function bindCameraInput(view: HTMLElement, app: App): void {
   let wheelPx = 0;
   let wheelAtMs = 0;
   let drag: Drag | null = null;
+  const pinch = new Pinch();
+  const { width, height } = app.renderer.canvas;
+  const [tilesWide, tilesHigh] = townTiles(app.camera, width, height);
 
+  const fit = (): void => {
+    const canvas = app.renderer.canvas;
+    app.camera = fitCamera(tilesWide, tilesHigh, canvas.width, canvas.height);
+  };
   const onWheel = (event: WheelEvent): void => {
     event.preventDefault();
     const px = event.deltaY * WHEEL_UNIT_PX[event.deltaMode];
@@ -87,19 +114,26 @@ export function bindCameraInput(view: HTMLElement, app: App): void {
     wheelPx = sameGesture ? wheelPx + px : px;
     wheelAtMs = event.timeStamp;
     if (Math.abs(wheelPx) < WHEEL_STEP_PX) return;
-    const [x, y] = devicePoint(view, event);
-    app.camera = zoomAt(app.camera, app.camera.zoom - Math.sign(wheelPx), x, y);
+    const [x, y] = devicePoint(view, event.clientX, event.clientY);
+    zoomBy(app, -Math.sign(wheelPx), x, y);
     wheelPx = 0;
   };
   // A second pointer down, as in a pinch, takes over the drag and is never a click.
   const onPointerDown = (event: PointerEvent): void => {
     if (event.button !== 0) return;
     const { pointerId, clientX, clientY } = event;
+    pinch.down(pointerId, clientX, clientY);
     drag = { pointer: pointerId, x: clientX, y: clientY, downX: clientX, downY: clientY, clickable: drag === null };
     view.setPointerCapture(pointerId);
   };
-  // The world follows the pointer, so the camera moves the other way: panBy's delta moves the view.
+  // The world follows the pointer, so the camera moves the other way: panBy's delta moves the view. Two pointers zoom
+  // about their midpoint instead.
   const onPointerMove = (event: PointerEvent): void => {
+    const step = pinch.move(event.pointerId, event.clientX, event.clientY);
+    if (pinch.active) {
+      if (step !== 0) zoomBy(app, step, ...devicePoint(view, pinch.midX, pinch.midY));
+      return;
+    }
     if (!drag || event.pointerId !== drag.pointer) return;
     const dpr = devicePixelRatio;
     app.camera = panBy(app.camera, (drag.x - event.clientX) * dpr, (drag.y - event.clientY) * dpr);
@@ -109,19 +143,25 @@ export function bindCameraInput(view: HTMLElement, app: App): void {
     if (event.buttons !== 1 || !isClick(event.clientX - drag.downX, event.clientY - drag.downY)) drag.clickable = false;
   };
   const onPointerUp = (event: PointerEvent): void => {
+    pinch.up(event.pointerId);
     if (drag?.pointer !== event.pointerId) return;
     if (drag.clickable && event.button === 0) {
-      const [x, y] = devicePoint(view, event);
+      const [x, y] = devicePoint(view, event.clientX, event.clientY);
       inspectAt(app, x, y);
     }
     drag = null;
   };
   const onPointerCancel = (event: PointerEvent): void => {
+    pinch.up(event.pointerId);
     if (drag?.pointer === event.pointerId) drag = null;
   };
-  const onKeyDown = (event: KeyboardEvent): void => onKey(app, event);
+  const onKeyDown = (event: KeyboardEvent): void => onKey(app, fit, event);
 
-  view.setAttribute('aria-label', 'Town view: arrow keys pan, plus and minus zoom, Enter shows the blob at the centre');
+  view.setAttribute(
+    'aria-label',
+    'Town view: arrow keys pan, plus and minus zoom, Home fits the town, Enter shows the blob at the centre',
+  );
+  view.append(new ZoomBar(view.ownerDocument, (steps) => zoomAtCentre(app, steps), fit).root);
   view.addEventListener('wheel', onWheel, { passive: false });
   view.addEventListener('pointerdown', onPointerDown);
   view.addEventListener('pointermove', onPointerMove);
