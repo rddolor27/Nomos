@@ -1,8 +1,7 @@
 name: perf
 
+# By hand only while Nomos is a proof of concept: run it after changing a tick or frame path.
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 jobs:
