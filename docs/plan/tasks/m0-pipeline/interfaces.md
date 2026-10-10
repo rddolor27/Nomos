@@ -703,6 +703,8 @@ M2.1 builds Lengnick's households and firms in `sim-core`, as its [step plan](..
   - `TIER_MEMORY_BYTES` and snapshot v1 don't change.
 - **Streams:** `FIRM_DRAW`, `WAGE_DRAW`, `LABOUR_DRAW`, `SHOP_DRAW`, `WEALTH_DRAW` and `START_DRAW`, the agent-layer streams 0x107–0x10C.
 - **Hashes:** seed 42 at 1,000 ticks gives CLI phone `3c786124`. Highcourt's pins follow the current `town.nmap`.
+  - `goldens.json` also pins `economy`: seed 42 on the phone tier after 3 months, which is 63 days of `economyDay` with LENGNICK and `fiatIssuePpm` 10,000, hashing to `b4bd023b`.
+  - The Node, Bun and browser checks replay it with the tick replays, and `node packages/sim-core/scripts/goldens.ts` regenerates it.
 
 ## Steering (owner, 10 October 2026)
 
