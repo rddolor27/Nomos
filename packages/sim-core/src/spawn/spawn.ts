@@ -113,7 +113,7 @@ function drawWeights(table: Uint16Array, n: number, weights: Float64Array, seed:
 }
 
 // Firm sizes split the employed by the lognormal table, then the first employed of a keyed order of everyone take the
-// jobs, firm by firm. The order stays in scratch for linkSuppliers.
+// jobs, firm by firm. Each hired place in the order then holds its blob's firm, for linkSuppliers.
 function hire(world: World, record: Float64Array, key: number): void {
   const { agents, firms, seed } = world;
   const { order, weights, shares } = world.economyScratch;
@@ -125,7 +125,10 @@ function hire(world: World, record: Float64Array, key: number): void {
   let hired = 0;
   for (let f = 0; f < firmCount; f++) {
     firms.employees[f] = shares[f];
-    for (let w = 0; w < shares[f]; w++) agents.employer[order[hired++]] = f;
+    for (let w = 0; w < shares[f]; w++, hired++) {
+      agents.employer[order[hired]] = f;
+      order[hired] = f;
+    }
   }
 }
 
@@ -161,17 +164,18 @@ function stockFirms(world: World, record: Float64Array, params: EconomyParams, k
 // steps on to the next firm, as in startEconomy.
 function linkSuppliers(world: World, record: Float64Array, key: number): void {
   const { agents, seed } = world;
-  const { employer, suppliers } = agents;
-  const order = world.economyScratch.order;
+  const suppliers = agents.suppliers;
+  // The bench's spawn row: hire left the u-th hired blob's firm at order[u], one read where employer[order[u]] took two.
+  const firmOfHired = world.economyScratch.order;
   const employed = record[LEDGER_EMPLOYED];
   const firmCount = record[LEDGER_FIRMS];
   for (let p = 0; p < agents.count[0]; p++) {
     const first = p * SUPPLIERS;
-    // The 10 ms spawn row: drawing all seven before any step lets their memory reads overlap, a third faster, and gives
-    // the same links as stepping each in turn.
+    // The bench's spawn row: drawing all seven before any step lets their memory reads overlap, a third faster, and
+    // gives the same links as stepping each in turn.
     for (let k = 0; k < SUPPLIERS; k++) {
       const u = draw4(seed, SPAWN_DRAW, key, p, k, LINK) % (employed + firmCount);
-      suppliers[first + k] = u < employed ? employer[order[u]] : u - employed;
+      suppliers[first + k] = u < employed ? firmOfHired[u] : u - employed;
     }
     for (let k = 1; k < SUPPLIERS; k++) stepPastRepeats(suppliers, first, k, firmCount);
   }
