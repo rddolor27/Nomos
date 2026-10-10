@@ -12,9 +12,14 @@ import { TARGETS, type TargetId } from '../src/targets/targets.ts';
 
 const LONG = process.env.ECONOMY_LONG === '1';
 const CLI = fileURLToPath(new URL('../src/main.ts', import.meta.url));
-// M2.3 Ruling 12: the confirmation runs 100 months on 50 seeds it never tuned on.
+// M2.3 Ruling 12: a confirmation runs 100 months on 50 seeds it never tuned on. The replication's ran seeds 1001-1050, and
+// the city's re-tune (Ruling 19) confirmed on 2001-2050.
 const CONFIRM_MONTHS = 100;
-const CONFIRM_SEEDS = Array.from({ length: 50 }, (_, i) => 1001 + i);
+const CONFIRM_SEED_COUNT = 50;
+
+function seedsFrom(first: number): number[] {
+  return Array.from({ length: CONFIRM_SEED_COUNT }, (_, i) => first + i);
+}
 
 function gridPath(name: string): string {
   return fileURLToPath(new URL(`../grids/${name}.json`, import.meta.url));
@@ -43,13 +48,13 @@ function summarizeRun(dir: string): Record<TargetId, number[]> {
 
 describe('the calibration grids', () => {
   it.each([
-    ['confirm-city', CITY],
-    ['confirm-lengnick', LENGNICK],
-  ] as const)("%s measures 100 months from the first month start on or after its preset's burn-in", (name, preset) => {
+    ['confirm-city', CITY, seedsFrom(2001)],
+    ['confirm-lengnick', LENGNICK, seedsFrom(1001)],
+  ] as const)("%s measures 100 months from the first month start on or after its preset's burn-in", (name, preset, seeds) => {
     const grid = readGrid(name);
     expect(grid.warmUpDays).toBe(preset.burnInDays);
     expect(grid.days).toBe((Math.ceil(preset.burnInDays / DAYS_PER_MONTH) + CONFIRM_MONTHS) * DAYS_PER_MONTH);
-    expect(grid.seeds).toEqual(CONFIRM_SEEDS);
+    expect(grid.seeds).toEqual(seeds);
   });
 
   it.each(['sweep', 'refine', 'design'])('%s parses', (name) => {
@@ -75,7 +80,7 @@ describe.runIf(LONG)('the city preset on fresh seeds (ECONOMY_LONG=1)', () => {
   });
 
   it('judges all 50 seeds', () => {
-    expect(values.unemployment_mean).toHaveLength(CONFIRM_SEEDS.length);
+    expect(values.unemployment_mean).toHaveLength(CONFIRM_SEED_COUNT);
   });
 
   // The one confirmation (10 October 2026) held every tier-1 target, so no tier-1 gap is listed. Tier-2 misses are gaps

@@ -204,10 +204,10 @@ describe('the city preset', () => {
       priceChancePpm: 220_000,
       wageCutMonths: 25,
       onJobSearchPpm: 127_732,
-      shortPayExitPpm: 300_000,
+      shortPayExitPpm: 0,
       slowSearcherPpm: 227_437,
       slowJobSearches: 1,
-      burnInDays: 17_295,
+      burnInDays: 18_428,
     };
     expect(CITY).toEqual({ ...LENGNICK, ...changed });
     expect(Object.keys(CITY).sort()).toEqual(Object.keys(LENGNICK).sort());

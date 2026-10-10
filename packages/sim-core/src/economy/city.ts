@@ -38,16 +38,16 @@ export const CITY = Object.freeze<EconomyParams>({
   bufferPpm: 100_000,
   demandFloor: 63,
   idleMonthsToExit: 3,
-  // M2.3 Ruling 5's bankruptcy at 30% of the wage keeps exits near R2's 1.45-1.65% of firm-months (seeds 1-20); at this
-  // theta the sweep's exits ran 38-61% from 700,000 up.
-  shortPayExitPpm: 300_000,
+  // Off until entry is designed (M2.3 Ruling 19): a re-entered row has no workers, so shop search never links a household
+  // to it, and it pays under the exit line and exits again every month.
+  shortPayExitPpm: 0,
   fiatIssuePpm: 0,
   openingCash: 310_000,
   openingWage: 142_800,
   // 3,200 x 63 is 1.41 x the 142,800 wage, inside the band.
   openingPrice: 3_200,
   // Measured here (`economy --preset city --burn-in --seeds 5 --seed 1 --days 40000`: seeds 1-5, 40,000 days, Node 24.18.0,
-  // 10 October 2026): MSER-5 cut 11,530 days of the mean price and 10,900 of the unemployment share, and 1.5 x 11,530
-  // rounds up to 17,295. 20,000 days left the price's truncation in the second half (M2.3 Ruling 18).
-  burnInDays: 17_295,
+  // 10 October 2026, exits off): MSER-5 cut 12,285 days of the mean price and 10,900 of the unemployment share, and
+  // 1.5 x 12,285 rounds up to 18,428 (M2.3 Ruling 18).
+  burnInDays: 18_428,
 });
