@@ -11,7 +11,7 @@ On 10 October 2026 the owner asked to improve how the app looks and reads: its b
     - a compact bar on phones, in place of the town view's four-row wrap over the picture;
   - **zoom:** the same +, −, Fit, wheel, pinch and keys on the town, the map and the town view, replacing the Controls panel's zoom slider;
   - **charts a user can read:** titles, axis labels with units, legends or direct labels, palette colours, and the data table each chart already needs.
-- **Owner decision first:** the look itself. The ui-designer shows two or three mockups, and the owner picks one before anything is built.
+- **Owner decision first:** the look itself. The ui-designer shows two or three mockups, and the owner picks one before anything is built. Settled on 10 October 2026: the owner said to go with the coordinator's suggestion, calm slate surfaces with one orange accent, so no mockups were drawn.
 - **Exit checks:**
   - axe finds no violations on the town, the map and the town view, at desktop size and at 390×844;
   - first-load bytes stay within budget, and each new chunk has a size-limit entry;

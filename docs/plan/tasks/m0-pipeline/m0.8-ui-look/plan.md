@@ -1,6 +1,11 @@
 # M0.8 UI look: implementation brief
 
-> **Status:** brief. Before building, expand it into a step-by-step plan with the writing-plans skill, in this file, against the code as it then stands.
+> **Status:** brief. The first pass was built from it on 10 October 2026, at the owner's word to go with the coordinator's look (checkpoint 0029):
+> - the tokens, buttons and focus ring (8e70a4f);
+> - one compact toolbar for the map and the town view, in `panels/toolbar.ts` (42f509e, with ce64dfe for its dependency rule);
+> - chart axes with labels and units (4b97e95).
+>
+> Left undone: lil-gui behind `?dev=1`; Fit, Home and pinch on the town itself; and `toolbar.ts` in `interfaces.md`'s Layout. Expand these into a step plan with the writing-plans skill before building them.
 
 **Task:** [task.md](task.md)
 
@@ -34,5 +39,5 @@
 
 ## Open questions
 
-- **Owner:** which look? Mockups come first. Needed before: building.
-- **Design:** keep lil-gui for developer settings, or retire it? Suggested: keep it, behind a developer toggle only. Needed before: the step plan.
+- **Owner:** which look? Mockups come first. Needed before: building. Settled on 10 October 2026: the owner said to go with the coordinator's suggestion, calm slate surfaces with one orange accent, so no mockups were drawn (checkpoint 0029).
+- **Design:** keep lil-gui for developer settings, or retire it? Suggested: keep it, behind a developer toggle only. Needed before: the step plan. Settled with the look: keep it, behind `?dev=1`.

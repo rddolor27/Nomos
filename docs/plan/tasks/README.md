@@ -183,7 +183,7 @@ Each must be settled before its sub-milestone starts. The task files give the co
 
 | Before | Decision |
 | --- | --- |
-| M0.8 | the look itself. The ui-designer shows two or three mockups, and the owner picks one before anything is built |
+| M0.8 | the look itself. The ui-designer shows two or three mockups, and the owner picks one before anything is built. Settled on 10 October 2026: the owner said to go with the coordinator's suggestion, calm slate surfaces with one orange accent, so no mockups were drawn |
 | M1.2 | how long a lab day lasts at 1×. Round 1's engine runs discrete days with animated phases, while the calendar makes a day at 1× last 144 s |
 | M1.4 | whether the sounds pass a listen: the Sound tab asks the owner to play `dist/sounds/` before M1, above all the nine tracks against well-known jingles |
 | M1.4 | whether the synth renders at 22,050 Hz like the previews, or at the audio context's 44.1 or 48 kHz |
