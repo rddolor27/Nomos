@@ -1,4 +1,5 @@
 import { SUPPLIERS } from '../agents/store.ts';
+import { NO_HOME } from '../households/store.ts';
 import { issue, retire, walletAccount } from '../money/ledger.ts';
 import { draw4 } from '../random/draw.ts';
 import { keyedShuffle } from '../random/shuffle.ts';
@@ -20,10 +21,21 @@ export function startEconomy(world: World, params: EconomyParams): void {
     throw new RangeError(`the economy starts with ${params.households} households, one a blob, not ${blobs} blobs`);
   }
   world.firms.count[0] = params.firms;
+  openHouseholds(world, params);
   hireEveryone(world, params);
   openFirms(world, params);
   linkSuppliers(world, params);
   fundHouseholds(world, params);
+}
+
+// A blob is still a whole household of the economy (M2.2 Ruling 1), so each row holds one person and no home.
+function openHouseholds(world: World, params: EconomyParams): void {
+  const { count, size, home } = world.households;
+  count[0] = params.households;
+  for (let h = 0; h < params.households; h++) {
+    size[h] = 1;
+    home[h] = NO_HOME;
+  }
 }
 
 // Household order[i] works at firm i mod F, so every firm holds floor(H / F) workers or one more.

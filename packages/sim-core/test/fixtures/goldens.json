@@ -1,14 +1,14 @@
 {
   "ticks": 1000,
   "hashes": {
-    "42/phone": "3c786124",
-    "42/phone-plus": "c12f0de5",
-    "42/desktop": "9ff63cde"
+    "42/phone": "746a06a3",
+    "42/phone-plus": "7560155c",
+    "42/desktop": "10699866"
   },
   "economy": {
     "seed": 42,
     "tier": "phone",
     "months": 3,
-    "hash": "b4bd023b"
+    "hash": "6a652730"
   }
 }

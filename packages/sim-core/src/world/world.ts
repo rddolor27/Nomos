@@ -8,6 +8,7 @@ import { createLedger, issue, walletAccount, type Ledger } from '../money/ledger
 import { reserveArena, take, type Arena } from '../memory/arena.ts';
 import { MAX_CULTURES, addAgent, createAgentStore, type AgentStore } from '../agents/store.ts';
 import { createFirmStore, type FirmStore } from '../firms/store.ts';
+import { createHouseholdStore, type HouseholdStore } from '../households/store.ts';
 import { createEconomyScratch, type EconomyScratch } from '../economy/scratch.ts';
 import { SPAWN, STRIDE } from '../random/streams.ts';
 import { STRIDE_DAYS, createStride, type Stride } from '../day/stride.ts';
@@ -29,7 +30,7 @@ export const RECORD_FIELDS = 3;
 
 // Stand-ins until later milestones supply settlements, cultures, loans and money.
 const SETTLEMENTS = 8;
-const CULTURES = 4;
+export const STAND_IN_CULTURES = 4;
 const LOAN_CAPACITY = 4_096;
 export const OPENING_CENTS = 100_000;
 const NO_FOCUS = -1;
@@ -44,6 +45,7 @@ export interface World {
   readonly globals: Int32Array;
   readonly agents: AgentStore;
   readonly firms: FirmStore;
+  readonly households: HouseholdStore;
   readonly economyScratch: EconomyScratch;
   readonly cash: Ledger;
   readonly blob: Blob;
@@ -98,13 +100,15 @@ export function layoutWorld(
   focus[0] = NO_FOCUS;
   const firms = createFirmStore(arena, TIER_FIRMS[tier]);
   const economyScratch = createEconomyScratch(arena, agents, TIER_FIRMS[tier]);
-  return {
+  const households = createHouseholdStore(arena, agents);
+  const world: World = {
     seed,
     tier,
     arena,
     globals,
     agents: store,
     firms,
+    households,
     economyScratch,
     cash,
     blob,
@@ -117,6 +121,10 @@ export function layoutWorld(
     ground,
     checks: true,
   };
+  for (let c = 0; c < STAND_IN_CULTURES; c++) cultureUid[c] = c + 1;
+  // Nothing is committed before the first day's last slice.
+  record[frontRecord(world) + RECORD_DAY] = -1;
+  return world;
 }
 
 export function populate(world: World, people: number = world.agents.capacity): void {
@@ -128,9 +136,8 @@ export function populate(world: World, people: number = world.agents.capacity): 
   const width = world.ground.width;
   const open = openCells(world.ground);
   if (open.length === 0) throw new RangeError('the ground has no walkable cell to spawn on');
-  for (let c = 0; c < CULTURES; c++) world.cultureUid[c] = c + 1;
   for (let id = 0; id < people; id++) {
-    const slot = addAgent(agents, seed, id, CULTURES, 0);
+    const slot = addAgent(agents, seed, id, STAND_IN_CULTURES, 0);
     issue(world.cash, walletAccount(world.cash, slot), OPENING_CENTS);
     const cell = open[below(open.length, seed, SPAWN, id, 0)];
     const spot = draw2(seed, SPAWN, id, 1);
@@ -142,8 +149,6 @@ export function populate(world: World, people: number = world.agents.capacity): 
       setHeading(agents, slot, start >>> 24);
     }
   }
-  // Nothing is committed before the first day's last slice.
-  world.record[frontRecord(world) + RECORD_DAY] = -1;
 }
 
 export function currentTick(world: World): number {
