@@ -40,7 +40,19 @@ Beyond the checkpoint's Open list:
 - **Stale docs:**
   - the 48×28 town in `place-camera.test.ts:11`, `interfaces.md`'s Places sizes, `countries.md:46`, the M3.1 plan (line 41) and the M0.4 plan (line 83);
   - the old hash `b3b2c251` in `interfaces.md:163`, the M8.1 plan (line 300) and the M8.3 plan (lines 85 and 1844).
-- **The shared plan doc** still names five engines, Deno and the 2% pay cut. Update it at the next sync, with the owner.
+- **The shared plan doc** still names five engines, Deno and the 2% pay cut. It also lacks M3.1 Part 3, whose suggested tag is "(Towns)". Update it at the next sync, with the owner, along with the deferred items in `git show 6736fb6:docs/plan/HANDOFF.md`.
+- **The owner's go:** M3.1 Part 3's Tasks 12–16 and 19–21 (walls, towers, gates and farms). M0.5 waits only on the owner's device timings.
+- **Backlog from before the restructure** (checkpoint 0034 and the nomos-bd hand-off):
+  - **Unbuilt tasks:** M0.8's leftovers (lil-gui behind `?dev=1`, the town's Fit, Home and pinch, and `toolbar.ts` in the Layout table), and M8.1's Tasks 31 and 33–35.
+  - **Checks:** the `names-only-in-the-inspector` dependency rule isn't `reachable`, and `fallback.spec` centres on the old 48×28 map.
+  - **The app:** the Town skin and the town view fetch the atlas separately. The town view's reduced motion doesn't switch live in Chromium (low).
+  - **The economy:** the slow-searcher trait keys on the row index, which M5's births must fix. M2.6's brief puts `spawn/culture.ts` in a guarded folder.
+  - **Budgets:** the 35 ms spawn row for 100,000 agents has about 14% headroom, and CI's runner may be slower.
+  - **Docs:**
+    - `interfaces.md`'s desktop memory total, about 11.9 of 64 MiB, leaves out M2.2's and M2.3's roughly 1.1 MB;
+    - M2.1's plan lines 220–221 and 258 are stale;
+    - `tools/sprites/README.md` lacks the designers' edits;
+    - `design` writes its columns in the machine's byte order, which `interfaces.md` records as little-endian on x64 and arm64.
 
 ## Log
 
