@@ -35,6 +35,7 @@ export function tinyWorld(width: number, height: number, patch: Partial<WorldMap
     regions: { seat: new Int32Array([0]), country: new Uint8Array([1]) },
     roads: none(),
     lanes: none(),
+    roadClass: new Uint8Array(0),
     bridges: new Int32Array(0),
     wonders: { kind: new Uint8Array(0), cell: new Int32Array(0) },
     landmarks: { kind: new Uint8Array(0), cell: new Int32Array(0) },
