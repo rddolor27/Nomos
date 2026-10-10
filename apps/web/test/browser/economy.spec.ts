@@ -93,8 +93,10 @@ for (const { name, viewport } of SIZES) {
   test.describe(name, () => {
     test.use({ viewport });
 
-    // One flow for all of it: each page that has run a town takes seconds to close under SwiftShader.
+    // One flow for all of it, as each page that has run a town takes seconds to close under SwiftShader, which is also why
+    // the test gets the slow-test timeout.
     test("shows day 0's figures and trades after Play, and passes axe", async ({ page }) => {
+      test.slow();
       await openPaused(page);
       await expect(page.locator('#economy')).toContainText(NO_DAYS);
       expect(day0.trades).toBeGreaterThan(0);
