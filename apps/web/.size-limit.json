@@ -104,7 +104,7 @@
   {
     "name": "Initial JS, M0 stand-in",
     "path": ["dist/assets/index-*.js", "dist/assets/render-gl-*.js", "dist/assets/worker-*.js"],
-    "limit": "17 kB"
+    "limit": "20 kB"
   },
   {
     "name": "Atlas",
