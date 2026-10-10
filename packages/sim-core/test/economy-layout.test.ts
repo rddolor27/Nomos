@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { SUPPLIERS } from '../src/agents/store.ts';
 import { CITY } from '../src/economy/city.ts';
 import { LENGNICK, checkParams, type EconomyParams } from '../src/economy/params.ts';
-import { createEconomyScratch } from '../src/economy/scratch.ts';
+import { PURCHASE_RING, createEconomyScratch } from '../src/economy/scratch.ts';
 import * as stats from '../src/economy/stats.ts';
 import { createFirmStore } from '../src/firms/store.ts';
 import { PHONE_MEMORY_BYTES, reserveArena } from '../src/memory/arena.ts';
@@ -307,6 +307,10 @@ describe('the economy scratch', () => {
       yearEmployer: [Int32Array, 500],
       yearWage: [Float64Array, 50],
       exiting: [Uint8Array, 50],
+      purchaseShop: [Int32Array, PURCHASE_RING],
+      purchaseUnits: [Int32Array, PURCHASE_RING],
+      purchaseCents: [Float64Array, PURCHASE_RING],
+      purchaseCount: [Int32Array, 1],
     } as const;
     for (const name of Object.keys(shapes) as (keyof typeof shapes)[]) {
       const [kind, length] = shapes[name];

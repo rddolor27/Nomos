@@ -1,5 +1,6 @@
 import { SUPPLIERS } from '../agents/store.ts';
 import type { EconomyParams } from '../economy/params.ts';
+import { clearPurchases, logPurchase } from '../economy/scratch.ts';
 import { STAT_SALES_CENTS, STAT_SALES_UNITS } from '../economy/stats.ts';
 import { floorDiv } from '../maths/int.ts';
 import { firmAccount, transfer, walletAccount } from '../money/ledger.ts';
@@ -43,6 +44,7 @@ function buyFrom(world: World, household: number, link: number, unmet: number): 
     transfer(cash, wallet, firmAccount(cash, firm), cents);
     economyScratch.stats[STAT_SALES_UNITS] += units;
     economyScratch.stats[STAT_SALES_CENTS] += cents;
+    logPurchase(economyScratch, firm, units, cents);
   }
   return units;
 }
@@ -62,6 +64,7 @@ function shopFor(world: World, household: number, wanted: number, day: number): 
 export function shopDay(world: World, params: EconomyParams, day: number): void {
   const households = world.agents.count[0];
   const order = world.economyScratch.order;
+  clearPurchases(world.economyScratch);
   keyedShuffle(order, households, world.seed, SHOP_DRAW, day, SHOP_ORDER);
   const dayInMonth = dayOfMonth(day);
   for (let turn = 0; turn < households; turn++) {
