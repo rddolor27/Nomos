@@ -83,6 +83,12 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 11 Oct: **M2.4 Part 1 briefed** (a38fc16): goods and food on screen.
+  - **The goods:** seven, one per supplier link: bread, vegetables, fish and milk as food, and cloth, tools and fuel.
+  - **Eating:** every blob eats 3 portions a day, and food spoils from a 16-day ring per shop.
+  - **The hash:** the goods state is hashed only in goods worlds, so `LENGNICK` and its goldens can't move. The city's food share is ICP's upper-middle 18.6% (decided).
+  - **The coordinator's calls:** milk is the seventh good, since the owner named none, and Part 1's shop waste of about 5% (inference) is a gap against R6's 0.5–3% until Part 2.
+  - **The modal:** its worker side landed in 5b6e505.
 - 11 Oct: **M2.2b done** (Tasks 5 and 8, the review, the allocation fix; 8e4a120..c20ce6e, b7eb873..1339b2c).
   - **The panel:** it charts mean price, mean wage and unemployment by day, each with a data table, above the day's last 16 trades, which name no buyer.
   - **The HUD:** Pause, 1×, 4×, 16× and Map sit on one row at 1280 px, with the developer panel behind `?dev=1`.
