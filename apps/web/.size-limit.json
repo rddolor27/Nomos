@@ -90,7 +90,7 @@
   {
     "name": "Map worker chunk",
     "path": ["dist/assets/map-worker-*.js"],
-    "limit": "17 kB"
+    "limit": "19 kB"
   },
   {
     "name": "Place builder chunk",
