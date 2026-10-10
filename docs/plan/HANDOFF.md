@@ -20,6 +20,13 @@ The owner can overturn any of these.
 - **Decisions.** Claude settles open owner decisions itself, and records each here as a ruling.
 - **Walled towns,** the final answers for M3.1 Part 3: density peaks at the plaza; stone walls with towers for capitals and cities, a palisade for towns, and none for villages and hamlets; roads by role; farms on the outskirts; the new buildings; suburbs, bridges, avenues and greens. Tasks 12–16 and 19–21 wait for the owner's go.
 
+**Owner, 11 October 2026,** after seeing M2.2b's flat monthly charts:
+- **Ask first:** Claude asks the owner before starting each new step or feature, with a short plan, and waits for a go.
+- **Every town runs the sim:** the town in view is live; leaving it folds it into its record, and the next spawns from its own. The first screen becomes one town among them.
+- **Crowds:** a town holds one blob per bed in its houses, so Highcourt drops to about 2,688.
+- **The blob modal:** a click shows the blob's picture, name, job and pay, home and household, what it is doing, and its look.
+- **The order:** first food and goods (M2.4 Part 1) beside the modal; then every town running the sim; then trips to work and shops. Ask again before each step.
+
 **The designers' calls, 10 October 2026:**
 - houses: the corner houses' L-shaped wing, cream doors, and handed pieces drawn at random rather than in pairs;
 - terrain: snow overlays on bridges (13 px of atlas), the palisade side gate as tall posts only, gates 2 tiles wide, and no palisade watchtower;
