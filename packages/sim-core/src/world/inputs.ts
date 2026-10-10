@@ -1,6 +1,8 @@
 import { take, type Arena } from '../memory/arena.ts';
 
 export const INPUT_FOCUS = 1;
+// a is the number of people to lay off, and a town's economy fires them at the next day's start (M2.2b).
+export const INPUT_LAYOFFS = 2;
 export const INPUT_CAPACITY = 4096;
 
 // Each input is stamped with the tick it was logged in; cursor holds the logged and applied counts.

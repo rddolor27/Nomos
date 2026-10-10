@@ -1,9 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import { logFocus, logInput } from '../src/day/day.ts';
+import { logFocus, logInput, logLayoffs } from '../src/day/day.ts';
+import { CITY } from '../src/economy/city.ts';
+import { ECONOMY_TICKS, economyDay } from '../src/economy/economy.ts';
+import { STAT_FIRINGS } from '../src/economy/stats.ts';
+import { createTown } from '../src/spawn/town.ts';
+import { TICKS_PER_DAY } from '../src/time/calendar.ts';
 import { INPUT_CAPACITY, INPUT_FOCUS } from '../src/world/inputs.ts';
 import { step } from '../src/step/step.ts';
 import { checkpoint, restoreWorld, stateHash } from '../src/world/checkpoint.ts';
-import { createWorld, currentTick } from '../src/world/world.ts';
+import { standInGround } from '../src/world/ground.ts';
+import { DAY_LAYOFFS, createWorld, currentTick, type World } from '../src/world/world.ts';
 import { run } from './run.ts';
 
 describe('the day boundary', () => {
@@ -73,5 +79,83 @@ describe('the day boundary', () => {
     expect(accepted).toBe(INPUT_CAPACITY);
     expect(logInput(world, INPUT_FOCUS, 0, 0)).toBe(false);
     expect(world.inputs.cursor[0]).toBe(4_096);
+  });
+});
+
+const SEED = 42;
+const PEOPLE = 1_000;
+const LAID_OFF = 50;
+const END_TICK = 3_000;
+
+function town(): World {
+  return createTown(SEED, 'phone', standInGround(), PEOPLE);
+}
+
+function employersOf(world: World): number[] {
+  return Array.from(world.agents.employer.subarray(0, world.agents.count[0]));
+}
+
+function employedCount(world: World): number {
+  let employed = 0;
+  for (const employer of employersOf(world)) if (employer >= 0) employed++;
+  return employed;
+}
+
+// The slot the boundary sums into, and the layoffs the day's economy has fired so far.
+function layoffsOf(world: World): number[] {
+  return [world.globals[DAY_LAYOFFS], world.economyScratch.stats[STAT_FIRINGS]];
+}
+
+describe('the layoffs input', () => {
+  it("fires a logged 50 at the next day's start, as economyDay's shock does", () => {
+    const world = run(town(), 300);
+    const employed = employedCount(world);
+    expect(logLayoffs(world, LAID_OFF)).toBe(true);
+
+    run(world, TICKS_PER_DAY);
+    expect(layoffsOf(world)).toEqual([0, 0]);
+    expect(employedCount(world)).toBe(employed);
+
+    step(world);
+    expect(layoffsOf(world)).toEqual([LAID_OFF, LAID_OFF]);
+    expect(employedCount(world)).toBe(employed - LAID_OFF);
+
+    run(world, TICKS_PER_DAY + ECONOMY_TICKS);
+    const twin = town();
+    economyDay(twin, CITY, 0);
+    economyDay(twin, CITY, 1, LAID_OFF);
+    expect(employersOf(world)).toEqual(employersOf(twin));
+
+    run(world, 2 * TICKS_PER_DAY + 1);
+    expect(layoffsOf(world)).toEqual([0, 0]);
+  });
+
+  it("holds layoffs logged inside a day's economy window for the next day, and adds them up", () => {
+    const world = run(town(), TICKS_PER_DAY + 5);
+    const employed = employedCount(world);
+    expect(logLayoffs(world, 30)).toBe(true);
+    run(world, TICKS_PER_DAY + 700);
+    expect(logLayoffs(world, 20)).toBe(true);
+
+    run(world, 2 * TICKS_PER_DAY);
+    expect(layoffsOf(world)).toEqual([0, 0]);
+    expect(employedCount(world)).toBe(employed);
+
+    step(world);
+    expect(layoffsOf(world)).toEqual([LAID_OFF, LAID_OFF]);
+    expect(employedCount(world)).toBe(employed - LAID_OFF);
+  });
+
+  it('reaches the same hash from a checkpoint taken with a layoff pending or after it fired', () => {
+    const whole = run(town(), 300);
+    logLayoffs(whole, LAID_OFF);
+    const pending = checkpoint(run(whole, 800));
+    const fired = checkpoint(run(whole, TICKS_PER_DAY + 5));
+    run(whole, END_TICK);
+
+    for (const state of [pending, fired]) {
+      expect(stateHash(run(restoreWorld(SEED, 'phone', state), END_TICK))).toBe(stateHash(whole));
+    }
+    expect(stateHash(whole)).not.toBe(stateHash(run(town(), END_TICK)));
   });
 });

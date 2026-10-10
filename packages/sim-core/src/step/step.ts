@@ -5,7 +5,7 @@ import { ECONOMY_TICKS, runEconomySystem } from '../economy/economy.ts';
 import { OK, checkInvariants, failInvariant } from '../money/invariants.ts';
 import { SPOILAGE_RULE, daySliceCount, runDaySlice } from '../day/slices.ts';
 import { move } from '../movement/wander.ts';
-import { DAY_AGENTS, DAY_HOUSEHOLDS, TICK, TOWN, type World } from '../world/world.ts';
+import { DAY_AGENTS, DAY_HOUSEHOLDS, DAY_LAYOFFS, TICK, TOWN, type World } from '../world/world.ts';
 
 export interface SystemTimer {
   lap(system: number): void;
@@ -16,7 +16,6 @@ export const SYSTEM_NAMES: readonly string[] = ['day', 'move', 'economy'];
 const DAY_SYSTEM = 0;
 const MOVE_SYSTEM = 1;
 const ECONOMY_SYSTEM = 2;
-const NO_LAYOFFS = 0;
 
 export function step(world: World, timer?: SystemTimer): void {
   runDayWork(world);
@@ -39,11 +38,12 @@ function runDayWork(world: World): void {
   if (k < daySliceCount(globals[DAY_AGENTS], globals[DAY_HOUSEHOLDS], SPOILAGE_RULE, world.tier)) runDaySlice(world, k);
 }
 
-// A town's economy runs system k on the day's tick k, from the boundary on, one system a tick (M2.2b Ruling 2).
+// A town's economy runs system k on the day's tick k, from the boundary on, one system a tick (M2.2b Ruling 2). The day's
+// layoffs are the boundary's sum, which system 0 on the day's first tick spends and no later system reads.
 function runEconomyTick(world: World): void {
   const globals = world.globals;
   if (globals[TOWN] === 0) return;
   const tick = globals[TICK];
   const system = tick % TICKS_PER_DAY;
-  if (system < ECONOMY_TICKS) runEconomySystem(world, CITY, dayOf(tick), system, NO_LAYOFFS);
+  if (system < ECONOMY_TICKS) runEconomySystem(world, CITY, dayOf(tick), system, globals[DAY_LAYOFFS]);
 }

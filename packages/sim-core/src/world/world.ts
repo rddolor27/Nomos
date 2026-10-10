@@ -21,6 +21,9 @@ export const DAY_AGENTS = 2;
 export const DAY_HOUSEHOLDS = 3;
 // 1 for a town, whose step runs CITY's economy, and 0 for any other world (M2.2b).
 export const TOWN = 4;
+// The people the day's economy lays off on its first tick: the layoffs logged since the last boundary, added up when the
+// boundary applies them, so only the boundary writes it (M2.2b).
+export const DAY_LAYOFFS = 5;
 const GLOBAL_SLOTS = 8;
 
 // The settlement record is double-buffered: day slices fold into the back half, and the last slice flips
