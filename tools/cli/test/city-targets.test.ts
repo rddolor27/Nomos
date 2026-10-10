@@ -83,8 +83,8 @@ describe.runIf(LONG)('the city preset on fresh seeds (ECONOMY_LONG=1)', () => {
     expect(values.unemployment_mean).toHaveLength(CONFIRM_SEED_COUNT);
   });
 
-  // The one confirmation (10 October 2026) held every tier-1 target, so no tier-1 gap is listed. Tier-2 misses are gaps
-  // that rank, never filter (Ruling 12), and M2.3's task.md documents them.
+  // The confirmation on seeds 2001-2050 (10 October 2026) held every tier-1 target, so no tier-1 gap is listed. Tier-2
+  // misses are gaps that rank, never filter (Ruling 12), and M2.3's task.md documents them.
   it.each(TARGETS.filter((target) => target.tier === 1))('$id holds', (target) => {
     expect(judgeTarget(target, values[target.id]).verdict).toBe('holds');
   });
