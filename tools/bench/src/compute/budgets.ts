@@ -1,4 +1,4 @@
-import { DAYS_PER_MONTH, type Tier } from '@nomos/sim-core';
+import { DAYS_PER_MONTH, dayOfMonth, type Tier } from '@nomos/sim-core';
 
 // A system's budget in reference-machine ms a tick, keyed by scale so that M7 can add 1k and 10k country rows. A mean
 // row gates the day's average tick and a max row its worst, as the day slices need (R6).
@@ -46,3 +46,24 @@ export const MAX_HEAP_GROWTH_BYTES_PER_TICK = 65_536;
 // garbage with no scavenge. Nothing planted measured about 3 KB, nearly all of it the stats call itself, and one
 // new Array(8) a tick about 170 KB (M0.6's review).
 export const MAX_YOUNG_BYTES_PER_DAY = 16_384;
+
+export interface AllocationLimit {
+  readonly scavenges: number;
+  readonly youngBytes: number;
+}
+
+// Interim allowance for a month's last and first days (coordinator, 11 October 2026). The once-a-month systems each loop
+// over every household or firm once, so V8 runs them in its cold tiers, which box a number per element; M6 owns the fix.
+// On Node 24.18 the CLI's three tiers read at most 0.82 MB with one scavenge on the last day, a reading the scavenge cuts
+// short, and 177 KB with none on the first. Each limit is that reading and a third more, rounded up to a whole 64 KiB and
+// a whole scavenge. A plain day keeps its 16 KiB and no scavenge.
+const PLAIN_DAY: AllocationLimit = { scavenges: 0, youngBytes: MAX_YOUNG_BYTES_PER_DAY };
+const MONTH_END: AllocationLimit = { scavenges: 2, youngBytes: 1_114_112 };
+const MONTH_START: AllocationLimit = { scavenges: 0, youngBytes: 262_144 };
+
+export function allocationLimit(day: number): AllocationLimit {
+  const dayInMonth = dayOfMonth(day);
+  if (dayInMonth === DAYS_PER_MONTH - 1) return MONTH_END;
+  if (dayInMonth === 0) return MONTH_START;
+  return PLAIN_DAY;
+}

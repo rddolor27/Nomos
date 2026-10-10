@@ -1,6 +1,13 @@
 import { TICKS_PER_DAY, currentTick, type Tier, type World } from '@nomos/sim-core';
 import { allocationWindow, runTicks } from './compute/allocation.ts';
-import { ALLOCATION_DAYS, MAX_HEAP_GROWTH_BYTES_PER_TICK, MAX_YOUNG_BYTES_PER_DAY, TIERS } from './compute/budgets.ts';
+import {
+  ALLOCATION_DAYS,
+  MAX_HEAP_GROWTH_BYTES_PER_TICK,
+  MAX_YOUNG_BYTES_PER_DAY,
+  TIERS,
+  allocationLimit,
+  type AllocationLimit,
+} from './compute/budgets.ts';
 import { readLoadavg } from './machine/loadavg.ts';
 import { BENCH_WARM_DAYS, createBenchWorld } from './compute/sample.ts';
 
@@ -10,6 +17,7 @@ interface DayAllocation {
   readonly scavenges: number;
   readonly youngBytes: number;
   readonly heapGrowthPerTick: number;
+  readonly limit: AllocationLimit;
   readonly pass: boolean;
 }
 
@@ -25,10 +33,11 @@ interface TierAllocation {
 async function checkDay(world: World, view: Uint32Array, day: number): Promise<DayAllocation> {
   runTicks(world, day * TICKS_PER_DAY - currentTick(world), view);
   const { scavenges, youngBytes, heapGrowthPerTick } = await allocationWindow(world, TICKS_PER_DAY, view);
+  const limit = allocationLimit(day);
+  const withinLimit = scavenges <= limit.scavenges && youngBytes <= limit.youngBytes;
   // A NaN reading fails too: growth from a run without --expose-gc, young bytes if V8 renames new_space.
-  const pass =
-    scavenges === 0 && youngBytes <= MAX_YOUNG_BYTES_PER_DAY && heapGrowthPerTick < MAX_HEAP_GROWTH_BYTES_PER_TICK;
-  return { day, ticks: TICKS_PER_DAY, scavenges, youngBytes, heapGrowthPerTick, pass };
+  const pass = withinLimit && heapGrowthPerTick < MAX_HEAP_GROWTH_BYTES_PER_TICK;
+  return { day, ticks: TICKS_PER_DAY, scavenges, youngBytes, heapGrowthPerTick, limit, pass };
 }
 
 async function checkTier(tier: Tier): Promise<TierAllocation> {

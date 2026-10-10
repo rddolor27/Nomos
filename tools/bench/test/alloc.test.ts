@@ -3,7 +3,12 @@ import { runInNewContext } from 'node:vm';
 import { DAYS_PER_MONTH, TICKS_PER_DAY, dayOfMonth } from '@nomos/sim-core';
 import { describe, expect, it } from 'vitest';
 import { allocationWindow, runTicks } from '../src/compute/allocation.ts';
-import { ALLOCATION_DAYS, MAX_HEAP_GROWTH_BYTES_PER_TICK, MAX_YOUNG_BYTES_PER_DAY } from '../src/compute/budgets.ts';
+import {
+  ALLOCATION_DAYS,
+  MAX_HEAP_GROWTH_BYTES_PER_TICK,
+  MAX_YOUNG_BYTES_PER_DAY,
+  allocationLimit,
+} from '../src/compute/budgets.ts';
 import { BENCH_WARM_DAYS, createBenchWorld, type BenchWorld } from '../src/compute/sample.ts';
 
 // Vitest runs without --expose-gc, so the tests expose gc themselves. Each window then starts from a full collection,
@@ -59,5 +64,21 @@ describe('the allocation days', () => {
   it('come in order and after the warm days, which the gate walks through once', () => {
     expect(ALLOCATION_DAYS[0]).toBeGreaterThanOrEqual(BENCH_WARM_DAYS);
     expect(ALLOCATION_DAYS.every((day, i) => i === 0 || day > ALLOCATION_DAYS[i - 1])).toBe(true);
+  });
+});
+
+// A plain day keeps the strict limit. The once-a-month systems box numbers in V8's cold tiers, so their two days have an
+// interim allowance until M6 (coordinator, 11 October 2026).
+describe('the allocation limits', () => {
+  it('give a plain day 16 KiB and no scavenge, and a month end and start their allowance', () => {
+    expect(allocationLimit(1)).toEqual({ scavenges: 0, youngBytes: MAX_YOUNG_BYTES_PER_DAY });
+    expect(allocationLimit(20)).toEqual({ scavenges: 2, youngBytes: 1_114_112 });
+    expect(allocationLimit(21)).toEqual({ scavenges: 0, youngBytes: 262_144 });
+  });
+
+  it('follow the day of the month, so day 0 starts a month and day 41 ends one', () => {
+    expect(allocationLimit(0)).toBe(allocationLimit(21));
+    expect(allocationLimit(41)).toBe(allocationLimit(20));
+    expect(allocationLimit(40)).toBe(allocationLimit(1));
   });
 });
