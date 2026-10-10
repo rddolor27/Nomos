@@ -421,6 +421,18 @@ The designers drew and committed all of these on 10 October 2026. They are still
 
 **The budget it sets:** after each layout task, the capitals' and cities' median stays within 2× this baseline, and their worst within 2.5× the baseline's worst, on the same machine. Past that, profile and fix the hot spot before committing. The likely ones are `spur_reach`, rebuilt by every `find_lot`, and searches that fit nowhere.
 
+**The baseline** (2664baa, 10 October 2026). Measured on Windows 10 with Node 24.18.0, while the other session's agents ran; the load wasn't measured. Two runs, each of 6 places a tier from 6 standard worlds:
+
+| Tier | Median, ms | Worst, ms | Budget: median, worst |
+| --- | --- | --- | --- |
+| capital | 118.2 and 109.9 | 125.0 and 128.5 | 236 ms and 321 ms |
+| city | 106.1 and 107.1 | 113.9 and 123.4 | 214 ms and 309 ms |
+| town | 54.3 and 57.7 | 61.4 and 64.0 | — |
+| village | 34.8 and 34.5 | 36.8 and 37.1 | — |
+| hamlet | 8.7 and 8.5 | 10.8 and 11.0 | — |
+
+Each budget doubles the higher median and multiplies the higher worst by 2.5. The largest loops: capitals 6,498 walk cells and 69,486 crowd cells, cities 5,946 and 22,498.
+
 ### Task 10: The atlas cap (render-engineer, Sonnet)
 
 The town page is 2048 × 1347 px against `tools/atlas`'s 2048 px cap, and the sheets are still growing (Measured here).
@@ -758,7 +770,7 @@ It may run beside Tasks 11–16, since it shares no file with them and road clas
 **Waits for:** Tasks 11–16 and 19.
 
 - [ ] **Step 1 (sim-engineer):** `python tools/worldgen/export_map.py --check` and `pnpm vitest run apps/web/test/town` pass, since every layout task re-exported Highcourt.
-- [ ] **Step 2 (sim-engineer): the replay hash.** `node tools/cli/src/main.ts --seed 42 --tier phone --ticks 1000`. Expected: the hash from before the round, since the CLI runs on the stand-in ground.
+- [ ] **Step 2 (sim-engineer): the replay hash.** `node tools/cli/src/main.ts --seed 42 --tier phone --ticks 1000`. Expected: the hash on `main` when the task starts. The CLI runs on the stand-in ground, so this round never moves it, while the other session's economy does: it was `3c786124` after M2.1's Task 1.
 - [ ] **Step 3 (sim-engineer):** report the first screen's start counts per tier from `tiers.test.ts`, with the tick budget each is held to. The owner decides the counts (task.md, Owner decision first).
 - [ ] **Step 4 (senior-game-engineer): screenshots for the owner,** at 1,280 × 800, seed 42 and `?tier=desktop`, saved to `dist/qa/walled-towns/`:
   - the first screen, in the Town skin;
