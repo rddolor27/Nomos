@@ -1,5 +1,6 @@
 import { parseArgs } from 'node:util';
 import { TIER_AGENTS, createWorld, currentTick, logFocus, stateHash, step, warmUp, type Tier } from '@nomos/sim-core';
+import { runEconomy } from './economy/run.ts';
 
 const MAX_SEED = 0xffff_ffff;
 const MAX_INT32 = 0x7fff_ffff;
@@ -32,33 +33,40 @@ function hex8(hash: number): string {
   return hash.toString(16).padStart(8, '0');
 }
 
-const { values } = parseArgs({
-  options: {
-    seed: { type: 'string', default: '42' },
-    tier: { type: 'string', default: 'phone' },
-    ticks: { type: 'string', default: '1000' },
-    focus: { type: 'string', multiple: true, default: [] },
-    warmup: { type: 'boolean', default: false },
-  },
-});
+function runTicks(args: readonly string[]): void {
+  const { values } = parseArgs({
+    args: [...args],
+    options: {
+      seed: { type: 'string', default: '42' },
+      tier: { type: 'string', default: 'phone' },
+      ticks: { type: 'string', default: '1000' },
+      focus: { type: 'string', multiple: true, default: [] },
+      warmup: { type: 'boolean', default: false },
+    },
+  });
 
-const seed = wholeNumber('seed', values.seed, MAX_SEED);
-const ticks = wholeNumber('ticks', values.ticks, MAX_INT32);
-const tier = values.tier;
-if (!isTier(tier)) throw new RangeError(`--tier must be one of ${Object.keys(TIER_AGENTS).join(', ')}, not ${tier}`);
-const focuses = values.focus.map((text) => parseFocus(text, ticks));
+  const seed = wholeNumber('seed', values.seed, MAX_SEED);
+  const ticks = wholeNumber('ticks', values.ticks, MAX_INT32);
+  const tier = values.tier;
+  if (!isTier(tier)) throw new RangeError(`--tier must be one of ${Object.keys(TIER_AGENTS).join(', ')}, not ${tier}`);
+  const focuses = values.focus.map((text) => parseFocus(text, ticks));
 
-if (values.warmup) {
-  const start = performance.now();
-  warmUp();
-  console.log(`warmup=${(performance.now() - start).toFixed(1)}ms`);
-}
-
-const world = createWorld(seed, tier);
-for (let tick = 0; tick < ticks; tick++) {
-  for (const focus of focuses) {
-    if (focus.tick === tick && !logFocus(world, focus.settlement)) throw new RangeError('the input log is full');
+  if (values.warmup) {
+    const start = performance.now();
+    warmUp();
+    console.log(`warmup=${(performance.now() - start).toFixed(1)}ms`);
   }
-  step(world);
+
+  const world = createWorld(seed, tier);
+  for (let tick = 0; tick < ticks; tick++) {
+    for (const focus of focuses) {
+      if (focus.tick === tick && !logFocus(world, focus.settlement)) throw new RangeError('the input log is full');
+    }
+    step(world);
+  }
+  console.log(`seed=${seed} tier=${tier} tick=${currentTick(world)} hash=${hex8(stateHash(world))}`);
 }
-console.log(`seed=${seed} tier=${tier} tick=${currentTick(world)} hash=${hex8(stateHash(world))}`);
+
+const args = process.argv.slice(2);
+if (args[0] === 'economy') runEconomy(args.slice(1));
+else runTicks(args);
