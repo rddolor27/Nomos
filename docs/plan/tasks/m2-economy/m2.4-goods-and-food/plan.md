@@ -1,102 +1,80 @@
-# M2.4 Goods and food: implementation brief
+# M2.4 Goods and food: brief
 
-> **Status:** brief. Before building, expand it into a step-by-step plan with the writing-plans skill, in this file, against the code as it then stands.
+> **Status:** two parts. Part 1, the visible cut, is a brief to build from once the owner says go (owner, 11 October 2026: ask before each step). Part 2 becomes a step plan after Part 1 lands.
 
-**Task:** [task.md](task.md)
+**Task:** [task.md](task.md). Each task writes its code, then its tests (the main case and one edge), runs only those and a typecheck at `nice -n 19`, then commits. CI runs the rest after the push.
 
-## Approach
+## Part 1: goods and food on screen
 
-- **Eight sectors:** each firm has one of grain, fresh food, timber, stone, metal, fuel, wares or services. Its integer recipe holds at most two inputs, one output and worker-days per batch. Recipes are a build-time table, never code paths per good ([R6 resources notes](../../../../research/round-6-goods-and-wellbeing/notes/resources-production.md), part a and the recommendation).
-- **One wholesale call auction per tradable good per day.**
-  - It extends M2.1's single auction to a loop over goods.
-  - Services trade directly, never through an auction.
-  - Unmet demand per good is logged for M3's needs system.
-- **Baskets per good:**
-  - Households buy goods with the Stone–Geary rule.
-  - Subsistence γ comes first, cheapest-first in portions, then marginal shares β.
-  - Shares are seeded from ICP 2021 by development preset: food is 45, 33, 19 and 9% of consumption.
-- **Food lots:**
-  - Each lot is one `Uint32`, packing `exp:16 | cat:3 | grade:2 | storage:2 | qty:9`.
-  - The six categories are grain, bread, produce, dairy, fresh protein and preserved.
-  - A shop shelf holds ≤ 32 lots and a pantry ≤ 8, both kept sorted by expiry and sold or eaten first-expiry-first.
-  - Storage moves convert the remaining life by integer proportion ([R6 food notes](../../../../research/round-6-goods-and-wellbeing/notes/food-quality-spoilage.md), part e).
-- **Spoilage only at the day boundary.**
-  - Expired lots move into per-category waste counters.
-  - Perishables get no random daily loss.
-  - Staples in poor storage lose 0.015–0.04% a day, by keyed stochastic rounding.
-  - The sliced day work's late-spoilage rule comes from M0.3's owner ruling (round 6 conflict e).
-- **Food prices:** base × grade (100, 135 or 180%) × freshness (100% fresh, 75% stale, 50% on the last day), in integer cents, flooring after each multiply. Markdown sales and waste are logged per category per day.
-- **Grade choice:**
-  - A household picks a grade from its consumption budget per adult, relative to the price index, never from a wealth band.
-  - Food value is a memo line, outside net worth and tax bases.
+### Rulings
 
-## Packages and files
+The architect's, 11 October 2026, after the owner found M2.2b's panel lifeless. The owner can overturn any of them.
 
-- `packages/sim-core`:
-  - `src/firms/recipes.ts`, generated from `scripts/recipes.ts`: the 8-sector table;
-  - `src/market/wholesale.ts`: the per-good loop, plus `unmetDemand`;
-  - `src/consumption/basket.ts`: Stone–Geary per good, and the ICP presets;
-  - `src/food/lots.ts`: lot pack and unpack, insertion sorted by expiry, and FEFO take;
-  - `src/food/spoil.ts`: the day-boundary sweep and the staple-loss draws;
-  - `src/food/price.ts`: the grade and freshness price;
-  - `src/food/ledger.ts`: the portion identity per day.
-- `scripts/shelf-life.ts`: the 6 × 3 shelf-life table (fresh-until and use-by days per storage tier), from the R6 notes, emitted as data.
+1. **Seven goods, one per supplier link,** in `goods/goods.ts`. Good 0 stays today's generic good, so zeroed memory and `LENGNICK` run as before.
 
-## Interfaces and data
+   | Id | Good | Shop | On sale | Made a worker-day | Firms and jobs |
+   | --- | --- | --- | --- | --- | --- |
+   | 1–4 | bread, vegetables, fish, milk | Bakery, Greengrocer, Fishmonger, Dairy | 4, 7, 3, 14 days | 18 portions | 4.5% each |
+   | 5–7 | cloth, tools, fuel | Draper, Smithy, Fuel Store | kept | 3 units | 27.33, 27.33, 27.34% |
 
-- **Lot word:**
-  - `packLot(exp, cat, grade, storage, qty): number`;
-  - `expOf`, `catOf`, `gradeOf`, `storageOf` and `qtyOf`.
+   - Milk joins the owner's six, so a blob's link k always sells good k + 1 (`SUPPLIERS` is 7). A search replaces link k only with a firm of that good, drawn by workers.
+   - Days on sale are R6's use-by days ([R6 food notes](../../../../research/round-6-goods-and-wellbeing/notes/food-quality-spoilage.md), opened), ambient for bread and vegetables and cool for fish and milk (inference).
+   - 3 portions a day take a sixth of a job, so at `CITY`'s 92.3% employed (M2.3, measured) food holds 18.1% of jobs and of spending (computed). That is near ICP 2021's upper-middle 18.6% (opened), which settles the city's preset.
+   - Start and spawn give each good its exact share of firm rows, at least one each, in table order. Spawn splits the employed the same way, then by the size table within each good. A keyed draw per firm would leave small towns short of goods and size food firms at random. Food firms open at the preset's or record's price over 6, floored.
 
-  `qty` counts portions, up to 511; larger stock splits into several lots.
-- **Shelf stores** are fixed `Uint32Array` blocks: 32 slots per shop shelf and 8 per pantry, plus a count per block.
-- **Food ledger per settlement per day:** produced, imported, eaten, spoiled, exported, pre-retail loss, Δstock and Δin-transit, all in portions.
-- **Hashing:** `stateHash` hashes lots by their decoded fields in canonical order, so a change of memory layout cannot change the hash. That makes the layout-swap exit check meaningful.
+2. **Food.**
+   - **Eating:** every blob eats 3 portions a day, one a meal (inference). The new `buyFood` runs before `shopDay` and visits food links in A9's keyed order, each shop selling what it can (A7, A10). Food is eaten the day it is bought; pantries are M3.5's.
+   - **Food first:** a month's `planConsumption` sets aside 63 portions at the food links' mean price, then plans goods from the rest by Lengnick's rule. `shopDay` skips food links.
+   - **Short:** a portion a blob can't afford or find adds to the day's `unmet`, for M3's needs system, and nothing else follows yet.
+   - **Dated stock:** each firm row has a 16-slot ring of portions by the day made, slot day & 15. Output enters today's slot after shopping, and sales take the oldest first. At the day's start, the new `spoilFood` empties the slot made L + 1 days ago, so a batch sells for L days. `firms.stock` stays the total.
+   - **Hiring:** food can't pile up, so Lengnick's band can't see a glut. A food firm is short under a day's demand in stock, and long once it has wasted a worker-month (378 portions) since it last decided. Short opens a vacancy and may raise the price; long gives notice and may cut it. Goods firms keep `CITY`'s 0.8–1.6-month band, and an exiting food firm's stock spoils.
 
-## Method and sources
+3. **Prices.** Each firm keeps Lengnick's price rule over its own good's output, so posted prices still move on a month's first day. Sales, stock, price paid, spoilage, eaten and short move daily. The price paid is a good's sales cents over its units, or its posted mean on a day nothing sells.
 
-- **Sectors, recipes and auctions:** [R6 resources notes](../../../../research/round-6-goods-and-wellbeing/notes/resources-production.md), parts a and d, and the recommendation.
-- **Lots, FEFO, shelf lives, spoilage, prices and targets:** [R6 food notes](../../../../research/round-6-goods-and-wellbeing/notes/food-quality-spoilage.md), parts a, b and e, and "Recommendation for the plan".
-- **ICP shares and the Stone–Geary rule:** [R6 summary](../../../../research/round-6-goods-and-wellbeing/summary.md), and M2.1's consumption code.
-- **Rescaling:** [calendar.md](../../../calendar.md). Shelf lives are per day; grain's 365-day use-by outlasts three 112-day years.
+4. **Money and determinism.**
+   - A purchase is one `transfer` of whole cents, and spoilage moves no money, so all accounts plus MINT still sum to zero.
+   - **The goods store** holds `good` (Uint8), the ring (16 Int32) and `wasted` (Int32) per firm row, 69 bytes a firm. It is canonical but off the canonical list: `stateHash` mixes it in last while global slot `GOODS` (6) is 1, which start and spawn copy from the new `EconomyParams.goods`, 0 in `LENGNICK` and 1 in `CITY`.
+   - So `6a652730`, `746a06a3`, the other tick goldens and the 20 spawn hashes hold, while `town` and Highcourt's pins move. `{ ...CITY, goods: 0 }` replays M2.3's `CITY` byte for byte.
+   - `buyFood` draws on `SHOP_DRAW` purposes 8 (its order of blobs) and 9 (its visit order). Goods need no draw, `goods/` reaches no culture, and every array is in the arena, so no tick allocates.
+   - **The record** keeps its 14 fields. In a goods world its price and stock are the goods firms', so fold stays exact, and each spawn starts food fresh: a day's output, made the day before.
+   - **M2.3's targets** still apply, since schema 2's unit columns count goods only: stock months, the price ratio and Okun read goods firms. Task 4 re-measures the burn-in and reruns the 50-seed confirmation once. A tier-1 miss is recorded as a gap, untuned until Part 2 changes demand again.
 
-## Tests for the exit checks
+5. **The schedule.** `ECONOMY_TICKS` becomes 20: 0 opens the day and now empties the trade rings, 1 `spoilFood`, 2–6 the month's first-day systems, 7 `buyFood`, 8 `shopDay`, 9 `produce`, 10–16 the month's last-day systems and 17–19 the records. Both new systems do nothing in `LENGNICK`, and the hash's month-end skip moves with the numbers, so compare from tick 20. **Cost at 10k** ([M2.2b's table](../../m0-pipeline/interfaces.md#the-economy-on-screen-owner-m22b), desktop, measured): the worst tick stays a month's first-day `searchShops`, 1.78 ms. `buyFood` adds a daily tick near `shopDay`'s 1.17 ms, and `spoilFood` reads a slot per food firm (inference).
 
-- `food balances in portions every day`:
-  - over 20 seeds × 400 days, each settlement satisfies, exactly every day: produced + imported = eaten + spoiled + exported + pre-retail loss + Δstock + Δin-transit.
-- `shops spoil 0.5–3% of throughput`: in the city preset over 50 paired seeds, this holds as an estimate claim.
-- `lot layout does not change the hash`:
-  - a build flag swaps packed `Uint32` lots for field arrays (`Uint16` exp, `Uint8` cat, grade and storage, `Uint16` qty);
-  - 10 seeds × 400 days give identical state hashes in both layouts;
-  - the flag exists only for this test.
-- `FEFO and markdowns`: unit tests cover:
-  - insertion keeps expiry order;
-  - takes come from the earliest expiry first;
-  - stale lots price at 75% and last-day lots at 50%, floored.
-- `services never auctioned`: the auction loop skips services, and services trade one to one.
+6. **The feed and panel.**
+   - **Flow log schema 2** adds per good `sold`, `sold_cents`, `made`, `stock`, `spoiled` and posted mean `price`, plus `eaten` and `unmet`: 79 slots. The unit columns and `price_mean` cover goods only; `sales_cents` stays all revenue.
+   - **`EconomyMessage`** drops `meanPriceCents`. It gains 112 days of sold, stock and price paid for each town good and of food eaten, spoiled and short, about 23.6 KB a day (computed), and trades hold the day's last 8 food and last 8 goods purchases, each with its good.
+   - **The panel:** a table of the day's goods (sold, in stock, price paid, spoiled), a food chart (eaten, spoiled, short), a chart of each good's sales, and the wage and unemployment charts. A trade reads "2 bread at Bakery 12, 10.66": a shop takes its trade's name and row + 1 until buildings name it, and the inspector says "works at Bakery 12".
+   - **Bytes:** only the lazy economy chunk and the worker grow. Raise each size-limit entry to a build's measure + 1 kB, as M2.2b did. Initial JS has about 9 kB left under its 35 kB (computed: the stand-in's 26.8 kB limit is its measure + 1 kB).
 
-## Risks and unknowns
+7. **Part 2 keeps** the sectors, recipes and producer layer, wholesale call auctions, Stone–Geary baskets, R6's lot words with grain and preserved food, storage tiers, grades, freshness pricing, and the full portion identity with shop spoilage of 0.5–3%.
 
-- **Needs M0.3's slice ruling** on late spoilage (round 6 conflict e) before the day-boundary sweep can be final.
-- **Round 6 rates set for a 365-day year,** such as the 1.5–3% monthly carrying cost and the ≤ 7% pest loss a season, must be re-read as per day or per year before they are coded (M2.7 verifies them).
-- **Shelf capacity:** 32 lots per shelf may overflow in busy shops. If so, merge lots with the same expiry and grade before adding, never drop one.
+### Tasks
 
-## Open questions
+One `sim-engineer` builds Tasks 1–4 in order beside the blob modal, with one agent running tests at a time. Tasks 5 and 6 wait for the modal to land, since it holds `messages.ts`, the worker loop, `households/store.ts` and the inspector. Each task records its names in `interfaces.md` in a docs commit. Bare paths are in `packages/sim-core/src/`.
 
-- **Owner, decided:** `skip-expired` stays M0.3's late-spoilage default, round 6's conflict (e). The owner chose it on 8 October 2026, and M0.3 built it as `SPOILAGE_RULE`. The day-boundary sweep and its tests depend on it, and the `one-pass-at-10k` option fails M0.6's 0.35 ms slice gate.
-- **Owner:** Which development preset does the `city` preset use, with food at 45, 33, 19 or 9% of consumption? It sets every basket, M2.6's Engel check and M2.7's food-share band. Suggested: 19%, where food still weighs on budgets without dominating them; then check M3.5's 5–15% insecurity band against it. Needed before: the step plan.
-- **Owner:** Which sector supplies each of the six food categories? Two sectors must fill six categories, and round 6 says only that shop labour and markup stand in for milling and baking ([R6 resources notes](../../../../research/round-6-goods-and-wellbeing/notes/resources-production.md), part d). Suggested: grain gives grain and bread, fresh food gives produce, dairy and fresh protein, and preserved takes fresh food plus fuel. Needed before: the step plan.
-- **Measure:** How full do the busiest shop shelves get? Peak occupancy shows whether merging same-expiry lots is enough. Suggested: log peak lots per shelf in the city preset at 10k agents. Needed before: building.
+1. **The goods** (`sim-engineer`, Sonnet), in two commits: `goods/goods.ts`, `goods/store.ts`, `World.goods`, the `GOODS` slot, the hash rule (`world/world.ts`, `world/checkpoint.ts`) and `EconomyParams.goods`; then goods, output, prices, stock and links by good in `economy/start.ts` and `spawn/spawn.ts`, and the record rule in `spawn/fold.ts`. `CITY.goods` stays 0 until Task 4.
+   - Check: `goods.test.ts`, where link k sells good k + 1 after start and spawn on `{ ...CITY, goods: 1 }` and fold returns the record exactly; edge: 7 firms hold one of each. `goldens.test.ts` and `city-record.ts --check` pass unchanged.
+2. **Food on the shelf** (`sim-engineer`, Sonnet): `goods/food.ts` (add, take oldest first, spoil) with `spoilFood`; output into the ring (`firms/produce.ts`); the food signals (`firms/decide.ts`); food exits (`firms/renew.ts`); schema 2 (`economy/stats.ts`).
+   - Check: `food.test.ts`, where a fish batch sells oldest first and its rest spoils on its 4th morning; edge: a firm that wasted 378 portions gives notice.
+3. **Eating** (`sim-engineer`, Sonnet): `buyFood` in `consumption/food.ts`, `shopDay` on goods links, the set-aside (`consumption/plan.ts`), the search by good (`consumption/search.ts`), the split rings (`economy/scratch.ts`) and the 20-system schedule (`economy/economy.ts`).
+   - Check: `food-day.test.ts`, 63 days of `economyDay` on a goods world, where each food's made = sold + spoiled + Δstock exactly every day and eaten = food sold; edge: an empty wallet logs 3 unmet portions. `flow-log.test.ts` follows, and the goldens and `--check` pass.
+4. **`CITY` gains goods** (`sim-engineer`, Sonnet; Opus if the twin fails for an unknown cause). `CITY.goods` is 1, and `burnInDays` comes from MSER-5 on 5 seeds of 40,000 days, about 30 s at M2.3's 7,774 days a second (computed). Regenerate `city-record.ts`, `goldens.json`'s `town`, Highcourt's pins and `confirm-city.json`; `targets.ts` reports `food_share`, `spoil_share` and `unmet_share`.
+   - Check: `economy-step.test.ts`'s twin, then one `ECONOMY_LONG=1` run of `city-targets.test.ts` on 2 threads (74 s in M2.3), its table written into `task.md`.
+5. **The feed** (`sim-engineer`, Sonnet), after the modal: `sim-protocol`'s `economy/feed.ts` and `messages.ts`, the goods' names re-exported for the app, and `employerGood` in `inspected`, which the loop's reply fills.
+   - Check: `feed.test.ts`, where a day's per-good point matches the stats row; edge: after 20 food and 20 goods purchases, the feed holds the last 8 of each.
+6. **The panel** (`senior-game-engineer`, Sonnet), after Task 5: `panels/economy.ts`, several series to a chart in `panels/charts.ts`, `panels/shop-name.ts` by trade, the inspector's employer line and `.size-limit.json`.
+   - Check: `economy.test.ts`, the goods table from a feed; edge: a good with nothing sold shows 0 at its posted price. In `economy.spec.ts`, the table and food chart show after Play, and axe passes.
+7. **Close** (the coordinator): push, so CI runs `pnpm check` and the browser specs; the owner starts perf.yml once; then one `economy-review` on Opus, which also checks the hash rule.
 
-## Implementation notes
+**Risks.** The set-aside and food hiring change demand and labour, so tier-1 targets may move; `{ ...CITY, goods: 0 }` stays an exact baseline. Staffing moves in whole workers, so a food shop can waste up to 1/(n + 1) of its output, about 5% in Highcourt's 9-worker food shops (inference), above R6's 0.5–3% until Part 2 lets shops buy to demand.
 
-Suggestions for the step plan, which makes the final call.
+## Part 2: the rest of M2.4 (later)
 
-- **Build order:** the lot word, FEFO and the price table first, as pure unit-tested code. Then the portion ledger on one good, the per-good auction loop, baskets, and the layout-swap hash test last.
-- **Reuse:** M2.1's auction and Stone–Geary code, extended rather than forked; M0.2's keyed stochastic rounding for staple losses; M0.3's day boundary for the sweep.
-- **Keep it simple:** imports, exports and in-transit stay zero until M7 but keep their place in the identity. Households buy final goods only; timber, stone and metal trade only at wholesale.
-- **Pitfalls:**
-  - If `exp:16` holds an absolute day, it wraps after 65,536 days, about 585 years of 112 days (computed). Longer-lived saves need a rebased epoch.
-  - Floor after each multiply in one fixed order, grade then freshness, since the order changes the cents.
-  - Clear the goods' auctions in the recipe table's fixed order, since one firm's cash spans several of them.
-- **Hard and easy parts:** keeping M2.3's targets once one good becomes eight is the hard part. Lots, FEFO and prices are mechanical.
+Part 2 builds `task.md`'s Part 2 list on Part 1's goods, from a step plan written against the code as it then stands.
+- **Sources:** the [R6 resources notes](../../../../research/round-6-goods-and-wellbeing/notes/resources-production.md), parts a and d; the [R6 food notes](../../../../research/round-6-goods-and-wellbeing/notes/food-quality-spoilage.md), parts a, b and e; and the [R6 summary](../../../../research/round-6-goods-and-wellbeing/summary.md) for ICP shares and Stone–Geary.
+- **Kept from the first brief:** R6's lot word, `exp:16 | cat:3 | grade:2 | storage:2 | qty:9`, at most 32 a shelf, replaces Part 1's ring, and `stateHash` reads lots by decoded field. Price floors after grade, then after freshness. Auctions clear in the recipe table's order. An absolute `exp` wraps after 65,536 days, about 585 years of 112 days (computed).
+- **Mapping:** bread comes from the grain sector, vegetables, fish and milk from fresh food, cloth and tools from wares, and fuel from fuel.
+- **Tests:** the full identity on 20 seeds × 400 days, shop spoilage on 50 paired city seeds, and identical hashes on 10 seeds × 400 days when a test-only flag swaps the lot layout.
+- **Open:** which sector makes grain and preserved food, and how full the busiest shelves get; measure peak lots a shelf at 10k agents first.
+- **Decided:** `skip-expired` stays M0.3's late-spoilage rule (owner, 8 October 2026), and the city's food share is ICP's upper-middle 18.6% (Ruling 1).
