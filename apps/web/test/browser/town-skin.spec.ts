@@ -61,8 +61,10 @@ test('draws Highcourt and every blob with the Town skin, over the hidden dots', 
 test.describe('on a 2560 x 1440 screen', () => {
   // The phone tier's 10,000 never pass autoSkin's town cap, 10,350 once the town shows, so ?tier=phone-plus spawns its
   // whole 25,000: at zoom 1 this view holds some 18,300, over the cap, and at zoom 2 some 4,600, under the 9,000 that
-  // enter the town. The 1280 x 720 view holds some 1,800 of the 10,000 at zoom 1, so it opens as the town.
-  test.use({ viewport: { width: 2560, height: 1440 } });
+  // enter the town. The 1280 x 720 view holds some 1,800 of the 10,000 at zoom 1, so it opens as the town. Paused at tick
+  // 0, the view redraws only when the camera moves or the town arrives: SwiftShader draws a running crowd this size too
+  // slowly for parallel workers.
+  test.use({ viewport: { width: 2560, height: 1440 }, reducedMotion: 'reduce' });
 
   test('shows the town under Auto from town zoom inward, and the dots zoomed out', async ({ page }) => {
     await page.goto('/?seed=42&tier=phone-plus');
