@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { CITY } from '../src/economy/city.ts';
-import { ECONOMY_TICKS, economyDay } from '../src/economy/economy.ts';
+import { ECONOMY_TICKS, economyDay, runEconomySystem } from '../src/economy/economy.ts';
 import { STAT_SALES_UNITS } from '../src/economy/stats.ts';
 import { createTown } from '../src/spawn/town.ts';
-import { DAYS_PER_MONTH, TICKS_PER_DAY } from '../src/time/calendar.ts';
+import { DAYS_PER_MONTH, DAYS_PER_YEAR, TICKS_PER_DAY } from '../src/time/calendar.ts';
 import { checkpoint, restoreWorld, stateHash } from '../src/world/checkpoint.ts';
 import { standInGround } from '../src/world/ground.ts';
 import { currentTick, type World } from '../src/world/world.ts';
@@ -61,6 +61,23 @@ describe('the economy in the step', () => {
     const afterWindow = booksOf(world);
     run(world, TICKS_PER_DAY - 1);
     expect(booksOf(world)).toEqual(afterWindow);
+  });
+
+  it("runs the year record as the 18th system on a year's last day only, and no system past it", () => {
+    const world = town();
+    const { yearEmployer } = world.economyScratch;
+    const people = world.agents.count[0];
+    const recorded = (): number[] => Array.from(yearEmployer.subarray(0, people));
+    const unrecorded = recorded();
+
+    runEconomySystem(world, CITY, DAYS_PER_YEAR - 2, ECONOMY_TICKS - 1, 0);
+    expect(recorded()).toEqual(unrecorded);
+    runEconomySystem(world, CITY, DAYS_PER_YEAR - 1, ECONOMY_TICKS, 0);
+    expect(recorded()).toEqual(unrecorded);
+
+    runEconomySystem(world, CITY, DAYS_PER_YEAR - 1, ECONOMY_TICKS - 1, 0);
+    expect(recorded()).toEqual(Array.from(world.agents.employer.subarray(0, people)));
+    expect(recorded()).not.toEqual(unrecorded);
   });
 
   it('reaches the same hash at tick 3,000 from a checkpoint taken on a day\'s 5th tick', () => {
