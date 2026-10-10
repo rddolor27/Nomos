@@ -4,6 +4,9 @@ import { WEB } from './web.ts';
 
 test.skip(({ browserName }) => browserName !== 'chromium', "the renderer's own specs draw the crowd in every engine");
 test.use({ baseURL: WEB });
+// SwiftShader draws the walking crowd on the CPU, so each screenshot here waits about 2 s for a frame, and longer on
+// CI's smaller runner. The checks keep their one-second windows; only the test's own budget grows.
+test.describe.configure({ timeout: 60_000 });
 
 // The map's world comes from the seed alone, and the phone tier keeps the town light, so it never slows the map.
 const TOWN = '/?seed=42&tier=phone';
