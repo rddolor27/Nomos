@@ -3,7 +3,9 @@ import { WEB } from './web.ts';
 
 test.use({ baseURL: WEB });
 
-const MAP_CHUNK = /\/(map-view|map-worker)-[^/]+\.js$|\/atlas\/map\.(json|webp)$/;
+// The map view and its atlas page load on demand. The map worker's chunk loads before, as the first screen's Town skin
+// builds Highcourt in a map worker of its own.
+const MAP_CHUNK = /\/map-view-[^/]+\.js$|\/atlas\/map\.(json|webp)$/;
 
 async function playing(page: Page): Promise<boolean> {
   return page.evaluate(() => window.__app?.paused === false);

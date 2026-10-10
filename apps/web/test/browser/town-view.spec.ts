@@ -27,10 +27,21 @@ test.afterEach(() => {
   expect(errors).toEqual([]);
 });
 
-async function openMap(page: Page): Promise<void> {
-  await page.goto(TOWN);
+async function showMap(page: Page): Promise<void> {
   await page.getByRole('button', { name: 'Map', exact: true }).click();
   await expect(page.locator('#map .map-legend li')).not.toHaveCount(0, { timeout: 60_000 });
+}
+
+async function openMap(page: Page): Promise<void> {
+  await page.goto(TOWN);
+  await showMap(page);
+}
+
+// The first screen's Town skin loads the town atlas and a place builder of its own in idle time, so a test that breaks
+// either for the town view waits for the town to draw first, or the first screen's load would fail first.
+async function openTown(page: Page): Promise<void> {
+  await page.goto(TOWN);
+  await page.waitForFunction(() => window.__app?.renderer.drawnSkin === 'town', null, { timeout: 60_000 });
 }
 
 function goToList(page: Page): Locator {
@@ -86,14 +97,15 @@ test('enters a settlement from the map, draws it with its walkers walking, and r
   await openMap(page);
   const capital = await goToCapital(page);
   const before = await mapCamera(page);
-  expect(loaded, 'the town view, its pass and the atlas, before any entry').toEqual([]);
+  // The first screen's Town skin loads the atlas in idle time, so only the town view's own chunk waits for an entry.
+  expect(loaded.filter((path) => path.startsWith('/assets/')), 'the town view, before any entry').toEqual([]);
 
   const enter = page.getByRole('button', { name: `Enter ${capital}` });
   await enter.click();
   await placeShown(page);
   await expect(page.getByRole('button', { name: 'Back to map' })).toBeFocused();
   await expect(page.locator('#map')).toHaveJSProperty('inert', true);
-  expect(loaded.map((path) => path.replace(/-[\w-]{8}\.js$/, '.js')).sort()).toEqual([
+  expect([...new Set(loaded.map((path) => path.replace(/-[\w-]{8}\.js$/, '.js')))].sort()).toEqual([
     '/assets/place-view.js',
     '/atlas/atlas.json',
     '/atlas/atlas.webp',
@@ -182,9 +194,10 @@ test.describe('in one engine', () => {
   });
 
   test('tells of a place the worker could not build, with Try again, and keeps the map whole', async ({ page, context }) => {
-    // Without its builder chunk, the worker answers the request with a place-error for that place.
+    await openTown(page);
+    // Without its builder chunk, the map's worker answers the request with a place-error for that place.
     await context.route(/\/place-builder-[\w-]{8}\.js$/, (route) => route.abort());
-    await openMap(page);
+    await showMap(page);
     const capital = await goToCapital(page);
     await page.getByRole('button', { name: `Enter ${capital}` }).click();
     await expect(page.locator('#place-status')).toHaveText(
@@ -277,12 +290,13 @@ test.describe('in one engine', () => {
     // As vite preview answers a missing file: with its index page, and 200.
     const missing = (route: Route): Promise<void> =>
       route.fulfill({ status: 200, contentType: 'text/html', body: '<!doctype html><title>Nomos</title>' });
+    await openTown(page);
     let asked = 0;
     page.on('request', (request) => {
       if (request.url().endsWith('/atlas/atlas.json')) asked++;
     });
     await page.route('**/atlas/atlas.json', missing);
-    await openMap(page);
+    await showMap(page);
     const capital = await goToCapital(page);
     const enter = page.getByRole('button', { name: `Enter ${capital}` });
     const status = page.locator('#place-status');
