@@ -10,12 +10,15 @@ export const WARM_AGENTS = 1024;
 export const WARM_MEMORY_BYTES = 1_048_576;
 export const WARM_DAYS = 40;
 export const WARM_TICKS = 2000;
+// Not 0: the first mix of seed 0 is under 2^31, so V8 compiles the keyed draw for small integers, and the warmed code
+// deoptimizes when a seed with a larger first mix arrives, which is half of them. The first mix of seed 1 is 2767685996.
+export const WARM_SEED = 1;
 
 // Day code runs once every 144 s at 1x, so the first real day would run cold; compiling it on a throwaway world first
 // roughly halves that day's cost at 100k (R6 integration-cost §2). An empty world would have no slices to run. The world
 // is a town, so the economy's days compile too: 40 of them cover a month's start and end.
 export function warmUp(): void {
-  const world = layoutWorld(0, 'phone', WARM_AGENTS, WARM_MEMORY_BYTES);
+  const world = layoutWorld(WARM_SEED, 'phone', WARM_AGENTS, WARM_MEMORY_BYTES);
   spawnTown(world, WARM_AGENTS);
   // Production workers skip the ledger check, so the warm-up compiles the step without it, and its cost stays flat as
   // wallets grow.
