@@ -13,7 +13,7 @@ M0's sub-milestones are planned in parallel, so the names and layouts they share
 | `@nomos/web` | `apps/web` | The page: load path, HUD, charts, the inspector, tiers and accessibility | M0.5, inspector in M0.7 |
 | `@nomos/cli` | `tools/cli` | Headless runs and replay hashes in Node, through sim-core's world step | M0.3 |
 | `@nomos/bench` | `tools/bench` | The CI budget, allocation and startup gates | M0.6 |
-| `@nomos/sim-culture` | `packages/sim-culture` | Culture code, walled off from crime, police, labour, wage, wealth, money, ability, housing and migration code; it also turns name keys into names | M0.6, names in M0.7 |
+| `@nomos/sim-culture` | `packages/sim-culture` | Culture code, walled off from crime, police, labour, wage, wealth, money, ability, housing, migration and spawn code; it also turns name keys into names | M0.6, names in M0.7 |
 | `@nomos/names` | `tools/names` | The name lint, its real-world fixture, the shared mixed sound set, the person-name filter and the culture text lint; M3.7 extends it | M0.6, sound set and person-name filter in M0.7 |
 | `@nomos/worldgen` | `packages/worldgen` | The TypeScript port of `tools/worldgen`: a seeded world of countries as a `WorldMap`, its place names, and each place's layout as `place.py` makes it. It runs only in the map worker | M8.1, places in M3.1 |
 
@@ -33,7 +33,7 @@ The world step lives in `sim-core`, so headless runs and the worker run the same
 
 The owner decided on 9 October 2026 that every package groups its source into module folders by concern. The rules:
 - **Entry files only at `src/`:** `index.ts`, a subpath export such as `kernels.ts`, and any file that a package script, CI or a test runs or bundles by path. Every other source file sits in a concern folder directly under `src/`, and a lint reports any that doesn't.
-- **One level of concern folders.** The culture wall matches `packages/sim-*/src/<concern>/`, so `crime`, `police`, `labour`, `wages`, `wealth`, `money`, `ability`, `housing` and `migration` are each a top-level folder when they arrive, never nested in another folder. `money/` is guarded as wealth, since every wallet lives there (M0.7 review).
+- **One level of concern folders.** The culture wall matches `packages/sim-*/src/<concern>/`, so `crime`, `police`, `labour`, `wages`, `wealth`, `money`, `ability`, `housing` and `migration` are each a top-level folder when they arrive, never nested in another folder. `money/` is guarded as wealth, since every wallet lives there (M0.7 review), and `spawn/` since it decides homes, jobs and cash (M2.2).
 - **Named for the concern,** never for a kind of code such as `utils/`. A concern may start with one file and grows in place, so paths and lint globs stay stable.
 - **Imports by path inside a package.** A source module imports another folder's module by its path; only other packages and tests use `index.ts`.
 - **The barrel caveat:** `sim-core`'s `index.ts` re-exports `consumption/stand-in.ts`, which imports `sim-culture`, so the barrel reaches `sim-culture`. In `sim-core`, only `consumption/` and `index.ts` may reach `sim-culture`, which dependency-cruiser enforces; M2.6 adds `step/` when the step first calls consumption. Guarded code elsewhere imports `@nomos/sim-core/kernels` or module paths, never the barrel.
@@ -162,9 +162,9 @@ Skin B and Skin C arrive as `blobs/` and `town/` beside `dots/` (M1.3, M3.3). M8
     - Three in four is the long-run share of the turns above, so the walking share holds near 75% from the first tick instead of climbing from none: 74.8%, 75.1% and 75.4% at ticks 0, 16 and 64 (measured, seed 42, phone tier).
 - `stateHash(world: World): number`: a 32-bit hash over every replay-relevant column and ledger, the value the determinism checks compare. M0.6 adds `stateHashExcept(world, skip: readonly ArrayBufferView[]): number`, of which `stateHash` is the case with nothing skipped, so no golden moves; the relabel test skips the culture columns.
 - `World.cultureUid`: a canonical `Uint8Array(MAX_CULTURES)` of stable culture uids, c + 1 per culture and 0 when unused. Culture-level draws key on it, never on the index (M0.6, R8).
-- Seed 42's replay hashes at tick 1,000, one per tier, live in `packages/sim-core/test/fixtures/goldens.json`, keyed `"<seed>/<tier>"`; the Node, Bun and browser checks all read it. A commit that moves the sim on purpose regenerates it with `node packages/sim-core/scripts/goldens.ts` (M0.6).
+- Seed 42's replay hashes at tick 1,000, one per tier, live in `packages/sim-core/test/fixtures/goldens.json`, keyed `"<seed>/<tier>"`; the Node, Bun and browser checks all read it. A commit that moves the sim on purpose regenerates it with `node packages/sim-core/scripts/goldens.ts` (M0.6). Since M2.2's household rows, they are `746a06a3` on phone, `7560155c` on phone-plus and `10699866` on desktop. `node tools/cli/src/main.ts --seed 42 --tier phone --ticks 1000` prints the phone hash.
 - `Tier` is `'phone' | 'phone-plus' | 'desktop'`, with agent caps of 10,000, 25,000 and 100,000. `sim-protocol` re-exports `Tier`, `TIER_AGENTS` and `townAgents` from its `messages.ts` (M0.3).
-- Highcourt's replay hashes at tick 1,000, seed 42, on `town.nmap` at the town's own crowd, are pinned in `packages/sim-protocol/test/town-map.test.ts`: `83e5b191` for phone (1,690 blobs) and `4099e61d` for desktop (3,381). The goldens above run on the stand-in ground, so a new map moves only these.
+- Highcourt's replay hashes at tick 1,000, seed 42, on `town.nmap` at the town's own crowd, are pinned in `packages/sim-protocol/test/town-map.test.ts`: `e5be40f9` for phone (3,965 blobs) and `d0a2c4ea` for desktop (7,931), on the 176 × 112 town. The goldens above run on the stand-in ground, so a new map moves only these.
 
 ## Agents and the Blob handle (owner: M0.7)
 
@@ -511,7 +511,7 @@ The Country and Region views draw a `WorldMap` with a renderer of their own, whi
 
 ## Places (owner: M3.1)
 
-The owner asked on 9 October 2026 to zoom into a settlement on the map and see that town and its people. A place is what `tools/worldgen/place.py` lays out for one settlement or wonder: a district of 176 × 112 tiles for a capital or city, 152 × 96 for a town, 80 × 48 for a village and 56 × 32 for a hamlet, or a wonder's vista of 30 × 18. These are M3.1's Part 3 sizes, or 160 × 100 and 140 × 80 if its Task 11 takes Ruling 1's fallback. M3.1's step plan builds it, ahead of the rest of M3.1.
+The owner asked on 9 October 2026 to zoom into a settlement on the map and see that town and its people. A place is what `tools/worldgen/place.py` lays out for one settlement or wonder: a district of 176 × 112 tiles for a capital or city, 152 × 96 for a town, 80 × 48 for a village and 56 × 32 for a hamlet, or a wonder's vista of 30 × 18. These are M3.1's Part 3 sizes, which its Task 11 built with no fallback (d68ff59). M3.1's step plan builds it, ahead of the rest of M3.1.
 
 ### The contract
 
@@ -664,7 +664,7 @@ The owner asked on 10 October 2026 for the town view's art on the first screen. 
   - once both are in, makes a `TownSkin` on the app renderer's backend, so `?canvas` draws it in Canvas2D, lends it with `app.renderer.setTown` and redraws.
   - A failed load keeps the dots and logs why.
 - **Skins:** the HUD's toggle is unchanged.
-  - Auto shows the town at `autoSkin`'s town level: from 6.9 CSS px a tile with at most 425 agents in view, kept down to 5.1 px and 575 agents.
+  - Auto shows the town at `autoSkin`'s town level: from 6.9 CSS px a tile with at most 9,000 agents in view, kept down to 5.1 px and 10,350 agents, since the 176 × 112 town starts 7,931 on desktop.
   - Dots and Town fix the skin, and Blobs still shows dots.
   - Until the town is lent, Town and Auto draw dots.
 - **Chunks:** `vite.config.ts`'s `render-gl` chunk group leaves out `src/town` too, so the town never joins the renderer chunk.
@@ -695,15 +695,15 @@ M2.1 builds Lengnick's households and firms in `sim-core`, as its [step plan](..
   - accounts run national, then sectors, then wallets, then firms;
   - `PROFITS = 3`, zero outside the month end;
   - `TIER_FIRMS` of 1,000, 2,500 and 10,000;
-  - a household's cash is its blob's wallet, one blob per household until M2.2.
+  - each blob's cash is its wallet, and a household's is its members' wallets summed (Spawn and fold, below).
 - **Bytes:**
   - an agent adds 45 bytes to the hash and 20 of scratch;
   - a firm adds 60 to the hash and 16 of scratch;
   - a desktop arena uses about 11.9 of its 64 MiB;
   - `TIER_MEMORY_BYTES` and snapshot v1 don't change.
 - **Streams:** `FIRM_DRAW`, `WAGE_DRAW`, `LABOUR_DRAW`, `SHOP_DRAW`, `WEALTH_DRAW` and `START_DRAW`, the agent-layer streams 0x107–0x10C.
-- **Hashes:** seed 42 at 1,000 ticks gives CLI phone `3c786124`. Highcourt's pins follow the current `town.nmap`.
-  - `goldens.json` also pins `economy`: seed 42 on the phone tier after 3 months, which is 63 days of `economyDay` with LENGNICK and `fiatIssuePpm` 10,000, hashing to `b4bd023b`.
+- **Hashes:** The world step, above, gives today's tick goldens and Highcourt's pins.
+  - `goldens.json` also pins `economy`: seed 42 on the phone tier after 3 months, which is 63 days of `economyDay` with LENGNICK and `fiatIssuePpm` 10,000, hashing to `6a652730`.
   - The Node, Bun and browser checks replay it with the tick replays, and `node packages/sim-core/scripts/goldens.ts` regenerates it.
 
 ## Steering (owner, 10 October 2026)
@@ -732,10 +732,11 @@ M2.2 spawns a city from a ledger record and folds it back exactly, as its [step 
   - M2.6 moves `spawn/culture.ts` out of the guarded folder.
 - **The record:**
   - a 14-field `Float64Array`, with a mean price in cents and no "6+" bucket;
+  - `checkRecord` keeps household + firm cash, price × firms and wage × firms within `MAX_SAFE_CENTS`, so every total stays exact;
   - spawn fills an empty world, issuing cash from MINT, and fold only reads.
 - **Draws:** `SPAWN_DRAW` (0x10D), keyed on (settlement, day).
 - **Speed and bytes:**
-  - a 10 ms spawn row for 100k agents;
+  - a desktop-only spawn row of 35 ms for 100k agents, not the plan's 10 ms: the fastest of 9 spawns takes 31.2 ms (measured here, Node 24.18.0 on Windows, load not recorded). The shared doc's 10 ms needs the owner;
   - 5 bytes per agent slot.
 - **Engines:** the spawn goldens replay in Node, Bun, Chromium, Firefox and WebKit. That harness replaces the brief's Deno (coordinator's ruling, 10 October 2026); the shared doc's wording waits for its sync.
-- **Hashes:** every golden and Highcourt pin moves with Task 1.
+- **Hashes:** Task 1 moved every golden and Highcourt pin, to the values The world step gives. `goldens.json`'s `spawn` holds 20 hashes of seed 2026's random records.
