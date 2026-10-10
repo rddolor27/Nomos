@@ -5,6 +5,7 @@ on:
     branches: [main]
 
 jobs:
+  # Everything but the browser specs, as `pnpm check` runs it locally.
   check:
     runs-on: ubuntu-latest
     steps:
@@ -19,35 +20,7 @@ jobs:
           python-version: '3.12'
       - run: pip install -r tools/requirements.txt
       - run: pnpm install --frozen-lockfile
-      - run: python tools/worldgen/vectors.py --check
-      - run: python tools/worldgen/mapfile.py --check
-      - run: python tools/worldgen/export_map.py --check
-      - run: python tools/sprites/test_skin_a.py
-      - run: python tools/licenses.py --check
-      - run: python tools/test_licenses.py
-      - run: python tools/atlas/test_atlas.py
-      - run: python tools/worldgen/goldens.py --check --seeds 3
-      - run: python tools/worldgen/place_goldens.py --check --worlds 1
-      - run: python tools/worldgen/place_fixtures.py --check
-      - run: pnpm lint
-      - run: pnpm typecheck
-      - run: pnpm names
-      - run: pnpm depcruise
-      - run: pnpm test
-      - run: node packages/worldgen/scripts/engines.ts
-      - run: node packages/worldgen/scripts/frozen.ts --check
-      - run: node packages/worldgen/scripts/sweep.ts
-      # The ledger gate: two days per tier with the money invariants checked every tick, so a lost cent exits non-zero.
-      - run: for tier in phone phone-plus desktop; do node tools/cli/src/main.ts --seed 7 --tier "$tier" --ticks 2880; done
-      # The build writes the atlas pages too, so size-limit measures them with every chunk.
-      - run: pnpm --filter @nomos/web build
-      - run: pnpm --filter @nomos/web size
-      - run: node tools/bench/src/chunks.ts
-      - run: |
-          node tools/cli/src/main.ts --seed 42 --tier phone --ticks 1000 > "$RUNNER_TEMP/replay-1.txt"
-          node tools/cli/src/main.ts --seed 42 --tier phone --ticks 1000 > "$RUNNER_TEMP/replay-2.txt"
-          cat "$RUNNER_TEMP/replay-1.txt"
-          diff "$RUNNER_TEMP/replay-1.txt" "$RUNNER_TEMP/replay-2.txt"
+      - run: pnpm check
 
   # The browser specs in Chromium only (WebGL2 on SwiftShader), on a runner with no GPU, while Nomos is a proof of concept.
   browser:
