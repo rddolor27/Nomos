@@ -10,10 +10,13 @@ export interface BudgetRow {
 
 // The Performance budget's sub-budgets for the systems that exist. The owner raised the 100k snapshot row from 0.3 ms
 // to 0.6 ms out of the tick's slack on 8 October 2026.
+// Desktop comes first because V8 gives every literal with the same keys in the same order one hidden class. In sim-core's
+// tier tables (phone, phone-plus, desktop) the fields hold small integers, so fractions here would widen them to doubles
+// and deoptimize the code warmUp compiled, which left the allocation gate measuring cold code.
 export const BUDGET_ROWS: readonly BudgetRow[] = [
-  { system: 'move', reduce: 'mean', rmMs: { phone: 0.1, 'phone-plus': 0.25, desktop: 0.8 } },
-  { system: 'day', reduce: 'max', rmMs: { phone: 0.35, 'phone-plus': 0.35, desktop: 0.35 } },
-  { system: 'snapshot', reduce: 'mean', rmMs: { phone: 0.1, 'phone-plus': 0.2, desktop: 0.6 } },
+  { system: 'move', reduce: 'mean', rmMs: { desktop: 0.8, phone: 0.1, 'phone-plus': 0.25 } },
+  { system: 'day', reduce: 'max', rmMs: { desktop: 0.35, phone: 0.35, 'phone-plus': 0.35 } },
+  { system: 'snapshot', reduce: 'mean', rmMs: { desktop: 0.6, phone: 0.1, 'phone-plus': 0.2 } },
 ];
 
 // The system whose worst tick each day is timed and printed, with no budget to judge it by (owner, 10 October 2026): the
