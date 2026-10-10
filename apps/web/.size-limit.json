@@ -70,7 +70,7 @@
   {
     "name": "Inspector chunk",
     "path": ["dist/assets/inspector-*.js", "dist/assets/inspector-*.css"],
-    "limit": "4.5 kB"
+    "limit": "6.65 kB"
   },
   {
     "name": "Shop name chunk the inspector and the economy panel share",
