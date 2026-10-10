@@ -2,7 +2,15 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { LENGNICK, type EconomyParams } from '../src/economy/params.ts';
-import { STAT_FIRINGS, STAT_HIRES, STAT_JOB_VISITS, STAT_SWITCHES } from '../src/economy/stats.ts';
+import {
+  STAT_FIRINGS,
+  STAT_HIRES,
+  STAT_JOB_VISITS,
+  STAT_LONG_SPELLS,
+  STAT_SPELL_MONTHS,
+  STAT_SWITCHES,
+  recordMonth,
+} from '../src/economy/stats.ts';
 import { layOff, layOffExiting } from '../src/labour/layoffs.ts';
 import { fireOnNotice } from '../src/labour/notice.ts';
 import { updateReservationWages } from '../src/labour/reservation.ts';
@@ -356,6 +364,34 @@ describe('searchJobs', () => {
     const all = switchesAt({ ...LENGNICK, onJobSearchPpm: PPM });
     expect(all).toBeGreaterThan(800);
     expect(all).toBeLessThan(930);
+  });
+
+  it('zeroes the spell count of each person it hires, and leaves one it does not hire as it was', () => {
+    const world = labourWorld(2, FIRMS);
+    world.firms.vacancy.fill(1, 0, FIRMS);
+    // Every firm pays 100, so only the first person, who wants no more, is hired.
+    world.agents.reservationWage[0] = 100;
+    world.agents.reservationWage[1] = 101;
+    world.economyScratch.spellMonths.set([7, 7]);
+
+    searchJobs(world, LENGNICK, 0);
+
+    expect([world.agents.employer[0] !== NO_FIRM, world.agents.employer[1]]).toEqual([true, NO_FIRM]);
+    expect(Array.from(world.economyScratch.spellMonths.subarray(0, 2))).toEqual([0, 7]);
+  });
+
+  it('starts a new spell for someone hired and laid off within the same month', () => {
+    const world = labourWorld(1, FIRMS);
+    world.firms.vacancy.fill(1, 0, FIRMS);
+    world.economyScratch.spellMonths[0] = 9;
+
+    searchJobs(world, LENGNICK, 0);
+    layOff(world, 1, 0);
+    recordMonth(world);
+
+    // The month end opens a spell with no whole month behind it, where the old count would have made it the tenth.
+    const { spellMonths, stats } = world.economyScratch;
+    expect([spellMonths[0], stats[STAT_SPELL_MONTHS], stats[STAT_LONG_SPELLS]]).toEqual([1, 0, 0]);
   });
 });
 

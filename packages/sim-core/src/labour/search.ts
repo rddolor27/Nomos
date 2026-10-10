@@ -24,10 +24,12 @@ export function sampledFirm(seed: number, month: number, household: number, samp
   return draw4(seed, LABOUR_DRAW, month, household, sample, SAMPLE) % firms;
 }
 
+// A hire ends the spell, so a layoff before the month's end starts a new one rather than carrying the old count on.
 function hire(world: World, household: number, firm: number): void {
   world.agents.employer[household] = firm;
   world.firms.employees[firm]++;
   world.firms.vacancy[firm] = 0;
+  world.economyScratch.spellMonths[household] = 0;
 }
 
 // The first sampled vacancy that pays at least the reservation wage (A4, A13).
