@@ -3,9 +3,11 @@
 > **Status:** brief. The first pass was built from it on 10 October 2026, at the owner's word to go with the coordinator's look (checkpoint 0029):
 > - the tokens, buttons and focus ring (8e70a4f);
 > - one compact toolbar for the map and the town view, in `panels/toolbar.ts` (42f509e, with ce64dfe for its dependency rule);
-> - chart axes with labels and units (4b97e95).
+> - chart axes with labels and units (4b97e95);
+> - the town's −, +, Fit, Home key and pinch, on a bar of its own (b44ed12);
+> - `toolbar.ts` in `interfaces.md`'s Layout (02e3c54).
 >
-> Left undone: lil-gui behind `?dev=1`; Fit, Home and pinch on the town itself; and `toolbar.ts` in `interfaces.md`'s Layout. Expand these into a step plan with the writing-plans skill before building them.
+> Left undone: lil-gui behind `?dev=1`, and with it the Controls panel's zoom slider, which the town's bar has replaced. It joins M2.2b's Task 8, the HUD's speed buttons, as a short brief, since both reshape the HUD row (coordinator, 10 October 2026).
 
 **Task:** [task.md](task.md)
 

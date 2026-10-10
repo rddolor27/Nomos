@@ -43,6 +43,9 @@ Beyond the checkpoint's Open list:
   - the 48×28 town in `place-camera.test.ts:11`, `interfaces.md`'s Places sizes, `countries.md:46`, the M3.1 plan (line 41) and the M0.4 plan (line 83);
   - the old hash `b3b2c251` in `interfaces.md:163`, the M8.1 plan (line 300) and the M8.3 plan (lines 85 and 1844).
 - **The shared plan doc** still names five engines, Deno and the 2% pay cut. It also lacks M3.1 Part 3, whose suggested tag is "(Towns)". Update it at the next sync, with the owner, along with the deferred items in `git show 6736fb6:docs/plan/HANDOFF.md`.
+- **Local specs:** a stray `vite preview` on port 4173 serves the last build of `apps/web/dist`, and Playwright reuses it outside CI. Build before a local spec run.
+- **Perf to check:** the economy's month-start `searchShops` (1.78 ms at 10k), and `createTown`'s extra 11 ms at the worker's start. `pnpm budget`'s sampled days miss a month's start. perf.yml, which the owner starts by hand, measures them.
+- **Names:** re-running `build-real-world.ts` would overwrite the 42 hand-added religion words. A test catches that, and a merge file would make them last.
 - **The owner's go:** M3.1 Part 3's Tasks 12–16 and 19–21 (walls, towers, gates and farms). M0.5 waits only on the owner's device timings.
 - **Backlog from before the restructure** (checkpoint 0034 and the nomos-bd hand-off):
   - **Unbuilt tasks:** M0.8's leftovers (lil-gui behind `?dev=1`, the town's Fit, Home and pinch, and `toolbar.ts` in the Layout table), and M8.1's Tasks 31 and 33–35.
@@ -58,6 +61,17 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 10 Oct: **M2.2b Tasks 1–4 and 6 built** (1d8e5f0..ba0b44a).
+  - **The town:** every app world is a town spawned settled from `CITY_RECORD`, and its crowd starts three in four walking.
+  - **The economy:** it runs one system a tick. The inspector shows job, employer and wage, the worker posts a daily `economy` feed, and logged layoffs fire at the next day's start.
+  - **Hashes:** the new `town` golden is `b76fca4c`, and Highcourt's pins are `d11bb532` and `8eb639aa`. `746a06a3` and `6a652730` held.
+  - **Cost:** the economy's worst tick is 0.77 ms at 3,965 people and 1.78 ms at 10,000, a month's first-day shop search (measured here, Node, one run).
+  - **Bytes:** initial JS is 24.42 kB of 35 kB, so the M0 stand-in rose to 25.5 kB (a8bd24d).
+- 10 Oct: **place names, and world generator version 1 frozen** (M8.1 Tasks 33–34, 9f78552..fb5890b).
+  - **The names:** the map names countries and settlements from a 1,024-word table, keyed on cells.
+  - **Before the freeze:** the owner waived the review, and the coordinator dropped 17 crude-sounding words. The religion list gained 42 core faith words that the Wikidata extract missed, which replaced 4 person words and 7 place words.
+  - **The freeze:** version 1 is frozen, with the road classes.
+- 10 Oct: **the town's zoom** (M0.8, b44ed12): −, +, Fit, Home and pinch on the first screen's town.
 - 10 Oct: **M2.3 closed** (41febe1..9a1bbff), with the review's fixes. Exits are off in `CITY` (Ruling 19). A hire resets the spell count, the slow-search bound applies only when someone is slow, and `design --out` must be new or empty. Okun is measured on units produced, and `design` runs 2 threads off CI. With exits off, the burn-in is 18,428 days. On seeds 2001–2050 all six tier-1 targets hold, Okun holds at −0.81, and `unemployment_sd` is 0.0110. The long test passed 13/13 in 74 s, and the goldens held (`6a652730`, `746a06a3`).
 - 10 Oct: **the world map's walking dots removed** (owner; 75e2652, f1f9341, 1090702). The app, the map renderer, the protocol and worldgen lose the map crowd, and `interfaces.md` follows. No world or replay hash moves, since the crowd was never in the world. The M8.1, M8.3 and M3.1 plans say so too, and M8.3's Tasks 16–19 point to git for their old steps.
 - 10 Oct: **git only, no `gh`** (owner). The M0 and M1.6 plans no longer name `gh`: their CI steps now just push `main`, and the owner starts `release.yml` from the Actions page.
