@@ -58,17 +58,22 @@ test('draws Highcourt and every blob with the Town skin, over the hidden dots', 
   await expect(page.locator('fieldset output')).toBeEmpty();
 });
 
-test('shows the town under Auto from town zoom inward, and the dots zoomed out', async ({ page }) => {
-  await page.goto(TOWN);
-  await page.waitForFunction(() => performance.getEntriesByName('app:interactive').length > 0);
-  expect(await drawnSkin(page)).toBe('dots');
-  // At zoom 3, some 280 of the 10,000 are in view, under autoSkin's 425; at zoom 2, some 640 are.
-  await zoomBy(page, 2);
-  await waitForSkin(page, 'town');
-  await zoomBy(page, -1);
-  await waitForSkin(page, 'dots');
-  expect(await page.evaluate(() => document.querySelector<HTMLCanvasElement>('#town')?.hidden)).toBe(true);
-  expect(await page.evaluate(() => window.__app?.renderer.canvas.style.visibility)).toBe('');
+test.describe('on a 2560 x 1440 screen', () => {
+  // At zoom 1 this view holds some 7,300 of the 10,000, over autoSkin's 4,600, and at zoom 2 some 1,800, under its
+  // 4,000. The 1280 x 720 view holds some 1,800 at zoom 1, so it opens as the town.
+  test.use({ viewport: { width: 2560, height: 1440 } });
+
+  test('shows the town under Auto from town zoom inward, and the dots zoomed out', async ({ page }) => {
+    await page.goto(TOWN);
+    await page.waitForFunction(() => performance.getEntriesByName('app:interactive').length > 0);
+    expect(await drawnSkin(page)).toBe('dots');
+    await zoomBy(page, 1);
+    await waitForSkin(page, 'town');
+    await zoomBy(page, -1);
+    await waitForSkin(page, 'dots');
+    expect(await page.evaluate(() => document.querySelector<HTMLCanvasElement>('#town')?.hidden)).toBe(true);
+    expect(await page.evaluate(() => window.__app?.renderer.canvas.style.visibility)).toBe('');
+  });
 });
 
 test('keeps the dots under Dots once the town is in, and draws the town again under Town', async ({ page }) => {
