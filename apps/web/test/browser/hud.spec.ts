@@ -51,6 +51,29 @@ test('pauses and resumes', async ({ page }) => {
   await expect.poll(() => tick(page)).toBeGreaterThan(after);
 });
 
+test('sets the speed from the buttons and the keys 1 to 3, and the town runs faster', async ({ page }) => {
+  await open(page);
+  const group = page.getByRole('group', { name: 'Speed' });
+  const [one, four, sixteen] = ['1×', '4×', '16×'].map((name) => group.getByRole('button', { name, exact: true }));
+  await expect(one).toHaveAttribute('aria-pressed', 'true');
+  await expect(four).toHaveAttribute('aria-pressed', 'false');
+  const [slowBefore, slowAfter] = await tickOverOneSecond(page);
+
+  await four.click();
+  await expect(four).toHaveAttribute('aria-pressed', 'true');
+  await expect(one).toHaveAttribute('aria-pressed', 'false');
+  // Focus is on the 4× button, and a digit pressed there still picks a speed, as it does in the view.
+  await page.keyboard.press('3');
+  await expect(sixteen).toHaveAttribute('aria-pressed', 'true');
+  await expect(four).toHaveAttribute('aria-pressed', 'false');
+  const [fastBefore, fastAfter] = await tickOverOneSecond(page);
+  expect(fastAfter - fastBefore).toBeGreaterThan(4 * (slowAfter - slowBefore));
+
+  await page.locator('#view').press('1');
+  await expect(one).toHaveAttribute('aria-pressed', 'true');
+  await expect(sixteen).toHaveAttribute('aria-pressed', 'false');
+});
+
 test("lists each system's milliseconds", async ({ page }) => {
   await open(page);
   const rows = page.locator('#hud-systems dd');

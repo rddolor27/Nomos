@@ -5,6 +5,7 @@ import {
   type AppMessage,
   type EconomyMessage,
   type MapV1,
+  type Speed,
   type Tier,
   type WorkerMessage,
 } from '@nomos/sim-protocol';
@@ -37,11 +38,14 @@ export interface App {
   camera: Camera;
   // The user's choice, or the reduced-motion start. A hidden tab pauses the worker without changing it.
   paused: boolean;
+  // The ticks the worker runs for each tick of wall time. A run starts at 1×, and a pause keeps the setting.
+  speed: Speed;
   // Push-and-draw milliseconds of the last FRAME_SAMPLES frames, in no order.
   frameMs: number[];
   // Resolves as frame:first is marked, so whatever loads after the first frame knows when to start.
   firstFrame: Promise<void>;
   setPaused(paused: boolean): void;
+  setSpeed(speed: Speed): void;
   onStats(listener: StatsListener): void;
   // The listener gets the latest economy message at once, if one has come, so a panel that mounts late draws what it
   // missed, and every message after it.
@@ -190,6 +194,7 @@ export async function startApp(boot: Boot, doc: Document, start: Start): Promise
     tick: 0,
     camera: { x: 0, y: 0, zoom: 1 },
     paused: start.paused,
+    speed: 1,
     frameMs: [],
     firstFrame: new Promise((resolve) => {
       scene.firstFrameDrawn = resolve;
@@ -197,6 +202,10 @@ export async function startApp(boot: Boot, doc: Document, start: Start): Promise
     setPaused(paused) {
       app.paused = paused;
       post({ type: paused ? 'pause' : 'resume' });
+    },
+    setSpeed(speed) {
+      app.speed = speed;
+      post({ type: 'speed', speed });
     },
     onStats(listener) {
       listeners.push(listener);

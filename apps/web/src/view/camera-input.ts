@@ -1,6 +1,7 @@
 import { fitCamera, panBy, worldAt, zoomAt, type Camera } from '@nomos/render-gl';
 import { TILE_PX, type AppMessage } from '@nomos/sim-protocol';
 import { element, type App } from '../app/app.ts';
+import { speedForKey } from '../panels/speed-bar.ts';
 import { Pinch } from './pinch.ts';
 import { ZoomBar } from './zoom-bar.ts';
 
@@ -85,9 +86,11 @@ function onKey(app: App, fit: () => void, event: KeyboardEvent): void {
   if (event.ctrlKey || event.metaKey || event.altKey) return;
   const pan = PAN_KEYS.get(event.key);
   const zoom = ZOOM_KEYS.get(event.key);
+  const speed = speedForKey(event);
   const { canvas } = app.renderer;
   if (pan) app.camera = panBy(app.camera, pan[0] * PAN_WORLD_PX * app.camera.zoom, pan[1] * PAN_WORLD_PX * app.camera.zoom);
   else if (zoom) zoomAtCentre(app, zoom);
+  else if (speed !== undefined) app.setSpeed(speed);
   else if (event.key === 'Home') fit();
   // A button in the view keeps its own Enter.
   else if (event.key === 'Enter' && event.target === event.currentTarget) inspectAt(app, canvas.width / 2, canvas.height / 2);
@@ -159,7 +162,7 @@ export function bindCameraInput(view: HTMLElement, app: App): void {
 
   view.setAttribute(
     'aria-label',
-    'Town view: arrow keys pan, plus and minus zoom, Home fits the town, Enter shows the blob at the centre',
+    'Town view: arrow keys pan, plus and minus zoom, Home fits the town, 1 to 3 set the speed, Enter shows the blob at the centre',
   );
   view.append(new ZoomBar(view.ownerDocument, (steps) => zoomAtCentre(app, steps), fit).root);
   view.addEventListener('wheel', onWheel, { passive: false });

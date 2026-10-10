@@ -1,6 +1,7 @@
 import { CANVAS2D_AGENT_CAP, mountSkinToggle, skinFromQuery, type SkinRenderer } from '@nomos/render-gl';
 import type { Tier } from '@nomos/sim-protocol';
 import { element, type App } from '../app/app.ts';
+import { SpeedBar, speedForKey } from './speed-bar.ts';
 
 const REFRESH_MS = 250;
 const TIER_LABELS: Record<Tier, string> = { phone: 'Phone tier', 'phone-plus': 'Phone-plus tier', desktop: 'Desktop tier' };
@@ -94,9 +95,26 @@ function skinRenderer(app: App): SkinRenderer {
   };
 }
 
+// A digit pressed on a HUD control picks a speed, as in the town view (view/camera-input.ts), so a click on a button
+// does not leave the keys dead.
+function bindSpeedKeys(root: HTMLElement, app: App, bar: SpeedBar): void {
+  root.addEventListener('keydown', (event) => {
+    const speed = speedForKey(event);
+    if (speed === undefined) return;
+    app.setSpeed(speed);
+    bar.show(speed);
+    event.preventDefault();
+  });
+}
+
 export function mountHud(root: HTMLElement, app: App): void {
   const doc = root.ownerDocument;
-  bindPlay(element<HTMLButtonElement>(doc, '#play'), app);
+  const play = element<HTMLButtonElement>(doc, '#play');
+  bindPlay(play, app);
+  const speedBar = new SpeedBar(doc, (speed) => app.setSpeed(speed));
+  play.after(speedBar.root);
+  bindSpeedKeys(root, app, speedBar);
+  app.worker.addEventListener('error', () => speedBar.disable());
   const tick = readout(root, 'hud-tick', 'Tick ');
   const agents = readout(root, 'hud-agents');
   const tier = readout(root, 'hud-tier');
@@ -120,6 +138,7 @@ export function mountHud(root: HTMLElement, app: App): void {
     agents(agentsText(app));
     tier(TIER_LABELS[app.tier]);
     zoom(`Zoom ${app.camera.zoom}×`);
+    speedBar.show(app.speed);
     for (const [name, ms] of Object.entries(latest)) {
       let write = systemRows.get(name);
       if (!write) {
