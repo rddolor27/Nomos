@@ -329,3 +329,24 @@ If the session ended: check `git log` for those Task lines, and `git status` for
   - **Docs updated:** M2.1 and M2.2 marked done (3c2f5c2 to 72de9ab), plus M3.1, M3.3, M0.8 and M8.1 (cee105a to 87fff65).
   - **CLI hash:** `746a06a3`.
 - **Next: M2.3 Calibration and design runner.** First a step plan from `sim-architect`, then building, with testing last.
+- 10 Oct: **M2.3 Calibration and design runner, Tasks 1–4 under way** (d2cf7bf to 6933f02, pushed).
+  - **Built:**
+    - the flow log, `STAT_NAMES` schema 1;
+    - the target suite in `tools/cli/src/targets`;
+    - the city preset's exits, markup clamp and slow searchers;
+    - the design runner on `worker_threads`, as the `design` and `targets` commands.
+  - **Sweep:** none of the 300 hypercube points passed tier 1. The pay-cut target can't be reached while the city's money is closed. The coordinator moved it to tier 2 as a documented gap (c4313d4, db49825), to revisit when M5's treasury brings inflation.
+  - **`CITY` frozen** at sweep point 232, refined on seeds 1–20:
+    - knobs: γ 25, π 127,732, β 5, slow searchers 227,437 ppm with 1 visit, θ 220,000, `shortPayExitPpm` 300,000;
+    - all six tier-1 targets hold;
+    - seven tier-2 targets are gaps: hires, layoffs, job-to-job, long spells, mean spell, pay cuts at 15.4%, and Okun's sign.
+  - **Burn-in:** the plan's 20,000-day run put the price truncation in its second half. The coordinator accepted 17,295 days from a 40,000-day run, where both truncations fall in the first half.
+  - **Test edits outside the file list:**
+    - `economy-layout.test.ts` follows the new preset;
+    - `flow-log.test.ts` sets the exit line to the full wage, so seed 1 sees exits.
+  - **Money** balanced exactly after every one of about 27 million sim days.
+  - **Shared doc:** still names the 2% pay-cut target. Update it at the next sync, with the owner.
+- **Next:**
+  - the confirmation on seeds 1001–1050, the long test and the results in `task.md`;
+  - then one test pass (`economy-review`, `senior-qa`), a minor re-test of flagged items, and M2.3's `interfaces.md` changes;
+  - after that, M2.2b, the economy on screen.
