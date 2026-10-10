@@ -14,6 +14,7 @@ The owner can overturn any of these.
 - **The owner's computer stays responsive.** Heavy runs (the whole unit suite, `pnpm check`, the headless runs, the browser suite and the bench) run in CI on GitHub, never on the owner's machine. Locally, run only the test files a task added or changed, one command at a time, at idle priority (`nice -n 19`); a task that changes no test runs none. Playwright runs one worker, and Vitest two outside CI.
 - **Pushes.** The coordinator pushes `main` after each finished feature, with the owner's standing OK, so CI runs the full checks; agents never push.
 - **Git only.** There is no `gh` CLI: Claude uses git alone, never asks the owner for `gh` or CI results, and skips any plan step that needs `gh`.
+- **No dots on the world map.** The map's walking crowd is gone; the people and walkers in places stay, and Pause people keeps its own state.
 - **Decisions.** Claude settles open owner decisions itself, and records each here as a ruling.
 - **Walled towns,** the final answers for M3.1 Part 3: density peaks at the plaza; stone walls with towers for capitals and cities, a palisade for towns, and none for villages and hamlets; roads by role; farms on the outskirts; the new buildings; suburbs, bridges, avenues and greens. Tasks 12–16 and 19–21 wait for the owner's go.
 
@@ -35,7 +36,7 @@ The owner can overturn any of these.
 ## Open
 
 Beyond the checkpoint's Open list:
-- **Browser specs.** `hud.spec.ts`'s "zooms and pans", `town-skin.spec.ts`'s 2560×1440 case and `map-goto.spec.ts` are fixed by pausing the sim or crowding the scene (9d4c402, 25a084b, c44c526, fa9f56f). `map-crowd.spec.ts`'s three tests pass alone but failed when browsers ran in parallel; with one Playwright worker (bd8ee04), CI's next run shows whether they still fail. CI's browser job has failed on every push since 01:42 on 10 October.
+- **Browser specs.** `hud.spec.ts`'s "zooms and pans", `town-skin.spec.ts`'s 2560×1440 case and `map-goto.spec.ts` are fixed by pausing the sim or crowding the scene (9d4c402, 25a084b, c44c526, fa9f56f). `map-crowd.spec.ts` went with the map crowd (75e2652); its one zoom-bar test moved to `map-goto.spec.ts`. CI's browser job has failed on every push since 01:42 on 10 October.
 - **Stale docs:**
   - the 48×28 town in `place-camera.test.ts:11`, `interfaces.md`'s Places sizes, `countries.md:46`, the M3.1 plan (line 41) and the M0.4 plan (line 83);
   - the old hash `b3b2c251` in `interfaces.md:163`, the M8.1 plan (line 300) and the M8.3 plan (lines 85 and 1844).
@@ -43,6 +44,7 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 10 Oct: **the world map's walking dots removed** (owner; 75e2652, f1f9341, 1090702). The app, the map renderer, the protocol and worldgen lose the map crowd, and `interfaces.md` follows. No world or replay hash moves, since the crowd was never in the world. The M8.3 plan's Tasks 16–19 and the M3.1 plan's line 168 still describe it, as history.
 - 10 Oct: **git only, no `gh`** (owner). The M0 and M1.6 plans no longer name `gh`: their CI steps now just push `main`, and the owner starts `release.yml` from the Actions page.
 - 10 Oct: **testing and rules restructured** (owner). `pnpm check` runs every check but the browser specs, and CI's check job runs only it. The stdlib workflow and the engine scripts are gone, perf runs by hand, and the place tests check 2 worlds. `pnpm check` passed locally in 349 s, with the unit tests at 65 s, down from 175 s.
 - 10 Oct: **engineers default to Sonnet,** and lint and the determinism and economy reviews wait for the end of a feature (owner). The check after each edit keeps only quick guards, about 0.13 s, where linting took about 3 s.
