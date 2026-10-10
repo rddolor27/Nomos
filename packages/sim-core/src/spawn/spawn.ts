@@ -39,6 +39,7 @@ const CASH = 11;
 const CASH_SPLIT = 12;
 // The weight tables hold 256 entries, so a draw's low byte picks one.
 const TABLE_INDEX = 255;
+const TWO_TO_MINUS_32 = 1 / 4_294_967_296;
 
 // Builds the record's city in an empty, laid-out world, with MINT issuing every cent (M2.2 Rulings 5 and 7). Demand,
 // plans and counters stay zero, as after startEconomy, so the economy day runs from a month's day 0. A throw midway
@@ -174,11 +175,17 @@ function linkSuppliers(world: World, record: Float64Array, key: number): void {
     // The bench's spawn row: drawing all seven before any step lets their memory reads overlap, a third faster, and
     // gives the same links as stepping each in turn.
     for (let k = 0; k < SUPPLIERS; k++) {
-      const u = draw4(seed, SPAWN_DRAW, key, p, k, LINK) % (employed + firmCount);
+      const u = scaleDraw(draw4(seed, SPAWN_DRAW, key, p, k, LINK), employed + firmCount);
       suppliers[first + k] = u < employed ? firmOfHired[u] : u - employed;
     }
     for (let k = 1; k < SUPPLIERS; k++) stepPastRepeats(suppliers, first, k, firmCount);
   }
+}
+
+// A 32-bit draw scaled to a whole number below n, a multiply where % takes an integer division (the bench's spawn row).
+// For n below 2^21 the product stays under 2^53, and the scale is a power of two, so both steps are exact everywhere.
+function scaleDraw(draw: number, n: number): number {
+  return Math.floor(draw * n * TWO_TO_MINUS_32);
 }
 
 function stepPastRepeats(suppliers: Int32Array, first: number, k: number, firmCount: number): void {
