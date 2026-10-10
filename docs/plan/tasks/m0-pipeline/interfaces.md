@@ -714,3 +714,28 @@ One wander rule moves every blob.
 - The town view's walkers (`apps/web/src/map/walkers.ts`) wander by the same rule over the street network that their place's loops cover. An owner stays within its own loop's box.
   - So `PlaceWalks` and `PlaceCrowd` now give each walker its network and start, not a path it follows.
   - A test matches walkers to `move` tick for tick.
+
+## Spawn and fold (owner: M2.2)
+
+M2.2 spawns a city from a ledger record and folds it back exactly, as its [step plan](../m2-economy/m2.2-spawn-and-fold/plan.md) lays out. That plan holds the API, the record's 14 fields, the weight tables and the goldens.
+
+- **Households:**
+  - a household is 1–6 adjacent blobs sharing a home;
+  - each blob is still Lengnick's one-person household for work, shopping and saving, from its own wallet, so M2.1's day systems don't change;
+  - a household's cash is its members' wallets summed, never stored;
+  - `World` gains `households`, and `startEconomy` writes one household per blob.
+- **Layout, `sim-core`:**
+  - new folders: `households/` and `spawn/`, with the three weight tables;
+  - `spawn/` joins the culture wall's guarded folders, since it writes wealth and households;
+  - `layoutWorld` takes over two stand-in jobs from `populate`, because guarded spawn may not write `cultureUid`;
+  - `STAND_IN_CULTURES` is exported;
+  - M2.6 moves `spawn/culture.ts` out of the guarded folder.
+- **The record:**
+  - a 14-field `Float64Array`, with a mean price in cents and no "6+" bucket;
+  - spawn fills an empty world, issuing cash from MINT, and fold only reads.
+- **Draws:** `SPAWN_DRAW` (0x10D), keyed on (settlement, day).
+- **Speed and bytes:**
+  - a 10 ms spawn row for 100k agents;
+  - 5 bytes per agent slot.
+- **Engines:** the spawn goldens replay in Node, Bun, Chromium, Firefox and WebKit. That harness replaces the brief's Deno (coordinator's ruling, 10 October 2026); the shared doc's wording waits for its sync.
+- **Hashes:** every golden and Highcourt pin moves with Task 1.
