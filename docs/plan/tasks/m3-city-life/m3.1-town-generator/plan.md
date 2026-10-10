@@ -51,7 +51,7 @@ This pulls M3.1's port forward, and starts M3.3's atlas pages and sprite drawing
 ### Rulings (coordinator, 9 October 2026; the owner can overturn them)
 
 1. **A place is `place.py`'s district.** That was 48×28 tiles for a capital or city, 40×24 for a town, 32×20 for a village or hamlet, and 30×18 for a wonder's vista, until Parts 2 and 3 grew them (Part 3, Ruling 1). The brief's "256² town" and "64×64 districts" do not match `place.py`, which stays the reference.
-2. **People are look-only, like the map's crowd.** They are `place.py`'s people, with no names, money or sim. Some walk loops. The rest stand or sit where `place.py` puts them.
+2. **People are look-only.** They are `place.py`'s people, with no names, money or sim. Some walk loops. The rest stand or sit where `place.py` puts them.
 3. **Summer art only.** Seasons wait for M3.8.
 4. **Wonders open their vistas too,** since the port builds them anyway.
 5. **The atlas:** the full page that `tools/atlas` already builds (`atlas.webp`, 86 KB, and `atlas.json`) loads when the first place opens, never on first load.
@@ -165,7 +165,7 @@ This pulls M3.1's port forward, and starts M3.3's atlas pages and sprite drawing
 - **The view:**
   - the place at an integer scale, centred, with at least 2 CSS px per art px where the screen allows;
   - pan, + and −, Fit, and the place's name, tier, population and country;
-  - people walk their loops with walk frames. Pause dots and reduced motion stop them.
+  - people walk their loops with walk frames. Pause people and reduced motion stop them.
 - **Leaving:** Back to map, Escape, or zooming out past the smallest scale returns to the map as it was.
 - **Load:** the town view module, the place pass and the atlas load on the first entry only. Vite's `render-gl` group must leave `src/place` out, as it leaves `src/map` out.
 - **Accessibility:**

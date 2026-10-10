@@ -11,12 +11,11 @@ Needs: M8.1's `WorldMap` and names, M0.4's renderer, camera and skin switch, M0.
   - countries on the map: border lines with a band of each side's map colour, country names at Country zoom, a legend of each country's name, colour, capital and towns, and a flat Countries view that also draws before the atlas page loads (Countries);
   - the table of five country map colours, kept apart from body hues, role and crime colours, black and the culture emblem colours, and used only on map overlays and the legend, never on a person, building or soldier (Countries);
   - pan and zoom by mouse, touch and keys, with the Country view giving way to the Region view by CSS pixels per cell, under the auto-skin's 15% hysteresis (R4);
-  - the map crowd: a look-only dot per 100 people, wandering near its settlement on its own country's land, drawn in random body hues from the Region view in. It has no names, money or sim, so the town's replay never moves (owner request, 9 October 2026);
-  - zooming into any settlement: click or tap a town, or pick it from a "Go to" list, and the view jumps there at close zoom, with Zoom in, Zoom out and Pause dots in the toolbar (owner request, 9 October 2026).
+  - the map crowd: a look-only dot per 100 people walking near its settlement (owner request, 9 October 2026), built, then removed at the owner's request on 10 October 2026 (75e2652, f1f9341, 1090702). The world map draws no people;
+  - zooming into any settlement: click or tap a town, or pick it from a "Go to" list, and the view jumps there at close zoom, with Zoom in and Zoom out in the toolbar (owner request, 9 October 2026).
 - **Owner decided:** on 9 October 2026 the owner chose:
   - five map-only country colours outside the 64-colour sprite palette, each kept well apart from every reserved colour. From the swatch sheet the owner picked `#42F6FC` cyan, `#0000E4` blue, `#600090` deep violet, `#CC36D8` orchid and `#FC66FC` pink-violet;
   - that the page still opens on the town, with the map a click away and loaded on demand;
-  - a crowd on the map, from four choices: a look-only crowd rather than live agents; dots that appear on zoom; random body hues; and wandering near home.
+  - a look-only crowd on the map, which they withdrew on 10 October 2026.
 - **Exit checks:**
   - Country and Region views take ≤ 2 ms of main-thread render time per frame in CI's software-GL Chromium, a bar the owner accepted on 9 October 2026 (R4);
-  - every crowd dot stands on its own country's land near its settlement. Dots show only from the Region view in and stand still under reduced motion, and neither the first load nor the town's hash changes.

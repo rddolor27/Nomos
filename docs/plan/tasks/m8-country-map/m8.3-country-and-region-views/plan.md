@@ -2,11 +2,11 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use executing-plans to implement this plan task by task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-> **Status:** step plan (9 October 2026), expanded from the brief while M8.1's port runs, as the owner asked for the map now. Tasks 1–6 need only M8.1's Task 9, the world-map codes, and can run beside M8.1's ports. Task 10 and later need M8.1's whole `WorldMap` and its map worker. Tasks 16–19, the map crowd, were added the same day at the owner's request.
+> **Status:** step plan (9 October 2026), expanded from the brief while M8.1's port runs, as the owner asked for the map now. Tasks 1–6 need only M8.1's Task 9, the world-map codes, and can run beside M8.1's ports. Task 10 and later need M8.1's whole `WorldMap` and its map worker. Tasks 16–19, the map crowd, were added the same day at the owner's request, and removed at the owner's request on 10 October 2026 (75e2652, f1f9341, 1090702).
 
 **Task:** [task.md](task.md)
 
-**Goal:** a Map control, pressed after the town has loaded, opens the world of 3–5 countries as Country and Region views: pixel-art tiles, rivers, roads, sea lanes, bridges, borders with colour bands, icons, labels and a legend, with pan and zoom. From the Region view in, each settlement's look-only crowd walks near home. A flat Countries view draws without the atlas. Nothing of it reaches the town's first load, and a frame takes ≤ 2 ms of main-thread time.
+**Goal:** a Map control, pressed after the town has loaded, opens the world of 3–5 countries as Country and Region views: pixel-art tiles, rivers, roads, sea lanes, bridges, borders with colour bands, icons, labels and a legend, with pan and zoom. A flat Countries view draws without the atlas. Nothing of it reaches the town's first load, and a frame takes ≤ 2 ms of main-thread time.
 
 **Architecture:**
 - **A renderer of its own.** `@nomos/render-gl/map` holds `MapRenderer`, with its own canvas, its own WebGL2 context and its own Canvas2D fallback. `WorldRenderer` and the renderer chunk stay as they are.
@@ -41,11 +41,8 @@
 | 12 | The exit tests: tiles complete, labels by band, the town's pause | Junior, exact code | 10, M8.1 Task 29 |
 | 13 | The 2 ms bar | Senior | 10 |
 | 14 | The colour check, then the Countries golden frame | Senior | 9; the golden frame also 10 and M8.1 Task 29 |
-| 16 | The crowd's homes and stops | Junior, exact code | — |
-| 17 | The crowd pass | Senior | 9 |
-| 18 | The crowd in the map view | Senior | 10, 16, 17, M8.1 Task 30 |
-| 19 | The crowd on real worlds, and the owner's screenshots | Junior, exact code | 16, M8.1 Task 29; the screenshots also 18 |
-| 15 | Close M8.3 | Senior | 11–14, 16–19 |
+| 16–19 | The map crowd, removed on 10 October 2026 | — | — |
+| 15 | Close M8.3 | Senior | 11–14 |
 
 ### The owner's decisions
 
@@ -59,14 +56,14 @@
   Task 2 writes them into `map-colours.json`, the one table that `render-gl` and `mapdraw.py` read. They replace M8.1's provisional five, which failed the palette bar twice: `#AABB00` lies 8.3 from `AUTUMN_L` and `#44BBCC` 12.3 from `WATER_L` (swatch sheet, computed). No test hard-codes a country colour: each reads the table. Task 14 adds the colour check and the golden frame.
 - **The 2 ms bar, accepted on 9 October 2026.** Task 13's spec holds it as `MAP_FRAME_MS = 2`.
 - **Fit on small screens, deferred by the owner on 9 October 2026.** At 1x and a 1,280 × 800 map section, the smallest step, 8 device px a cell, can't show a whole large world, so Fit cuts its edge rows, mostly sea. A flat step below 8 would fix it; the owner chose to leave it for now.
-- **The map crowd, decided on 9 October 2026.** The owner asked to see each country's people on the map, and chose:
+- **The map crowd, decided on 9 October 2026 and removed at the owner's request on 10 October 2026 (75e2652, f1f9341, 1090702).** The world map draws no people, and the places keep theirs. The owner had first asked to see each country's people on the map, and chose:
   - **a look-only crowd:** a dot per 100 people, about 10,000 on a large world (computed from `settle`'s population rule: 5,000–16,000). It comes from the seed, with no names, money or sim, so the town's replay never moves;
   - **dots that appear on zoom:** none in the Country view; from the Region view in, growing with zoom until each one can be followed;
   - **random body hues:** sun, lilac, rose, ice, mint and silver. The five country colours still never go on a person;
   - **dots that wander near home,** on their own country's land.
 
   The page still opens on the town, with the map a click away.
-- **Zooming into any settlement, decided on 9 October 2026.** After trying the map, the owner asked to zoom into any settlement they want. They chose click to zoom: a click or tap on a town jumps the view there at close zoom, and a "Go to" list in the toolbar reaches any town by name. Opening a town as its own street view stays with M9. The same pass adds Zoom in and Zoom out buttons, and a Pause dots toggle (WCAG 2.2.2; agent ruling).
+- **Zooming into any settlement, decided on 9 October 2026.** After trying the map, the owner asked to zoom into any settlement they want. They chose click to zoom: a click or tap on a town jumps the view there at close zoom, and a "Go to" list in the toolbar reaches any town by name. Opening a town as its own street view stays with M9. The same pass adds Zoom in and Zoom out buttons, and a Pause dots toggle (WCAG 2.2.2; agent ruling), which went with the crowd on 10 October 2026.
 
 ### Global constraints
 
@@ -124,14 +121,10 @@
   - `src/map/`: `camera.ts`, `colours.ts`, `map-colours.json`, `frames.ts`, `overlay.ts`, `gl.ts`, `base-pass.ts`, `icons.ts`, `canvas2d.ts` and `renderer.ts`;
   - tests in `test/`, and harness hooks in `harness/`.
 - `apps/web/`:
-  - `src/map/map-view.ts`, `map-input.ts`, `labels.ts`, `legend.ts` and `crowd-motion.ts`;
+  - `src/map/map-view.ts`, `map-input.ts`, `labels.ts` and `legend.ts`;
   - `src/panels/controls.ts`, `vite.config.ts` and `.size-limit.json`;
   - tests in `test/` and `test/browser/`.
 - Root: `eslint.config.js` and `.dependency-cruiser.cjs` (Task 2).
-- The crowd:
-  - `packages/sim-protocol/src/world-map/world-map.ts`, which holds `MapCrowd` (committed in 9f4f9e1);
-  - `packages/worldgen/src/crowd/crowd.ts`, with `test/crowd.test.ts` and `test/crowd-sweep.test.ts`;
-  - `packages/render-gl/src/map/crowd.ts`.
 
 ### Task 1: The map atlas page (junior, exact code)
 
@@ -1565,8 +1558,7 @@ The owner's step is done: the owner picked the five on 9 October 2026, and Task 
   - the 2 ms bar (Task 13);
   - the first frame and bytes (Tasks 10 and 11);
   - complete tiles, labels by band and the town's pause (Task 12);
-  - the countries drawn (Task 14);
-  - the crowd (Tasks 16–19).
+  - the countries drawn (Task 14).
 - **Review:** `code-reviewer` over the whole part, and `web-accessibility` over the map section: focus order, the legend as text alternative, Escape, and the reduced-motion start.
 - **Docs,** in a separate docs commit:
   - interfaces.md for anything the code refined;
@@ -1574,405 +1566,9 @@ The owner's step is done: the owner picked the five on 9 October 2026, and Task 
   - `tools/worldgen/README.md`'s note that `country.png` and the map scene share `map-colours.json`.
 - **Checkpoint:** the next one, committed alone.
 
-### Task 16: The crowd's homes and stops (junior, exact code)
+### Tasks 16–19: The map crowd (removed)
 
-**Files:** create `packages/worldgen/src/crowd/crowd.ts` and `packages/worldgen/test/crowd.test.ts`. The `MapCrowd` type is in `@nomos/sim-protocol/world-map` already (9f4f9e1).
-
-**What it makes.** `crowdOf(map: WorldMap): MapCrowd` places the owner's look-only crowd, settlement by settlement in id order:
-- a dot per 100 people, and at least one;
-- each dot's home is a cell of its settlement's country within a reach that grows with its dots. It takes the nearer of two draws, so the crowd thins toward its edge;
-- three more stops in the 3 × 3 block around the home, on the same country's land. The review changed both rules after this listing: homes take the nearer of the two draws by distance, since the sorted yard sent ties north and west (f1cbb14). Stops 0 and 2 stand in the home cell and stops 1 and 3 beside it, never diagonally, so no straight leg leaves the country's land (e035a7f). The code below is the first version;
-- each stop lies in the middle three quarters of its cell, in cells times `CROWD_Q`;
-- each dot gets a random body hue, a leg of 2.5–6 s and a start somewhere in its loop.
-
-Every draw is `draw(map.seed, CROWD, …)`, with first keys from 0x100, clear of `place.py`'s 1–6. `map.country` is 0 on water, so matching the country keeps every stop ashore. `index.ts` gains `crowdOf` in Task 18, since M8.1 Task 29 creates it.
-
-- [ ] **Step 1: Write the failing test,** `packages/worldgen/test/crowd.test.ts`:
-
-  ```ts
-  import { CROWD_HUES, CROWD_Q, CROWD_STOPS, type WorldMap } from '@nomos/sim-protocol/world-map';
-  import { describe, expect, it } from 'vitest';
-  import { crowdOf } from '../src/crowd/crowd.ts';
-
-  const WIDTH = 12;
-  const HEIGHT = 8;
-  // Settlements in id order, as [x, y, population, country]: 90 dots, then 9, then a hamlet's one.
-  const PLACES = [
-    [5, 2, 9000, 1],
-    [8, 4, 999, 2],
-    [1, 6, 40, 1],
-  ] as const;
-  // The furthest, in cells either way, a stop may stand from its settlement: its reach, plus the block around its home.
-  const FARTHEST = [3, 2, 2];
-  const OWNERS = [...Array<number>(90).fill(0), ...Array<number>(9).fill(1), 2];
-
-  // Two countries inside a ring of sea, country 1 west of x = 6, with a lake at (4, 3). crowdOf reads only the seed,
-  // the size, the countries and the settlements.
-  function tinyWorld(seed: number): WorldMap {
-    const n = WIDTH * HEIGHT;
-    const country = new Uint8Array(n);
-    for (let y = 1; y < HEIGHT - 1; y++) {
-      for (let x = 1; x < WIDTH - 1; x++) country[y * WIDTH + x] = x < 6 ? 1 : 2;
-    }
-    country[3 * WIDTH + 4] = 0;
-    const count = PLACES.length;
-    return {
-      version: 1,
-      seed,
-      width: WIDTH,
-      height: HEIGHT,
-      template: 0,
-      wind: 0,
-      cold: 0,
-      elevation: new Int16Array(n),
-      biome: new Uint8Array(n),
-      temperature: new Uint8Array(n),
-      moisture: new Uint8Array(n),
-      river: new Uint8Array(n),
-      receiver: new Int32Array(n),
-      coast: new Uint8Array(n),
-      variant: new Uint8Array(n),
-      country,
-      region: new Uint16Array(n),
-      market: new Uint16Array(n),
-      settlements: {
-        cell: Int32Array.from(PLACES, ([x, y]) => y * WIDTH + x),
-        tier: new Uint8Array(count),
-        population: Int32Array.from(PLACES, (place) => place[2]),
-        country: Uint8Array.from(PLACES, (place) => place[3]),
-        region: new Uint16Array(count),
-        landmarks: new Uint8Array(count * 3),
-      },
-      countries: { capital: Int32Array.from([0, 1]), colour: Uint8Array.from([0, 1]) },
-      regions: { seat: new Int32Array(0), country: new Uint8Array(0) },
-      roads: { offsets: new Int32Array(1), cells: new Int32Array(0) },
-      lanes: { offsets: new Int32Array(1), cells: new Int32Array(0) },
-      bridges: new Int32Array(0),
-      wonders: { kind: new Uint8Array(0), cell: new Int32Array(0) },
-      landmarks: { kind: new Uint8Array(0), cell: new Int32Array(0) },
-    };
-  }
-
-  function stopCell(stops: Uint16Array, dot: number, stop: number): [number, number] {
-    const at = 2 * (dot * CROWD_STOPS + stop);
-    return [Math.floor(stops[at] / CROWD_Q), Math.floor(stops[at + 1] / CROWD_Q)];
-  }
-
-  function apart(ax: number, ay: number, bx: number, by: number): number {
-    return Math.max(Math.abs(ax - bx), Math.abs(ay - by));
-  }
-
-  describe('the map crowd', () => {
-    const world = tinyWorld(0x5eed0001);
-    const crowd = crowdOf(world);
-
-    it('gives each settlement a dot per 100 people, and a hamlet at least one', () => {
-      expect(crowd.hue.length).toBe(OWNERS.length);
-      expect(crowd.stops.length).toBe(OWNERS.length * CROWD_STOPS * 2);
-      expect(crowd.legMs.length).toBe(OWNERS.length);
-      expect(crowd.startMs.length).toBe(OWNERS.length);
-    });
-
-    it("keeps every stop on its own country's land, near its settlement", () => {
-      OWNERS.forEach((s, dot) => {
-        const [px, py, , country] = PLACES[s];
-        for (let stop = 0; stop < CROWD_STOPS; stop++) {
-          const [x, y] = stopCell(crowd.stops, dot, stop);
-          expect(world.country[y * WIDTH + x], `dot ${dot} stop ${stop}`).toBe(country);
-          expect(apart(x, y, px, py), `dot ${dot} stop ${stop}`).toBeLessThanOrEqual(FARTHEST[s]);
-        }
-      });
-    });
-
-    it("puts a dot's later stops beside its first", () => {
-      OWNERS.forEach((_, dot) => {
-        const [hx, hy] = stopCell(crowd.stops, dot, 0);
-        for (let stop = 1; stop < CROWD_STOPS; stop++) {
-          const [x, y] = stopCell(crowd.stops, dot, stop);
-          expect(apart(x, y, hx, hy), `dot ${dot} stop ${stop}`).toBeLessThanOrEqual(1);
-        }
-      });
-    });
-
-    it('keeps stops off cell edges, and legs between 2.5 and 6 s', () => {
-      for (const q of crowd.stops) {
-        expect(q % CROWD_Q).toBeGreaterThanOrEqual(32);
-        expect(q % CROWD_Q).toBeLessThan(224);
-      }
-      crowd.legMs.forEach((leg, dot) => {
-        expect(leg).toBeGreaterThanOrEqual(2500);
-        expect(leg).toBeLessThanOrEqual(6000);
-        expect(crowd.startMs[dot]).toBeLessThan(CROWD_STOPS * leg);
-      });
-    });
-
-    it('draws all six body hues', () => {
-      expect(new Set(crowd.hue).size).toBe(CROWD_HUES.length);
-    });
-
-    it('makes the same crowd from the same seed, and another from another', () => {
-      expect(crowdOf(tinyWorld(0x5eed0001))).toEqual(crowd);
-      expect(crowdOf(tinyWorld(0x5eed0002)).stops).not.toEqual(crowd.stops);
-    });
-  });
-  ```
-
-- [ ] **Step 2: Run** `pnpm exec vitest run packages/worldgen/test/crowd.test.ts`. Expected: fails, since `crowd.ts` doesn't exist.
-- [ ] **Step 3: Write** `packages/worldgen/src/crowd/crowd.ts`:
-
-  ```ts
-  import { below, floorDiv, isqrt } from '@nomos/sim-core/kernels';
-  import { CROWD_HUES, CROWD_Q, CROWD_STOPS, type MapCrowd, type WorldMap } from '@nomos/sim-protocol/world-map';
-  import { dist2, xOf, yOf } from '../grid/grid.ts';
-  import { CROWD } from '../random/streams.ts';
-
-  // The map's look-only crowd (owner, 9 October 2026). map.country is 0 on water, so matching a settlement's country
-  // keeps its dots ashore and at home.
-  const PEOPLE_PER_DOT = 100;
-  // A yard holds about this many dots a cell, so a capital's spreads some nine cells and a hamlet's keeps to its own.
-  const DOTS_PER_CELL = 24;
-  // Legs take 2.5 to 6 s, so neighbours fall out of step.
-  const LEG_MS = 2500;
-  const LEG_SPAN_MS = 3501;
-  // Stops keep to the middle three quarters of a cell, never its edge.
-  const EDGE = 32;
-  const INNER = 192;
-
-  // First keys of the crowd's CROWD draws on the world seed, clear of place.py's 1-6, as variant keys SHAPE on 0x200.
-  const HOME = 0x100;
-  const NEAR = 0x101;
-  const STOP = 0x102;
-  const OFFSET = 0x103;
-  const HUE = 0x104;
-  const LEG = 0x105;
-  const START = 0x106;
-
-  function dotsOf(population: number): number {
-    return Math.max(1, floorDiv(population, PEOPLE_PER_DOT));
-  }
-
-  // A disc of dots / DOTS_PER_CELL cells has a radius of the root of dots / (DOTS_PER_CELL * pi); 3 stands in for pi.
-  function reachOf(dots: number): number {
-    return 1 + isqrt(floorDiv(dots, DOTS_PER_CELL * 3));
-  }
-
-  // The settlement's own land within reach, nearest first, ties to the lower cell.
-  function yardOf(map: WorldMap, settlement: number, reach: number): number[] {
-    const { width, height } = map;
-    const home = map.settlements.cell[settlement];
-    const country = map.settlements.country[settlement];
-    const hx = xOf(home, width);
-    const hy = yOf(home, width);
-    const yard: number[] = [];
-    for (let y = Math.max(0, hy - reach); y <= Math.min(height - 1, hy + reach); y++) {
-      for (let x = Math.max(0, hx - reach); x <= Math.min(width - 1, hx + reach); x++) {
-        if (map.country[y * width + x] === country && dist2(x, y, hx, hy) <= reach * reach) yard.push(y * width + x);
-      }
-    }
-    const away = (cell: number): number => dist2(xOf(cell, width), yOf(cell, width), hx, hy);
-    return yard.sort((a, b) => away(a) - away(b) || a - b);
-  }
-
-  // The country's cells in the 3 x 3 block around a cell, the cell included: where a dot's later stops fall.
-  function blockOf(map: WorldMap, cell: number, country: number, out: Int32Array): number {
-    const { width, height } = map;
-    const cx = xOf(cell, width);
-    const cy = yOf(cell, width);
-    let count = 0;
-    for (let y = Math.max(0, cy - 1); y <= Math.min(height - 1, cy + 1); y++) {
-      for (let x = Math.max(0, cx - 1); x <= Math.min(width - 1, cx + 1); x++) {
-        if (map.country[y * width + x] === country) out[count++] = y * width + x;
-      }
-    }
-    return count;
-  }
-
-  // Dot k of a settlement: a home in its yard, the nearer of two draws, then three more stops beside it.
-  function placeDot(
-    map: WorldMap,
-    crowd: MapCrowd,
-    dot: number,
-    settlement: number,
-    yard: readonly number[],
-    k: number,
-    block: Int32Array,
-  ): void {
-    const { seed, width } = map;
-    const uid = map.settlements.cell[settlement];
-    const first = below(yard.length, seed, CROWD, HOME, uid, k);
-    const home = yard[Math.min(first, below(yard.length, seed, CROWD, NEAR, uid, k))];
-    const near = blockOf(map, home, map.settlements.country[settlement], block);
-    for (let stop = 0; stop < CROWD_STOPS; stop++) {
-      const cell = stop === 0 ? home : block[below(near, seed, CROWD, STOP, uid, k, stop)];
-      const at = 2 * (dot * CROWD_STOPS + stop);
-      crowd.stops[at] = xOf(cell, width) * CROWD_Q + EDGE + below(INNER, seed, CROWD, OFFSET, uid, k, 2 * stop);
-      crowd.stops[at + 1] = yOf(cell, width) * CROWD_Q + EDGE + below(INNER, seed, CROWD, OFFSET, uid, k, 2 * stop + 1);
-    }
-    crowd.hue[dot] = below(CROWD_HUES.length, seed, CROWD, HUE, uid, k);
-    crowd.legMs[dot] = LEG_MS + below(LEG_SPAN_MS, seed, CROWD, LEG, uid, k);
-    crowd.startMs[dot] = below(CROWD_STOPS * crowd.legMs[dot], seed, CROWD, START, uid, k);
-  }
-
-  // Settlement by settlement in id order, so each settlement's dots sit together.
-  export function crowdOf(map: WorldMap): MapCrowd {
-    const { population } = map.settlements;
-    let total = 0;
-    for (let s = 0; s < population.length; s++) total += dotsOf(population[s]);
-    const crowd: MapCrowd = {
-      hue: new Uint8Array(total),
-      stops: new Uint16Array(total * CROWD_STOPS * 2),
-      legMs: new Uint16Array(total),
-      startMs: new Uint16Array(total),
-    };
-    const block = new Int32Array(9);
-    let dot = 0;
-    for (let s = 0; s < population.length; s++) {
-      const dots = dotsOf(population[s]);
-      const yard = yardOf(map, s, reachOf(dots));
-      for (let k = 0; k < dots; k++) placeDot(map, crowd, dot++, s, yard, k, block);
-    }
-    return crowd;
-  }
-  ```
-
-- [ ] **Step 4: Run** Step 2's command. Expected: all six pass. Then check that each test bites. Make each change below alone, see a test fail, and undo it:
-  1. drop `map.country[y * width + x] === country &&` in `yardOf`;
-  2. call `yardOf(map, s, 99)` in `crowdOf`;
-  3. take later stops from `yard` instead of `block`;
-  4. make `dotsOf` return `floorDiv(population, PEOPLE_PER_DOT)`;
-  5. set `EDGE` to 0.
-- [ ] **Step 5: The gates:** `pnpm test && pnpm lint && pnpm typecheck && pnpm depcruise && pnpm names`, and `hash=b3b2c251` from the CLI.
-- [ ] **Step 6: Commit** `feat(worldgen): place a look-only crowd around each settlement`, with both files.
-
-### Task 17: The crowd pass (senior)
-
-**Files:**
-- create `packages/render-gl/src/map/crowd.ts` and `test/browser/map-crowd.spec.ts`;
-- modify `src/map/renderer.ts`, `src/map/canvas2d.ts`, `src/map/map-colours.json`, `src/map/colours.ts`, `src/map.ts` and `harness/map.ts`;
-- modify `tools/worldgen/test_worldgen.py`, for the colour check.
-
-- **API:** `MapRenderer.setCrowd(hue: Uint8Array, xy: Float32Array): void`.
-  - `hue` holds each dot's `CROWD_HUES` index. `xy` holds each dot's position, x then y, in cells, fractional.
-  - The caller rewrites `xy` in place before each `draw`. The renderer uploads it on every draw that shows the crowd, and keeps both arrays for a restored context or the fallback.
-- **When:** only in the Region view, after the base pass and before the icons, so settlement icons and labels stay on top. The Country view never draws it (the owner's decision).
-- **Look:**
-  - each dot is a filled disc in its body hue. The six are `spritekit.py`'s `BODY_HUES` base colours, kept in `map-colours.json` beside the country colours;
-  - sizes are whole device pixels, snapped as the camera is: at least 2 px at the Region view's first step, growing with `cellPx` to about a tenth of a cell;
-  - from 4 px up, a dot has a 1-px dark outline, as characters have by day (web rules).
-- **GL:** one instanced draw of a unit quad, with a dynamic `xy` buffer and a static hue buffer, and no allocation per frame.
-- **Canvas2D:** the same dots as filled squares with the outline, skipping any dot off the canvas.
-- **The colour check:** `test_worldgen.py` checks that `map-colours.json`'s six body hues equal `spritekit.PALETTE`'s `BODY`, `LILAC`, `ROSE`, `ICE`, `MINT` and `SILVER`, in `CROWD_HUES` order.
-- **Checks,** in `map-crowd.spec.ts` on the harness:
-  - at a Region step, body-hue pixels show at the dots' places; at a Country step, none do;
-  - Canvas2D draws the same;
-  - after `WEBGL_lose_context` and a restore, the dots draw again;
-  - moving `xy` moves them.
-- **Commit** `feat(render-gl): draw the map crowd from the Region view in`.
-
-### Task 18: The crowd in the map view (senior)
-
-**Needs:** Task 10, M8.1 Task 30, and Tasks 16 and 17.
-
-**Files:**
-- create `apps/web/src/map/crowd-motion.ts` and `apps/web/test/crowd-motion.test.ts`;
-- modify `apps/web/src/map/map-view.ts`;
-- create `apps/web/test/browser/map-crowd.spec.ts`, apart from Task 12's `map.spec.ts`.
-
-- **The worker answers with the crowd too.** This part landed with M8.1 Task 30 (05bd29a), to save a round trip:
-  - `MapWorkerMessage` gains `crowd: MapCrowd`;
-  - `answerGenerate` calls `crowdOf(map)` after the names, and laps it as `crowd`;
-  - it transfers `crowdBuffers(crowd)` with the world's buffers;
-  - `worldgen`'s `index.ts` exports `crowdOf`.
-- **Motion:** `crowdAt(crowd: MapCrowd, nowMs: number, xy: Float32Array): void`, with no allocation.
-  - Dot d's loop takes `CROWD_STOPS × legMs[d]`, and at `nowMs` it is `nowMs + startMs[d]` into the loop.
-  - In each leg the dot stands for the first 40%, then walks straight to the next stop; the last leg returns to stop 0.
-  - It writes each position in cells: the stop values divided by `CROWD_Q`.
-- **The view:**
-  - when the world arrives, make `xy` once, fill it with `crowdAt(crowd, 0, xy)`, and hand both arrays to `renderer.setCrowd`;
-  - while the map shows and the renderer's view is the Region view, each frame calls `crowdAt` with the frame's time before `renderer.draw`, then asks for the next frame. In the Country view, drawing stays on demand, as Task 10 has it;
-  - under `prefers-reduced-motion: reduce`, dots stand at their time-0 places and no loop runs;
-  - closing the map stops the loop;
-  - `window.__map` reports the crowd's dot count and whether the last frame drew it, for the tests.
-- **Checks:**
-  - `crowd-motion.test.ts` checks exact positions at chosen times for a hand-made crowd of two dots: standing, walking, and the wrap back to stop 0;
-  - `map-worker.test.ts`: the stage list gains `crowd`, and every buffer, the crowd's included, is listed once (M8.1 Task 30);
-  - `map-crowd.spec.ts`: the Country view draws no crowd. At a Region step it draws one, and a dot moves within a second. Under reduced motion, no dot moves.
-- **The bytes after:** Task 10's first-load chunks keep their exact sizes.
-- **Commits:** `feat(web): walk the map crowd near home from the Region view in`, then the tests.
-
-### Task 19: The crowd on real worlds, and the owner's screenshots (junior, exact code)
-
-**Needs:** Task 16 and M8.1 Task 29 for the sweep, and Task 18 for the screenshots.
-
-**Files:** create `packages/worldgen/test/crowd-sweep.test.ts`.
-
-- [ ] **Step 1: The sweep,** `packages/worldgen/test/crowd-sweep.test.ts`:
-
-  ```ts
-  import {
-    BIOME_NAMES,
-    CROWD_HUES,
-    CROWD_Q,
-    CROWD_STOPS,
-    type MapCrowd,
-    type WorldMap,
-  } from '@nomos/sim-protocol/world-map';
-  import { describe, expect, it } from 'vitest';
-  import { crowdOf } from '../src/crowd/crowd.ts';
-  import { generateWorld } from '../src/index.ts';
-
-  const WATER = new Set([BIOME_NAMES.indexOf('ocean'), BIOME_NAMES.indexOf('lake')]);
-  const WORLDS: [number, 'standard' | 'large'][] = [
-    ...Array.from({ length: 10 }, (_, k): [number, 'standard'] => [0x5eed0001 + k, 'standard']),
-    [0x5eed0001, 'large'],
-    [0x5eed0002, 'large'],
-  ];
-
-  // Each dot's settlement: dots come settlement by settlement, a dot per 100 people and at least one.
-  function owners(map: WorldMap): number[] {
-    const dotsOf = (people: number): number => Math.max(1, Math.floor(people / 100));
-    return Array.from(map.settlements.population, (people, s) => Array<number>(dotsOf(people)).fill(s)).flat();
-  }
-
-  // Every stop off its settlement's country or on water.
-  function strays(map: WorldMap, crowd: MapCrowd, owner: readonly number[]): string[] {
-    const out: string[] = [];
-    owner.forEach((s, dot) => {
-      for (let stop = 0; stop < CROWD_STOPS; stop++) {
-        const at = 2 * (dot * CROWD_STOPS + stop);
-        const cell = Math.floor(crowd.stops[at + 1] / CROWD_Q) * map.width + Math.floor(crowd.stops[at] / CROWD_Q);
-        const home = map.country[cell] === map.settlements.country[s];
-        if (!home || WATER.has(map.biome[cell])) out.push(`dot ${dot} stop ${stop}`);
-      }
-    });
-    return out;
-  }
-
-  describe('the map crowd on real worlds', { timeout: 120_000 }, () => {
-    it("puts a dot per 100 people on its own country's land, in every hue", () => {
-      for (const [seed, size] of WORLDS) {
-        const map = generateWorld(seed, size);
-        const crowd = crowdOf(map);
-        const owner = owners(map);
-        expect(crowd.hue.length, `${size} ${seed}`).toBe(owner.length);
-        expect(strays(map, crowd, owner), `${size} ${seed}`).toEqual([]);
-        expect(new Set(crowd.hue).size, `${size} ${seed}`).toBe(CROWD_HUES.length);
-      }
-    });
-  });
-  ```
-
-- [ ] **Step 2: Run** `pnpm exec vitest run packages/worldgen/test/crowd-sweep.test.ts`. Expected: passes. Report the dot counts of the two large worlds.
-- [ ] **Step 3: Commit** `test(worldgen): keep the crowd ashore in its own country on real worlds`.
-- [ ] **Step 4: Screenshots for the owner,** by `junior-qa` after Task 18.
-  - Build: `pnpm --filter @nomos/web build`, then `python tools/atlas/build_atlas.py --out apps/web/dist/atlas`, then `pnpm --filter @nomos/web preview`.
-  - Take each at seed 42 and 1,280 × 800:
-    - the town with its Map control;
-    - the whole map;
-    - the Region view on the capital;
-    - the closest step on the capital;
-    - the Countries toggle at a Region step.
-  - Save them to `dist/qa/map-crowd/`, and report each file.
+Built on 9 October 2026, then removed at the owner's request on 10 October 2026 (75e2652, f1f9341, 1090702). The old steps are in git: `git show 093017f:docs/plan/tasks/m8-country-map/m8.3-country-and-region-views/plan.md`.
 
 ### Highways, tracks and walled icons (owner, 10 October 2026)
 
@@ -1988,7 +1584,6 @@ Planned in [M3.1's plan, Part 3](../../m3-city-life/m3.1-town-generator/plan.md)
 | Seed 42's Countries view matches its golden frame; every border edge draws; the legend lists every country with its name and capital | Task 14 |
 | The Country view labels only countries, capitals and cities, the Region view every settlement, and no two labels overlap | Tasks 5 and 12 |
 | Opening the map pauses the town; closing it resumes the town only if it was playing | Task 12 |
-| The crowd: a dot per 100 people, every stop on its own country's land; drawn only from the Region view in, and still under reduced motion; the first load and the town's hash unchanged | Tasks 16–19 |
 
 ### Risks
 
@@ -1996,4 +1591,3 @@ Planned in [M3.1's plan, Part 3](../../m3-city-life/m3.1-town-generator/plan.md)
 - **The Region overlay is 6.3 MB of texture.** A device that can't hold it draws the map in Canvas2D (Ruling 3). M9's larger worlds will need tiled overlays.
 - **The chunk group.** If Vite's group regex ever stops excluding `src/map`, the scene lands in the renderer chunk. Task 10's byte check and the renderer chunk's 10 kB limit both catch that.
 - **Two WebGL contexts** live while the map shows, the town's and the map's. Browsers allow many more, and the map frees its own on dispose.
-- **The crowd costs every Region frame:** about 10,000 dots moved, and two floats each uploaded. If it breaks Task 13's bar, move and upload only the dots in view, or step the motion at 10 Hz.

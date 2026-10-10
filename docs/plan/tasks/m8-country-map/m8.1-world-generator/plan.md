@@ -2676,12 +2676,11 @@ with `import { landmarks } from '../../src/features/landmarks.ts';`.
 
 The owner asked for a bigger world map. The map now opens the `large` size: 192 × 128 cells, four times the standard world. The generator and its goldens already cover that size. Later on 10 October the owner made this the first task of the round: the bigger map, more cities, towns and villages, and more blobs in proportion come before everything else. Run it before Task 35 closes M8.1.
 
-- **More settlements come free.** `settle.py` sets its target at the land's cell count divided by 50–70, so a large world holds about four times the cities, towns and villages, and the crowd grows with them, one dot per 100 people. Check the counts per tier on 20 large worlds.
+- **More settlements come free.** `settle.py` sets its target at the land's cell count divided by 50–70, so a large world holds about four times the cities, towns and villages. Check the counts per tier on 20 large worlds.
 - **Capitals stay one per country,** with 3–5 countries, as the Countries plan has it. More capitals would need more countries, an owner decision this task doesn't take.
 
 - Make `large` the map's default size. Keep `standard` for tests and as a fallback.
 - Measure generation in the map worker against Task 31's budget, on desktop, and on phones when the owner sends the timings.
-- The crowd grows with the population, at one dot per 100 people. Re-check the Region view against the 2 ms bar.
 - Check the zoom ladder's Fit, the labels, the legend and the Go to list on a world four times the size. Fit on small screens is still the owner's deferred call.
 - **Done when:** the map opens a large world, the frame tests and size limits pass, and the generation time is recorded.
 
