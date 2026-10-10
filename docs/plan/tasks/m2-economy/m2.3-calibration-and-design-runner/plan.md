@@ -18,6 +18,15 @@
 
 The owner let the coordinator settle M2.3's open questions. These rulings are the planner's, made for the coordinator, and the owner can overturn any of them.
 
+**The coordinator settled the planner's three questions on 10 October 2026:**
+1. **Yearly targets count per 112-day game year.** That shows a real year's worth of exits and pay cuts in one game year, as a player sees a year, and matches M2.7's "final calibration on the 112-day year".
+2. **"Markup over wholesale" reads as markup over unit labour cost** until M2.4 adds the shop layer.
+3. **The slow-searcher trait is fair under four conditions:**
+   - it's drawn at birth on its own keyed stream, independent of looks, culture, household and wealth;
+   - it's never inherited;
+   - it never shows on a body;
+   - it's listed on M6.6's "What this toy leaves out" page.
+
 1. **Closed money.** `CITY.fiatIssuePpm` is 0, and fiat stays a scenario setting, a grid's `params` override. The suite sets no saving-rate target; M2.1's closed-money identity stands. Cost if wrong: one confirmation with fiat on, judged against R2's 4%.
 2. **Monthly targets per 21-day month, yearly ones per 112-day year,** as [calendar.md](../../../calendar.md)'s rescaling rules and [milestone.md](../milestone.md) ask.
    - Firm exits of 7.5–8.5% a year so become 1.45–1.65% of firm-months (computed), not 0.65%.
