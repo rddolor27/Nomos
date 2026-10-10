@@ -53,7 +53,7 @@ The tables give the layout M0.7 builds, including the files it adds. A renamed f
 | `money/` | `ledger.ts`, `ppm.ts` (was `money.ts`), `claims.ts`, `registry.ts`, `invariants.ts`, `flows.ts`, `histogram.ts` | Cents, accounts, wallets, loans, holdings and the money invariants |
 | `world/` | `world.ts`, `checkpoint.ts` (split from `world.ts`), `ground.ts`, `inputs.ts`, `space.ts` | The `World`, its creation and population; the hash, checkpoints and restore; the ground, the input log and the Q8 space |
 | `day/` | `day.ts`, `slices.ts`, `stride.ts` | The day boundary, day slices and the stride scheduler |
-| `movement/` | `wander.ts`, `walk.ts` | `move`, and the walking step on each heading |
+| `movement/` | `wander.ts`, `walk.ts`, `steer.ts` | `move`, the walking step on each heading, and the pure wander rule the town view's walkers share |
 | `step/` | `step.ts`, `warm.ts` | The world step and its warm-up |
 | `consumption/` | `stand-in.ts` | Consumption's stand-in, the one `sim-core` folder that reads culture |
 
@@ -68,7 +68,7 @@ The tables give the layout M0.7 builds, including the files it adds. A renamed f
 | `messages/` | `messages.ts`, `lifecycle.ts` | Worker messages and the page lifecycle |
 | `map/` | `map.ts` | The binary map |
 | `sprites/` | `sprite-manifest.ts` (generated) | The sprite-manifest types |
-| `shared/` | `calendar.ts`, `columns.ts` | Constants re-exported from `sim-core`, so `render-gl` and the app never import it |
+| `shared/` | `calendar.ts`, `columns.ts`, `steering.ts` | Constants re-exported from `sim-core`, and the wander rule with its keyed draw and steps, so `render-gl` and the app never import it |
 | `world-map/` | `world-map.ts` | The world map, its crowd and the map worker's messages, behind the `./world-map` export (M8.1) |
 | `place/` | `place-layout.ts` | A place's layout, its walk loops and the map worker's place messages, behind the `./place` export (M3.1) |
 
@@ -151,6 +151,10 @@ Skin B and Skin C arrive as `blobs/` and `town/` beside `dots/` (M1.3, M3.3). M8
     - Through a row edge, the blob slides by its step's x part; through a column edge, by its y part. At a corner it stays put and treats the wall as running along y.
     - It then turns off the wall: its heading is mirrored across the wall, and its angle to the wall is halved, rounded up so it still points away.
     - A blob so leaves a wall at half the angle it met it and never zigzags down a narrow lane. No extra ground lookup is needed.
+  - **The shared rule** (owner request, 10 October 2026): `steer.ts` holds the turns and walls above as pure functions on plain numbers.
+    - They are `firstRedraw(tick)` with `REDRAW_TICKS`, `wanderTo(heading, walking, w)`, which gives the next heading or `STAND` (−1), and `offWall(heading, wallAlongX)`.
+    - `move` calls them, and `sim-protocol`'s `shared/steering.ts` re-exports them with `draw2`, `WANDER` and the steps, so the town view's walkers walk the same way.
+    - `move` keeps its redraw loop inline. A redraw function of its own spent TurboFan's inlining budget for `move`, so the keyed draw's inner call went uninlined and boxed a heap number per redraw.
   - **Facing:** `facingFor(heading)` is ((heading + 32) >> 6) & 3, the facing nearest the heading and so its step's dominant axis. At the four exact diagonals it takes the facing clockwise.
     - `populate` and `move` write `facing` with every heading change, through `setHeading`, so snapshot v1 and its 2 facing bits are unchanged.
   - **Spawns:** `populate` puts each blob at a keyed point in its open tile, so blobs sharing a tile don't stack. With d = `draw2(seed, SPAWN, id, 1)`, x is the tile's left edge plus d & 4095 and y its top edge plus (d >>> 12) & 4095, in Q8.
@@ -612,10 +616,12 @@ The owner asked on 9 October 2026 to zoom into a settlement on the map and see t
 - **The view:** `map/place-view.ts` mounts a `#place` section over the map, which goes inert beneath it and draws nothing while covered.
   - It opens at `openPlaceCamera`'s scale.
   - Its bar holds Back to map, Fit, + and −, and Pause people, which shares the map's Pause dots state, with the place's name, tier, population and country. A wonder is named by its kind, such as "Sea arch".
-- **Walkers:** `map/walkers.ts`'s `Walkers` move people round their loops at about 20 art px a second, with no allocation per frame.
-  - The walk frame changes every 8 px, and facing follows the way they go.
-  - A stander with a loop takes the walk pose while it moves.
-  - Pause people stops them, and reduced motion keeps everyone where `place.py` put them.
+- **Walkers:** `map/walkers.ts`'s `Walkers` wander a place's street network, the tiles of all its loops, by the sim's own wander rule, which `sim-protocol`'s `shared/steering.ts` hands them with the keyed draw (owner request, 10 October 2026).
+  - They step as the sim's blobs do, 4 art px a tick, at about 20 art px a second, so a tick lasts 200 ms. A frame draws each walker eased between its last two ticks, with no allocation per frame.
+  - An owner keeps to its own loop's box, near home. The street crowd starts at its phases along its loops and roams the whole network.
+  - The walk frame changes every 8 px along the way they face, and facing follows the way they go.
+  - A walker takes the walk pose while it walks and the stand pose while it stands, as the sim's idlers do.
+  - Pause people stops them, and reduced motion keeps everyone where `place.py` put them; switched off, they walk again from there.
 - **Leaving:** Back to map, Escape, or zooming out past the smallest scale returns to the map as it was, with focus back where it was.
 - **Loading:**
   - `place-view-*.js`, `place-builder-*.js` and the atlas load on the first entry only, and each chunk has a size-limit entry.
