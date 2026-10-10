@@ -160,6 +160,29 @@ describe('spawnFromLedger', () => {
     }
   });
 
+  // Random records stay far below these bounds, where an Int32 column or a 32-bit step would still round-trip.
+  it('folds back the largest record checkRecord allows, on edge seeds, settlements and days', () => {
+    const base = recordAt(1);
+    const mostPerFirm = Math.floor(Number.MAX_SAFE_INTEGER / base[LEDGER_FIRMS]);
+    const largest = withFields(base, {
+      [LEDGER_HOUSEHOLD_CASH]: Number.MAX_SAFE_INTEGER - 2 ** 50,
+      [LEDGER_FIRM_CASH]: 2 ** 50,
+      [LEDGER_PRICE]: mostPerFirm,
+      [LEDGER_WAGE]: mostPerFirm,
+      [LEDGER_STOCK]: 2 ** 31 - 1,
+    });
+    const edges = [
+      [0, -1, -1],
+      [2 ** 31, -(2 ** 31), 2 ** 31 - 1],
+      [2 ** 32 - 1, 2 ** 32 - 1, 0],
+    ];
+    for (const [seed, settlement, day] of edges) {
+      const world = spawnedSmall(largest, seed, settlement, day);
+      expect(Array.from(folded(world)), `seed ${seed}`).toEqual(Array.from(largest));
+      expect(checkCash(world.cash), `seed ${seed}`).toBe(OK);
+    }
+  });
+
   it('issues exactly the record cash from MINT', () => {
     const record = recordAt(3);
     const world = spawnedSmall(record, 1, 0, 0);
