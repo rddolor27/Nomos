@@ -34,6 +34,12 @@ The owner can overturn any of these.
   - `burnInDays` is 18,428, from a 40,000-day run with exits off (Ruling 18);
   - no credit line, since Ruling 14's trigger didn't trip (s.d. 0.0110 on seeds 2001–2050); recheck at M2.2b and M5;
   - exits off in `CITY` (`shortPayExitPpm` 0) until entry is designed (Ruling 19), so the exit target is a tier-2 gap meanwhile.
+- **The economy on screen (M2.2b):**
+  - M1.2's 1×, 4× and 16× buttons came forward (Ruling 6). Each turn still posts one snapshot, and keys 1–3 work only while the view or the HUD has focus.
+  - lil-gui and the per-system timings load only with `?dev=1`, and the Map button is in the HUD.
+  - A plain day keeps the 16 KiB allocation limit. A month's last and first days get an interim allowance until M6.
+  - A town's crowd starts three in four walking.
+  - One inspect quirk is accepted: at a month's last day, between ticks 12 and 13, an inspect can show the wrong wage.
 
 ## Open
 
@@ -45,6 +51,15 @@ Beyond the checkpoint's Open list:
 - **The shared plan doc** still names five engines, Deno and the 2% pay cut. It also lacks M3.1 Part 3, whose suggested tag is "(Towns)". Update it at the next sync, with the owner, along with the deferred items in `git show 6736fb6:docs/plan/HANDOFF.md`.
 - **Local specs:** a stray `vite preview` on port 4173 serves the last build of `apps/web/dist`, and Playwright reuses it outside CI. Build before a local spec run.
 - **Perf to check:** the economy's month-start `searchShops` (1.78 ms at 10k), and `createTown`'s extra 11 ms at the worker's start. `pnpm budget`'s sampled days miss a month's start. perf.yml, which the owner starts by hand, measures them.
+- **perf.yml:** it hasn't run since the economy joined the step. The owner starts it from the Actions page. Watch the startup gate, the tick budget at 10k, and the allocation allowance on a month's last day, whose readings swing 0.24–0.92 MB.
+- **Speed at 100k:** at 16× the desktop tier saturates the worker, so M1.2's per-tier caps are still needed.
+- **A spawn transient:** a spawned town matches the record's totals, but every shop starts at one wage. So unemployment falls from 8.3% to 4.8% at day 21 before it settles.
+- **Small follow-ups for `junior-game-engineer`:**
+  - fold the segmented-button CSS, now in `toolbar.ts`, `zoom-bar.ts` and `speed-bar.ts`, into one rule;
+  - drop `#side`'s 72 px top padding without `?dev=1`;
+  - show the phone's inspector line without a scroll;
+  - move `SystemRows` into the controls chunk;
+  - the charts chunk has only 0.08 kB spare.
 - **Names:** re-running `build-real-world.ts` would overwrite the 42 hand-added religion words. A test catches that, and a merge file would make them last.
 - **The owner's go:** M3.1 Part 3's Tasks 12–16 and 19–21 (walls, towers, gates and farms). M0.5 waits only on the owner's device timings.
 - **Backlog from before the restructure** (checkpoint 0034 and the nomos-bd hand-off):
@@ -61,6 +76,13 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 11 Oct: **M2.2b done** (Tasks 5 and 8, the review, the allocation fix; 8e4a120..c20ce6e, b7eb873..1339b2c).
+  - **The panel:** it charts mean price, mean wage and unemployment by day, each with a data table, above the day's last 16 trades, which name no buyer.
+  - **The HUD:** Pause, 1×, 4×, 16× and Map sit on one row at 1280 px, with the developer panel behind `?dev=1`.
+  - **The review** (Opus) found nothing serious, and its seven fixes landed.
+  - **The allocation test:** it had failed since Task 3, which turned CI red. It passes again: a plain day allocates 2.9 KB, down from 83 KB.
+  - **Checks:** twelve browser specs pass locally, and initial JS is 25.78 of 35 kB.
+- 11 Oct: **M0.8 done:** lil-gui is behind `?dev=1`, and the town has Fit, Home and pinch.
 - 10 Oct: **M2.2b Tasks 1–4 and 6 built** (1d8e5f0..ba0b44a).
   - **The town:** every app world is a town spawned settled from `CITY_RECORD`, and its crowd starts three in four walking.
   - **The economy:** it runs one system a tick. The inspector shows job, employer and wage, the worker posts a daily `economy` feed, and logged layoffs fire at the next day's start.

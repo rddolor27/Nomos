@@ -1,5 +1,7 @@
 # M2.2b The economy on screen: brief
 
+> **Status:** done (11 October 2026). Tasks 1–6 and 8 landed from 1d8e5f0 to c20ce6e. The Opus review's fixes and the allocation fix followed (b7eb873..1339b2c), and `HANDOFF.md`'s log holds the results. The owner still starts perf.yml once.
+
 **Task:** [task.md](task.md). Each task writes its code, then its tests: the main case and one edge. It runs only those, at `nice -n 19`, with a typecheck of the packages it touched, then commits. CI runs the rest after the push.
 
 ## Rulings
