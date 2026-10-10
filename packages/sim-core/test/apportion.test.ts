@@ -109,6 +109,13 @@ describe('exact apportionment', () => {
     expect(emptyEntries.size).toBeGreaterThanOrEqual(50);
   });
 
+  it('refuses fewer than one weight, where the stride would search forever', () => {
+    const cents = new Float64Array(1);
+    expect(() => apportionByStride(5, [], 0, cents, 7)).toThrow(RangeError);
+    expect(() => apportionByStride(0, [], 0, cents, 7)).toThrow(RangeError);
+    expect(() => apportionByStride(5, [1], -1, cents, 7)).toThrow(RangeError);
+  });
+
   it('never strides a leftover cent onto a zero weight', () => {
     const cents = new Float64Array(4);
     for (let word = 0; word < 100; word++) {

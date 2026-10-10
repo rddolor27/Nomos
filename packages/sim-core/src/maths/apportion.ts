@@ -44,6 +44,8 @@ export function apportionByStride(
   out: Float64Array,
   word: number,
 ): void {
+  // With no entry, the stride search below never finds a stride and never returns.
+  if (n < 1) throw new RangeError(`apportionByStride needs at least one weight, not ${n}`);
   let leftover = floors(total, weights, n, out, null);
   const stride = coprimeStride(1 + (mix(word) % n), n);
   for (let i = word % n; leftover > 0; i = (i + stride) % n) {
