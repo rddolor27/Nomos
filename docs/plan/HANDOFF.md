@@ -266,3 +266,25 @@ If the session ended: check `git log` for those Task lines, and `git status` for
     - the M8.1 plan at line 300;
     - the M8.3 plan at lines 85 and 1844.
   - Wave 2 started: Tasks 5 (firms, profits and fiat money), 6 (labour and wages) and 7 (consumption), on `sim-engineer` with Sonnet.
+- 10 Oct: **M2.1's code is complete** (Tasks 1–8, 6b1778e to f6ab86c).
+  - The economy runs from the Lengnick start: `economyDay`, `startEconomy`, and the CLI's `economy` command.
+  - `burnInDays` is 9,893.
+  - The step doesn't call the economy yet, so the CLI hash stays `3c786124`.
+  - Money and goods balance exactly in every check.
+  - R1's bands hold: mean price 1.19–1.21× the start, unemployment averaging 2.6%.
+  - Speed: about 7,000 sim days a second.
+- **For M2.3's calibration,** measured, not bugs:
+  - price changes on 18.9% of firm-months, against a 9–12% target;
+  - firm exits about 200× rarer than the target;
+  - 66% of firm-months above the 1.15 markup ceiling, which a step can overshoot;
+  - wage cuts by about 17% of firms a year, against a 10% warning line;
+  - a firm-size skew of 0.50, against 1.9;
+  - an exiting firm's unsold stock vanishes, with no write-off stat;
+  - `economyDay` allocates at most 0.6 KB a sim day.
+- The first-load JS stand-in is set to 18 kB; it measures 17.14 kB.
+- **Running:** a shared steering rule, so town-view walkers wander in any direction like the sim's blobs, with one copy of the logic.
+- **Next:**
+  - one QA pass over M2.1 and the steering: economy-review, determinism-review and the bench gates;
+  - a minor re-test of the flagged items;
+  - the economy sections of `interfaces.md` (the coordinator's docs commit);
+  - the docs that still show `b3b2c251`.
