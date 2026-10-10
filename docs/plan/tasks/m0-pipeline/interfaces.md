@@ -56,6 +56,7 @@ The tables give the layout M0.7 builds, including the files it adds. A renamed f
 | `movement/` | `wander.ts`, `walk.ts`, `steer.ts` | `move`, the walking step on each heading, and the pure wander rule the town view's walkers share |
 | `step/` | `step.ts`, `warm.ts` | The world step and its warm-up |
 | `consumption/` | `stand-in.ts` | Consumption's stand-in, the one `sim-core` folder that reads culture |
+| `goods/` | `goods.ts`, `store.ts`, `food.ts` (M2.4) | The seven goods and their table, the goods store a firm row holds beside `FirmStore`, and the dated food ring ([Goods and food](#goods-and-food-owner-m24)) |
 
 `world/checkpoint.ts` takes `stateHash`, `stateHashExcept`, `checkpoint` and `restoreWorld`; `world/world.ts` keeps the `World`, its global slots, `layoutWorld`, `populate`, `createWorld`, `currentTick` and `committed`.
 
@@ -170,7 +171,7 @@ Grids live in `tools/cli/grids/`, outside `src/`.
   - **Spawns:** `populate` puts each blob at a keyed point in its open tile, so blobs sharing a tile don't stack. With d = `draw2(seed, SPAWN, id, 1)`, x is the tile's left edge plus d & 4095 and y its top edge plus (d >>> 12) & 4095, in Q8.
     - Three in four blobs start walking. With s = `draw2(seed, SPAWN, id, 2)`, a blob where s & 3 isn't 0 starts on the heading s >>> 24, with the `vx`, `vy` and `facing` that follow it. The rest start idle on heading 0, facing down.
     - Three in four is the long-run share of the turns above, so the walking share holds near 75% from the first tick instead of climbing from none: 74.8%, 75.1% and 75.4% at ticks 0, 16 and 64 (measured, seed 42, phone tier).
-- `stateHash(world: World): number`: a 32-bit hash over every replay-relevant column and ledger, the value the determinism checks compare. M0.6 adds `stateHashExcept(world, skip: readonly ArrayBufferView[]): number`, of which `stateHash` is the case with nothing skipped, so no golden moves; the relabel test skips the culture columns.
+- `stateHash(world: World): number`: a 32-bit hash over every replay-relevant column and ledger, the value the determinism checks compare. M0.6 adds `stateHashExcept(world, skip: readonly ArrayBufferView[]): number`, of which `stateHash` is the case with nothing skipped, so no golden moves; the relabel test skips the culture columns. M2.4 adds the goods store, which it mixes in last while the `GOODS` slot is 1 (Goods and food, below).
 - `World.cultureUid`: a canonical `Uint8Array(MAX_CULTURES)` of stable culture uids, c + 1 per culture and 0 when unused. Culture-level draws key on it, never on the index (M0.6, R8).
 - Seed 42's replay hashes at tick 1,000, one per tier, live in `packages/sim-core/test/fixtures/goldens.json`, keyed `"<seed>/<tier>"`; the Node and browser checks both read it. A commit that moves the sim on purpose regenerates it with `node packages/sim-core/scripts/goldens.ts` (M0.6). Since M2.2's household rows, they are `746a06a3` on phone, `7560155c` on phone-plus and `10699866` on desktop. `node tools/cli/src/main.ts --seed 42 --tier phone --ticks 1000` prints the phone hash.
 - `Tier` is `'phone' | 'phone-plus' | 'desktop'`, with agent caps of 10,000, 25,000 and 100,000. `sim-protocol` re-exports `Tier`, `TIER_AGENTS` and `townAgents` from its `messages.ts` (M0.3).
@@ -684,7 +685,7 @@ M2.1 builds Lengnick's households and firms in `sim-core`, as its [step plan](..
   - the calendar gains `DAYS_PER_MONTH = 21` (owner, 10 October 2026), `monthOf` and `dayOfMonth`;
   - `LENGNICK.burnInDays` is 9,893 and `CITY.burnInDays` 18,428, each measured by MSER-5.
 - **Presets (M2.3):** `CITY`, in `economy/city.ts`, joins `LENGNICK`.
-  - `EconomyParams` gains four fields, and `LENGNICK`'s values turn each off:
+  - `EconomyParams` gains four fields, and `LENGNICK`'s values turn each off (M2.4 adds a fifth, `goods`, below):
     - `slowSearcherPpm` (0) and `slowJobSearches` (5): that share of people, fixed for life, visits only `slowJobSearches` firms a month while unemployed, and the rest `jobSearches`;
     - `shortPayExitPpm` (0): a firm with workers that paid them under this share of its wage at a month's end exits, and `layOffExiting` lays its workers off;
     - `markupClamp` (0): 1 stops a price step at the markup band's edge.
@@ -692,7 +693,7 @@ M2.1 builds Lengnick's households and firms in `sim-core`, as its [step plan](..
   - Every exit, idle or short of pay, writes its stock off.
   - Firms stay one layer, the city's shops, and the `CallAuction` stays unwired until M2.4 (M2.3 Ruling 3).
 - **The flow log (M2.3):** the day's stats row, `economyScratch.stats`, holds levels first, then each flow as that day's sum, which `clearFlows(stats)` zeroes each morning.
-  - `STAT_NAMES` names its 29 slots (`STATS`) as flow-log schema 1, `FLOW_LOG_SCHEMA`, and any column change bumps it.
+  - `STAT_NAMES` names its 29 slots (`STATS`) as flow-log schema 1, `FLOW_LOG_SCHEMA`, and any column change bumps it. M2.4 bumps it to schema 2 and 79 slots, below.
   - `firings` counts every layoff: notices, exits and shocks.
   - `recordMonth(world)`, after a month's end, and `recordYear(world)`, after a year's last day, join `recordDay(world)`.
 - **Agents:**
@@ -746,7 +747,7 @@ M2.2 spawns a city from a ledger record and folds it back exactly, as its [step 
   - a 14-field `Float64Array`, with a mean price in cents and no "6+" bucket;
   - `checkRecord` keeps household + firm cash, price × firms and wage × firms within `MAX_SAFE_CENTS`, so every total stays exact;
   - spawn fills an empty world, issuing cash from MINT, and fold only reads.
-- **Draws:** `SPAWN_DRAW` (0x10D), keyed on (settlement, day).
+- **Draws:** `SPAWN_DRAW` (0x10D), keyed on (settlement, day). A goods world adds purpose 14 (Goods and food, below).
 - **Speed and bytes:**
   - a desktop-only spawn row of 35 ms for 100k agents, not the plan's 10 ms: the fastest of 9 spawns takes 31.2 ms (measured here, Node 24.18.0 on Windows, load not recorded). The shared doc's 10 ms needs the owner;
   - 5 bytes per agent slot.
@@ -776,7 +777,7 @@ M2.3 runs the economy headless over a grid of cells, writes each cell's flow log
   - A shock lays off floor(points × size ÷ 100) people at the start of its day, through `economyDay`'s `layoffs`.
   - The police share is recorded and does nothing until M4.
 - **A cell's folder** holds one `<column>.f64` per column, then `meta.json`, written last, so a folder a crash cut short has none.
-  - Flow-log schema 1's columns are `day`, `district` and `STAT_NAMES`, a row a day per district. One district stands until M3.1, so `district` is all 0, and `taxes` stays 0 until M5's treasury.
+  - Flow-log schema 1's columns (schema 2's from M2.4) are `day`, `district` and `STAT_NAMES`, a row a day per district. One district stands until M3.1, so `district` is all 0, and `taxes` stays 0 until M5's treasury.
   - Each column is Float64 in the host's byte order, little-endian on x64 and arm64, so `numpy.fromfile(path, '<f8')` reads it there.
   - `meta.json` holds `schema`, `commit`, `cell`, `preset`, `start`, `seed`, `size`, `tier`, `policeShare`, `shock`, `layoffs`, `point`, `params` (in full), `days`, `warmUpDays`, `districts` and `columns`. `commit` is `git rev-parse HEAD`, or "unknown".
 - **Output never depends on thread count,** finish order, time or thread ids. Cells start largest first, each in a fresh worker thread, at most `--threads` at once, and each cell's sim days per second go to stderr only. `world.checks` stays on, since the CLI counts as development.
@@ -833,7 +834,7 @@ M2.2b spawns every app world as a town that runs `CITY`, and shows the economy o
   - **Hashes:** `goldens.json` gains `town`: `{ seed: 42, tier: 'phone', people: 1000, ticks: 1000, hash: 'b76fca4c' }`. `townHash(seed, tier, people, ticks)`, in `test/engines/checks.ts`, spawns a town on the stand-in ground and steps it, and `checkGoldens` replays it with the rest, so Node and Chromium both run its case: 5 + 20 cases in all. No other golden moved: `42/phone` is still `746a06a3` and the economy `6a652730`. Highcourt's pins are `d11bb532` (phone) and `8eb639aa` (desktop).
   - **The walking start** (coordinator, 10 October 2026): `spawnTown` starts three in four blobs walking after `spawnFromLedger`, so the first screen moves from its first frame.
     - For blob p, with s = `draw3(seed, SPAWN_DRAW, key, p, 13)` and key = `draw2(seed, SPAWN_DRAW, 0, 0)`, the settlement and day `spawnFromLedger` keys on, a blob where s & `WALK_START_MASK` (3, now exported from `world/world.ts`) isn't 0 starts on heading s >>> 24, with the `vx`, `vy` and `facing` that follow. The rest stay idle on heading 0, facing down.
-    - Purpose 13 is the next free one on `SPAWN_DRAW`, after `spawn.ts`'s 1 to 12. In seed 42's town of 3,965, 2,998 walk (75.6%).
+    - Purpose 13 is the next free one on `SPAWN_DRAW`, after `spawn.ts`'s 1 to 12 (M2.4 takes 14). In seed 42's town of 3,965, 2,998 walk (75.6%).
   - **Cost** (measured here, Node 24.18.0 on Windows, a desktop, one run, load not recorded): each system timed alone over a town's second month, after `warmUp`. The worst tick of the economy, with the system that takes it:
 
     | Town | Worst tick | Worst system | Next worst |
@@ -867,7 +868,7 @@ M2.2b spawns every app world as a town that runs `CITY`, and shows the economy o
     - Nothing allocates per tick: the feed's buffers are made once, and the day's one post is the copy `postMessage` makes of every message.
 - **Task 6, the layoffs input** (ba0b44a):
   - `INPUT_LAYOFFS` is 2 in `world/inputs.ts`, beside `INPUT_FOCUS` (1). Its `a` is a number of people and its `b` is 0. `logLayoffs(world, people): boolean` in `day/day.ts` logs one. It returns false for a count under 1 or over 2,147,483,647, and the boundary clamps a day's sum at 2,147,483,647 (the M2.2b review). Runs are watch-only, so the app has no control for it.
-  - `DAY_LAYOFFS` is global slot 5 in `world/world.ts`, beside `TOWN` (4). It is canonical, so checkpoints and the hash carry it, and slots 6 and 7 stay free. `dayBoundary` sets it at every boundary to the sum of the `a`s of the `INPUT_LAYOFFS` entries it applies, or 0, so only the boundary writes it.
+  - `DAY_LAYOFFS` is global slot 5 in `world/world.ts`, beside `TOWN` (4). It is canonical, so checkpoints and the hash carry it, and slot 6 is `GOODS` (M2.4) while slot 7 stays free. `dayBoundary` sets it at every boundary to the sum of the `a`s of the `INPUT_LAYOFFS` entries it applies, or 0, so only the boundary writes it.
   - `step` passes `globals[DAY_LAYOFFS]` as `runEconomySystem`'s `layoffs`. System 0 spends it with `layOff` on the day's tick 0, in the boundary's step. When fewer people work than it asks for, everyone employed is laid off. No later system reads the slot, so a layoff fires once.
   - An input logged on any tick of a day, the economy's window included, waits for the next boundary. A world that is not a town still sums the slot but spends nothing.
 - **Task 5, the economy panel** (8e4a120, b4b7ac0):
@@ -884,3 +885,50 @@ M2.2b spawns every app world as a town that runs `CITY`, and shows the economy o
   - **Draws below n:** per-tick code that needs a draw below n calls `drawBelow2`–`drawBelow4(…, n)`, which is exactly `drawN(…) % n`. A draw of 2^31 or more is a heap number to V8 whenever it crosses a call that isn't inlined, so the reduced value must be what crosses. `mix` is `mixBits >>> 0`, so the mixing steps are shared.
   - **A V8 trap:** a `Record<Tier, number>` literal with fractional values, in the same key order as sim-core's integer `TIER_*` tables, shares their hidden class and deoptimises warmed sim code. So the bench's tables list `desktop` first.
   - **Measured** (phone, Node 24.18.0 on Windows, load not recorded): a plain day's young-generation growth fell from about 83 KB to 2.9 KB. A month's first day fell from 943 KB to 25 KB. A month's last day still grows 0.24–0.82 MB in cold V8 tiers, which `allocationLimit` allows until M6 (coordinator, 11 October 2026).
+
+## Goods and food (owner: M2.4)
+
+M2.4 Part 1 gives the economy seven goods and food, as its [brief](../m2-economy/m2.4-goods-and-food/plan.md) lays out. Each task adds its names here, in its own docs commit. Tasks 1 and 2 leave `CITY.goods` at 0, so no hash moved: `42/phone` is still `746a06a3`, the economy `6a652730`, `town` `b76fca4c`, the 20 spawn hashes and Highcourt's pins `d11bb532` and `8eb639aa`.
+
+- **Task 1, the goods:**
+  - **Layout, `sim-core`:** the new folder `goods/`, exported by the barrel.
+    - `goods.ts` holds the table. The ids are `GENERIC` (0), then `BREAD`, `VEGETABLES`, `FISH`, `MILK` (1–4, the foods) and `CLOTH`, `TOOLS`, `FUEL` (5–7). `GOOD_COUNT` is 8, with the generic good that a world with goods off holds in every row. A blob's link k sells good k + 1, as `goodOfLink(k)` says.
+    - It also holds `GOOD_NAMES` and `SHOP_NAMES` (Bakery, Greengrocer, Fishmonger, Dairy, Draper, Smithy, Fuel Store, and Shop for the generic good), `DAYS_ON_SALE` (4, 7, 3 and 14 for the foods, 0 for the rest), `SHARE_PER_10K` (450 for each food, then 2,733, 2,733 and 2,734) and `PORTIONS_PER_UNIT` (6).
+    - `isFood(good)`, `outputPerWorkerDay(good, unitsPerWorkerDay)` (6 portions for each unit a worker makes, so 18 against 3 at the presets), `openingPriceOf(good, unitPriceCents)` (a food opens at the unit price over 6, floored) and `splitByGood(total, least, out)`.
+    - `splitByGood` shares `total` over goods 1 to 7 by `SHARE_PER_10K`, each at `least` or more, by largest remainders with ties to the lower good, and throws `RangeError` below 7 × `least`. It is exact, as 100 rows give 5, 5, 5, 4, 27, 27 and 27, and 7 rows give one each.
+    - `store.ts` holds `GoodsStore`, `createGoodsStore(arena, capacity)`, `FOOD_RING` (16), `ringSlot(firm, day)` (the ring index of the batch made on `day`, whose slot is `day & 15`, so day −1 is 15) and `assignGoods(goods, firms)`, which lays the rows out good by good in table order, foods first.
+  - **`World.goods`:** a `GoodsStore` of the tier's firm slots, taken last in `layoutWorld`.
+    - Its canonical columns are `good` (a `Uint8Array`), `ring` (`FOOD_RING` `Int32` to a row) and `wasted` (an `Int32`, the portions spoiled at the firm since it last decided): 69 bytes a firm, so 69 KB, 172.5 KB and 690 KB by tier. They are off `arena.canonical`.
+    - `byteOffset` and `byteLength` give the hash's region. Three scratch columns of `GOOD_COUNT` `Int32`s follow it, outside the hash: `firstRow` and `rowCount`, which `assignGoods` fills and nothing moves, since a row keeps its good for the life of the world, and `jobs`, which spawn fills.
+  - **The `GOODS` slot and the hash rule:** `GOODS` is global slot 6 in `world/world.ts`: 1 in a world that runs goods, 0 in any other. `startEconomy` and `spawnFromLedger` copy it from `EconomyParams.goods`, and it is canonical.
+    - `stateHashExcept` mixes the goods region in last, after the canonical regions, only while the slot is 1. A skip view that starts where `goods.good` does leaves it out, as it does a canonical region. A world with goods off hashes as before.
+    - A checkpoint copies the whole arena, so it carries the store whether or not it is hashed.
+  - **`EconomyParams.goods`:** 0 or 1, checked by `checkParams`. `LENGNICK` and `CITY` hold 0, and Task 4 turns `CITY`'s on. `{ ...CITY, goods: 0 }` is M2.3's `CITY`.
+  - **Start and spawn,** with `goods` 1:
+    - The firm rows hold the goods in `splitByGood(firms, 1)`'s shares, in table order, so the goods firms are the rows from `firstRow[CLOTH]` on, and every blob's link k is a firm of good k + 1.
+    - `startEconomy` links by a draw below the good's row count on `START_DRAW`'s keys as before, and hires as before, `i mod F`, so each good's jobs follow its rows, to within a worker a firm.
+    - `spawnFromLedger` splits the employed by `splitByGood(employed, 0)`, then each good's jobs over its rows by the size table, with `SPAWN_DRAW` purpose 14, keyed (key, good), for the stride word. The goods firms' prices spread around the record's mean and sum to exactly their count × price. The record's stock follows workers + 1 over the goods firms. A link draws among the rows of its good with odds (workers + 1) ÷ (jobs + rows).
+    - A food firm opens at `openingPriceOf` of the preset's or record's price, flat, with a day of output as its stock and in `ringSlot(firm, day − 1)`, where `day` is the start's day 0 or spawn's `day`. Its `lastDemand` is a month of output, as every firm's.
+    - A world with goods off replays as before: the goldens and `city-record.ts --check` prove it.
+  - **The record rule:** the record keeps its 14 fields. In a goods world `foldToLedger` reads `price` and `stock` over the goods firms alone, since a portion is not a unit, and counts every firm in `firms`, `firmCash` and the `wage` mean. So spawn on `{ ...CITY, goods: 1 }` and fold return a record exactly, and each spawn starts food fresh.
+- **Task 2, food on the shelf:**
+  - **`goods/food.ts`:** a batch made on day m enters slot m after that day's shopping, is on sale on the days m + 1 to m + L, and spoils at the start of day m + L + 1. `firms.stock` stays the total of a row's ring, so each function moves both.
+    - `addFood(firms, goods, firm, day, portions)` adds to the slot of `day`.
+    - `takeFood(firms, goods, firm, day, portions)` takes the oldest batch first and returns how many portions it took, never more than the ring holds.
+    - `spoilFood(world, day)` runs at a day's start: it empties the slot made L + 1 days ago for each food firm, adds the portions to the firm's `wasted` and to `STAT_SPOILED + good`.
+    - `spoilShelf(world, firm)` spoils a whole shelf, for an exit, into `STAT_SPOILED + good` and not into `wasted`.
+    - Task 3 wires `spoilFood` into the schedule, so until then a world that runs goods through `economyDay` does not spoil its food or sell it from the ring.
+  - **Production:** `produce(world, params, day)` takes the day. A food firm adds its output to the ring, any other firm to stock. `STAT_MADE + good` counts every good, and `STAT_PRODUCED` the goods firms' units alone.
+  - **Food hiring,** in `decideFirms` on a month's first day:
+    - A food firm is short when it holds under a day's demand, `ceil(max(lastDemand, demandFloor) ÷ 21)` portions, and long once its `wasted` reaches a worker-month of its output (378 portions). It is never both, so it never hires and gives notice together.
+    - Short opens a vacancy, and long gives notice if it has workers. Each may move the price by Lengnick's rule, over a worker-month of portions, so a month's output is priced at the same markup. `wasted` starts again from 0.
+    - A goods firm keeps the band and never reads `wasted`.
+  - **Food exits,** in `closeFirmMonth`: an exiting food firm spoils its shelf (`spoilShelf`) instead of writing it off, and every entrant takes the mean price of the firms of its kind, as they stood: the foods' mean for a food row, and every other firm's for any other. With goods off that is the city's mean, as before.
+  - **Flow-log schema 2,** in `economy/stats.ts`: `FLOW_LOG_SCHEMA` is 2 and `STATS` is 79. The levels still come first, so the 20 flows moved up 16 places.
+    - The levels hold slots 0–8 as before, then `STAT_GOOD_STOCK` (9–16) and `STAT_GOOD_PRICE` (17–24), each a slot to a good, the posted mean price being 0 where no firm sells the good.
+    - The flows start at `STAT_SALES_UNITS` (25) and run to `STAT_TAXES` (44), as before. Then `STAT_SOLD` (45), `STAT_SOLD_CENTS` (53), `STAT_MADE` (61) and `STAT_SPOILED` (69) take a slot to a good, and `STAT_EATEN` (77) and `STAT_UNMET` (78) one each.
+    - A per-good column is named for the column and the good in lower case: `stock_bread`, `sold_cents_fish`, `made_generic`.
+    - In a goods world the unit columns `stock`, `sales_units`, `produced` and `write_off` and the `price_mean` level count the goods firms alone, every good but the foods. `sales_cents` stays all revenue. With goods off the generic good's columns equal them.
+    - `recordFirms` writes the per-good levels, `produce` and `spoilFood` the flows `made_*` and `spoiled_*`, and Task 3 writes `sold_*`, `sold_cents_*`, `eaten` and `unmet`.
+  - **`tools/cli`'s `targets`** reads schema 2, which keeps every column name it reads, and refuses any other.
+  - **Cost** (measured here, Node 24.18.0 on Windows, a desktop-tier world of 100,000 people and 10,000 firms, goods on, median of 300 runs, load not recorded): `produce` 73 µs, `spoilFood` 28 µs, `recordDay` 0.31 ms and a month's `decideFirms` 0.83 ms. With goods off, `produce` takes 82 µs, `recordDay` 0.31 ms and `decideFirms` 0.92 ms.
