@@ -1,6 +1,6 @@
 import { ECONOMY_TICKS, SPOILAGE_RULE, TICKS_PER_DAY, TIER_AGENTS, daySliceCount } from '@nomos/sim-core';
 import { describe, expect, it } from 'vitest';
-import { BUDGET_ROWS, REPORTED_WORST } from '../src/compute/budgets.ts';
+import { BUDGET_ROWS, ECONOMY_SYSTEM } from '../src/compute/budgets.ts';
 import { BENCH_WARM_DAYS, SAMPLE_DAYS, sampleTier } from '../src/compute/sample.ts';
 
 // sampleTier reads the clock six times a tick: at its start, at the day, move and economy laps, and around the snapshot.
@@ -46,7 +46,7 @@ describe('sampling a tier', { timeout: 120_000 }, () => {
 
   it('samples a phone world', () => {
     const samples = sampleTier('phone', SAMPLE_DAYS, () => performance.now());
-    for (const system of [...BUDGET_ROWS.map((row) => row.system), ...REPORTED_WORST]) {
+    for (const system of [...BUDGET_ROWS.map((row) => row.system), ECONOMY_SYSTEM]) {
       expect(samples[system], system).toHaveLength(SAMPLE_DAYS);
       expect(Array.from(samples[system]).every((ms) => ms > 0), system).toBe(true);
     }

@@ -1,5 +1,5 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
-import { BUDGET_ROWS, MIN_SAMPLES, REPORTED_WORST, SPAWN_ROW, TIERS } from './compute/budgets.ts';
+import { BUDGET_ROWS, ECONOMY_SYSTEM, MIN_SAMPLES, SPAWN_ROW, TIERS } from './compute/budgets.ts';
 import { formatReported, formatVerdict, judge } from './compute/judge.ts';
 import { readLoadavg } from './machine/loadavg.ts';
 import { SAMPLE_DAYS, sampleTier } from './compute/sample.ts';
@@ -15,7 +15,7 @@ const runs = TIERS.map((tier) => {
   const verdicts = judge(BUDGET_ROWS, tier, samples);
   console.log(`${tier}: loadavg ${before} before, ${after} after`);
   for (const verdict of verdicts) console.log(formatVerdict(verdict));
-  for (const system of REPORTED_WORST) console.log(formatReported(tier, system, samples[system]));
+  console.log(formatReported(tier, ECONOMY_SYSTEM, samples[ECONOMY_SYSTEM]));
   const days = Object.fromEntries(Object.entries(samples).map(([system, values]) => [system, Array.from(values)]));
   return { tier, loadavg: { before, after }, verdicts, samples: days };
 });
