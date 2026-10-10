@@ -24,6 +24,7 @@ export * from './money/histogram.ts';
 export * from './world/world.ts';
 export * from './world/checkpoint.ts';
 export * from './movement/walk.ts';
+export * from './movement/steer.ts';
 export * from './movement/wander.ts';
 export * from './step/step.ts';
 export * from './world/inputs.ts';
