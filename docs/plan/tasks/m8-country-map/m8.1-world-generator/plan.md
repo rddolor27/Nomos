@@ -233,7 +233,7 @@
 
 ## Part 2: the TypeScript port
 
-> **Status:** step plan (9 October 2026). The owner asked for the map now, so it is written before M0.7 closes. Tasks 7–32 need only M0.7's layout, which is done. Task 33 builds on M0.7's word script, which landed in 60e4f8e, and Task 34 waits for the owner's review of 100 names.
+> **Status:** step plan (9 October 2026). The owner asked for the map now, so it is written before M0.7 closes. Tasks 7–32 need only M0.7's layout, which is done. Task 33 builds on M0.7's word script, which landed in 60e4f8e, and Task 34's review of 100 names was waived by the owner on 10 October 2026.
 
 **Goal:** `@nomos/worldgen` makes the same world as `tools/worldgen` for every seed, in a worker of its own. Every stage's fingerprint matches Python's in Node, Bun, Chromium, Firefox and WebKit. A standard world takes ≤ 100 ms and a large one ≤ 400 ms in desktop Chromium. The port adds regions and market territories, and names once M0.7's sound set lands.
 
@@ -2647,6 +2647,8 @@ with `import { landmarks } from '../../src/features/landmarks.ts';`.
 - **Commits:** `feat(names): write the place-name table`, `feat(worldgen): name places and countries from the table`, and `test(worldgen): freeze the place names`.
 
 ### Task 34: The owner's 100 names and the version 1 freeze (senior and owner)
+
+**Done (10 October 2026).** Approved by the owner without a review (owner, 10 October 2026). The 100 names were printed for the record, and version 1 froze with the road classes' `classes` stage in `goldens-v1.json`, since M3.1's Task 17 had landed.
 
 - **Print 100 sample names** for the owner: 10 countries and 90 settlements over 10 large seeds from `5EED0001`, one per line with its kind. The owner listens to every new sound, so this waits on the owner.
 - **On approval, freeze version 1:**
