@@ -1,0 +1,13 @@
+{
+  "preset": "city",
+  "start": "spawn",
+  "days": 21504,
+  "warmUpDays": 17295,
+  "seeds": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+  "sizes": [1000, 3000, 10000, 30000, 100000],
+  "policeShares": [0],
+  "shocks": [
+    { "day": 0, "unemploymentPoints": 0 },
+    { "day": 19404, "unemploymentPoints": 5 }
+  ]
+}
