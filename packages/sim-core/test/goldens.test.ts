@@ -2,7 +2,14 @@ import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { checkGoldens, checkKernels, economyHash, type Goldens, type KernelFixture } from './engines/checks.ts';
+import {
+  checkGoldens,
+  checkKernels,
+  economyHash,
+  spawnHash,
+  type Goldens,
+  type KernelFixture,
+} from './engines/checks.ts';
 
 const kernels: KernelFixture = JSON.parse(readFileSync(new URL('./fixtures/kernels.json', import.meta.url), 'utf8'));
 const goldens: Goldens = JSON.parse(readFileSync(new URL('./fixtures/goldens.json', import.meta.url), 'utf8'));
@@ -10,16 +17,34 @@ const CLI = fileURLToPath(new URL('../../../tools/cli/src/main.ts', import.meta.
 
 describe('the engine checks', { timeout: 30_000 }, () => {
   it('matches the goldens in Node', () => {
-    expect(checkGoldens(goldens)).toEqual({ cases: 4, failures: [] });
+    expect(goldens.spawn.hashes).toHaveLength(20);
+    expect(checkGoldens(goldens)).toEqual({ cases: 4 + 20, failures: [] });
   });
 
   it('reports a wrong economy hash, and a run that depends on its seed and its months', () => {
     const { seed, tier, months } = goldens.economy;
-    const wrong = { ...goldens, hashes: {}, economy: { ...goldens.economy, hash: '00000000' } };
+    const wrong = {
+      ...goldens,
+      hashes: {},
+      spawn: { ...goldens.spawn, hashes: [] },
+      economy: { ...goldens.economy, hash: '00000000' },
+    };
     const { failures } = checkGoldens(wrong);
     expect(failures).toHaveLength(1);
     expect(failures[0]).toContain('economy');
     expect(new Set([goldens.economy.hash, economyHash(seed + 1, tier, months), economyHash(seed, tier, months + 1)]).size).toBe(3);
+  });
+
+  it('reports a wrong spawn hash, and spawns that depend on their record', () => {
+    const { seed, hashes } = goldens.spawn;
+    const wrongHashes = hashes.map((hash, index) => (index === 3 ? '00000000' : hash));
+    const wrong = { ...goldens, hashes: {}, spawn: { seed, hashes: wrongHashes } };
+    const { failures } = checkGoldens(wrong);
+    expect(failures).toHaveLength(1);
+    expect(failures[0]).toContain('spawn');
+    expect(failures[0]).toContain('"index":3');
+    expect(new Set(hashes).size).toBe(hashes.length);
+    expect(spawnHash(seed + 1, 0)).not.toBe(hashes[0]);
   });
 
   it('agrees with the CLI', () => {

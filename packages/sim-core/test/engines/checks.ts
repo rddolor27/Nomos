@@ -8,9 +8,14 @@ import { economyDay } from '../../src/economy/economy.ts';
 import { LENGNICK, type EconomyParams } from '../../src/economy/params.ts';
 import { startEconomy } from '../../src/economy/start.ts';
 import type { Tier } from '../../src/memory/tiers.ts';
+import { createStandInHomes } from '../../src/spawn/homes.ts';
+import { LEDGER_FIELDS } from '../../src/spawn/record.ts';
+import { spawnFromLedger } from '../../src/spawn/spawn.ts';
 import { DAYS_PER_MONTH } from '../../src/time/calendar.ts';
 import { stateHash } from '../../src/world/checkpoint.ts';
-import { createWorld } from '../../src/world/world.ts';
+import { standInGround } from '../../src/world/ground.ts';
+import { createWorld, layoutWorld } from '../../src/world/world.ts';
+import { randomRecord } from './records.ts';
 
 interface DrawCase {
   seed: number;
@@ -61,6 +66,8 @@ export interface Goldens {
   ticks: number;
   hashes: Record<string, string>;
   economy: { seed: number; tier: Tier; months: number; hash: string };
+  // seed is randomRecord's, and hashes[index] is spawnHash(seed, index).
+  spawn: { seed: number; hashes: string[] };
 }
 
 export interface EngineReport {
@@ -110,6 +117,23 @@ export function economyHash(seed: number, tier: Tier, months: number): string {
   return stateHash(world).toString(16).padStart(8, '0');
 }
 
+// A random record fits a phone world laid out for 1,500 agents in 1 MiB, and 500 stand-in homes hold over twice its
+// people, so any record seats. Each index spawns into its own world seed, settlement and day.
+const SPAWN_AGENTS = 1_500;
+const SPAWN_BYTES = 1 << 20;
+const SPAWN_HOMES = 500;
+const SPAWN_SETTLEMENTS = 4;
+const SPAWN_DAYS_PER_INDEX = 21;
+
+export function spawnHash(recordSeed: number, index: number): string {
+  const record = new Float64Array(LEDGER_FIELDS);
+  randomRecord(recordSeed, index, record);
+  const world = layoutWorld(index + 1, 'phone', SPAWN_AGENTS, SPAWN_BYTES);
+  const homes = createStandInHomes(standInGround(), SPAWN_HOMES);
+  spawnFromLedger(world, record, homes, LENGNICK, index % SPAWN_SETTLEMENTS, SPAWN_DAYS_PER_INDEX * index);
+  return stateHash(world).toString(16).padStart(8, '0');
+}
+
 export function checkGoldens(goldens: Goldens): EngineReport {
   const report: EngineReport = { cases: 0, failures: [] };
   for (const [key, want] of Object.entries(goldens.hashes)) {
@@ -118,5 +142,9 @@ export function checkGoldens(goldens: Goldens): EngineReport {
   }
   const { hash, ...run } = goldens.economy;
   checkCase(report, 'economy', run, economyHash(run.seed, run.tier, run.months), hash);
+  const { seed, hashes } = goldens.spawn;
+  for (let index = 0; index < hashes.length; index++) {
+    checkCase(report, 'spawn', { seed, index }, spawnHash(seed, index), hashes[index]);
+  }
   return report;
 }
