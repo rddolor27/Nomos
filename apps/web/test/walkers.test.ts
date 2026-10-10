@@ -1,3 +1,4 @@
+import { ACTION_WALK, TICK, layoutWorld, move, populate, setHeading, type Ground } from '@nomos/sim-core';
 import {
   NO_CODE,
   PLACE_FACINGS,
@@ -5,11 +6,12 @@ import {
   PLACE_TILE_PX,
   type PlaceCrowd,
   type PlaceLayout,
+  type PlacePeople,
   type PlaceWalks,
 } from '@nomos/sim-protocol/place';
 import { crowdedPlace, generateWorld, placeContexts } from '@nomos/worldgen';
 import { describe, expect, it } from 'vitest';
-import { WALK_PX_PER_S, Walkers, withCrowd } from '../src/map/walkers.ts';
+import { WALK_PX_PER_S, WALK_SEED, WALK_TICK_MS, Walkers, withCrowd } from '../src/map/walkers.ts';
 
 const STAND = PLACE_POSES.indexOf('stand');
 const WALK = PLACE_POSES.indexOf('walk');
@@ -48,99 +50,56 @@ function square(): { layout: PlaceLayout; walks: PlaceWalks } {
   return { layout, walks };
 }
 
-// The time loop 0's walker takes to cover px art px.
-function msFor(px: number): number {
-  return (px * 1000) / WALK_PX_PER_S;
-}
-
-// Person 0's lap once the square's three corners but its home are cut: four straights of 10, 4, 4 and 10 px, and three
-// bends of two steps of 3.16 px (sqrt 10) round one of 2.83 px (sqrt 8).
-const LAP = 28 + 3 * (2 * Math.sqrt(10) + Math.sqrt(8));
-
 function at(layout: PlaceLayout): [number, number, number, number, number] {
   const p = layout.people;
   return [p.x[0], p.y[0], p.pose[0], p.facing[0], p.step[0]];
 }
 
 describe('walkers', () => {
-  it('starts from where place.py put the walker, facing its first step', () => {
+  it("take the sim's 4 px step once a tick, so a tick lasts 200 ms at the stroll's 20 px a second", () => {
+    expect(WALK_TICK_MS).toBe((4 * 1000) / WALK_PX_PER_S);
+  });
+
+  it('start from where place.py put the owner, walking along its loop', () => {
     const { layout, walks } = square();
     new Walkers(layout, walks).walk(0);
     expect(at(layout)).toEqual([22, 29, WALK, RIGHT, 0]);
   });
 
-  it('glides along its loop at its pace, cutting each corner, facing the dominant axis of its move', () => {
+  // Walker 0 redraws on tick 0, which turns it from 192 to 187: a step of 1,016 and -125 in Q8.
+  it('ease between ticks, a tick ahead of the clock', () => {
     const { layout, walks } = square();
     const walkers = new Walkers(layout, walks);
-    const legs: [number, number, number][] = [];
-    for (const px of [5, 11.5, 15.5, 21, 31, 41, 50, LAP + 0.5]) {
-      walkers.walk(msFor(px));
-      legs.push([layout.people.x[0], layout.people.y[0], layout.people.facing[0]]);
+    walkers.walk(WALK_TICK_MS / 2);
+    expect(at(layout).slice(0, 2)).toEqual([23, 28]);
+    walkers.walk(WALK_TICK_MS);
+    expect(at(layout).slice(0, 2)).toEqual([25, 28]);
+  });
+
+  it("keep an owner near home, within its own loop's box", () => {
+    const { layout, walks } = square();
+    const walkers = new Walkers(layout, walks);
+    const outside: [number, number][] = [];
+    for (let ms = 0; ms < 600_000; ms += 50) {
+      walkers.walk(ms);
+      const [x, y] = at(layout);
+      if (x < 16 || x >= 48 || y < 16 || y >= 48) outside.push([x, y]);
     }
-    expect(legs).toEqual([
-      [27, 29, RIGHT],
-      [33, 29, RIGHT],
-      [36, 31, DOWN],
-      [38, 36, DOWN],
-      [34, 44, LEFT],
-      [24, 43, UP],
-      [22, 35, UP],
-      [22, 29, RIGHT],
-    ]);
+    expect(outside).toEqual([]);
   });
 
-  it("keeps to the loop's tiles, rounding every corner but its home's instead of touching it", () => {
+  it('move only the people with a loop', () => {
     const { layout, walks } = square();
-    const walkers = new Walkers(layout, walks);
-    const trail: [number, number][] = [];
-    for (let px = 0; px < LAP; px += 0.5) {
-      walkers.walk(msFor(px));
-      trail.push([layout.people.x[0], layout.people.y[0]]);
-    }
-    const corners = new Set(['38,29', '38,45', '22,45']);
-    expect(trail.filter(([x, y]) => x < 16 || x >= 48 || y < 16 || y >= 48)).toEqual([]);
-    expect(trail.filter(([x, y]) => corners.has(`${x},${y}`))).toEqual([]);
-    expect(trail.some(([x, y], i) => i > 0 && x !== trail[i - 1][0] && y !== trail[i - 1][1])).toBe(true);
-  });
-
-  it('turns round at the end of a street that runs out', () => {
-    const { layout, walks } = square();
-    walks.offsets = Int32Array.of(0, 2);
-    const walkers = new Walkers(layout, walks);
-    const legs: [number, number, number][] = [];
-    for (const px of [11, 13, 20]) {
-      walkers.walk(msFor(px));
-      legs.push([layout.people.x[0], layout.people.y[0], layout.people.facing[0]]);
-    }
-    expect(legs).toEqual([
-      [33, 29, RIGHT],
-      [33, 29, LEFT],
-      [26, 29, LEFT],
-    ]);
-  });
-
-  it('changes the walk frame every 8 art px walked', () => {
-    const { layout, walks } = square();
-    const walkers = new Walkers(layout, walks);
-    const steps = [0, 7, 8, 15, 16, 23, 24].map((px) => {
-      walkers.walk(msFor(px));
-      return layout.people.step[0];
-    });
-    expect(steps).toEqual([0, 0, 1, 1, 0, 0, 1]);
-  });
-
-  it('moves only the people with a loop', () => {
-    const { layout, walks } = square();
-    new Walkers(layout, walks).walk(msFor(30));
+    new Walkers(layout, walks).walk(30_000);
     const p = layout.people;
     expect([p.x[1], p.y[1], p.pose[1], p.facing[1], p.step[1]]).toEqual([40, 40, PLACE_POSES.indexOf('sit'), DOWN, 0]);
   });
 
-  it('starts the street crowd at its phases on its own loop, in walk pose, at the middle of its tiles', () => {
+  it('start the street crowd at its phases along its own loop, in walk pose, facing on along it', () => {
     const { layout, walks } = square();
-    // One crowd loop round the same square, (1, 1), (2, 1), (2, 2) and (1, 2), whose 64 px of tiles its cut corners
-    // shorten to 52.6 px; the phases keep their share of it.
-    const crowd = {
+    // One crowd loop round the same square, (1, 1), (2, 1), (2, 2) and (1, 2): 20 px along is 4 px down from (2, 1)'s
+    // spot, and 40 px along is 8 px left of (2, 2)'s.
+    const crowd: PlaceCrowd = {
       look: Uint8Array.of(3, 4),
       expression: Uint8Array.of(1, 2),
       loop: Uint16Array.of(0, 0),
@@ -153,19 +112,128 @@ describe('walkers', () => {
     const p = placed.people;
     expect(walkers.count).toBe(3);
     expect([2, 3].map((j) => [p.x[j], p.y[j], p.pose[j], p.facing[j], p.look[j], p.job[j]])).toEqual([
-      [37, 31, WALK, DOWN, 3, NO_CODE],
-      [37, 45, WALK, LEFT, 4, NO_CODE],
+      [40, 34, WALK, DOWN, 3, NO_CODE],
+      [32, 46, WALK, LEFT, 4, NO_CODE],
     ]);
-    walkers.walk(msFor(4));
-    expect([p.x[2], p.y[2]]).toEqual([39, 34]);
   });
 
-  it('stands every walker back where place.py put it', () => {
+  it('stand every walker back where place.py put it, to walk the same way again from there', () => {
     const { layout, walks } = square();
     const walkers = new Walkers(layout, walks);
-    walkers.walk(msFor(37));
+    walkers.walk(37_000);
+    const walked = at(layout);
     walkers.standStill();
     expect(at(layout)).toEqual([22, 29, STAND, UP, 0]);
+    walkers.walk(0);
+    expect(at(layout)).toEqual([22, 29, WALK, RIGHT, 0]);
+    walkers.walk(37_000);
+    expect(at(layout)).toEqual(walked);
+  });
+});
+
+const OPEN_WIDTH = 12;
+const OPEN_HEIGHT = 10;
+const CLOSED = [
+  [4, 3],
+  [5, 3],
+  [5, 4],
+  [8, 6],
+  [2, 7],
+  [9, 2],
+  [10, 8],
+];
+
+function noPeople(): PlacePeople {
+  return {
+    look: new Uint8Array(0),
+    pose: new Uint8Array(0),
+    facing: new Uint8Array(0),
+    step: new Uint8Array(0),
+    expression: new Uint8Array(0),
+    job: new Uint8Array(0),
+    emote: new Uint8Array(0),
+    x: new Int32Array(0),
+    y: new Int32Array(0),
+    lift: new Uint8Array(0),
+  };
+}
+
+// A 12 x 10 place, open but for a few tiles, with no owners and three crowd walkers on one loop through every open tile,
+// row by row. They start at tiles 0, 37 and 74 along it, (0, 0), (2, 3) and (6, 6), each stepping right.
+function openPlace(): { placed: PlaceLayout; walks: PlaceWalks; crowd: PlaceCrowd; ground: Ground } {
+  const walk = new Uint8Array(OPEN_WIDTH * OPEN_HEIGHT).fill(1);
+  for (const [tx, ty] of CLOSED) walk[ty * OPEN_WIDTH + tx] = 0;
+  const cells = Int32Array.from(Array.from(walk.keys()).filter((cell) => walk[cell] === 1));
+  const layout: PlaceLayout = {
+    width: OPEN_WIDTH,
+    height: OPEN_HEIGHT,
+    frames: [],
+    tiles: new Uint16Array(walk.length),
+    ground: new Int32Array(0),
+    standing: new Int32Array(0),
+    people: noPeople(),
+  };
+  const walks: PlaceWalks = { person: new Uint16Array(0), offsets: Int32Array.of(0), cells: new Int32Array(0) };
+  const crowd: PlaceCrowd = {
+    look: new Uint8Array(3),
+    expression: new Uint8Array(3),
+    loop: new Uint16Array(3),
+    phase: Uint16Array.of(0, 37 * PLACE_TILE_PX, 74 * PLACE_TILE_PX),
+    offsets: Int32Array.of(0, cells.length),
+    cells,
+  };
+  return { placed: withCrowd(layout, crowd, 3), walks, crowd, ground: { width: OPEN_WIDTH, height: OPEN_HEIGHT, walk } };
+}
+
+describe("walkers and the sim's blobs", () => {
+  it('walk the same way, tick by tick, by the one wander rule and draw', () => {
+    const { placed, walks, crowd, ground } = openPlace();
+    const walkers = new Walkers(placed, walks, crowd, 3);
+    const people = placed.people;
+    expect(Array.from(people.x)).toEqual([8, 40, 104]);
+    expect(Array.from(people.y)).toEqual([14, 62, 110]);
+    const world = layoutWorld(WALK_SEED, 'phone', 3, 1_048_576, ground);
+    populate(world);
+    const agents = world.agents;
+    for (let i = 0; i < 3; i++) {
+      agents.x[i] = people.x[i] * 256;
+      agents.y[i] = people.y[i] * 256;
+      agents.action[i] = ACTION_WALK;
+      setHeading(agents, i, 192);
+    }
+    const apart: string[] = [];
+    let stands = 0;
+    for (let tick = 0; tick < 2_000 && apart.length < 5; tick++) {
+      const blobs = [0, 1, 2].map((i) => [agents.x[i] >> 8, agents.y[i] >> 8]);
+      move(world);
+      world.globals[TICK]++;
+      walkers.walk(tick * WALK_TICK_MS);
+      for (let i = 0; i < 3; i++) {
+        const pose = agents.action[i] === ACTION_WALK ? WALK : STAND;
+        if (pose === STAND) stands++;
+        const blob = [...blobs[i], pose].join();
+        const walker = [people.x[i], people.y[i], people.pose[i]].join();
+        if (walker !== blob) apart.push(`tick ${tick}, walker ${i}: ${walker}, blob ${blob}`);
+      }
+    }
+    expect(apart).toEqual([]);
+    expect(stands).toBeGreaterThan(0);
+  });
+
+  it('step the walk frame every 8 art px along the way they face, and stand on frame 0', () => {
+    const { placed, walks, crowd } = openPlace();
+    const walkers = new Walkers(placed, walks, crowd, 3);
+    const { x, y, pose, facing, step } = placed.people;
+    const wrong: string[] = [];
+    for (let ms = 0; ms < 120_000; ms += 10) {
+      walkers.walk(ms);
+      for (let i = 0; i < 3; i++) {
+        const along = facing[i] === LEFT || facing[i] === RIGHT ? x[i] : y[i];
+        const want = pose[i] === WALK ? Math.floor(along / 8) % 2 : 0;
+        if (step[i] !== want) wrong.push(`${ms} ms, walker ${i}`);
+      }
+    }
+    expect(wrong).toEqual([]);
   });
 });
 
@@ -177,19 +245,63 @@ function loopTiles(walks: PlaceWalks, crowd: PlaceCrowd, n: number): Set<number>
   return [...loops(walks.cells, walks.offsets), ...Array.from(crowd.loop.subarray(0, n), (loop) => crowded[loop])];
 }
 
-// Each frame of 60 a second, every walker in a world's first capital and first wonder, owners and street crowd, moves at
-// most an art pixel along each axis and stays on the tiles of its own loop.
+// A loop's box: its tiles' least x and y, then their most.
+function boxOf(tiles: Set<number>, width: number): number[] {
+  const xs = Array.from(tiles, (cell) => cell % width);
+  const ys = Array.from(tiles, (cell) => Math.floor(cell / width));
+  return [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)];
+}
+
+// What a place's walkers may do: keep to its street network, an owner within its own loop's box.
+interface Streets {
+  width: number;
+  owners: number;
+  network: Set<number>;
+  tiles: Set<number>[];
+  boxes: number[][];
+  // The crowd walkers seen off their own loop's tiles.
+  strayed: Set<number>;
+}
+
+function outsideBox([minX, minY, maxX, maxY]: number[], tx: number, ty: number): boolean {
+  return tx < minX || ty < minY || tx > maxX || ty > maxY;
+}
+
+// A frame on a tick draws each walker where its last tick put it.
+function misstep(streets: Streets, w: number, x: number, y: number, lastX: number, lastY: number, onTick: boolean): string {
+  const tx = Math.floor(x / PLACE_TILE_PX);
+  const ty = Math.floor(y / PLACE_TILE_PX);
+  const tile = ty * streets.width + tx;
+  const owner = w < streets.owners;
+  if (!owner && !streets.tiles[w].has(tile)) streets.strayed.add(w);
+  const far = Math.abs(x - lastX) > 1 || Math.abs(y - lastY) > 1;
+  const outside = (owner && outsideBox(streets.boxes[w], tx, ty)) || (onTick && !streets.network.has(tile));
+  return far || outside ? `walker ${w} at ${x}, ${y} from ${lastX}, ${lastY}` : '';
+}
+
+// Each frame of 60 a second, every walker in a world's first capital and first wonder moves at most an art pixel along
+// each axis. Every tick it stands on the place's street network, the tiles of all its loops: an owner within its own
+// loop's box, and the street crowd anywhere on it, most of the crowd leaving its own loop's tiles. Between ticks, a
+// diagonal step may cut a closed tile's corner, as the sim's blobs do.
 describe("walkers in a world's places", () => {
   const map = generateWorld(42, 'standard');
   const contexts = placeContexts(map);
   const places = [0, map.settlements.cell.length];
 
-  it.each(places)('keep to their loops in place %i', (place) => {
+  it.each(places)('wander the streets of place %i', (place) => {
     const { layout, walks, crowd } = crowdedPlace(contexts[place]);
     const n = crowd.look.length;
     const placed = withCrowd(layout, crowd, n);
     const walkers = new Walkers(placed, walks, crowd, n);
     const tiles = loopTiles(walks, crowd, n);
+    const streets: Streets = {
+      width: layout.width,
+      owners: walks.person.length,
+      network: new Set([...walks.cells, ...crowd.cells]),
+      tiles,
+      boxes: tiles.map((loop) => boxOf(loop, layout.width)),
+      strayed: new Set(),
+    };
     const { x, y } = placed.people;
     const lastX = new Int32Array(walkers.count);
     const lastY = new Int32Array(walkers.count);
@@ -200,15 +312,16 @@ describe("walkers in a world's places", () => {
         lastX[w] = x[walkers.person(w)];
         lastY[w] = y[walkers.person(w)];
       }
-      walkers.walk((frame * 1000) / 60);
+      const ms = (frame * 1000) / 60;
+      walkers.walk(ms);
       for (let w = 0; w < walkers.count; w++) {
         const p = walkers.person(w);
-        const tile = Math.floor(y[p] / PLACE_TILE_PX) * layout.width + Math.floor(x[p] / PLACE_TILE_PX);
-        const far = Math.abs(x[p] - lastX[w]) > 1 || Math.abs(y[p] - lastY[w]) > 1;
-        if (far || !tiles[w].has(tile)) bad.push(`frame ${frame}, walker ${w}: ${x[p] - lastX[w]}, ${y[p] - lastY[w]}`);
+        const wrong = misstep(streets, w, x[p], y[p], lastX[w], lastY[w], ms % WALK_TICK_MS === 0);
+        if (wrong) bad.push(`frame ${frame}, ${wrong}`);
       }
     }
-    expect(walks.person.length).toBeGreaterThan(0);
+    expect(streets.owners).toBeGreaterThan(0);
     expect(bad).toEqual([]);
+    expect(2 * streets.strayed.size).toBeGreaterThanOrEqual(n);
   });
 });
