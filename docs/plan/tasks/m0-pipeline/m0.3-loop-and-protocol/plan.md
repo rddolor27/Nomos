@@ -345,7 +345,7 @@ git -c user.name=rddolor27 -c user.email=80044625+rddolor27@users.noreply.github
 **Files:**
 - Modify: `docs/plan/tasks/m0-pipeline/milestone.md`, the shared plan doc and its export `docs/plan/implementation-plan.md`
 
-- [ ] **Step 1: Confirm CI passes on `main`.** Run: `gh run list --workflow ci.yml --limit 1`. Expected: success, with the CLI's two runs identical.
+- [ ] **Step 1: Push `main`** so `ci.yml` runs on GitHub, where the CLI's two runs must match.
 - [ ] **Step 2: Record the pace** in M0.3's Started, Done and Actual cells, and rescale the remaining estimates.
 - [ ] **Step 3: Tick what landed** in the shared doc's M0 section, then export with `/sync-plan-doc`:
   - the worker loop (R1, R2);

@@ -285,7 +285,7 @@ git commit -m "test(render-gl): add golden frames and the frame budget"
 **Files:**
 - Modify: `docs/plan/tasks/m0-pipeline/milestone.md`, the shared plan doc and its export `docs/plan/implementation-plan.md`
 
-- [ ] **Step 1: Confirm CI passes on `main`,** `browser` job included. Run `gh run list --limit 1`. Expected: the latest run's conclusion is success.
+- [ ] **Step 1: Push `main`** so CI runs on GitHub, `browser` job included.
 - [ ] **Step 2: Record the pace** against the 4–6-day estimate and rescale the rest, as M0.1 did.
 - [ ] **Step 3: Tick** M0.4's build items and exit checks in the shared doc's M0 section (R2, R3, R5, R9), then export with `/sync-plan-doc`.
 - [ ] **Step 4: Commit**

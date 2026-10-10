@@ -226,7 +226,7 @@ git commit -m "feat(sim-core): add the calendar"
 **Files:**
 - Modify: `docs/plan/tasks/m0-pipeline/milestone.md`, and the shared plan doc, then its export `docs/plan/implementation-plan.md`
 
-- [ ] **Step 1: Confirm CI passes on `main`.** Run: `gh run list --limit 1`. Expected: the latest run's conclusion is success.
+- [ ] **Step 1: Push `main`** so CI runs on GitHub.
 - [ ] **Step 2: Record the pace.** Fill in M0.1's Started, Done and Actual cells in the overview's table. Compare Actual with the 2–3-day estimate, and rescale the remaining estimates by that ratio.
 - [ ] **Step 3: Tick what landed** in the shared doc's M0 section: the finaliser with cross-stream χ² (R8), the calendar module (Calendar), and the χ² and calendar exit checks (R4, Calendar). Then export with `/sync-plan-doc`.
 - [ ] **Step 4: Commit**

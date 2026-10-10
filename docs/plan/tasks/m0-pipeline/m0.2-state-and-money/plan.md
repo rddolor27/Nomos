@@ -56,7 +56,7 @@ git add .github/workflows/stdlib.yml
 git -c user.name=rddolor27 -c user.email=80044625+rddolor27@users.noreply.github.com commit -m "ci: check @stdlib digests on arm64, macos and firefox"
 ```
 
-- [ ] **Step 3: Read the result** once the owner has pushed `main`. Run: `gh run list --workflow stdlib.yml --limit 1`. Expected: five green jobs, or a red one naming the functions that differ.
+- [ ] **Step 3: Push `main`** so `stdlib.yml` runs on GitHub: five green jobs, or a red one naming the functions that differ.
 
 - [ ] **Step 4: Record the rule.** If every job passes, code outside per-agent loops may call @stdlib at runtime (task.md), and nothing changes. Otherwise ban `@stdlib/*` with `no-restricted-imports` in `packages/sim-core/src/**`, and add the test `keeps @stdlib out of sim-core source` to `lint.test.ts`: `import exp from '@stdlib/math-base-special-exp'` gives a message at `src/planted.ts` and none at `scripts/planted.ts`. Run: `pnpm test lint && pnpm lint`. Expected: PASS.
 
@@ -296,7 +296,7 @@ git -c user.name=rddolor27 -c user.email=80044625+rddolor27@users.noreply.github
 **Files:**
 - Modify: `docs/plan/tasks/m0-pipeline/milestone.md`, the shared plan doc and its export `docs/plan/implementation-plan.md`
 
-- [ ] **Step 1: Confirm CI passes on `main`.** Run: `gh run list --workflow ci.yml --limit 1 && gh run list --workflow stdlib.yml --limit 1`. Expected: both latest runs succeeded, or the `stdlib` run's failure is the one Task 1 recorded.
+- [ ] **Step 1: Push `main`** so `ci.yml` and `stdlib.yml` run on GitHub.
 - [ ] **Step 2: Record the pace** in M0.2's Started, Done and Actual cells, and rescale the remaining estimates as M0.1 did.
 - [ ] **Step 3: Tick what landed** in the shared doc's M0 section, then export with `/sync-plan-doc`:
   - the `AgentStore`, with keyed draws in place of sfc32 (R1, R2);

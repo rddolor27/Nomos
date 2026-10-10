@@ -20,7 +20,7 @@ CI exists before this: M0.1 starts `ci.yml`, M0.5 and M0.6 add its gates and `pe
 - **Release, in `release.yml`, run by hand from the Actions page** with one input, the version:
   - **a new version** picks the newest `main` commit whose `ci.yml` and `perf.yml` runs both passed, and downloads that run's `web` artifact. It writes `version.json`, deploys to production and runs the smoke test. Only then does it create the tag and a GitHub Release with the notes and the zipped build;
   - **an existing version is a rollback:** it downloads that release's zip, redeploys it and smoke-tests it, with no new tag;
-  - **only people with write access can run it,** so the owner is the gate. Claude runs it with `gh workflow run` only when the owner asks, like a push.
+  - **only people with write access can run it,** so the owner is the gate and starts it from the Actions page.
 - **The smoke test checks the live site.** `apps/web/test/smoke.spec.ts` runs in Chromium against `SMOKE_URL`, and is skipped when that is unset. It checks that:
   - `/` answers 200 with COOP and COEP, and the page is `crossOriginIsolated`;
   - a hashed `/assets/*.js` carries `Cache-Control: public, max-age=31536000, immutable`;
@@ -104,7 +104,7 @@ Claude cannot open accounts or change repository settings, since the scope guard
 Suggestions for the step plan, which makes the final call.
 
 - **Build order:** the notes tool and its test, then `version.json` and the HUD line, then the `web` artifact, `deploy-dev` and the smoke test. `release.yml` and the rehearsal come next, and `v0.1.0` last.
-- **Keep it simple:** no preview per commit, no staging between dev and release, no automatic rollback and no changelog file in the repo. The pick step is a few lines of `gh run list`; keep it in the workflow unless it grows.
+- **Keep it simple:** no preview per commit, no staging between dev and release, no automatic rollback and no changelog file in the repo. The pick step is a few lines; keep it in the workflow unless it grows.
 - **Later milestones build on this:**
   - M6.2's service worker names its cache after the deployed version, so each release replaces the last cache;
   - M6.3's links can pin the release version, which its open question on link versions needs;

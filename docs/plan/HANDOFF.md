@@ -13,6 +13,7 @@ The owner can overturn any of these.
 - **TypeScript only.** The program runs in TypeScript, the map and town generators included. Python builds only assets: sprites, sounds, the atlas, mockups and licences. `tools/worldgen` is frozen, and its saved outputs still check the TypeScript for the parts they cover; a deliberate change to one of them first moves its regeneration to TypeScript, as `packages/worldgen/scripts/frozen.ts` does.
 - **The owner's computer stays responsive.** Heavy runs (the whole unit suite, `pnpm check`, the headless runs, the browser suite and the bench) run in CI on GitHub, never on the owner's machine. Locally, run only the test files a task added or changed, one command at a time, at idle priority (`nice -n 19`); a task that changes no test runs none. Playwright runs one worker, and Vitest two outside CI.
 - **Pushes.** The coordinator pushes `main` after each finished feature, with the owner's standing OK, so CI runs the full checks; agents never push.
+- **Git only.** There is no `gh` CLI: Claude uses git alone, never asks the owner for `gh` or CI results, and skips any plan step that needs `gh`.
 - **Decisions.** Claude settles open owner decisions itself, and records each here as a ruling.
 - **Walled towns,** the final answers for M3.1 Part 3: density peaks at the plaza; stone walls with towers for capitals and cities, a palisade for towns, and none for villages and hamlets; roads by role; farms on the outskirts; the new buildings; suburbs, bridges, avenues and greens. Tasks 12–16 and 19–21 wait for the owner's go.
 
@@ -42,6 +43,7 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 10 Oct: **git only, no `gh`** (owner). The M0 and M1.6 plans no longer name `gh`: their CI steps now just push `main`, and the owner starts `release.yml` from the Actions page.
 - 10 Oct: **testing and rules restructured** (owner). `pnpm check` runs every check but the browser specs, and CI's check job runs only it. The stdlib workflow and the engine scripts are gone, perf runs by hand, and the place tests check 2 worlds. `pnpm check` passed locally in 349 s, with the unit tests at 65 s, down from 175 s.
 - 10 Oct: **engineers default to Sonnet,** and lint and the determinism and economy reviews wait for the end of a feature (owner). The check after each edit keeps only quick guards, about 0.13 s, where linting took about 3 s.
 - 10 Oct: **TypeScript only** (owner). `pnpm test:py` runs only the asset checks, the sprite test among them; the frozen generator's checks are gone, and `town.test.ts` no longer starts Python. M3.1 Part 3 builds its layouts in TypeScript.

@@ -364,7 +364,7 @@ git commit -m "test(web): calibrate startup and gate regressions against main"
 - Modify: `docs/plan/tasks/m0-pipeline/milestone.md`, the shared plan doc and its export `docs/plan/implementation-plan.md`
 - Create: the next checkpoint in `docs/plan/checkpoints/`
 
-- [ ] **Step 1: Confirm CI on `main`,** once the owner approves the push: `gh run list --limit 3` shows the latest `CI` (jobs `check`, `browser` and `bun`) and `perf` (`compute`, `load`) runs green.
+- [ ] **Step 1: Push `main`** so `CI` (jobs `check`, `browser` and `bun`) and `perf` (`compute`, `load`) run on GitHub.
 - [ ] **Step 2: Record the pace** in M0.6's cells against its 3–5 days, and fill the M0 total.
 - [ ] **Step 3: With the owner's go-ahead, tick the shared doc's M0 section,** then `/sync-plan-doc`: M0.6's build items (R4, R5, R8, R9) and exit checks (R1, R2, R3, R5, R6, R8, R9). Note that the WASM rule arms with M6.2, and re-baseline the Performance budget's Measured columns from Tasks 10, 11 and 13, with engine and load.
 - [ ] **Step 4: Write the checkpoint** per its README (`milestone: M0.6`, `next` naming M1's first plan). Commit:
