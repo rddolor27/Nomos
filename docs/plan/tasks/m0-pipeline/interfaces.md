@@ -144,7 +144,7 @@ Grids live in `tools/cli/grids/`, outside `src/`.
   - `layoutWorld` throws `RangeError` when `walk.length` isn't `width × height`, and `populate` when no tile is open.
 - **Stepping:** `step(world: World, timer?: SystemTimer): void`, one tick per call.
   - `SystemTimer` is `{ lap(system: number): void }`, called after each system, so the worker and the benches time systems without clocks in `sim-core`.
-  - `SYSTEM_NAMES` is `['day', 'move']` in M0.3, and later systems append to it.
+  - `SYSTEM_NAMES` is `['day', 'move']` in M0.3, and later systems append to it. M2.2b appends `economy`, so it is `['day', 'move', 'economy']`, and `step` laps all three on every tick.
 - **Movement:** the owner asked on 9 October 2026 that blobs walk in any direction, and the design below is the sim engineer's. `move`, in `wander.ts`, walks blobs on any of 256 headings, so paths curve instead of running along lines.
   - **Headings:** the new column `heading`, a 1-byte `Uint8Array` after `facing` in `AGENT_COLUMNS`, runs clockwise on screen from down: 0 walks down (+y), 64 left, 128 up and 192 right. It is needed because `vx` and `vy` can't give a heading back without trigonometry.
   - **Steps:** `walk.ts` exports `WALK_X_Q8` and `WALK_Y_Q8`, two `Int16Array`s of 256. They hold the step per tick on each heading in Q8 sub-pixels, −1,024 sin and 1,024 cos of 2πh / 256, rounded.
@@ -173,7 +173,7 @@ Grids live in `tools/cli/grids/`, outside `src/`.
 - `World.cultureUid`: a canonical `Uint8Array(MAX_CULTURES)` of stable culture uids, c + 1 per culture and 0 when unused. Culture-level draws key on it, never on the index (M0.6, R8).
 - Seed 42's replay hashes at tick 1,000, one per tier, live in `packages/sim-core/test/fixtures/goldens.json`, keyed `"<seed>/<tier>"`; the Node and browser checks both read it. A commit that moves the sim on purpose regenerates it with `node packages/sim-core/scripts/goldens.ts` (M0.6). Since M2.2's household rows, they are `746a06a3` on phone, `7560155c` on phone-plus and `10699866` on desktop. `node tools/cli/src/main.ts --seed 42 --tier phone --ticks 1000` prints the phone hash.
 - `Tier` is `'phone' | 'phone-plus' | 'desktop'`, with agent caps of 10,000, 25,000 and 100,000. `sim-protocol` re-exports `Tier`, `TIER_AGENTS` and `townAgents` from its `messages.ts` (M0.3).
-- Highcourt's replay hashes at tick 1,000, seed 42, on `town.nmap` at the town's own crowd, are pinned in `packages/sim-protocol/test/town-map.test.ts`: `7f5f6cb9` for phone (3,965 blobs) and `6ece364d` for desktop (7,931), on the 176 × 112 town. M2.2b builds that world with `createTown` instead of `createWorld`, which moved both from `e5be40f9` and `d0a2c4ea`. The goldens above run on the stand-in ground with `createWorld`, so a new map or a change to the town moves only these.
+- Highcourt's replay hashes at tick 1,000, seed 42, on `town.nmap` at the town's own crowd, are pinned in `packages/sim-protocol/test/town-map.test.ts`: `d11bb532` for phone (3,965 blobs) and `8eb639aa` for desktop (7,931), on the 176 × 112 town. M2.2b builds that world with `createTown` instead of `createWorld`, which moved both from `e5be40f9` and `d0a2c4ea`, then adds the town's walking start (to `7693e501` and `22dae2ca`) and the economy in the step (to these). The goldens above run on the stand-in ground with `createWorld`, so a new map or a change to the town moves only these.
 
 ## Agents and the Blob handle (owner: M0.7)
 
@@ -662,7 +662,7 @@ The owner asked on 10 October 2026 for the town view's art on the first screen. 
 
 ## The economy (owner: M2.1)
 
-M2.1 builds Lengnick's households and firms in `sim-core`, as its [step plan](../m2-economy/m2.1-lengnick-core/plan.md) lays out. The economy runs through `economyDay`; the world step doesn't call it yet. M2.3 adds the city preset and the flow log, as its [step plan](../m2-economy/m2.3-calibration-and-design-runner/plan.md) lays out.
+M2.1 builds Lengnick's households and firms in `sim-core`, as its [step plan](../m2-economy/m2.1-lengnick-core/plan.md) lays out. The economy runs through `economyDay` in headless runs and, from M2.2b, in a town's world step one system a tick. M2.3 adds the city preset and the flow log, as its [step plan](../m2-economy/m2.3-calibration-and-design-runner/plan.md) lays out.
 
 - **Layout, `sim-core`:**
   - new concern folders: `firms/` (`store.ts`, `decide.ts`, `produce.ts`, `renew.ts`), `labour/` (`search.ts`, `notice.ts`, `reservation.ts`), `wages/` (`wage-step.ts`, `payroll.ts`), `wealth/` (`profits.ts`), `market/` (`wholesale.ts`, with the `CallAuction` class) and `economy/` (`params.ts`, `stats.ts`, `scratch.ts`, `start.ts`, `economy.ts`, `mser5.ts`);
@@ -672,7 +672,7 @@ M2.1 builds Lengnick's households and firms in `sim-core`, as its [step plan](..
 - **The culture wall:** guarded code imports `economy/params.ts`, `economy/stats.ts` and `economy/scratch.ts`, never `economy/economy.ts`, which reaches `consumption/`. M2.6 adds `economy/` beside `step/` to the folders that may reach `sim-culture`.
 - **The world:**
   - `World` gains `firms` (`FirmStore`) and `economyScratch`;
-  - `startEconomy(world, params)` and `economyDay(world, params, day, layoffs = 0)` join `sim-core`, outside `SYSTEM_NAMES` until the economy joins the step. `layoffs` employed people, or all if fewer, lose their jobs at the day's start, a scenario input for headless runs until then (M2.3);
+  - `startEconomy(world, params)` and `economyDay(world, params, day, layoffs = 0)` join `sim-core`. The step of a hand-built world never runs them, and from M2.2b a town's step runs the same systems one a tick (below). `layoffs` employed people, or all if fewer, lose their jobs at the day's start, a scenario input for headless runs (M2.3);
   - the calendar gains `DAYS_PER_MONTH = 21` (owner, 10 October 2026), `monthOf` and `dayOfMonth`;
   - `LENGNICK.burnInDays` is 9,893 and `CITY.burnInDays` 18,428, each measured by MSER-5.
 - **Presets (M2.3):** `CITY`, in `economy/city.ts`, joins `LENGNICK`.
@@ -708,7 +708,7 @@ M2.1 builds Lengnick's households and firms in `sim-core`, as its [step plan](..
 - **Hashes:** The world step, above, gives today's tick goldens and Highcourt's pins.
   - `goldens.json` also pins `economy`: seed 42 on the phone tier after 3 months, which is 63 days of `economyDay` with LENGNICK and `fiatIssuePpm` 10,000, hashing to `6a652730`.
   - The Node and browser checks replay it with the tick replays, and `node packages/sim-core/scripts/goldens.ts` regenerates it.
-  - M2.3's off values keep `LENGNICK` byte-identical, so no hash moved, and `economy` stays `6a652730`.
+  - M2.3's off values keep `LENGNICK` byte-identical, so no hash moved, and `economy` stays `6a652730`. M2.2b adds a `town` golden beside it (below).
 
 ## Steering (owner, 10 October 2026)
 
@@ -797,11 +797,41 @@ M2.2b spawns every app world as a town that runs `CITY`, and shows the economy o
     - from a 1,000-person record at a multiple of 1,000, its output is the runner's, so no design cell moves.
   - **The town:**
     - `createTown(seed, tier, ground, people): World` lays out an empty world of the tier's whole size with `layoutWorld`, so a smaller town moves no offset, and calls `spawnTown`;
-    - `spawnTown(world, people)` fills an empty world through `spawnFromLedger` from `CITY_RECORD` scaled to `people`, with `CITY`, a stand-in home to every 3 people, settlement 0 and day 0, and marks it a town. It stands apart from `createTown` for the warm-up and the bench, which lay a world out themselves (Task 3);
+    - `spawnTown(world, people)` fills an empty world through `spawnFromLedger` from `CITY_RECORD` scaled to `people`, with `CITY`, a stand-in home to every 3 people, settlement 0 and day 0, and marks it a town. It stands apart from `createTown` for the warm-up, which lays out a world of its own (Task 3);
     - the mark is global slot `TOWN` = 4, in `world/world.ts` beside `TICK` (0), `RECORD_FRONT` (1), `DAY_AGENTS` (2) and `DAY_HOUSEHOLDS` (3). It is 1 for a town, whose step runs `CITY`'s economy (Task 3), and 0 for any other world. It is canonical, so checkpoints and the hash carry it;
-    - blobs spawn idle at their home's door, as `spawnFromLedger` places them, where `populate` starts three in four walking.
+    - blobs spawn at their home's door, as `spawnFromLedger` places them, and `spawnTown` then starts three in four walking, as `populate` does (Task 3).
   - **The worker:** `worker.ts` binds `makeWorld` to `createTown(seed, tier, parseMap(map), agents ?? TIER_AGENTS[tier])`.
     - The first screen's crowd is as ruled: 3,965, 5,287 or 7,931 by tier, or a whole tier under `?tier=`, whose firms then fill the tier's firm rows exactly (1,000, 2,500 and 10,000).
     - `inspected` gains `employer` and `wage` (Worker messages, above). The loop reads them from `world.blob.employer` and `world.firms.wage`.
   - **Hashes:** Highcourt's pins moved (The world step, above). `goldens.json` did not: `42/phone` stays `746a06a3` and the economy `6a652730`.
   - **Speed:** a cold `createTown` takes 18–21 ms for 3,965 people and 23 ms for 7,931, where `createWorld` takes 6–9 ms and 11 ms. The worker's start gains about 11 ms, not the brief's 1 ms (measured here, Node 24.18.0 on Windows, fresh process, load not recorded).
+- **Task 3, the economy in the step:**
+  - **The schedule,** in `economy/economy.ts`: `ECONOMY_TICKS` is 18, and `runEconomySystem(world, params, day, system, layoffs)` runs system `system` of `day`'s economy, or nothing when it is not due that day. System k is, in `economyDay`'s order:
+    - 0 opens the day: `clearFlows`, then `layOff` when `layoffs` is above 0;
+    - 1 to 5 are `startMonth`'s `stepWages`, `decideFirms`, `searchShops`, `searchJobs` and `planConsumption`, due on a month's first day;
+    - 6 is `shopDay` and 7 `produce`, both every day;
+    - 8 to 14 are `endMonth`'s `payWages`, `updateReservationWages`, `fireOnNotice`, `distributeProfits`, `closeFirmMonth`, `layOffExiting` and `issueFiat`, and 15 is `recordMonth`, all due on a month's last day;
+    - 16 is `recordDay`, every day, and 17 `recordYear`, due on a year's last day.
+  - **`economyDay`** `(world, params, day, layoffs = 0)` runs the 18 in a row and then checks the invariants while `world.checks` is on, so headless runs and the economy golden `6a652730` did not move. `startMonth` and `endMonth` stay exported and loop over the same systems.
+  - **The step:** a town (`globals[TOWN]` = 1) runs `runEconomySystem(world, CITY, dayOf(tick), tick mod 1,440, 0)` on each tick of a day below `ECONOMY_TICKS`, after the day work and `move`. A world that is not a town runs none, and neither does any tick from the 19th of a day on, so only the day's window writes economy state. A fresh town sits at a month's day 0, which is the day its first tick runs.
+    - The layoffs argument is 0 here, and no global slot is taken: slots 5 to 7 stay free.
+    - A day's row of `economyScratch.stats` is whole once the step that runs tick 17 ends, until tick 0 of the next day clears its flows.
+    - `SYSTEM_NAMES` gains `economy`, which `step` laps on every tick, so the stats message's `economy` is the mean over all 1,440 ticks of a day, not over the 18 that run it.
+  - **The warm-up:** `warmUp` spawns a town with `spawnTown` in its 1,024-agent, 1 MiB layout and runs `economyDay` with each of its 40 days of day work, so a month's start and end both compile. It grows from 27 ms to 46 ms (measured here, Node 24.18.0 on Windows, three runs each, load not recorded). It runs after the first snapshot, so the first frame never waits for it, and whatever the page sends meanwhile waits about 19 ms longer.
+  - **The bench:** `createBenchWorld(tier)` makes `createTown(BENCH_SEED, tier, standInGround(), TIER_AGENTS[tier])`, a town of the tier's whole crowd. `sampleTier` also gives `economy`, the worst tick of each day, which `REPORTED_WORST` names and `budget.ts` prints per tier as `<tier> economy: worst tick … ms on the best of 9 days, no budget`, judging nothing. The Chromium run carries the samples in its report.
+    - Its 9 sampled days are days 1 to 9, after one dropped warm day, so they hold neither a month's start (day 0) nor its end (day 20), and the printed worst tick is the daily shopping tick. At the phone sizes a month's first-day `searchShops` costs more (the table below), so the printed figure understates the worst tick there.
+  - **Hashes:** `goldens.json` gains `town`: `{ seed: 42, tier: 'phone', people: 1000, ticks: 1000, hash: 'b76fca4c' }`. `townHash(seed, tier, people, ticks)`, in `test/engines/checks.ts`, spawns a town on the stand-in ground and steps it, and `checkGoldens` replays it with the rest, so Node and Chromium both run its case: 5 + 20 cases in all. No other golden moved: `42/phone` is still `746a06a3` and the economy `6a652730`. Highcourt's pins are `d11bb532` (phone) and `8eb639aa` (desktop).
+  - **The walking start** (coordinator, 10 October 2026): `spawnTown` starts three in four blobs walking after `spawnFromLedger`, so the first screen moves from its first frame.
+    - For blob p, with s = `draw3(seed, SPAWN_DRAW, key, p, 13)` and key = `draw2(seed, SPAWN_DRAW, 0, 0)`, the settlement and day `spawnFromLedger` keys on, a blob where s & `WALK_START_MASK` (3, now exported from `world/world.ts`) isn't 0 starts on heading s >>> 24, with the `vx`, `vy` and `facing` that follow. The rest stay idle on heading 0, facing down.
+    - Purpose 13 is the next free one on `SPAWN_DRAW`, after `spawn.ts`'s 1 to 12. In seed 42's town of 3,965, 2,998 walk (75.6%).
+  - **Cost** (measured here, Node 24.18.0 on Windows, a desktop, one run, load not recorded): each system timed alone over a town's second month, after `warmUp`. The worst tick of the economy, with the system that takes it:
+
+    | Town | Worst tick | Worst system | Next worst |
+    | --- | --- | --- | --- |
+    | 3,965 (Highcourt, phone) | 0.77 ms | `searchShops` | `shopDay` 0.48 ms |
+    | 7,931 (Highcourt, desktop) | 1.56 ms | `searchShops` | `searchJobs` 0.80 ms |
+    | 10,000 (phone tier) | 1.78 ms | `searchShops` | `shopDay` 1.17 ms |
+    | 25,000 (phone-plus tier) | 2.69 ms | `shopDay` | `searchShops` 2.47 ms |
+    | 100,000 (desktop tier) | 14.17 ms | `shopDay` | `searchShops` 10.03 ms |
+
+    So at 10k and below a month's first-day shop search, not the daily shopping, is the worst tick (Ruling 2 inferred shopping). At 100k shopping alone nears the 16 ms tick, as Ruling 2 said, and perf.yml measures the real figures on the reference machine.
