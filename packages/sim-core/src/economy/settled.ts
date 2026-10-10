@@ -1,3 +1,4 @@
+import { floorDiv } from '../maths/int.ts';
 import { foldToLedger } from '../spawn/fold.ts';
 import { LEDGER_FIELDS } from '../spawn/record.ts';
 import { DAYS_PER_MONTH } from '../time/calendar.ts';
@@ -13,7 +14,7 @@ const SOURCE_SEED = 42;
 export function settledRecord(preset: EconomyParams): Float64Array {
   const world = createWorld(SOURCE_SEED, 'phone', undefined, preset.households);
   startEconomy(world, preset);
-  const days = Math.ceil(preset.burnInDays / DAYS_PER_MONTH) * DAYS_PER_MONTH;
+  const days = floorDiv(preset.burnInDays + DAYS_PER_MONTH - 1, DAYS_PER_MONTH) * DAYS_PER_MONTH;
   for (let day = 0; day < days; day++) economyDay(world, preset, day);
   return createFolded(world);
 }

@@ -1,5 +1,6 @@
 import { CITY } from '../economy/city.ts';
 import { CITY_RECORD } from '../economy/city-record.ts';
+import { floorDiv } from '../maths/int.ts';
 import { TIER_AGENTS, TIER_MEMORY_BYTES, type Tier } from '../memory/tiers.ts';
 import type { Ground } from '../world/ground.ts';
 import { TOWN, layoutWorld, type World } from '../world/world.ts';
@@ -19,7 +20,7 @@ export function createTown(seed: number, tier: Tier, ground: Ground, people: num
 
 // Fills an empty world with CITY's settled record scaled to people, at settlement 0 on day 0, and marks it to run CITY.
 export function spawnTown(world: World, people: number): void {
-  const homes = createStandInHomes(world.ground, Math.ceil(people / PEOPLE_PER_HOME));
+  const homes = createStandInHomes(world.ground, floorDiv(people + PEOPLE_PER_HOME - 1, PEOPLE_PER_HOME));
   spawnFromLedger(world, createTownRecord(people), homes, CITY, 0, 0);
   world.globals[TOWN] = 1;
 }
