@@ -318,3 +318,14 @@ If the session ended: check `git log` for those Task lines, and `git status` for
     - docs still show `b3b2c251`;
     - M2.3's calibration flags, as above.
 - **Next:** M2.2, Spawn and fold. Expand its brief into a short step plan with `sim-architect`, then build it with up to 5 agents, testing last.
+- 10 Oct: **M2.2 Spawn and fold is closed** (821984a to e83512b).
+  - A household is 1–6 blobs sharing a home.
+  - Spawn builds a city from its 14-field record. 100k agents take about 31–34 ms; the bench row is 35 ms, the coordinator's ruling, since M9 spawns only the districts in view.
+  - Fold reads the city back exactly.
+  - 20 spawn goldens replay in Node, Chromium, Firefox and WebKit.
+  - The burn-in comparison passes, judged by the median of 40 paired seeds: spawned 5,240 against 6,395 days, and 4,095 against 6,680 on seeds 41–80.
+  - **One QA pass:** gates green, the determinism review clean, money exact. Its gap fix is e83512b.
+  - **Risk:** the 35 ms row has about 14% headroom; CI's ubuntu runner may be slower.
+  - **Docs updated:** M2.1 and M2.2 marked done (3c2f5c2 to 72de9ab), plus M3.1, M3.3, M0.8 and M8.1 (cee105a to 87fff65).
+  - **CLI hash:** `746a06a3`.
+- **Next: M2.3 Calibration and design runner.** First a step plan from `sim-architect`, then building, with testing last.
