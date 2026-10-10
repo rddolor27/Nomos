@@ -673,7 +673,7 @@ M2.1 builds Lengnick's households and firms in `sim-core`, as its [step plan](..
   - `World` gains `firms` (`FirmStore`) and `economyScratch`;
   - `startEconomy(world, params)` and `economyDay(world, params, day, layoffs = 0)` join `sim-core`, outside `SYSTEM_NAMES` until the economy joins the step. `layoffs` employed people, or all if fewer, lose their jobs at the day's start, a scenario input for headless runs until then (M2.3);
   - the calendar gains `DAYS_PER_MONTH = 21` (owner, 10 October 2026), `monthOf` and `dayOfMonth`;
-  - `LENGNICK.burnInDays` is 9,893 and `CITY.burnInDays` 17,295, each measured by MSER-5.
+  - `LENGNICK.burnInDays` is 9,893 and `CITY.burnInDays` 18,428, each measured by MSER-5.
 - **Presets (M2.3):** `CITY`, in `economy/city.ts`, joins `LENGNICK`.
   - `EconomyParams` gains four fields, and `LENGNICK`'s values turn each off:
     - `slowSearcherPpm` (0) and `slowJobSearches` (5): that share of people, fixed for life, visits only `slowJobSearches` firms a month while unemployed, and the rest `jobSearches`;
@@ -749,7 +749,7 @@ M2.2 spawns a city from a ledger record and folds it back exactly, as its [step 
 M2.3 runs the economy headless over a grid of cells, writes each cell's flow log, and judges the runs against round 2's targets, as its [step plan](../m2-economy/m2.3-calibration-and-design-runner/plan.md) lays out. That plan holds the targets table, the rulings and the calibration's seeds.
 
 - **Commands,** in `tools/cli`:
-  - `design --grid <file> --out <dir> [--threads N]` runs a grid's cells, on `availableParallelism()` − 1 threads by default, and at least 1;
+  - `design --grid <file> --out <dir> [--threads N]` runs a grid's cells. `--threads` defaults to `availableParallelism()` − 1, and at least 1, when `CI` is set, and to 2 elsewhere, since full runs pinned the owner's CPU (owner, 10 October 2026). `--out` must be a new or empty folder, or the run is refused before any cell starts;
   - `targets <dir> [--filter]` judges a run's folder against `TARGETS`, in `targets/targets.ts`, the one home of every target.
 - **A grid** is JSON, and every error names its field. A field it doesn't know is an error too.
   - `preset` is a `PRESETS` name, `lengnick` or `city`, and `start` is `hand` or `spawn`.
@@ -775,5 +775,5 @@ M2.3 runs the economy headless over a grid of cells, writes each cell's flow log
 - **Grids:**
   - `smoke.json` checks the runner;
   - `sweep.json`, a 300-point hypercube on seeds 1–5, and `refine.json`, on seeds 1–20, tuned `CITY`;
-  - `confirm-city.json` and `confirm-lengnick.json` judge each preset once, on seeds 1001–1050;
+  - `confirm-city.json` judges `CITY` on seeds 2001–2050, fresh after the review's re-tune, and `confirm-lengnick.json` judges `LENGNICK` on seeds 1001–1050;
   - `design.json` runs `CITY` at all five sizes, with and without a 5-point shock.
