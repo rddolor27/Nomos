@@ -7,7 +7,7 @@ module.exports = {
       comment:
         'R8, content rule 8: guarded folders may not reach sim-culture by any chain of imports. Import the module you need, never a barrel that re-exports consumption, and write `import type` for types.',
       severity: 'error',
-      from: { path: '^packages/sim-[^/]+/src/(crime|police|labour|wages|wealth|money|ability|housing|migration)/' },
+      from: { path: '^packages/sim-[^/]+/src/(crime|police|labour|wages|wealth|money|ability|housing|migration|spawn)/' },
       to: { path: '^packages/sim-culture/', reachable: true },
     },
     {

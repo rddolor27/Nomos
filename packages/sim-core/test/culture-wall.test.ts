@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 
 const eslint = new ESLint({ cwd: fileURLToPath(new URL('../../../', import.meta.url)) });
 
-const GUARDED_FOLDERS = ['crime', 'police', 'labour', 'wages', 'wealth', 'money', 'ability', 'housing', 'migration'];
+const GUARDED_FOLDERS = ['crime', 'police', 'labour', 'wages', 'wealth', 'money', 'ability', 'housing', 'migration', 'spawn'];
 const IMPORT = "import { festivalToday } from '@nomos/sim-culture'";
 const PLANTED_READS = [
   "import type { festivalToday } from '@nomos/sim-culture'",
@@ -42,7 +42,7 @@ describe('the culture wall', { timeout: 30_000 }, () => {
     }
   });
 
-  it('guards all nine folders, nested folders and every sim package', async () => {
+  it('guards all ten folders, nested folders and every sim package', async () => {
     const files = [
       ...GUARDED_FOLDERS.map((folder) => `packages/sim-core/src/${folder}/planted.ts`),
       'packages/sim-core/src/wages/deep/inner.ts',
