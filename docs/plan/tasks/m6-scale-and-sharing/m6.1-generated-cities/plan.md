@@ -29,7 +29,7 @@
   - `src/versions.ts` holds the version registry, with each frozen version as a lazy `import()`.
 - `packages/worldgen/test/goldens/v<N>.json`: fingerprints for about 100 seeds per released version, at about 363 B each (R9).
 - `apps/web/src/new-town/`: the settings panel.
-- CI: the city generator under Node, Bun, Deno and three browsers through M0.6's engine harness.
+- CI: the city generator in Node through Vitest, and in Chromium through a browser engine spec.
 
 ## Interfaces and data
 
@@ -45,7 +45,7 @@
 
 ## Tests for the exit checks
 
-- `map hash identical across engines`: for a fixed seed, the city's map hash matches in Node, Bun, Deno, Chromium, Firefox and WebKit.
+- `map hash identical across engines`: for a fixed seed, the city's map hash matches in Node and Chromium.
 - `byte-identical maps for 100 context records`: 100 random context records give byte-identical maps across the same six engines.
 - `lazy order does not matter`: generating districts in random order gives the same bytes as row order.
 - `frozen versions still match`: every released version's goldens match after any later change.
@@ -53,7 +53,6 @@
 ## Risks and unknowns
 
 - **Version chunks grow** with every release. Keep each frozen version's code minimal, and measure the lazy chunk sizes in M0.6's size gate.
-- **Deno joins CI** for the first time in M2.2. Reuse that setup.
 - **1,024² cities** stress memory: about 1 MB per byte-per-tile layer. Build districts lazily in the renderer too, never the whole city at once.
 
 ## Open questions
@@ -67,7 +66,7 @@
 Suggestions for the step plan, which makes the final call.
 
 - **Build order:** the context record and one byte-identical district in Node first. Then lazy districts in any order, the six-engine check, goldens and versions, and the panel last.
-- **Reuse:** M3.1's place generator and its goldens against `tools/worldgen`, M0.6's engine harness, M2.2's Deno setup, and sim-core's integer noise and keyed draw.
+- **Reuse:** M3.1's place generator and its goldens against `tools/worldgen`, the browser engine specs, and sim-core's integer noise and keyed draw.
 - **Keep it simple:** a frozen version is a copy of the generator code it ran, loaded by lazy `import()`; shared code never branches on the version.
 - **Pitfalls:** one `Math.sin` in a river curve can break the six-engine check, so use integer noise and build-time tables. A district never reads a neighbour's bytes; roads and rivers that cross edges come from the context record.
 - **Hard and easy parts:** seams where roads and rivers cross district edges need the most care. The panel is routine.

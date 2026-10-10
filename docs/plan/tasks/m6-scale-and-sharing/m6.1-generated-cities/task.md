@@ -10,4 +10,4 @@ Needs M3's TypeScript port of `place.py`. The Python reference in `tools/worldge
   - each released generator version frozen with golden fingerprints for about 100 seeds, old versions shipped as lazy chunks, and an explicit "Rebuild on the latest generator" that lists conflicts (R9);
   - a "New town" settings panel: seed with re-roll, 3–5 presets, size tier, biome, river, coast and port (R9).
 - **Exit checks:**
-  - a generated city's map hash is identical across engines for a given seed (R3); the city generator returns byte-identical maps in Node, Bun, Deno and three browsers for 100 random context records (R4).
+  - a generated city's map hash is identical across engines for a given seed (R3); the city generator returns byte-identical maps in Node and Chromium for 100 random context records, and in Firefox and WebKit before launch (R4; owner, 10 October 2026).

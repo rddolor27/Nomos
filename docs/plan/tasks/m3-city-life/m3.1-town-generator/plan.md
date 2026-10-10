@@ -938,7 +938,7 @@ Settled on 10 October 2026, and open to the owner's overturning:
   - every walkable IntGrid cell has a ground tile;
   - every zone entity has a building footprint on the tile layer;
   - every door touches a walkable cell.
-- `matches Python stage by stage`: per-stage fingerprints equal the Python goldens for 100 seeds in Node, and in Bun, Chromium, Firefox and WebKit through M0.6's engine harness.
+- `matches Python stage by stage`: per-stage fingerprints equal the Python goldens for 100 seeds in Node, and in Chromium through the browser engine spec.
 - `tidying is order-free`: tidying a shore in reversed cell order gives the same grid.
 - `roofs never follow wealth`: the roof choice key contains no occupant or price field. A test generates a town, permutes household wealth, and gets identical roofs.
 
