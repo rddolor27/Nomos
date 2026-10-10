@@ -53,6 +53,11 @@
     "limit": "22 kB"
   },
   {
+    "name": "Economy chunk",
+    "path": ["dist/assets/economy-*.js", "dist/assets/economy-*.css"],
+    "limit": "1.5 kB"
+  },
+  {
     "name": "Controls chunk",
     "path": ["dist/assets/controls-*.js"],
     "limit": "8 kB"
@@ -66,6 +71,11 @@
     "name": "Inspector chunk",
     "path": ["dist/assets/inspector-*.js"],
     "limit": "4.5 kB"
+  },
+  {
+    "name": "Shop name chunk the inspector and the economy panel share",
+    "path": ["dist/assets/shop-name-*.js"],
+    "limit": "200 B"
   },
   {
     "name": "Map view chunk",
