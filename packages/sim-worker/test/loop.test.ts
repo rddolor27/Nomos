@@ -301,7 +301,7 @@ describe('the sim loop', () => {
     expect(stats.length).toBeGreaterThan(0);
     expect(stats.length).toBeLessThanOrEqual(1_000 / STATS_MS);
     for (const { systemMs } of stats) {
-      expect(Object.keys(systemMs)).toEqual(['day', 'move', 'snapshot']);
+      expect(Object.keys(systemMs)).toEqual(['day', 'move', 'economy', 'snapshot']);
       expect(Object.values(systemMs).every((ms) => Number.isFinite(ms) && ms >= 0)).toBe(true);
     }
   });

@@ -200,7 +200,7 @@ describe('the world step', () => {
     const timer: SystemTimer = { lap: (system) => laps.push(system) };
     const world = createWorld(42, 'phone');
     for (let tick = 0; tick < 3; tick++) step(world, timer);
-    expect(SYSTEM_NAMES).toEqual(['day', 'move']);
-    expect(laps).toEqual([0, 1, 0, 1, 0, 1]);
+    expect(SYSTEM_NAMES).toEqual(['day', 'move', 'economy']);
+    expect(laps).toEqual([0, 1, 2, 0, 1, 2, 0, 1, 2]);
   });
 });

@@ -1,7 +1,9 @@
 import {
   SYSTEM_NAMES,
   TICKS_PER_DAY,
-  createWorld,
+  TIER_AGENTS,
+  createTown,
+  standInGround,
   step,
   warmUp,
   type SystemTimer,
@@ -9,7 +11,7 @@ import {
   type World,
 } from '@nomos/sim-core';
 import { createSnapshotPool, takeView, writeSnapshot } from '@nomos/sim-protocol';
-import { BUDGET_ROWS } from './budgets.ts';
+import { BUDGET_ROWS, REPORTED_WORST } from './budgets.ts';
 
 export const BENCH_SEED = 42;
 // Named apart from sim-core's WARM_DAYS (40), which warmUp runs on a throwaway world.
@@ -25,10 +27,11 @@ export interface BenchWorld {
   readonly view: Uint32Array;
 }
 
-// The world every gate measures: the sim's code warmed up, BENCH_SEED, checks off and one snapshot view to write.
+// The world every gate measures: the sim's code warmed up, a town of the tier's whole crowd on BENCH_SEED, checks off and
+// one snapshot view to write. A town runs CITY's economy in the step (M2.2b).
 export function createBenchWorld(tier: Tier): BenchWorld {
   warmUp();
-  const world = createWorld(BENCH_SEED, tier);
+  const world = createTown(BENCH_SEED, tier, standInGround(), TIER_AGENTS[tier]);
   world.checks = false;
   const view = takeView(createSnapshotPool(world.agents.capacity));
   if (view === null) throw new Error('a new snapshot pool has no free view');
@@ -36,7 +39,7 @@ export function createBenchWorld(tier: Tier): BenchWorld {
 }
 
 // One value per day for each budget row: the day's mean tick, or its worst tick for a max row, so a row's fastest
-// sample is its best day.
+// sample is its best day. A system in REPORTED_WORST gets its worst tick too, with no budget to judge it by.
 export function sampleTier(tier: Tier, days: number, now: () => number): Record<string, Float64Array> {
   const { world, view } = createBenchWorld(tier);
   const totalMs = new Float64Array(SLOTS.length);
@@ -52,6 +55,7 @@ export function sampleTier(tier: Tier, days: number, now: () => number): Record<
   };
   const samples: Record<string, Float64Array> = {};
   for (const row of BUDGET_ROWS) samples[row.system] = new Float64Array(days);
+  for (const system of REPORTED_WORST) samples[system] = new Float64Array(days);
   // The warm days are timed like the rest and dropped, so the timer's path is compiled before the first sample.
   for (let day = -BENCH_WARM_DAYS; day < days; day++) {
     totalMs.fill(0);
@@ -78,4 +82,5 @@ function recordDay(
     const slot = SLOTS.indexOf(row.system);
     samples[row.system][day] = row.reduce === 'mean' ? totalMs[slot] / TICKS_PER_DAY : worstMs[slot];
   }
+  for (const system of REPORTED_WORST) samples[system][day] = worstMs[SLOTS.indexOf(system)];
 }

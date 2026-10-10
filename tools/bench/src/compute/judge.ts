@@ -31,6 +31,12 @@ function fastest(values: ArrayLike<number>): number {
   return ms;
 }
 
+// A system timed without a budget, such as the economy: its worst tick on the best of the days sampled, which is how a max
+// row is judged.
+export function formatReported(scale: string, system: string, samples: ArrayLike<number>): string {
+  return `${scale} ${system}: worst tick ${fastest(samples).toFixed(3)} ms on the best of ${samples.length} days, no budget`;
+}
+
 export function formatVerdict(verdict: Verdict): string {
   const { scale, system, fastestMs, samples, limitMs, budgetMs, pass } = verdict;
   const result = pass ? 'pass' : 'FAIL';

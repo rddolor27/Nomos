@@ -11,6 +11,13 @@
     "months": 3,
     "hash": "6a652730"
   },
+  "town": {
+    "seed": 42,
+    "tier": "phone",
+    "people": 1000,
+    "ticks": 1000,
+    "hash": "b76fca4c"
+  },
   "spawn": {
     "seed": 2026,
     "hashes": [

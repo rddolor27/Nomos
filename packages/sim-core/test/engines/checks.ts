@@ -11,6 +11,7 @@ import type { Tier } from '../../src/memory/tiers.ts';
 import { createStandInHomes } from '../../src/spawn/homes.ts';
 import { LEDGER_FIELDS } from '../../src/spawn/record.ts';
 import { spawnFromLedger } from '../../src/spawn/spawn.ts';
+import { createTown } from '../../src/spawn/town.ts';
 import { DAYS_PER_MONTH } from '../../src/time/calendar.ts';
 import { stateHash } from '../../src/world/checkpoint.ts';
 import { standInGround } from '../../src/world/ground.ts';
@@ -66,6 +67,8 @@ export interface Goldens {
   ticks: number;
   hashes: Record<string, string>;
   economy: { seed: number; tier: Tier; months: number; hash: string };
+  // A town of people on the stand-in ground, stepped for ticks.
+  town: { seed: number; tier: Tier; people: number; ticks: number; hash: string };
   // seed is randomRecord's, and hashes[index] is spawnHash(seed, index).
   spawn: { seed: number; hashes: string[] };
 }
@@ -109,11 +112,18 @@ export function replayHash(seed: number, tier: Tier, ticks: number): string {
 // LENGNICK with its fiat issue on at 1% a month, so the run replays the issue along with wages, shopping and profits.
 const ECONOMY: EconomyParams = { ...LENGNICK, fiatIssuePpm: 10_000 };
 
-// The economy is not part of step yet, so it runs a day at a time, as the CLI does.
+// A hand-built world outside the step, so it runs the economy a day at a time, as the CLI does.
 export function economyHash(seed: number, tier: Tier, months: number): string {
   const world = createWorld(seed, tier, undefined, ECONOMY.households);
   startEconomy(world, ECONOMY);
   for (let day = 0; day < months * DAYS_PER_MONTH; day++) economyDay(world, ECONOMY, day);
+  return stateHash(world).toString(16).padStart(8, '0');
+}
+
+// A spawned town runs CITY inside the step, so this replays its walking start, its movement and the economy's days together.
+export function townHash(seed: number, tier: Tier, people: number, ticks: number): string {
+  const world = createTown(seed, tier, standInGround(), people);
+  for (let tick = 0; tick < ticks; tick++) step(world);
   return stateHash(world).toString(16).padStart(8, '0');
 }
 
@@ -142,6 +152,8 @@ export function checkGoldens(goldens: Goldens): EngineReport {
   }
   const { hash, ...run } = goldens.economy;
   checkCase(report, 'economy', run, economyHash(run.seed, run.tier, run.months), hash);
+  const { hash: townWant, ...town } = goldens.town;
+  checkCase(report, 'town', town, townHash(town.seed, town.tier, town.people, town.ticks), townWant);
   const { seed, hashes } = goldens.spawn;
   for (let index = 0; index < hashes.length; index++) {
     checkCase(report, 'spawn', { seed, index }, spawnHash(seed, index), hashes[index]);
