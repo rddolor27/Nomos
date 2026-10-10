@@ -172,9 +172,13 @@ function expectValues(actual: TargetValues, expected: TargetValues): void {
 }
 
 describe('the target table', () => {
-  it('holds seven tier-1, six tier-2 and six tier-3 targets, and three reported measures', () => {
+  it('holds six tier-1, seven tier-2 and six tier-3 targets, and three reported measures', () => {
     const inTier = (tier: number | string): number => TARGETS.filter((target) => target.tier === tier).length;
-    expect([1, 2, 3, 'reported'].map(inTier)).toEqual([7, 6, 6, 3]);
+    expect([1, 2, 3, 'reported'].map(inTier)).toEqual([6, 7, 6, 3]);
+  });
+
+  it('keeps the pay-cut target out of the tier-1 filter, since closed money makes cuts balance raises', () => {
+    expect(TARGETS.find((target) => target.id === 'stayer_cut_share')?.tier).toBe(2);
   });
 
   it('names every target once, with low below high on a band', () => {

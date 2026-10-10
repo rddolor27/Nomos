@@ -15,7 +15,6 @@ export type Target =
 
 export const TARGETS = [
   { id: 'price_change_share', tier: 1, rule: 'band', low: 0.09, high: 0.12, source: 'R2 KQ1' },
-  { id: 'stayer_cut_share', tier: 1, rule: 'band', low: 0.016, high: 0.024, source: 'R2 KQ1: 2%, +-20%' },
   { id: 'job_finding', tier: 1, rule: 'band', low: 0.208, high: 0.312, source: 'R2 KQ2: 26%, +-20%' },
   { id: 'unemployment_mean', tier: 1, rule: 'band', low: 0.04, high: 0.09, source: 'BAM (R2 KQ5)' },
   { id: 'markup', tier: 1, rule: 'band', low: 1.36, high: 1.5, source: 'R2 KQ3' },
@@ -27,6 +26,8 @@ export const TARGETS = [
   { id: 'exit_rate', tier: 2, rule: 'band', low: 0.0145, high: 0.0165, source: "R2 KQ3 at Ruling 2's year (computed)" },
   { id: 'long_spell_share', tier: 2, rule: 'band', low: 0.216, high: 0.324, source: 'R2 KQ2: 27% out 27+ weeks, +-20%' },
   { id: 'mean_spell_months', tier: 2, rule: 'band', low: 4.6, high: 6.9, source: 'R2 KQ2: 24.8 weeks is 5.7 months (computed), +-20%' },
+  // Tier 2, a documented gap: under closed money cuts must balance raises, and R2's 2% comes from wages that grow (Ruling 12).
+  { id: 'stayer_cut_share', tier: 2, rule: 'band', low: 0.016, high: 0.024, source: 'R2 KQ1: 2%, +-20%' },
   { id: 'unemployment_sd', tier: 3, rule: 'band', low: 0.01, high: 0.03, source: 'BAM; under 0.010 trips Ruling 14' },
   { id: 'phillips', tier: 3, rule: 'band', low: -0.5, high: -0.05, source: 'BAM' },
   { id: 'okun', tier: 3, rule: 'band', low: -0.98, high: -0.7, source: 'BAM' },
