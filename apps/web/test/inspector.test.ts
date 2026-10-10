@@ -33,6 +33,7 @@ describe('the blob card', () => {
   it('words a blob in work: its shop, pay, wallet, home, housemates, doing and look', () => {
     expect(blobCard(IN_WORK)).toEqual({
       name: NAME,
+      look: 77,
       rows: [
         ['Job', 'Works at Shop 12'],
         ['Pay', '1,428.00 a month'],

@@ -84,7 +84,7 @@ function putOverlays(
 
 // looks.py's layers from the person's look and pose, then placedraw.py's person_layers. A look is hue look % 6, eyes
 // floor(look / 6) % 4 and pattern floor(look / 24).
-function putPerson(data: Int16Array, at: number, frames: PersonFrames, people: PlacePeople, j: number): number {
+export function putPerson(data: Int16Array, at: number, frames: PersonFrames, people: PlacePeople, j: number): number {
   const look = people.look[j];
   const hue = look % HUES;
   const pattern = Math.floor(look / (HUES * EYES));

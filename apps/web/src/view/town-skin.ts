@@ -1,7 +1,7 @@
-import { loadAtlasPage, type AtlasPage } from '@nomos/render-gl/map';
 import { TownSkin } from '@nomos/render-gl/town';
 import type { PlaceLayout, TownError, TownReply, TownRequest } from '@nomos/sim-protocol/place';
 import { element, type App } from '../app/app.ts';
+import { townAtlas } from './atlas.ts';
 
 // Long enough for the HUD's and charts' first work, short enough that a busy page still gets its town.
 const IDLE_TIMEOUT_MS = 2000;
@@ -43,13 +43,8 @@ function requestTown(): Promise<PlaceLayout> {
   });
 }
 
-function loadAtlas(): Promise<AtlasPage> {
-  const base = document.baseURI;
-  return loadAtlasPage(new URL('atlas/atlas.json', base).href, new URL('atlas/atlas.webp', base).href);
-}
-
 async function lendTown(app: App, canvas: HTMLCanvasElement): Promise<void> {
-  const [layout, page] = await Promise.all([requestTown(), loadAtlas()]);
+  const [layout, page] = await Promise.all([requestTown(), townAtlas()]);
   // The town follows the dots' backend, so ?canvas draws both in Canvas2D.
   const backend = app.renderer.backend === 'canvas2d' ? 'canvas2d' : 'auto';
   app.renderer.setTown(new TownSkin(canvas, layout, page, { backend }));

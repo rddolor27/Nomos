@@ -78,11 +78,6 @@
     "limit": "200 B"
   },
   {
-    "name": "Constant chunks the inspector shares with the Town skin and the map",
-    "path": ["dist/assets/actions-*.js", "dist/assets/place-layout-*.js", "dist/assets/world-map-*.js"],
-    "limit": "1 kB"
-  },
-  {
     "name": "Map view chunk",
     "path": ["dist/assets/map-view-*.js"],
     "limit": "14.5 kB"
@@ -98,8 +93,14 @@
     "limit": "2 kB"
   },
   {
-    "name": "Scene chunks the views and the Town skin share",
-    "path": ["dist/assets/renderer-*.js", "dist/assets/lifecycle-*.js"],
+    "name": "Scene chunks the views, the Town skin and the blob portrait share",
+    "path": [
+      "dist/assets/renderer-*.js",
+      "dist/assets/lifecycle-*.js",
+      "dist/assets/frames-*.js",
+      "dist/assets/sprites-*.js",
+      "dist/assets/atlas-*.js"
+    ],
     "limit": "6 kB"
   },
   {

@@ -51,9 +51,10 @@ interface View {
   canvas: [number, number];
 }
 
-// What the card shows of a blob: its name and its rows, in order.
+// What the card shows of a blob: its name and its rows, in order, and the look its picture is drawn from.
 interface Card {
   name: string;
+  look: number;
   rows: [string, string][];
 }
 
@@ -113,6 +114,7 @@ function cardOf(agent: number): Card {
   const others = housemates(agent);
   return {
     name: personName(blob.nameKey),
+    look: agents.look[agent],
     rows: [
       ['Job', employer < 0 ? 'Out of work' : `Works at Shop ${employer + 1}`],
       ['Pay', employer < 0 ? 'None' : `${money(firms.wage[employer])} a month`],
@@ -186,6 +188,65 @@ async function expectCard(page: Page, card: Card): Promise<Locator> {
   return dialog;
 }
 
+// The atlas frames of a standing blob of this look, as looks.py names them: body, pattern unless plain, and face.
+function layerNames(look: number): string[] {
+  const hue = HUES[look % 6];
+  const eyes = EYES[Math.floor(look / 6) % 4];
+  const pattern = PATTERNS[Math.floor(look / 24)];
+  return [
+    `characters/blob_${hue}_stand_down`,
+    ...(pattern === 'plain' ? [] : [`characters/pattern_${pattern}_${hue}_stand_down`]),
+    `characters/face_neutral${eyes === 'round' ? '' : `-${eyes}`}_down`,
+  ];
+}
+
+interface PortraitReading {
+  // Whether every pixel equals the atlas's own layers, drawn by name at the portrait's scale, and the canvas is not blank.
+  same: boolean;
+  // Device pixels to an art pixel, and the canvas's CSS width.
+  scale: number;
+  cssWidth: number;
+  pixelated: string;
+}
+
+// The picture on the card, once drawn, read against the atlas page: the three layers stacked at one corner, since a standing
+// blob's frames share a size and an anchor and its face sits at no offset.
+async function readPortrait(page: Page, look: number): Promise<PortraitReading> {
+  await expect(page.locator('#blob-modal canvas')).toBeVisible();
+  return page.evaluate(async (names) => {
+    const portrait = document.querySelector<HTMLCanvasElement>('#blob-modal canvas');
+    if (!portrait) throw new Error('the card has no picture');
+    const [atlas, pixels] = await Promise.all([
+      fetch('atlas/atlas.json').then((response) => response.json() as Promise<{ frames: Record<string, { x: number; y: number; w: number; h: number }> }>),
+      fetch('atlas/atlas.webp').then((response) => response.blob()),
+    ]);
+    const image = await createImageBitmap(pixels);
+    const scale = portrait.width / atlas.frames[names[0]].w;
+    const reference = document.createElement('canvas');
+    reference.width = portrait.width;
+    reference.height = portrait.height;
+    const drawing = reference.getContext('2d');
+    if (!drawing) throw new Error('no 2D context for the reference');
+    drawing.imageSmoothingEnabled = false;
+    for (const name of names) {
+      const { x, y, w, h } = atlas.frames[name];
+      drawing.drawImage(image, x, y, w, h, 0, 0, w * scale, h * scale);
+    }
+    const bytes = (canvas: HTMLCanvasElement): Uint8ClampedArray =>
+      canvas.getContext('2d')?.getImageData(0, 0, canvas.width, canvas.height).data ?? new Uint8ClampedArray();
+    const [drawn, expected] = [bytes(portrait), bytes(reference)];
+    const style = getComputedStyle(portrait);
+    // Every fourth byte is a pixel's alpha.
+    const painted = drawn.some((byte, i) => i % 4 === 3 && byte > 0);
+    return {
+      same: painted && drawn.length === expected.length && drawn.every((byte, i) => byte === expected[i]),
+      scale,
+      cssWidth: Number.parseFloat(style.width),
+      pixelated: style.imageRendering,
+    };
+  }, layerNames(look));
+}
+
 // A blob found opens its card, and no blob says so in the short line.
 async function expectAnswer(page: Page, answer: Card | null): Promise<void> {
   if (answer) {
@@ -226,6 +287,33 @@ test('opens a card with the name, work, wallet, home, doing and look of the blob
   // The focus moves into the card, on its one control.
   await expect(dialog.getByRole('button', { name: 'Close' })).toBeFocused();
   await expect(page.locator('#inspector')).toHaveText('');
+  // Its picture is the blob's own sprite, 5 device pixels to an art pixel, and is for the eye alone.
+  expect(await readPortrait(page, card.look)).toEqual({ same: true, scale: 5, cssWidth: 90, pixelated: 'pixelated' });
+  // Read against another look's layers, the same picture differs, so the comparison can tell.
+  expect((await readPortrait(page, (card.look + 1) % 96)).same).toBe(false);
+  await expect(dialog.locator('canvas')).toHaveAttribute('aria-hidden', 'true');
+});
+
+// The first blob in the view's top-left quarter whose look the test accepts, with the client pixel that finds it.
+function blobLooking(view: View, accepts: (look: number) => boolean): [number, number, Card] {
+  for (let skip = 0; ; skip++) {
+    const [clientX, clientY] = blobPoint(view, skip, true);
+    const card = answerAt(view, clientX * view.dpr, clientY * view.dpr);
+    if (card && accepts(card.look)) return [clientX, clientY, card];
+  }
+}
+
+test('draws a plain look with round eyes and a patterned look with other eyes as the atlas holds them', async ({ page }) => {
+  await openPaused(page);
+  const view = await viewOf(page);
+  // Look 0 to 5 is a plain blob with round eyes, whose picture has no pattern layer; the rest wear a pattern or other eyes.
+  const plain = blobLooking(view, (look) => look < 6);
+  const patterned = blobLooking(view, (look) => look >= 24 && Math.floor(look / 6) % 4 !== 0);
+  for (const [clientX, clientY, card] of [plain, patterned]) {
+    await page.mouse.click(clientX, clientY);
+    await expectCard(page, card);
+    expect((await readPortrait(page, card.look)).same).toBe(true);
+  }
 });
 
 test("sits in the view's bottom-right corner, clear of the zoom buttons", async ({ page }) => {
@@ -357,6 +445,16 @@ test.describe('on a 2x screen', () => {
     await page.mouse.click(clientX, clientY);
     await expectAnswer(page, answerAt(view, clientX * view.dpr, clientY * view.dpr));
   });
+
+  // 5 CSS pixels to an art pixel is 10 device pixels at 2x, and at 1.5x the whole 8 nearest 7.5, so the canvas is 96 CSS px wide.
+  for (const [dpr, scale, cssWidth] of [[2, 10, 90], [1.5, 8, 96]]) {
+    test(`draws the portrait in whole device pixels at ${dpr}x`, async ({ openAtScale }) => {
+      const page = await openAtScale(dpr);
+      await openPaused(page);
+      const card = await openCard(page);
+      expect(await readPortrait(page, card.look)).toEqual({ same: true, scale, cssWidth, pixelated: 'pixelated' });
+    });
+  }
 });
 
 test.describe('with a touch screen', () => {

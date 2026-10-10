@@ -47,6 +47,7 @@ export function blobCard(reply: Inspected): BlobCard {
   const { employer } = reply;
   return {
     name: personName(reply.nameKey),
+    look: reply.look,
     rows: [
       ['Job', employer < 0 ? 'Out of work' : `Works at ${shopName(employer)}`],
       ['Pay', employer < 0 ? 'None' : `${formatCents(reply.wage)} a month`],
