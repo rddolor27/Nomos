@@ -6,7 +6,7 @@ Needs M1's bet cards, M4's outcome audit and M6.3's links.
 
 - **Builds:**
   - the launch kit: playable with no signup, a 1200×600 preview card per scenario drawn in Skin C with blobs and alt text, a share text that carries a bet, and translation-ready text files (R2, R3);
-  - the "What this toy leaves out" page, live at launch, explaining why every agent shares one blob body and a random look that no sim rule reads (R2, R3, R8, R9), and naming the class colours, culture conflict and punishment spectacles that games like Norland use and Nomos excludes (R6);
+  - the "What this toy leaves out" page, live at launch, explaining why every agent shares one blob body and a random look that no sim rule reads (R2, R3, R8, R9), listing the economy's slow searchers, a random share of people who visit fewer firms while out of work, drawn at birth, never inherited and never shown (M2.3 Ruling 3), and naming the class colours, culture conflict and punishment spectacles that games like Norland use and Nomos excludes (R6);
   - the page's culture section: cultures are fictional, learned, preference-only and never drawn, real cultures are far richer, housing ignores culture, and festival and taste spending never crowds out food (Atkin; Banerjee and Duflo); it names what Nomos leaves out on purpose (real cultures, discrimination by law as in Victoria 3, xenophobia and culture conflict as in Norland), states the outcome-audit result in words, and links the illusory-correlation and generic-language studies (R8);
   - the custom catalogue and a sample of generated names reviewed by sensitivity readers or the diverse panel before launch (R8);
   - ODD+D with purpose and patterns first, a TRACE notebook, and a CoMSES submission (R2);
