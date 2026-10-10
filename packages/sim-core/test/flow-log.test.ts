@@ -51,6 +51,16 @@ function expectBalanced(was: Row, now: Row, label: string): void {
   expect(now.taxes, `${label}: taxes`).toBe(0);
 }
 
+// Every firm's headcount against the people who name it as their employer.
+function expectHeadcounts(world: World, label: string): void {
+  const counts = new Array<number>(world.firms.count[0]).fill(0);
+  for (let h = 0; h < world.agents.count[0]; h++) {
+    const employer = world.agents.employer[h];
+    if (employer >= 0) counts[employer]++;
+  }
+  expect(Array.from(world.firms.employees.subarray(0, counts.length)), `${label}: headcounts`).toEqual(counts);
+}
+
 // Runs the days, with the layoffs a scenario asks for on its days, and checks every day from day 1 against the day before.
 // Returns the rows, so a test can tell its identities were not met by zeros.
 function runBalanced(params: EconomyParams, seed: number, days: number, shocks: Readonly<Record<number, number>> = {}): Row[] {
@@ -59,6 +69,7 @@ function runBalanced(params: EconomyParams, seed: number, days: number, shocks: 
   for (let day = 0; day < days; day++) {
     economyDay(world, params, day, shocks[day] ?? 0);
     rows.push(rowOf(world));
+    expectHeadcounts(world, `seed ${seed}, day ${day}`);
     if (day > 0) expectBalanced(rows[day - 1], rows[day], `seed ${seed}, day ${day}`);
   }
   return rows;
