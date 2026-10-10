@@ -2,7 +2,10 @@ import { expect, test, type Locator, type Page } from 'playwright/test';
 import { WEB } from './web.ts';
 
 test.skip(({ browserName }) => browserName !== 'chromium', 'the map view is plain DOM over the renderer, so one engine proves it');
-test.use({ baseURL: WEB });
+// Paused from the start, as under reduced motion, with the map's crowd standing, so the page draws only when the camera
+// moves. A running town or a walking crowd redraws every frame, which SwiftShader's software GL makes slow enough under
+// parallel workers to hold a check's reads past its 5 s.
+test.use({ baseURL: WEB, reducedMotion: 'reduce' });
 
 // The map's world comes from the seed alone, and the phone tier keeps the town light, so it never slows the map.
 const TOWN = '/?seed=42&tier=phone';
