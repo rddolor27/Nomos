@@ -19,7 +19,7 @@ export interface GoToGroup {
   places: { id: number; name: string }[];
 }
 
-// A settlement opens at the ladder step nearest 64 CSS px a cell, close enough to follow its crowd (owner, 9 October
+// A settlement opens at the ladder step nearest 64 CSS px a cell, close enough to follow its streets (owner, 9 October
 // 2026).
 const CLOSE_CSS_PX = 64;
 // A tap reaches about 1.5 cells, or 12 CSS px where cells are smaller than 8 CSS px.

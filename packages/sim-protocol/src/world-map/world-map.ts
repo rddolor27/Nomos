@@ -120,7 +120,6 @@ export type MapWorkerMessage = {
   type: 'world';
   map: WorldMap;
   names: string[];
-  crowd: MapCrowd;
   stageMs: Record<string, number>;
 };
 

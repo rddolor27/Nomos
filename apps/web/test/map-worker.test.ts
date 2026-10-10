@@ -1,6 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
 import { layoutBuffers, placeBuffers, type PlaceError, type PlaceReply } from '@nomos/sim-protocol/place';
-import { crowdBuffers } from '@nomos/sim-protocol/world-map';
 import { buildPlace, worldFingerprint } from '@nomos/worldgen';
 import { answerGenerate, answerPlace, answerTown } from '../src/map/generate.ts';
 import { TOWN } from '../src/map/town.ts';
@@ -13,14 +12,12 @@ describe('the map worker', { timeout: 60_000 }, () => {
     expect(worldFingerprint(reply.map)).toBe(0x4a765ce2);
     expect(reply.names).toHaveLength(reply.map.countries.capital.length + reply.map.settlements.cell.length);
     expect(reply.names.slice(0, 2)).toEqual(['country-1', 'country-2']);
-    expect(reply.crowd.hue.length).toBeGreaterThan(0);
     expect(Object.keys(reply.stageMs)).toEqual([
-      'shape', 'rain', 'drain', 'climate', 'biomes', 'settle', 'countries', 'regions', 'farm', 'roads', 'lanes', 'features', 'names', 'crowd', 'contexts',
+      'shape', 'rain', 'drain', 'climate', 'biomes', 'settle', 'countries', 'regions', 'farm', 'roads', 'lanes', 'features', 'names', 'contexts',
     ]);
     expect(Object.values(reply.stageMs).every((ms) => ms === 2)).toBe(true);
     expect(new Set(transfer).size).toBe(transfer.length);
     const moved = structuredClone(reply, { transfer });
-    expect(crowdBuffers(reply.crowd).every((b) => b.byteLength === 0)).toBe(true);
     expect(worldFingerprint(moved.map)).toBe(0x4a765ce2);
   });
 

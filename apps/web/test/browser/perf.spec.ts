@@ -12,7 +12,7 @@ const MAP_FRAME_MS = 2;
 const FRAMES = 120;
 // The map's world comes from the seed alone, and the town pauses under the map and then draws nothing, so the town's
 // tier changes no timed frame. The phone tier keeps the town's play before the click from holding SwiftShader's main
-// thread; reduced motion would pause it too, but would also stop the crowd the Region frames move.
+// thread; reduced motion would pause it too.
 const TOWN = '/?seed=42&tier=phone';
 // Seed 14's first capital holds 526,831 people, so its street crowd fills the 3,000 cap; the phone tier would draw 600.
 const CROWDED = '/?seed=14&tier=phone-plus';
@@ -137,14 +137,12 @@ test('pans the Country and Region views within 2 ms a frame', async ({ page, bro
   const country = summarise(await timePan(page));
   await zoomOnCapital(page);
   const region = summarise(await timePan(page));
-  const crowd = await page.evaluate(() => ({ dots: window.__map?.dots ?? 0, drawn: window.__map?.crowdDrawn }));
-  expect(crowd.drawn, 'the crowd, drawn in the Region frames').toBe(true);
   const drawn = await page.evaluate(drawnWith);
   if (!drawn) throw new Error('the map drew in Canvas2D, not WebGL2');
 
   const notes = [
     { type: 'Country view', description: inMs(country) },
-    { type: 'Region view', description: `${inMs(region)}, with ${crowd.dots} crowd dots walking` },
+    { type: 'Region view', description: inMs(region) },
     { type: 'canvas', description: `${drawn.width} x ${drawn.height} device px at DPR 1; desktop CPU, unthrottled` },
     { type: 'browser', description: `Chromium ${browser.version()} on ${drawn.renderer}` },
     {

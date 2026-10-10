@@ -5,7 +5,6 @@ import {
   createMapRenderer,
   fitMapCamera,
   loadAtlasPage,
-  mapViewFor,
   panMapBy,
   zoomMapAt,
   type AtlasPage,
@@ -16,7 +15,6 @@ import {
 import type { PlaceError, PlaceReply, PlaceRequest } from '@nomos/sim-protocol/place';
 import type { MapAppMessage, MapWorkerMessage, WorldMap } from '@nomos/sim-protocol/world-map';
 import type { App } from '../app/app.ts';
-import { crowdAt } from './crowd-motion.ts';
 import { cameraOn, goToGroups, mountGoTo, placeInFocus, placeInfo, placeUnder } from './goto.ts';
 import { mountLabels, type Labels } from './labels.ts';
 import { legendRows, mountLegend } from './legend.ts';
@@ -28,11 +26,8 @@ import { OverflowMenu, addToolbarStyles, group, iconButton, zoomGroup } from '..
 interface MapHook {
   open: boolean;
   view: MapView;
-  // The last frame's main-thread time: moving the crowd, renderer.draw and labels.update.
+  // The last frame's main-thread time: renderer.draw and labels.update.
   frameMs: number;
-  dots: number;
-  // Whether the last frame drew the crowd, which only the Region view does.
-  crowdDrawn: boolean;
   // The last frame's camera, and the world, so a test can find a place on screen.
   camera: MapCamera | null;
   map: WorldMap | null;
@@ -53,7 +48,6 @@ interface Parts {
   zoomIn: HTMLButtonElement;
   zoomOut: HTMLButtonElement;
   flat: HTMLButtonElement;
-  pauseDots: HTMLButtonElement;
   goTo: HTMLSelectElement;
   enter: HTMLButtonElement;
   status: HTMLElement;
@@ -81,19 +75,11 @@ interface MapPanel {
   readonly town: readonly HTMLElement[];
   readonly hook: MapHook;
   readonly onFrame: FrameRequestCallback;
-  readonly reducedMotion: MediaQueryList;
   canvas: HTMLCanvasElement;
   renderer: MapRenderer | null;
   returnFocus: HTMLElement | null;
   resumeTown: boolean;
   world: MapWorkerMessage | null;
-  // Each dot's place, x then y in cells, which crowdAt rewrites in place while the crowd walks.
-  xy: Float32Array;
-  // Pause dots stops the crowd's clock: the time it has stood is taken off the frame time, so it walks on from where it
-  // stood.
-  dotsPaused: boolean;
-  pausedAtMs: number;
-  stoodMs: number;
   making: boolean;
   failure: string;
   page: AtlasPage | null;
@@ -192,7 +178,6 @@ function buildParts(doc: Document): Parts {
     zoomIn: make(doc, 'button', { type: 'button', class: 'btn', 'aria-label': 'Zoom in' }, '+'),
     zoomOut: make(doc, 'button', { type: 'button', class: 'btn', 'aria-label': 'Zoom out' }, '\u{2212}'),
     flat: make(doc, 'button', { type: 'button', class: 'btn', 'aria-pressed': 'false' }, 'Countries'),
-    pauseDots: make(doc, 'button', { type: 'button', class: 'btn', 'aria-pressed': 'false' }, 'Pause dots'),
     goTo: make(doc, 'select', { 'aria-label': 'Go to a settlement', disabled: '' }),
     enter: make(doc, 'button', { type: 'button', class: 'btn btn-primary', hidden: '' }, 'Enter'),
     status: make(doc, 'p', { id: 'map-status', role: 'status' }),
@@ -202,8 +187,8 @@ function buildParts(doc: Document): Parts {
     info: make(doc, 'div', { class: 'ui-info' }),
   };
   parts.goTo.append(make(doc, 'option', { value: '', disabled: '', hidden: '', selected: '' }, 'Go to…'));
-  const { close, fit, zoomIn, zoomOut, flat, pauseDots, goTo, enter, status, legend } = parts;
-  const more = new OverflowMenu(doc, 'map-more', flat, pauseDots);
+  const { close, fit, zoomIn, zoomOut, flat, goTo, enter, status, legend } = parts;
+  const more = new OverflowMenu(doc, 'map-more', flat);
   parts.bar.append(close, zoomGroup(doc, zoomOut, zoomIn, fit), goTo, more.root);
   parts.info.append(enter, group(doc, 'ui-panel', status, legend));
   parts.section.append(parts.keys, parts.bar, parts.canvas, parts.labels, parts.info);
@@ -218,21 +203,16 @@ function createPanel(app: App): MapPanel {
     app,
     parts,
     town,
-    hook: { open: false, view: 'country', frameMs: 0, dots: 0, crowdDrawn: false, camera: null, map: null },
-    onFrame: (nowMs) => {
+    hook: { open: false, view: 'country', frameMs: 0, camera: null, map: null },
+    onFrame: () => {
       panel.frameAsked = false;
-      drawNow(panel, nowMs);
+      drawNow(panel);
     },
-    reducedMotion: matchMedia('(prefers-reduced-motion: reduce)'),
     canvas: parts.canvas,
     renderer: null,
     returnFocus: null,
     resumeTown: false,
     world: null,
-    xy: new Float32Array(0),
-    dotsPaused: false,
-    pausedAtMs: 0,
-    stoodMs: 0,
     making: false,
     failure: '',
     page: null,
@@ -279,13 +259,11 @@ function bindPanel(panel: MapPanel): void {
   parts.zoomIn.addEventListener('click', () => zoomAtCentre(parts.section, target, 1));
   parts.zoomOut.addEventListener('click', () => zoomAtCentre(parts.section, target, -1));
   parts.flat.addEventListener('click', () => toggleFlat(panel));
-  parts.pauseDots.addEventListener('click', () => setDotsPaused(panel, !panel.dotsPaused));
   parts.enter.addEventListener('click', () => enter(panel, panel.focus, parts.enter));
   bindGoTo(panel, parts.goTo);
   // A drag captures the pointer on the section, which would take a bar button's click, and a press on the bar or the
   // info box is no tap on the map, so both keep their pointers.
   for (const part of [parts.bar, parts.info]) part.addEventListener('pointerdown', (event) => event.stopPropagation());
-  panel.reducedMotion.addEventListener('change', () => onMotionPreference(panel));
   bindMapInput(parts.section, target);
   observeDeviceSize(parts.section, (width, height, dpr) => onSize(panel, width, height, dpr));
 }
@@ -337,7 +315,7 @@ function openRenderer(panel: MapPanel): MapRenderer {
   const renderer = createMapRenderer(panel.canvas, { backend });
   renderer.init();
   if (panel.deviceWidth > 0 && panel.deviceHeight > 0) renderer.resize(panel.deviceWidth, panel.deviceHeight, panel.dpr);
-  if (panel.world) setWorld(renderer, panel.world, panel.xy);
+  if (panel.world) renderer.setWorld(panel.world.map);
   if (panel.page) renderer.setAtlas(panel.page);
   renderer.setFlat(panel.flat);
   return renderer;
@@ -425,8 +403,6 @@ function placeHost(panel: MapPanel): PlaceHost {
     backend: panel.app.renderer.backend === 'canvas2d' ? 'canvas2d' : 'auto',
     phone: panel.app.tier === 'phone',
     request: (place, onReply, onFail) => requestPlace(panel, place, onReply, onFail),
-    paused: () => panel.dotsPaused,
-    setPaused: (paused) => setDotsPaused(panel, paused),
     left: () => {
       panel.placeOpen = false;
       requestDraw(panel);
@@ -452,23 +428,13 @@ function enter(panel: MapPanel, place: number, returnFocus: HTMLElement): void {
     });
 }
 
-// setCrowd sizes the renderer's buffers, so it runs once per renderer, never per frame.
-function setWorld(renderer: MapRenderer, world: MapWorkerMessage, xy: Float32Array): void {
-  renderer.setWorld(world.map);
-  renderer.setCrowd(world.crowd.hue, xy);
-}
-
-// The crowd starts at its time-0 places, where it stays under reduced motion. A world that arrives after a closing waits
-// for the next opening, where show mounts it.
+// A world that arrives after a closing waits for the next opening, where show mounts it.
 function adoptWorld(panel: MapPanel, world: MapWorkerMessage): void {
   panel.world = world;
-  panel.xy = new Float32Array(2 * world.crowd.hue.length);
-  crowdAt(world.crowd, 0, panel.xy);
-  panel.hook.dots = world.crowd.hue.length;
   panel.hook.map = world.map;
   showStatus(panel);
   if (!panel.renderer) return;
-  setWorld(panel.renderer, world, panel.xy);
+  panel.renderer.setWorld(world.map);
   mountWorld(panel, world);
   requestDraw(panel);
 }
@@ -490,7 +456,7 @@ function tapAt(panel: MapPanel, deviceX: number, deviceY: number): void {
   else if (place >= 0) goTo(panel, place);
 }
 
-// The jump is instant: the view centres on the place at the close step, where its crowd walks. The Go to list shows its
+// The jump is instant: the view centres on the place at the close step. The Go to list shows its
 // placeholder again after every jump, so it never names a place the view has left.
 function goTo(panel: MapPanel, place: number): void {
   panel.parts.goTo.value = '';
@@ -557,22 +523,6 @@ function toggleFlat(panel: MapPanel): void {
   requestDraw(panel);
 }
 
-// Read live: switched on, the dots go back to their time-0 places; switched off, they walk on.
-function onMotionPreference(panel: MapPanel): void {
-  if (panel.reducedMotion.matches && panel.world) crowdAt(panel.world.crowd, 0, panel.xy);
-  requestDraw(panel);
-}
-
-// WCAG 2.2.2: anything that moves for over five seconds can be paused (agent ruling). The town view's walkers share it.
-function setDotsPaused(panel: MapPanel, paused: boolean): void {
-  if (paused === panel.dotsPaused) return;
-  panel.dotsPaused = paused;
-  panel.parts.pauseDots.setAttribute('aria-pressed', String(paused));
-  if (paused) panel.pausedAtMs = performance.now();
-  else panel.stoodMs += performance.now() - panel.pausedAtMs;
-  requestDraw(panel);
-}
-
 // Drawn at once, inside the observer, so a resized canvas never shows a blank frame before the next one.
 function onSize(panel: MapPanel, width: number, height: number, dpr: number): void {
   panel.deviceWidth = width;
@@ -581,21 +531,14 @@ function onSize(panel: MapPanel, width: number, height: number, dpr: number): vo
   if (!panel.renderer || width === 0 || height === 0) return;
   panel.renderer.resize(width, height, dpr);
   if (!panel.fitted) fit(panel);
-  drawNow(panel, performance.now());
+  drawNow(panel);
 }
 
-// The map draws on demand: a camera change, a resize, a toggle or an arrival asks for one frame. Only a walking crowd
-// asks for the next frame itself.
+// The map draws on demand: a camera change, a resize, a toggle or an arrival asks for one frame.
 function requestDraw(panel: MapPanel): void {
   if (panel.frameAsked) return;
   panel.frameAsked = true;
   requestAnimationFrame(panel.onFrame);
-}
-
-// The crowd walks only where it is drawn, in the Region view, which mapViewFor predicts as the renderer will choose it.
-function walking(panel: MapPanel, renderer: MapRenderer): boolean {
-  if (panel.dotsPaused || panel.reducedMotion.matches) return false;
-  return mapViewFor(renderer.view, panel.camera.cellPx, panel.dpr) === 'region';
 }
 
 // The Enter button names the place in focus, found only when the camera or the view has changed since.
@@ -613,18 +556,14 @@ function updateFocus(panel: MapPanel, world: MapWorkerMessage, view: MapView): v
   if (focus >= 0) enter.textContent = `Enter ${placeInfo(world.map, world.names, focus).name}`;
 }
 
-function drawNow(panel: MapPanel, nowMs: number): void {
+function drawNow(panel: MapPanel): void {
   const { renderer, labels, world, camera, dpr } = panel;
   if (!renderer || !labels || !world || panel.placeOpen || panel.deviceWidth === 0 || panel.deviceHeight === 0) return;
   const startMs = performance.now();
-  const walks = walking(panel, renderer);
-  if (walks) crowdAt(world.crowd, nowMs - panel.stoodMs, panel.xy);
   renderer.draw(camera);
   labels.update(camera, renderer.view, panel.deviceWidth / dpr, panel.deviceHeight / dpr, dpr);
   panel.hook.frameMs = performance.now() - startMs;
   panel.hook.view = renderer.view;
-  panel.hook.crowdDrawn = renderer.view === 'region';
   panel.hook.camera = camera;
   updateFocus(panel, world, renderer.view);
-  if (walks) requestDraw(panel);
 }

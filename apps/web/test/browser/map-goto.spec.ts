@@ -2,9 +2,9 @@ import { expect, test, type Locator, type Page } from 'playwright/test';
 import { WEB } from './web.ts';
 
 test.skip(({ browserName }) => browserName !== 'chromium', 'the map view is plain DOM over the renderer, so one engine proves it');
-// Paused from the start, as under reduced motion, with the map's crowd standing, so the page draws only when the camera
-// moves. A running town or a walking crowd redraws every frame, which SwiftShader's software GL makes slow enough under
-// parallel workers to hold a check's reads past its 5 s.
+// Paused from the start, as under reduced motion, so the page draws only when the camera moves. A running
+// town redraws every frame, which SwiftShader's software GL makes slow enough under parallel workers to hold a check's
+// reads past its 5 s.
 test.use({ baseURL: WEB, reducedMotion: 'reduce' });
 
 // The map's world comes from the seed alone, and the phone tier keeps the town light, so it never slows the map.
@@ -109,4 +109,17 @@ test('jumps to the settlement clicked on the map', async ({ page }) => {
   if (!box) throw new Error('no settlement is labelled in the Country view');
   await page.mouse.click(box.x + box.width / 2, box.y - 4);
   await expectCentred(page, name);
+});
+
+test("zooms with the bar's buttons into the Region view and back out", async ({ page }) => {
+  await openMap(page);
+  const zoomIn = page.getByRole('button', { name: 'Zoom in' });
+  const zoomOut = page.getByRole('button', { name: 'Zoom out' });
+  await zoomIn.click();
+  await zoomIn.click();
+  await expect.poll(() => view(page)).toBe('region');
+  // Back at 16 px a cell the Region view holds, by its 15% hysteresis, so the Country view takes a second step.
+  await zoomOut.click();
+  await zoomOut.click();
+  await expect.poll(() => view(page)).toBe('country');
 });

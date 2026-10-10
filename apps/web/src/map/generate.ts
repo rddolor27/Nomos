@@ -1,6 +1,6 @@
 import type { PlaceError, PlaceReply, PlaceRequest, TownError, TownReply } from '@nomos/sim-protocol/place';
-import { crowdBuffers, worldMapBuffers, type MapAppMessage, type MapWorkerMessage } from '@nomos/sim-protocol/world-map';
-import { crowdOf, generateWorld, placeContexts, placeNames, type PlaceContext } from '@nomos/worldgen';
+import { worldMapBuffers, type MapAppMessage, type MapWorkerMessage } from '@nomos/sim-protocol/world-map';
+import { generateWorld, placeContexts, placeNames, type PlaceContext } from '@nomos/worldgen';
 
 export interface MapAnswer {
   reply: MapWorkerMessage;
@@ -19,7 +19,7 @@ export interface TownAnswer {
   transfer: ArrayBuffer[];
 }
 
-// The map worker's first job: a world, its names and its crowd, every buffer listed, so the page never copies a column.
+// The map worker's first job: a world and its names, every buffer listed, so the page never copies a column.
 export function answerGenerate(msg: MapAppMessage, now: () => number): MapAnswer {
   const stageMs: Record<string, number> = {};
   let last = now();
@@ -31,12 +31,10 @@ export function answerGenerate(msg: MapAppMessage, now: () => number): MapAnswer
   const map = generateWorld(msg.seed, msg.size, { lap });
   const names = placeNames(map);
   lap('names');
-  const crowd = crowdOf(map);
-  lap('crowd');
   const contexts = placeContexts(map);
   lap('contexts');
-  const transfer = [...worldMapBuffers(map), ...crowdBuffers(crowd)];
-  return { reply: { type: 'world', map, names, crowd, stageMs }, transfer, contexts };
+  const transfer = [...worldMapBuffers(map)];
+  return { reply: { type: 'world', map, names, stageMs }, transfer, contexts };
 }
 
 // Its second: place p of the world the request was made in, or a place-error for p, never a throw, so the page can match

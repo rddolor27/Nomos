@@ -48,9 +48,6 @@ export interface PlaceHost {
   readonly phone: boolean;
   // Asks the map worker for a place; one of the two callbacks runs, in time.
   request(place: number, onReply: (reply: PlaceReply) => void, onFail: (why: string) => void): void;
-  // Pause dots, shared by the map's crowd and the town's walkers.
-  paused(): boolean;
-  setPaused(paused: boolean): void;
   // Runs once the town view has hidden, before focus goes back.
   left(): void;
 }
@@ -103,6 +100,8 @@ interface PlaceView {
   lastWalkMs: number;
   frameAsked: boolean;
   returnFocus: HTMLElement | null;
+  // Pause people, which stays set from one entry to the next.
+  paused: boolean;
 }
 
 // The town view covers the map, with the map's bar, over the ground the pass fills a place with.
@@ -170,7 +169,6 @@ function buildParts(): Parts {
     fit: make('button', { type: 'button', class: 'btn' }, 'Fit'),
     zoomIn: make('button', { type: 'button', class: 'btn', 'aria-label': 'Zoom in' }, '+'),
     zoomOut: make('button', { type: 'button', class: 'btn', 'aria-label': 'Zoom out' }, '\u{2212}'),
-    // The map's Pause dots, by the name its walkers go by here; both share one state.
     pause: make('button', { type: 'button', class: 'btn', 'aria-pressed': 'false' }, 'Pause people'),
     title: make('h2', { id: 'place-title' }),
     about: make('p', {}),
@@ -218,6 +216,7 @@ function createView(host: PlaceHost): PlaceView {
     lastWalkMs: -1,
     frameAsked: false,
     returnFocus: null,
+    paused: false,
   };
   bindView(view);
   window.__place = view.hook;
@@ -250,12 +249,12 @@ function bindView(view: PlaceView): void {
 function show(view: PlaceView, info: PlaceInfo, returnFocus: HTMLElement): void {
   Object.assign(view, { info, returnFocus, layout: null, walkers: null, failure: '', fitted: false, walkedMs: 0, lastWalkMs: -1 });
   Object.assign(view.hook, { open: true, place: info.place, ready: false, walkers: 0 });
-  const { parts, host } = view;
+  const { parts } = view;
   parts.title.textContent = info.name;
   parts.about.textContent = aboutText(info);
   parts.picture.setAttribute('aria-label', `${info.name}, being built`);
-  parts.pause.setAttribute('aria-pressed', String(host.paused()));
-  host.map.inert = true;
+  parts.pause.setAttribute('aria-pressed', String(view.paused));
+  view.host.map.inert = true;
   parts.section.hidden = false;
   view.renderer = openRenderer(view);
   loadPage(view);
@@ -444,9 +443,8 @@ function fit(view: PlaceView): void {
 }
 
 function togglePause(view: PlaceView): void {
-  const paused = !view.host.paused();
-  view.host.setPaused(paused);
-  view.parts.pause.setAttribute('aria-pressed', String(paused));
+  view.paused = !view.paused;
+  view.parts.pause.setAttribute('aria-pressed', String(view.paused));
   requestDraw(view);
 }
 
@@ -476,7 +474,7 @@ function requestDraw(view: PlaceView): void {
 }
 
 function walking(view: PlaceView): boolean {
-  return view.walkers !== null && view.walkers.count > 0 && !view.host.paused() && !view.reducedMotion.matches;
+  return view.walkers !== null && view.walkers.count > 0 && !view.paused && !view.reducedMotion.matches;
 }
 
 // The walkers' clock runs only on walking frames, so a pause or a hidden tab holds them where they stand. It counts whole

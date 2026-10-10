@@ -260,7 +260,7 @@ test.describe('in one engine', () => {
     await expect(page.locator('#place-status')).toHaveText(new RegExp(`^${name}, a wonder in .+: [\\d,]+ (person is|people are) out`));
   });
 
-  test("holds the walkers still under Pause people, which shares the map's Pause dots", async ({ page }) => {
+  test('holds the walkers still under Pause people', async ({ page }) => {
     await openMap(page);
     const capital = await goToCapital(page);
     await page.getByRole('button', { name: `Enter ${capital}` }).click();
@@ -271,8 +271,6 @@ test.describe('in one engine', () => {
     const held = await walker(page);
     await page.waitForTimeout(1000);
     expect(await walker(page)).toEqual(held);
-    await page.keyboard.press('Escape');
-    await expect(page.locator('#map').getByRole('button', { name: 'Pause dots' })).toHaveAttribute('aria-pressed', 'true');
   });
 
   test('keeps the walkers where place.py put them under reduced motion', async ({ page }) => {
