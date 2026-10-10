@@ -1,4 +1,4 @@
-// Free of Node imports, so the same file runs in Node, Bun and, bundled, in each browser.
+// Free of Node imports, so the same file runs in Node and, bundled, in the browser.
 import { below, draw, draw1, mix } from '../../src/random/draw.ts';
 import { fade, fbm, value } from '../../src/random/noise.ts';
 import { step } from '../../src/step/step.ts';

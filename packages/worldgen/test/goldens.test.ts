@@ -9,7 +9,6 @@ function readFixture(name: string): Goldens {
 const goldens = readFixture('goldens-v1.json');
 const frozen = readFixture('frozen-v1.json');
 
-// A sample on every run. scripts/engines.ts runs all 200 worlds in Node and Bun, and the browser spec in three browsers.
 describe('the port against the Python goldens and the frozen TypeScript stages', { timeout: 120_000 }, () => {
   it('matches every stage ported so far on the first 10 standard and 2 large worlds', () => {
     const report = checkStages(goldens, frozen, { standard: 10, large: 2 });

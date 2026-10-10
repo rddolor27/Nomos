@@ -1,4 +1,4 @@
-// Free of Node imports, so the same file runs in Node, Bun and, bundled, in each browser. goldens.py's stages, line
+// Free of Node imports, so the same file runs in Node and, bundled, in the browser. goldens.py's stages, line
 // for line: each block runs a stage the way goldens.py opens world.generate up, and folds what it made. Each port task
 // appends its block before the return.
 import { WORLD_SIZES, type WorldSize } from '@nomos/sim-protocol/world-map';

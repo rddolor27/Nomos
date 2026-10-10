@@ -1,4 +1,4 @@
-// Free of Node imports, so the same file runs in Node, Bun and, bundled, in each browser.
+// Free of Node imports, so the same file runs in Node and, bundled, in the browser.
 import type { WorldSize } from '@nomos/sim-protocol/world-map';
 import { stagePrints } from './stages.ts';
 

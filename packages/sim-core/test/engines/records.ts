@@ -1,4 +1,4 @@
-// Free of Node imports, so the engine harness replays spawns from the same records in Node, Bun and each browser.
+// Free of Node imports, so the engine harness replays spawns from the same records in Node and the browser.
 import { SUPPLIERS } from '../../src/agents/store.ts';
 import { MAX_HOUSEHOLD } from '../../src/households/store.ts';
 import { below, draw } from '../../src/random/draw.ts';
