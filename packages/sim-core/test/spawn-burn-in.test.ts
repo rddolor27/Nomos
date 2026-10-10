@@ -14,7 +14,7 @@ import { standInGround } from '../src/world/ground.ts';
 import { createWorld, layoutWorld, type World } from '../src/world/world.ts';
 
 const LONG = process.env.ECONOMY_LONG === '1';
-const SEEDS = Array.from({ length: 20 }, (_, i) => i + 1);
+const SEEDS = Array.from({ length: 40 }, (_, i) => i + 1);
 const RUN_DAYS = 20_000;
 // R*, the record the spawned arm starts from: seed 42's hand-built city after 471 months, deep in its stationary state
 // (M2.2 Ruling 12).
@@ -31,13 +31,11 @@ interface Run {
   readonly unemployment: Float64Array;
 }
 
-// An arm's seeds averaged day by day, MSER-5's truncation of each average in days, and of each seed's own price.
+// An arm's seeds averaged day by day, for the block means, and each seed's own burn-in in days.
 interface Arm {
   readonly price: Float64Array;
   readonly unemployment: Float64Array;
-  readonly priceDays: number;
-  readonly unemploymentDays: number;
-  readonly seedPriceDays: readonly number[];
+  readonly burnInDays: readonly number[];
 }
 
 function handBuiltWorld(seed: number): World {
@@ -75,31 +73,36 @@ function runDays(world: World): Run {
   return { price, unemployment };
 }
 
+// A truncation that is not found counts as the whole run.
+function truncationDays(series: Float64Array): number {
+  const days = mser5(series, RUN_DAYS);
+  return days === NOT_FOUND ? RUN_DAYS : days;
+}
+
+// M2.1 Ruling 9, per seed: the larger of the price and unemployment truncations.
+function seedBurnInDays(run: Run): number {
+  return Math.max(truncationDays(run.price), truncationDays(run.unemployment));
+}
+
+function median(values: readonly number[]): number {
+  const sorted = Float64Array.from(values).sort();
+  const middle = Math.floor(sorted.length / 2);
+  return sorted.length % 2 === 0 ? (sorted[middle - 1] + sorted[middle]) / 2 : sorted[middle];
+}
+
 function measureArm(startWorld: (seed: number) => World): Arm {
   const price = new Float64Array(RUN_DAYS);
   const unemployment = new Float64Array(RUN_DAYS);
-  const seedPriceDays: number[] = [];
+  const burnInDays: number[] = [];
   for (const seed of SEEDS) {
     const run = runDays(startWorld(seed));
-    seedPriceDays.push(mser5(run.price, RUN_DAYS));
+    burnInDays.push(seedBurnInDays(run));
     for (let day = 0; day < RUN_DAYS; day++) {
       price[day] += run.price[day] / SEEDS.length;
       unemployment[day] += run.unemployment[day] / SEEDS.length;
     }
   }
-  return {
-    price,
-    unemployment,
-    priceDays: mser5(price, RUN_DAYS),
-    unemploymentDays: mser5(unemployment, RUN_DAYS),
-    seedPriceDays,
-  };
-}
-
-// M2.1 Ruling 9: the larger truncation of the two mean series, found only if both are.
-function burnInDays(arm: Arm): number {
-  if (arm.priceDays === NOT_FOUND || arm.unemploymentDays === NOT_FOUND) return NOT_FOUND;
-  return Math.max(arm.priceDays, arm.unemploymentDays);
+  return { price, unemployment, burnInDays };
 }
 
 function blockMeans(series: Float64Array): number[] {
@@ -128,22 +131,22 @@ function blockRows(hand: Arm, spawn: Arm): string[] {
 function report(source: Float64Array, hand: Arm, spawn: Arm): string {
   return [
     `R* (${LEDGER_FIELDS} ledger fields): ${source.join(' ')}`,
-    `burn-in days, hand-built against spawned: ${burnInDays(hand)} against ${burnInDays(spawn)}`,
-    `  mean price: ${hand.priceDays} against ${spawn.priceDays}`,
-    `  unemployment share: ${hand.unemploymentDays} against ${spawn.unemploymentDays}`,
-    `per-seed price truncation, seeds 1-${SEEDS.length}, -1 for none found`,
-    `  hand-built: ${hand.seedPriceDays.join(' ')}`,
-    `  spawned:    ${spawn.seedPriceDays.join(' ')}`,
+    `median burn-in days, seeds 1-${SEEDS.length}: hand-built ${median(hand.burnInDays)}, spawned ${median(spawn.burnInDays)}`,
+    `per-seed burn-in days, ${RUN_DAYS} for a truncation not found`,
+    `  hand-built: ${hand.burnInDays.join(' ')}`,
+    `  spawned:    ${spawn.burnInDays.join(' ')}`,
     `${BLOCK_DAYS}-day block means of the seeds' mean, hand-built / spawned`,
     ...blockRows(hand, spawn),
   ].join('\n');
 }
 
 describe.runIf(LONG)('the spawn burn-in comparison (ECONOMY_LONG=1)', () => {
-  // M2.2 Ruling 12: the spawned city burns in no slower than M2.1's hand-built start. On a fail, report the numbers; the
-  // seeds are never re-rolled and the spreads never retuned without a plan edit. Vitest hides a passing test's log when
-  // an AI agent runs it, so add --silent=false to read the numbers.
-  it('burns a spawned city in no slower than the hand-built start', { timeout: 900_000 }, () => {
+  // M2.2 Ruling 12, steadied by the coordinator on 10 October 2026: the spawned city burns in no slower than M2.1's
+  // hand-built start when the median of 40 paired seeds' burn-ins is no longer. One burn-in of the 20-seed mean series
+  // swung from 4,430 to 8,635 days with the seed set. On a fail, report the numbers; the seeds are never re-rolled and
+  // the spreads never retuned without a plan edit. Vitest hides a passing test's log when an AI agent runs it, so add
+  // --silent=false to read the numbers.
+  it('burns a spawned city in no slower than the hand-built start', { timeout: 1_800_000 }, () => {
     const source = sourceRecord();
     const homes = createStandInHomes(standInGround(), HOME_COUNT);
     const hand = measureArm(handBuiltWorld);
@@ -151,8 +154,8 @@ describe.runIf(LONG)('the spawn burn-in comparison (ECONOMY_LONG=1)', () => {
 
     console.log(report(source, hand, spawn));
 
-    expect(burnInDays(hand), 'the hand-built burn-in is found').not.toBe(NOT_FOUND);
-    expect(burnInDays(spawn), 'the spawned burn-in is found').not.toBe(NOT_FOUND);
-    expect(burnInDays(spawn), 'the spawned burn-in is no longer').toBeLessThanOrEqual(burnInDays(hand));
+    expect(median(spawn.burnInDays), 'the median spawned burn-in is no longer').toBeLessThanOrEqual(
+      median(hand.burnInDays),
+    );
   });
 });
