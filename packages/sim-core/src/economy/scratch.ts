@@ -1,7 +1,8 @@
 import { take, type Arena } from '../memory/arena.ts';
 import { STATS } from './stats.ts';
 
-// Working arrays the economy day reuses, outside the state hash. Each has one owner, named here.
+// Working arrays the economy day reuses, outside the state hash. Each has one owner, named here. No system holds order,
+// weights or shares between days, so spawn/ borrows all three before the first day.
 export interface EconomyScratch {
   // Refilled by keyedShuffle just before each use.
   readonly order: Int32Array;
