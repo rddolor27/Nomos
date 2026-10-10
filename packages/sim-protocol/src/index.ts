@@ -3,6 +3,7 @@ export * from './snapshot/visual.ts';
 export * from './snapshot/jobs.ts';
 export * from './map/map.ts';
 export * from './shared/columns.ts';
+export * from './shared/steering.ts';
 export * from './messages/messages.ts';
 export * from './messages/lifecycle.ts';
 export * from './snapshot/snapshot.ts';
