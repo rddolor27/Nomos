@@ -1,6 +1,7 @@
 // M8.1's exit sweeps, over the same seeds from 5EED0001 every run: node packages/worldgen/scripts/sweep.ts. Countries,
-// regions and road classes are checked on the first 100 seeds of each size, wonders on 1,000 standard seeds. Prints the
-// worlds made, the problems found and the major roads among the classed ones, and exits 1 on any problem.
+// regions and road classes are checked on the first 100 seeds of each size, wonders on 1,000 standard seeds and place
+// names on 1,000 seeds of each size. Prints the worlds made, the problems found and the major roads among the classed
+// ones, and exits 1 on any problem.
 import {
   BIOME_NAMES,
   ROAD_CLASS_NAMES,
@@ -12,12 +13,14 @@ import {
 import { survey } from '../src/features/survey.ts';
 import { dist2, xOf, yOf } from '../src/grid/grid.ts';
 import { generateWorld } from '../src/index.ts';
+import { placeNames } from '../src/names/place-names.ts';
+import { PLACE_WORDS } from '../src/names/words.ts';
 import { featureWorldOf } from '../test/feature-world.ts';
 import { cutOffHubs, unclassedRoads } from '../test/major-roads.ts';
 
 const FIRST_SEED = 0x5eed0001;
 const SIZES: readonly WorldSize[] = ['standard', 'large'];
-const WORLDS: Record<WorldSize, number> = { standard: 1000, large: 100 };
+const WORLDS: Record<WorldSize, number> = { standard: 1000, large: 1000 };
 const STRUCTURE_WORLDS = 100;
 
 const MIN_COUNTRIES = 3;
@@ -29,6 +32,8 @@ const COLOUR_COUNT = 5;
 // the wonder gap. So the floor is 3 (agent ruling, 9 October 2026; checkpoint 0023).
 const MIN_WONDERS = 3;
 const MAX_WONDERS = 8;
+
+const TABLE_WORDS: ReadonlySet<string> = new Set(PLACE_WORDS);
 
 const OCEAN = BIOME_NAMES.indexOf('ocean');
 const LAKE = BIOME_NAMES.indexOf('lake');
@@ -200,12 +205,27 @@ function wonderProblems(map: WorldMap): string[] {
   return [...out, ...hotspotProblems(map)];
 }
 
+// Every place has one name, a word of the table (which words.test.ts holds to the name filter), and none repeats.
+function nameProblems(map: WorldMap): string[] {
+  const names = placeNames(map);
+  const places = map.countries.capital.length + map.settlements.cell.length;
+  const out = names.length === places ? [] : [`${names.length} names for ${places} places`];
+  const seen = new Set<string>();
+  for (const name of names) {
+    if (!TABLE_WORDS.has(name.toLowerCase())) out.push(`${name} is not a table word`);
+    if (seen.has(name)) out.push(`${name} names two places`);
+    seen.add(name);
+  }
+  return out;
+}
+
 function problemsOf(map: WorldMap, size: WorldSize, index: number): string[] {
   const found =
     index < STRUCTURE_WORLDS
       ? [...countryProblems(map), ...regionProblems(map), ...unclassedRoads(map), ...cutOffHubs(map)]
       : [];
-  return size === 'standard' ? [...found, ...wonderProblems(map)] : found;
+  const named = [...found, ...nameProblems(map)];
+  return size === 'standard' ? [...named, ...wonderProblems(map)] : named;
 }
 
 function majorRoads(map: WorldMap): number {
