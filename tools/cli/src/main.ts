@@ -1,6 +1,8 @@
 import { parseArgs } from 'node:util';
 import { TIER_AGENTS, createWorld, currentTick, logFocus, stateHash, step, warmUp, type Tier } from '@nomos/sim-core';
+import { runDesign } from './design/run.ts';
 import { runEconomy } from './economy/run.ts';
+import { runTargets } from './targets/run.ts';
 
 const MAX_SEED = 0xffff_ffff;
 const MAX_INT32 = 0x7fff_ffff;
@@ -69,4 +71,6 @@ function runTicks(args: readonly string[]): void {
 
 const args = process.argv.slice(2);
 if (args[0] === 'economy') runEconomy(args.slice(1));
+else if (args[0] === 'design') await runDesign(args.slice(1));
+else if (args[0] === 'targets') runTargets(args.slice(1));
 else runTicks(args);

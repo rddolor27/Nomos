@@ -34,7 +34,7 @@ interface EconomyOptions {
   readonly seeds: number;
 }
 
-function wholeNumber(flag: string, text: string, min: number, max: number): number {
+export function wholeNumber(flag: string, text: string, min: number, max: number): number {
   const n = Number(text);
   if (!Number.isInteger(n) || n < min || n > max) {
     throw new RangeError(`--${flag} must be a whole number from ${min} to ${max}, not ${text}`);

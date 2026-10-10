@@ -1,0 +1,13 @@
+{
+  "preset": "lengnick",
+  "start": "spawn",
+  "days": 63,
+  "warmUpDays": 21,
+  "seeds": [1, 2],
+  "sizes": [1000, 3000],
+  "policeShares": [0],
+  "shocks": [
+    { "day": 0, "unemploymentPoints": 0 },
+    { "day": 30, "unemploymentPoints": 5 }
+  ]
+}
