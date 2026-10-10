@@ -48,7 +48,22 @@ export type WorkerMessage =
   | { type: 'snapshot'; tick: number; count: number; buffer: ArrayBuffer }
   | { type: 'stats'; tick: number; systemMs: Record<string, number> } // keyed by SYSTEM_NAMES plus 'snapshot'
   | { type: 'checkpoint'; tick: number; state: ArrayBuffer }
-  // agent -1: no blob within a tile. employer is the employing firm's row and wage its pay in cents a month, or -1 and 0 for
-  // someone out of work.
-  | { type: 'inspected'; tick: number; agent: number; nameKey: number; cents: number; employer: number; wage: number }
+  // agent -1: no blob within a tile, and every field after it 0, -1 or empty. employer is the employing firm's row and wage
+  // its pay in cents a month, or -1 and 0 for someone out of work. look is one of the 96 (hue look % 6, eyes
+  // floor(look / 6) % 4, pattern floor(look / 24)) and action an ACTION_* code, both as the snapshot's visual word holds
+  // them. home is the row of the household's home, or -1, and members the name keys of the other people in its household,
+  // in household order: none for someone who lives alone, and at most five.
+  | {
+      type: 'inspected';
+      tick: number;
+      agent: number;
+      nameKey: number;
+      cents: number;
+      employer: number;
+      wage: number;
+      look: number;
+      action: number;
+      home: number;
+      members: number[];
+    }
   | EconomyMessage;

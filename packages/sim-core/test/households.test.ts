@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { LENGNICK } from '../src/economy/params.ts';
 import { startEconomy } from '../src/economy/start.ts';
-import { MAX_HOUSEHOLD, NO_HOME } from '../src/households/store.ts';
+import { MAX_HOUSEHOLD, NO_HOME, NO_HOUSEHOLD, firstMemberOf, householdOf } from '../src/households/store.ts';
 import { PHONE_MEMORY_BYTES } from '../src/memory/arena.ts';
 import { checkpoint, restoreWorld, stateHash } from '../src/world/checkpoint.ts';
 import { RECORD_DAY, STAND_IN_CULTURES, committed, createWorld, layoutWorld } from '../src/world/world.ts';
@@ -65,6 +65,24 @@ describe('the household rows', () => {
     expect(size.subarray(0, LENGNICK.households).every((people) => people === 1)).toBe(true);
     expect(home.subarray(0, LENGNICK.households).every((place) => place === NO_HOME)).toBe(true);
     expect([size[LENGNICK.households], home[LENGNICK.households]]).toEqual([0, 0]);
+  });
+});
+
+describe('the household lookups', () => {
+  it('find the household of an agent, and its first member, from the sizes alone', () => {
+    const { households } = createWorld(42, 'phone');
+    households.count[0] = 3;
+    households.size.set([1, 2, MAX_HOUSEHOLD]);
+    expect([0, 1, 2, 3, 8].map((agent) => householdOf(households, agent))).toEqual([0, 1, 1, 2, 2]);
+    expect([0, 1, 2].map((household) => firstMemberOf(households, household))).toEqual([0, 1, 3]);
+  });
+
+  it('find no household past the last row, or in a world that has none', () => {
+    const { households } = createWorld(42, 'phone');
+    expect(householdOf(households, 0)).toBe(NO_HOUSEHOLD);
+    households.count[0] = 1;
+    households.size[0] = 2;
+    expect([householdOf(households, 1), householdOf(households, 2)]).toEqual([0, NO_HOUSEHOLD]);
   });
 });
 

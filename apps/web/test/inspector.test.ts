@@ -1,4 +1,5 @@
 import { personName } from '@nomos/sim-culture';
+import type { WorkerMessage } from '@nomos/sim-protocol';
 import { describe, expect, it } from 'vitest';
 import { formatCents, inspectorLine } from '../src/panels/inspector.ts';
 import { isClick } from '../src/view/camera-input.ts';
@@ -6,7 +7,7 @@ import { isClick } from '../src/view/camera-input.ts';
 const NAME_KEY = 7;
 const NAME = personName(NAME_KEY);
 // Firm row 11 pays 1,428.00 a month and the blob holds 3,100.00.
-const IN_WORK = {
+const IN_WORK: Extract<WorkerMessage, { type: 'inspected' }> = {
   type: 'inspected',
   tick: 0,
   agent: 3,
@@ -14,7 +15,11 @@ const IN_WORK = {
   cents: 310_000,
   employer: 11,
   wage: 142_800,
-} as const;
+  look: 0,
+  action: 0,
+  home: -1,
+  members: [],
+};
 
 describe('the inspector', () => {
   it('names the shop, its monthly pay and the wallet of a blob in work, counting shops from 1', () => {

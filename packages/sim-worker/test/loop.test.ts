@@ -1,4 +1,5 @@
 import {
+  ACTION_WALK,
   ECONOMY_TICKS,
   STAT_PRICE_MEAN,
   TICKS_PER_DAY,
@@ -403,12 +404,47 @@ describe('the sim loop', () => {
     // A blob past the first, holding a balance no other wallet holds, so an answer from the wrong row or wallet shows.
     const agent = 7;
     issue(cash, walletAccount(cash, agent), 1_234);
+    agents.look[agent] = 77;
+    agents.action[agent] = ACTION_WALK;
     expect(nearestAgent(agents, agents.x[agent], agents.y[agent], 4_096)).toBe(agent);
     page.handle({ type: 'inspect', x: agents.x[agent] / 256, y: agents.y[agent] / 256 });
-    // No economy has run here, so the blob has no employer and no wage.
+    // No economy has run here, so the blob has no employer and no wage, and a world that is no town has no households.
     expect(page.ofType('inspected')).toEqual([
-      { type: 'inspected', tick: 0, agent, nameKey: agents.nameKey[agent], cents: 101_234, employer: -1, wage: 0 },
+      {
+        type: 'inspected',
+        tick: 0,
+        agent,
+        nameKey: agents.nameKey[agent],
+        cents: 101_234,
+        employer: -1,
+        wage: 0,
+        look: 77,
+        action: ACTION_WALK,
+        home: -1,
+        members: [],
+      },
     ]);
+  });
+
+  it("answers a household's home and the name keys of its others, in order, and none for someone who lives alone", () => {
+    const page = fakePage({ town: true });
+    const { agents, households } = page.world();
+    // Households of 1, 3 and 2 people over agents 0 to 5, so the household of 3 holds agents 1 to 3; agent 6 is in none.
+    households.count[0] = 3;
+    households.size.set([1, 3, 2]);
+    households.home.set([5, 9, 4]);
+    // The agent the answer names, its home and the name keys of its others.
+    const answerFor = (agent: number) => {
+      page.handle({ type: 'inspect', x: agents.x[agent] / 256, y: agents.y[agent] / 256 });
+      const answers = page.ofType('inspected');
+      const { agent: named, home, members } = answers[answers.length - 1];
+      return [named, home, members];
+    };
+
+    expect(answerFor(2)).toEqual([2, 9, [agents.nameKey[1], agents.nameKey[3]]]);
+    expect(answerFor(0)).toEqual([0, 5, []]);
+    expect(answerFor(5)).toEqual([5, 4, [agents.nameKey[4]]]);
+    expect(answerFor(6)).toEqual([6, -1, []]);
   });
 
   it("answers an employed blob's firm row and that firm's wage", () => {
@@ -421,16 +457,28 @@ describe('the sim loop', () => {
     firms.wage[3] = 142_800;
     firms.wage[4] = 150_000;
     page.handle({ type: 'inspect', x: agents.x[agent] / 256, y: agents.y[agent] / 256 });
-    expect(page.ofType('inspected')).toEqual([
+    expect(page.ofType('inspected')).toMatchObject([
       { type: 'inspected', tick: 0, agent, nameKey: agents.nameKey[agent], cents: 100_000, employer: 3, wage: 142_800 },
     ]);
   });
 
-  it('answers -1 off the map', () => {
+  it('answers -1 off the map, with every other field empty', () => {
     const page = fakePage();
     page.handle({ type: 'inspect', x: -1_000, y: -1_000 });
     expect(page.ofType('inspected')).toEqual([
-      { type: 'inspected', tick: 0, agent: -1, nameKey: 0, cents: 0, employer: -1, wage: 0 },
+      {
+        type: 'inspected',
+        tick: 0,
+        agent: -1,
+        nameKey: 0,
+        cents: 0,
+        employer: -1,
+        wage: 0,
+        look: 0,
+        action: 0,
+        home: -1,
+        members: [],
+      },
     ]);
   });
 

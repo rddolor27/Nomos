@@ -1,9 +1,14 @@
 import {
+  ACTION_IDLE,
+  NO_HOME,
+  NO_HOUSEHOLD,
   SUBPIXELS,
   SYSTEM_NAMES,
   TILE_PX,
   checkpoint,
   currentTick,
+  firstMemberOf,
+  householdOf,
   nearestAgent,
   step,
   warmUp,
@@ -55,6 +60,7 @@ interface Session {
 
 type SnapshotMessage = Extract<WorkerMessage, { type: 'snapshot' }>;
 type StatsMessage = Extract<WorkerMessage, { type: 'stats' }>;
+type InspectedMessage = Extract<WorkerMessage, { type: 'inspected' }>;
 
 // cpuSlowdown stands in for CDP's CPU throttling, which skips workers: the startup gate sets it (R5 load notes §2).
 export function createSimLoop(host: LoopHost, cpuSlowdown = 1): { handle(msg: AppMessage): void } {
@@ -215,15 +221,7 @@ export function createSimLoop(host: LoopHost, cpuSlowdown = 1): { handle(msg: Ap
   function postInspected(world: World, x: number, y: number): void {
     const tick = currentTick(world);
     const agent = nearestAgent(world.agents, Math.round(x * SUBPIXELS), Math.round(y * SUBPIXELS), INSPECT_RADIUS_Q8);
-    if (agent < 0) {
-      post({ type: 'inspected', tick, agent, nameKey: 0, cents: 0, employer: NO_EMPLOYER, wage: 0 }, noTransfer);
-      return;
-    }
-    const blob = world.blob;
-    blob.at(agent);
-    const employer = blob.employer;
-    const wage = employer < 0 ? 0 : world.firms.wage[employer];
-    post({ type: 'inspected', tick, agent, nameKey: blob.nameKey, cents: blob.cash, employer, wage }, noTransfer);
+    post(agent < 0 ? noBlobReply(tick) : blobReply(world, tick, agent), noTransfer);
   }
 
   // Waits before the post rather than after the handler, which would come too late: init posts ready and the spawn
@@ -246,4 +244,53 @@ export function createSimLoop(host: LoopHost, cpuSlowdown = 1): { handle(msg: Ap
 
 function meanMs(totalMs: number, count: number): number {
   return count > 0 ? totalMs / count : 0;
+}
+
+function noBlobReply(tick: number): InspectedMessage {
+  return {
+    type: 'inspected',
+    tick,
+    agent: -1,
+    nameKey: 0,
+    cents: 0,
+    employer: NO_EMPLOYER,
+    wage: 0,
+    look: 0,
+    action: ACTION_IDLE,
+    home: NO_HOME,
+    members: [],
+  };
+}
+
+// A read-only query answered between turns, so it may allocate. Only this and the snapshot writer read a look, to draw it.
+function blobReply(world: World, tick: number, agent: number): InspectedMessage {
+  const { blob, households } = world;
+  blob.at(agent);
+  const employer = blob.employer;
+  const household = householdOf(households, agent);
+  return {
+    type: 'inspected',
+    tick,
+    agent,
+    nameKey: blob.nameKey,
+    cents: blob.cash,
+    employer,
+    wage: employer < 0 ? 0 : world.firms.wage[employer],
+    look: world.agents.look[agent],
+    action: blob.action,
+    home: household === NO_HOUSEHOLD ? NO_HOME : households.home[household],
+    members: housemateKeys(world, household, agent),
+  };
+}
+
+// The name keys of the others in agent's household, in household order: none for someone who lives alone, or in no household.
+function housemateKeys(world: World, household: number, agent: number): number[] {
+  const keys: number[] = [];
+  if (household === NO_HOUSEHOLD) return keys;
+  const first = firstMemberOf(world.households, household);
+  const end = first + world.households.size[household];
+  for (let member = first; member < end; member++) {
+    if (member !== agent) keys.push(world.agents.nameKey[member]);
+  }
+  return keys;
 }
