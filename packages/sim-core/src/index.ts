@@ -39,3 +39,4 @@ export * from './economy/stats.ts';
 export * from './economy/start.ts';
 export * from './economy/economy.ts';
 export * from './economy/mser5.ts';
+export * from './spawn/homes.ts';

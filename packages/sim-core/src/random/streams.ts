@@ -16,6 +16,8 @@ export const LABOUR_DRAW = AGENT_SALT + 9;
 export const SHOP_DRAW = AGENT_SALT + 10;
 export const WEALTH_DRAW = AGENT_SALT + 11;
 export const START_DRAW = AGENT_SALT + 12;
+// Spawn's own, apart from populate's SPAWN: its draws key on (settlement, day), so a place on a day is one city (M2.2).
+export const SPAWN_DRAW = AGENT_SALT + 13;
 
 export function layerOf(stream: number): 'world' | 'agent' | 'ledger' {
   if (stream < AGENT_SALT) return 'world';
