@@ -1,0 +1,23 @@
+{
+  "preset": "city",
+  "start": "hand",
+  "days": 12100,
+  "warmUpDays": 10000,
+  "seeds": [1, 2, 3, 4, 5],
+  "sizes": [1000],
+  "policeShares": [0],
+  "shocks": [{ "day": 0, "unemploymentPoints": 0 }],
+  "lhs": {
+    "points": 300,
+    "seed": 1,
+    "ranges": {
+      "priceChancePpm": [200000, 750000],
+      "wageCutMonths": [24, 96],
+      "onJobSearchPpm": [20000, 150000],
+      "jobSearches": [3, 6],
+      "slowSearcherPpm": [0, 300000],
+      "slowJobSearches": [1, 2],
+      "shortPayExitPpm": [0, 1000000]
+    }
+  }
+}
