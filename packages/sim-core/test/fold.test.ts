@@ -192,11 +192,13 @@ describe('checkRecord', () => {
     accepts({ [LEDGER_HOUSEHOLD_CASH]: exact - 5, [LEDGER_FIRM_CASH]: 5 });
   });
 
-  it('refuses a price whose total over the firms passes the exact cents', () => {
-    // floor((2^53 - 1) / 100), the most a price may be across the record's 100 firms.
+  it('refuses a price or a wage whose total over the firms passes the exact cents', () => {
+    // floor((2^53 - 1) / 100), the most either may be across the record's 100 firms.
     const most = 90_071_992_547_409;
     accepts({ [LEDGER_PRICE]: most });
+    accepts({ [LEDGER_WAGE]: most });
     refuses({ [LEDGER_PRICE]: most + 1 }, /^price x firms must be 9007199254740991 or less, not 90071992547410 x 100$/);
+    refuses({ [LEDGER_WAGE]: most + 1 }, /^wage x firms must be 9007199254740991 or less, not 90071992547410 x 100$/);
   });
 
   it('refuses a record folded from a household row of the wrong size', () => {

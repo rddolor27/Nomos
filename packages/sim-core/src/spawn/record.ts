@@ -53,7 +53,8 @@ export function checkRecord(record: Float64Array, world: World): void {
   requireAtLeast(record, LEDGER_WAGE, MIN_POSTED_CENTS);
   requireAtMost(record, LEDGER_STOCK, MAX_STOCK);
   requireCashTotal(record);
-  requirePriceTotal(record);
+  requireTotalOverFirms(record, LEDGER_PRICE);
+  requireTotalOverFirms(record, LEDGER_WAGE);
 }
 
 function requireWhole(record: Float64Array, field: number): void {
@@ -93,11 +94,12 @@ function requireCashTotal(record: Float64Array): void {
   }
 }
 
-// Spawn spreads price x firms over the firms in exact cents; the product rounds as the sum above does.
-function requirePriceTotal(record: Float64Array): void {
-  const price = record[LEDGER_PRICE];
+// Spawn spreads price x firms over the firms in exact cents, and every firm takes the wage, so fold's sum over the
+// firms is wage x firms; each product rounds as the sum above does.
+function requireTotalOverFirms(record: Float64Array, field: number): void {
+  const cents = record[field];
   const firms = record[LEDGER_FIRMS];
-  if (price * firms > MAX_SAFE_CENTS) {
-    throw new RangeError(`price x firms must be ${MAX_SAFE_CENTS} or less, not ${price} x ${firms}`);
+  if (cents * firms > MAX_SAFE_CENTS) {
+    throw new RangeError(`${FIELD_NAMES[field]} x firms must be ${MAX_SAFE_CENTS} or less, not ${cents} x ${firms}`);
   }
 }
