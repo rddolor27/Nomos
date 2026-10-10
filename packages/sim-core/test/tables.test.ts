@@ -4,8 +4,20 @@ import { draw2 } from '../src/random/draw.ts';
 import { log2Q16 } from '../src/maths/log2.ts';
 import * as tables from '../src/maths/tables.ts';
 
-const { BAND_SHARE_PPM, COPULA_Q16, EXP2_Q30, FADE_0_35Y, FADE_1Y, FADE_2_6Y, INV_NORMAL_Q16, LOG2_Q16, WALK_SINE_Q8 } =
-  tables;
+const {
+  BAND_SHARE_PPM,
+  CASH_WEIGHTS,
+  COPULA_Q16,
+  EXP2_Q30,
+  FADE_0_35Y,
+  FADE_1Y,
+  FADE_2_6Y,
+  FIRM_SIZE_WEIGHTS,
+  INV_NORMAL_Q16,
+  LOG2_Q16,
+  PRICE_WEIGHTS,
+  WALK_SINE_Q8,
+} = tables;
 
 function ranks(values: ArrayLike<number>): number[] {
   const order = Array.from(values, (_, k) => k).sort((a, b) => values[a] - values[b]);
@@ -38,6 +50,12 @@ function spearman(x: ArrayLike<number>, y: ArrayLike<number>): number {
   return pearson(ranks(x), ranks(y));
 }
 
+function sdOfLogs(values: ArrayLike<number>): number {
+  const logs = Array.from(values, (value) => Math.log(value));
+  const mean = logs.reduce((sum, v) => sum + v, 0) / logs.length;
+  return Math.sqrt(logs.reduce((sum, v) => sum + (v - mean) ** 2, 0) / logs.length);
+}
+
 describe('the build-time tables', () => {
   it('matches its generator', () => {
     const built = buildTables();
@@ -62,6 +80,10 @@ describe('the build-time tables', () => {
     // 2^31 is its last entry, one past Int32Array.
     expect(EXP2_Q30).toBeInstanceOf(Uint32Array);
     expect(EXP2_Q30).toHaveLength(65);
+    for (const weights of [CASH_WEIGHTS, PRICE_WEIGHTS, FIRM_SIZE_WEIGHTS]) {
+      expect(weights).toBeInstanceOf(Uint16Array);
+      expect(weights).toHaveLength(256);
+    }
   });
 
   it("holds exp2's 2^(k / 64) in Q30, from 1 to 2", () => {
@@ -72,6 +94,28 @@ describe('the build-time tables', () => {
   it("holds the walking step's sine over a quarter turn", () => {
     expect([WALK_SINE_Q8[0], WALK_SINE_Q8[1], WALK_SINE_Q8[32], WALK_SINE_Q8[64]]).toEqual([0, 25, 724, 1_024]);
     expect(WALK_SINE_Q8.every((value, k) => k === 0 || value >= WALK_SINE_Q8[k - 1])).toBe(true);
+  });
+
+  it('spreads each weight table as a lognormal of its sigma, from 1 to 4,095', () => {
+    const sigmas = { CASH_WEIGHTS: 0.07, PRICE_WEIGHTS: 0.025, FIRM_SIZE_WEIGHTS: 0.5 };
+    for (const [name, sigma] of Object.entries(sigmas)) {
+      const weights = tables[name as keyof typeof sigmas];
+      expect(weights[0], `${name} starts at 1 or more`).toBeGreaterThanOrEqual(1);
+      expect(weights[255], `${name} ends at 4,095`).toBe(4_095);
+      expect(
+        weights.every((value, i) => i === 0 || value >= weights[i - 1]),
+        `${name} never falls`,
+      ).toBe(true);
+      expect(Math.abs(sdOfLogs(weights) / sigma - 1), `${name}'s SD of ln within 3% of sigma`).toBeLessThanOrEqual(0.03);
+    }
+  });
+
+  it("pins each weight table's ends and middle to Python's NormalDist", () => {
+    // round(K * exp(sigma * z)), where z = NormalDist().inv_cdf((i + 0.5) / 256) and K puts entry 255 at 4,095.
+    const at = [0, 127, 128, 255];
+    expect(at.map((i) => CASH_WEIGHTS[i])).toEqual([2_734, 3_345, 3_347, 4_095]);
+    expect(at.map((i) => PRICE_WEIGHTS[i])).toEqual([3_545, 3_810, 3_810, 4_095]);
+    expect(at.map((i) => FIRM_SIZE_WEIGHTS[i])).toEqual([229, 965, 970, 4_095]);
   });
 
   it('gives log2 in Q16 within the 8-bit mantissa bound', () => {
