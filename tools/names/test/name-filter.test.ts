@@ -49,6 +49,12 @@ describe('the person-name filter', { timeout: 30_000 }, () => {
     expect(rejectName('dalmon')).toBe('franchise');
   });
 
+  // The Wikidata religions extract lacked these, so they were added by hand (sources.json, religions "added").
+  it('rejects core faith words the Wikidata extract missed, and a slip of one letter', () => {
+    for (const word of ['islam', 'Quran', 'allah']) expect(rejectName(word), word).toBe('real-world');
+    expect(rejectName(oneLetterOff('islam'))).toBe('real-world');
+  });
+
   it('passes a clean word', () => {
     expect(rejectName('quvexil')).toBeNull();
   });

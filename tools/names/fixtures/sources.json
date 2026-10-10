@@ -27,7 +27,12 @@
     "query": "SELECT DISTINCT ?label WHERE { VALUES ?kind { wd:Q9174 wd:Q13414953 } ?item wdt:P31 ?kind ; wikibase:sitelinks ?links ; rdfs:label ?label . FILTER(LANG(?label) = \"en\" && ?links >= 5) }",
     "date": "2026-10-08",
     "licence": "CC0-1.0",
-    "count": 280
+    "count": 322,
+    "added": {
+      "date": "2026-10-10",
+      "reason": "core faith words the Wikidata extract missed",
+      "count": 42
+    }
   },
   "avoid-species": {
     "query": "SELECT ?item ?label ?rev ?number WHERE { ?item p:P1685 ?statement . ?statement pq:P972 wd:Q20005020 ; ps:P1685 ?number . ?item rdfs:label ?label . FILTER(LANG(?label) = \"en\") ?item schema:version ?rev . }",
@@ -58,6 +63,6 @@
     "query": "reviewed by hand: person-name table words (M0.7 review) and place-name table words (M8.1 review) that read as dictionary words, slang, brands, franchises, faiths, famous people or real places",
     "date": "2026-10-10",
     "licence": "MIT",
-    "count": 82
+    "count": 80
   }
 }
