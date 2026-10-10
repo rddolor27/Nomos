@@ -171,7 +171,7 @@ Grids live in `tools/cli/grids/`, outside `src/`.
     - Three in four is the long-run share of the turns above, so the walking share holds near 75% from the first tick instead of climbing from none: 74.8%, 75.1% and 75.4% at ticks 0, 16 and 64 (measured, seed 42, phone tier).
 - `stateHash(world: World): number`: a 32-bit hash over every replay-relevant column and ledger, the value the determinism checks compare. M0.6 adds `stateHashExcept(world, skip: readonly ArrayBufferView[]): number`, of which `stateHash` is the case with nothing skipped, so no golden moves; the relabel test skips the culture columns.
 - `World.cultureUid`: a canonical `Uint8Array(MAX_CULTURES)` of stable culture uids, c + 1 per culture and 0 when unused. Culture-level draws key on it, never on the index (M0.6, R8).
-- Seed 42's replay hashes at tick 1,000, one per tier, live in `packages/sim-core/test/fixtures/goldens.json`, keyed `"<seed>/<tier>"`; the Node, Bun and browser checks all read it. A commit that moves the sim on purpose regenerates it with `node packages/sim-core/scripts/goldens.ts` (M0.6). Since M2.2's household rows, they are `746a06a3` on phone, `7560155c` on phone-plus and `10699866` on desktop. `node tools/cli/src/main.ts --seed 42 --tier phone --ticks 1000` prints the phone hash.
+- Seed 42's replay hashes at tick 1,000, one per tier, live in `packages/sim-core/test/fixtures/goldens.json`, keyed `"<seed>/<tier>"`; the Node and browser checks both read it. A commit that moves the sim on purpose regenerates it with `node packages/sim-core/scripts/goldens.ts` (M0.6). Since M2.2's household rows, they are `746a06a3` on phone, `7560155c` on phone-plus and `10699866` on desktop. `node tools/cli/src/main.ts --seed 42 --tier phone --ticks 1000` prints the phone hash.
 - `Tier` is `'phone' | 'phone-plus' | 'desktop'`, with agent caps of 10,000, 25,000 and 100,000. `sim-protocol` re-exports `Tier`, `TIER_AGENTS` and `townAgents` from its `messages.ts` (M0.3).
 - Highcourt's replay hashes at tick 1,000, seed 42, on `town.nmap` at the town's own crowd, are pinned in `packages/sim-protocol/test/town-map.test.ts`: `e5be40f9` for phone (3,965 blobs) and `d0a2c4ea` for desktop (7,931), on the 176 × 112 town. The goldens above run on the stand-in ground, so a new map moves only these.
 
@@ -574,7 +574,7 @@ The owner asked on 9 October 2026 to zoom into a settlement on the map and see t
   A vista has its context, ground and layout fingerprinted.
 - `tools/worldgen/place_fixtures.py` writes `packages/render-gl/test/fixtures/places-v1.json`: three whole layouts, with the SHA-256 of `placedraw.py`'s picture of each, which the place pass must match.
 - **CI** runs both with `--check`; the goldens check covers the first world and the pinned places.
-- **Engines:** `scripts/engines.ts` and the browser engine spec check the places of the first two worlds plus the pinned ones, 109 places in all, in Node, Bun, Chromium, Firefox and WebKit.
+- **Engines:** the place goldens test and the browser engine spec check the places of the first two worlds plus the pinned ones, 109 places in all, in Node and Chromium.
 
 ### In the map worker
 
@@ -613,7 +613,7 @@ The owner asked on 9 October 2026 to zoom into a settlement on the map and see t
 
   A person's layers are the body, the pattern, the face at the body frame's `face` offset, the job item, and the emote at (7, face y − 15). People move every frame, so the pass re-sorts them in place, stably, with no allocation.
 - **Backends:** WebGL2 draws the whole place in one instanced draw, reading texels with `texelFetch`. Canvas2D caches the tiles and ground on an offscreen canvas.
-- **The pixel check:** at 1×, both backends match the SHA-256 of `placedraw.py`'s picture of each fixture, in Chromium, Firefox and WebKit. At 2×, a frame equals the 1× picture scaled up by nearest neighbour.
+- **The pixel check:** at 1×, both backends match the SHA-256 of `placedraw.py`'s picture of each fixture, in Chromium. At 2×, a frame equals the 1× picture scaled up by nearest neighbour.
 - **Imports:** only `src/map`'s `frames.ts`, `gl.ts`, `colours.ts` and `lifecycle.ts`, and `sim-protocol`.
 
 ### The town view in `web`
@@ -728,7 +728,7 @@ M2.1 builds Lengnick's households and firms in `sim-core`, as its [step plan](..
   - M2.3 gives `LABOUR_DRAW` purposes 4 and 5. Purpose 4 is the slow-searcher trait, `draw2(seed, LABOUR_DRAW, person, 4)`, fixed for life. Purpose 5 is a shock's order, `keyedShuffle(order, people, seed, LABOUR_DRAW, day, 5)`.
 - **Hashes:** The world step, above, gives today's tick goldens and Highcourt's pins.
   - `goldens.json` also pins `economy`: seed 42 on the phone tier after 3 months, which is 63 days of `economyDay` with LENGNICK and `fiatIssuePpm` 10,000, hashing to `6a652730`.
-  - The Node, Bun and browser checks replay it with the tick replays, and `node packages/sim-core/scripts/goldens.ts` regenerates it.
+  - The Node and browser checks replay it with the tick replays, and `node packages/sim-core/scripts/goldens.ts` regenerates it.
   - M2.3's off values keep `LENGNICK` byte-identical, so no hash moved, and `economy` stays `6a652730`.
 
 ## Steering (owner, 10 October 2026)
@@ -763,7 +763,7 @@ M2.2 spawns a city from a ledger record and folds it back exactly, as its [step 
 - **Speed and bytes:**
   - a desktop-only spawn row of 35 ms for 100k agents, not the plan's 10 ms: the fastest of 9 spawns takes 31.2 ms (measured here, Node 24.18.0 on Windows, load not recorded). The shared doc's 10 ms needs the owner;
   - 5 bytes per agent slot.
-- **Engines:** the spawn goldens replay in Node, Bun, Chromium, Firefox and WebKit. That harness replaces the brief's Deno (coordinator's ruling, 10 October 2026); the shared doc's wording waits for its sync.
+- **Engines:** the spawn goldens replay in Node and Chromium. Bun and Deno are dropped, and Firefox and WebKit return before launch (owner, 10 October 2026); the shared doc's wording waits for its sync.
 - **Hashes:** Task 1 moved every golden and Highcourt pin, to the values The world step gives. `goldens.json`'s `spawn` holds 20 hashes of seed 2026's random records.
 
 ## The design runner (owner: M2.3)
