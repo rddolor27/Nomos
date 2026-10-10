@@ -52,6 +52,9 @@ export interface App {
   onEconomy(listener: EconomyListener): void;
   // Asks for a draw on the next frame, for a change the camera does not show, such as the skin.
   redraw(): void;
+  // Fits the whole town in the view, centred, as the camera is at the first frame. A view too small to measure fits on its
+  // first real size.
+  fit(): void;
 }
 
 declare global {
@@ -216,6 +219,10 @@ export async function startApp(boot: Boot, doc: Document, start: Start): Promise
     },
     redraw() {
       scene.dirty = true;
+    },
+    fit() {
+      scene.fitted = false;
+      fit(app, scene);
     },
   };
 

@@ -1,5 +1,5 @@
-import { fitCamera, panBy, worldAt, zoomAt, type Camera } from '@nomos/render-gl';
-import { TILE_PX, type AppMessage } from '@nomos/sim-protocol';
+import { panBy, worldAt, zoomAt } from '@nomos/render-gl';
+import type { AppMessage } from '@nomos/sim-protocol';
 import { element, type App } from '../app/app.ts';
 import { speedForKey } from '../panels/speed-bar.ts';
 import { Pinch } from './pinch.ts';
@@ -51,12 +51,6 @@ export function isClick(dxCss: number, dyCss: number): boolean {
   return dxCss * dxCss + dyCss * dyCss < CLICK_CSS_PX * CLICK_CSS_PX;
 }
 
-// The app fits the town once, centred, as the view first measures, and keeps no map. Until the camera moves, that fit
-// still holds the town's size, since x = (town - device / zoom) / 2.
-export function townTiles(camera: Camera, deviceWidth: number, deviceHeight: number): [number, number] {
-  return [(2 * camera.x + deviceWidth / camera.zoom) / TILE_PX, (2 * camera.y + deviceHeight / camera.zoom) / TILE_PX];
-}
-
 function devicePoint(view: HTMLElement, clientX: number, clientY: number): [number, number] {
   const box = view.getBoundingClientRect();
   return [(clientX - box.left) * devicePixelRatio, (clientY - box.top) * devicePixelRatio];
@@ -81,7 +75,7 @@ function inspectAt(app: App, deviceX: number, deviceY: number): void {
   inspectorReady.then(() => app.worker.postMessage(message)).catch((error: unknown) => console.error(error));
 }
 
-function onKey(app: App, fit: () => void, event: KeyboardEvent): void {
+function onKey(app: App, event: KeyboardEvent): void {
   // Ctrl or Cmd with plus and minus zooms the browser, which stays the browser's.
   if (event.ctrlKey || event.metaKey || event.altKey) return;
   const pan = PAN_KEYS.get(event.key);
@@ -91,7 +85,7 @@ function onKey(app: App, fit: () => void, event: KeyboardEvent): void {
   if (pan) app.camera = panBy(app.camera, pan[0] * PAN_WORLD_PX * app.camera.zoom, pan[1] * PAN_WORLD_PX * app.camera.zoom);
   else if (zoom) zoomAtCentre(app, zoom);
   else if (speed !== undefined) app.setSpeed(speed);
-  else if (event.key === 'Home') fit();
+  else if (event.key === 'Home') app.fit();
   // A button in the view keeps its own Enter.
   else if (event.key === 'Enter' && event.target === event.currentTarget) inspectAt(app, canvas.width / 2, canvas.height / 2);
   else return;
@@ -103,13 +97,7 @@ export function bindCameraInput(view: HTMLElement, app: App): void {
   let wheelAtMs = 0;
   let drag: Drag | null = null;
   const pinch = new Pinch();
-  const { width, height } = app.renderer.canvas;
-  const [tilesWide, tilesHigh] = townTiles(app.camera, width, height);
 
-  const fit = (): void => {
-    const canvas = app.renderer.canvas;
-    app.camera = fitCamera(tilesWide, tilesHigh, canvas.width, canvas.height);
-  };
   const onWheel = (event: WheelEvent): void => {
     event.preventDefault();
     const px = event.deltaY * WHEEL_UNIT_PX[event.deltaMode];
@@ -158,13 +146,13 @@ export function bindCameraInput(view: HTMLElement, app: App): void {
     pinch.up(event.pointerId);
     if (drag?.pointer === event.pointerId) drag = null;
   };
-  const onKeyDown = (event: KeyboardEvent): void => onKey(app, fit, event);
+  const onKeyDown = (event: KeyboardEvent): void => onKey(app, event);
 
   view.setAttribute(
     'aria-label',
     'Town view: arrow keys pan, plus and minus zoom, Home fits the town, 1 to 3 set the speed, Enter shows the blob at the centre',
   );
-  view.append(new ZoomBar(view.ownerDocument, (steps) => zoomAtCentre(app, steps), fit).root);
+  view.append(new ZoomBar(view.ownerDocument, (steps) => zoomAtCentre(app, steps), () => app.fit()).root);
   view.addEventListener('wheel', onWheel, { passive: false });
   view.addEventListener('pointerdown', onPointerDown);
   view.addEventListener('pointermove', onPointerMove);

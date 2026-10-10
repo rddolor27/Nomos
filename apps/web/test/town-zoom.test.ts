@@ -1,6 +1,4 @@
-import { fitCamera } from '@nomos/render-gl';
 import { describe, expect, it } from 'vitest';
-import { townTiles } from '../src/view/camera-input.ts';
 import { Pinch } from '../src/view/pinch.ts';
 
 describe('the pinch', () => {
@@ -30,27 +28,5 @@ describe('the pinch', () => {
     pinch.up(2);
     expect(pinch.active).toBe(false);
     expect(pinch.move(1, 0, 0)).toBe(0);
-  });
-});
-
-describe("the town's size, read back from the app's fit", () => {
-  it('gives the tiles the fit was made for, so fitting again lands on the same camera', () => {
-    // 12 x 8 tiles in a 700 x 400 view fit at zoom 3, where 700 / 3 is no whole number.
-    const fitted = fitCamera(12, 8, 700, 400);
-    expect(fitted.zoom).toBe(3);
-
-    const [wide, high] = townTiles(fitted, 700, 400);
-
-    expect([wide, high]).toEqual([12, 8]);
-    expect(fitCamera(wide, high, 700, 400)).toEqual(fitted);
-    // Once the view has grown to 1400 x 800, Fit picks the larger zoom that suits it: 800 / 128 is 6.25.
-    expect(fitCamera(wide, high, 1400, 800).zoom).toBe(6);
-  });
-
-  it('reads a town larger than the view, which the fit centres at the smallest zoom', () => {
-    const fitted = fitCamera(200, 120, 640, 360);
-    expect(fitted.zoom).toBe(1);
-
-    expect(townTiles(fitted, 640, 360)).toEqual([200, 120]);
   });
 });

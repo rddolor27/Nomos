@@ -31,6 +31,10 @@ async function camera(page: Page): Promise<Camera> {
   });
 }
 
+function canvasWidth(page: Page): Promise<number> {
+  return page.evaluate(() => window.__app?.renderer.canvas.width ?? NaN);
+}
+
 test('fits the town from the Fit button and the Home key, and zooms in whole steps from the bar', async ({ page }) => {
   await openPaused(page);
   const fitted = await camera(page);
@@ -60,6 +64,22 @@ test('fits the town from the Fit button and the Home key, and zooms in whole ste
   // Enter on a button presses it, and the view does not read it as "show the blob at the centre".
   await page.waitForTimeout(QUIET_MS);
   await expect(page.locator('#inspector')).toHaveCount(0);
+});
+
+test('fits to the view as it is now, as a page opened at that size does', async ({ page, context }) => {
+  await openPaused(page);
+  const wide = await canvasWidth(page);
+  await page.setViewportSize({ width: 390, height: 844 });
+  // The view measures its new size on the next frame, and only then can Fit use it.
+  await expect.poll(() => canvasWidth(page)).not.toBe(wide);
+  await page.getByRole('button', { name: 'Fit' }).click();
+
+  const phone = await context.newPage();
+  await phone.setViewportSize({ width: 390, height: 844 });
+  await openPaused(phone);
+  const fresh = await camera(phone);
+
+  await expect.poll(() => camera(page)).toEqual(fresh);
 });
 
 test.describe('with a touch screen', () => {
