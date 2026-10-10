@@ -11,7 +11,7 @@ M0's sub-milestones are planned in parallel, so the names and layouts they share
 | `@nomos/sim-worker` | `packages/sim-worker` | The Web Worker: timing, pause and checkpoints around sim-core's world step | M0.3 |
 | `@nomos/render-gl` | `packages/render-gl` | `WorldRenderer` on WebGL2, with the Canvas2D fallback | M0.4 |
 | `@nomos/web` | `apps/web` | The page: load path, HUD, charts, the inspector, tiers and accessibility | M0.5, inspector in M0.7 |
-| `@nomos/cli` | `tools/cli` | Headless runs and replay hashes in Node, through sim-core's world step | M0.3 |
+| `@nomos/cli` | `tools/cli` | Headless runs and replay hashes in Node, through sim-core's world step, and the economy's design runner and target suite | M0.3, design runner and targets in M2.3 |
 | `@nomos/bench` | `tools/bench` | The CI budget, allocation and startup gates | M0.6 |
 | `@nomos/sim-culture` | `packages/sim-culture` | Culture code, walled off from crime, police, labour, wage, wealth, money, ability, housing, migration and spawn code; it also turns name keys into names | M0.6, names in M0.7 |
 | `@nomos/names` | `tools/names` | The name lint, its real-world fixture, the shared mixed sound set, the person-name filter and the culture text lint; M3.7 extends it | M0.6, sound set and person-name filter in M0.7 |
@@ -101,7 +101,16 @@ Skin B and Skin C arrive as `blobs/` and `town/` beside `dots/` (M1.3, M3.3). M8
 
 `apps/web/vite/` keeps the build plugins. Vite names a lazy chunk after its file, so the size-limit globs `charts-*.js` and `controls-*.js` hold after the move, and the view input's and the inspector's chunks need entries of their own.
 
-**`tools/cli/src`:** `main.ts` only, the entry CI runs.
+**`tools/cli/src`**
+
+| Folder | Files | Concern |
+| --- | --- | --- |
+| `src/` | `main.ts` | The entry CI runs: replay hashes, and the `economy`, `design` and `targets` commands |
+| `economy/` | `run.ts`, `presets.ts` | The `economy` command (M2.1), and `PRESETS`, which a grid's `preset` and `--preset` pick by name (M2.3) |
+| `design/` | `grid.ts`, `cell.ts`, `pool.ts`, `worker.ts`, `run.ts` | The design runner: a grid and its cells, one cell's run and folder, and the worker threads (M2.3) |
+| `targets/` | `targets.ts`, `summarize.ts`, `judge.ts`, `run.ts` | The targets table, one seed's summary, the judge over seeds, and the `targets` command (M2.3) |
+
+Grids live in `tools/cli/grids/`, outside `src/`.
 
 **`tools/bench/src`**
 
@@ -674,18 +683,31 @@ The owner asked on 10 October 2026 for the town view's art on the first screen. 
 
 ## The economy (owner: M2.1)
 
-M2.1 builds Lengnick's households and firms in `sim-core`, as its [step plan](../m2-economy/m2.1-lengnick-core/plan.md) lays out. The economy runs through `economyDay`; the world step doesn't call it yet.
+M2.1 builds Lengnick's households and firms in `sim-core`, as its [step plan](../m2-economy/m2.1-lengnick-core/plan.md) lays out. The economy runs through `economyDay`; the world step doesn't call it yet. M2.3 adds the city preset and the flow log, as its [step plan](../m2-economy/m2.3-calibration-and-design-runner/plan.md) lays out.
 
 - **Layout, `sim-core`:**
   - new concern folders: `firms/` (`store.ts`, `decide.ts`, `produce.ts`, `renew.ts`), `labour/` (`search.ts`, `notice.ts`, `reservation.ts`), `wages/` (`wage-step.ts`, `payroll.ts`), `wealth/` (`profits.ts`), `market/` (`wholesale.ts`, with the `CallAuction` class) and `economy/` (`params.ts`, `stats.ts`, `scratch.ts`, `start.ts`, `economy.ts`, `mser5.ts`);
   - existing folders gain files: `consumption/` gains `search.ts`, `plan.ts` and `shop.ts`; `money/` gains `fiat.ts`; `random/` gains `shuffle.ts`; and `movement/` gains `steer.ts` (see Steering, below);
-  - `tools/cli/src` gains `economy/run.ts`, the `economy` command.
+  - `tools/cli/src` gains `economy/run.ts`, the `economy` command;
+  - M2.3 adds `economy/city.ts` and `labour/layoffs.ts`, and the barrel exports `random/shuffle.ts` for the design runner.
 - **The culture wall:** guarded code imports `economy/params.ts`, `economy/stats.ts` and `economy/scratch.ts`, never `economy/economy.ts`, which reaches `consumption/`. M2.6 adds `economy/` beside `step/` to the folders that may reach `sim-culture`.
 - **The world:**
   - `World` gains `firms` (`FirmStore`) and `economyScratch`;
-  - `startEconomy(world, params)` and `economyDay(world, params, day)` join `sim-core`, outside `SYSTEM_NAMES` until the economy joins the step;
+  - `startEconomy(world, params)` and `economyDay(world, params, day, layoffs = 0)` join `sim-core`, outside `SYSTEM_NAMES` until the economy joins the step. `layoffs` employed people, or all if fewer, lose their jobs at the day's start, a scenario input for headless runs until then (M2.3);
   - the calendar gains `DAYS_PER_MONTH = 21` (owner, 10 October 2026), `monthOf` and `dayOfMonth`;
-  - `EconomyParams.burnInDays` is 9,893, measured by MSER-5.
+  - `LENGNICK.burnInDays` is 9,893 and `CITY.burnInDays` 17,295, each measured by MSER-5.
+- **Presets (M2.3):** `CITY`, in `economy/city.ts`, joins `LENGNICK`.
+  - `EconomyParams` gains four fields, and `LENGNICK`'s values turn each off:
+    - `slowSearcherPpm` (0) and `slowJobSearches` (5): that share of people, fixed for life, visits only `slowJobSearches` firms a month while unemployed, and the rest `jobSearches`;
+    - `shortPayExitPpm` (0): a firm with workers that paid them under this share of its wage at a month's end exits, and `layOffExiting` lays its workers off;
+    - `markupClamp` (0): 1 stops a price step at the markup band's edge.
+  - `stockHighPpm` becomes the excess over one month's demand, like the markups, so `LENGNICK`'s is 0.
+  - Every exit, idle or short of pay, writes its stock off.
+  - Firms stay one layer, the city's shops, and the `CallAuction` stays unwired until M2.4 (M2.3 Ruling 3).
+- **The flow log (M2.3):** the day's stats row, `economyScratch.stats`, holds levels first, then each flow as that day's sum, which `clearFlows(stats)` zeroes each morning.
+  - `STAT_NAMES` names its 29 slots (`STATS`) as flow-log schema 1, `FLOW_LOG_SCHEMA`, and any column change bumps it.
+  - `firings` counts every layoff: notices, exits and shocks.
+  - `recordMonth(world)`, after a month's end, and `recordYear(world)`, after a year's last day, join `recordDay(world)`.
 - **Agents:**
   - `SUPPLIERS = 7`;
   - new columns `employer`, `reservationWage`, `suppliers`, `stockedOut` and `plannedUnits`, with `addAgent` writing −1 to `employer` and the suppliers;
@@ -700,11 +722,14 @@ M2.1 builds Lengnick's households and firms in `sim-core`, as its [step plan](..
   - an agent adds 45 bytes to the hash and 20 of scratch;
   - a firm adds 60 to the hash and 16 of scratch;
   - a desktop arena uses about 11.9 of its 64 MiB;
-  - `TIER_MEMORY_BYTES` and snapshot v1 don't change.
+  - `TIER_MEMORY_BYTES` and snapshot v1 don't change;
+  - M2.3's scratch adds `spellMonths` and `yearEmployer` per agent, and `yearWage` and `exiting` per firm: 5 bytes an agent and 9 a firm, outside the hash.
 - **Streams:** `FIRM_DRAW`, `WAGE_DRAW`, `LABOUR_DRAW`, `SHOP_DRAW`, `WEALTH_DRAW` and `START_DRAW`, the agent-layer streams 0x107–0x10C.
+  - M2.3 gives `LABOUR_DRAW` purposes 4 and 5. Purpose 4 is the slow-searcher trait, `draw2(seed, LABOUR_DRAW, person, 4)`, fixed for life. Purpose 5 is a shock's order, `keyedShuffle(order, people, seed, LABOUR_DRAW, day, 5)`.
 - **Hashes:** The world step, above, gives today's tick goldens and Highcourt's pins.
   - `goldens.json` also pins `economy`: seed 42 on the phone tier after 3 months, which is 63 days of `economyDay` with LENGNICK and `fiatIssuePpm` 10,000, hashing to `6a652730`.
   - The Node, Bun and browser checks replay it with the tick replays, and `node packages/sim-core/scripts/goldens.ts` regenerates it.
+  - M2.3's off values keep `LENGNICK` byte-identical, so no hash moved, and `economy` stays `6a652730`.
 
 ## Steering (owner, 10 October 2026)
 
@@ -740,3 +765,37 @@ M2.2 spawns a city from a ledger record and folds it back exactly, as its [step 
   - 5 bytes per agent slot.
 - **Engines:** the spawn goldens replay in Node, Bun, Chromium, Firefox and WebKit. That harness replaces the brief's Deno (coordinator's ruling, 10 October 2026); the shared doc's wording waits for its sync.
 - **Hashes:** Task 1 moved every golden and Highcourt pin, to the values The world step gives. `goldens.json`'s `spawn` holds 20 hashes of seed 2026's random records.
+
+## The design runner (owner: M2.3)
+
+M2.3 runs the economy headless over a grid of cells, writes each cell's flow log, and judges the runs against round 2's targets, as its [step plan](../m2-economy/m2.3-calibration-and-design-runner/plan.md) lays out. That plan holds the targets table, the rulings and the calibration's seeds.
+
+- **Commands,** in `tools/cli`:
+  - `design --grid <file> --out <dir> [--threads N]` runs a grid's cells, on `availableParallelism()` − 1 threads by default, and at least 1;
+  - `targets <dir> [--filter]` judges a run's folder against `TARGETS`, in `targets/targets.ts`, the one home of every target.
+- **A grid** is JSON, and every error names its field. A field it doesn't know is an error too.
+  - `preset` is a `PRESETS` name, `lengnick` or `city`, and `start` is `hand` or `spawn`.
+  - `days`, `seeds`, `sizes`, `policeShares` and `shocks` are required. A shock is `{ day, unemploymentPoints }`, with its day inside the run, and 0 points is none.
+  - `warmUpDays` defaults to the preset's `burnInDays`, and either must be below `days`.
+  - `params` overrides the preset's fields, but never `households` or `firms`, which the size sets. Every cell's params must pass `checkParams`.
+  - `lhs`, `{ points, seed, ranges }`, spreads a Latin hypercube of n = `points` points over the params that `ranges` maps to `[lo, hi]`. A spawn start refuses it, and a knob may not also be in `params`.
+    - Knob j, in `ranges`' order, orders its n strata with `keyedShuffle(perm, n, lhs.seed, DESIGN_DRAW, j, 0)`. Point i takes lo + floor((perm[i] + u) × (hi − lo + 1) ÷ n), with u = `draw3(lhs.seed, DESIGN_DRAW, j, i, 1)` ÷ 2³².
+    - `DESIGN_DRAW` is the runner's own stream, 0x300, past every sim stream.
+- **A cell** is a point, a size, a police share, a shock and a seed, listed in that order. Its folder is `p<point, padded to 3 digits>-n<size>-x<police index>-k<shock index>-s<seed>`.
+  - Sizes are multiples of 1,000 up to 100,000. The tier is the smallest that holds the size, `households` is the size and `firms` a tenth of it.
+  - A hand start is `createWorld(seed, tier, undefined, size)`, then `startEconomy`.
+  - A spawn start spawns R* into settlement 0 on day 0, with a stand-in home to every 3 people. Every field of R* but the mean price and wage is scaled by size ÷ the preset's 1,000 households.
+  - The main thread makes R* once per run: the preset's hand-built city on seed 42, run for the whole months that cover its `burnInDays`, then folded.
+  - A shock lays off floor(points × size ÷ 100) people at the start of its day, through `economyDay`'s `layoffs`.
+  - The police share is recorded and does nothing until M4.
+- **A cell's folder** holds one `<column>.f64` per column, then `meta.json`, written last, so a folder a crash cut short has none.
+  - Flow-log schema 1's columns are `day`, `district` and `STAT_NAMES`, a row a day per district. One district stands until M3.1, so `district` is all 0, and `taxes` stays 0 until M5's treasury.
+  - Each column is Float64 in the host's byte order, little-endian on x64 and arm64, so `numpy.fromfile(path, '<f8')` reads it there.
+  - `meta.json` holds `schema`, `commit`, `cell`, `preset`, `start`, `seed`, `size`, `tier`, `policeShare`, `shock`, `layoffs`, `point`, `params` (in full), `days`, `warmUpDays`, `districts` and `columns`. `commit` is `git rev-parse HEAD`, or "unknown".
+- **Output never depends on thread count,** finish order, time or thread ids. Cells start largest first, each in a fresh worker thread, at most `--threads` at once, and each cell's sim days per second go to stderr only. `world.checks` stays on, since the CLI counts as development.
+- **Judging:** `targets` refuses a folder of another schema. It groups cells by point, size, police share and shock, and gives each target's verdict over a group's seeds by M2.3's Ruling 10, or medians only under 20 seeds. `--filter` instead checks each point's tier-1 medians and ranks the passing points by their tier-2 misses (Ruling 12).
+- **Grids:**
+  - `smoke.json` checks the runner;
+  - `sweep.json`, a 300-point hypercube on seeds 1–5, and `refine.json`, on seeds 1–20, tuned `CITY`;
+  - `confirm-city.json` and `confirm-lengnick.json` judge each preset once, on seeds 1001–1050;
+  - `design.json` runs `CITY` at all five sizes, with and without a 5-point shock.
