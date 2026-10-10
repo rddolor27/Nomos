@@ -95,9 +95,11 @@ describe('the flow log', () => {
   });
 
   it('balances the city through two layoff shocks, short-pay exits and slow searchers', { timeout: 120_000 }, () => {
-    // Day 1,000 is a day 13 of its month and day 1,050 a day 0, so the shock comes alone and then before a search.
+    // Day 1,000 is a day 13 of its month and day 1,050 a day 0, so the shock comes alone and then before a search. The
+    // full wage bill as the exit line makes short-pay exits happen within the run, whatever the calibration sets.
+    const params = { ...CITY, shortPayExitPpm: 1_000_000 };
     for (const seed of SEEDS) {
-      const rows = runBalanced(CITY, seed, DAYS, SHOCKS);
+      const rows = runBalanced(params, seed, DAYS, SHOCKS);
       expect([rows[1_000].firings, rows[1_050].firings], `seed ${seed}`).toEqual([50, 30]);
       for (const name of ['hires', 'job_visits', 'exits', 'write_off', 'spell_months']) {
         expect(totalOf(rows, name), `seed ${seed}: ${name}`).toBeGreaterThan(0);

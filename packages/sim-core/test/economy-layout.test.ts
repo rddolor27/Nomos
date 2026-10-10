@@ -193,8 +193,11 @@ describe('the city preset', () => {
       markupHighPpm: 500_000,
       markupClamp: 1,
       openingPrice: 3_200,
-      shortPayExitPpm: 1_000_000,
-      slowSearcherPpm: 100_000,
+      priceChancePpm: 220_000,
+      wageCutMonths: 25,
+      onJobSearchPpm: 127_732,
+      shortPayExitPpm: 300_000,
+      slowSearcherPpm: 227_437,
       slowJobSearches: 1,
     };
     expect(CITY).toEqual({ ...LENGNICK, ...changed });
