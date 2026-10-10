@@ -55,9 +55,9 @@
     "credit": "Name bases by Azgaar (real-world), Dopu (fantasy) and Avengium (additional), as name-bases.ts credits them; Nomos uses the 32 real-world bases and Levantine."
   },
   "denied": {
-    "query": "reviewed by hand: person-name table words that read as dictionary words, slang, brands, franchises, faiths or famous people (M0.7 review)",
-    "date": "2026-10-09",
+    "query": "reviewed by hand: person-name table words (M0.7 review) and place-name table words (M8.1 review) that read as dictionary words, slang, brands, franchises, faiths, famous people or real places",
+    "date": "2026-10-10",
     "licence": "MIT",
-    "count": 56
+    "count": 65
   }
 }
