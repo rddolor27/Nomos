@@ -17,13 +17,14 @@ sys.path.insert(0, str(HERE.parent / 'sprites'))
 from climate import FARMLAND, GRASSLAND, LAKE, MOUNTAIN, OCEAN, PEAK  # noqa: E402
 from model import BIOMES  # noqa: E402
 from rng import SHAPE, draw  # noqa: E402
+from roads import MAJOR, MINOR  # noqa: E402
 from showcase import Sheets  # noqa: E402
 from spritekit import PALETTE  # noqa: E402
 
 SCALE = 2
 VARIANT = 0x200
 RIVER, ROAD, DECK, RAIL = PALETTE['WATER'], PALETTE['WOOD'], PALETTE['WOOD_L'], PALETTE['WOOD_D']
-LANE = PALETTE['WATER_L']
+LANE, HIGHWAY = PALETTE['WATER_L'], PALETTE['STONE_L']
 ROOT = HERE.parents[1]
 # One table with render-gl's map scene (M8.3). Countries.Country.colour indexes its five country colours, the owner's
 # picks of 9 October 2026, which stay outside the sprite palette.
@@ -75,6 +76,15 @@ def _tile(world, i, size):
     return f'map{size}_{BIOMES[b]}'
 
 
+def _settlement_frame(tier, size):
+    """Capitals and cities draw walled and towns palisaded, in each view's art (M3.1's Part 3, Ruling 12)."""
+    if tier in ('capital', 'city'):
+        return f'map{size}_settlement_{tier}-walled'
+    if tier == 'town':
+        return f'map{size}_settlement_town-palisade'
+    return f'settlement_{tier}'
+
+
 def _terrain(view, sprite):
     w, size = view.world, view.size
     image = Image.new('RGBA', (view.cols * size, view.rows * size), PALETTE['WATER'] + (255,))
@@ -103,10 +113,14 @@ def _dots(pen, a, b, dash, gap, thick, fill):
 
 
 def _routes(view, pen, dash, gap, thick):
-    for paths, fill in ((view.world.lanes, LANE), (view.world.roads, ROAD)):
+    """Sea lanes and minor roads dotted, then major roads solid in stone over them (M3.1's Part 3)."""
+    w = view.world
+    minor = [path for path, kind in zip(w.roads, w.road_class) if kind == MINOR]
+    major = [path for path, kind in zip(w.roads, w.road_class) if kind == MAJOR]
+    for paths, fill, on, off in ((w.lanes, LANE, dash, gap), (minor, ROAD, dash, gap), (major, HIGHWAY, 1, 0)):
         for path in paths:
             for a, b in zip(path, path[1:]):
-                _dots(pen, _centre(view, a), _centre(view, b), dash, gap, thick, fill)
+                _dots(pen, _centre(view, a), _centre(view, b), on, off, thick, fill)
 
 
 def _bridges(view, pen, along, across):
@@ -178,7 +192,8 @@ def _overlays(view):
     out += [(f.y, ICONS, f.x, 'wonders', f'map{size}_wonder_{f.kind}') for f in w.wonders if _near(view, f.x, f.y)]
     out += [(f.y, ICONS, f.x, 'landmarks', f'map{size}_landmark_{f.kind}') for f in w.landmarks
             if _near(view, f.x, f.y)]
-    out += [(s.y, TOWNS, s.x, 'map', f'settlement_{s.tier}') for s in w.settlements if _near(view, s.x, s.y, 3)]
+    out += [(s.y, TOWNS, s.x, 'map', _settlement_frame(s.tier, size)) for s in w.settlements
+            if _near(view, s.x, s.y, 3)]
     return out
 
 
@@ -191,7 +206,7 @@ def _beside(view, sprite, taken):
         kinds = [k for k in s.landmarks if k != 'lighthouse']
         if not kinds or not _near(view, s.x, s.y, 0):
             continue
-        im, _ = sprite('map', f'settlement_{s.tier}')
+        im, _ = sprite('map', _settlement_frame(s.tier, view.size))
         reach = (im.width // 2 + view.size // 2) // view.size + 1
         spots = [(s.x + reach, s.y), (s.x - reach, s.y), (s.x + reach, s.y + 1), (s.x - reach, s.y + 1)]
         free = [(x, y) for x, y in spots if _near(view, x, y, 0) and (x, y) not in taken

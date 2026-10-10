@@ -40,8 +40,13 @@ export function peakFrame(biome: number, variant: number, view: MapView): string
   return name === 'mountain' && view === 'region' && (variant & 2) !== 0 ? 'map/map16_peak-low' : null;
 }
 
-export function settlementFrame(tier: number): string {
-  return `map/settlement_${TIER_NAMES[tier]}`;
+// mapdraw.py's _settlement_frame: capitals and cities draw walled and towns palisaded, in each view's art (M3.1's
+// Part 3, Ruling 12).
+export function settlementFrame(tier: number, view: MapView): string {
+  const name = TIER_NAMES[tier];
+  if (name === 'capital' || name === 'city') return `map/map${artPx(view)}_settlement_${name}-walled`;
+  if (name === 'town') return `map/map${artPx(view)}_settlement_town-palisade`;
+  return `map/settlement_${name}`;
 }
 
 export function wonderFrame(kind: number, view: MapView): string {

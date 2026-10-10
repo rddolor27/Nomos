@@ -1,9 +1,11 @@
 import type { WorldMap } from '@nomos/sim-protocol/world-map';
 
-// A grassland world of one country, with nothing on it; a test patches in what it needs.
+// A grassland world of one country, with nothing on it; a test patches in what it needs. Its roads are minor unless
+// the patch classes them.
 export function tinyWorld(width: number, height: number, patch: Partial<WorldMap> = {}): WorldMap {
   const cells = width * height;
   const none = (): WorldMap['roads'] => ({ offsets: new Int32Array([0]), cells: new Int32Array(0) });
+  const roads = patch.roads ?? none();
   return {
     version: 1,
     seed: 1,
@@ -33,9 +35,9 @@ export function tinyWorld(width: number, height: number, patch: Partial<WorldMap
     },
     countries: { capital: new Int32Array([0]), colour: new Uint8Array([0]) },
     regions: { seat: new Int32Array([0]), country: new Uint8Array([1]) },
-    roads: none(),
+    roads,
     lanes: none(),
-    roadClass: new Uint8Array(0),
+    roadClass: new Uint8Array(roads.offsets.length - 1),
     bridges: new Int32Array(0),
     wonders: { kind: new Uint8Array(0), cell: new Int32Array(0) },
     landmarks: { kind: new Uint8Array(0), cell: new Int32Array(0) },

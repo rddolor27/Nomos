@@ -1,8 +1,8 @@
 import { readFileSync } from 'node:fs';
-import { BIOME_NAMES, LANDMARK_NAMES, NO_LANDMARK, WONDER_NAMES, type WorldMap } from '@nomos/sim-protocol/world-map';
+import { BIOME_NAMES, LANDMARK_NAMES, NO_LANDMARK, TIER_NAMES, WONDER_NAMES, type WorldMap } from '@nomos/sim-protocol/world-map';
 import { describe, expect, it } from 'vitest';
 import { SPRITE_SHORTS, iconSprites } from '../src/map/icons.ts';
-import type { AtlasFrame, AtlasPage } from '../src/map.ts';
+import { settlementFrame, type AtlasFrame, type AtlasPage, type MapView } from '../src/map.ts';
 import { tinyWorld } from './tiny-world.ts';
 
 // The real frames' sizes and anchors, each at its own place on a pretend page.
@@ -14,6 +14,7 @@ for (const sheet of ['map', 'wonders', 'landmarks']) {
   }
 }
 const page = { frames } as AtlasPage;
+const VIEWS: MapView[] = ['country', 'region'];
 
 // Each sprite as [x, y, width, height, peak] in art pixels, with the frame it shows.
 function placed(sprites: Int16Array): [string, number, number, number, number, number][] {
@@ -37,6 +38,18 @@ function settled(cell: number, tier: number, landmarks: number[]): WorldMap['set
 }
 
 describe('the map icons', () => {
+  it("walls a capital's and a city's icon and palisades a town's, in each view, all on the map page", () => {
+    const icons = Object.fromEntries(TIER_NAMES.map((name, tier) => [name, VIEWS.map((view) => settlementFrame(tier, view))]));
+    expect(icons).toEqual({
+      capital: ['map/map8_settlement_capital-walled', 'map/map16_settlement_capital-walled'],
+      city: ['map/map8_settlement_city-walled', 'map/map16_settlement_city-walled'],
+      town: ['map/map8_settlement_town-palisade', 'map/map16_settlement_town-palisade'],
+      village: ['map/settlement_village', 'map/settlement_village'],
+      hamlet: ['map/settlement_hamlet', 'map/settlement_hamlet'],
+    });
+    expect(Object.values(icons).flat().filter((name) => !(name in frames))).toEqual([]);
+  });
+
   it('anchors each sprite on its cell, in row, layer and column order', () => {
     const biome = new Uint8Array(12).fill(BIOME_NAMES.indexOf('grassland'));
     biome[1] = BIOME_NAMES.indexOf('peak');
@@ -48,7 +61,7 @@ describe('the map icons', () => {
     expect(placed(iconSprites(map, page, 'country'))).toEqual([
       ['map/map8_peak', 8, -2, 8, 10, 1],
       ['wonders/map8_wonder_waterfall', 16, 8, 8, 8, 0],
-      ['map/settlement_town', -1, -3, 27, 19, 0],
+      ['map/map8_settlement_town-palisade', -2, -7, 29, 23, 0],
     ]);
   });
 
@@ -56,21 +69,21 @@ describe('the map icons', () => {
     const kinds = [LANDMARK_NAMES.indexOf('clock-tower'), LANDMARK_NAMES.indexOf('library')];
     const map = tinyWorld(12, 6, { settlements: settled(2 * 12 + 5, 0, kinds) });
     expect(placed(iconSprites(map, page, 'region'))).toEqual([
-      ['landmarks/map16_landmark_library', 48, 32, 16, 16, 0],
-      ['landmarks/map16_landmark_clock-tower', 112, 25, 16, 23, 0],
-      ['map/settlement_capital', 72, 17, 32, 31, 0],
+      ['landmarks/map16_landmark_library', 32, 32, 16, 16, 0],
+      ['landmarks/map16_landmark_clock-tower', 128, 25, 16, 23, 0],
+      ['map/map16_settlement_capital-walled', 62, 2, 52, 46, 0],
     ]);
-    expect(placed(iconSprites(map, page, 'country'))).toEqual([['map/settlement_capital', 28, -7, 32, 31, 0]]);
+    expect(placed(iconSprites(map, page, 'country'))).toEqual([['map/map8_settlement_capital-walled', 28, -7, 32, 31, 0]]);
   });
 
   it('skips a lighthouse, and a spot on water', () => {
     const biome = new Uint8Array(72).fill(BIOME_NAMES.indexOf('grassland'));
-    biome[2 * 12 + 7] = BIOME_NAMES.indexOf('ocean');
+    biome[2 * 12 + 8] = BIOME_NAMES.indexOf('ocean');
     const kinds = [LANDMARK_NAMES.indexOf('lighthouse'), LANDMARK_NAMES.indexOf('fountain')];
     const map = tinyWorld(12, 6, { biome, settlements: settled(2 * 12 + 5, 0, kinds) });
     expect(placed(iconSprites(map, page, 'region')).map(([name, x, y]) => [name, x, y])).toEqual([
-      ['landmarks/map16_landmark_fountain', 48, 32],
-      ['map/settlement_capital', 72, 17],
+      ['landmarks/map16_landmark_fountain', 32, 32],
+      ['map/map16_settlement_capital-walled', 62, 2],
     ]);
   });
 });

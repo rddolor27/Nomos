@@ -12,7 +12,8 @@ const TILES: WorldSpec = {
   country: BIOMES.map((b) => (b <= 1 ? 0 : 1)),
   colour: [2],
 };
-// Two countries split down x 3, a river along the top row, a bridged road across the middle and a sea lane below.
+// Two countries split down x 3, a river along the top row, a bridged minor road across the middle, and a sea lane
+// below beside a major road.
 const LINES: WorldSpec = {
   width: 6,
   height: 3,
@@ -20,7 +21,11 @@ const LINES: WorldSpec = {
   colour: [3, 4],
   river: [1, 1, 0, 0, 0, 0, ...Array<number>(12).fill(0)],
   receiver: [1, 2, -1, -1, -1, -1, ...Array<number>(12).fill(-1)],
-  roads: [[6, 7, 8, 9, 10, 11]],
+  roads: [
+    [6, 7, 8, 9, 10, 11],
+    [15, 16, 17],
+  ],
+  roadClass: [0, 1],
   bridges: [8],
   lanes: [[12, 13, 14]],
 };

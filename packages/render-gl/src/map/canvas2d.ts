@@ -42,7 +42,7 @@ function drawTowns(context: CanvasRenderingContext2D, map: WorldMap, page: Atlas
   const camY = Math.round(camera.y * camera.cellPx);
   for (const id of towns) {
     const cell = map.settlements.cell[id];
-    const frame = page.frames[settlementFrame(map.settlements.tier[id])];
+    const frame = page.frames[settlementFrame(map.settlements.tier[id], view)];
     const x = (cell % map.width) * tilePx + (tilePx >> 1) - frame.anchor[0];
     const y = Math.floor(cell / map.width) * tilePx + tilePx - 1 - frame.anchor[1];
     context.drawImage(page.image, frame.x, frame.y, frame.w, frame.h, x * scale - camX, y * scale - camY, frame.w * scale, frame.h * scale);

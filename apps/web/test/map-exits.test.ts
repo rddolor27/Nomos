@@ -26,7 +26,7 @@ function framesOf(map: WorldMap, view: MapView): string[] {
     const peak = peakFrame(map.biome[cell], map.variant[cell], view);
     if (peak) names.push(peak);
   }
-  map.settlements.tier.forEach((tier) => names.push(settlementFrame(tier)));
+  map.settlements.tier.forEach((tier) => names.push(settlementFrame(tier, view)));
   map.wonders.kind.forEach((kind) => names.push(wonderFrame(kind, view)));
   map.landmarks.kind.forEach((kind) => names.push(landmarkFrame(kind, view)));
   for (const kind of map.settlements.landmarks) {

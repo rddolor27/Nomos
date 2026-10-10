@@ -1,4 +1,4 @@
-import { BIOME_NAMES, type PathTable, type WorldMap } from '@nomos/sim-protocol/world-map';
+import { BIOME_NAMES, ROAD_CLASS_NAMES, type PathTable, type WorldMap } from '@nomos/sim-protocol/world-map';
 import type { MapView } from './camera.ts';
 
 // Palette indices, in mapdraw.py's drawing order; 0 is none. Country colour c's band is BAND + c. The flat Countries
@@ -6,10 +6,11 @@ import type { MapView } from './camera.ts';
 export const RIVER = 1;
 export const LANE = 2;
 export const ROAD = 3;
-export const DECK = 4;
-export const RAIL = 5;
-export const BORDER = 6;
-export const BAND = 7;
+export const HIGHWAY = 4;
+export const DECK = 5;
+export const RAIL = 6;
+export const BORDER = 7;
+export const BAND = 8;
 
 // One view's overlay in art pixels: 8 a cell in the Country view and 16 in the Region view.
 export interface Overlay {
@@ -19,6 +20,8 @@ export interface Overlay {
 }
 
 const LAKE = BIOME_NAMES.indexOf('lake');
+const MINOR = ROAD_CLASS_NAMES.indexOf('minor');
+const MAJOR = ROAD_CLASS_NAMES.indexOf('major');
 
 // mapdraw.py's sizes in each view: the river's width, the routes' dash, gap and thickness, the bridge deck along and
 // across its road, and the border's line and bands.
@@ -72,13 +75,26 @@ function drawRivers(pen: Pen): void {
   }
 }
 
-function drawRoutes(pen: Pen, table: PathTable, value: number): void {
-  const { thick, dash, gap } = pen.marks;
-  for (let p = 0; p + 1 < table.offsets.length; p++) {
-    for (let k = table.offsets[p]; k + 1 < table.offsets[p + 1]; k++) {
-      stroke(pen, table.cells[k], table.cells[k + 1], thick, dash, dash + gap, value);
-    }
+function drawPath(pen: Pen, table: PathTable, p: number, dash: number, period: number, value: number): void {
+  for (let k = table.offsets[p]; k + 1 < table.offsets[p + 1]; k++) {
+    stroke(pen, table.cells[k], table.cells[k + 1], pen.marks.thick, dash, period, value);
   }
+}
+
+function drawRoads(pen: Pen, kind: number, dash: number, period: number, value: number): void {
+  const { roads, roadClass } = pen.map;
+  for (let p = 0; p + 1 < roads.offsets.length; p++) {
+    if (roadClass[p] === kind) drawPath(pen, roads, p, dash, period, value);
+  }
+}
+
+// mapdraw.py's _routes: sea lanes and minor roads dotted, then major roads solid over them.
+function drawRoutes(pen: Pen): void {
+  const { dash, gap } = pen.marks;
+  const { lanes } = pen.map;
+  for (let p = 0; p + 1 < lanes.offsets.length; p++) drawPath(pen, lanes, p, dash, dash + gap, LANE);
+  drawRoads(pen, MINOR, dash, dash + gap, ROAD);
+  drawRoads(pen, MAJOR, 1, 1, HIGHWAY);
 }
 
 // mapdraw.py's _bridges: a road runs flat at a cell when, at the cell's first visit, its neighbours along the road lie
@@ -161,8 +177,7 @@ export function buildOverlay(map: WorldMap, view: MapView): Overlay {
   const height = map.height * marks.tilePx;
   const pen: Pen = { map, marks, out: { width, height, pixels: new Uint8Array(width * height) } };
   drawRivers(pen);
-  drawRoutes(pen, map.lanes, LANE);
-  drawRoutes(pen, map.roads, ROAD);
+  drawRoutes(pen);
   drawBridges(pen);
   drawBorders(pen);
   return pen.out;

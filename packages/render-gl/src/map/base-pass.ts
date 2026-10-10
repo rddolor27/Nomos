@@ -4,7 +4,7 @@ import { COUNTRY_COLOURS, LINE_COLOURS } from './colours.ts';
 import { flatFills } from './fills.ts';
 import { tileFrame, type AtlasPage } from './frames.ts';
 import { link, nearestTexture } from './gl.ts';
-import { BAND, BORDER, DECK, LANE, RAIL, RIVER, ROAD, buildOverlay } from './overlay.ts';
+import { BAND, BORDER, DECK, HIGHWAY, LANE, RAIL, RIVER, ROAD, buildOverlay } from './overlay.ts';
 
 const ATLAS_UNIT = 0;
 const CELLS_UNIT = 1;
@@ -109,6 +109,7 @@ function palette(): Float32Array {
     [RIVER, LINE_COLOURS.river],
     [LANE, LINE_COLOURS.lane],
     [ROAD, LINE_COLOURS.road],
+    [HIGHWAY, LINE_COLOURS.highway],
     [DECK, LINE_COLOURS.deck],
     [RAIL, LINE_COLOURS.rail],
     [BORDER, LINE_COLOURS.border],

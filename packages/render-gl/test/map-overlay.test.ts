@@ -1,5 +1,6 @@
+import { ROAD_CLASS_NAMES } from '@nomos/sim-protocol/world-map';
 import { describe, expect, it } from 'vitest';
-import { BAND, BORDER, DECK, RAIL, RIVER, ROAD, buildOverlay, type Overlay } from '../src/map.ts';
+import { BAND, BORDER, DECK, HIGHWAY, RAIL, RIVER, ROAD, buildOverlay, type Overlay } from '../src/map.ts';
 import { tinyWorld } from './tiny-world.ts';
 
 function row(o: Overlay, y: number, x0: number, x1: number): number[] {
@@ -16,6 +17,11 @@ const TWO = { country: new Uint8Array([1, 2]), countries: { capital: new Int32Ar
 const FLOW = { river: new Uint8Array([1, 0, 0]), receiver: new Int32Array([1, -1, -1]) };
 const ROAD_0_1 = { roads: { offsets: new Int32Array([0, 2]), cells: new Int32Array([0, 1]) } };
 const BRIDGED = { roads: { offsets: new Int32Array([0, 3]), cells: new Int32Array([0, 1, 2]) }, bridges: new Int32Array([1]) };
+// A major road from cell 0 to cell 1, and a minor one on from cell 1 to cell 2.
+const CLASSED = {
+  roads: { offsets: new Int32Array([0, 2, 4]), cells: new Int32Array([0, 1, 1, 2]) },
+  roadClass: Uint8Array.from(['major', 'minor'] as const, (name) => ROAD_CLASS_NAMES.indexOf(name)),
+};
 
 describe('the map overlay', () => {
   it("draws borders on cell edges, as test_worldgen.py checks the previews'", () => {
@@ -45,6 +51,20 @@ describe('the map overlay', () => {
     expect(row(buildOverlay(tinyWorld(2, 1, both), 'country'), 4, 4, 12)).toEqual(dotted);
     const region = row(buildOverlay(tinyWorld(2, 1, ROAD_0_1), 'region'), 8, 7, 26);
     expect(region).toEqual([0, 3, 3, 3, 0, 3, 3, 3, 0, 3, 3, 3, 0, 3, 3, 3, 0, 3, 3, 0].map((v) => (v ? ROAD : 0)));
+  });
+
+  it('draws a major road solid in HIGHWAY, over a minor one dotted in ROAD', () => {
+    const country = row(buildOverlay(tinyWorld(3, 1, CLASSED), 'country'), 4, 4, 20);
+    expect(country).toEqual([...Array<number>(9).fill(HIGHWAY), 0, ROAD, 0, ROAD, 0, ROAD, 0, ROAD]);
+    const region = row(buildOverlay(tinyWorld(3, 1, CLASSED), 'region'), 8, 7, 42);
+    const dotted = [3, 0, 3, 3, 3, 0, 3, 3, 3, 0, 3, 3, 3, 0, 3, 3, 0].map((v) => (v ? ROAD : 0));
+    expect(region).toEqual([0, ...Array<number>(18).fill(HIGHWAY), ...dotted]);
+  });
+
+  it('marks both roads among the routes the flat view hides, RIVER to RAIL', () => {
+    const marks = new Set(buildOverlay(tinyWorld(3, 1, CLASSED), 'region').pixels);
+    expect(marks).toEqual(new Set([0, ROAD, HIGHWAY]));
+    for (const mark of [ROAD, HIGHWAY]) expect(mark >= RIVER && mark <= RAIL, `mark ${mark}`).toBe(true);
   });
 
   it('lays a bridge deck along its road, with a rail round it', () => {

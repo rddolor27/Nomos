@@ -41,7 +41,8 @@ function overlays(map: WorldMap, view: MapView): Placed[] {
     out.push({ gy: Math.floor(cell / width), layer: ICONS, gx: cell % width, name });
   });
   map.settlements.cell.forEach((cell, id) => {
-    out.push({ gy: Math.floor(cell / width), layer: TOWNS, gx: cell % width, name: settlementFrame(map.settlements.tier[id]) });
+    const name = settlementFrame(map.settlements.tier[id], view);
+    out.push({ gy: Math.floor(cell / width), layer: TOWNS, gx: cell % width, name });
   });
   return out;
 }
@@ -71,7 +72,8 @@ function beside(map: WorldMap, page: AtlasPage, placed: readonly Placed[]): Plac
     if (kinds.length === 0) return;
     const x = cell % map.width;
     const y = Math.floor(cell / map.width);
-    const reach = Math.floor((Math.floor(page.frames[settlementFrame(map.settlements.tier[id])].w / 2) + 8) / 16) + 1;
+    const icon = page.frames[settlementFrame(map.settlements.tier[id], 'region')];
+    const reach = Math.floor((Math.floor(icon.w / 2) + 8) / 16) + 1;
     const spots = [
       [x + reach, y],
       [x - reach, y],

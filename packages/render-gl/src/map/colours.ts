@@ -19,6 +19,7 @@ export const LINE_COLOURS = {
   river: rgbOf(table.river),
   lane: rgbOf(table.lane),
   road: rgbOf(table.road),
+  highway: rgbOf(table.highway),
   deck: rgbOf(table.deck),
   rail: rgbOf(table.rail),
   border: rgbOf(table.border),

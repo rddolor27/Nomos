@@ -12,6 +12,7 @@ import {
   CROWD_COLOURS,
   CROWD_OUTLINE,
   DECK,
+  HIGHWAY,
   LANE,
   LINE_COLOURS,
   RAIL,
@@ -31,8 +32,8 @@ import {
 import { tinyWorld } from '../test/tiny-world.ts';
 
 // A world as plain arrays, so a spec can hand it through evaluate. Cells left out take tinyWorld's grassland of
-// country 1, and colour lists each country's colour index. Landmarks go in settlements' slots; sites are landmarks on
-// cells of their own.
+// country 1, and colour lists each country's colour index. Roads are minor unless roadClass says otherwise. Landmarks
+// go in settlements' slots; sites are landmarks on cells of their own.
 export interface WorldSpec {
   width: number;
   height: number;
@@ -43,6 +44,7 @@ export interface WorldSpec {
   river?: number[];
   receiver?: number[];
   roads?: number[][];
+  roadClass?: number[];
   lanes?: number[][];
   bridges?: number[];
   settlements?: { cell: number; tier: number; landmarks?: number[] }[];
@@ -160,6 +162,7 @@ function worldOf(spec: WorldSpec): WorldMap {
     river: Uint8Array.from(filled(spec.river, cells, 0)),
     receiver: Int32Array.from(filled(spec.receiver, cells, -1)),
     roads: paths(spec.roads),
+    roadClass: Uint8Array.from(filled(spec.roadClass, spec.roads?.length ?? 0, 0)),
     lanes: paths(spec.lanes),
     bridges: Int32Array.from(spec.bridges ?? []),
     settlements: settlementsOf(spec.settlements),
@@ -219,6 +222,7 @@ function lineColour(mark: number): number {
     [RIVER]: LINE_COLOURS.river,
     [LANE]: LINE_COLOURS.lane,
     [ROAD]: LINE_COLOURS.road,
+    [HIGHWAY]: LINE_COLOURS.highway,
     [DECK]: LINE_COLOURS.deck,
     [RAIL]: LINE_COLOURS.rail,
     [BORDER]: LINE_COLOURS.border,
@@ -351,11 +355,13 @@ function glWant(map: WorldMap, view: MapView, flat: boolean, crowd: CrowdOver): 
   return (ax, ay, px, py) => over(sprites, drawnFlat, ax, ay, crowd(under(map, overlay, view, drawnFlat, ax, ay), px, py));
 }
 
-// The settlements of iconSprites' list, in its order, which is row order.
+// The settlements of iconSprites' list, in its order, which is row order: plain icons, and walled or palisaded ones
+// at either view's scale.
 function townSprites(sprites: Int16Array): Int16Array {
   const kept: number[] = [];
   for (let at = 0; at < sprites.length; at += SPRITE_SHORTS) {
-    if ((namesAt.get(sprites[at + 2]) ?? '').startsWith('map/settlement_')) kept.push(...sprites.subarray(at, at + SPRITE_SHORTS));
+    const name = namesAt.get(sprites[at + 2]) ?? '';
+    if (/^map\/(map(8|16)_)?settlement_/.test(name)) kept.push(...sprites.subarray(at, at + SPRITE_SHORTS));
   }
   return Int16Array.from(kept);
 }

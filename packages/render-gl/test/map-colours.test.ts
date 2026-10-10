@@ -7,4 +7,8 @@ describe('the map colours', () => {
     expect(new Set(COUNTRY_COLOURS).size).toBe(5);
     for (const colour of COUNTRY_COLOURS) expect(Object.values(LINE_COLOURS)).not.toContain(colour);
   });
+
+  it("draws highways in the palette's STONE_L", () => {
+    expect(LINE_COLOURS.highway).toBe(0x9aa2b4);
+  });
 });

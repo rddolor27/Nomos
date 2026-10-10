@@ -12,8 +12,9 @@ const known = new Set(
 const VIEWS: MapView[] = ['country', 'region'];
 
 function everyName(): string[] {
-  const names = TIER_NAMES.map((_, tier) => settlementFrame(tier));
+  const names: string[] = [];
   for (const view of VIEWS) {
+    TIER_NAMES.forEach((_, tier) => names.push(settlementFrame(tier, view)));
     for (let biome = 0; biome < BIOME_NAMES.length; biome++) {
       for (let variant = 0; variant < 4; variant++) {
         names.push(tileFrame(biome, variant, view));

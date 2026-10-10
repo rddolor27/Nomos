@@ -27,10 +27,11 @@ from climate import GRASSLAND, HILLS, HILLS_AT, LAKE, MOUNTAIN, OCEAN, SNOW, SNO
 from colours import VIEWERS, ciede2000, rgb_of, seen_by, to_lab, wheel_hue  # noqa: E402
 from countries import Country, capitals, count, found, grow  # noqa: E402
 from grid import neighbours  # noqa: E402
-from mapdraw import BORDER, COUNTRY_COLOURS, View, _borders, countries_png, country_png, region_png  # noqa: E402
+from mapdraw import (BORDER, COUNTRY_COLOURS, ROAD, View, _borders, _routes, _settlement_frame,  # noqa: E402
+                     countries_png, country_png, region_png)
 from mapfile import WALK_ROAD  # noqa: E402
 from model import PlaceContext  # noqa: E402
-from roads import landmasses  # noqa: E402
+from roads import MAJOR, MINOR, landmasses  # noqa: E402
 from settle import Settlement, habitability  # noqa: E402
 from world import SIZES, fingerprint, generate  # noqa: E402
 
@@ -205,15 +206,51 @@ def borders_draw_on_cell_edges():
     return problems[:6]
 
 
+def drawn_routes(classes):
+    """_routes at 8 px for a stand-in 3 x 1 world, with a road from cell 0 to cell 1 and one on to cell 2 in these
+    classes: row 4's pixels from the first cell's centre to the last's."""
+    w = SimpleNamespace(width=3, height=1, lanes=[], roads=[[0, 1], [1, 2]], road_class=bytearray(classes))
+    image = Image.new('RGB', (24, 8), BLANK)
+    _routes(View(w, 8, 0, 0, 3, 1), ImageDraw.Draw(image), 1, 1, 1)
+    return [image.getpixel((x, 4)) for x in range(4, 21)]
+
+
+def routes_draw_majors_solid_over_minors():
+    """Major roads draw solid in the palette's STONE_L, over minor roads dotted in ROAD (M3.1's Part 3)."""
+    from spritekit import PALETTE
+    want = [PALETTE['STONE_L']] * 9 + [BLANK, ROAD] * 4
+    got = drawn_routes([MAJOR, MINOR])
+    return [] if got == want else [f'row 4 from x 4: {got}, want {want}']
+
+
+# Each tier's icon at 8 and 16 px a cell (M3.1's Part 3, Ruling 12).
+SETTLEMENT_ICONS = {
+    'capital': ['map8_settlement_capital-walled', 'map16_settlement_capital-walled'],
+    'city': ['map8_settlement_city-walled', 'map16_settlement_city-walled'],
+    'town': ['map8_settlement_town-palisade', 'map16_settlement_town-palisade'],
+    'village': ['settlement_village', 'settlement_village'],
+    'hamlet': ['settlement_hamlet', 'settlement_hamlet'],
+}
+
+
+def settlement_icons_by_tier_and_size():
+    from showcase import Sheets
+    frames = Sheets().load('map')[1]
+    got = {tier: [_settlement_frame(tier, size) for size in (8, 16)] for tier in SETTLEMENT_ICONS}
+    problems = [] if got == SETTLEMENT_ICONS else [f'icons {got}, want {SETTLEMENT_ICONS}']
+    return problems + [f'{name} is not on the map sheet' for names in got.values() for name in names
+                       if name not in frames]
+
+
 def map_colours_match_the_palette():
     """map-colours.json, which render-gl's map scene shares, holds the palette's water and line colours."""
     from mapdraw import MAP_COLOURS
     from spritekit import PALETTE
-    names = {'water': 'WATER', 'river': 'WATER', 'lane': 'WATER_L', 'road': 'WOOD', 'deck': 'WOOD_L', 'rail': 'WOOD_D',
-             'border': 'OUTLINE', 'outline': 'OUTLINE'}
+    names = {'water': 'WATER', 'river': 'WATER', 'lane': 'WATER_L', 'road': 'WOOD', 'highway': 'STONE_L',
+             'deck': 'WOOD_L', 'rail': 'WOOD_D', 'border': 'OUTLINE', 'outline': 'OUTLINE'}
     wanted = {key: '#' + bytes(PALETTE[name]).hex().upper() for key, name in names.items()}
-    return [f'{key} is {MAP_COLOURS[key]}, but the palette gives {colour}' for key, colour in wanted.items()
-            if MAP_COLOURS[key] != colour]
+    return [f'{key} is {MAP_COLOURS.get(key)}, but the palette gives {colour}' for key, colour in wanted.items()
+            if MAP_COLOURS.get(key) != colour]
 
 
 def crowd_hues_are_the_body_hues():
@@ -412,7 +449,8 @@ CHECKS = [snow_on_cold_lowland, lone_snow_melts, snow_is_uninhabitable, snow_pla
           count_is_three_to_five, capitals_spaced_in_population_order, grow_breaks_ties_by_cost_then_cell,
           grow_bends_to_mountains, island_joins_the_cheaper_crossing, diagonal_never_slips,
           small_countries_pass_their_capital_on, fingerprint_covers_countries, fingerprints_are_pinned,
-          borders_draw_on_cell_edges, map_colours_match_the_palette, crowd_hues_are_the_body_hues,
+          borders_draw_on_cell_edges, routes_draw_majors_solid_over_minors, settlement_icons_by_tier_and_size,
+          map_colours_match_the_palette, crowd_hues_are_the_body_hues,
           ciede2000_matches_sharma, country_colours_keep_apart,
           colour_check_bites, previews_write, town_roads_never_draw_as_water]
 WORLD_CHECKS = [snow_lies_on_cold_lowland, countries_cover_the_land, stage_only_retiers_capitals,
