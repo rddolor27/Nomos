@@ -34,8 +34,9 @@ const META: SummaryMeta = {
 };
 
 // Each array runs over the window's months, 6 to 11. Month totals sit on the first or last day of the month, as the
-// flow log writes them, and sales are spread over its days. Levels and sales_units have seven entries, the first being
-// month 5, which month 6 starts from and compares its sales with; levels are read only on a month's last day.
+// flow log writes them, and sales and output are spread over its days. Levels, sales_units and produced have seven
+// entries, the first being month 5, which month 6 starts from and compares its output with; levels are read only on a
+// month's last day.
 type Plan = Record<Exclude<SummaryColumn, 'stayers' | 'stayer_cuts'>, number[]>;
 
 const ON_FIRST_DAY = ['price_changes', 'price_change_ppm', 'hires', 'switches', 'job_visits', 'above_markup'] as const;
@@ -43,10 +44,12 @@ const ON_LAST_DAY = ['firings', 'wage_bill', 'exits', 'spell_months', 'long_spel
 const LEVELS = ['unemployed', 'vacancies', 'price_mean', 'wage_mean', 'stock', 'size_squares', 'size_cubes'] as const;
 
 const UNEMPLOYED = [50, 60, 70, 80, 60, 50, 40];
-// Wages fall by 0.05 minus the unemployment rate, vacancy rates are 0.10 minus it, and sales grow by ten times the fall
-// in it, so each correlation is exactly -1 when it pairs the right months.
+// Wages fall by 0.05 minus the unemployment rate, vacancy rates are 0.10 minus it, and output grows by ten times the fall
+// in it, so each correlation is exactly -1 when it pairs the right months. Sales stay flat, so Okun is -1 only if it
+// reads the units produced.
 const WAGE_MEAN = chain(100_000, (previous, i) => previous * (1.05 - UNEMPLOYED[i] / PEOPLE));
-const SALES_UNITS = chain(210_000, (previous, i) => previous * (1 - (10 * (UNEMPLOYED[i] - UNEMPLOYED[i - 1])) / PEOPLE));
+const PRODUCED = chain(210_000, (previous, i) => previous * (1 - (10 * (UNEMPLOYED[i] - UNEMPLOYED[i - 1])) / PEOPLE));
+const SALES_UNITS = UNEMPLOYED.map(() => 210_000);
 const STOCK_PER_SALES = [1, 1, 1.2, 0.8, 1, 1, 1];
 // One firm in a hundred is big in some months and two in others; the rest hold 5. Skew then depends only on that share.
 const BIG_FIRMS = [1, 1, 2, 1, 2, 1, 2];
@@ -79,6 +82,7 @@ const BASE: Plan = {
   long_spells: [18, 21, 24, 18, 15, 12],
   sales_cents: [1_302_000, 1_386_000, 1_470_000, 1_386_000, 1_386_000, 1_386_000],
   sales_units: SALES_UNITS,
+  produced: PRODUCED,
   unemployed: UNEMPLOYED,
   vacancies: UNEMPLOYED.map((n) => {
     const rate = 0.1 - n / PEOPLE;
@@ -106,6 +110,7 @@ function build(plan: Plan): SummaryColumns {
   for (let i = 0; i < 7; i++) {
     const first = (5 + i) * MONTH;
     columns.sales_units.fill(plan.sales_units[i] / MONTH, first, first + MONTH);
+    columns.produced.fill(plan.produced[i] / MONTH, first, first + MONTH);
     for (const name of LEVELS) {
       columns[name].fill(MID_MONTH_NOISE, first, first + MONTH - 1);
       columns[name][first + MONTH - 1] = plan[name][i];
@@ -189,9 +194,9 @@ describe('the target table', () => {
     }
   });
 
-  it('reads 22 columns, each named once', () => {
-    expect(SUMMARY_COLUMNS).toHaveLength(22);
-    expect(new Set(SUMMARY_COLUMNS).size).toBe(22);
+  it('reads 23 columns, each named once', () => {
+    expect(SUMMARY_COLUMNS).toHaveLength(23);
+    expect(new Set(SUMMARY_COLUMNS).size).toBe(23);
   });
 });
 
@@ -200,6 +205,13 @@ describe('summarize', () => {
     const values = summarize(build(BASE), META);
     expect(Object.keys(values).sort()).toEqual(TARGETS.map((target) => target.id).sort());
     expectValues(values, EXPECTED);
+  });
+
+  it('measures Okun on the units produced, whatever the units sold do', () => {
+    const jaggedSales = { ...BASE, sales_units: [210_000, 90_000, 400_000, 100_000, 300_000, 50_000, 250_000] };
+    expect(summarize(build(jaggedSales), META).okun).toBeCloseTo(-1, 10);
+    // With output flat there is nothing to correlate, and NaN is in no band.
+    expect(summarize(build({ ...BASE, produced: SALES_UNITS }), META).okun).toBeNaN();
   });
 
   it('reads nothing from the warm-up, the partial month after the window, or a year end outside it', () => {

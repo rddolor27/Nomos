@@ -5,7 +5,7 @@ import type { TargetId } from './targets.ts';
 // The flow-log columns (schema 1) that the targets read.
 export const SUMMARY_COLUMNS = [
   'unemployed', 'vacancies', 'price_mean', 'wage_mean', 'stock', 'size_squares', 'size_cubes', 'sales_units',
-  'sales_cents', 'price_changes', 'price_change_ppm', 'hires', 'switches', 'firings', 'wage_bill', 'exits',
+  'sales_cents', 'price_changes', 'price_change_ppm', 'hires', 'switches', 'firings', 'wage_bill', 'exits', 'produced',
   'job_visits', 'above_markup', 'spell_months', 'long_spells', 'stayers', 'stayer_cuts',
 ] as const;
 
@@ -139,7 +139,8 @@ function cycleMeasures(c: SummaryColumns, w: Window, people: number) {
     unemployment_mean: mean(u),
     unemployment_sd: sampleSd(u),
     phillips: correlation(growth(endLevels(c.wage_mean, w), startLevels(c.wage_mean, w)), u),
-    okun: correlation(growth(sums(c.sales_units, w), priorSums(c.sales_units, w)), u.map((value, i) => value - priorU[i])),
+    // Output is the units made. Sales follow demand and stock, and measured on them Okun's sign came out positive (M2.3 review).
+    okun: correlation(growth(sums(c.produced, w), priorSums(c.produced, w)), u.map((value, i) => value - priorU[i])),
     beveridge: correlation(vacancyRate, u),
   };
 }
