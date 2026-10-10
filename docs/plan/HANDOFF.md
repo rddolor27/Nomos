@@ -219,6 +219,20 @@ If the session ended: check `git log` for those Task lines, and `git status` for
 - No other task starts. Tasks 12–16 and 19–21 stay as plans in M3.1's Part 3, and a later round implements them when the owner says.
 - Once Tasks 11 and 18 land, the coordinator writes checkpoint 0033 with the summary.
 
+**10 Oct, 11:10: the round's started tasks are all in.**
+- **Task 18** (19ef31a): the country map draws major roads solid in `highway` (#9AA2B4) and minor roads dotted, with walled and palisaded icons in both views.
+  - 60 of 60 map browser specs pass in Chromium, Firefox and WebKit.
+  - The Countries golden came out byte-identical, since its flat view hides roads and icons.
+  - A capital's landmarks in the Region view moved from 2 cells out to 3, to clear the 52-px walled icon.
+- **Task 11** (d68ff59), at the planned 176×112 and 152×96, with no fallback:
+  - two runs: capital median 178 and 200 ms, worst 215 and 235 ms, against budgets of 236 and 321 ms; city median 171 and 177 ms against 214 ms;
+  - three changes in the port alone brought it within budget, with output unchanged;
+  - Highcourt is 176×112, with 15,862 walkable tiles and 387 homes. Its pins are phone `dd30b5fd` and desktop `39f5b5ea`, and the start counts 3,965, 5,287 and 7,931.
+  - Its ledger is the gitignored `.superpowers/sdd/plan-m3.1-town-generator/task11-ledger.md`. Checkpoint 0033 copies the rulings that matter.
+- **The coordinator's fix** (c4b8bc1): cut-stone main roads drew as light water on the dots map (WATER_L), so road kinds now pick a dry ground colour, and stone takes SAND_D. The pins don't move.
+- **The tree:** `nomos-bd`'s steering refactor (a530047) broke `tools/bench/test/alloc.test.ts`, and its agent is fixing it.
+- Plans only from here: Tasks 12–16 and 19–21 wait for the owner. Checkpoint 0033 holds the summary.
+
 ## The town view session (nomos-bd), continued
 
 - 10 Oct: **step 4 and the blob counts are done and pushed** (217980a, d5dfdff, d999ab7, dea6b06 and d6e3bdc).
