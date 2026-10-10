@@ -8,6 +8,7 @@ import { createLedger, issue, walletAccount, type Ledger } from '../money/ledger
 import { reserveArena, take, type Arena } from '../memory/arena.ts';
 import { MAX_CULTURES, SUPPLIERS, addAgent, createAgentStore, type AgentStore } from '../agents/store.ts';
 import { createFirmStore, type FirmStore } from '../firms/store.ts';
+import { createGoodsStore, type GoodsStore } from '../goods/store.ts';
 import { createHouseholdStore, type HouseholdStore } from '../households/store.ts';
 import { createEconomyScratch, type EconomyScratch } from '../economy/scratch.ts';
 import { SPAWN, STRIDE } from '../random/streams.ts';
@@ -24,6 +25,9 @@ export const TOWN = 4;
 // The people the day's economy lays off on its first tick: the layoffs logged since the last boundary, added up when the
 // boundary applies them, so only the boundary writes it (M2.2b).
 export const DAY_LAYOFFS = 5;
+// 1 for a world that runs the seven goods and food (EconomyParams.goods, which startEconomy and spawnFromLedger copy here),
+// and 0 for one with the generic good. The state hash mixes the goods store in only while it is 1 (M2.4).
+export const GOODS = 6;
 const GLOBAL_SLOTS = 8;
 
 // The settlement record is double-buffered: day slices fold into the back half, and the last slice flips
@@ -51,6 +55,7 @@ export interface World {
   readonly agents: AgentStore;
   readonly firms: FirmStore;
   readonly households: HouseholdStore;
+  readonly goods: GoodsStore;
   readonly economyScratch: EconomyScratch;
   readonly cash: Ledger;
   readonly blob: Blob;
@@ -107,6 +112,7 @@ export function layoutWorld(
   const firms = createFirmStore(arena, TIER_FIRMS[tier]);
   const economyScratch = createEconomyScratch(arena, agents, TIER_FIRMS[tier]);
   const households = createHouseholdStore(arena, agents);
+  const goods = createGoodsStore(arena, TIER_FIRMS[tier]);
   const world: World = {
     seed,
     tier,
@@ -115,6 +121,7 @@ export function layoutWorld(
     agents: store,
     firms,
     households,
+    goods,
     economyScratch,
     cash,
     blob,

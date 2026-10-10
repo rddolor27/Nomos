@@ -42,6 +42,8 @@ export const CITY = Object.freeze<EconomyParams>({
   // to it, and it pays under the exit line and exits again every month.
   shortPayExitPpm: 0,
   fiatIssuePpm: 0,
+  // Off until M2.4's task 4 re-measures the city with goods on; { ...CITY, goods: 0 } is M2.3's city.
+  goods: 0,
   openingCash: 310_000,
   openingWage: 142_800,
   // 3,200 x 63 is 1.41 x the 142,800 wage, inside the band.

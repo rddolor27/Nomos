@@ -92,6 +92,7 @@ describe('the economy parameters', () => {
       slowSearcherPpm: 0,
       slowJobSearches: 5,
       fiatIssuePpm: 0,
+      goods: 0,
       openingCash: 310_000,
       openingWage: 142_800,
       openingPrice: 2_500,

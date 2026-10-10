@@ -44,6 +44,9 @@ export interface EconomyParams {
   readonly shortPayExitPpm: number;
   // A month's issue as a share of the money stock; 0 is closed money.
   readonly fiatIssuePpm: number;
+  // 1 runs the seven goods and food (M2.4), one good to each firm in exact shares; 0 keeps the one generic good, as LENGNICK
+  // does. start and spawn copy it to the world's GOODS slot.
+  readonly goods: number;
   readonly openingCash: number;
   readonly openingWage: number;
   readonly openingPrice: number;
@@ -78,6 +81,7 @@ export const LENGNICK = Object.freeze<EconomyParams>({
   idleMonthsToExit: 3,
   shortPayExitPpm: 0,
   fiatIssuePpm: 0,
+  goods: 0,
   openingCash: 310_000,
   openingWage: 142_800,
   openingPrice: 2_500,
@@ -102,6 +106,7 @@ export function checkParams(params: EconomyParams, tier: Tier): void {
   // Nobody reads slowJobSearches at a share of 0, so a grid may lower jobSearches under LENGNICK's unused 5.
   if (params.slowSearcherPpm > 0) requireBetween('slowJobSearches', params.slowJobSearches, 1, params.jobSearches);
   requireBetween('markupClamp', params.markupClamp, 0, 1);
+  requireBetween('goods', params.goods, 0, 1);
   checkOpeningPrice(params);
 }
 
