@@ -1,60 +1,36 @@
 # Checkpoints
 
-A checkpoint records where Nomos stands, so any agent or person can pick up the work without the conversation that produced it. The file with the highest number is the current state.
+A checkpoint records where Nomos stands, so the next session can resume without the conversation behind it. This folder keeps only the current one; older ones are in git history.
 
 ## When to write one
 
-- When a sub-milestone closes, after its exit checks pass.
-- Before stopping partway, for example when usage runs out, so the next agent can resume mid-task.
+- Before stopping, whether the work is done or paused, for example when usage runs out.
 - After an owner decision that changes the plan.
-
-## How to resume from one
-
-1. Open the highest-numbered file here.
-2. Compare its `based_on` commit with `git log`: anything after it was done after the checkpoint and is not described in it.
-3. Read the plan file that `next` names, and start there. Anything listed in `waiting_on` must be settled first.
 
 ## Format
 
-Name each file `NNNN-short-slug.md`, numbered from 0001. Never edit a committed checkpoint; write a new one instead.
-
-Every checkpoint starts with this front matter:
+Name it `NNNN-short-slug.md`, numbered on from the last, and keep each section to a few lines. Commit it alone as `docs(plan): add checkpoint NNNN`, removing the previous checkpoint in the same commit. Never edit a committed checkpoint; write a new one.
 
 ```yaml
 ---
-checkpoint: 2                  # matches the file number
-date: 2026-10-08               # UTC
-milestone: M0.1                # the sub-milestone it closes or pauses, or "planning"
-status: done                   # done, paused or blocked
-based_on: f64d5a8              # the last commit before this checkpoint
-next: M0.2 State and money (docs/plan/tasks/<plan file>.md)
+checkpoint: 35                 # matches the file number
+date: 2026-10-10               # UTC
+milestone: M2.3                # the sub-milestone it closes or pauses, or "planning"
+status: paused                 # done, paused or blocked
+based_on: 6736fb6              # the last commit before this checkpoint
+next: the next task, with its plan file
 waiting_on: []                 # owner decisions or reviews that block next
 ---
 ```
 
-Then these sections, in this order:
-
-1. **State:** two or three sentences on where the project stands.
-2. **Done since the last checkpoint:** what landed, with commit ranges and the command that proves it.
-3. **Decisions:** owner decisions and the agent's own rulings, each with its reason.
-4. **Open:** owner decisions still pending, known gaps and deferred findings.
-5. **Next:** the exact next task and its plan file. For a paused task, give the step reached and any uncommitted state.
-6. **How to verify:** commands that should pass right now.
+Then four short sections:
+1. **State:** two or three sentences.
+2. **Decisions:** owner decisions and rulings since the last checkpoint, one line each; `docs/plan/HANDOFF.md` keeps the details.
+3. **Open:** what is pending or known to be broken.
+4. **Next:** the exact next task and its plan file; for paused work, the step reached and any uncommitted state.
 
 ## Rules
 
-- Write facts only. Every claim must be checkable in git or by running a command.
-- The repo is public, so never write secrets, personal email addresses or private configuration into a checkpoint.
-- When a sub-milestone closes, also fill in its Started, Done and Actual cells in its milestone file under `docs/plan/tasks/`.
-- Commit each checkpoint on its own, with the header `docs(plan): add checkpoint NNNN`.
-
-## Conventions for agents
-
-- **Git:** commit straight to `main`, with no branches or pull requests. Use a Conventional Commits header of at most 72 characters, then a body whose `Task:` line names the work by ID and title, such as `Task: M0.1 Workspace and kernels, task 2: The sim-core lint profile`, with no co-author. Author and committer are the owner's no-reply address: `git -c user.name=rddolor27 -c user.email=80044625+rddolor27@users.noreply.github.com commit`. Push only when the owner asks.
-- **Where things go:** plans in `docs/plan/`, checkpoints here, and product code in `apps/`, `packages/` and `tools/`. Milestones live in `docs/plan/tasks/`, whose README is the roadmap:
-  - each milestone has a folder, such as `m3-city-life/`, with `milestone.md` giving its overview and progress table;
-  - each sub-milestone has a folder inside it, such as `m3.2-daily-routines/`, with `task.md` (what to build and the checks that close it) and `plan.md` (how to build it);
-  - a `plan.md` is either a step-by-step plan, ready to execute, or a brief that is expanded into one with the writing-plans skill just before the work starts.
-- **Source of truth:** the shared plan doc is the live plan, and `docs/plan/implementation-plan.md` is its export. Its milestone sections carry the rules each task must follow, such as determinism, budgets and content rules.
-- **Art and sound rules:** `tools/sprites/README.md` and `tools/sounds/README.md`.
-- **Plan tools:** after editing a milestone breakdown, run `python tools/plan/check_coverage.py` to catch dropped plan items, and `python tools/plan/roadmap.py` to rebuild the roadmap. The roadmap is generated; never edit it by hand.
+- Write facts only, each checkable in git or by running a command.
+- The repo is public: no secrets, personal email addresses or private configuration.
+- To resume, compare `based_on` with `git log`: later commits aren't described in the checkpoint.
