@@ -96,8 +96,8 @@ Skin B and Skin C arrive as `blobs/` and `town/` beside `dots/` (M1.3, M3.3). M8
 | --- | --- | --- |
 | `src/` | `main.ts` | The entry `index.html` loads |
 | `app/` | `app.ts`, `boot.ts`, `lifecycle.ts`, `query.ts`, `tiers.ts` | The app shell: boot hand-off, worker link, query, tiers and the page lifecycle |
-| `view/` | `camera-input.ts`; `town-skin.ts` (the Town skin) | Pointer and keyboard input on the view, and the click that inspects; it loads after the first frame, as the charts do (M0.7). `camera-input.ts` also imports the Town skin's loader, `town-skin.ts`, once the page is interactive |
-| `panels/` | `hud.ts`, `charts.ts`, `controls.ts`, `inspector.ts` (new) | The HUD, the lazy charts and controls, and the on-demand inspector |
+| `view/` | `camera-input.ts`; `pinch.ts` (`Pinch`, two-pointer zoom in whole steps); `zoom-bar.ts` (`ZoomBar`, the town's −, + and Fit); `town-skin.ts` (the Town skin) | Pointer and keyboard input on the view: the click that inspects, wheel, keys, pinch, and Home to fit (M0.8, b44ed12). It loads after the first frame, as the charts do (M0.7). `camera-input.ts` also imports the Town skin's loader, `town-skin.ts`, once the page is interactive |
+| `panels/` | `hud.ts`, `charts.ts`, `controls.ts`, `inspector.ts`, `toolbar.ts` (the compact bar the map and the town view share, M0.8); `shop-name.ts` (`shopName(firm)`: Shop N is firm row N − 1, M2.2b) | The HUD, the lazy charts and controls, the on-demand inspector, and the map's toolbar |
 | `map/` | `generate.ts` and `map-worker.ts` (M8.1); `map-view.ts`, `map-input.ts`, `labels.ts`, `legend.ts` and `goto.ts` (M8.3); `place-builder.ts`, `place-view.ts` and `walkers.ts` (M3.1); `town.ts` (the Town skin) | The map: its worker and the worker's lazy place builder, the lazy view the Map control opens, and the town view a place opens into. `town.ts` pins Highcourt's place context for the builder |
 
 `apps/web/vite/` keeps the build plugins. Vite names a lazy chunk after its file, so the size-limit globs `charts-*.js` and `controls-*.js` hold after the move, and the view input's and the inspector's chunks need entries of their own.
@@ -131,7 +131,7 @@ Grids live in `tools/cli/grids/`, outside `src/`.
 | `sound-set/` | `sound-set.ts` (new) | The one shared mixed sound set: Greek-like sounds mixed with other languages', learned from Fantasy Map Generator's name bases, and its candidate words |
 | `lints/` | `culture-text.ts`, `scan.ts` | The culture text lint and the repo scan |
 
-`tools/names/scripts/` gains `words.ts`, which writes the person-name table into `sim-culture` and checks it with `--check`, and `build-avoid.ts` and `build-name-bases.ts`, which rebuild the new fixtures from the network and are run by hand. M8.1's place-name table comes from the same `sound-set/`, as a second output of `words.ts`.
+`tools/names/scripts/` gains `words.ts`, which writes the person-name table into `sim-culture` and checks it with `--check`, and `build-avoid.ts` and `build-name-bases.ts`, which rebuild the new fixtures from the network and are run by hand. M8.1's place-name table comes from the same `sound-set/`, as a second output of `words.ts`: `PLACE_WORDS`, 1,024 words on build seed `PLACE_SEED` (2), written to `packages/worldgen/src/names/words.ts` with Fantasy Map Generator's licence beside it. `words.ts` exports `PERSON_TABLE`, `PLACE_TABLE`, `TABLES` and `tableSource(words, constant)`.
 
 ## The world step (owner: M0.3)
 
@@ -324,7 +324,7 @@ M8.1 ports `tools/worldgen` to TypeScript, and M8.3 draws what it makes. The own
 | `regions/` | `regions.ts` | Regions inside countries, and market territories across them; Python has neither |
 | `routes/` | `costs.ts`, `graph.ts`, `roads.ts`, `lanes.ts`, `classes.ts` (M3.1's Part 3) | `roads.py`, whose step costs countries share, and its road classes |
 | `features/` | `survey.ts`, `wonders.ts`, `landmarks.ts` | `features.py` |
-| `names/` | `place-names.ts`, `words.ts` (generated) | Place and country names |
+| `names/` | `place-names.ts`, `words.ts` (generated), `LICENSE-fmg.txt` | Place and country names |
 | `world/` | `draft.ts`, `generate.ts`, `fingerprint.ts` | The world being built, the pipeline, and `world.fingerprint` |
 | `place/` | `site.ts`, `build.ts`, the stage files (among them `walls.ts` and `farms.ts`, from M3.1's Part 3), `looks.ts`, `contexts.ts`, `layout.ts`, `walks.ts`, `street-crowd.ts` and `frames.ts` (generated) | `place.py`, `looks.py`'s `look_for` and `world.py`'s place contexts, plus the walk loops and the street crowd Python lacks (M3.1, Places below) |
 
@@ -412,7 +412,10 @@ The rest:
   - each country's regions grow from its seats by the countries' growth, over its own land and any water;
   - market territories grow from the same seats with no fence, since trade crosses borders.
 - **Countries and regions are map facts:** no sim rule reads them (Countries).
-- **Names:** `placeNames(map: WorldMap): string[]` gives the K country names, then the n settlement names in id order. They are display text, outside the map and the fingerprint. Until the place-name table lands, they are stand-ins: `country-1`, and `capital-0` or `town-12` as Python names settlements.
+- **Names:** `placeNames(map: WorldMap): string[]` gives the K country names, then the n settlement names in id order. They are display text, outside the map and the fingerprint.
+  - A name is a capitalised `PLACE_WORDS` word keyed on a cell, never an id: a country keys on its capital's cell and a settlement on its own (M8.1 Task 33).
+  - Countries take names first, in id order, then settlements in cell order. A word already taken in the world takes the next attempt.
+  - `placeWordIndexes(map): Int32Array` gives each name's table index, which `frozen.ts`'s `names` stage folds. It isn't on the barrel.
 
 ### Body hues
 
@@ -816,7 +819,7 @@ M2.2b spawns every app world as a town that runs `CITY`, and shows the economy o
     - 16 is `recordDay`, every day, and 17 `recordYear`, due on a year's last day.
   - **`economyDay`** `(world, params, day, layoffs = 0)` runs the 18 in a row and then checks the invariants while `world.checks` is on, so headless runs and the economy golden `6a652730` did not move. `startMonth` and `endMonth` stay exported and loop over the same systems.
   - **The step:** a town (`globals[TOWN]` = 1) runs `runEconomySystem(world, CITY, dayOf(tick), tick mod 1,440, 0)` on each tick of a day below `ECONOMY_TICKS`, after the day work and `move`. A world that is not a town runs none, and neither does any tick from the 19th of a day on, so only the day's window writes economy state. A fresh town sits at a month's day 0, which is the day its first tick runs.
-    - The layoffs argument is 0 here, and no global slot is taken: slots 5 to 7 stay free.
+    - The layoffs argument is `globals[DAY_LAYOFFS]`, which Task 6 added (below).
     - A day's row of `economyScratch.stats` is whole once the step that runs tick 17 ends, until tick 0 of the next day clears its flows.
     - `SYSTEM_NAMES` gains `economy`, which `step` laps on every tick, so the stats message's `economy` is the mean over all 1,440 ticks of a day, not over the 18 that run it.
   - **The warm-up:** `warmUp` spawns a town with `spawnTown` in its 1,024-agent, 1 MiB layout and runs `economyDay` with each of its 40 days of day work, so a month's start and end both compile. It grows from 27 ms to 46 ms (measured here, Node 24.18.0 on Windows, three runs each, load not recorded). It runs after the first snapshot, so the first frame never waits for it, and whatever the page sends meanwhile waits about 19 ms longer.
@@ -857,3 +860,8 @@ M2.2b spawns every app world as a town that runs `CITY`, and shows the economy o
   - **The loop** makes one feed for each `Session`, at `init`, so a new run starts its days over. After each `step` it calls `economyDayEnded` and writes the feed, and once the turn's ticks and snapshot are done it posts the feed, with no transfer list. A world that is not a town posts none.
     - At 1× the first post lands at tick 18, 1.8 s after Play, and one follows every 1,440 ticks, which is 144 s.
     - Nothing allocates per tick: the feed's buffers are made once, and the day's one post is the copy `postMessage` makes of every message.
+- **Task 6, the layoffs input** (ba0b44a):
+  - `INPUT_LAYOFFS` is 2 in `world/inputs.ts`, beside `INPUT_FOCUS` (1). Its `a` is a number of people and its `b` is 0. `logLayoffs(world, people): boolean` in `day/day.ts` logs one. Runs are watch-only, so the app has no control for it.
+  - `DAY_LAYOFFS` is global slot 5 in `world/world.ts`, beside `TOWN` (4). It is canonical, so checkpoints and the hash carry it, and slots 6 and 7 stay free. `dayBoundary` sets it at every boundary to the sum of the `a`s of the `INPUT_LAYOFFS` entries it applies, or 0, so only the boundary writes it.
+  - `step` passes `globals[DAY_LAYOFFS]` as `runEconomySystem`'s `layoffs`. System 0 spends it with `layOff` on the day's tick 0, in the boundary's step. When fewer people work than it asks for, everyone employed is laid off. No later system reads the slot, so a layoff fires once.
+  - An input logged on any tick of a day, the economy's window included, waits for the next boundary. A world that is not a town still sums the slot but spends nothing.
