@@ -73,6 +73,17 @@ function inView(view: View, clientX: number, clientY: number): boolean {
   return xInside && clientY >= view.hudBottom + MARGIN_CSS_PX && clientY <= view.height - MARGIN_CSS_PX;
 }
 
+// The first client pixel, on a grid a tile apart, clear of the HUD and the view's edges with no blob within a tile of it.
+// Highcourt fills the view, so such a spot lies over a house or water, not off the town.
+function emptyPoint(view: View): [number, number] {
+  for (let clientY = Math.ceil(view.hudBottom) + MARGIN_CSS_PX; clientY <= view.height - MARGIN_CSS_PX; clientY += TILE_PX) {
+    for (let clientX = MARGIN_CSS_PX; clientX <= view.width - MARGIN_CSS_PX; clientX += TILE_PX) {
+      if (answerAt(view, clientX * view.dpr, clientY * view.dpr) === NO_BLOB) return [clientX, clientY];
+    }
+  }
+  throw new Error('a blob lies within a tile of every spot in view');
+}
+
 // The whole client pixel nearest the first blob drawn clear of the HUD and the view's edges.
 function blobPoint(view: View): [number, number] {
   const { x, y, count } = world.agents;
@@ -107,10 +118,7 @@ test('shows the name and wallet of the blob under a click', async ({ page }) => 
 
 test('says so when no blob is within a tile', async ({ page }) => {
   await openPaused(page);
-  const view = await viewOf(page);
-  // The bottom-left corner lies off the centred town at this zoom.
-  const [clientX, clientY] = [MARGIN_CSS_PX, Math.floor(view.height) - MARGIN_CSS_PX];
-  expect(answerAt(view, clientX * view.dpr, clientY * view.dpr)).toBe(NO_BLOB);
+  const [clientX, clientY] = emptyPoint(await viewOf(page));
   await page.mouse.click(clientX, clientY);
   await expect(page.locator('#inspector')).toHaveText(NO_BLOB);
 });
