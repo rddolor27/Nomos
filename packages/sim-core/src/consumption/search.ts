@@ -66,15 +66,19 @@ function nthSet(bits: number, n: number): number {
 }
 
 // A11: compare one random link with a firm drawn by workers, and switch when the newcomer is cheaper by xi of the link's
-// price, rounded down. A newcomer that is already a link is a miss, so a household never holds a firm twice.
+// price, rounded down. A newcomer that is already a link is a miss, so a household never holds a firm twice. A switch
+// clears the link's stock-out bit, which was the old firm's, so A12 cannot replace the firm just found.
 function searchCheaper(world: World, params: EconomyParams, month: number, household: number, workers: number): void {
   const { seed, agents, firms } = world;
   const first = household * SUPPLIERS;
-  const slot = first + (draw3(seed, SHOP_DRAW, month, household, PRICE_LINK) % SUPPLIERS);
+  const link = draw3(seed, SHOP_DRAW, month, household, PRICE_LINK) % SUPPLIERS;
   const newcomer = firmByWorkers(world, workers, draw3(seed, SHOP_DRAW, month, household, PRICE_FIRM));
   if (isLinked(agents.suppliers, first, newcomer)) return;
-  const linkedPrice = firms.price[agents.suppliers[slot]];
-  if (firms.price[newcomer] + mulPpm(linkedPrice, params.cheaperPpm) <= linkedPrice) agents.suppliers[slot] = newcomer;
+  const linkedPrice = firms.price[agents.suppliers[first + link]];
+  if (firms.price[newcomer] + mulPpm(linkedPrice, params.cheaperPpm) <= linkedPrice) {
+    agents.suppliers[first + link] = newcomer;
+    agents.stockedOut[household] &= ~(1 << link);
+  }
 }
 
 // A12: replace one random stocked-out link with a firm drawn by workers, on the same no-duplicate rule as A11.

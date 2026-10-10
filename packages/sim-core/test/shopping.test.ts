@@ -28,6 +28,7 @@ const FIRST_SEVEN = [0, 1, 2, 3, 4, 5, 6];
 const NO_SEARCH: EconomyParams = { ...LENGNICK, priceSearchPpm: 0, stockoutSearchPpm: 0 };
 const PRICE_ONLY: EconomyParams = { ...LENGNICK, priceSearchPpm: 1_000_000, stockoutSearchPpm: 0 };
 const STOCKOUT_ONLY: EconomyParams = { ...LENGNICK, priceSearchPpm: 0, stockoutSearchPpm: 1_000_000 };
+const BOTH_SEARCHES: EconomyParams = { ...LENGNICK, priceSearchPpm: 1_000_000, stockoutSearchPpm: 1_000_000 };
 
 interface FirmSpec {
   price: number;
@@ -308,6 +309,55 @@ describe('searchShops', () => {
       expect(world.agents.stockedOut[0]).toBe(0);
     });
   });
+
+  describe('both searches in one month', () => {
+    const HOUSEHOLDS = 200;
+
+    // Two cheap firms with equal workers: the price search always switches, and the two searches' draws can differ.
+    function market(): World {
+      return searchWorld(HOUSEHOLDS, [
+        { price: 1, stock: 100, employees: 1 },
+        { price: 1, stock: 100, employees: 1 },
+      ]);
+    }
+
+    // The price search alone on one market, and the link it switches in each household.
+    function priceSearch(): { alone: World; slots: number[] } {
+      const alone = market();
+      searchShops(alone, PRICE_ONLY, 0);
+      const slots = Array.from({ length: HOUSEHOLDS }, (_, i) => linksOf(alone, i).findIndex((firm, k) => firm !== k));
+      expect(slots.every((slot) => slot >= 0)).toBe(true);
+      return { alone, slots };
+    }
+
+    it('leaves the firm the price search just found, though the link it replaced had run short', () => {
+      const { alone, slots } = priceSearch();
+      const both = market();
+      slots.forEach((slot, i) => {
+        both.agents.stockedOut[i] = 1 << slot;
+      });
+      searchShops(both, BOTH_SEARCHES, 0);
+      const changed = slots.map((_, i) => i).filter((i) => linksOf(both, i).join() !== linksOf(alone, i).join());
+      expect(changed).toEqual([]);
+    });
+
+    it('clears only the switched link, so the other short links can still be replaced', () => {
+      const { alone, slots } = priceSearch();
+      const both = market();
+      both.agents.stockedOut.fill(0b1111111, 0, HOUSEHOLDS);
+      searchShops(both, BOTH_SEARCHES, 0);
+      const lost: number[] = [];
+      let replacedElsewhere = 0;
+      slots.forEach((slot, i) => {
+        const [after, before] = [linksOf(both, i), linksOf(alone, i)];
+        if (after[slot] !== before[slot]) lost.push(i);
+        if (after.some((firm, k) => k !== slot && firm !== before[k])) replacedElsewhere++;
+      });
+      expect(lost).toEqual([]);
+      // The stock-out search finds the other cheap firm, not the one just linked, half the time.
+      expectShare(replacedElsewhere, HOUSEHOLDS, 0.5);
+    });
+  });
 });
 
 interface LimitCase {
@@ -542,6 +592,6 @@ describe('the consumption replay', () => {
       checksum(suppliers, 0, REPLAY_HOUSEHOLDS * SUPPLIERS),
       checksum(first.cash.balance, first.cash.firstWallet, REPLAY_HOUSEHOLDS),
       checksum(first.firms.demand, 0, REPLAY_FIRMS),
-    ]).toEqual([45_590, 113_797_820, 1_944_476_838, 1_934_495_892, 223_536_417]);
+    ]).toEqual([45_586, 113_788_270, 2_799_348_955, 1_504_025_232, 3_839_084_245]);
   });
 });
