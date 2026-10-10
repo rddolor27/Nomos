@@ -7,4 +7,5 @@ export * from './shared/steering.ts';
 export * from './messages/messages.ts';
 export * from './messages/lifecycle.ts';
 export * from './snapshot/snapshot.ts';
+export * from './economy/feed.ts';
 export * from './sprites/sprite-manifest.ts';

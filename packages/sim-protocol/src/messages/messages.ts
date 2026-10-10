@@ -15,6 +15,29 @@ export type AppMessage =
   | { type: 'inspect'; x: number; y: number } // world pixels; a read-only query, answered even while a run plays
   | { type: 'return'; buffer: ArrayBuffer };
 
+// A town's economy after each of its days (M2.2b): the last days of three figures, oldest first, and the day's last trades.
+// Every array keeps its length from one message to the next, so read days and trades for how much of each is filled; the
+// rest is zero. The trades name the shop and never a buyer.
+export interface EconomyMessage {
+  type: 'economy';
+  // The day that just ended, counted from 0. Point i of the three series is day `day - days + 1 + i`, and days is at most
+  // FEED_DAYS.
+  day: number;
+  days: number;
+  // The firms' mean price, in cents a unit.
+  meanPriceCents: Float64Array;
+  // The firms' mean wage, in cents a month.
+  meanWageCents: Float64Array;
+  // The share of households out of work, in parts per million.
+  unemploymentPpm: Float64Array;
+  // Trade i, oldest first, is tradeUnits[i] units bought from firm row tradeShop[i] for tradeCents[i] cents, for i below
+  // trades, which is at most FEED_TRADES.
+  trades: number;
+  tradeShop: Int32Array;
+  tradeUnits: Int32Array;
+  tradeCents: Float64Array;
+}
+
 export type WorkerMessage =
   | { type: 'ready'; agents: number }
   | { type: 'snapshot'; tick: number; count: number; buffer: ArrayBuffer }
@@ -22,4 +45,5 @@ export type WorkerMessage =
   | { type: 'checkpoint'; tick: number; state: ArrayBuffer }
   // agent -1: no blob within a tile. employer is the employing firm's row and wage its pay in cents a month, or -1 and 0 for
   // someone out of work.
-  | { type: 'inspected'; tick: number; agent: number; nameKey: number; cents: number; employer: number; wage: number };
+  | { type: 'inspected'; tick: number; agent: number; nameKey: number; cents: number; employer: number; wage: number }
+  | EconomyMessage;
