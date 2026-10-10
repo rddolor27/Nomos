@@ -17,7 +17,11 @@ export default defineConfig({
   testDir: '.',
   testMatch: '**/test/browser/**/*.spec.ts',
   forbidOnly: !!process.env.CI,
-  reporter: process.env.CI ? [['dot'], ['html', { open: 'never' }]] : 'list',
+  // One browser at a time: SwiftShader draws on the CPU, so parallel browsers starve each other, on a CI runner and on
+  // the owner's machine alike (owner, 10 October 2026).
+  workers: 1,
+  // The github reporter turns each failure into an annotation, which anyone can read without signing in to the logs.
+  reporter: process.env.CI ? [['github'], ['dot'], ['html', { open: 'never' }]] : 'list',
   use: { baseURL: HARNESS },
   projects: [
     // Chromium only (Chrome and Brave) while Nomos is a proof of concept; Firefox and WebKit return before launch
