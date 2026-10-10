@@ -79,7 +79,7 @@ def milestone(folder):
     tasks = {d.name.split('-', 1)[0]: d for d in folder.iterdir() if d.is_dir()}
     rows = []
     for line in text.splitlines():
-        if re.match(r'\| \[?M\d+\.\d+ ', line):
+        if re.match(r'\| \[?M\d+\.\d+[a-z]? ', line):
             name, delivers, estimate = [c.strip() for c in line.strip().strip('|').split('|')][:3]
             key = plain(name).split(' ', 1)[0].lower()
             rows.append((plain(name), delivers, estimate, tasks.get(key)))
