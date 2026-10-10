@@ -19,14 +19,16 @@ import { TICK_MS, bindPageLifecycle, type AppMessage, type WorkerMessage } from 
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { SLEEP_MIN_MS, STATS_MS, createSimLoop, type LoopHost } from '../src/index.ts';
 
-// The real warm-up, wrapped so a test can see when the loop runs it or stand in for its time.
+// The real warm-up and step, wrapped so a test can see when the loop runs the first or stand in for its time, and give the
+// second a cost on the fake clock.
 vi.mock('@nomos/sim-core', async (importOriginal) => {
   const simCore = await importOriginal<typeof import('@nomos/sim-core')>();
-  return { ...simCore, warmUp: vi.fn(simCore.warmUp) };
+  return { ...simCore, warmUp: vi.fn(simCore.warmUp), step: vi.fn(simCore.step) };
 });
 
 afterEach(() => {
   vi.mocked(warmUp).mockReset();
+  vi.mocked(step).mockReset();
 });
 
 type Posted<T extends WorkerMessage['type']> = Extract<WorkerMessage, { type: T }>;
@@ -83,7 +85,8 @@ function fakePage({ init = true, town = false } = {}) {
       clock = Math.max(clock, at);
       fn();
     }
-    clock = end;
+    // A tick with a cost can carry the clock past the window.
+    clock = Math.max(clock, end);
   }
 
   function startedWorld(): World {
@@ -267,6 +270,56 @@ describe('the sim loop', () => {
     expect(page.sleeps.length).toBeGreaterThanOrEqual(10);
     expect(page.sleeps.every((ms) => ms >= SLEEP_MIN_MS)).toBe(true);
     expect(page.yields()).toBeLessThanOrEqual(10);
+  });
+
+  it('reaches the same state at 16x as at 1x', () => {
+    const twin = createTown(42, 'phone', standInGround(), TOWN_PEOPLE);
+    while (currentTick(twin) < 1_000) step(twin);
+
+    const page = fakePage({ town: true });
+    page.handle({ type: 'speed', speed: 16 });
+    page.handle({ type: 'resume' });
+    page.advance(62 * TICK_MS);
+    expect(page.tick()).toBe(62 * 16);
+    // The first day ends inside a turn of 16 ticks, and its feed still comes once.
+    expect(page.ofType('economy').map(({ day }) => day)).toEqual([0]);
+
+    // 1,000 is no whole number of turns at 16×, so the last 8 ticks run at 1×.
+    page.handle({ type: 'speed', speed: 1 });
+    page.advance(8 * TICK_MS);
+    expect(page.tick()).toBe(1_000);
+    expect(stateHash(page.world())).toBe(stateHash(twin));
+  });
+
+  it('keeps a speed sent while paused for Play', () => {
+    const page = fakePage({ town: true });
+    page.handle({ type: 'speed', speed: 4 });
+    page.advance(1_000);
+    expect(page.tick()).toBe(0);
+
+    page.handle({ type: 'resume' });
+    page.advance(TICK_MS);
+    expect(page.tick()).toBe(4);
+  });
+
+  it("runs fewer ticks than the speed asks when a turn can't fit them, and never makes them up", async () => {
+    const { step: realStep } = await vi.importActual<typeof import('@nomos/sim-core')>('@nomos/sim-core');
+    const page = fakePage({ town: true });
+    let tickMs = 40;
+    vi.mocked(step).mockImplementation((world, timer) => {
+      page.stall(tickMs);
+      realStep(world, timer);
+    });
+    page.handle({ type: 'speed', speed: 16 });
+    page.handle({ type: 'resume' });
+    // A turn at 16× has 160 ms, which fits 4 ticks of 40 ms.
+    page.advance(TICK_MS);
+    expect(page.tick()).toBe(4);
+
+    // The 12 lost ticks are not owed: with ticks free again, the next turn runs the two slots the wall clock owes.
+    tickMs = 0;
+    page.advance(TICK_MS);
+    expect(page.tick()).toBe(4 + 2 * 16);
   });
 
   it('checkpoints on pagehide', () => {

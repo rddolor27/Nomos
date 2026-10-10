@@ -7,10 +7,15 @@ export { TIER_AGENTS, townAgents } from '@nomos/sim-core';
 export const SNAPSHOT_BYTES = 12;
 export const SNAPSHOT_BUFFERS = 3;
 
+// The ticks the worker runs for each tick of wall time at 1×. Skipping and per-tier caps are M1.2's.
+export const SPEEDS = [1, 4, 16] as const;
+export type Speed = (typeof SPEEDS)[number];
+
 export type AppMessage =
   | { type: 'init'; seed: number; tier: Tier; map: ArrayBuffer; checks: boolean; agents?: number } // agents: omitted, the tier's whole count
   | { type: 'pause' }
   | { type: 'resume' }
+  | { type: 'speed'; speed: Speed } // changes no state, so a watch-only run accepts it; a paused run keeps it for Play
   | { type: 'checkpoint' } // a worker cannot see pagehide, so the app asks for the checkpoint
   | { type: 'inspect'; x: number; y: number } // world pixels; a read-only query, answered even while a run plays
   | { type: 'return'; buffer: ArrayBuffer };

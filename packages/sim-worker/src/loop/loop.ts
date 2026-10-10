@@ -23,11 +23,13 @@ import {
   type AppMessage,
   type EconomyMessage,
   type SnapshotPool,
+  type Speed,
   type WorkerMessage,
 } from '@nomos/sim-protocol';
 
+// A turn may spend this long for each tick of speed, so 16× has 160 ms to fit its 16 ticks (M2.2b Ruling 6).
 export const MAX_TURN_MS = 10;
-// At most two ticks' worth, so a stall of any length runs at most 2 ticks and nothing is caught up (R2 §2).
+// At most two slots' worth, so a stall of any length runs at most two slots, 2 ticks at 1×, and nothing is caught up (R2 §2).
 export const MAX_GAP_MS = 250;
 export const STATS_MS = 250;
 // A shorter wait yields through the MessageChannel instead, since setTimeout clamps nested waits to 4 ms (R2 §2).
@@ -58,7 +60,10 @@ type StatsMessage = Extract<WorkerMessage, { type: 'stats' }>;
 export function createSimLoop(host: LoopHost, cpuSlowdown = 1): { handle(msg: AppMessage): void } {
   let session: Session | null = null;
   let running = false;
+  let speed: Speed = 1;
   let turnPending = false;
+  // A town's day ended in the turn under way, so the turn posts its economy feed.
+  let feedDue = false;
   let lastMs = 0;
   let accMs = 0;
   // When the work the next slowed wait covers began: the message, the turn or the last reply.
@@ -97,6 +102,7 @@ export function createSimLoop(host: LoopHost, cpuSlowdown = 1): { handle(msg: Ap
     if (session === null) return;
     if (msg.type === 'pause') running = false;
     else if (msg.type === 'resume') resume();
+    else if (msg.type === 'speed') speed = msg.speed;
     else if (msg.type === 'checkpoint') postCheckpoint(session.world);
     else if (msg.type === 'inspect') postInspected(session.world, msg.x, msg.y);
     else giveBack(session.pool, msg.buffer);
@@ -104,6 +110,7 @@ export function createSimLoop(host: LoopHost, cpuSlowdown = 1): { handle(msg: Ap
 
   function init(seed: number, tier: Tier, map: ArrayBuffer, checks: boolean, agents?: number): void {
     running = false;
+    speed = 1;
     const world = host.makeWorld(seed, tier, map, agents);
     world.checks = checks;
     const pool = createSnapshotPool(world.agents.capacity);
@@ -135,23 +142,34 @@ export function createSimLoop(host: LoopHost, cpuSlowdown = 1): { handle(msg: Ap
     workFromMs = startMs;
     accMs = Math.min(accMs + (startMs - lastMs), MAX_GAP_MS);
     lastMs = startMs;
+    const untilMs = startMs + MAX_TURN_MS * speed;
     let ticks = 0;
-    let dayEnded = false;
-    while (accMs >= TICK_MS && host.now() - startMs < MAX_TURN_MS) {
-      lapMs = host.now();
-      step(world, timer);
+    feedDue = false;
+    while (accMs >= TICK_MS && host.now() < untilMs) {
       accMs -= TICK_MS;
-      ticks++;
-      if (economyDayEnded(world)) {
-        writeEconomyFeed(world, session.feed);
-        dayEnded = true;
-      }
+      ticks += runSlot(world, session.feed, untilMs);
     }
     ticksTimed += ticks;
     if (ticks > 0) postSnapshot(world, session.pool);
-    if (dayEnded) post(session.feed, noTransfer);
+    if (feedDue) post(session.feed, noTransfer);
     if (startMs - statsFromMs >= STATS_MS) postStats(world, startMs);
     scheduleTurn(TICK_MS - accMs);
+  }
+
+  // A slot is the 100 ms of wall time that one tick takes at 1×, and it holds `speed` ticks. A slot the turn's time
+  // cuts short is spent all the same, so a slow device plays slower and never makes the lost ticks up.
+  function runSlot(world: World, feed: EconomyMessage, untilMs: number): number {
+    let ran = 0;
+    while (ran < speed && host.now() < untilMs) {
+      lapMs = host.now();
+      step(world, timer);
+      ran++;
+      if (economyDayEnded(world)) {
+        writeEconomyFeed(world, feed);
+        feedDue = true;
+      }
+    }
+    return ran;
   }
 
   function scheduleTurn(waitMs: number): void {
