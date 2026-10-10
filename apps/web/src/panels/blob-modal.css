@@ -1,0 +1,19 @@
+#blob-modal { box-sizing: border-box; margin: 0; padding: 16px; border: 1px solid var(--ui-line); border-radius: var(--ui-r);
+  background: var(--ui-bg); color: var(--ui-text); box-shadow: 0 2px 12px rgb(0 0 0 / .45); font-variant-numeric: tabular-nums; }
+/* The browser's own rules for a dialog pin it to both sides, so left is let go for right to place it. */
+#blob-modal[open] { position: absolute; right: 8px; bottom: 8px; left: auto; z-index: 1; display: grid;
+  grid-template-columns: 1fr auto; align-items: center; gap: 12px; width: 22rem; max-width: calc(100% - 16px);
+  max-height: calc(100% - 16px); overflow: auto; }
+#blob-modal h2 { margin: 0; font-size: 18px; line-height: 1.3; overflow-wrap: anywhere; }
+#blob-modal dl { grid-column: 1 / -1; display: grid; grid-template-columns: max-content 1fr; align-items: baseline; gap: 4px 12px;
+  margin: 0; }
+#blob-modal dt { color: var(--ui-muted); }
+#blob-modal dd { margin: 0; overflow-wrap: anywhere; }
+#blob-modal p { grid-column: 1 / -1; margin: 0; color: var(--ui-muted); font-size: var(--ui-small); }
+/* The map covers the town and makes its view inert, so the card goes with it, as the zoom bar does. */
+#view[inert] #blob-modal { display: none; }
+@media (max-width: 50rem) {
+  /* A bottom sheet over the page's foot, with the town drawn above it. */
+  #blob-modal[open] { position: fixed; right: 0; bottom: 0; left: 0; width: auto; max-width: none; max-height: 60%;
+    border-width: 1px 0 0; border-radius: var(--ui-r) var(--ui-r) 0 0; }
+}

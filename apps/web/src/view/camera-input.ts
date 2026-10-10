@@ -68,7 +68,7 @@ function zoomAtCentre(app: App, steps: number): void {
 
 function inspectAt(app: App, deviceX: number, deviceY: number): void {
   inspectorReady ??= import('../panels/inspector.ts').then(({ mountInspector }) => {
-    mountInspector(element(document, '#hud'), app.worker);
+    mountInspector(element(document, '#hud'), element(document, '#view'), app.worker);
   });
   const [x, y] = worldAt(app.camera, deviceX, deviceY);
   const message: AppMessage = { type: 'inspect', x, y };

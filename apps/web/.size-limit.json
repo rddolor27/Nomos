@@ -69,13 +69,18 @@
   },
   {
     "name": "Inspector chunk",
-    "path": ["dist/assets/inspector-*.js"],
+    "path": ["dist/assets/inspector-*.js", "dist/assets/inspector-*.css"],
     "limit": "4.5 kB"
   },
   {
     "name": "Shop name chunk the inspector and the economy panel share",
     "path": ["dist/assets/shop-name-*.js"],
     "limit": "200 B"
+  },
+  {
+    "name": "Constant chunks the inspector shares with the Town skin and the map",
+    "path": ["dist/assets/actions-*.js", "dist/assets/place-layout-*.js", "dist/assets/world-map-*.js"],
+    "limit": "1 kB"
   },
   {
     "name": "Map view chunk",
