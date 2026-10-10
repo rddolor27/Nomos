@@ -23,8 +23,8 @@ function create<K extends keyof HTMLElementTagNameMap>(doc: Document, tag: K, te
 }
 
 // The blob's card, as a dialog in the town view: it leaves the town drawn, and a click on another blob fills it again. It
-// is not a true modal, so the camera, the speed keys and the other controls stay live; Tab stays on its one control, as a
-// modal's focus does, and Escape closes it and gives the view the focus back. Made once per page, at the first inspect.
+// is not a true modal, so the camera, the speed keys, Tab and the other controls stay live; the focus moves into it when it
+// opens, and Escape closes it from any focus and gives the view the focus back. Made once per page, at the first inspect.
 export class BlobModal {
   private readonly view: HTMLElement;
   private readonly dialog: HTMLDialogElement;
@@ -53,7 +53,6 @@ export class BlobModal {
     this.list = doc.createElement('dl');
     this.dialog = doc.createElement('dialog');
     this.dialog.id = 'blob-modal';
-    this.dialog.setAttribute('aria-modal', 'true');
     this.dialog.setAttribute('aria-labelledby', this.title.id);
     this.dialog.append(this.title, this.closeButton, this.picture, this.list, create(doc, 'p', LOOK_NOTE));
     view.append(this.dialog);
@@ -83,12 +82,10 @@ export class BlobModal {
     this.closeButton.addEventListener('click', () => this.hide());
     // The view's drag captures the pointer on press, which would take the button's click.
     this.dialog.addEventListener('pointerdown', (event) => event.stopPropagation());
-    this.dialog.addEventListener('keydown', (event) => {
-      if (event.key === 'Tab') event.preventDefault();
-    });
-    // The dialog sits in the view, so its keys bubble there, and so does Escape from a press that left the focus on the view.
-    this.view.addEventListener('keydown', (event) => {
-      if (event.key !== 'Escape' || !this.dialog.open) return;
+    // Escape closes the card from any focus. A handler that took the key first, as the map's does, has prevented it, so the
+    // map closes and the card stays.
+    this.view.ownerDocument.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape' || event.defaultPrevented || !this.dialog.open) return;
       event.preventDefault();
       this.hide();
     });

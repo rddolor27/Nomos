@@ -282,7 +282,8 @@ test('opens a card with the name, work, wallet, home, doing and look of the blob
   await openPaused(page);
   const card = await openCard(page);
   const dialog = dialogOf(page, card.name);
-  await expect(dialog).toHaveAttribute('aria-modal', 'true');
+  // The page stays live behind it, so it is not marked modal.
+  await expect(dialog).not.toHaveAttribute('aria-modal');
   await expect(dialog.locator('h2')).toHaveText(card.name);
   // The focus moves into the card, on its one control.
   await expect(dialog.getByRole('button', { name: 'Close' })).toBeFocused();
@@ -341,19 +342,22 @@ test('closes on Escape, and on its Close button, and gives the view the focus ba
   await expect(page.locator('#view')).toBeFocused();
 });
 
-test('keeps the focus in the card on Tab, and closes on Escape from the view too', async ({ page }) => {
+test('closes on Escape from the view too, and while a HUD button has the focus', async ({ page }) => {
   await openPaused(page);
   const card = await openCard(page);
-  const close = dialogOf(page, card.name).getByRole('button', { name: 'Close' });
-  await page.keyboard.press('Tab');
-  await expect(close).toBeFocused();
-  await page.keyboard.press('Shift+Tab');
-  await expect(close).toBeFocused();
 
   // A click on the town takes the focus to the view, and Escape there closes the card as well.
   const [emptyX, emptyY] = emptyPoint(await viewOf(page));
   await page.mouse.click(emptyX, emptyY);
   await expect(page.locator('#view')).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(dialogOf(page, card.name)).toBeHidden();
+
+  // The HUD lies outside the view, so Escape from its button reaches the card by the document.
+  await openCard(page);
+  const speedOne = page.getByRole('group', { name: 'Speed' }).getByRole('button', { name: '1×', exact: true });
+  await speedOne.focus();
+  await expect(speedOne).toBeFocused();
   await page.keyboard.press('Escape');
   await expect(dialogOf(page, card.name)).toBeHidden();
 });
