@@ -252,7 +252,7 @@ The steps, in order:
 **Goal:** capitals, cities and towns become walled towns, packed round the plaza and thinning past the wall into suburbs along the roads, then a farm belt by climate. Villages and hamlets stay open among their fields. Every road takes a surface and width by its role, and the country map draws highways in stone and tracks in dirt, with walled icons.
 
 **Architecture:**
-- `place.py` stays the reference. Each layout task lands `place.py`, its TypeScript port, the regenerated goldens and fixtures, and Highcourt's `town.nmap` in one commit, as d1210d0 did, so every check stays green.
+- **TypeScript only (owner, 10 October 2026).** `place.py` is frozen, so each layout task lands in `packages/worldgen/src/place/` alone; skip the steps below that edit `place.py` or regenerate goldens and fixtures with Python. The first task that changes a layout first adds TypeScript scripts that regenerate the place goldens, the place fixtures and Highcourt's `town.nmap` from the port, as `scripts/frozen.ts` does for its stages. Each later layout change reruns them in the same commit, so every check stays green.
 - Two stage groups join `SETTLEMENT_STAGES`, walls after the centre and farms after the buildings: water, centre, walls, buildings, farms, decor, nature and people.
 - New game objects are classes: `Wall` and `Gate` for the ring, and `Plot` for the farm belt. Roads by role are one table, `ROADS`.
 - On the country map, each road route gains one byte, its class, worked out after the roads from the routes that join the towns.
