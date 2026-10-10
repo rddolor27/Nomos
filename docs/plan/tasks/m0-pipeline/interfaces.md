@@ -671,3 +671,44 @@ The owner asked on 10 October 2026 for the town view's art on the first screen. 
   - The town view, the map view and the Town skin share the place renderer and the scenes' common modules, which so build as shared chunks, `renderer-*.js` and `lifecycle-*.js`.
   - size-limit gates `town-skin-*.js` and those two shared chunks, each with an entry.
 - **Test hooks:** none new. `window.__app.renderer.drawnSkin` reads `town` once the town draws.
+
+## The economy (owner: M2.1)
+
+M2.1 builds Lengnick's households and firms in `sim-core`, as its [step plan](../m2-economy/m2.1-lengnick-core/plan.md) lays out. The economy runs through `economyDay`; the world step doesn't call it yet.
+
+- **Layout, `sim-core`:**
+  - new concern folders: `firms/` (`store.ts`, `decide.ts`, `produce.ts`, `renew.ts`), `labour/` (`search.ts`, `notice.ts`, `reservation.ts`), `wages/` (`wage-step.ts`, `payroll.ts`), `wealth/` (`profits.ts`), `market/` (`wholesale.ts`, with the `CallAuction` class) and `economy/` (`params.ts`, `stats.ts`, `scratch.ts`, `start.ts`, `economy.ts`, `mser5.ts`);
+  - existing folders gain files: `consumption/` gains `search.ts`, `plan.ts` and `shop.ts`; `money/` gains `fiat.ts`; `random/` gains `shuffle.ts`; and `movement/` gains `steer.ts` (see Steering, below);
+  - `tools/cli/src` gains `economy/run.ts`, the `economy` command.
+- **The culture wall:** guarded code imports `economy/params.ts`, `economy/stats.ts` and `economy/scratch.ts`, never `economy/economy.ts`, which reaches `consumption/`. M2.6 adds `economy/` beside `step/` to the folders that may reach `sim-culture`.
+- **The world:**
+  - `World` gains `firms` (`FirmStore`) and `economyScratch`;
+  - `startEconomy(world, params)` and `economyDay(world, params, day)` join `sim-core`, outside `SYSTEM_NAMES` until the economy joins the step;
+  - the calendar gains `DAYS_PER_MONTH = 21` (owner, 10 October 2026), `monthOf` and `dayOfMonth`;
+  - `EconomyParams.burnInDays` is 9,893, measured by MSER-5.
+- **Agents:**
+  - `SUPPLIERS = 7`;
+  - new columns `employer`, `reservationWage`, `suppliers`, `stockedOut` and `plannedUnits`, with `addAgent` writing −1 to `employer` and the suppliers;
+  - `Blob` gains no accessor.
+- **Wallets and firm accounts:**
+  - `createLedger(arena, settlements, wallets, firms = 0)`, `Ledger.firstFirm` and `firmAccount(ledger, firm)`;
+  - accounts run national, then sectors, then wallets, then firms;
+  - `PROFITS = 3`, zero outside the month end;
+  - `TIER_FIRMS` of 1,000, 2,500 and 10,000;
+  - a household's cash is its blob's wallet, one blob per household until M2.2.
+- **Bytes:**
+  - an agent adds 45 bytes to the hash and 20 of scratch;
+  - a firm adds 60 to the hash and 16 of scratch;
+  - a desktop arena uses about 11.9 of its 64 MiB;
+  - `TIER_MEMORY_BYTES` and snapshot v1 don't change.
+- **Streams:** `FIRM_DRAW`, `WAGE_DRAW`, `LABOUR_DRAW`, `SHOP_DRAW`, `WEALTH_DRAW` and `START_DRAW`, the agent-layer streams 0x107–0x10C.
+- **Hashes:** seed 42 at 1,000 ticks gives CLI phone `3c786124`. Highcourt's pins follow the current `town.nmap`.
+
+## Steering (owner, 10 October 2026)
+
+One wander rule moves every blob.
+- `movement/steer.ts` holds `wanderTo`, `offWall`, `firstRedraw`, `REDRAW_TICKS` and `STAND`. `sim-core`'s `move` calls them, with the keyed draw inlined so ticks stay allocation-free.
+- `sim-protocol`'s `shared/steering.ts` re-exports them, with `draw2`, `WANDER` and the step tables, so the app never imports `sim-core`.
+- The town view's walkers (`apps/web/src/map/walkers.ts`) wander by the same rule over the street network that their place's loops cover. An owner stays within its own loop's box.
+  - So `PlaceWalks` and `PlaceCrowd` now give each walker its network and start, not a path it follows.
+  - A test matches walkers to `move` tick for tick.
