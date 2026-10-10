@@ -1,10 +1,11 @@
-"""Packs every sprite frame of every manifest into one atlas (plan: M0.5 Task 3).
+"""Packs the sprite frames of every manifest into one atlas (plan: M0.5 Task 3).
 
 Run `python tools/atlas/build_atlas.py [--out DIR]`, default dist/atlas/. It writes atlas.webp (lossless), atlas.png
 (shrunk by oxipng when that is installed) and atlas.json, each frame's place keyed "<category>/<name>", with the body
-frames' face offsets that the place pass needs (M3.1). It also writes the
-map scene's page, map.webp, map.png and map.json (M8.3). Frames are packed, not sheets, because houses.png alone is
-2,316 px tall. The output is a build product and is never committed.
+frames' face offsets that the place pass needs (M3.1). That town page leaves out the frames ending in _snow or _night
+(M3.1's Part 3, Ruling 14). It also writes the map scene's page, map.webp, map.png and map.json (M8.3), which keeps
+every map frame. Frames are packed, not sheets, because houses.png alone is 2,316 px tall. The output is a build
+product and is never committed.
 """
 import argparse
 import json
@@ -22,6 +23,9 @@ NOT_A_MANIFEST = 'season_map.json'
 ATLAS_WIDTH = 2048
 MAX_HEIGHT = 2048
 GAP = 1
+# Places draw summer days only, and these variants take 16% of a town page that is near its cap (Ruling 14). They get a
+# second page when seasons or the light periods draw them. Two map tiles end in _snow, and the map page keeps both.
+LEFT_OFF_TOWN_PAGE = ('_snow', '_night')
 # The map scene's own page (M8.3): terrain tiles, wonders and landmarks at both map scales, and the settlement icons,
 # so the map never waits for the whole atlas.
 MAP_PAGE_WIDTH = 256
@@ -121,7 +125,8 @@ def main(argv=None):
     out = parser.parse_args(argv).out
     frames = read_frames()
     try:
-        optimised = build_page(frames, ATLAS_WIDTH, out, 'atlas')
+        town = [f for f in frames if not f.key.endswith(LEFT_OFF_TOWN_PAGE)]
+        optimised = build_page(town, ATLAS_WIDTH, out, 'atlas')
         build_page([f for f in frames if f.key.startswith(MAP_PREFIXES)], MAP_PAGE_WIDTH, out, 'map')
     except ValueError as error:
         sys.exit(f'atlas: {error}')

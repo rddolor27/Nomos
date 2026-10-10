@@ -2,7 +2,8 @@
 
 Every manifest frame must be packed once with its size, anchor and any face offset, and no two may overlap, every 37th
 frame must keep its pixels in both the WebP and the PNG, no side may pass 2,048 px, and a pack too big for
-2,048 x 2,048 must fail."""
+2,048 x 2,048 must fail. The town page leaves out the snow and night variants and fails past 1,920 px tall; every run
+prints its height and bytes (M3.1's Part 3, Task 10)."""
 import json
 import subprocess
 import sys
@@ -20,6 +21,10 @@ from build_atlas import ATLAS_WIDTH, MAP_PAGE_WIDTH, MAP_PREFIXES, MAX_HEIGHT, p
 SPRITES = HERE.parents[1] / 'assets' / 'sprites'
 # Pinned here, apart from build_atlas's MAP_PREFIXES, so a wrong prefix list can't pass on both sides (M8.3 Task 1).
 MAP_FRAMES = 93
+# Pinned apart from build_atlas's LEFT_OFF_TOWN_PAGE for the same reason. Places draw summer days only (Ruling 14), and
+# the height limit sits a row of houses short of the 2,048 px cap, so a second page is planned before the pack fails.
+LEFT_OFF_TOWN_PAGE = ('_snow', '_night')
+TOWN_PAGE_HEIGHT = 1920
 NOT_A_MANIFEST = 'season_map.json'
 SAMPLE_EVERY = 37
 IMAGES = ('atlas.webp', 'atlas.png')
@@ -42,6 +47,11 @@ def manifest_frames():
             frames[f'{path.stem}/{name}'] = (SPRITES / manifest['image'], f['x'], f['y'], f['w'], f['h'], f['anchor'],
                                              f.get('face'))
     return frames
+
+
+def town_page_frames():
+    """The manifest frames the town page packs: all but the snow and night variants."""
+    return {key: frame for key, frame in manifest_frames().items() if not key.endswith(LEFT_OFF_TOWN_PAGE)}
 
 
 def same_pixels(source, decoded):
@@ -70,14 +80,19 @@ def index_problems(index, expected, out):
     problems = []
     packed = index['frames']
     width, height = index['size']
+    problems += [f'{key}: a snow or night frame, which the town page leaves out' for key in packed
+                 if key.endswith(LEFT_OFF_TOWN_PAGE)]
     problems += [f'{key}: missing from atlas.json' for key in expected if key not in packed]
-    problems += [f'{key}: in atlas.json but in no manifest' for key in packed if key not in expected]
+    problems += [f'{key}: in atlas.json but in no manifest' for key in packed
+                 if key not in expected and not key.endswith(LEFT_OFF_TOWN_PAGE)]
     for name in IMAGES:
         with Image.open(out / name) as image:
             if image.size != (width, height):
                 problems.append(f'{name} is {image.size}, atlas.json says {(width, height)}')
     if width > ATLAS_WIDTH or height > MAX_HEIGHT:
         problems.append(f'atlas is {width} x {height}, over {ATLAS_WIDTH} x {MAX_HEIGHT}')
+    elif height > TOWN_PAGE_HEIGHT:
+        problems.append(f'the town page is {height} px tall, past {TOWN_PAGE_HEIGHT}: plan its second page (Ruling 14)')
     return problems
 
 
@@ -117,13 +132,16 @@ def pixel_problems(index, expected, out, images=IMAGES, every=SAMPLE_EVERY):
 
 
 def built_problems(out):
-    expected = manifest_frames()
+    expected = town_page_frames()
     index = json.loads((out / 'atlas.json').read_text(encoding='utf-8'))
     problems = index_problems(index, expected, out)
     if not problems:
         problems = placement_problems(index, expected) + pixel_problems(index, expected, out)
     sampled = len(sorted(expected)[::SAMPLE_EVERY])
-    print(f'{len(expected)} manifest frames, {len(index["frames"])} in atlas.json, {sampled} compared pixel by pixel')
+    print(f'{len(expected)} town page frames, {len(index["frames"])} in atlas.json, {sampled} compared pixel by pixel')
+    width, height = index['size']
+    sizes = ', '.join(f'{name} {(out / name).stat().st_size:,} bytes' for name in IMAGES)
+    print(f'town page {width} x {height} px (fails past {TOWN_PAGE_HEIGHT:,}), {sizes}')
     return problems
 
 
