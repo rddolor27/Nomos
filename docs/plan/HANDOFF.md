@@ -214,6 +214,11 @@ If the session ended: check `git log` for those Task lines, and `git status` for
   - Task 11 (`sim-engineer`, Opus);
   - Task 18, highways, tracks and walled icons on the map (`render-engineer`, Opus). Its browser runs use a scratch build under `dist/` through `NOMOS_WEB`, never `apps/web/dist`.
 
+**Owner, 10 October 2026: this round is plans only.**
+- Tasks already started run to the end: Task 11 and Task 18.
+- No other task starts. Tasks 12–16 and 19–21 stay as plans in M3.1's Part 3, and a later round implements them when the owner says.
+- Once Tasks 11 and 18 land, the coordinator writes checkpoint 0033 with the summary.
+
 ## The town view session (nomos-bd), continued
 
 - 10 Oct: **step 4 and the blob counts are done and pushed** (217980a, d5dfdff, d999ab7, dea6b06 and d6e3bdc).
