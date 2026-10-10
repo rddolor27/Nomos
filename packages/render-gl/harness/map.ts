@@ -3,14 +3,11 @@ import landmarkSheet from '../../../assets/sprites/landmarks.json';
 import mapSheet from '../../../assets/sprites/map.json';
 import wonderSheet from '../../../assets/sprites/wonders.json';
 import { createBasePass, type BasePass } from '../src/map/base-pass.ts';
-import { DOT_CLEAR, DOT_HUE, crowdDotPx, dotCorner, dotPixel } from '../src/map/crowd.ts';
 import { SPRITE_SHORTS, createIconsPass, iconSprites, type IconsPass } from '../src/map/icons.ts';
 import {
   BAND,
   BORDER,
   COUNTRY_COLOURS,
-  CROWD_COLOURS,
-  CROWD_OUTLINE,
   DECK,
   HIGHWAY,
   LANE,
@@ -52,13 +49,11 @@ export interface WorldSpec {
   sites?: [kind: number, cell: number][];
 }
 
-// hues counts the pixels of each crowd hue in the frame.
 export interface RenderedFrame {
   backend: MapBackend;
   view: MapView;
   swapped: boolean;
   wrong: string[];
-  hues: number[];
 }
 
 export interface MapHarness {
@@ -71,20 +66,14 @@ export interface MapHarness {
   // Draws, reads the frame back, and lists up to 10 device pixels that differ from the CPU reference.
   check(camera: MapCamera, view: MapView, flat: boolean): string[];
   pixel(x: number, y: number): string;
-  readonly colours: { countries: string[]; border: string; water: string; crowd: string[] };
-  // A MapRenderer instead of the bare passes; world, atlas and crowd then feed it.
+  readonly colours: { countries: string[]; border: string; water: string };
+  // A MapRenderer instead of the bare passes; world and atlas then feed it.
   bootRenderer(width: number, height: number, options?: MapRendererOptions): MapBackend;
   // Draws through the renderer and checks the frame against the reference for the backend it drew on.
   render(camera: MapCamera, flat: boolean): RenderedFrame;
   // Checks the frame the renderer shows, as render does, without drawing. The map's WebGL2 context doesn't preserve its
   // drawing buffer, so a WebGL2 frame reads back only in the task that drew it.
   shown(camera: MapCamera, flat: boolean): RenderedFrame;
-  // Each dot's CROWD_HUES index, and its x and y in fractional cells.
-  crowd(hue: number[], xy: number[]): void;
-  // Rewrites the crowd's places in the array the renderer holds, as the map view's motion will.
-  moveCrowd(xy: number[]): void;
-  // The canvas pixel at a dot's middle under this camera.
-  dotCentre(dot: number, camera: MapCamera): [number, number];
   // False when the browser has no WEBGL_lose_context to lose with.
   loseContext(): Promise<boolean>;
   restoreContext(): Promise<void>;
@@ -116,8 +105,6 @@ let names: string[] = [];
 let solid = new Set<string>();
 let frame = new Uint8Array(0);
 let frameWidth = 0;
-let crowdHue = new Uint8Array(0);
-let crowdXy = new Float32Array(0);
 let loser: WEBGL_lose_context | null = null;
 
 function hex(colour: number): string {
@@ -266,52 +253,6 @@ function over(sprites: Int16Array, flat: boolean, ax: number, ay: number, colour
   return shown;
 }
 
-const NO_DOT = -1;
-
-function dotColour(dot: number, kind: number): number {
-  if (kind === DOT_CLEAR) return NO_DOT;
-  return kind === DOT_HUE ? CROWD_COLOURS[crowdHue[dot]] : CROWD_OUTLINE;
-}
-
-function paintDot(layer: Int32Array, width: number, dot: number, size: number, corner: [number, number]): void {
-  const height = layer.length / width;
-  for (let j = 0; j < size; j++) {
-    for (let i = 0; i < size; i++) {
-      const x = corner[0] + i;
-      const y = corner[1] + j;
-      const colour = dotColour(dot, dotPixel(size, i, j));
-      if (colour !== NO_DOT && x >= 0 && y >= 0 && x < width && y < height) layer[y * width + x] = colour;
-    }
-  }
-}
-
-// The crowd pass's rule in plain TypeScript: in the Region view, each dot's disc in dot order, later over earlier, in
-// frame pixels; NO_DOT where none lies.
-function crowdLayer(width: number, height: number, camera: MapCamera, view: MapView): Int32Array {
-  const layer = new Int32Array(width * height).fill(NO_DOT);
-  if (view !== 'region') return layer;
-  const size = crowdDotPx(camera.cellPx);
-  const camX = Math.round(camera.x * camera.cellPx);
-  const camY = Math.round(camera.y * camera.cellPx);
-  for (let dot = 0; dot < crowdHue.length; dot++) {
-    const corner: [number, number] = [
-      dotCorner(crowdXy[2 * dot], camera.cellPx, size) - camX,
-      dotCorner(crowdXy[2 * dot + 1], camera.cellPx, size) - camY,
-    ];
-    paintDot(layer, width, dot, size, corner);
-  }
-  return layer;
-}
-
-// A frame pixel's colour once the crowd has drawn over what lay beneath.
-type CrowdOver = (colour: number, px: number, py: number) => number;
-
-const NO_CROWD: CrowdOver = (colour) => colour;
-
-function crowdOver(layer: Int32Array, width: number): CrowdOver {
-  return (colour, px, py) => (layer[py * width + px] === NO_DOT ? colour : layer[py * width + px]);
-}
-
 // readPixels gives rows from the bottom; keep them from the top, as the camera counts.
 function readBack(context: WebGL2RenderingContext): void {
   const width = context.drawingBufferWidth;
@@ -330,29 +271,20 @@ function read2d(canvas: HTMLCanvasElement): void {
   frameWidth = canvas.width;
 }
 
-function huesShown(): number[] {
-  const counts = CROWD_COLOURS.map(() => 0);
-  for (let at = 0; at < frame.length; at += 4) {
-    const hue = CROWD_COLOURS.indexOf((frame[at] << 16) | (frame[at + 1] << 8) | frame[at + 2]);
-    if (hue >= 0) counts[hue]++;
-  }
-  return counts;
-}
-
 function booted(): { context: WebGL2RenderingContext; map: WorldMap } {
   if (!gl || !world) throw new Error('boot the map harness and give it a world first');
   return { context: gl, map: world };
 }
 
-// A frame pixel's colour, from its art pixel and its own place on the frame.
-type Want = (ax: number, ay: number, px: number, py: number) => number;
+// A frame pixel's colour, from its art pixel.
+type Want = (ax: number, ay: number) => number;
 
-// What WebGL2 draws: the base pass, the crowd, then the icons.
-function glWant(map: WorldMap, view: MapView, flat: boolean, crowd: CrowdOver): Want {
+// What WebGL2 draws: the base pass, then the icons.
+function glWant(map: WorldMap, view: MapView, flat: boolean): Want {
   const overlay = buildOverlay(map, view);
   const sprites = page ? iconSprites(map, page, view) : new Int16Array(0);
   const drawnFlat = flat || !page;
-  return (ax, ay, px, py) => over(sprites, drawnFlat, ax, ay, crowd(under(map, overlay, view, drawnFlat, ax, ay), px, py));
+  return (ax, ay) => over(sprites, drawnFlat, ax, ay, under(map, overlay, view, drawnFlat, ax, ay));
 }
 
 // The settlements of iconSprites' list, in its order, which is row order: plain icons, and walled or palisaded ones
@@ -366,14 +298,14 @@ function townSprites(sprites: Int16Array): Int16Array {
   return Int16Array.from(kept);
 }
 
-// What the Canvas2D fallback draws: flat fills, the crowd, then the settlement icons.
-function canvasWant(map: WorldMap, view: MapView, crowd: CrowdOver): Want {
+// What the Canvas2D fallback draws: flat fills, then the settlement icons.
+function canvasWant(map: WorldMap, view: MapView): Want {
   const tilePx = view === 'region' ? 16 : 8;
   const sprites = page ? townSprites(iconSprites(map, page, view)) : new Int16Array(0);
-  return (ax, ay, px, py) => {
+  return (ax, ay) => {
     const inside = ax >= 0 && ay >= 0 && ax < map.width * tilePx && ay < map.height * tilePx;
     const fill = inside ? flatColour(map, Math.floor(ay / tilePx) * map.width + Math.floor(ax / tilePx)) : LINE_COLOURS.water;
-    return over(sprites, false, ax, ay, crowd(fill, px, py));
+    return over(sprites, false, ax, ay, fill);
   };
 }
 
@@ -387,7 +319,7 @@ function mismatches(width: number, height: number, camera: MapCamera, view: MapV
   for (let at = 0; at < frame.length && wrong.length < 10; at += 4) {
     const px = (at >> 2) % width;
     const py = Math.floor((at >> 2) / width);
-    const shown = want(Math.floor((px + camX) / scale), Math.floor((py + camY) / scale), px, py);
+    const shown = want(Math.floor((px + camX) / scale), Math.floor((py + camY) / scale));
     const got = (frame[at] << 16) | (frame[at + 1] << 8) | frame[at + 2];
     if (got !== shown) wrong.push(`${px},${py}: got ${hex(got)}, want ${hex(shown)}`);
   }
@@ -409,10 +341,9 @@ function shownFrame(camera: MapCamera, flat: boolean): RenderedFrame {
   const { drawn, map } = rendered();
   readRenderer(drawn);
   const { width, height } = drawn.canvas;
-  const crowd = crowdOver(crowdLayer(width, height, camera, drawn.view), width);
-  const want = drawn.backend === 'webgl2' ? glWant(map, drawn.view, flat, crowd) : canvasWant(map, drawn.view, crowd);
+  const want = drawn.backend === 'webgl2' ? glWant(map, drawn.view, flat) : canvasWant(map, drawn.view);
   const wrong = mismatches(width, height, camera, drawn.view, want);
-  return { backend: drawn.backend, view: drawn.view, swapped: drawn.canvas !== bootCanvas, wrong, hues: huesShown() };
+  return { backend: drawn.backend, view: drawn.view, swapped: drawn.canvas !== bootCanvas, wrong };
 }
 
 function webglOf(canvas: HTMLCanvasElement | undefined): WebGL2RenderingContext | null {
@@ -463,7 +394,7 @@ window.mapHarness = {
     icons?.draw(camera, view, flat);
     readBack(context);
     const { drawingBufferWidth: width, drawingBufferHeight: height } = context;
-    return mismatches(width, height, camera, view, glWant(map, view, flat, NO_CROWD));
+    return mismatches(width, height, camera, view, glWant(map, view, flat));
   },
   bootRenderer(width, height, options) {
     renderer?.dispose();
@@ -471,8 +402,6 @@ window.mapHarness = {
     base = null;
     icons = null;
     page = null;
-    crowdHue = new Uint8Array(0);
-    crowdXy = new Float32Array(0);
     bootCanvas = document.createElement('canvas');
     document.body.replaceChildren(bootCanvas);
     renderer = createMapRenderer(bootCanvas, options);
@@ -487,20 +416,6 @@ window.mapHarness = {
     return shownFrame(camera, flat);
   },
   shown: shownFrame,
-  crowd(hue, xy) {
-    crowdHue = Uint8Array.from(hue);
-    crowdXy = Float32Array.from(xy);
-    renderer?.setCrowd(crowdHue, crowdXy);
-  },
-  moveCrowd(xy) {
-    crowdXy.set(xy);
-  },
-  dotCentre(dot, camera) {
-    const size = crowdDotPx(camera.cellPx);
-    const middle = (at: number, cam: number): number =>
-      dotCorner(at, camera.cellPx, size) + (size >> 1) - Math.round(cam * camera.cellPx);
-    return [middle(crowdXy[2 * dot], camera.x), middle(crowdXy[2 * dot + 1], camera.y)];
-  },
   // Chromium and WebKit mark a context restorable only after the lost event's listeners return, so wait a task.
   async loseContext() {
     const canvas = renderer?.canvas;
@@ -530,7 +445,6 @@ window.mapHarness = {
       countries: COUNTRY_COLOURS.map(hex),
       border: hex(LINE_COLOURS.border),
       water: hex(LINE_COLOURS.water),
-      crowd: CROWD_COLOURS.map(hex),
     };
   },
 };
