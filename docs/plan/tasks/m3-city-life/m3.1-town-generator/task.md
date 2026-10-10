@@ -12,20 +12,21 @@ The port needs M0.1's keyed draw and noise, M0.4's binary map format and M0.5's 
   - the civic signals: teal-and-cream shop awnings with a gold coin sign, and home roofs chosen at random, never by wealth; art exists; wire it in (R3).
 - **Exit checks:**
   - one map, now the binary map rather than one LDtk file, drives both walkability and tiles: every walkable cell has a ground tile and every zone entity a building (R3, R9).
-- **Part 2, added by the owner on 10 October 2026,** built before M1 and ahead of the export above:
-  - **bigger places:** places at four times the area or more. A capital or city landed at 128×80 tiles, a town 112×64, a village 80×48 and a hamlet 56×32. The change lands in `place.py` first, then in the port;
-  - **crowds that grow with population:** on desktop, about 150–300 people in a capital or city, 60–120 in a town, 25–50 in a village and 10–20 in a hamlet. Phones show fewer;
-  - **the starting town:** Highcourt grows to the capital's new size and is re-exported as the binary map. Its blob counts per tier are re-checked against the tick budgets;
+- **Part 2, added by the owner on 10 October 2026,** built before M1 and ahead of the export above. All but its 2 ms bar landed that day; the bar moved to Part 3's Task 19:
+  - **bigger places:** places at four times the area or more. Today a capital or city is 176×112 tiles, a town 152×96, a village 80×48 and a hamlet 56×32, from Part 2 (d1210d0) and Part 3's Task 11 (d68ff59). The change lands in `place.py` first, then in the port;
+  - **crowds that grow with population:** on desktop, about 150–300 people in a capital or city, 60–120 in a town, 25–50 in a village and 10–20 in a hamlet. Phones show fewer. Built in d1210d0, plus a street crowd of one walker per 150 residents, up to 3,000 (06d6713 to 7406816);
+  - **the starting town:** Highcourt grows to the capital's new size and is re-exported as the binary map. Its blob counts per tier are re-checked against the tick budgets. Built: 176×112 with 15,862 walkable tiles (217980a, then d68ff59);
   - **town walls with gates** around capitals and cities, with a gate where each road enters, drawn look-only. Part 3 replaces this;
   - **more house styles and props.** Part 3 replaces this.
 - **Owner decision first:** the town walls' look, from the asset-designer's mockups, before the full sprite set is drawn. Settled on 10 October 2026: the owner asked for the assets to be drawn and then added to the plans, and their previews went to the owner.
 - **Owner decision first:** how many blobs the grown starting town holds on each device tier, within the tick budgets.
+  - Today the first screen starts one blob per 2, 3 or 4 walkable tiles on desktop, phone-plus and phone (dea6b06): 7,931, 5,287 and 3,965 on 176×112 Highcourt.
 - **Exit checks for part 2:**
   - the per-stage goldens are regenerated, and the TypeScript port matches them;
   - the town view's frame time stays under 2 ms for the biggest capital, in both backends;
   - every crowd stays within its tier's range;
   - walls never cross a road except at a gate.
-- **Part 3, added by the owner on 10 October 2026,** builds walled towns, roads by role and farms, in place of part 2's walls and houses:
+- **Part 3, added by the owner on 10 October 2026,** builds walled towns, roads by role and farms, in place of part 2's walls and houses. Tasks 9–11, 17 and 18 have landed: the sizes, roads by role with stone bridges and avenue trees, and the country map's road classes and walled icons. The rest stays a plan until the owner says to build it (plan.md, Part 3):
   - **sizes:** a capital or city is 176×112 tiles and a town 152×96, while villages, hamlets and vistas keep theirs;
   - **walls:** stone walls with towers round capitals and cities, a palisade round towns, and none round villages and hamlets, with a gate wherever a road enters;
   - **roads by role:**
@@ -40,7 +41,7 @@ The port needs M0.1's keyed draw and noise, M0.4's binary map format and M0.5's 
   - **a farm belt by climate:** strips of grain and vegetables, pastures with herds, orchards, vineyards on warm, dry land and rice paddies on hot, wet land, with farm tracks, barns, granaries and a watermill;
   - **the country map:** major roads drawn as stone highways and minor ones as dirt tracks, and walled icons for capitals, cities and towns.
 - **Exit checks for part 3,** over every place of the first 20 standard worlds unless one is named:
-  - places measure 176×112 for a capital or city, 152×96 for a town, 80×48 for a village and 56×32 for a hamlet, and vistas 30×18, or 160×100 and 140×80 if Task 11 takes its fallback;
+  - places measure 176×112 for a capital or city, 152×96 for a town, 80×48 for a village and 56×32 for a hamlet, and vistas 30×18;
   - every capital and city has a stone wall, every town a palisade, and no village or hamlet a wall;
   - no wall piece stands on a road, water or a bank, and every road crossing the wall's line is a 2-tile gate;
   - every map-edge road and every gate joins the plaza by road;

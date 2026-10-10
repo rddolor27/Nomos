@@ -1,10 +1,22 @@
 # M3.1 Town generator: plan
 
-> **Status:** step plan for the place port and the owner's town view, started 9 October 2026. Part 3, added on 10 October 2026, is a step plan for walled towns, roads by role and farms. The rest of M3.1 is still the brief further down: the export to the binary map, the saddle keys and the LDtk fallback. Expand it with the writing-plans skill before building it.
+> **Status:**
+> - **Done:** the place port and the owner's town view, Tasks 0–8 (9–10 October 2026).
+> - **Built:** Part 2, but for its 2 ms bar, which moved into Part 3's Task 19 (10 October 2026).
+> - **Part 3** is a step plan for walled towns, roads by role and farms. Tasks 9–11, 17 and 18 have landed. Tasks 12–16 and 19–21 stay plans until the owner says to build them (checkpoint 0033).
+> - **The rest of M3.1** is still the brief further down: the export to the binary map, the saddle keys and the LDtk fallback. Expand it with the writing-plans skill before building it.
 
 **Task:** [task.md](task.md)
 
 ## Step plan: the place port and the owner's town view
+
+> **Status:** done, 9–10 October 2026, from 6ceaffc to fda1f8f. Checkpoints 0026 and 0027, in git history at c96d81c and be81455, hold the account. QA's low bugs 2 and 3 stay open.
+> - Task 0: 6ceaffc and eb89fca.
+> - Tasks 1–3: 737474b, 20d53fd, 7d6d8f3 and 708e1a2, with the CI and engine checks in 048ef6c, a1da0c5 and 2fd4660.
+> - Task 4: 598f5a1 and e897fd5.
+> - Tasks 5–6: be2067e, 6a807d2 and b2cb2a1.
+> - Task 7: 0cef4cf to f3fe6e6, and fda1f8f for QA's bug 1.
+> - Task 8: 2f51e37 and b209aee in `interfaces.md`, and QA's tests 025dda5 and 605e16a.
 
 On 9 October 2026 the owner asked why zooming into a settlement on the map still shows the map. They also asked for the sprite images and the houses next, and left the design to the coordinator.
 
@@ -43,7 +55,7 @@ This pulls M3.1's port forward, and starts M3.3's atlas pages and sprite drawing
 3. **Summer art only.** Seasons wait for M3.8.
 4. **Wonders open their vistas too,** since the port builds them anyway.
 5. **The atlas:** the full page that `tools/atlas` already builds (`atlas.webp`, 86 KB, and `atlas.json`) loads when the first place opens, never on first load.
-6. **The first screen's town keeps Skin A dots.** Drawing it with these sprites is the next step, to offer the owner.
+6. **The first screen's town keeps Skin A dots.** Drawing it with these sprites is the next step, to offer the owner. Since 10 October 2026, the first screen opens in these sprites as the Town skin (M3.3).
 
 ### Owner decisions this plan leaves open
 
@@ -174,7 +186,12 @@ This pulls M3.1's port forward, and starts M3.3's atlas pages and sprite drawing
 
 ## Part 2: bigger places, the starting town, then walls and houses (owner, 10 October 2026)
 
-> **Status:** steps 1, 2, 2b and 4 landed on 10 October 2026 (d1210d0, 06d6713, 8c18e75, 86437eb and 217980a). Step 3 moved into Part 3's Task 19, and Part 3 replaces steps 5 and 6.
+> **Status:** built on 10 October 2026. Step 3 moved into Part 3's Task 19, and Part 3 replaces steps 5 and 6.
+> - **Steps 1 and 2,** bigger places and crowds by population: 81ac739, d1210d0 and 4932aef. Part 3's Task 11 then grew capitals and cities to 176×112 and towns to 152×96 (d68ff59).
+> - **The town view fills the screen:** 0d0ce8a.
+> - **Step 2b,** the street crowd: one walker per 150 residents, up to 3,000 on desktops and 600 on phones, one per cell of its own loops (06d6713, 8c18e75, 86437eb and 7406816).
+> - **Step 4,** the starting town: Highcourt re-exported at 128×80 (217980a), then at 176×112 by Task 11. The first screen's blob counts follow its walkable tiles (dea6b06).
+> - **Walking in any direction,** at the owner's request: 3cc98f0 cut the loops' corners. Then a530047 to d6e13d8 made the town view's people wander its street network by the sim's own steering rule.
 
 The owner found the town views too small and their crowds too thin. They asked for bigger places and a bigger starting town, then town walls with gates and more houses. Later on 10 October they set the order:
 - M8.1's Task 36, the large world with more settlements, goes first;
@@ -184,7 +201,7 @@ The owner found the town views too small and their crowds too thin. They asked f
 The steps, in order:
 
 1. **Bigger places** (sim-engineer; asset-designer to tune the layout).
-   - `place.py`'s `SIZES` become 96×56 for a capital or city, 80×48 for a town, 64×40 for a village and 40×24 for a hamlet. Vistas stay 30×18. At the owner's later word they landed larger: 128×80, 112×64, 80×48 and 56×32.
+   - `place.py`'s `SIZES` are now 176×112 for a capital or city, 152×96 for a town, 80×48 for a village and 56×32 for a hamlet, and vistas stay 30×18. This step landed 128×80 and 112×64 at the owner's word (d1210d0), and Part 3's Task 11 grew them (d68ff59).
    - Retune `PLAZAS`, `BLOCK`, `REACH` and `HOUSES`, so the bigger districts fill with streets and houses rather than grass.
    - Regenerate the goldens and fixtures, then port the change to TypeScript stage by stage.
    - **The town view fills the screen** (owner, 10 October 2026: "it shouldn't be just a small rectangle"). `openPlaceCamera` opens at the smallest whole scale at which the place covers the whole view, never under 2 CSS px per art px, and the user pans. Fit stays a button. This is render-engineer work, done with this step.
@@ -200,9 +217,9 @@ The steps, in order:
    - The place pass draws them in its one instanced draw. Re-measure the 2 ms bar in step 3.
 3. **Budgets** (render-engineer): re-measure the place pass and the walkers against the 2 ms bar with the bigger crowds, in both backends. **Moved to Part 3, Task 19,** once the walled towns settle.
 4. **The starting town** (sim-engineer, with senior-game-engineer).
-   - Highcourt, `export_map.py`'s pinned capital, is re-exported at 96×56 as `assets/maps/town.nmap`.
-   - The replay hash changes, so record the new one.
-   - Re-check the blob counts per tier against the tick budgets. The owner picks the counts (task.md).
+   - Highcourt, `export_map.py`'s pinned capital, is re-exported at the capital's size as `assets/maps/town.nmap`, now 176×112 with 15,862 walkable tiles.
+   - The replay hash changes, so record the new one. Done: Highcourt's own hashes are pinned in `packages/sim-protocol/test/town-map.test.ts`, while the CLI's holds, since the CLI runs on the stand-in ground.
+   - Re-check the blob counts per tier against the tick budgets. The owner picks the counts (task.md). Today they are 7,931, 5,287 and 3,965 on desktop, phone-plus and phone, well under the 100k, 25k and 10k the tick budgets cover.
 5. **Replaced by Part 3.** **Town walls with gates** (asset-designer, then sim-engineer).
    - Mockups first, for the owner to pick.
    - Then the wall, corner, tower and gate sprites in `tools/sprites`.
@@ -229,6 +246,8 @@ The steps, in order:
 ## Part 3: walled towns, roads by role and farms (owner, 10 October 2026)
 
 > **Status:** step plan, written on 10 October 2026 by `sim-architect`. It replaces Part 2's steps 5 and 6. Run it with the executing-plans skill; steps use checkboxes. All the art it needs landed on 10 October 2026 (The art contract).
+>
+> Tasks 9–11, 17 and 18 landed on 10 October 2026, each marked done below. The owner then kept the round to plans: Tasks 12–16 and 19–21 wait until the owner says to build them (checkpoint 0033).
 
 **Goal:** capitals, cities and towns become walled towns, packed round the plaza and thinning past the wall into suburbs along the roads, then a farm belt by climate. Villages and hamlets stay open among their fields. Every road takes a surface and width by its role, and the country map draws highways in stone and tracks in dirt, with walled icons.
 
@@ -405,7 +424,9 @@ The designers drew and committed all of these on 10 October 2026. They are still
 | `sim-engineer` and `senior-game-engineer` (Sonnet) | 20: Highcourt, the first screen and the owner's screenshots | Tasks 11–16 and 19 |
 | Coordinator | 21: interfaces, QA once, review and the checkpoint | everything |
 
-### Task 9: Time place builds (sim-engineer, Sonnet)
+### Task 9: Time place builds (sim-engineer, Sonnet; done)
+
+Done on 10 October 2026: 2664baa, with the baseline below (b035a86).
 
 **Files:** create `packages/worldgen/scripts/time-places.ts`.
 
@@ -433,7 +454,9 @@ The designers drew and committed all of these on 10 October 2026. They are still
 
 Each budget doubles the higher median and multiplies the higher worst by 2.5. The largest loops: capitals 6,498 walk cells and 69,486 crowd cells, cities 5,946 and 22,498.
 
-### Task 10: The atlas cap (render-engineer, Sonnet)
+### Task 10: The atlas cap (render-engineer, Sonnet; done)
+
+Done on 10 October 2026: 25d318c. The town page is now 2048 × 1161 px and 182,550 B of WebP, and its 169 snow and night frames stay on the map page (measured here).
 
 The town page is 2048 × 1347 px against `tools/atlas`'s 2048 px cap, and the sheets are still growing (Measured here).
 
@@ -470,7 +493,11 @@ Tasks 11–15 each change `place.py` by their rules, then run these steps. Each 
   - `pnpm lint && pnpm typecheck`.
 - [ ] **Step 8: Commit** by path: `place.py` and any other Python, the port and its tests, `frames.ts`, `place-goldens-v1.json`, `places-v1.json`, `town.nmap`, `assets/LICENSES.md` and the pinned tests. The body is the task's `Task:` line, plus the timing script's capital and town lines.
 
-### Task 11: Roads by role, sizes and the town plan (sim-engineer, Opus)
+### Task 11: Roads by role, sizes and the town plan (sim-engineer, Opus; done)
+
+Done on 10 October 2026: d68ff59, at the planned sizes with no fallback, and c4b8bc1, which draws cut stone in a dry ground colour on the dots map.
+- Over two runs in Node on Task 9's machine, while other agents ran, a capital built in 178 and 200 ms median and 215 and 235 ms worst. That is within the 236 and 321 ms budgets (measured here).
+- Highcourt is 176×112, with 15,862 walkable tiles and 387 homes.
 
 **Interfaces:** produces these, in Python then TypeScript names:
 - `ROADS`, a role's width and kind: `main` 3 `stone`, `street` 2 `cobble`, `country` 2 `gravel`, `track` 1 `track`, `lane` 1 `path`. `RANK` orders the kinds, lowest first: `path`, `track`, `gravel`, `cobble`, `stone`, `paving`;
@@ -702,7 +729,9 @@ TypeScript only, so no golden moves.
 - [ ] **Step 3: Check:** `node packages/worldgen/scripts/time-places.ts`, within Task 9's budget, and `pnpm lint && pnpm typecheck`.
 - [ ] **Step 4: Commit** `feat(worldgen): spread the street crowd across wide roads`, with `Task: M3.1 Town generator, task 16: The street crowd on wide roads`.
 
-### Task 17: Road classes on the country map (sim-engineer, Opus)
+### Task 17: Road classes on the country map (sim-engineer, Opus; done)
+
+Done on 10 October 2026: b05bccc, and f84a9e2 for render-gl's tiny test world. Over 100 worlds of each size, 5,570 of 44,093 roads are major, and classing adds under 2 ms to a large world in Node (measured here).
 
 It may run beside Tasks 11–16, since it shares no file with them and road classes never reach a place.
 
@@ -730,7 +759,9 @@ It may run beside Tasks 11–16, since it shares no file with them and road clas
 - [ ] **Step 4: Check:** `python tools/worldgen/goldens.py --check --seeds 3`, `node packages/worldgen/scripts/engines.ts`, `node packages/worldgen/scripts/frozen.ts --check`, `node packages/worldgen/scripts/sweep.ts`, and `pnpm lint && pnpm typecheck`.
 - [ ] **Step 5: Commit** `feat(worldgen): class country roads as highways and tracks`, with `Task: M3.1 Town generator, task 17: Road classes on the country map`.
 
-### Task 18: Highways, tracks and walled icons on the map (render-engineer, Opus)
+### Task 18: Highways, tracks and walled icons on the map (render-engineer, Opus; done)
+
+Done on 10 October 2026: 19ef31a. All 60 map browser specs pass in Chromium, Firefox and WebKit. The Countries golden came out byte-identical, since its flat view hides roads and icons, so Step 5's second commit wasn't needed.
 
 **Waits for:** `nomos-bd`'s Town skin, and Task 17.
 
