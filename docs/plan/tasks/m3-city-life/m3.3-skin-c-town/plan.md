@@ -3,6 +3,11 @@
 > **Status:** brief. Before building, expand it into a step-by-step plan with the writing-plans skill, in this file, against the code as it then stands.
 >
 > **Started early:** M3.1's town view (owner, 9 October 2026) built the place pass, `@nomos/render-gl/place`. It draws a place's tiles, sprites and people from the full atlas page, in one instanced WebGL2 draw, with a Canvas2D fallback, pixel for pixel as `placedraw.py` does. Every `vite build` now writes the atlas pages too. Build the town skin on these ([interfaces.md](../../m0-pipeline/interfaces.md), Places).
+>
+> **The Town skin, a first cut** (owner request, 10 October 2026; b012157 to b2d3b9e):
+> - The first screen draws Highcourt with the place pass, and the sim's agents as blob sprites. Highcourt's layout and the town atlas page load in idle time after the first frame.
+> - Auto opens the town up to 9,000 blobs in view and keeps it up to 10,350, a 15% hysteresis (95ed685, 4c42d45). So 176×112 Highcourt opens in it with 7,931 blobs on desktop, while the 10k-and-up perf tiers stay dots.
+> - Not built yet: the 150 ms cross-fade, animated tiles, the roof pass, the framebuffer path, light and the follow-cam ([interfaces.md](../../m0-pipeline/interfaces.md), The Town skin).
 
 **Task:** [task.md](task.md)
 
