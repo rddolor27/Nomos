@@ -8,7 +8,8 @@ The owner can overturn any of these.
 
 **Owner, 10 October 2026:**
 - **Proof of concept.** Tests run in Node and in Chromium, which covers Chrome and Brave. Bun and Deno are dropped for good, and Firefox and WebKit return before launch. Where an older plan names them, or the deleted `scripts/engines.ts` and `stdlib.yml`, run the pnpm checks in Node and Chromium instead.
-- **Testing.** Each task's code comes first, then its tests, covering the main behaviour and one edge case. Engineers run only those tests, plus lint and typecheck on the touched packages. `pnpm check` runs once per feature, with `pnpm test:browser` when the page changed. The perf workflow runs by hand, after a tick or frame path changes. One review per feature, and only for money, economy or determinism changes.
+- **Testing.** Each task's code comes first, then its tests, covering the main behaviour and one edge case. Engineers run only those tests and a typecheck of the touched packages, and nothing slow runs on each edit. Lint, `pnpm check` and the one review run once the whole feature is built, with `pnpm test:browser` when the page changed and the review only for money, economy or determinism changes. The perf workflow runs by hand, after a tick or frame path changes.
+- **Models.** Engineer agents default to Sonnet; Opus is for design calls, plans, reviews and bugs of unknown cause.
 - **Decisions.** Claude settles open owner decisions itself, and records each here as a ruling.
 - **Walled towns,** the final answers for M3.1 Part 3: density peaks at the plaza; stone walls with towers for capitals and cities, a palisade for towns, and none for villages and hamlets; roads by role; farms on the outskirts; the new buildings; suburbs, bridges, avenues and greens. Tasks 12–16 and 19–21 wait for the owner's go.
 
@@ -39,3 +40,4 @@ Beyond the checkpoint's Open list:
 ## Log
 
 - 10 Oct: **testing and rules restructured** (owner). `pnpm check` runs every check but the browser specs, and CI's check job runs only it. The stdlib workflow and the engine scripts are gone, perf runs by hand, and the place tests check 2 worlds. `pnpm check` passed locally in 349 s, with the unit tests at 65 s, down from 175 s.
+- 10 Oct: **engineers default to Sonnet,** and lint and the determinism and economy reviews wait for the end of a feature (owner). The check after each edit keeps only quick guards, about 0.13 s, where linting took about 3 s.

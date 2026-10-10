@@ -296,7 +296,7 @@ Tasks 24–28 don't touch Task 23's files, so they may run while the senior buil
   - before committing a shared file, check that `git diff <file>` shows only your hunks;
   - never `git add -A`, `git stash`, `git push` or `--no-verify`.
 - **Commits:** `git -c user.name=rddolor27 -c user.email=80044625+rddolor27@users.noreply.github.com commit`, each body starting `Task: M8.1 World generator, part 2: the TypeScript port`. Code and docs never share a commit.
-- **Checks (owner, 10 October 2026):** each task runs its own tests, plus `pnpm exec eslint` on the changed files and `pnpm --filter @nomos/worldgen typecheck`; a Python task also runs `python tools/worldgen/test_worldgen.py`. `pnpm check`, which includes the Python tools' checks, runs once when the remaining tasks are done.
+- **Checks (owner, 10 October 2026):** each task runs its own tests and `pnpm --filter @nomos/worldgen typecheck`; a Python task also runs `python tools/worldgen/test_worldgen.py`. Lint and the rest of `pnpm check`, which includes the Python tools' checks, run once when the remaining tasks are done.
 - **The sim never moves:** `node tools/cli/src/main.ts --seed 42 --tier phone --ticks 1000` prints the hash on `main` when the task starts. That was `b3b2c251` when this plan was written, and `746a06a3` at f3892e5 on 10 October 2026 (measured here).
 - **Nothing reaches the first load.** The town's first-load JS was 17.47 kB of its 18 kB stand-in at 955d2fb, counting the shared `app` chunk (measured here). No task here may add a byte to the entry, `app`, sim worker or renderer chunks.
 - **A test that fails in another agent's files** may be their work in progress. Rerun once, and report it if it persists.
