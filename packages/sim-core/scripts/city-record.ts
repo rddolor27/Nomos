@@ -3,6 +3,8 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { CITY } from '../src/economy/city.ts';
 import { settledRecord } from '../src/economy/settled.ts';
+import { TIER_AGENTS, TIER_FIRMS, type Tier } from '../src/memory/tiers.ts';
+import { firmsFitTier } from '../src/spawn/record.ts';
 
 const FILE = new URL('../src/economy/city-record.ts', import.meta.url);
 const NAME = 'packages/sim-core/src/economy/city-record.ts';
@@ -12,7 +14,20 @@ function moduleSource(record: Float64Array): string {
   return `${HEADER}\nexport const CITY_RECORD = /* @__PURE__ */ new Float64Array([${record.join(', ')}]);\n`;
 }
 
-const text = moduleSource(settledRecord(CITY));
+// A town of a tier's whole crowd takes firms at the record's ratio, and createTown throws when they pass the tier's rows.
+function requireFirmsFitTiers(record: Float64Array): void {
+  for (const tier of Object.keys(TIER_AGENTS) as Tier[]) {
+    if (!firmsFitTier(record, tier)) {
+      throw new RangeError(
+        `CITY's record would put more than ${TIER_FIRMS[tier]} firms in a ${tier} town of ${TIER_AGENTS[tier]}`,
+      );
+    }
+  }
+}
+
+const record = settledRecord(CITY);
+requireFirmsFitTiers(record);
+const text = moduleSource(record);
 if (!process.argv.includes('--check')) {
   writeFileSync(FILE, text);
   console.log(`wrote ${NAME}`);

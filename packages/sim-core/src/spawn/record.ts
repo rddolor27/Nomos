@@ -1,5 +1,6 @@
 import { SUPPLIERS } from '../agents/store.ts';
 import { MAX_HOUSEHOLD } from '../households/store.ts';
+import { TIER_AGENTS, TIER_FIRMS, type Tier } from '../memory/tiers.ts';
 import { MAX_SAFE_CENTS } from '../money/invariants.ts';
 import type { World } from '../world/world.ts';
 
@@ -62,6 +63,12 @@ function scaledDown(value: number, people: number, base: number): number {
   const whole = Math.floor(value / base);
   const rest = value - whole * base;
   return whole * people + Math.floor((rest * people) / base);
+}
+
+// Whether the record's firms to a person stay within the tier's firm rows to an agent slot, so a town of the tier's whole
+// crowd keeps its firms inside the rows (checkRecord). scripts/city-record.ts asks it of CITY's record.
+export function firmsFitTier(record: Float64Array, tier: Tier): boolean {
+  return record[LEDGER_FIRMS] * TIER_AGENTS[tier] <= TIER_FIRMS[tier] * populationOf(record);
 }
 
 // What spawn needs of a record to build a city that folds back into it. The world gives the room: agent and firm slots.

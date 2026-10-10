@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { SUPPLIERS } from '../src/agents/store.ts';
 import { draw2 } from '../src/random/draw.ts';
 import { standInGround, walkableTiles, type Ground } from '../src/world/ground.ts';
 import { PHONE_MEMORY_BYTES } from '../src/memory/arena.ts';
@@ -106,7 +107,7 @@ describe('a town of blobs', () => {
     expect(walkableTiles(standInGround())).toBe(65_536);
   });
 
-  it("fills a town at its tier's density and never past its tier", () => {
+  it("fills a town at its tier's density, never past its tier and never under its 7 firms", () => {
     const hundred = new Uint8Array(32 * 32);
     hundred.fill(1, 0, 100);
     const small: Ground = { width: 32, height: 32, walk: hundred };
@@ -114,7 +115,7 @@ describe('a town of blobs', () => {
     expect(tiers.map((tier) => townAgents(tier, small))).toEqual([50, 33, 25]);
     expect(tiers.map((tier) => townAgents(tier, standInGround()))).toEqual([32_768, 21_845, 10_000]);
     const lone: Ground = { width: 2, height: 2, walk: new Uint8Array([0, 0, 0, 1]) };
-    expect(townAgents('desktop', lone)).toBe(1);
+    expect(tiers.map((tier) => townAgents(tier, lone))).toEqual([SUPPLIERS, SUPPLIERS, SUPPLIERS]);
   });
 
   it('spawns a town smaller than its tier in the places the full tier would use', () => {

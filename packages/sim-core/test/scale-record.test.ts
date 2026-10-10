@@ -1,13 +1,18 @@
 import { describe, expect, it } from 'vitest';
+import { CITY_RECORD } from '../src/economy/city-record.ts';
+import { TIER_AGENTS, TIER_FIRMS, type Tier } from '../src/memory/tiers.ts';
 import {
   LEDGER_EMPLOYED,
   LEDGER_FIELDS,
   LEDGER_FIRMS,
   LEDGER_HOUSEHOLDS,
   LEDGER_UNEMPLOYED,
+  firmsFitTier,
   populationOf,
   scaleRecord,
 } from '../src/spawn/record.ts';
+
+const TIERS = Object.keys(TIER_AGENTS) as Tier[];
 
 // Households of 1 to 6, employed, unemployed, firms, the two cash fields, price, wage and stock: CITY's settled record when
 // this was written, kept here so a new CITY_RECORD moves no figure below.
@@ -48,5 +53,23 @@ describe('scaleRecord', () => {
   it('keeps 7 firms for 69 people, where 100 x 69 / 1,000 rounds down to 6', () => {
     const out = scaled(SETTLED, 69);
     expect([out[LEDGER_FIRMS], populationOf(out), out[LEDGER_EMPLOYED] + out[LEDGER_UNEMPLOYED]]).toEqual([7, 69, 69]);
+  });
+});
+
+describe('firmsFitTier', () => {
+  it("holds for CITY's record at every tier, whose whole crowd then fills the firm rows exactly", () => {
+    for (const tier of TIERS) {
+      expect(firmsFitTier(CITY_RECORD, tier), tier).toBe(true);
+      expect(scaled(CITY_RECORD, TIER_AGENTS[tier])[LEDGER_FIRMS], tier).toBe(TIER_FIRMS[tier]);
+    }
+  });
+
+  it('fails every tier once the record has a firm past the ratio, 101 to 1,000 people', () => {
+    const crowded = Float64Array.from(SETTLED);
+    crowded[LEDGER_FIRMS] = 101;
+    for (const tier of TIERS) {
+      expect(firmsFitTier(SETTLED, tier), tier).toBe(true);
+      expect(firmsFitTier(crowded, tier), tier).toBe(false);
+    }
   });
 });

@@ -6,7 +6,7 @@ import { openCells, pointInTileQ8, standInGround, walkableTiles, type Ground } f
 import { createInputLog, type InputLog } from './inputs.ts';
 import { createLedger, issue, walletAccount, type Ledger } from '../money/ledger.ts';
 import { reserveArena, take, type Arena } from '../memory/arena.ts';
-import { MAX_CULTURES, addAgent, createAgentStore, type AgentStore } from '../agents/store.ts';
+import { MAX_CULTURES, SUPPLIERS, addAgent, createAgentStore, type AgentStore } from '../agents/store.ts';
 import { createFirmStore, type FirmStore } from '../firms/store.ts';
 import { createHouseholdStore, type HouseholdStore } from '../households/store.ts';
 import { createEconomyScratch, type EconomyScratch } from '../economy/scratch.ts';
@@ -73,10 +73,11 @@ export function createWorld(seed: number, tier: Tier, ground?: Ground, agents: n
   return world;
 }
 
-// A town's blobs: one to every TIER_TILES_PER_AGENT walkable tiles, and never past the tier's own count.
+// A town's blobs: one to every TIER_TILES_PER_AGENT walkable tiles, never past the tier's own count, and never under the
+// SUPPLIERS firms a town keeps, since its firms cannot outnumber its people (checkRecord).
 export function townAgents(tier: Tier, ground: Ground): number {
   const fitting = Math.floor(walkableTiles(ground) / TIER_TILES_PER_AGENT[tier]);
-  return Math.max(1, Math.min(TIER_AGENTS[tier], fitting));
+  return Math.max(SUPPLIERS, Math.min(TIER_AGENTS[tier], fitting));
 }
 
 // No take is caught: create* is not atomic across its takes, so a world that does not fit is dropped whole.

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { ACTION_IDLE, ACTION_WALK, FACING_DOWN } from '../src/agents/actions.ts';
+import { SUPPLIERS } from '../src/agents/store.ts';
 import { CITY_RECORD } from '../src/economy/city-record.ts';
 import { OK, checkInvariants } from '../src/money/invariants.ts';
 import { MINT } from '../src/money/ledger.ts';
@@ -15,8 +16,8 @@ import {
 } from '../src/spawn/record.ts';
 import { createTown, spawnTown } from '../src/spawn/town.ts';
 import { stateHash } from '../src/world/checkpoint.ts';
-import { standInGround } from '../src/world/ground.ts';
-import { TOWN, createWorld, layoutWorld, type World } from '../src/world/world.ts';
+import { standInGround, type Ground } from '../src/world/ground.ts';
+import { TOWN, createWorld, layoutWorld, townAgents, type World } from '../src/world/world.ts';
 
 // Highcourt's phone crowd (townAgents on the 176 x 112 map).
 const PEOPLE = 3_965;
@@ -103,5 +104,21 @@ describe('spawnTown', () => {
     expect([got[LEDGER_FIRMS], world.firms.count[0], populationOf(got)]).toEqual([7, 7, 69]);
     expect(Array.from(got)).toEqual(Array.from(scaled(69)));
     expect(world.globals[TOWN]).toBe(1);
+  });
+});
+
+describe('the smallest town', () => {
+  const lone: Ground = { width: 2, height: 2, walk: new Uint8Array([0, 0, 0, 1]) };
+
+  it('spawns the 7 people townAgents allows on one walkable tile, with 7 firms', () => {
+    const people = townAgents('phone', lone);
+    const world = createTown(1, 'phone', lone, people);
+
+    expect([people, world.agents.count[0], world.firms.count[0]]).toEqual([SUPPLIERS, SUPPLIERS, SUPPLIERS]);
+    expect(checkInvariants(world.cash, world.claims)).toBe(OK);
+  });
+
+  it('refuses 6 people, whom the 7 firms of a town outnumber', () => {
+    expect(() => createTown(1, 'phone', lone, SUPPLIERS - 1)).toThrow(RangeError);
   });
 });
