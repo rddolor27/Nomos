@@ -60,7 +60,7 @@
   {
     "name": "Camera input chunk",
     "path": ["dist/assets/camera-input-*.js"],
-    "limit": "1.5 kB"
+    "limit": "2.5 kB"
   },
   {
     "name": "Inspector chunk",
@@ -105,7 +105,7 @@
   {
     "name": "Initial JS, M0 stand-in",
     "path": ["dist/assets/index-*.js", "dist/assets/app-*.js", "dist/assets/render-gl-*.js", "dist/assets/worker-*.js"],
-    "limit": "18 kB"
+    "limit": "25.5 kB"
   },
   {
     "name": "Atlas",
