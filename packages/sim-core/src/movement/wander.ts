@@ -23,7 +23,21 @@ export function move(world: World): void {
   const y = agents.y;
   const vx = agents.vx;
   const vy = agents.vy;
-  for (let i = firstRedraw(tick); i < count; i += REDRAW_TICKS) redraw(agents, seed, i, tick);
+  const action = agents.action;
+  // The redraw stays inline: as a function of its own it spent TurboFan's inlining budget for move, so the keyed
+  // draw's inner calls went uninlined and boxed a heap number a redraw, 7.2 MB a phone day under the allocation gate.
+  for (let i = firstRedraw(tick); i < count; i += REDRAW_TICKS) {
+    const walking = action[i] === ACTION_WALK;
+    const next = wanderTo(agents.heading[i], walking, draw2(seed, WANDER, i, tick));
+    if (next !== STAND) {
+      action[i] = ACTION_WALK;
+      setHeading(agents, i, next);
+    } else if (walking) {
+      action[i] = ACTION_IDLE;
+      vx[i] = 0;
+      vy[i] = 0;
+    }
+  }
   for (let first = 0; first < count; first += WALK_CHUNK) {
     const end = Math.min(count, first + WALK_CHUNK);
     let stuck = 0;
@@ -52,17 +66,4 @@ function meetWall(agents: AgentStore, i: number): void {
   if (wallAlongX) x[i] = nextX;
   else if (tileOf(nextY) === tileOf(y[i])) y[i] = nextY;
   setHeading(agents, i, offWall(agents.heading[i], wallAlongX));
-}
-
-function redraw(agents: AgentStore, seed: number, i: number, tick: number): void {
-  const walking = agents.action[i] === ACTION_WALK;
-  const next = wanderTo(agents.heading[i], walking, draw2(seed, WANDER, i, tick));
-  if (next !== STAND) {
-    agents.action[i] = ACTION_WALK;
-    setHeading(agents, i, next);
-  } else if (walking) {
-    agents.action[i] = ACTION_IDLE;
-    agents.vx[i] = 0;
-    agents.vy[i] = 0;
-  }
 }
