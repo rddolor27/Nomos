@@ -25,12 +25,15 @@ These are the coordinator's, from 10 October 2026, and the owner can overturn an
    - A panel loads with the charts after the first frame. It draws three uPlot charts by day, each with its data table, and a table of recent trades.
    - **Fairness:** trades name no buyer, and the panel reads no name, look or culture. Wages show only in the inspector, which loads on demand.
 5. **Bytes.** The worker grows by about 8–12 KB brotli (inference). First-load JS stays within 35 KB. The worker's and the M0 stand-in's size-limit entries rise to one build's measure plus 1 kB. If 35 KB can't hold, the worker loads the economy after its first snapshot.
-6. **Pace.** At 1×, the panel gains a point every 144 s. Spawned firms all pay R*'s wage, so wages first differ on day 21, about 50 min in. Speed controls stay with M1.
+6. **Pace.** At 1×, the panel gains a point every 144 s. Spawned firms all pay R*'s wage, so wages first differ on day 21, about 50 min in.
+   - So M1.2's 1×, 4× and 16× buttons come forward as Task 8 (coordinator, 10 October 2026). At 16×, a month takes about 3 min 9 s (computed).
+   - Skipping, per-tier speed caps and keys past 3 stay in M1.2.
+   - A turn that can't fit its ticks runs fewer and never catches up later, so a slow device plays slower instead of stalling.
 7. **Ruling 14** was rechecked by M2.3's re-confirmation (s.d. 0.0110), so the next check is M5's.
 
 ## Tasks
 
-Two agents build it, and the tasks run in the order 1, then 2 beside 3, then 4, then 5 beside 6, then 7. No two tasks share a file, and only one agent runs tests at a time. Bare paths are in `packages/sim-core/src/` for sim tasks and `apps/web/src/` for web tasks.
+Two agents build it, and the tasks run in the order 1, then 2 beside 3, then 4, then 5 beside 6, then 8, then 7. Each task records the names it adds in `interfaces.md`, in its own docs commit. No two tasks share a file, and only one agent runs tests at a time. Bare paths are in `packages/sim-core/src/` for sim tasks and `apps/web/src/` for web tasks.
 
 1. **The town start** (`sim-engineer`, Sonnet), in two commits: the record, then the town.
    - `settledRecord` moves from `tools/cli/src/design/cell.ts` to `sim-core/src/economy/settled.ts`. `sim-core/scripts/city-record.ts` writes the generated `economy/city-record.ts`, and `test:headless` runs its `--check`.
@@ -53,5 +56,9 @@ Two agents build it, and the tasks run in the order 1, then 2 beside 3, then 4, 
    - Check: `economy.test.ts`, the rows a feed gives; edge: no days yet. In `economy.spec.ts`, day 0's figures and trades show after Play, and axe passes.
 6. **The layoffs input** (`sim-engineer`, Sonnet). `world/inputs.ts` gains `INPUT_LAYOFFS`. `day/day.ts` adds up a day's logged layoffs in a global slot, and the economy's first system spends them. Runs are watch-only, so the app has no control for it. Check: `day.test.ts`, where a logged 50 fires 50 the next day; edge: one logged mid-day waits for the next day.
 7. **Close** (the coordinator, with an Opus reviewer). Push, so CI runs `pnpm check` and the browser specs. The owner starts perf.yml once from the Actions page, since a tick path changed. Then run one `determinism-review` on Opus, because the schedule and replay carry the risk.
+8. **Speed** (`senior-game-engineer`, Sonnet), M1.2's buttons brought forward (Ruling 6).
+   - **The buttons:** 1×, 4× and 16× beside Play and Pause, with keys 1–3 and `aria-pressed` on the one in force.
+   - **The worker:** a `speed` message that `sim-worker`'s loop obeys by running that many ticks a turn. Speed changes no state, so watch-only runs still accept it.
+   - **Check:** the loop's test, where 1,000 ticks at 16× reach the same hash as at 1×. Edge: a speed sent while paused takes effect at Play. In the HUD spec, key 3 presses the 16× button.
 
 **Risks:** the first frame took 1.49 s of its 1.5 s on GitHub's runner (9 October). The spawn adds about 1 ms to the worker's start on a desktop (inference), so watch the startup gate. The coordinator writes this brief's names into `interfaces.md`, which another session holds now.
