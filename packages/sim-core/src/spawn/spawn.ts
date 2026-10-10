@@ -1,5 +1,7 @@
 import { SUPPLIERS, addAgent } from '../agents/store.ts';
 import type { EconomyParams } from '../economy/params.ts';
+import { BREAD, CLOTH, FUEL, goodOfLink, isFood, openingPriceOf, outputPerWorkerDay, splitByGood } from '../goods/goods.ts';
+import { assignGoods, ringSlot } from '../goods/store.ts';
 import { MAX_HOUSEHOLD } from '../households/store.ts';
 import { apportionByStride } from '../maths/apportion.ts';
 import { CASH_WEIGHTS, FIRM_SIZE_WEIGHTS, PRICE_WEIGHTS } from '../maths/tables.ts';
@@ -9,7 +11,7 @@ import { keyedShuffle } from '../random/shuffle.ts';
 import { SPAWN_DRAW } from '../random/streams.ts';
 import { DAYS_PER_MONTH } from '../time/calendar.ts';
 import { pointInTileQ8 } from '../world/ground.ts';
-import { STAND_IN_CULTURES, type World } from '../world/world.ts';
+import { GOODS, STAND_IN_CULTURES, type World } from '../world/world.ts';
 import { seatHouseholds, type Homes } from './homes.ts';
 import {
   LEDGER_EMPLOYED,
@@ -37,13 +39,17 @@ const FIRM_CASH_SPLIT = 9;
 const LINK = 10;
 const CASH = 11;
 const CASH_SPLIT = 12;
+// After town.ts's 13: a goods world's stride word for splitting one good's jobs over its firms, keyed (key, good, purpose).
+const GOOD_SIZE_SPLIT = 14;
 // The weight tables hold 256 entries, so a draw's low byte picks one.
 const TABLE_INDEX = 255;
 const TWO_TO_MINUS_32 = 1 / 4_294_967_296;
 
 // Builds the record's city in an empty, laid-out world, with MINT issuing every cent (M2.2 Rulings 5 and 7). Demand,
 // plans and counters stay zero, as after startEconomy, so the economy day runs from a month's day 0. A throw midway
-// leaves the world half-written, and the caller drops it, as with layoutWorld.
+// leaves the world half-written, and the caller drops it, as with layoutWorld. With goods on (M2.4), the firms hold the
+// seven goods in exact shares: the record's price and stock go to the goods firms alone, as foldToLedger reads them, and
+// each food firm starts fresh, with a day of output made the day before.
 export function spawnFromLedger(
   world: World,
   record: Float64Array,
@@ -54,15 +60,24 @@ export function spawnFromLedger(
 ): void {
   checkRecord(record, world);
   requireEmpty(world);
+  world.globals[GOODS] = params.goods;
   const key = draw2(world.seed, SPAWN_DRAW, settlement, day);
   const households = world.households;
   listHouseholds(world, record, key);
   seatHouseholds(households.size, households.count[0], households.home, homes, world.seed, key);
   spawnPeople(world, homes, key);
-  hire(world, record, key);
-  postPrices(world, record, key);
-  stockFirms(world, record, params, key);
-  linkSuppliers(world, record, key);
+  if (params.goods === 1) {
+    hireByGood(world, record, key);
+    postPricesByGood(world, record, key);
+    stockByGood(world, record, params, key, day);
+    linkByGood(world, key);
+  } else {
+    hire(world, record, key);
+    postPrices(world, record, key);
+    stockFirms(world, record, params, key);
+    linkSuppliers(world, record, key);
+  }
+  fundFirms(world, record, key);
   fundHouseholds(world, record, key);
 }
 
@@ -109,8 +124,17 @@ function spawnPeople(world: World, homes: Homes, key: number): void {
   }
 }
 
-function drawWeights(table: Uint16Array, n: number, weights: Float64Array, seed: number, key: number, purpose: number): void {
-  for (let i = 0; i < n; i++) weights[i] = table[draw3(seed, SPAWN_DRAW, key, i, purpose) & TABLE_INDEX];
+// n weights from the table, keyed on the firm or person at index first + i, which a good's run of firm rows needs.
+function drawWeights(
+  table: Uint16Array,
+  n: number,
+  weights: Float64Array,
+  seed: number,
+  key: number,
+  purpose: number,
+  first = 0,
+): void {
+  for (let i = 0; i < n; i++) weights[i] = table[draw3(seed, SPAWN_DRAW, key, first + i, purpose) & TABLE_INDEX];
 }
 
 // Firm sizes split the employed by the lognormal table, then the first employed of a keyed order of everyone take the
@@ -147,7 +171,7 @@ function postPrices(world: World, record: Float64Array, key: number): void {
 // Stock and cash follow workers + 1, as a stationary firm's do, and last month's demand is a month of output, as in
 // startEconomy.
 function stockFirms(world: World, record: Float64Array, params: EconomyParams, key: number): void {
-  const { firms, cash, seed } = world;
+  const { firms, seed } = world;
   const { weights, shares } = world.economyScratch;
   const firmCount = firms.count[0];
   for (let f = 0; f < firmCount; f++) {
@@ -156,6 +180,13 @@ function stockFirms(world: World, record: Float64Array, params: EconomyParams, k
   }
   apportionByStride(record[LEDGER_STOCK], weights, firmCount, shares, draw2(seed, SPAWN_DRAW, key, STOCK_SPLIT));
   for (let f = 0; f < firmCount; f++) firms.stock[f] = shares[f];
+}
+
+function fundFirms(world: World, record: Float64Array, key: number): void {
+  const { firms, cash, seed } = world;
+  const { weights, shares } = world.economyScratch;
+  const firmCount = firms.count[0];
+  for (let f = 0; f < firmCount; f++) weights[f] = firms.employees[f] + 1;
   apportionByStride(record[LEDGER_FIRM_CASH], weights, firmCount, shares, draw2(seed, SPAWN_DRAW, key, FIRM_CASH_SPLIT));
   for (let f = 0; f < firmCount; f++) issue(cash, firmAccount(cash, f), shares[f]);
 }
@@ -197,6 +228,98 @@ function stepPastRepeats(suppliers: Int32Array, first: number, k: number, firmCo
 function linkedBefore(suppliers: Int32Array, first: number, links: number, firm: number): boolean {
   for (let k = 0; k < links; k++) if (suppliers[first + k] === firm) return true;
   return false;
+}
+
+// A goods world's firms (M2.4). The rows run good by good in table order, the foods first, then cloth, tools and fuel,
+// so the goods firms the record counts are the rows from the first cloth row on.
+// The employed are split over the goods as the rows are, then over each good's rows by the size table. Hired places in
+// the keyed order run firm by firm in row order, so a good's places are a run, as its rows are.
+function hireByGood(world: World, record: Float64Array, key: number): void {
+  const { agents, firms, goods, seed } = world;
+  const firmCount = record[LEDGER_FIRMS];
+  firms.count[0] = firmCount;
+  assignGoods(goods, firmCount);
+  splitByGood(record[LEDGER_EMPLOYED], 0, goods.jobs);
+  keyedShuffle(world.economyScratch.order, agents.count[0], seed, SPAWN_DRAW, key, JOB_ORDER);
+  let hired = 0;
+  for (let good = BREAD; good <= FUEL; good++) hired = hireGood(world, key, good, hired);
+}
+
+// Hires one good's jobs into its rows from the first hired place not yet taken, and returns the next.
+function hireGood(world: World, key: number, good: number, hired: number): number {
+  const { agents, firms, goods, seed } = world;
+  const { order, weights, shares } = world.economyScratch;
+  const first = goods.firstRow[good];
+  const rows = goods.rowCount[good];
+  drawWeights(FIRM_SIZE_WEIGHTS, rows, weights, seed, key, FIRM_SIZE, first);
+  apportionByStride(goods.jobs[good], weights, rows, shares, draw3(seed, SPAWN_DRAW, key, good, GOOD_SIZE_SPLIT));
+  let next = hired;
+  for (let i = 0; i < rows; i++) {
+    firms.employees[first + i] = shares[i];
+    for (let w = 0; w < shares[i]; w++, next++) {
+      agents.employer[order[next]] = first + i;
+      order[next] = first + i;
+    }
+  }
+  return next;
+}
+
+// The goods firms' prices spread around the record's mean and sum to exactly their count x price, so the fold's mean is
+// the record's. A food firm opens at the record's price over 6, floored.
+function postPricesByGood(world: World, record: Float64Array, key: number): void {
+  const { firms, goods, seed } = world;
+  const { weights, shares } = world.economyScratch;
+  const firmCount = firms.count[0];
+  const firstGoodsRow = goods.firstRow[CLOTH];
+  const goodsRows = firmCount - firstGoodsRow;
+  drawWeights(PRICE_WEIGHTS, goodsRows, weights, seed, key, PRICE, firstGoodsRow);
+  apportionByStride(goodsRows * record[LEDGER_PRICE], weights, goodsRows, shares, draw2(seed, SPAWN_DRAW, key, PRICE_SPLIT));
+  for (let f = 0; f < firstGoodsRow; f++) firms.price[f] = openingPriceOf(goods.good[f], record[LEDGER_PRICE]);
+  for (let i = 0; i < goodsRows; i++) firms.price[firstGoodsRow + i] = shares[i];
+  for (let f = 0; f < firmCount; f++) firms.wage[f] = record[LEDGER_WAGE];
+}
+
+// The record's stock follows workers + 1 over the goods firms alone. A food firm starts fresh: a day of output, made the
+// day before, in its ring.
+function stockByGood(world: World, record: Float64Array, params: EconomyParams, key: number, day: number): void {
+  const { firms, goods, seed } = world;
+  const { weights, shares } = world.economyScratch;
+  const firmCount = firms.count[0];
+  const firstGoodsRow = goods.firstRow[CLOTH];
+  const goodsRows = firmCount - firstGoodsRow;
+  for (let f = 0; f < firmCount; f++) openOutput(world, params, day, f);
+  for (let i = 0; i < goodsRows; i++) weights[i] = firms.employees[firstGoodsRow + i] + 1;
+  apportionByStride(record[LEDGER_STOCK], weights, goodsRows, shares, draw2(seed, SPAWN_DRAW, key, STOCK_SPLIT));
+  for (let i = 0; i < goodsRows; i++) firms.stock[firstGoodsRow + i] = shares[i];
+}
+
+// Last month's demand is a month of the firm's output, as in startEconomy.
+function openOutput(world: World, params: EconomyParams, day: number, f: number): void {
+  const { firms, goods } = world;
+  const good = goods.good[f];
+  const dayOutput = outputPerWorkerDay(good, params.unitsPerWorkerDay) * firms.employees[f];
+  firms.lastDemand[f] = DAYS_PER_MONTH * dayOutput;
+  if (!isFood(good)) return;
+  firms.stock[f] = dayOutput;
+  goods.ring[ringSlot(f, day - 1)] = dayOutput;
+}
+
+// Link k is a firm of good k + 1, with odds (workers + 1) / (jobs + rows) among the rows of that good, drawn as
+// linkSuppliers does among all the firms. The links of one household are different goods, so none repeats.
+function linkByGood(world: World, key: number): void {
+  const { agents, goods, seed } = world;
+  const suppliers = agents.suppliers;
+  const firmOfHired = world.economyScratch.order;
+  for (let p = 0; p < agents.count[0]; p++) {
+    let hiredBefore = 0;
+    for (let k = 0; k < SUPPLIERS; k++) {
+      const good = goodOfLink(k);
+      const jobs = goods.jobs[good];
+      const u = scaleDraw(draw4(seed, SPAWN_DRAW, key, p, k, LINK), jobs + goods.rowCount[good]);
+      suppliers[p * SUPPLIERS + k] = u < jobs ? firmOfHired[hiredBefore + u] : goods.firstRow[good] + u - jobs;
+      hiredBefore += jobs;
+    }
+  }
 }
 
 function fundHouseholds(world: World, record: Float64Array, key: number): void {

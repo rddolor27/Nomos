@@ -1,6 +1,7 @@
+import { isFood } from '../goods/goods.ts';
 import { MAX_HOUSEHOLD } from '../households/store.ts';
 import { firmAccount, walletAccount } from '../money/ledger.ts';
-import type { World } from '../world/world.ts';
+import { GOODS, type World } from '../world/world.ts';
 import {
   LEDGER_EMPLOYED,
   LEDGER_FIELDS,
@@ -45,24 +46,31 @@ function foldBlobs(world: World, out: Float64Array): void {
   out[LEDGER_HOUSEHOLD_CASH] = cents;
 }
 
+// In a goods world (M2.4) the record's price and stock are the goods firms' alone, since a food firm counts portions where
+// they count units. A food firm adds only to the firm count, the wage mean and the cash. Spawn starts food fresh, so
+// nothing of it needs to fold.
 function foldFirms(world: World, out: Float64Array): void {
-  const { firms, cash } = world;
+  const { firms, goods, cash } = world;
+  const byGood = world.globals[GOODS] === 1;
   const count = firms.count[0];
+  let goodsFirms = 0;
   let prices = 0;
   let wages = 0;
   let stock = 0;
   let cents = 0;
   for (let f = 0; f < count; f++) {
-    prices += firms.price[f];
     wages += firms.wage[f];
-    stock += firms.stock[f];
     cents += cash.balance[firmAccount(cash, f)];
+    if (byGood && isFood(goods.good[f])) continue;
+    prices += firms.price[f];
+    stock += firms.stock[f];
+    goodsFirms++;
   }
   out[LEDGER_FIRMS] = count;
   out[LEDGER_FIRM_CASH] = cents;
   out[LEDGER_STOCK] = stock;
   if (count === 0) return;
-  out[LEDGER_PRICE] = meanCents(prices, count);
+  if (goodsFirms > 0) out[LEDGER_PRICE] = meanCents(prices, goodsFirms);
   out[LEDGER_WAGE] = meanCents(wages, count);
 }
 
