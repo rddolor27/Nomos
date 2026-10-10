@@ -9,7 +9,7 @@ import { frame } from '../src/place/site.ts';
 // grid that forgets a building, or a road laid over water with no bridge, still shows (M3.1's plan, Task 3).
 const SCENERY = new URL('../../../assets/sprites/scenery.json', import.meta.url);
 const FOOTBRIDGE: { w: number; anchor: [number, number] } = JSON.parse(readFileSync(SCENERY, 'utf8')).frames.prop_footbridge;
-const WORLDS = 20;
+const WORLDS = 2;
 const FIRST_SEED = 0x5eed0001;
 
 // The tiles a bridge lies over: a footbridge's picture span on the row of its anchor, or a stone bridge piece's

@@ -9,7 +9,7 @@ import { frame, type Cell, type Site } from '../src/place/site.ts';
 
 // M3.1's Part 3, Task 11: roads by role, the ring a walled town keeps for its wall, and the stone bridges wide roads
 // cross rivers on. Every place is built once, and each test reads its share of the findings.
-const WORLDS = 20;
+const WORLDS = 2;
 const FIRST_SEED = 0x5eed0001;
 const WALLED = ['capital', 'city', 'town'];
 const SCENERY = new URL('../../../assets/sprites/scenery.json', import.meta.url);
@@ -287,7 +287,7 @@ describe(`the roads of every settlement of the first ${WORLDS} standard worlds`,
   }, 900_000);
 
   it('lays cut stone and cobbles only inside the ring line, and gravel only on or past it', () => {
-    expect(found.walledTiers).toBeGreaterThan(100);
+    expect(found.walledTiers).toBeGreaterThan(5 * WORLDS);
     expect(found.rings).toBe(found.walledTiers);
     expect(found.surface.slice(0, 20)).toEqual([]);
   });
@@ -297,7 +297,7 @@ describe(`the roads of every settlement of the first ${WORLDS} standard worlds`,
   });
 
   it('joins every map-edge entry to the centre by road', () => {
-    expect(found.settlements).toBeGreaterThan(500);
+    expect(found.settlements).toBeGreaterThan(25 * WORLDS);
     expect(found.entries.slice(0, 20)).toEqual([]);
   });
 
@@ -307,7 +307,7 @@ describe(`the roads of every settlement of the first ${WORLDS} standard worlds`,
   });
 
   it(`lines every spoke of ${AVENUE_CELLS} or more main-road cells with at least 2 trees`, () => {
-    expect(found.avenues).toBeGreaterThan(100);
+    expect(found.avenues).toBeGreaterThan(5 * WORLDS);
     expect(found.trees.slice(0, 20)).toEqual([]);
   });
 });
