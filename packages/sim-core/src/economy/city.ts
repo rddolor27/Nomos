@@ -46,6 +46,8 @@ export const CITY = Object.freeze<EconomyParams>({
   openingWage: 142_800,
   // 3,200 x 63 is 1.41 x the 142,800 wage, inside the band.
   openingPrice: 3_200,
-  // Still LENGNICK's: over M2.3's 20,000-day run MSER-5 found no truncation of the city's mean price in the first half.
-  burnInDays: 9_893,
+  // Measured here (`economy --preset city --burn-in --seeds 5 --seed 1 --days 40000`: seeds 1-5, 40,000 days, Node 24.18.0,
+  // 10 October 2026): MSER-5 cut 11,530 days of the mean price and 10,900 of the unemployment share, and 1.5 x 11,530
+  // rounds up to 17,295. 20,000 days left the price's truncation in the second half (M2.3 Ruling 18).
+  burnInDays: 17_295,
 });
