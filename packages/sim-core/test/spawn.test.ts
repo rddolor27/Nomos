@@ -278,6 +278,9 @@ describe('spawn guards', () => {
       withFields(record, { [LEDGER_WAGE]: 99 }),
       withFields(record, { [LEDGER_STOCK]: 2 ** 31 }),
       withFields(record, { [LEDGER_HOUSEHOLD_CASH]: Number.MAX_SAFE_INTEGER + 1 }),
+      // Each field is exact, but MINT would hold minus their sum.
+      withFields(record, { [LEDGER_HOUSEHOLD_CASH]: 2 ** 52, [LEDGER_FIRM_CASH]: 2 ** 52 }),
+      withFields(record, { [LEDGER_PRICE]: Math.floor(Number.MAX_SAFE_INTEGER / record[LEDGER_FIRMS]) + 1 }),
     ];
     for (const fields of bad) {
       const world = smallWorld(1);

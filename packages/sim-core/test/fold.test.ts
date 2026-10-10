@@ -180,13 +180,23 @@ describe('checkRecord', () => {
     accepts({ [LEDGER_PRICE]: 100, [LEDGER_WAGE]: 100 });
   });
 
-  it('refuses stock past an Int32 and cash past the exact cents', () => {
+  it('refuses stock past an Int32 and cash past the exact cents, counting both cash fields together', () => {
     refuses({ [LEDGER_STOCK]: 2 ** 31 }, /^stock must be 2147483647 or less, not 2147483648/);
     accepts({ [LEDGER_STOCK]: 2 ** 31 - 1 });
     const exact = Number.MAX_SAFE_INTEGER;
-    refuses({ [LEDGER_HOUSEHOLD_CASH]: exact + 1 }, /^householdCash must be 9007199254740991 or less/);
-    refuses({ [LEDGER_FIRM_CASH]: exact + 1 }, /^firmCash must be 9007199254740991 or less/);
-    accepts({ [LEDGER_HOUSEHOLD_CASH]: exact, [LEDGER_FIRM_CASH]: exact });
+    const pastExact = /^householdCash \+ firmCash must be 9007199254740991 or less/;
+    refuses({ [LEDGER_HOUSEHOLD_CASH]: exact + 1, [LEDGER_FIRM_CASH]: 0 }, pastExact);
+    refuses({ [LEDGER_HOUSEHOLD_CASH]: 0, [LEDGER_FIRM_CASH]: exact + 1 }, pastExact);
+    refuses({ [LEDGER_HOUSEHOLD_CASH]: 2 ** 52, [LEDGER_FIRM_CASH]: 2 ** 52 }, /not 4503599627370496 \+ 4503599627370496/);
+    refuses({ [LEDGER_HOUSEHOLD_CASH]: exact - 4, [LEDGER_FIRM_CASH]: 5 }, pastExact);
+    accepts({ [LEDGER_HOUSEHOLD_CASH]: exact - 5, [LEDGER_FIRM_CASH]: 5 });
+  });
+
+  it('refuses a price whose total over the firms passes the exact cents', () => {
+    // floor((2^53 - 1) / 100), the most a price may be across the record's 100 firms.
+    const most = 90_071_992_547_409;
+    accepts({ [LEDGER_PRICE]: most });
+    refuses({ [LEDGER_PRICE]: most + 1 }, /^price x firms must be 9007199254740991 or less, not 90071992547410 x 100$/);
   });
 
   it('refuses a record folded from a household row of the wrong size', () => {

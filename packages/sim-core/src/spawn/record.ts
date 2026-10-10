@@ -52,8 +52,8 @@ export function checkRecord(record: Float64Array, world: World): void {
   requireAtLeast(record, LEDGER_PRICE, MIN_POSTED_CENTS);
   requireAtLeast(record, LEDGER_WAGE, MIN_POSTED_CENTS);
   requireAtMost(record, LEDGER_STOCK, MAX_STOCK);
-  requireAtMost(record, LEDGER_HOUSEHOLD_CASH, MAX_SAFE_CENTS);
-  requireAtMost(record, LEDGER_FIRM_CASH, MAX_SAFE_CENTS);
+  requireCashTotal(record);
+  requirePriceTotal(record);
 }
 
 function requireWhole(record: Float64Array, field: number): void {
@@ -81,4 +81,23 @@ function requireAtLeast(record: Float64Array, field: number, least: number): voi
 
 function requireAtMost(record: Float64Array, field: number, most: number): void {
   if (record[field] > most) throw new RangeError(`${FIELD_NAMES[field]} must be ${most} or less, not ${record[field]}`);
+}
+
+// MINT holds minus the two cash fields' sum, so the sum must be exact cents. A true sum past 2^53 - 1 rounds to 2^53 or
+// more, so the float comparison still catches it.
+function requireCashTotal(record: Float64Array): void {
+  const households = record[LEDGER_HOUSEHOLD_CASH];
+  const firms = record[LEDGER_FIRM_CASH];
+  if (households + firms > MAX_SAFE_CENTS) {
+    throw new RangeError(`householdCash + firmCash must be ${MAX_SAFE_CENTS} or less, not ${households} + ${firms}`);
+  }
+}
+
+// Spawn spreads price x firms over the firms in exact cents; the product rounds as the sum above does.
+function requirePriceTotal(record: Float64Array): void {
+  const price = record[LEDGER_PRICE];
+  const firms = record[LEDGER_FIRMS];
+  if (price * firms > MAX_SAFE_CENTS) {
+    throw new RangeError(`price x firms must be ${MAX_SAFE_CENTS} or less, not ${price} x ${firms}`);
+  }
 }
