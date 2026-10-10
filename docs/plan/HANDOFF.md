@@ -202,6 +202,18 @@ If the session ended: check `git log` for those Task lines, and `git status` for
   Tasks 11 and 17 share `packages/worldgen` but not files, and each was told how to tell the other's half-finished state from its own.
 - **If the session ends:** check `git log` for "task 11", "task 17" and "task 10" commits, and `git status` for unfinished work in those files. Restart only the tasks that have no commit.
 
+**10 Oct, 10:30:**
+- **Task 10 is done** (25d318c). The town atlas page is 2048×1161 px with 182,550 B of WebP, and its 169 snow and night frames stay on the map page only.
+  - It also found "Initial JS" over its 17 kB limit, from the other session's economy. `nomos-bd` raised the entry to 20 kB (49f432d).
+- **Task 17 is done** (b05bccc):
+  - over 100 worlds of each size, 5,570 roads are major and 38,523 minor;
+  - classing them adds under 2 ms to a large world;
+  - the world fingerprints moved, to `0x4a765ce2` in `map-worker.test.ts`.
+  - The coordinator gave render-gl's tiny test world its `roadClass` (f84a9e2), which turned typecheck green again.
+- **Running:**
+  - Task 11 (`sim-engineer`, Opus);
+  - Task 18, highways, tracks and walled icons on the map (`render-engineer`, Opus). Its browser runs use a scratch build under `dist/` through `NOMOS_WEB`, never `apps/web/dist`.
+
 ## The town view session (nomos-bd), continued
 
 - 10 Oct: **step 4 and the blob counts are done and pushed** (217980a, d5dfdff, d999ab7, dea6b06 and d6e3bdc).
