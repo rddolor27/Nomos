@@ -1,6 +1,9 @@
 import { personName } from '@nomos/sim-culture';
 import type { WorkerMessage } from '@nomos/sim-protocol';
 import { formatCount } from './hud.ts';
+import { shopName } from './shop-name.ts';
+
+type Inspected = Extract<WorkerMessage, { type: 'inspected' }>;
 
 const NO_BLOB = 'No blob here';
 const CENTS_PER_UNIT = 100;
@@ -15,8 +18,18 @@ export function formatCents(cents: number): string {
   return `${sign}${formatCount(units)}.${String(rest).padStart(2, '0')}`;
 }
 
+function job(employer: number, wage: number): string {
+  return employer < 0 ? 'out of work' : `works at ${shopName(employer)} for ${formatCents(wage)} a month`;
+}
+
+export function inspectorLine(reply: Inspected): string {
+  if (reply.agent < 0) return NO_BLOB;
+  return `${personName(reply.nameKey)}, ${job(reply.employer, reply.wage)}, wallet ${formatCents(reply.cents)}`;
+}
+
 // The only module that imports sim-culture, and it loads on demand, so names and their word table never reach the
-// first load; a blob's name and wallet show nowhere else (R8, content rule 5). Made once, at the first inspect.
+// first load; a blob's name, work, pay and wallet show nowhere else (R8, content rule 5, M2.2b ruling 4). Made once, at
+// the first inspect.
 export function mountInspector(parent: HTMLElement, worker: Worker): void {
   const line = parent.ownerDocument.createElement('p');
   line.id = 'inspector';
@@ -24,6 +37,6 @@ export function mountInspector(parent: HTMLElement, worker: Worker): void {
   parent.append(line);
   worker.addEventListener('message', ({ data }: MessageEvent<WorkerMessage>) => {
     if (data.type !== 'inspected') return;
-    line.textContent = data.agent < 0 ? NO_BLOB : `${personName(data.nameKey)}, wallet ${formatCents(data.cents)}`;
+    line.textContent = inspectorLine(data);
   });
 }

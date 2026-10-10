@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs';
-import { SUBPIXELS, TILE_PX, createWorld, nearestAgent } from '@nomos/sim-core';
+import { SUBPIXELS, TIER_AGENTS, TILE_PX, createTown, nearestAgent } from '@nomos/sim-core';
 import { personName } from '@nomos/sim-culture';
 import { parseMap } from '@nomos/sim-protocol';
 import type { Page } from 'playwright/test';
@@ -22,9 +22,9 @@ const CHORDS: [string, Button, Button][] = [
   ['left released first', 'left', 'right'],
 ];
 
-// The world the page builds for this URL, held at tick 0 by reduced motion.
+// The world the page builds for this URL: a town of the phone tier's whole crowd, held at tick 0 by reduced motion.
 const town = new Uint8Array(readFileSync(new URL('../../../../assets/maps/town.nmap', import.meta.url)));
-const world = createWorld(42, 'phone', parseMap(town.buffer));
+const world = createTown(42, 'phone', parseMap(town.buffer), TIER_AGENTS.phone);
 
 interface View {
   width: number;
@@ -60,12 +60,26 @@ async function viewOf(page: Page): Promise<View> {
   });
 }
 
+// Intl here, so the page's own digit grouping is checked against an independent formatter.
+function money(cents: number): string {
+  return (cents / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+// The line the inspector shows for a blob, read from the twin: its name, its employer and pay, and its wallet.
+function lineOf(agent: number): string {
+  const { blob, firms } = world;
+  blob.at(agent);
+  const employer = blob.employer;
+  const job = employer < 0 ? 'out of work' : `works at Shop ${employer + 1} for ${money(firms.wage[employer])} a month`;
+  return `${personName(blob.nameKey)}, ${job}, wallet ${money(blob.cash)}`;
+}
+
 // What the worker answers for a device pixel: the page's worldAt, rounded to Q8 as the worker rounds it.
 function answerAt(view: View, deviceX: number, deviceY: number): string {
   const x = view.camera.x + deviceX / view.camera.zoom;
   const y = view.camera.y + deviceY / view.camera.zoom;
   const agent = nearestAgent(world.agents, Math.round(x * SUBPIXELS), Math.round(y * SUBPIXELS), TILE_Q8);
-  return agent < 0 ? NO_BLOB : `${personName(world.agents.nameKey[agent])}, wallet 1,000.00`;
+  return agent < 0 ? NO_BLOB : lineOf(agent);
 }
 
 function inView(view: View, clientX: number, clientY: number): boolean {
@@ -105,7 +119,7 @@ async function pressOver(page: Page, clientX: number, clientY: number): Promise<
   await page.mouse.down();
 }
 
-test('shows the name and wallet of the blob under a click', async ({ page }) => {
+test('shows the name, work and wallet of the blob under a click', async ({ page }) => {
   await openPaused(page);
   const view = await viewOf(page);
   const [clientX, clientY] = blobPoint(view);
