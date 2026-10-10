@@ -7,7 +7,7 @@ import { setHeading } from '../movement/walk.ts';
 import { draw2, draw3 } from '../random/draw.ts';
 import { SPAWN_DRAW } from '../random/streams.ts';
 import type { Ground } from '../world/ground.ts';
-import { TOWN, WALK_START_MASK, layoutWorld, type World } from '../world/world.ts';
+import { TOWN, WALK_START_MASK, currentTick, layoutWorld, type World } from '../world/world.ts';
 import { createStandInHomes } from './homes.ts';
 import { LEDGER_FIELDS, scaleRecord } from './record.ts';
 import { spawnFromLedger } from './spawn.ts';
@@ -26,8 +26,11 @@ export function createTown(seed: number, tier: Tier, ground: Ground, people: num
   return world;
 }
 
-// Fills an empty world with CITY's settled record scaled to people, at settlement 0 on day 0, and marks it to run CITY.
+// Fills an empty world with CITY's settled record scaled to people, at settlement 0 on day 0, and marks it to run CITY. The
+// world must be at tick 0: the spawn leaves the consumption plans empty, and only a month's first day, as day 0 is, makes them.
 export function spawnTown(world: World, people: number): void {
+  const tick = currentTick(world);
+  if (tick !== 0) throw new RangeError(`a town spawns at tick 0, and this world is at tick ${tick}`);
   const homes = createStandInHomes(world.ground, floorDiv(people + PEOPLE_PER_HOME - 1, PEOPLE_PER_HOME));
   spawnFromLedger(world, createTownRecord(people), homes, CITY, SETTLEMENT, DAY);
   startWalking(world);

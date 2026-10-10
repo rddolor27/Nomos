@@ -15,9 +15,10 @@ import {
   scaleRecord,
 } from '../src/spawn/record.ts';
 import { createTown, spawnTown } from '../src/spawn/town.ts';
+import { TICKS_PER_DAY } from '../src/time/calendar.ts';
 import { stateHash } from '../src/world/checkpoint.ts';
 import { standInGround, type Ground } from '../src/world/ground.ts';
-import { TOWN, createWorld, layoutWorld, townAgents, type World } from '../src/world/world.ts';
+import { TICK, TOWN, createWorld, layoutWorld, townAgents, type World } from '../src/world/world.ts';
 
 // Highcourt's phone crowd (townAgents on the 176 x 112 map).
 const PEOPLE = 3_965;
@@ -104,6 +105,17 @@ describe('spawnTown', () => {
     expect([got[LEDGER_FIRMS], world.firms.count[0], populationOf(got)]).toEqual([7, 7, 69]);
     expect(Array.from(got)).toEqual(Array.from(scaled(69)));
     expect(world.globals[TOWN]).toBe(1);
+  });
+
+  it('refuses a world past tick 0, whose first month would run with no plans, and writes nothing', () => {
+    for (const tick of [1, TICKS_PER_DAY]) {
+      const world = layoutWorld(1, 'phone', 1_024, 1 << 20);
+      world.globals[TICK] = tick;
+
+      expect(() => spawnTown(world, 69), `tick ${tick}`).toThrow(RangeError);
+      const { agents, households, firms, globals } = world;
+      expect([agents.count[0], households.count[0], firms.count[0], globals[TOWN]]).toEqual([0, 0, 0, 0]);
+    }
   });
 });
 
