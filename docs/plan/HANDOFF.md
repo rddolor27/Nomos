@@ -350,3 +350,22 @@ If the session ended: check `git log` for those Task lines, and `git status` for
   - the confirmation on seeds 1001–1050, the long test and the results in `task.md`;
   - then one test pass (`economy-review`, `senior-qa`), a minor re-test of flagged items, and M2.3's `interfaces.md` changes;
   - after that, M2.2b, the economy on screen.
+- 10 Oct: **M2.3 Task 4 done** (81889c0 to 6abe0bb, pushed). The one confirmation, on fresh seeds 1001–1050, holds all six tier-1 targets for `CITY`.
+  - **Tier 1:** price changes 0.108, job finding 0.268, unemployment 0.079, markup 1.493, stock 0.885 months, price ratio 0.983.
+  - **Tier 2:**
+    - six gaps: hires, layoffs, job-to-job, long spells, mean spell, and pay cuts at 14.6%;
+    - exits are inconclusive.
+  - **Tier 3:**
+    - unemployment s.d., Phillips, Beveridge and no crisis hold;
+    - Okun fails at +0.17, because output is measured as units sold; with units produced it is −0.80;
+    - firm-size skew fails.
+  - **`burnInDays`** is 17,295, measured over 40,000 days (Ruling 18).
+  - **Ruling (coordinator): no credit line.**
+    - Ruling 14's trigger is a median unemployment s.d. under 0.010. On 50 fresh seeds it is 0.0104, so the trigger doesn't trip.
+    - Adding a credit line now would change the model after the holdout was seen.
+    - Recheck the s.d. when the economy joins the live sim (M2.2b), and again when M5's treasury adds inflation.
+  - **Not run:** `design.json`'s 100,000-person cells are meant to run by hand.
+- **Now:** the one test pass, with three agents:
+  - a code and economy review;
+  - `senior-qa`'s gates and bench;
+  - the `interfaces.md` update.
