@@ -71,6 +71,7 @@ The tables give the layout M0.7 builds, including the files it adds. A renamed f
 | `shared/` | `calendar.ts`, `columns.ts`, `steering.ts` | Constants re-exported from `sim-core`, and the wander rule with its keyed draw and steps, so `render-gl` and the app never import it |
 | `world-map/` | `world-map.ts` | The world map, the body hues and the map worker's messages, behind the `./world-map` export (M8.1) |
 | `place/` | `place-layout.ts` | A place's layout, its walk loops and the map worker's place messages, behind the `./place` export (M3.1) |
+| `economy/` | `feed.ts` | The economy feed: a town's last 112 days of three figures and the day's last 16 trades, which the worker posts as the `economy` message (M2.2b) |
 
 **`packages/sim-worker/src`:** `index.ts` and `worker.ts` (the `./worker` export) at `src/`, and `loop/loop.ts`.
 
@@ -236,6 +237,7 @@ Grids live in `tools/cli/grids/`, outside `src/`.
   - `{ type: 'stats', tick, systemMs: Record<string, number> }`, keyed by `SYSTEM_NAMES` plus `snapshot`, the mean milliseconds per snapshot (M0.3)
   - `{ type: 'checkpoint', tick, state: ArrayBuffer }`, the answer to the app's `checkpoint`
   - `{ type: 'inspected', tick, agent, nameKey, cents, employer, wage }`, the answer to `inspect`: the nearest blob within one tile (16 world pixels), or `agent` −1 with `nameKey` and `cents` 0 (M0.7). `employer` is the blob's firm row and `wage` that firm's pay in cents a month, or −1 and 0 for someone out of work, and for `agent` −1 (M2.2b)
+  - `{ type: 'economy', day, days, meanPriceCents, meanWageCents, unemploymentPpm, trades, tradeShop, tradeUnits, tradeCents }`, a town's feed after each day's last economy tick, and from a town only (M2.2b, The economy on screen, below)
 - `sim-protocol`'s `bindPageLifecycle(doc, win, post): void` sends `pause` and `resume` on `visibilitychange`, and `checkpoint` on `pagehide`. M0.5 wraps it.
 - `sim-worker`'s `createSimLoop(host: LoopHost, cpuSlowdown = 1): { handle(msg: AppMessage): void }` runs the loop. A `cpuSlowdown` above 1 makes the worker wait before each reply, and after its warm-up, as a CPU that many times slower would, since CDP's CPU throttling skips workers. Only the startup gate sets it, through a `__nomosCpuSlowdown` global that its server prefixes to the worker chunk (M0.6, R5).
 - The startup gate's server, `startServer(options: ServeOptions): Promise<Served>` in `apps/web/test/serve.ts`, serves a build over an emulated Fast 4G link, with `latencyMs` 165, `bytesPerSecond` 1,012,500 and `setupRtts` 3 by default. Its `workerSlowdown`, 1 by default, is the `cpuSlowdown` it prefixes to the worker chunk (M0.6, R5).
@@ -835,3 +837,23 @@ M2.2b spawns every app world as a town that runs `CITY`, and shows the economy o
     | 100,000 (desktop tier) | 14.17 ms | `shopDay` | `searchShops` 10.03 ms |
 
     So at 10k and below a month's first-day shop search, not the daily shopping, is the worst tick (Ruling 2 inferred shopping). At 100k shopping alone nears the 16 ms tick, as Ruling 2 said, and perf.yml measures the real figures on the reference machine.
+- **Task 4, the economy feed:**
+  - **The ring,** in `economy/scratch.ts`, outside the hash:
+    - `PURCHASE_RING` is 16, and `EconomyScratch` gains `purchaseShop` and `purchaseUnits` (`Int32Array`, 16 long), `purchaseCents` (`Float64Array`, 16) and `purchaseCount` (`Int32Array`, 1). Purchase n of a day sits in slot n mod 16, so the ring keeps the day's last 16. It names the firm row that sold and never a buyer, household or person.
+    - `logPurchase(scratch, shop, units, cents)` writes one, and `consumption/shop.ts` calls it for each purchase. `clearPurchases(scratch)` opens `shopDay`, so every day starts with an empty ring and a day nobody shops leaves no trades.
+    - `copyPurchases(scratch, shop, units, cents): number` copies the held purchases, oldest first, into three arrays of 16, zeroes the rest and returns how many it holds.
+    - The barrel exports `economy/scratch.ts`. The scratch grows by 264 bytes, none hashed, so no golden moved: `42/phone` is still `746a06a3`, `town` `b76fca4c` and the economy `6a652730`.
+    - **Cost:** `logPurchase` takes 2.28 ns, and a town of 3,965 makes about 3,930 purchases in a `shopDay` of 0.443 ms, so the ring adds about 2% to shopping (measured here, Node 24.18.0 on Windows, a desktop, one run, load not recorded).
+  - **The feed,** in `sim-protocol`'s new `economy/` folder, `feed.ts`:
+    - `createEconomyFeed(): EconomyMessage` makes the message once, with room for `FEED_DAYS` (112, a year) days and `FEED_TRADES` (16) trades. `writeEconomyFeed(world, feed)` fills it in place and allocates nothing.
+    - `economyDayEnded(world)` is true for a town right after the step that runs a day's last economy tick. Then `globals[TICK]` mod 1,440 is `ECONOMY_TICKS`, the day's row of stats is whole (Task 3), and the loop writes the feed.
+    - A write adds the day that just ended, `dayOf(tick − 1)`. Once 112 days are held, each write first shifts the three series down one place, so they stay oldest first.
+  - **The `economy` message,** `EconomyMessage` in `messages.ts`, is the feed itself:
+    - `day` is the day that just ended, counted from 0, and `days` the points held, up to 112. Point i of the three series is day `day − days + 1 + i`, oldest first, and a slot at `days` or past is 0.
+    - `meanPriceCents` (cents a unit) and `meanWageCents` (cents a month) are the stats row's `price_mean` and `wage_mean`: the mean over the town's firms, unrounded and not weighted by their workers.
+    - `unemploymentPpm` is floor(1,000,000 × the row's `unemployed` ÷ all households), the share out of work. It is a rate for each day, so a later change in population leaves the old points right.
+    - `trades` is how many of the day's last purchases are held, up to 16. Trade i, oldest first, is `tradeUnits[i]` units bought from firm row `tradeShop[i]` for `tradeCents[i]` cents. A page names firm row r "Shop r + 1", as the inspector does. Slots from `trades` on are 0.
+    - Each array has an `ArrayBuffer` of its own, so a post copies only the 2,944 bytes of the three 112-point series and the three 16-trade columns.
+  - **The loop** makes one feed for each `Session`, at `init`, so a new run starts its days over. After each `step` it calls `economyDayEnded` and writes the feed, and once the turn's ticks and snapshot are done it posts the feed, with no transfer list. A world that is not a town posts none.
+    - At 1× the first post lands at tick 18, 1.8 s after Play, and one follows every 1,440 ticks, which is 144 s.
+    - Nothing allocates per tick: the feed's buffers are made once, and the day's one post is the copy `postMessage` makes of every message.
