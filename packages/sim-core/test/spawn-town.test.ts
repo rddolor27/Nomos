@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
+import { ACTION_IDLE, ACTION_WALK, FACING_DOWN } from '../src/agents/actions.ts';
 import { CITY_RECORD } from '../src/economy/city-record.ts';
 import { OK, checkInvariants } from '../src/money/invariants.ts';
 import { MINT } from '../src/money/ledger.ts';
+import { WALK_X_Q8, WALK_Y_Q8, facingFor } from '../src/movement/walk.ts';
 import { foldToLedger } from '../src/spawn/fold.ts';
 import {
   LEDGER_FIELDS,
@@ -53,6 +55,42 @@ describe('createTown', () => {
 
     expect(stateHash(createTown(42, 'phone', standInGround(), PEOPLE))).toBe(hash);
     expect(stateHash(createTown(43, 'phone', standInGround(), PEOPLE))).not.toBe(hash);
+  });
+});
+
+function actionsOf(world: World): number[] {
+  return Array.from(world.agents.action.subarray(0, world.agents.count[0]));
+}
+
+describe('the walking start', () => {
+  it('sets three in four of a town walking on a keyed heading, and leaves the rest idle facing down', () => {
+    const world = createTown(42, 'phone', standInGround(), PEOPLE);
+    const { count, action, heading, vx, vy, facing } = world.agents;
+    const wrong: number[] = [];
+    const quadrants = new Set<number>();
+    let walkers = 0;
+    for (let p = 0; p < count[0]; p++) {
+      const walks = action[p] === ACTION_WALK;
+      if (walks) {
+        walkers++;
+        quadrants.add(heading[p] >> 6);
+      }
+      const want = walks
+        ? [ACTION_WALK, heading[p], WALK_X_Q8[heading[p]], WALK_Y_Q8[heading[p]], facingFor(heading[p])]
+        : [ACTION_IDLE, 0, 0, 0, FACING_DOWN];
+      if ([action[p], heading[p], vx[p], vy[p], facing[p]].join() !== want.join()) wrong.push(p);
+    }
+
+    expect(wrong).toEqual([]);
+    expect(walkers).toBe(2_998);
+    expect(quadrants.size).toBe(4);
+  });
+
+  it('keys the walkers on the seed', () => {
+    const walking = actionsOf(createTown(42, 'phone', standInGround(), PEOPLE));
+
+    expect(actionsOf(createTown(42, 'phone', standInGround(), PEOPLE))).toEqual(walking);
+    expect(actionsOf(createTown(43, 'phone', standInGround(), PEOPLE))).not.toEqual(walking);
   });
 });
 

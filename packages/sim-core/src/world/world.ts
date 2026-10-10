@@ -38,7 +38,7 @@ export const OPENING_CENTS = 100_000;
 const NO_FOCUS = -1;
 // Three in four blobs spawn walking, the share that walking settles at (wander.ts), so the first seconds look like
 // the rest.
-const WALK_START_MASK = 3;
+export const WALK_START_MASK = 3;
 
 export interface World {
   readonly seed: number;
