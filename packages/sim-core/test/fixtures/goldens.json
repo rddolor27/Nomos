@@ -4,5 +4,11 @@
     "42/phone": "3c786124",
     "42/phone-plus": "c12f0de5",
     "42/desktop": "9ff63cde"
+  },
+  "economy": {
+    "seed": 42,
+    "tier": "phone",
+    "months": 3,
+    "hash": "b4bd023b"
   }
 }

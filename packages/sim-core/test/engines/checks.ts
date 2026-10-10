@@ -4,7 +4,11 @@ import { fade, fbm, value } from '../../src/random/noise.ts';
 import { step } from '../../src/step/step.ts';
 import { LOOKS } from '../../src/agents/store.ts';
 import { LOOK } from '../../src/random/streams.ts';
+import { economyDay } from '../../src/economy/economy.ts';
+import { LENGNICK, type EconomyParams } from '../../src/economy/params.ts';
+import { startEconomy } from '../../src/economy/start.ts';
 import type { Tier } from '../../src/memory/tiers.ts';
+import { DAYS_PER_MONTH } from '../../src/time/calendar.ts';
 import { stateHash } from '../../src/world/checkpoint.ts';
 import { createWorld } from '../../src/world/world.ts';
 
@@ -56,6 +60,7 @@ export interface KernelFixture {
 export interface Goldens {
   ticks: number;
   hashes: Record<string, string>;
+  economy: { seed: number; tier: Tier; months: number; hash: string };
 }
 
 export interface EngineReport {
@@ -94,11 +99,24 @@ export function replayHash(seed: number, tier: Tier, ticks: number): string {
   return stateHash(world).toString(16).padStart(8, '0');
 }
 
+// LENGNICK with its fiat issue on at 1% a month, so the run replays the issue along with wages, shopping and profits.
+const ECONOMY: EconomyParams = { ...LENGNICK, fiatIssuePpm: 10_000 };
+
+// The economy is not part of step yet, so it runs a day at a time, as the CLI does.
+export function economyHash(seed: number, tier: Tier, months: number): string {
+  const world = createWorld(seed, tier, undefined, ECONOMY.households);
+  startEconomy(world, ECONOMY);
+  for (let day = 0; day < months * DAYS_PER_MONTH; day++) economyDay(world, ECONOMY, day);
+  return stateHash(world).toString(16).padStart(8, '0');
+}
+
 export function checkGoldens(goldens: Goldens): EngineReport {
   const report: EngineReport = { cases: 0, failures: [] };
   for (const [key, want] of Object.entries(goldens.hashes)) {
     const [seed, tier] = key.split('/');
     checkCase(report, 'replay', key, replayHash(Number(seed), tier as Tier, goldens.ticks), want);
   }
+  const { hash, ...run } = goldens.economy;
+  checkCase(report, 'economy', run, economyHash(run.seed, run.tier, run.months), hash);
   return report;
 }
