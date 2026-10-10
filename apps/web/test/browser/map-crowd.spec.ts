@@ -64,12 +64,13 @@ async function dotPixels(page: Page): Promise<number> {
   );
 }
 
-// Nothing else on the canvas moves, so a changed frame is the crowd walking.
+// Nothing else on the canvas moves, so a changed frame is the crowd walking. The bar's buttons, which ease after a
+// press, lie over the canvas, so they hide while it is read.
 async function movesWithin(canvas: Locator, ms: number): Promise<boolean> {
-  const first = await canvas.screenshot();
+  const first = await canvas.screenshot({ style: CANVAS_ONLY });
   const until = Date.now() + ms;
   while (Date.now() < until) {
-    if (!(await canvas.screenshot()).equals(first)) return true;
+    if (!(await canvas.screenshot({ style: CANVAS_ONLY })).equals(first)) return true;
   }
   return false;
 }
