@@ -20,11 +20,11 @@ export default defineConfig({
   reporter: process.env.CI ? [['dot'], ['html', { open: 'never' }]] : 'list',
   use: { baseURL: HARNESS },
   projects: [
+    // Chromium only (Chrome and Brave) while Nomos is a proof of concept; Firefox and WebKit return before launch
+    // (owner, 10 October 2026).
     { name: 'chromium', testIgnore: [FRAME_BUDGET, BUILT], use: CHROMIUM },
-    { name: 'firefox', testIgnore: [FRAME_BUDGET, BUILT], use: { browserName: 'firefox' } },
-    { name: 'webkit', testIgnore: [FRAME_BUDGET, BUILT], use: { browserName: 'webkit' } },
     // Timed after every other project, and one file at a time, so no other browser contends for the CPU while it measures.
-    { name: 'perf', testMatch: FRAME_BUDGET, testIgnore: BUILT, dependencies: ['chromium', 'firefox', 'webkit'], workers: 1, use: CHROMIUM },
+    { name: 'perf', testMatch: FRAME_BUDGET, testIgnore: BUILT, dependencies: ['chromium'], workers: 1, use: CHROMIUM },
   ],
   webServer: [
     {

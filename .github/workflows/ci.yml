@@ -49,7 +49,7 @@ jobs:
           cat "$RUNNER_TEMP/replay-1.txt"
           diff "$RUNNER_TEMP/replay-1.txt" "$RUNNER_TEMP/replay-2.txt"
 
-  # The renderer's specs in Chromium (WebGL2 on SwiftShader), Firefox and WebKit, on a runner with no GPU.
+  # The browser specs in Chromium only (WebGL2 on SwiftShader), on a runner with no GPU, while Nomos is a proof of concept.
   browser:
     runs-on: ubuntu-latest
     steps:
@@ -65,7 +65,7 @@ jobs:
           python-version: '3.12'
       - run: pip install -r tools/requirements.txt
       - run: pnpm install --frozen-lockfile
-      - run: pnpm exec playwright install --with-deps chromium firefox webkit
+      - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm test:browser
       # The report keeps each test's annotations and log, the frame budget's numbers among them, pass or fail.
       - if: always()
@@ -73,20 +73,3 @@ jobs:
         with:
           name: playwright-report
           path: playwright-report/
-
-  # The kernels, replay goldens and world generator stages under JavaScriptCore, the fifth engine after Node and the three browsers.
-  bun:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - uses: pnpm/action-setup@v6
-      - uses: actions/setup-node@v7
-        with:
-          node-version: 24
-          cache: pnpm
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: '1.3'
-      - run: pnpm install --frozen-lockfile
-      - run: bun packages/sim-core/scripts/engines.ts
-      - run: bun packages/worldgen/scripts/engines.ts
