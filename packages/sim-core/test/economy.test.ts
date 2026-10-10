@@ -107,15 +107,28 @@ function expectCleanMonthEnd(world: World, books: Books, where: string): void {
   books.firms = firms;
 }
 
-// economyDay checks the invariants every day while world.checks is on, and throws on the first that fails.
-function runCleanly(seed: number, days: number): void {
+function monthIncome(world: World): number {
+  const stats = world.economyScratch.stats;
+  return stats[STAT_WAGE_BILL] + stats[STAT_PROFITS_PAID] + stats[STAT_ISSUED];
+}
+
+// economyDay checks the invariants every day while world.checks is on, and throws on the first that fails. Returns
+// household saving over household income from the first month end after the burn-in, or NaN for a run inside it.
+function runCleanly(seed: number, days: number): number {
   const world = startedWorld(seed);
   expect(world.checks).toBe(true);
   const books = openBooks(world);
+  let savedFrom = Number.NaN;
+  let income = 0;
   for (let day = 0; day < days; day++) {
     economyDay(world, LENGNICK, day);
-    if (dayOfMonth(day) === LAST_DAY) expectCleanMonthEnd(world, books, `seed ${seed}, day ${day}`);
+    if (dayOfMonth(day) !== LAST_DAY) continue;
+    expectCleanMonthEnd(world, books, `seed ${seed}, day ${day}`);
+    if (day < LENGNICK.burnInDays) continue;
+    if (Number.isNaN(savedFrom)) savedFrom = books.households;
+    else income += monthIncome(world);
   }
+  return (books.households - savedFrom) / income;
 }
 
 describe('startEconomy', () => {
@@ -318,7 +331,11 @@ describe("the month's order", () => {
 });
 
 describe.runIf(LONG)('the long economy run (ECONOMY_LONG=1)', () => {
-  it('runs 50 seeds × 20,000 days cleanly', { timeout: 7_200_000 }, () => {
-    for (const seed of LONG_SEEDS) runCleanly(seed, 20_000);
+  // Ruling 10: in closed money, household saving after the burn-in averages zero within 0.1% of household income.
+  it('runs 50 seeds × 20,000 days cleanly, and households save nothing after the burn-in', { timeout: 7_200_000 }, () => {
+    for (const seed of LONG_SEEDS) {
+      const savingRate = runCleanly(seed, 20_000);
+      expect(Math.abs(savingRate), `seed ${seed}`).toBeLessThanOrEqual(0.001);
+    }
   });
 });

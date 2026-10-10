@@ -90,6 +90,7 @@ describe('the economy parameters', () => {
       openingCash: 310_000,
       openingWage: 142_800,
       openingPrice: 2_500,
+      burnInDays: 9_893,
     });
   });
 

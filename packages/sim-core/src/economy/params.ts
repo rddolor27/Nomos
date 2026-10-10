@@ -37,6 +37,8 @@ export interface EconomyParams {
   readonly openingCash: number;
   readonly openingWage: number;
   readonly openingPrice: number;
+  // Days to discard before measuring a run (Ruling 9); the sim never reads it.
+  readonly burnInDays: number;
 }
 
 export const LENGNICK = Object.freeze<EconomyParams>({
@@ -65,6 +67,9 @@ export const LENGNICK = Object.freeze<EconomyParams>({
   openingCash: 310_000,
   openingWage: 142_800,
   openingPrice: 2_500,
+  // Measured here (`economy --burn-in --seeds 5 --days 20000`: seeds 42-46, Node 24.18.0, 10 October 2026): MSER-5 cut
+  // 5,775 days of the mean price and 6,595 of the unemployment share, and 1.5 x 6,595 rounds up to 9,893.
+  burnInDays: 9_893,
 });
 
 const FIELDS = Object.keys(LENGNICK) as (keyof EconomyParams)[];
