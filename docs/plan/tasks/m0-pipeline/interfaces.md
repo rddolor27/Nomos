@@ -45,7 +45,7 @@ The tables give the layout M0.7 builds, including the files it adds. A renamed f
 | Folder | Files | Concern |
 | --- | --- | --- |
 | `src/` | `index.ts`, `kernels.ts` | The barrel, and the `./kernels` subpath that `sim-culture` imports |
-| `random/` | `draw.ts`, `noise.ts`, `streams.ts` | The keyed draw, value noise and the stream ids |
+| `random/` | `draw.ts`, `noise.ts`, `streams.ts` | The keyed draw with `drawBelow2`–`drawBelow4` (the draw modulo n as a small integer), value noise and the stream ids |
 | `maths/` | `int.ts`, `log2.ts`, `tables.ts` (generated), `apportion.ts`, `split.ts` | Exact integer maths and apportionment |
 | `time/` | `calendar.ts`, `day-length.ts` (generated) | The calendar and the sunrise table |
 | `memory/` | `arena.ts` (was `memory.ts`), `tiers.ts` | The one reserved memory, and the device tiers |
@@ -96,11 +96,11 @@ Skin B and Skin C arrive as `blobs/` and `town/` beside `dots/` (M1.3, M3.3). M8
 | --- | --- | --- |
 | `src/` | `main.ts` | The entry `index.html` loads |
 | `app/` | `app.ts`, `boot.ts`, `lifecycle.ts`, `query.ts`, `tiers.ts` | The app shell: boot hand-off, worker link, query, tiers and the page lifecycle |
-| `view/` | `camera-input.ts`; `pinch.ts` (`Pinch`, two-pointer zoom in whole steps); `zoom-bar.ts` (`ZoomBar`, the town's −, + and Fit); `town-skin.ts` (the Town skin) | Pointer and keyboard input on the view: the click that inspects, wheel, keys, pinch, and Home to fit (M0.8, b44ed12). It loads after the first frame, as the charts do (M0.7). `camera-input.ts` also imports the Town skin's loader, `town-skin.ts`, once the page is interactive |
-| `panels/` | `hud.ts`, `charts.ts`, `controls.ts`, `inspector.ts`, `toolbar.ts` (the compact bar the map and the town view share, M0.8); `shop-name.ts` (`shopName(firm)`: Shop N is firm row N − 1, M2.2b) | The HUD, the lazy charts and controls, the on-demand inspector, and the map's toolbar |
+| `view/` | `camera-input.ts`; `pinch.ts` (`Pinch`, two-pointer zoom in whole steps); `zoom-bar.ts` (`ZoomBar`, the town's −, + and Fit); `town-skin.ts` (the Town skin) | Pointer and keyboard input on the view: the click that inspects, wheel, keys, pinch, Home to fit through `App.fit()` (M0.8, b44ed12), and keys 1–3 for speed (M2.2b). It loads after the first frame, as the charts do (M0.7). `camera-input.ts` also imports the Town skin's loader, `town-skin.ts`, once the page is interactive |
+| `panels/` | `hud.ts` (the row, its Map button and `SystemRows`), `charts.ts` (also `DayChart`, `dataTable`, `setRows`, `el` and `levelRange`), `controls.ts` (the `?dev=1` Zoom slider), `inspector.ts`, `toolbar.ts` (the compact bar the map and the town view share, M0.8); `shop-name.ts` (`shopName(firm)`: Shop N is firm row N − 1), `economy.ts` and `economy.css` (`EconomyPanel`, `mountEconomy`, `MEASURES`, `fillSeries` and `tradeRows`) and `speed-bar.ts` (`SpeedBar`, `speedForKey`), all M2.2b | The HUD, the lazy charts, the economy panel, the developer controls, the on-demand inspector, and the map's toolbar |
 | `map/` | `generate.ts` and `map-worker.ts` (M8.1); `map-view.ts`, `map-input.ts`, `labels.ts`, `legend.ts` and `goto.ts` (M8.3); `place-builder.ts`, `place-view.ts` and `walkers.ts` (M3.1); `town.ts` (the Town skin) | The map: its worker and the worker's lazy place builder, the lazy view the Map control opens, and the town view a place opens into. `town.ts` pins Highcourt's place context for the builder |
 
-`apps/web/vite/` keeps the build plugins. Vite names a lazy chunk after its file, so the size-limit globs `charts-*.js` and `controls-*.js` hold after the move, and the view input's and the inspector's chunks need entries of their own.
+`apps/web/vite/` keeps the build plugins. Vite names a lazy chunk after its file, so the size-limit globs `charts-*.js` and `controls-*.js` hold after the move, and the view input's and the inspector's chunks need entries of their own. So do the economy panel's chunk and the shop-name chunk that the inspector and the panel share (M2.2b).
 
 **`tools/cli/src`**
 
@@ -118,7 +118,7 @@ Grids live in `tools/cli/grids/`, outside `src/`.
 | Folder | Files | Concern |
 | --- | --- | --- |
 | `src/` | `alloc.ts`, `assert-startup.ts`, `browser-entry.ts`, `budget.ts`, `calibrate.ts`, `chunks.ts` | Entries that package scripts, CI and the budget spec run or bundle by path |
-| `compute/` | `allocation.ts`, `budgets.ts`, `judge.ts`, `sample.ts`, `serve-isolated.ts` | The compute gates' sampling, budget table and verdicts |
+| `compute/` | `allocation.ts`, `budgets.ts`, `judge.ts`, `sample.ts`, `serve-isolated.ts` | The compute gates' sampling, budget table and verdicts. `budgets.ts` holds `ALLOCATION_DAYS` (1, 20 and 21) and `allocationLimit(day)`: 16 KiB and no scavenge on a plain day, and an interim allowance on a month's last and first days until M6 (M2.2b) |
 | `machine/` | `benchmark-index.ts`, `LICENSE-lighthouse.txt`, `loadavg.ts` | The machine measured on: its speed index and its load |
 
 **`tools/names/src`**
@@ -137,7 +137,7 @@ Grids live in `tools/cli/grids/`, outside `src/`.
 
 - **Creation:** `createWorld(seed: number, tier: Tier, ground?: Ground, agents?: number): World`, and `restoreWorld(seed, tier, state: ArrayBuffer, ground?: Ground): World` for checkpoints. A `World` holds the agent store, the ledgers, the tick counter, `world.ground`, and `world.blob`, the world's `Blob` handle, made once in `layoutWorld` (M0.7).
   - `agents` is how many blobs spawn, a whole number from 1 to the tier's count, which is the default. The layout always holds the tier's whole count, so a smaller town moves no offset and `restoreWorld` needs no count. `populate(world, people?)` throws `RangeError` outside that range. Blob `id` keys every spawn draw, so a smaller town is the first `agents` blobs of the full one.
-  - `townAgents(tier, ground): number` is how many a town holds: its walkable tiles divided by `TIER_TILES_PER_AGENT` (phone 4, phone-plus 3, desktop 2), rounded down, at least 1 and at most the tier's count. `walkableTiles(ground)` counts the open tiles. The owner asked on 10 October 2026 for a first screen of about one blob to two walkable tiles on desktop, and fewer on phones.
+  - `townAgents(tier, ground): number` is how many a town holds: its walkable tiles divided by `TIER_TILES_PER_AGENT` (phone 4, phone-plus 3, desktop 2), rounded down, at least `SUPPLIERS` (7), so a town always seats its firms (the M2.2b review), and at most the tier's count. `walkableTiles(ground)` counts the open tiles. The owner asked on 10 October 2026 for a first screen of about one blob to two walkable tiles on desktop, and fewer on phones.
 - **Checks:** while `world.checks` is true, the default, `step` runs `checkInvariants` after every tick. Tests and the CLI keep the default. The worker sets it from `init.checks`, which the app sends as true only from development builds, because wallets make the check cost grow with population. `warmUp`'s throwaway world runs with checks off, as production does (M0.7).
 - **Ground (M0.4):** `{ width, height, walk: Uint8Array }` in `sim-core`, tiles row-major from the top-left, where nonzero means walkable. A `MapV1` is a `Ground`, so `sim-core` never imports `sim-protocol`.
   - The ground is an unhashed input: it stays out of the arena and the hash, and a restore must pass the same ground.
@@ -230,6 +230,9 @@ Grids live in `tools/cli/grids/`, outside `src/`.
   - `{ type: 'pause' }` and `{ type: 'resume' }`
   - `{ type: 'return', buffer: ArrayBuffer }`
   - `{ type: 'checkpoint' }`, which the app sends on `pagehide`
+  - `{ type: 'speed', speed: Speed }`, with `SPEEDS` = [1, 4, 16] and `Speed` in sim-protocol (M2.2b Task 8).
+    - It changes no state, so a watch-only run accepts it. The worker takes it while paused and keeps it for Play, and `init` resets it to 1×.
+    - The loop then runs `speed` ticks per 100 ms slot, so a turn still posts one snapshot. A turn spends at most `MAX_TURN_MS` (10) × `speed` ms, drops the ticks it can't fit and never makes them up, and `MAX_GAP_MS` caps the debt at two slots.
   - `{ type: 'inspect', x, y }`, in world pixels, which the worker rounds to Q8: a read-only query, answered at any time, even while a run plays (M0.7)
 - Worker to app:
   - `{ type: 'ready', agents }`. A tick-0 snapshot follows (M0.4), then the worker warms up (R6) and waits for `resume`. Messages sent during the warm-up wait until it ends. Under reduced motion the app withholds `resume` (M0.5).
@@ -241,7 +244,7 @@ Grids live in `tools/cli/grids/`, outside `src/`.
 - `sim-protocol`'s `bindPageLifecycle(doc, win, post): void` sends `pause` and `resume` on `visibilitychange`, and `checkpoint` on `pagehide`. M0.5 wraps it.
 - `sim-worker`'s `createSimLoop(host: LoopHost, cpuSlowdown = 1): { handle(msg: AppMessage): void }` runs the loop. A `cpuSlowdown` above 1 makes the worker wait before each reply, and after its warm-up, as a CPU that many times slower would, since CDP's CPU throttling skips workers. Only the startup gate sets it, through a `__nomosCpuSlowdown` global that its server prefixes to the worker chunk (M0.6, R5).
 - The startup gate's server, `startServer(options: ServeOptions): Promise<Served>` in `apps/web/test/serve.ts`, serves a build over an emulated Fast 4G link, with `latencyMs` 165, `bytesPerSecond` 1,012,500 and `setupRtts` 3 by default. Its `workerSlowdown`, 1 by default, is the `cpuSlowdown` it prefixes to the worker chunk (M0.6, R5).
-- Speed controls and skip arrive in M1 (Calendar); the worker refuses settings messages while a run plays.
+- Speed comes from M2.2b's `speed` message (App to worker, above). Skip and the per-tier speed caps arrive in M1.2 (Calendar); the worker refuses settings messages while a run plays.
 
 ## The binary map, version 1 (owner: M0.4)
 
@@ -438,7 +441,7 @@ The map's look-only crowd of walking dots (M8.3, owner, 9 October 2026) was remo
   - The page starts the worker with `new Worker(new URL('./map-worker.ts', import.meta.url), { type: 'module', name: 'map' })`.
   - So Vite builds it as its own chunk, `map-worker-*.js`, whose name never matches the sim worker's `worker-*.js` glob.
 - **`render-gl`** gains a `./map` export, the lazy map scene, with its entry file at `src/map.ts`. It imports only `sim-protocol`, and its API is The map scene, below.
-- **Nothing of the map reaches the first load** (owner, 9 October 2026). The entry, sim worker and renderer chunks keep their bytes, and the Map control mounts from a chunk that already loads after the first frame.
+- **Nothing of the map reaches the first load** (owner, 9 October 2026). The entry, sim worker and renderer chunks keep their bytes, and the HUD's Map button, about 0.15 kB of first-load JS since M2.2b's Task 8, imports `map/map-view.ts` only when pressed.
 
 ## The map scene (owner: M8.3)
 
@@ -481,7 +484,7 @@ The Country and Region views draw a `WorldMap` with a renderer of their own, whi
 
 ### In `web`
 
-- **The Map control** sits in the lazy controls chunk, so the entry chunk gains no byte. It imports `map/map-view.ts`, whose chunk holds the map scene, labels, legend and input.
+- **The Map control** is the HUD's "Map" button (M2.2b Task 8), about 0.15 kB of first-load JS. It imports `map/map-view.ts`, whose chunk holds the map scene, labels, legend and input.
 - **Opening the map:**
   - it pauses the town if it was playing, and makes the town's view and HUD inert under the map;
   - it starts the map worker once per page, and keeps the world it answers for the rest of the page;
@@ -813,19 +816,19 @@ M2.2b spawns every app world as a town that runs `CITY`, and shows the economy o
 - **Task 3, the economy in the step:**
   - **The schedule,** in `economy/economy.ts`: `ECONOMY_TICKS` is 18, and `runEconomySystem(world, params, day, system, layoffs)` runs system `system` of `day`'s economy, or nothing when it is not due that day. System k is, in `economyDay`'s order:
     - 0 opens the day: `clearFlows`, then `layOff` when `layoffs` is above 0;
-    - 1 to 5 are `startMonth`'s `stepWages`, `decideFirms`, `searchShops`, `searchJobs` and `planConsumption`, due on a month's first day;
+    - 1 to 5 are a month's first-day systems, `stepWages`, `decideFirms`, `searchShops`, `searchJobs` and `planConsumption`, due on a month's first day;
     - 6 is `shopDay` and 7 `produce`, both every day;
     - 8 to 14 are `endMonth`'s `payWages`, `updateReservationWages`, `fireOnNotice`, `distributeProfits`, `closeFirmMonth`, `layOffExiting` and `issueFiat`, and 15 is `recordMonth`, all due on a month's last day;
     - 16 is `recordDay`, every day, and 17 `recordYear`, due on a year's last day.
-  - **`economyDay`** `(world, params, day, layoffs = 0)` runs the 18 in a row and then checks the invariants while `world.checks` is on, so headless runs and the economy golden `6a652730` did not move. `startMonth` and `endMonth` stay exported and loop over the same systems.
+  - **`economyDay`** `(world, params, day, layoffs = 0)` runs the 18 in a row and then checks the invariants while `world.checks` is on, so headless runs and the economy golden `6a652730` did not move. One 18-case switch dispatches them (the M2.2b review). `endMonth` stays exported as a loop over systems 8 to 14 on a month's last day, and a system number past 17 does nothing.
   - **The step:** a town (`globals[TOWN]` = 1) runs `runEconomySystem(world, CITY, dayOf(tick), tick mod 1,440, 0)` on each tick of a day below `ECONOMY_TICKS`, after the day work and `move`. A world that is not a town runs none, and neither does any tick from the 19th of a day on, so only the day's window writes economy state. A fresh town sits at a month's day 0, which is the day its first tick runs.
     - The layoffs argument is `globals[DAY_LAYOFFS]`, which Task 6 added (below).
     - A day's row of `economyScratch.stats` is whole once the step that runs tick 17 ends, until tick 0 of the next day clears its flows.
     - **The hash:** a town's `stateHash` fingerprints its state only outside the economy's window. On a month's last day, `pay` stays live from tick 8 to 12 and `exiting` from 12 to 13, and the hash skips both, so compare hashes from a day's tick 18 on. A restore is still exact, since `checkpoint()` copies the whole arena (the M2.2b review).
     - **An accepted quirk** (coordinator, 11 October 2026): an inspect answered between ticks 12 and 13 of a month's last day shows an exiting firm's worker at the re-entered row's wage, until `layOffExiting` runs a tick later. It is display only.
     - `SYSTEM_NAMES` gains `economy`, which `step` laps on every tick, so the stats message's `economy` is the mean over all 1,440 ticks of a day, not over the 18 that run it.
-  - **The warm-up:** `warmUp` spawns a town with `spawnTown` in its 1,024-agent, 1 MiB layout and runs `economyDay` with each of its 40 days of day work, so a month's start and end both compile. It grows from 27 ms to 46 ms (measured here, Node 24.18.0 on Windows, three runs each, load not recorded). It runs after the first snapshot, so the first frame never waits for it, and whatever the page sends meanwhile waits about 19 ms longer.
-  - **The bench:** `createBenchWorld(tier)` makes `createTown(BENCH_SEED, tier, standInGround(), TIER_AGENTS[tier])`, a town of the tier's whole crowd. `sampleTier` also gives `economy`, the worst tick of each day, which `REPORTED_WORST` names and `budget.ts` prints per tier as `<tier> economy: worst tick … ms on the best of 9 days, no budget`, judging nothing. The Chromium run carries the samples in its report.
+  - **The warm-up:** `warmUp` spawns a town with `spawnTown` in its 1,024-agent, 1 MiB layout and runs `economyDay` with each of its 40 days of day work, so a month's start and end both compile. It grows from 27 ms to 46 ms (measured here, Node 24.18.0 on Windows, three runs each, load not recorded). It runs after the first snapshot, so the first frame never waits for it, and whatever the page sends meanwhile waits about 19 ms longer. Its throwaway town runs on `WARM_SEED` 1, whose first mix is 2^31 or more, so V8's warmed code survives a real seed (the allocation fix).
+  - **The bench:** `createBenchWorld(tier)` makes `createTown(BENCH_SEED, tier, standInGround(), TIER_AGENTS[tier])`, a town of the tier's whole crowd. `sampleTier` also gives `economy`, the worst tick of each day, which `ECONOMY_SYSTEM` names and `budget.ts` prints per tier as `<tier> economy: worst tick … ms on the best of 9 days, no budget`, judging nothing. The Chromium run carries the samples in its report.
     - Its 9 sampled days are days 1 to 9, after one dropped warm day, so they hold neither a month's start (day 0) nor its end (day 20), and the printed worst tick is the daily shopping tick. At the phone sizes a month's first-day `searchShops` costs more (the table below), so the printed figure understates the worst tick there.
   - **Hashes:** `goldens.json` gains `town`: `{ seed: 42, tier: 'phone', people: 1000, ticks: 1000, hash: 'b76fca4c' }`. `townHash(seed, tier, people, ticks)`, in `test/engines/checks.ts`, spawns a town on the stand-in ground and steps it, and `checkGoldens` replays it with the rest, so Node and Chromium both run its case: 5 + 20 cases in all. No other golden moved: `42/phone` is still `746a06a3` and the economy `6a652730`. Highcourt's pins are `d11bb532` (phone) and `8eb639aa` (desktop).
   - **The walking start** (coordinator, 10 October 2026): `spawnTown` starts three in four blobs walking after `spawnFromLedger`, so the first screen moves from its first frame.
@@ -863,7 +866,21 @@ M2.2b spawns every app world as a town that runs `CITY`, and shows the economy o
     - At 1× the first post lands at tick 18, 1.8 s after Play, and one follows every 1,440 ticks, which is 144 s.
     - Nothing allocates per tick: the feed's buffers are made once, and the day's one post is the copy `postMessage` makes of every message.
 - **Task 6, the layoffs input** (ba0b44a):
-  - `INPUT_LAYOFFS` is 2 in `world/inputs.ts`, beside `INPUT_FOCUS` (1). Its `a` is a number of people and its `b` is 0. `logLayoffs(world, people): boolean` in `day/day.ts` logs one. Runs are watch-only, so the app has no control for it.
+  - `INPUT_LAYOFFS` is 2 in `world/inputs.ts`, beside `INPUT_FOCUS` (1). Its `a` is a number of people and its `b` is 0. `logLayoffs(world, people): boolean` in `day/day.ts` logs one. It returns false for a count under 1 or over 2,147,483,647, and the boundary clamps a day's sum at 2,147,483,647 (the M2.2b review). Runs are watch-only, so the app has no control for it.
   - `DAY_LAYOFFS` is global slot 5 in `world/world.ts`, beside `TOWN` (4). It is canonical, so checkpoints and the hash carry it, and slots 6 and 7 stay free. `dayBoundary` sets it at every boundary to the sum of the `a`s of the `INPUT_LAYOFFS` entries it applies, or 0, so only the boundary writes it.
   - `step` passes `globals[DAY_LAYOFFS]` as `runEconomySystem`'s `layoffs`. System 0 spends it with `layOff` on the day's tick 0, in the boundary's step. When fewer people work than it asks for, everyone employed is laid off. No later system reads the slot, so a layoff fires once.
   - An input logged on any tick of a day, the economy's window included, waits for the next boundary. A world that is not a town still sums the slot but spends nothing.
+- **Task 5, the economy panel** (8e4a120, b4b7ac0):
+  - `App` gains `onEconomy(listener: EconomyListener)`, where `EconomyListener = (message: EconomyMessage) => void`. The app keeps the latest message and hands it to a new listener at once.
+  - `index.html`'s `<div id="side">` holds `<section id="economy">` above `<section id="charts">`. The scroll and the top padding moved from `#charts` to `#side`.
+  - `main.ts`'s `mountEconomyPanel` imports the economy chunk after `app:interactive`, without awaiting it, so it loads beside the Town skin and can't block it.
+- **Task 8, speed and the HUD** (da4eeff..c20ce6e):
+  - `App` gains `speed: Speed`, `setSpeed(speed)` and `fit()`. `mountHud(root, app, dev)` takes the developer flag, which `devFrom(search)` in `app/query.ts` reads from `?dev=1`.
+  - The HUD row holds Play, 1×, 4× and 16×, and Map. `?dev=1` also loads `controls-*.js`, the lil-gui Zoom slider, and shows the per-system timings (`#hud-systems`).
+  - Keys 1–3 set the speed while the view or a HUD control has focus, never document-wide (WCAG 2.1.4).
+- **The review's fixes and the allocation gate** (b7eb873..1339b2c):
+  - `spawnTown` throws unless the world is at tick 0. `firmsFitTier(record, tier)` in `spawn/record.ts` checks a record's firms fit a tier, and `scripts/city-record.ts` asserts it for every tier.
+  - The hot-path lint also covers `packages/sim-protocol/src/economy`.
+  - **Draws below n:** per-tick code that needs a draw below n calls `drawBelow2`–`drawBelow4(…, n)`, which is exactly `drawN(…) % n`. A draw of 2^31 or more is a heap number to V8 whenever it crosses a call that isn't inlined, so the reduced value must be what crosses. `mix` is `mixBits >>> 0`, so the mixing steps are shared.
+  - **A V8 trap:** a `Record<Tier, number>` literal with fractional values, in the same key order as sim-core's integer `TIER_*` tables, shares their hidden class and deoptimises warmed sim code. So the bench's tables list `desktop` first.
+  - **Measured** (phone, Node 24.18.0 on Windows, load not recorded): a plain day's young-generation growth fell from about 83 KB to 2.9 KB. A month's first day fell from 943 KB to 25 KB. A month's last day still grows 0.24–0.82 MB in cold V8 tiers, which `allocationLimit` allows until M6 (coordinator, 11 October 2026).
