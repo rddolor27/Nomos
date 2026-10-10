@@ -19,17 +19,24 @@ test('draws each tile in its zone colour', async ({ page }) => {
   const { backend, wrong } = await page.evaluate(async () => {
     const harness = window.harness;
     const backend = await harness.boot({ css: [1536, 896] });
-    harness.view({ x: 0, y: 0, zoom: 2 });
-    harness.draw();
     const map = harness.map;
     if (!map) throw new Error('boot set no map');
+    // At zoom 2 the frame holds 48 x 28 tiles, so the view steps across the town a frame at a time.
+    const [across, down] = [48, 28];
     const wrong: string[] = [];
-    for (let ty = 0; ty < map.height; ty++) {
-      for (let tx = 0; tx < map.width; tx++) {
-        const want = `#${map.kinds[map.terrain[ty * map.width + tx]].rgb.toString(16).padStart(6, '0')}`;
-        const got = harness.pixel((tx * 16 + 8) * 2, (ty * 16 + 8) * 2);
-        if (got !== want) wrong.push(`tile ${tx},${ty} is ${got}, not ${want}`);
+    const checkFrame = (left: number, top: number): void => {
+      harness.view({ x: left * 16, y: top * 16, zoom: 2 });
+      harness.draw();
+      for (let ty = top; ty < Math.min(top + down, map.height); ty++) {
+        for (let tx = left; tx < Math.min(left + across, map.width); tx++) {
+          const want = `#${map.kinds[map.terrain[ty * map.width + tx]].rgb.toString(16).padStart(6, '0')}`;
+          const got = harness.pixel(((tx - left) * 16 + 8) * 2, ((ty - top) * 16 + 8) * 2);
+          if (got !== want) wrong.push(`tile ${tx},${ty} is ${got}, not ${want}`);
+        }
       }
+    };
+    for (let top = 0; top < map.height; top += down) {
+      for (let left = 0; left < map.width; left += across) checkFrame(left, top);
     }
     return { backend, wrong };
   });
