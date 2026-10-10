@@ -173,7 +173,7 @@ Grids live in `tools/cli/grids/`, outside `src/`.
 - `World.cultureUid`: a canonical `Uint8Array(MAX_CULTURES)` of stable culture uids, c + 1 per culture and 0 when unused. Culture-level draws key on it, never on the index (M0.6, R8).
 - Seed 42's replay hashes at tick 1,000, one per tier, live in `packages/sim-core/test/fixtures/goldens.json`, keyed `"<seed>/<tier>"`; the Node and browser checks both read it. A commit that moves the sim on purpose regenerates it with `node packages/sim-core/scripts/goldens.ts` (M0.6). Since M2.2's household rows, they are `746a06a3` on phone, `7560155c` on phone-plus and `10699866` on desktop. `node tools/cli/src/main.ts --seed 42 --tier phone --ticks 1000` prints the phone hash.
 - `Tier` is `'phone' | 'phone-plus' | 'desktop'`, with agent caps of 10,000, 25,000 and 100,000. `sim-protocol` re-exports `Tier`, `TIER_AGENTS` and `townAgents` from its `messages.ts` (M0.3).
-- Highcourt's replay hashes at tick 1,000, seed 42, on `town.nmap` at the town's own crowd, are pinned in `packages/sim-protocol/test/town-map.test.ts`: `e5be40f9` for phone (3,965 blobs) and `d0a2c4ea` for desktop (7,931), on the 176 × 112 town. The goldens above run on the stand-in ground, so a new map moves only these.
+- Highcourt's replay hashes at tick 1,000, seed 42, on `town.nmap` at the town's own crowd, are pinned in `packages/sim-protocol/test/town-map.test.ts`: `7f5f6cb9` for phone (3,965 blobs) and `6ece364d` for desktop (7,931), on the 176 × 112 town. M2.2b builds that world with `createTown` instead of `createWorld`, which moved both from `e5be40f9` and `d0a2c4ea`. The goldens above run on the stand-in ground with `createWorld`, so a new map or a change to the town moves only these.
 
 ## Agents and the Blob handle (owner: M0.7)
 
@@ -184,7 +184,8 @@ Grids live in `tools/cli/grids/`, outside `src/`.
   - `at(index: number): void` re-points it. It returns nothing, so a handle is never held under two names;
   - `index` (read-only) is the current row;
   - `x` and `y` (Q8 sub-pixels), `vx` and `vy` (Q8 a tick), `heading`, `action` and `facing` read and write their columns, and code that sets `heading` also sets `vx`, `vy` and `facing`, which follow it;
-  - `nameKey` (read-only), `wallet` (read-only, the row's account in `world.cash`) and `cash` (read-only, that account's balance in cents). Money moves only through `transfer`, `issue` and `retire`.
+  - `nameKey` (read-only), `wallet` (read-only, the row's account in `world.cash`) and `cash` (read-only, that account's balance in cents). Money moves only through `transfer`, `issue` and `retire`;
+  - `employer` (read-only, M2.2b): the employing firm's row, or −1.
 - Column accessors carry their column's exact name, so the look and culture lints see every read. `Blob` has no `look` accessor, since no sim rule reads a look, and no culture accessors until a consumption system needs one.
 - **Per-tick loops** use the accessors or plain columns, and call no method per blob. A method per blob made the four-way `move` 2.0–2.8× slower, while accessors cost 7% (M0.7's brief, measured here in Node 24.18.0, V8 only).
   - M0.7's A/B check found accessors 1.05–1.20× slower on the free-heading `move` and up to 3.6× slower on the day slice's walker count (measured there, Node 24.18.0).
@@ -224,7 +225,7 @@ Grids live in `tools/cli/grids/`, outside `src/`.
 ## Worker messages (owner: M0.3)
 
 - App to worker:
-  - `{ type: 'init', seed, tier, map: ArrayBuffer, checks: boolean, agents?: number }`; `checks` sets `world.checks`, and the app sends true only from development builds (M0.7). `agents` is passed to `createWorld`; leaving it out spawns the tier's whole count, as the bench and the harness do. The app sends `townAgents(tier, map)`, or the tier's whole count when the URL names the tier with `?tier=`, which is how the perf specs keep their 10,000, 25,000 and 100,000.
+  - `{ type: 'init', seed, tier, map: ArrayBuffer, checks: boolean, agents?: number }`; `checks` sets `world.checks`, and the app sends true only from development builds (M0.7). `agents` is the town's people, passed to `createTown` since M2.2b (`createWorld` before); leaving it out spawns the tier's whole count, as the bench and the harness do. The app sends `townAgents(tier, map)`, or the tier's whole count when the URL names the tier with `?tier=`, which is how the perf specs keep their 10,000, 25,000 and 100,000.
   - `{ type: 'pause' }` and `{ type: 'resume' }`
   - `{ type: 'return', buffer: ArrayBuffer }`
   - `{ type: 'checkpoint' }`, which the app sends on `pagehide`
@@ -234,7 +235,7 @@ Grids live in `tools/cli/grids/`, outside `src/`.
   - `{ type: 'snapshot', tick, count, buffer: ArrayBuffer }`
   - `{ type: 'stats', tick, systemMs: Record<string, number> }`, keyed by `SYSTEM_NAMES` plus `snapshot`, the mean milliseconds per snapshot (M0.3)
   - `{ type: 'checkpoint', tick, state: ArrayBuffer }`, the answer to the app's `checkpoint`
-  - `{ type: 'inspected', tick, agent, nameKey, cents }`, the answer to `inspect`: the nearest blob within one tile (16 world pixels), or `agent` −1 with `nameKey` and `cents` 0 (M0.7)
+  - `{ type: 'inspected', tick, agent, nameKey, cents, employer, wage }`, the answer to `inspect`: the nearest blob within one tile (16 world pixels), or `agent` −1 with `nameKey` and `cents` 0 (M0.7). `employer` is the blob's firm row and `wage` that firm's pay in cents a month, or −1 and 0 for someone out of work, and for `agent` −1 (M2.2b)
 - `sim-protocol`'s `bindPageLifecycle(doc, win, post): void` sends `pause` and `resume` on `visibilitychange`, and `checkpoint` on `pagehide`. M0.5 wraps it.
 - `sim-worker`'s `createSimLoop(host: LoopHost, cpuSlowdown = 1): { handle(msg: AppMessage): void }` runs the loop. A `cpuSlowdown` above 1 makes the worker wait before each reply, and after its warm-up, as a CPU that many times slower would, since CDP's CPU throttling skips workers. Only the startup gate sets it, through a `__nomosCpuSlowdown` global that its server prefixes to the worker chunk (M0.6, R5).
 - The startup gate's server, `startServer(options: ServeOptions): Promise<Served>` in `apps/web/test/serve.ts`, serves a build over an emulated Fast 4G link, with `latencyMs` 165, `bytesPerSecond` 1,012,500 and `setupRtts` 3 by default. Its `workerSlowdown`, 1 by default, is the `cpuSlowdown` it prefixes to the worker chunk (M0.6, R5).
@@ -689,7 +690,7 @@ M2.1 builds Lengnick's households and firms in `sim-core`, as its [step plan](..
 - **Agents:**
   - `SUPPLIERS = 7`;
   - new columns `employer`, `reservationWage`, `suppliers`, `stockedOut` and `plannedUnits`, with `addAgent` writing −1 to `employer` and the suppliers;
-  - `Blob` gains no accessor.
+  - `Blob` gains no accessor here; M2.2b adds `employer`.
 - **Wallets and firm accounts:**
   - `createLedger(arena, settlements, wallets, firms = 0)`, `Ledger.firstFirm` and `firmAccount(ledger, firm)`;
   - accounts run national, then sectors, then wallets, then firms;
@@ -762,8 +763,8 @@ M2.3 runs the economy headless over a grid of cells, writes each cell's flow log
 - **A cell** is a point, a size, a police share, a shock and a seed, listed in that order. Its folder is `p<point, padded to 3 digits>-n<size>-x<police index>-k<shock index>-s<seed>`.
   - Sizes are multiples of 1,000 up to 100,000. The tier is the smallest that holds the size, `households` is the size and `firms` a tenth of it.
   - A hand start is `createWorld(seed, tier, undefined, size)`, then `startEconomy`.
-  - A spawn start spawns R* into settlement 0 on day 0, with a stand-in home to every 3 people. Every field of R* but the mean price and wage is scaled by size ÷ the preset's 1,000 households.
-  - The main thread makes R* once per run: the preset's hand-built city on seed 42, run for the whole months that cover its `burnInDays`, then folded.
+  - A spawn start spawns R* into settlement 0 on day 0, with a stand-in home to every 3 people. `scaleRecord(R*, size, out)` scales it: every field but the mean price and wage is multiplied by size ÷ R*'s 1,000 people, the whole factor at these sizes (M2.2b; the runner's own `scaledRecord` before).
+  - The main thread makes R* once per run with `settledRecord(preset)`, which M2.2b moved into `sim-core`: the preset's hand-built city on seed 42, run for the whole months that cover its `burnInDays`, then folded.
   - A shock lays off floor(points × size ÷ 100) people at the start of its day, through `economyDay`'s `layoffs`.
   - The police share is recorded and does nothing until M4.
 - **A cell's folder** holds one `<column>.f64` per column, then `meta.json`, written last, so a folder a crash cut short has none.
@@ -777,3 +778,30 @@ M2.3 runs the economy headless over a grid of cells, writes each cell's flow log
   - `sweep.json`, a 300-point hypercube on seeds 1–5, and `refine.json`, on seeds 1–20, tuned `CITY`;
   - `confirm-city.json` judges `CITY` on seeds 2001–2050, fresh after the review's re-tune, and `confirm-lengnick.json` judges `LENGNICK` on seeds 1001–1050;
   - `design.json` runs `CITY` at all five sizes, with and without a 5-point shock.
+
+## The economy on screen (owner: M2.2b)
+
+M2.2b spawns every app world as a town that runs `CITY`, and shows the economy on screen, as its [brief](../m2-economy/m2.2b-economy-on-screen/plan.md) lays out. Each task adds its names here, in its own docs commit.
+
+- **Task 1, the town start:**
+  - **Layout, `sim-core`:**
+    - `economy/settled.ts` holds `settledRecord(preset: EconomyParams): Float64Array`, moved from the design runner's `cell.ts`;
+    - `economy/city-record.ts`, generated, holds `CITY_RECORD`, which is `settledRecord(CITY)` as a 14-field `Float64Array`. Nothing writes to it;
+    - `spawn/town.ts` holds `createTown` and `spawnTown`;
+    - `scripts/city-record.ts` writes `city-record.ts` in about 2.4 s, and `--check` compares a fresh `settledRecord(CITY)` with it instead. `test:headless` runs the check, and a commit that changes `CITY` or the economy day runs `node packages/sim-core/scripts/city-record.ts` and commits the result;
+    - the barrel exports the three modules.
+  - **The record:** `scaleRecord(record, people, out)`, in `spawn/record.ts`, replaces the design runner's `scaledRecord` and writes all 14 fields of `out`:
+    - every count and total is scaled by `people` ÷ the record's population, rounded down, and price and wage stay as they are;
+    - `unemployed` is filled up to `people` − `employed`, and one-person households are added until the households hold `people` exactly;
+    - a town keeps at least `SUPPLIERS` (7) firms;
+    - from a 1,000-person record at a multiple of 1,000, its output is the runner's, so no design cell moves.
+  - **The town:**
+    - `createTown(seed, tier, ground, people): World` lays out an empty world of the tier's whole size with `layoutWorld`, so a smaller town moves no offset, and calls `spawnTown`;
+    - `spawnTown(world, people)` fills an empty world through `spawnFromLedger` from `CITY_RECORD` scaled to `people`, with `CITY`, a stand-in home to every 3 people, settlement 0 and day 0, and marks it a town. It stands apart from `createTown` for the warm-up and the bench, which lay a world out themselves (Task 3);
+    - the mark is global slot `TOWN` = 4, in `world/world.ts` beside `TICK` (0), `RECORD_FRONT` (1), `DAY_AGENTS` (2) and `DAY_HOUSEHOLDS` (3). It is 1 for a town, whose step runs `CITY`'s economy (Task 3), and 0 for any other world. It is canonical, so checkpoints and the hash carry it;
+    - blobs spawn idle at their home's door, as `spawnFromLedger` places them, where `populate` starts three in four walking.
+  - **The worker:** `worker.ts` binds `makeWorld` to `createTown(seed, tier, parseMap(map), agents ?? TIER_AGENTS[tier])`.
+    - The first screen's crowd is as ruled: 3,965, 5,287 or 7,931 by tier, or a whole tier under `?tier=`, whose firms then fill the tier's firm rows exactly (1,000, 2,500 and 10,000).
+    - `inspected` gains `employer` and `wage` (Worker messages, above). The loop reads them from `world.blob.employer` and `world.firms.wage`.
+  - **Hashes:** Highcourt's pins moved (The world step, above). `goldens.json` did not: `42/phone` stays `746a06a3` and the economy `6a652730`.
+  - **Speed:** a cold `createTown` takes 18–21 ms for 3,965 people and 23 ms for 7,931, where `createWorld` takes 6–9 ms and 11 ms. The worker's start gains about 11 ms, not the brief's 1 ms (measured here, Node 24.18.0 on Windows, fresh process, load not recorded).
