@@ -297,7 +297,7 @@ Tasks 24–28 don't touch Task 23's files, so they may run while the senior buil
   - never `git add -A`, `git stash`, `git push` or `--no-verify`.
 - **Commits:** `git -c user.name=rddolor27 -c user.email=80044625+rddolor27@users.noreply.github.com commit`, each body starting `Task: M8.1 World generator, part 2: the TypeScript port`. Code and docs never share a commit.
 - **Gates before every commit:** `pnpm test && pnpm lint && pnpm typecheck && pnpm depcruise && pnpm names`. From Task 12, also `node packages/worldgen/scripts/engines.ts`. A Python task also runs `python tools/worldgen/test_worldgen.py` and `vectors.py`, `mapfile.py` and `export_map.py` with `--check`.
-- **The sim never moves:** `node tools/cli/src/main.ts --seed 42 --tier phone --ticks 1000` prints `hash=b3b2c251`.
+- **The sim never moves:** `node tools/cli/src/main.ts --seed 42 --tier phone --ticks 1000` prints the hash on `main` when the task starts. That was `b3b2c251` when this plan was written, and `746a06a3` at f3892e5 on 10 October 2026 (measured here).
 - **Nothing reaches the first load.** The town has 234 B left under its 17 kB stand-in. No task here may add a byte to the entry, sim worker or renderer chunks.
 - **A test that fails in another agent's files** may be their work in progress. Rerun once, and report it if it persists.
 
@@ -2666,6 +2666,13 @@ with `import { landmarks } from '../../src/features/landmarks.ts';`.
 - **Record it:** the Started, Done and Actual cells in `milestone.md`, then the next checkpoint, committed alone as `docs(plan): add checkpoint NNNN`.
 
 ### Task 36: The large world by default (senior; owner, 10 October 2026)
+
+**Done in part.** The map has opened the large world since M8.3's Task 10 (d5b6642, 9 October 2026), and `standard` stays in the tests. Still open:
+- the counts per tier on 20 large worlds;
+- the generation time in the map worker;
+- the Region view's 2 ms bar on record. `apps/web/test/browser/perf.spec.ts` already times it on the large world;
+- the check of Fit, the labels, the legend and the Go to list;
+- a fallback to `standard` in the app, such as an optional `?world=standard`.
 
 The owner asked for a bigger world map. The map now opens the `large` size: 192 × 128 cells, four times the standard world. The generator and its goldens already cover that size. Later on 10 October the owner made this the first task of the round: the bigger map, more cities, towns and villages, and more blobs in proportion come before everything else. Run it before Task 35 closes M8.1.
 
