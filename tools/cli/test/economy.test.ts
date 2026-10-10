@@ -3,14 +3,11 @@ import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { STAT_NAMES } from '@nomos/sim-core';
 import { describe, expect, it } from 'vitest';
 
 const CLI = fileURLToPath(new URL('../src/main.ts', import.meta.url));
-const HEADER = [
-  'day', 'unemployed', 'vacancies', 'price_mean', 'wage_mean', 'household_cash', 'firm_cash', 'sales_units',
-  'sales_cents', 'price_changes', 'price_change_ppm', 'hires', 'switches', 'firings', 'wage_bill', 'profits_paid',
-  'exits', 'issued', 'velocity',
-];
+const HEADER = ['day', ...STAT_NAMES, 'velocity'];
 const OPENING_MONEY_CENTS = 310_000_000;
 
 function economy(...args: string[]): string {

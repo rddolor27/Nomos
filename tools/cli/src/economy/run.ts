@@ -6,23 +6,12 @@ import {
   DAYS_PER_YEAR,
   LENGNICK,
   STATS,
-  STAT_EXITS,
-  STAT_FIRINGS,
   STAT_FIRM_CASH,
-  STAT_HIRES,
   STAT_HOUSEHOLD_CASH,
-  STAT_ISSUED,
-  STAT_PRICE_CHANGES,
-  STAT_PRICE_CHANGE_PPM,
+  STAT_NAMES,
   STAT_PRICE_MEAN,
-  STAT_PROFITS_PAID,
   STAT_SALES_CENTS,
-  STAT_SALES_UNITS,
-  STAT_SWITCHES,
   STAT_UNEMPLOYED,
-  STAT_VACANCIES,
-  STAT_WAGE_BILL,
-  STAT_WAGE_MEAN,
   createWorld,
   economyDay,
   mser5,
@@ -35,26 +24,6 @@ const MAX_INT32 = 0x7fff_ffff;
 const MAX_SEEDS = 1_000;
 // Ruling 9: the burn-in is the larger MSER-5 truncation, with half again as a margin.
 const BURN_IN_MARGIN = 1.5;
-
-const STAT_COLUMNS: readonly (readonly [string, number])[] = [
-  ['unemployed', STAT_UNEMPLOYED],
-  ['vacancies', STAT_VACANCIES],
-  ['price_mean', STAT_PRICE_MEAN],
-  ['wage_mean', STAT_WAGE_MEAN],
-  ['household_cash', STAT_HOUSEHOLD_CASH],
-  ['firm_cash', STAT_FIRM_CASH],
-  ['sales_units', STAT_SALES_UNITS],
-  ['sales_cents', STAT_SALES_CENTS],
-  ['price_changes', STAT_PRICE_CHANGES],
-  ['price_change_ppm', STAT_PRICE_CHANGE_PPM],
-  ['hires', STAT_HIRES],
-  ['switches', STAT_SWITCHES],
-  ['firings', STAT_FIRINGS],
-  ['wage_bill', STAT_WAGE_BILL],
-  ['profits_paid', STAT_PROFITS_PAID],
-  ['exits', STAT_EXITS],
-  ['issued', STAT_ISSUED],
-];
 
 interface EconomyOptions {
   readonly seed: number;
@@ -126,9 +95,10 @@ function cell(value: number): string {
 }
 
 function toCsv(rows: Float64Array, days: number): string {
-  const lines = [['day', ...STAT_COLUMNS.map(([name]) => name), 'velocity'].join(',')];
+  const lines = [['day', ...STAT_NAMES, 'velocity'].join(',')];
   for (let day = 0; day < days; day++) {
-    const cells = [String(day), ...STAT_COLUMNS.map(([, slot]) => cell(rows[day * STATS + slot]))];
+    const cells = [String(day)];
+    for (let slot = 0; slot < STATS; slot++) cells.push(cell(rows[day * STATS + slot]));
     cells.push(velocityPerYear(rows, day).toFixed(4));
     lines.push(cells.join(','));
   }
