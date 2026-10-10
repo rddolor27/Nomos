@@ -147,15 +147,23 @@ describe('the economy parameters', () => {
   });
 
   it("keep a slow searcher's visits from 1 up to everyone else's, and the markup clamp a switch", () => {
-    accepts({ slowJobSearches: 1 });
-    accepts({ slowJobSearches: 5 });
-    refuses({ slowJobSearches: 0 }, 'slowJobSearches');
-    refuses({ slowJobSearches: 6 }, 'slowJobSearches');
-    accepts({ jobSearches: 3, slowJobSearches: 3 });
-    refuses({ jobSearches: 3 }, 'slowJobSearches');
+    const some = { slowSearcherPpm: 100_000 };
+    accepts({ ...some, slowJobSearches: 1 });
+    accepts({ ...some, slowJobSearches: 5 });
+    refuses({ ...some, slowJobSearches: 0 }, 'slowJobSearches');
+    refuses({ ...some, slowJobSearches: 6 }, 'slowJobSearches');
+    accepts({ ...some, jobSearches: 3, slowJobSearches: 3 });
+    refuses({ ...some, jobSearches: 3 }, 'slowJobSearches');
     accepts({ markupClamp: 1 });
     refuses({ markupClamp: 2 }, 'markupClamp');
     refuses({ markupClamp: -1 }, 'markupClamp');
+  });
+
+  it("leave a slow searcher's visits unchecked where nobody is slow, so a grid can lower jobSearches alone", () => {
+    accepts({ jobSearches: 3 });
+    accepts({ slowJobSearches: 6 });
+    // A single slow searcher in a million turns the check on.
+    refuses({ slowSearcherPpm: 1, jobSearches: 3 }, 'slowJobSearches');
   });
 
   it('refuse a fractional or negative field, since cents and counts are whole', () => {

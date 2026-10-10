@@ -94,16 +94,24 @@ describe('a grid', () => {
     ['a warm-up that fills the run', { ...BASE, warmUpDays: 63 }, /grid\.warmUpDays/],
     ['an unknown param', { ...BASE, params: { jobSearchez: 5 } }, /grid\.params\.jobSearchez/],
     ['a param the size sets', { ...BASE, params: { households: 500 } }, /grid\.params\.households/],
-    ['a param that fails checkParams', { ...BASE, params: { jobSearches: 3 } }, /slowJobSearches must be 1 to 3/],
+    ['a param that fails checkParams', { ...BASE, params: { jobSearches: 3, slowSearcherPpm: 100_000 } }, /slowJobSearches must be 1 to 3/],
     ['a lhs with a spawn start', { ...BASE, start: 'spawn', lhs: { points: 4, seed: 1, ranges: { bufferPpm: [0, 9] } } }, /grid\.lhs/],
     ['a lhs knob that is no param', { ...BASE, lhs: { points: 4, seed: 1, ranges: { nope: [0, 9] } } }, /grid\.lhs\.ranges\.nope/],
     ['a lhs range read backwards', { ...BASE, lhs: { points: 4, seed: 1, ranges: { bufferPpm: [9, 0] } } }, /grid\.lhs\.ranges\.bufferPpm/],
     ['a lhs knob that params also sets', { ...BASE, params: { bufferPpm: 5 }, lhs: { points: 4, seed: 1, ranges: { bufferPpm: [0, 9] } } }, /grid\.lhs\.ranges\.bufferPpm/],
-    ['a lhs point that fails checkParams', { ...BASE, lhs: { points: 10, seed: 1, ranges: { slowJobSearches: [1, 9] } } }, /slowJobSearches must be 1 to 5/],
+    [
+      'a lhs point that fails checkParams',
+      { ...BASE, params: { slowSearcherPpm: 100_000 }, lhs: { points: 10, seed: 1, ranges: { slowJobSearches: [1, 9] } } },
+      /slowJobSearches must be 1 to 5/,
+    ],
   ];
 
   it.each(BAD)('refuses %s, naming the field', (_what, grid, message) => {
     expect(() => parseGrid(grid)).toThrow(message);
+  });
+
+  it('lets a grid lower jobSearches under a preset with no slow searchers', () => {
+    expect(() => parseGrid({ ...BASE, params: { jobSearches: 3 } })).not.toThrow();
   });
 });
 

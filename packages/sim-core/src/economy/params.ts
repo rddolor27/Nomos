@@ -99,7 +99,8 @@ export function checkParams(params: EconomyParams, tier: Tier): void {
   requireBetween('fiatIssuePpm', params.fiatIssuePpm, 0, MAX_FIAT_ISSUE_PPM);
   requireBetween('wageCutMonths', params.wageCutMonths, 0, MAX_MONTH_COUNT);
   requireBetween('idleMonthsToExit', params.idleMonthsToExit, 0, MAX_MONTH_COUNT);
-  requireBetween('slowJobSearches', params.slowJobSearches, 1, params.jobSearches);
+  // Nobody reads slowJobSearches at a share of 0, so a grid may lower jobSearches under LENGNICK's unused 5.
+  if (params.slowSearcherPpm > 0) requireBetween('slowJobSearches', params.slowJobSearches, 1, params.jobSearches);
   requireBetween('markupClamp', params.markupClamp, 0, 1);
   checkOpeningPrice(params);
 }
