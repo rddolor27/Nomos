@@ -302,3 +302,19 @@ If the session ended: check `git log` for those Task lines, and `git status` for
   - a minor re-test of the flagged items;
   - the economy sections of `interfaces.md` (the coordinator's docs commit);
   - the docs that still show `b3b2c251`.
+- 10 Oct: **the round's one test pass and its fixes are done.**
+  - **QA:** the gates are green. QA updated 15 outdated specs in 8 test-only commits (2a7c791 to 8fbbf45). The determinism review is clean, and money is exact.
+  - **Fixed after QA:**
+    - the shared `app-*.js` chunk is gated (4c42d45's parent); the first load is 17.47 kB of the 18 kB stand-in;
+    - the Town skin cap is 9,000 in, 10,350 to stay, since 176×112 Highcourt starts 7,931 on desktop;
+    - profit sharing scales its weights for big pools (585d695);
+    - A11 clears a switched link's stocked-out bit (312b9f5);
+    - the economy has a cross-engine vector, `b4bd023b`, 63 days with fiat (827fe54).
+  - **Gaps left:**
+    - `names-only-in-the-inspector` isn't `reachable`;
+    - the Town skin and the town view fetch the atlas separately;
+    - `fallback.spec` centres on the old 48×28 map;
+    - M2.1's plan, lines 220–221 and 258, is stale;
+    - docs still show `b3b2c251`;
+    - M2.3's calibration flags, as above.
+- **Next:** M2.2, Spawn and fold. Expand its brief into a short step plan with `sim-architect`, then build it with up to 5 agents, testing last.
