@@ -132,6 +132,9 @@ test('keeps Play/Pause disabled when the start fails', async ({ page }) => {
 
 test('zooms and pans', async ({ page }) => {
   const view = page.locator('#view');
+  // Paused from the start, as under reduced motion, so the town redraws only when the camera moves. A running town
+  // redraws every frame, which SwiftShader's software GL makes slow enough to hold up each key and pointer event here.
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   await open(page);
   await expect(view).toHaveAttribute('aria-label', /arrow keys pan/);
   await expect(page.locator('#hud-zoom')).toHaveText('Zoom 1×');
