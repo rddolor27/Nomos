@@ -5,8 +5,9 @@ import { bandMiss, inBand, judgeTarget, median } from './judge.ts';
 import { SUMMARY_COLUMNS, summarize, type SummaryColumns, type SummaryMeta, type TargetValues } from './summarize.ts';
 import { TARGETS, type BandTarget, type Target, type TargetId } from './targets.ts';
 
-// summarize reads the columns that flow-log schema 1 names, so a folder of another schema is refused.
-const SCHEMA = 1;
+// summarize reads the columns that flow-log schema 2 names, so a folder of another schema is refused. Schema 2 keeps the
+// names it reads and counts goods alone in its unit columns (M2.4).
+const SCHEMA = 2;
 const BYTES_PER_VALUE = 8;
 const BEST_POINTS = 10;
 // A cell's folder: point, size, police index, shock index and seed (the design runner's naming).

@@ -1,3 +1,4 @@
+import { BREAD, FUEL, GENERIC, GOOD_COUNT, GOOD_NAMES, isFood } from '../goods/goods.ts';
 import { firmAccount, walletAccount } from '../money/ledger.ts';
 import type { World } from '../world/world.ts';
 
@@ -5,7 +6,10 @@ import type { World } from '../world/world.ts';
 // sets from state at the day's end, then every flow as that day's sum, which clearFlows zeroes each morning and each
 // system adds to. STAT_NAMES names the slots in order. Any change to a column, its order or what it holds bumps
 // FLOW_LOG_SCHEMA, because runs written under an older number are read by name.
-export const FLOW_LOG_SCHEMA = 1;
+// Schema 2 (M2.4) adds a column per good, GOOD_COUNT slots at the slot's base + the good. In a goods world, the unit
+// columns stock, sales_units, produced and write_off and the price_mean level count the goods firms alone, every good but
+// the foods, so portions never mix with units; sales_cents stays all revenue.
+export const FLOW_LOG_SCHEMA = 2;
 
 export const STAT_UNEMPLOYED = 0;
 export const STAT_VACANCIES = 1;
@@ -17,45 +21,82 @@ export const STAT_FIRM_CASH = 5;
 export const STAT_STOCK = 6;
 export const STAT_SIZE_SQUARES = 7;
 export const STAT_SIZE_CUBES = 8;
+// Per good: units, or portions of food, in stock at the day's end, and the mean posted price in cents, 0 where no firm
+// sells the good.
+export const STAT_GOOD_STOCK = 9;
+export const STAT_GOOD_PRICE = 17;
 
 // The flows follow, each group with the days a system writes it. Every day:
-export const STAT_SALES_UNITS = 9;
-export const STAT_SALES_CENTS = 10;
+export const STAT_SALES_UNITS = 25;
+export const STAT_SALES_CENTS = 26;
 // A month's first day. STAT_PRICE_CHANGE_PPM adds up the sizes of the changes.
-export const STAT_PRICE_CHANGES = 11;
-export const STAT_PRICE_CHANGE_PPM = 12;
-export const STAT_HIRES = 13;
-export const STAT_SWITCHES = 14;
+export const STAT_PRICE_CHANGES = 27;
+export const STAT_PRICE_CHANGE_PPM = 28;
+export const STAT_HIRES = 29;
+export const STAT_SWITCHES = 30;
 // A month's last day, and STAT_FIRINGS also the day of a layoff shock.
-export const STAT_FIRINGS = 15;
-export const STAT_WAGE_BILL = 16;
-export const STAT_PROFITS_PAID = 17;
-export const STAT_EXITS = 18;
-export const STAT_ISSUED = 19;
+export const STAT_FIRINGS = 31;
+export const STAT_WAGE_BILL = 32;
+export const STAT_PROFITS_PAID = 33;
+export const STAT_EXITS = 34;
+export const STAT_ISSUED = 35;
 // Every day: units made.
-export const STAT_PRODUCED = 20;
+export const STAT_PRODUCED = 36;
 // A month's last day: units of stock that exits write off.
-export const STAT_WRITE_OFF = 21;
+export const STAT_WRITE_OFF = 37;
 // A month's first day: visits by the unemployed, and firms priced above the markup ceiling once they have repriced.
-export const STAT_JOB_VISITS = 22;
-export const STAT_ABOVE_MARKUP = 23;
+export const STAT_JOB_VISITS = 38;
+export const STAT_ABOVE_MARKUP = 39;
 // A month's last day: months out so far, summed over the unemployed, and how many are out six months or more.
-export const STAT_SPELL_MONTHS = 24;
-export const STAT_LONG_SPELLS = 25;
+export const STAT_SPELL_MONTHS = 40;
+export const STAT_LONG_SPELLS = 41;
 // A year's last day: people at the same firm as a year before, and those whose firm's wage is lower.
-export const STAT_STAYERS = 26;
-export const STAT_STAYER_CUTS = 27;
+export const STAT_STAYERS = 42;
+export const STAT_STAYER_CUTS = 43;
 // Nothing writes it until M5's treasury.
-export const STAT_TAXES = 28;
+export const STAT_TAXES = 44;
+// Per good, every day: units or portions sold and the cents they took, made, and spoiled. A food firm that exits spoils
+// its whole shelf. Made = sold + spoiled + the change in stock, for each food.
+export const STAT_SOLD = 45;
+export const STAT_SOLD_CENTS = 53;
+export const STAT_MADE = 61;
+export const STAT_SPOILED = 69;
+// Every day, in portions: eaten, and wanted but never bought, for lack of cash or of a shop with stock.
+export const STAT_EATEN = 77;
+export const STAT_UNMET = 78;
 
-export const STATS = 29;
+export const STATS = 79;
 
-export const STAT_NAMES: readonly string[] = [
+const LEVEL_NAMES: readonly string[] = [
   'unemployed', 'vacancies', 'price_mean', 'wage_mean', 'household_cash', 'firm_cash', 'stock', 'size_squares', 'size_cubes',
+];
+const FLOW_NAMES: readonly string[] = [
   'sales_units', 'sales_cents', 'price_changes', 'price_change_ppm', 'hires', 'switches', 'firings', 'wage_bill',
   'profits_paid', 'exits', 'issued', 'produced', 'write_off', 'job_visits', 'above_markup', 'spell_months', 'long_spells',
   'stayers', 'stayer_cuts', 'taxes',
 ];
+
+// A column per good is named for the good: stock_bread, sold_cents_fish.
+function createGoodColumns(column: string): string[] {
+  return GOOD_NAMES.map((name) => `${column}_${name.toLowerCase()}`);
+}
+
+function createStatNames(): string[] {
+  return [
+    ...LEVEL_NAMES,
+    ...createGoodColumns('stock'),
+    ...createGoodColumns('price'),
+    ...FLOW_NAMES,
+    ...createGoodColumns('sold'),
+    ...createGoodColumns('sold_cents'),
+    ...createGoodColumns('made'),
+    ...createGoodColumns('spoiled'),
+    'eaten',
+    'unmet',
+  ];
+}
+
+export const STAT_NAMES: readonly string[] = createStatNames();
 
 const FIRST_FLOW = STAT_SALES_UNITS;
 // spellMonths is a byte, and a spell that long is long whatever its exact length.
@@ -87,33 +128,59 @@ function recordHouseholds(world: World): void {
 }
 
 function recordFirms(world: World): void {
-  const { firms, cash } = world;
+  const { firms, goods, cash } = world;
+  const stats = world.economyScratch.stats;
   const count = firms.count[0];
   let vacancies = 0;
-  let prices = 0;
   let wages = 0;
   let cents = 0;
-  let stock = 0;
   let squares = 0;
   let cubes = 0;
+  for (let good = GENERIC; good < GOOD_COUNT; good++) {
+    stats[STAT_GOOD_STOCK + good] = 0;
+    stats[STAT_GOOD_PRICE + good] = 0;
+  }
   for (let f = 0; f < count; f++) {
     const workers = firms.employees[f];
+    const good = goods.good[f];
     vacancies += firms.vacancy[f];
-    prices += firms.price[f];
     wages += firms.wage[f];
     cents += cash.balance[firmAccount(cash, f)];
-    stock += firms.stock[f];
+    stats[STAT_GOOD_STOCK + good] += firms.stock[f];
+    stats[STAT_GOOD_PRICE + good] += firms.price[f];
     squares += workers * workers;
     cubes += workers * workers * workers;
   }
-  const stats = world.economyScratch.stats;
   stats[STAT_VACANCIES] = vacancies;
-  stats[STAT_PRICE_MEAN] = prices / count;
   stats[STAT_WAGE_MEAN] = wages / count;
   stats[STAT_FIRM_CASH] = cents;
-  stats[STAT_STOCK] = stock;
   stats[STAT_SIZE_SQUARES] = squares;
   stats[STAT_SIZE_CUBES] = cubes;
+  settleGoodLevels(world);
+}
+
+// The price slots hold sums until here. Each becomes the mean over the good's rows, and price_mean and stock follow over
+// the goods firms alone. The generic good holds every row a goods world did not give another good, so a world with
+// goods off has all its firms in it.
+function settleGoodLevels(world: World): void {
+  const { firms, goods } = world;
+  const stats = world.economyScratch.stats;
+  let genericRows = firms.count[0];
+  for (let good = BREAD; good <= FUEL; good++) genericRows -= goods.rowCount[good];
+  let goodsRows = 0;
+  let goodsPrices = 0;
+  let goodsStock = 0;
+  for (let good = GENERIC; good < GOOD_COUNT; good++) {
+    const rows = good === GENERIC ? genericRows : goods.rowCount[good];
+    const prices = stats[STAT_GOOD_PRICE + good];
+    stats[STAT_GOOD_PRICE + good] = rows > 0 ? prices / rows : 0;
+    if (isFood(good)) continue;
+    goodsRows += rows;
+    goodsPrices += prices;
+    goodsStock += stats[STAT_GOOD_STOCK + good];
+  }
+  stats[STAT_PRICE_MEAN] = goodsPrices / goodsRows;
+  stats[STAT_STOCK] = goodsStock;
 }
 
 // After a month's last day. spellMonths counts the month ends a person has spent out of work in a row, so the whole months

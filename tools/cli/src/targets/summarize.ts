@@ -2,7 +2,7 @@ import { DAYS_PER_MONTH } from '@nomos/sim-core';
 import { mean, sampleSd } from './judge.ts';
 import type { TargetId } from './targets.ts';
 
-// The flow-log columns (schema 1) that the targets read.
+// The flow-log columns (schema 2) that the targets read.
 export const SUMMARY_COLUMNS = [
   'unemployed', 'vacancies', 'price_mean', 'wage_mean', 'stock', 'size_squares', 'size_cubes', 'sales_units',
   'sales_cents', 'price_changes', 'price_change_ppm', 'hires', 'switches', 'firings', 'wage_bill', 'exits', 'produced',

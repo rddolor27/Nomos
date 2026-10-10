@@ -99,7 +99,7 @@ export function runEconomySystem(
       shopDay(world, params, day);
       break;
     case PRODUCE:
-      produce(world, params);
+      produce(world, params, day);
       break;
     case PAY_WAGES:
       payWages(world);

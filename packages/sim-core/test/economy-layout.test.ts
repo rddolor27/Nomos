@@ -229,6 +229,18 @@ describe('the city preset', () => {
 });
 
 describe('the economy statistics', () => {
+  // A column per good takes GOOD_COUNT slots from its base, named for the base and the good.
+  const PER_GOOD: Record<string, string> = {
+    STAT_GOOD_STOCK: 'stock',
+    STAT_GOOD_PRICE: 'price',
+    STAT_SOLD: 'sold',
+    STAT_SOLD_CENTS: 'sold_cents',
+    STAT_MADE: 'made',
+    STAT_SPOILED: 'spoiled',
+  };
+  const GOOD_KEYS = ['generic', 'bread', 'vegetables', 'fish', 'milk', 'cloth', 'tools', 'fuel'];
+  const perGood = (column: string): string[] => GOOD_KEYS.map((key) => `${column}_${key}`);
+
   const slotConstants = (): [string, number][] => {
     const found: [string, number][] = [];
     for (const [name, value] of Object.entries(stats)) {
@@ -238,29 +250,41 @@ describe('the economy statistics', () => {
   };
 
   it('number their slots from 0 without a gap or a repeat', () => {
-    const slots = slotConstants().map(([, slot]) => slot);
+    const slots = slotConstants().flatMap(([name, slot]) =>
+      name in PER_GOOD ? GOOD_KEYS.map((_, good) => slot + good) : [slot],
+    );
     expect(slots.sort((a, b) => a - b)).toEqual(Array.from({ length: stats.STATS }, (_, slot) => slot));
-    expect(stats.STATS).toBe(29);
+    expect(stats.STATS).toBe(79);
   });
 
-  it('name every slot in flow-log schema 1, the levels first and then the flows', () => {
-    expect(stats.FLOW_LOG_SCHEMA).toBe(1);
+  it('name every slot in flow-log schema 2, the levels first and then the flows', () => {
+    expect(stats.FLOW_LOG_SCHEMA).toBe(2);
     expect(stats.STAT_NAMES).toEqual([
       'unemployed', 'vacancies', 'price_mean', 'wage_mean', 'household_cash', 'firm_cash', 'stock', 'size_squares',
-      'size_cubes', 'sales_units', 'sales_cents', 'price_changes', 'price_change_ppm', 'hires', 'switches', 'firings',
+      'size_cubes', ...perGood('stock'), ...perGood('price'),
+      'sales_units', 'sales_cents', 'price_changes', 'price_change_ppm', 'hires', 'switches', 'firings',
       'wage_bill', 'profits_paid', 'exits', 'issued', 'produced', 'write_off', 'job_visits', 'above_markup',
       'spell_months', 'long_spells', 'stayers', 'stayer_cuts', 'taxes',
+      ...perGood('sold'), ...perGood('sold_cents'), ...perGood('made'), ...perGood('spoiled'), 'eaten', 'unmet',
     ]);
     for (const [constant, slot] of slotConstants()) {
-      expect(stats.STAT_NAMES[slot], constant).toBe(constant.slice('STAT_'.length).toLowerCase());
+      if (constant in PER_GOOD) {
+        expect(stats.STAT_NAMES.slice(slot, slot + GOOD_KEYS.length), constant).toEqual(perGood(PER_GOOD[constant]));
+      } else {
+        expect(stats.STAT_NAMES[slot], constant).toBe(constant.slice('STAT_'.length).toLowerCase());
+      }
     }
+    expect(stats.STAT_NAMES[stats.STAT_SOLD_CENTS + 3]).toBe('sold_cents_fish');
   });
 
-  it('clear the flows each morning and leave the levels as the last day set them', () => {
+  it('clear the flows each morning and leave the levels as the last day set them, the per-good levels included', () => {
     const row = new Float64Array(stats.STATS).fill(7);
     stats.clearFlows(row);
     expect(Array.from(row.subarray(0, stats.STAT_SALES_UNITS))).toEqual(new Array(stats.STAT_SALES_UNITS).fill(7));
     expect(Array.from(row.subarray(stats.STAT_SALES_UNITS))).toEqual(new Array(stats.STATS - stats.STAT_SALES_UNITS).fill(0));
+    expect(stats.STAT_GOOD_PRICE + GOOD_KEYS.length).toBe(stats.STAT_SALES_UNITS);
+    expect([row[stats.STAT_GOOD_STOCK], row[stats.STAT_GOOD_PRICE + 7]]).toEqual([7, 7]);
+    expect([row[stats.STAT_SOLD], row[stats.STAT_UNMET]]).toEqual([0, 0]);
   });
 });
 

@@ -343,7 +343,7 @@ interface CellSpec {
 function writeRun(cells: readonly CellSpec[]): string {
   const root = mkdtempSync(join(tmpdir(), 'nomos-targets-'));
   folders.push(root);
-  for (const { point, seed, plan, params = {}, schema = 1 } of cells) {
+  for (const { point, seed, plan, params = {}, schema = 2 } of cells) {
     const folder = join(root, `p${String(point).padStart(3, '0')}-n${PEOPLE}-x0-k0-s${seed}`);
     mkdirSync(folder);
     const meta = { schema, ...META, params: { ...META.params, ...params } };
@@ -463,7 +463,7 @@ describe('the targets command', () => {
   it('refuses a missing folder argument, an empty folder and a schema it does not read', () => {
     expect(() => runTargets([])).toThrow('targets takes one run folder');
     expect(() => printed(writeRun([]))).toThrow('no design cells');
-    expect(() => printed(writeRun([{ point: 0, seed: 1, plan: BASE, schema: 2 }]))).toThrow('schema 2');
+    expect(() => printed(writeRun([{ point: 0, seed: 1, plan: BASE, schema: 1 }]))).toThrow('schema 1');
   });
 
   it('refuses a column file that holds fewer rows than the run has days', () => {

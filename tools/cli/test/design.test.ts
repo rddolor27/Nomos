@@ -32,7 +32,7 @@ import { SUMMARY_COLUMNS } from '../src/targets/summarize.ts';
 
 const CLI = fileURLToPath(new URL('../src/main.ts', import.meta.url));
 const SMOKE = fileURLToPath(new URL('../grids/smoke.json', import.meta.url));
-// The flow-log schema's 29 columns, day, district and meta.json.
+// The flow-log schema's columns, day, district and meta.json.
 const FILES_PER_CELL = STAT_NAMES.length + 3;
 
 const BASE = {

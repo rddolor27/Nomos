@@ -47,6 +47,7 @@ export * from './economy/mser5.ts';
 export * from './households/store.ts';
 export * from './goods/goods.ts';
 export * from './goods/store.ts';
+export * from './goods/food.ts';
 export * from './spawn/homes.ts';
 export * from './spawn/record.ts';
 export * from './spawn/fold.ts';

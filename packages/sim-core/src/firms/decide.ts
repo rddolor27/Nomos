@@ -1,5 +1,6 @@
 import type { EconomyParams } from '../economy/params.ts';
 import { STAT_ABOVE_MARKUP, STAT_PRICE_CHANGES, STAT_PRICE_CHANGE_PPM } from '../economy/stats.ts';
+import { isFood, outputPerWorkerDay } from '../goods/goods.ts';
 import { PPM, mulPpm, mulPpmUp } from '../money/ppm.ts';
 import { drawBelow3 } from '../random/draw.ts';
 import { FIRM_DRAW } from '../random/streams.ts';
@@ -12,34 +13,65 @@ const PRICE_CHANCE = 0;
 const PRICE_STEP = 1;
 
 export function decideFirms(world: World, params: EconomyParams, month: number): void {
-  const firms = world.firms;
-  const count = firms.count[0];
+  const count = world.firms.count[0];
   for (let f = 0; f < count; f++) {
-    const demand = Math.max(firms.lastDemand[f], params.demandFloor);
-    const low = mulPpmUp(demand, params.stockLowPpm);
-    const high = demand + mulPpmUp(demand, params.stockHighPpm);
-    firms.vacancy[f] = firms.stock[f] < low ? 1 : 0;
-    firms.notice[f] = firms.stock[f] > high && firms.employees[f] > 0 ? 1 : 0;
-    repriceFirm(world, params, month, f, low, high);
+    if (isFood(world.goods.good[f])) decideFood(world, params, month, f);
+    else decideGoods(world, params, month, f);
   }
+}
+
+// Lengnick's band over a month's demand: short under its bottom opens a vacancy, long over its top gives notice.
+function decideGoods(world: World, params: EconomyParams, month: number, f: number): void {
+  const firms = world.firms;
+  const demand = Math.max(firms.lastDemand[f], params.demandFloor);
+  const low = mulPpmUp(demand, params.stockLowPpm);
+  const high = demand + mulPpmUp(demand, params.stockHighPpm);
+  const short = firms.stock[f] < low;
+  const long = firms.stock[f] > high;
+  firms.vacancy[f] = short ? 1 : 0;
+  firms.notice[f] = long && firms.employees[f] > 0 ? 1 : 0;
+  repriceFirm(world, params, month, f, short, long, DAYS_PER_MONTH * params.unitsPerWorkerDay);
+}
+
+// M2.4 Ruling 2. Food spoils, so stock never piles up for the band to see. A food firm is short when it holds under a day's
+// demand, and long once it has wasted a worker-month of its output since it last decided; the waste then starts again from
+// 0. Short and long cannot both hold, as under the band, so a firm never both hires and gives notice.
+function decideFood(world: World, params: EconomyParams, month: number, f: number): void {
+  const { firms, goods } = world;
+  const workerMonth = DAYS_PER_MONTH * outputPerWorkerDay(goods.good[f], params.unitsPerWorkerDay);
+  const demand = Math.max(firms.lastDemand[f], params.demandFloor);
+  const short = firms.stock[f] < ceilDiv(demand, DAYS_PER_MONTH);
+  const long = !short && goods.wasted[f] >= workerMonth;
+  firms.vacancy[f] = short ? 1 : 0;
+  firms.notice[f] = long && firms.employees[f] > 0 ? 1 : 0;
+  goods.wasted[f] = 0;
+  repriceFirm(world, params, month, f, short, long, workerMonth);
 }
 
 // Short of stock under the band's top a firm may raise its price, and long on stock over the band's bottom it may cut it.
 // The cost floor then holds whatever the stock did, since a wage rise can lift it past a price that sat still.
-function repriceFirm(world: World, params: EconomyParams, month: number, f: number, low: number, high: number): void {
+// unitsPerMonth is a worker's month of output in the firm's own unit, a unit or a portion.
+function repriceFirm(
+  world: World,
+  params: EconomyParams,
+  month: number,
+  f: number,
+  short: boolean,
+  long: boolean,
+  unitsPerMonth: number,
+): void {
   const firms = world.firms;
   const price = firms.price[f];
   const wage = firms.wage[f];
-  const unitsPerMonth = DAYS_PER_MONTH * params.unitsPerWorkerDay;
   const monthOutputCents = unitsPerMonth * price;
   const ceilingCents = wage + mulPpm(wage, params.markupHighPpm);
   const stats = world.economyScratch.stats;
   let eta = 0;
   let next = price;
-  if (firms.stock[f] < low && monthOutputCents < ceilingCents) {
+  if (short && monthOutputCents < ceilingCents) {
     eta = priceStep(world.seed, params, month, f);
     next = risenPrice(params, price, eta, ceilingCents, unitsPerMonth);
-  } else if (firms.stock[f] > high && monthOutputCents > wage + mulPpm(wage, params.markupLowPpm)) {
+  } else if (long && monthOutputCents > wage + mulPpm(wage, params.markupLowPpm)) {
     eta = priceStep(world.seed, params, month, f);
     next = cutPrice(params, price, eta, wage, unitsPerMonth);
   }

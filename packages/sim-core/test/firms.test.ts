@@ -352,10 +352,10 @@ describe('production', () => {
       { stock: 0, employees: 100 },
     ]);
     world.firms.employees[4] = 9;
-    produce(world, LENGNICK);
+    produce(world, LENGNICK, 0);
     expect(Array.from(world.firms.stock.subarray(0, 5))).toEqual([5, 3, 31, 300, 0]);
     expect(world.economyScratch.stats[STAT_PRODUCED]).toBe(3 + 21 + 300);
-    produce(world, { ...LENGNICK, unitsPerWorkerDay: 5 });
+    produce(world, { ...LENGNICK, unitsPerWorkerDay: 5 }, 1);
     expect(Array.from(world.firms.stock.subarray(0, 4))).toEqual([5, 8, 66, 800]);
     expect(world.economyScratch.stats[STAT_PRODUCED]).toBe(3 + 21 + 300 + 5 + 35 + 500);
   });
