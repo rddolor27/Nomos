@@ -64,8 +64,13 @@ The owner let the coordinator settle M2.3's open questions. These rulings are th
     - BAM's bands that apply (R2 KQ5): unemployment's mean and s.d., the Phillips, Okun and Beveridge correlations, and firm-size skewness. They are computed on monthly series, though BAM's own period may differ (inference).
     - Not applied: BAM's inflation, since closed money holds prices flat; its real wage of 0.34 of productivity, where Lengnick's labour share is 1 ÷ markup, about 0.7; and its 13% vacancy rate, since a Lengnick firm posts at most one vacancy a month.
 12. **Calibration filters patterns** (R2 validation, part 3).
-    - **Tier 1** is the filter: the exit check's three named targets, BAM's unemployment band, the city's two bands and R1's price band.
+    - **Tier 1** is the filter: the exit check's price-change and job-finding targets, BAM's unemployment band, the city's two bands and R1's price band.
     - **Tier 2** ranks the points that pass. A miss is a documented gap.
+    - **The pay-cut target is tier 2, a documented gap** (coordinator, 10 October 2026). It was the exit check's third named target.
+      - Its 2% of stayers comes from the US, where stayers' wages grow about 3.6% a year (R2 KQ1, snippet only).
+      - Under closed money the wage level can't drift, so cuts must balance raises. The sweep found cuts in over 10% of stayer-years wherever unemployment was in band (measured here).
+      - It was decided from the target's structure, after the sweep stopped and before any confirmation seed ran.
+      - Revisit it when the game has inflation, from M5's treasury.
     - **Tier 3** is held back for corroboration and never tuned on: BAM's s.d., correlations and size skew, and Mark-0. It still counts toward the exit check, so a miss there is a documented gap, never a reason to re-tune.
     - **Seeds:** the sweep runs seeds 1–5 under every point, the refine runs 1–20, and the one confirmation runs 1001–1050, never seen before. A re-tune confirms on 2001–2050.
     - The confirmation also removes the winner's curse of picking the best of 300 points.
@@ -154,7 +159,6 @@ The owner let the coordinator settle M2.3's open questions. These rulings are th
 | Tier | Target | Measure | Band | Source |
 | --- | --- | --- | --- | --- |
 | 1 | `price_change_share` | `price_changes` ÷ firm-months | 0.09–0.12 | R2 KQ1 |
-| 1 | `stayer_cut_share` | `stayer_cuts` ÷ `stayers` | 0.016–0.024 | R2 KQ1: 2%, ±20% |
 | 1 | `job_finding` | `hires` ÷ the unemployed at each month's start | 0.208–0.312 | R2 KQ2: 26%, ±20% |
 | 1 | `unemployment_mean` | the mean of u | 0.04–0.09 | BAM (R2 KQ5) |
 | 1 | `markup` | `sales_cents` ÷ `wage_bill` | 1.36–1.50 | R2 KQ3 |
@@ -166,6 +170,7 @@ The owner let the coordinator settle M2.3's open questions. These rulings are th
 | 2 | `exit_rate` | `exits` ÷ firm-months | 0.0145–0.0165 | R2 KQ3 at Ruling 2's year (computed) |
 | 2 | `long_spell_share` | `long_spells` ÷ the month-end unemployed | 0.216–0.324 | R2 KQ2: 27% out 27+ weeks, ±20% |
 | 2 | `mean_spell_months` | `spell_months` ÷ the month-end unemployed | 4.6–6.9 | R2 KQ2: 24.8 weeks is 5.7 months (computed), ±20% |
+| 2 | `stayer_cut_share` | `stayer_cuts` ÷ `stayers` | 0.016–0.024 | R2 KQ1: 2%, ±20%; tier 2 under closed money (Ruling 12) |
 | 3 | `unemployment_sd` | the s.d. of u | 0.010–0.030 | BAM; under 0.010 trips Ruling 14 |
 | 3 | `phillips` | corr(month-on-month growth of `wage_mean`, u) | −0.50 to −0.05 | BAM |
 | 3 | `okun` | corr(month-on-month growth of units sold, the change in u) | −0.98 to −0.70 | BAM |
