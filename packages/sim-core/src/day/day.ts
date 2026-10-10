@@ -6,6 +6,8 @@ import { DAY_LAYOFFS, TICK, type World } from '../world/world.ts';
 
 const LOGGED = 0;
 const APPLIED = 1;
+// The log's a column and the DAY_LAYOFFS slot are Int32Arrays, which wrap past this.
+const MAX_INT32 = 0x7fff_ffff;
 
 export function logInput(world: World, kind: number, a: number, b: number): boolean {
   const log = world.inputs;
@@ -23,7 +25,9 @@ export function logFocus(world: World, settlement: number): boolean {
   return logInput(world, INPUT_FOCUS, settlement, 0);
 }
 
+// A count under 1 would cancel other layoffs in the boundary's sum, and one past the largest int32 would wrap into one.
 export function logLayoffs(world: World, people: number): boolean {
+  if (people < 1 || people > MAX_INT32) return false;
   return logInput(world, INPUT_LAYOFFS, people, 0);
 }
 
@@ -35,7 +39,7 @@ export function dayBoundary(world: World): void {
   for (let n = log.cursor[APPLIED]; n < logged; n++) {
     const kind = log.kind[n];
     if (kind === INPUT_FOCUS) world.focus[0] = log.a[n];
-    else if (kind === INPUT_LAYOFFS) layoffs += log.a[n];
+    else if (kind === INPUT_LAYOFFS) layoffs = Math.min(layoffs + log.a[n], MAX_INT32);
   }
   log.cursor[APPLIED] = logged;
   world.globals[DAY_LAYOFFS] = layoffs;

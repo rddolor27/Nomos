@@ -86,6 +86,7 @@ const SEED = 42;
 const PEOPLE = 1_000;
 const LAID_OFF = 50;
 const END_TICK = 3_000;
+const MAX_INT32 = 2_147_483_647;
 
 function town(): World {
   return createTown(SEED, 'phone', standInGround(), PEOPLE);
@@ -144,6 +145,17 @@ describe('the layoffs input', () => {
     step(world);
     expect(layoffsOf(world)).toEqual([LAID_OFF, LAID_OFF]);
     expect(employedCount(world)).toBe(employed - LAID_OFF);
+  });
+
+  it('refuses a count under 1 or past the int32 range, and clamps a day\'s sum at the largest int32', () => {
+    const world = createWorld(SEED, 'phone');
+    for (const people of [0, -50, MAX_INT32 + 1]) expect(logLayoffs(world, people), `${people}`).toBe(false);
+    expect(world.inputs.cursor[0]).toBe(0);
+
+    const accepted = [2_000_000_000, 2_000_000_000, 7].map((people) => logLayoffs(world, people));
+    expect(accepted).toEqual([true, true, true]);
+    step(world);
+    expect(world.globals[DAY_LAYOFFS]).toBe(MAX_INT32);
   });
 
   it('reaches the same hash from a checkpoint taken with a layoff pending or after it fired', () => {
