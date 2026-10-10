@@ -14,6 +14,10 @@ const SOAK_STREAM = 0x7f5;
 const TWO_20 = 1 << 20;
 const TWO_33 = 8_589_934_592;
 const TWO_40 = 1_099_511_627_776;
+const TWO_50 = 1_125_899_906_842_624;
+const TWO_52 = 4_503_599_627_370_496;
+// The pool that stopped `economy --seed 42 --days 23000 --fiat-ppm 10000`.
+const CLI_POOL = 8_601_460_509;
 
 interface Firm {
   wage?: number;
@@ -56,19 +60,19 @@ function sum(values: readonly number[]): number {
   return values.reduce((total, value) => total + value, 0);
 }
 
-// The spec's weights: cash over the smallest power of two that brings the largest under 2^20, rounded down, or 1 each
-// when nobody holds cash.
-function weightsOf(cash: readonly number[]): bigint[] {
+// The spec's weights: cash over the smallest power of two that brings the largest under the limit, rounded down, or 1 each
+// when nobody holds cash. The limit is 2^20, or 2^53 over the pool when that is less.
+function weightsOf(cash: readonly number[], limit: number): bigint[] {
   const largest = Math.max(...cash);
   if (largest === 0) return cash.map(() => 1n);
   let divisor = 1;
-  while (Math.floor(largest / divisor) >= TWO_20) divisor *= 2;
+  while (Math.floor(largest / divisor) >= limit) divisor *= 2;
   return cash.map((cents) => BigInt(Math.floor(cents / divisor)));
 }
 
 // Each share is the floor of pool x weight / total weight, plus at most one cent, and only a household with weight gets it.
-function expectApportioned(shares: readonly number[], pool: number, cash: readonly number[]): void {
-  const weights = weightsOf(cash);
+function expectApportioned(shares: readonly number[], pool: number, cash: readonly number[], limit = TWO_20): void {
+  const weights = weightsOf(cash, limit);
   const total = weights.reduce((all, weight) => all + weight, 0n);
   shares.forEach((share, i) => {
     const floor = Number((BigInt(pool) * weights[i]) / total);
@@ -162,8 +166,27 @@ describe('profits', () => {
     expect(checkCash(world.cash)).toBe(OK);
   });
 
-  it('refuse a pool of 2^33 cents, and change nothing', () => {
-    const world = worldWith([{ cash: TWO_33 }]);
+  // Weights stay under 2^53 over the pool, so pool x weight stays exact: the limit is that quotient, rounded down.
+  it.each([
+    { pool: TWO_33, limit: TWO_20 },
+    { pool: CLI_POOL, limit: 1_047_170 },
+    { pool: TWO_40 + 7, limit: 8_191 },
+    { pool: TWO_50, limit: 8 },
+    { pool: TWO_52, limit: 2 },
+  ])('share a pool of $pool cents exactly, with weights under $limit', ({ pool, limit }) => {
+    const world = worldWith([{ cash: pool }]);
+    for (let i = 0; i < 5; i++) issue(world.cash, walletAccount(world.cash, i), Math.floor(TWO_40 / (i + 1)) + 7);
+    const before = wallets(world);
+    distributeProfits(world, LENGNICK, 0);
+    expectApportioned(gainsOver(before, world), pool, before, limit);
+    expect(firmCash(world, 0)).toBe(0);
+    expect(world.cash.balance[PROFITS]).toBe(0);
+    expect(world.economyScratch.stats[STAT_PROFITS_PAID]).toBe(pool);
+    expect(checkCash(world.cash)).toBe(OK);
+  });
+
+  it('refuse a pool past 2^52 cents, which weights under 2 cannot split, and change nothing', () => {
+    const world = worldWith([{ cash: TWO_52 + 1 }]);
     const books = [...world.cash.balance];
     expect(() => distributeProfits(world, LENGNICK, 0)).toThrow(RangeError);
     expect([...world.cash.balance]).toEqual(books);
