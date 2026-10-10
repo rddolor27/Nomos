@@ -4,7 +4,6 @@ import { parseArgs } from 'node:util';
 import {
   DAYS_PER_MONTH,
   DAYS_PER_YEAR,
-  LENGNICK,
   STATS,
   STAT_FIRM_CASH,
   STAT_HOUSEHOLD_CASH,
@@ -18,6 +17,7 @@ import {
   startEconomy,
   type EconomyParams,
 } from '@nomos/sim-core';
+import { PRESETS, isPreset } from './presets.ts';
 
 const MAX_SEED = 0xffff_ffff;
 const MAX_INT32 = 0x7fff_ffff;
@@ -42,6 +42,11 @@ export function wholeNumber(flag: string, text: string, min: number, max: number
   return n;
 }
 
+function presetParams(name: string): EconomyParams {
+  if (!isPreset(name)) throw new RangeError(`--preset must be one of ${Object.keys(PRESETS).join(', ')}, not ${name}`);
+  return PRESETS[name];
+}
+
 // startEconomy's checkParams bounds the fiat rate, so the flag only needs to be a whole number here.
 function parseEconomyArgs(args: readonly string[]): EconomyOptions {
   const { values } = parseArgs({
@@ -53,13 +58,14 @@ function parseEconomyArgs(args: readonly string[]): EconomyOptions {
       out: { type: 'string' },
       'burn-in': { type: 'boolean', default: false },
       seeds: { type: 'string', default: '5' },
+      preset: { type: 'string', default: 'lengnick' },
     },
   });
   const fiatIssuePpm = wholeNumber('fiat-ppm', values['fiat-ppm'], 0, MAX_INT32);
   return {
     seed: wholeNumber('seed', values.seed, 0, MAX_SEED),
     days: wholeNumber('days', values.days, 1, MAX_INT32),
-    params: { ...LENGNICK, fiatIssuePpm },
+    params: { ...presetParams(values.preset), fiatIssuePpm },
     out: values.out,
     burnIn: values['burn-in'],
     seeds: wholeNumber('seeds', values.seeds, 1, MAX_SEEDS),

@@ -3,7 +3,7 @@ import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { STAT_NAMES } from '@nomos/sim-core';
+import { CITY, STAT_NAMES } from '@nomos/sim-core';
 import { describe, expect, it } from 'vitest';
 
 const CLI = fileURLToPath(new URL('../src/main.ts', import.meta.url));
@@ -49,6 +49,19 @@ describe('the economy command', { timeout: 60_000 }, () => {
     const refused = spawnSync(process.execPath, [CLI, 'economy', '--days', '21', '--fiat-ppm', '10001'], { encoding: 'utf8' });
     expect(refused.status).not.toBe(0);
     expect(refused.stderr).toContain('fiatIssuePpm must be 0 to 10000');
+  });
+
+  it('runs the preset --preset names, lengnick by default, and refuses an unknown one', () => {
+    const price = HEADER.indexOf('price_mean');
+    const lengnick = economy('--days', '21', '--preset', 'lengnick');
+    const city = economy('--days', '21', '--preset', 'city');
+    expect(economy('--days', '21')).toBe(lengnick);
+    // A first month's step moves a price by at most 2%, so each run's day 0 sits at its own preset's opening price.
+    expect(rowsOf(lengnick)[0][price]).toBeLessThan(CITY.openingPrice);
+    expect(rowsOf(city)[0][price]).toBeGreaterThanOrEqual(CITY.openingPrice);
+    const refused = spawnSync(process.execPath, [CLI, 'economy', '--days', '21', '--preset', 'mark0'], { encoding: 'utf8' });
+    expect(refused.status).not.toBe(0);
+    expect(refused.stderr).toContain('--preset must be one of lengnick, city, not mark0');
   });
 
   it('writes to --out, making its folder, and prints sim days per second to stderr', () => {
