@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { LENGNICK, type EconomyParams } from '../src/economy/params.ts';
-import { STAT_FIRINGS, STAT_HIRES, STAT_SWITCHES } from '../src/economy/stats.ts';
+import { STAT_FIRINGS, STAT_HIRES, STAT_JOB_VISITS, STAT_SWITCHES } from '../src/economy/stats.ts';
 import { fireOnNotice } from '../src/labour/notice.ts';
 import { updateReservationWages } from '../src/labour/reservation.ts';
 import { sampledFirm, searchJobs } from '../src/labour/search.ts';
@@ -197,6 +197,8 @@ describe('searchJobs', () => {
         const label = `searches ${searches}, month ${month}`;
         expect(world.agents.employer[0], label).toBe(expected);
         expect(world.economyScratch.stats[STAT_HIRES], label).toBe(expected === NO_FIRM ? 0 : 1);
+        // A visit counts for each firm looked at, the one that hires included, and the search stops there.
+        expect(world.economyScratch.stats[STAT_JOB_VISITS], label).toBe(expected === NO_FIRM ? searches : sampled.indexOf(expected) + 1);
         expect(Array.from(world.firms.vacancy.subarray(0, FIRMS)), label).toEqual(
           Array.from({ length: FIRMS }, (_, f) => (hiring.includes(f) && f !== expected ? 1 : 0)),
         );
@@ -221,6 +223,13 @@ describe('searchJobs', () => {
     searchJobs(world, LENGNICK, 0);
     expect(world.agents.employer[0]).toBe(sampledFirm(42, 0, 0, 0, FIRMS));
     expect(world.economyScratch.stats[STAT_HIRES]).toBe(1);
+  });
+
+  it('makes every searcher look at all its sampled firms when none will hire it', () => {
+    const world = labourWorld(3, FIRMS);
+    searchJobs(world, LENGNICK, 0);
+    expect(world.economyScratch.stats[STAT_JOB_VISITS]).toBe(3 * LENGNICK.jobSearches);
+    expect(world.economyScratch.stats[STAT_HIRES]).toBe(0);
   });
 
   it('fills each vacancy once, however many households ask', () => {
@@ -272,6 +281,7 @@ describe('searchJobs', () => {
       expect(world.firms.vacancy[3], label).toBe(goesTo === 3 ? 0 : 1);
       expect(world.economyScratch.stats[STAT_SWITCHES], label).toBe(goesTo === 3 ? 1 : 0);
       expect(world.economyScratch.stats[STAT_HIRES], label).toBe(0);
+      expect(world.economyScratch.stats[STAT_JOB_VISITS], label).toBe(0);
       if (goesTo === 3) moved++;
     }
     expect(moved).toBeGreaterThan(5);

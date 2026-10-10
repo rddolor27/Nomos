@@ -12,9 +12,13 @@ import {
   STAT_ISSUED,
   STAT_PRICE_CHANGES,
   STAT_PRICE_MEAN,
+  STAT_PRICE_CHANGE_PPM,
   STAT_PROFITS_PAID,
   STAT_SALES_CENTS,
   STAT_SALES_UNITS,
+  STAT_SIZE_CUBES,
+  STAT_SIZE_SQUARES,
+  STAT_STOCK,
   STAT_SWITCHES,
   STAT_UNEMPLOYED,
   STAT_VACANCIES,
@@ -217,7 +221,7 @@ describe('economyDay', () => {
     expect(economyScratch.stats[STAT_SALES_CENTS]).toBe(firmCash(world) - firmsCash);
   });
 
-  it("keeps the month's sums to the month", () => {
+  it('clears every flow each morning, and leaves the levels', () => {
     const world = startedWorld(3);
     const stats = world.economyScratch.stats;
     runDays(world, LENGNICK, 0, DAYS_PER_MONTH);
@@ -226,12 +230,16 @@ describe('economyDay', () => {
     economyDay(world, LENGNICK, DAYS_PER_MONTH);
     const monthEnd = [STAT_WAGE_BILL, STAT_PROFITS_PAID, STAT_FIRINGS, STAT_EXITS, STAT_ISSUED];
     expect(monthEnd.map((slot) => stats[slot])).toEqual([0, 0, 0, 0, 0]);
-    // The month's searches run on its first day only, and their sums hold to the month's end.
-    const searches = [STAT_HIRES, STAT_SWITCHES, STAT_PRICE_CHANGES];
-    const searched = searches.map((slot) => stats[slot]);
-    expect(searched[2]).toBeGreaterThan(0);
-    runDays(world, LENGNICK, DAYS_PER_MONTH + 1, 2 * DAYS_PER_MONTH);
-    expect(searches.map((slot) => stats[slot])).toEqual(searched);
+    // A month's first day searches and reprices, and the next morning those sums are gone.
+    const searches = [STAT_HIRES, STAT_SWITCHES, STAT_PRICE_CHANGES, STAT_PRICE_CHANGE_PPM];
+    expect(stats[STAT_PRICE_CHANGES]).toBeGreaterThan(0);
+    expect(stats[STAT_PRICE_CHANGE_PPM]).toBeGreaterThan(0);
+    economyDay(world, LENGNICK, DAYS_PER_MONTH + 1);
+    expect(searches.map((slot) => stats[slot])).toEqual([0, 0, 0, 0]);
+    // Sales are the day's own, and the levels still read the state.
+    expect(stats[STAT_SALES_UNITS]).toBeGreaterThan(0);
+    expect(stats[STAT_HOUSEHOLD_CASH]).toBe(householdCash(world));
+    expect(stats[STAT_FIRM_CASH]).toBe(firmCash(world));
   });
 
   it("records the day's end from the state", () => {
@@ -241,10 +249,16 @@ describe('economyDay', () => {
     let vacancies = 0;
     let prices = 0;
     let wages = 0;
+    let stock = 0;
+    let squares = 0;
+    let cubes = 0;
     for (let f = 0; f < FIRMS; f++) {
       vacancies += firms.vacancy[f];
       prices += firms.price[f];
       wages += firms.wage[f];
+      stock += firms.stock[f];
+      squares += firms.employees[f] * firms.employees[f];
+      cubes += firms.employees[f] * firms.employees[f] * firms.employees[f];
     }
     const stats = economyScratch.stats;
     expect(stats[STAT_UNEMPLOYED]).toBe(HOUSEHOLDS - employedHouseholds(world));
@@ -253,6 +267,10 @@ describe('economyDay', () => {
     expect(stats[STAT_WAGE_MEAN]).toBe(wages / FIRMS);
     expect(stats[STAT_HOUSEHOLD_CASH]).toBe(householdCash(world));
     expect(stats[STAT_FIRM_CASH]).toBe(firmCash(world));
+    expect(stats[STAT_STOCK]).toBe(stock);
+    expect(stats[STAT_SIZE_SQUARES]).toBe(squares);
+    expect(stats[STAT_SIZE_CUBES]).toBe(cubes);
+    expect(stats[STAT_SIZE_SQUARES]).toBeGreaterThan(0);
     expect(agents.count[0]).toBe(HOUSEHOLDS);
   });
 

@@ -1,5 +1,5 @@
 import type { EconomyParams } from '../economy/params.ts';
-import { STAT_HIRES, STAT_SWITCHES } from '../economy/stats.ts';
+import { STAT_HIRES, STAT_JOB_VISITS, STAT_SWITCHES } from '../economy/stats.ts';
 import { PPM } from '../money/ppm.ts';
 import { draw3, draw4 } from '../random/draw.ts';
 import { keyedShuffle } from '../random/shuffle.ts';
@@ -25,12 +25,14 @@ function hire(world: World, household: number, firm: number): void {
 // The first sampled vacancy that pays at least the reservation wage (A4, A13).
 function searchUnemployed(world: World, params: EconomyParams, month: number, household: number): void {
   const firms = world.firms;
+  const stats = world.economyScratch.stats;
   const wantedCents = world.agents.reservationWage[household];
   for (let k = 0; k < params.jobSearches; k++) {
+    stats[STAT_JOB_VISITS]++;
     const f = sampledFirm(world.seed, month, household, k, firms.count[0]);
     if (firms.vacancy[f] !== 0 && firms.wage[f] >= wantedCents) {
       hire(world, household, f);
-      world.economyScratch.stats[STAT_HIRES]++;
+      stats[STAT_HIRES]++;
       return;
     }
   }

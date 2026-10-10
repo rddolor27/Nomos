@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { LENGNICK, type EconomyParams } from '../src/economy/params.ts';
-import { STAT_EXITS, STAT_PRICE_CHANGES, STAT_PRICE_CHANGE_PPM } from '../src/economy/stats.ts';
+import {
+  STAT_ABOVE_MARKUP,
+  STAT_EXITS,
+  STAT_PRICE_CHANGES,
+  STAT_PRICE_CHANGE_PPM,
+  STAT_PRODUCED,
+  STAT_WRITE_OFF,
+} from '../src/economy/stats.ts';
 import { decideFirms } from '../src/firms/decide.ts';
 import { produce } from '../src/firms/produce.ts';
 import { closeFirmMonth } from '../src/firms/renew.ts';
@@ -258,6 +265,20 @@ describe('the price rule', () => {
     expect(world.economyScratch.stats[STAT_PRICE_CHANGE_PPM]).toBe(0);
   });
 
+  it('counts the firms left above the markup ceiling once they have repriced', () => {
+    // At the preset's wage the ceiling is 164,220 cents a worker's month, which 63 x price passes from a price of 2,607.
+    const still = worldWith([2_500, 2_606, 2_607, 2_608, 3_000].map((price) => ({ ...BASE, price, stock: 30, employees: 3 })));
+    decideFirms(still, STILL, 0);
+    expect(still.economyScratch.stats[STAT_ABOVE_MARKUP]).toBe(3);
+
+    // A firm at 2,606 with no stock may rise past the ceiling, and counts from the price it ends on.
+    const rising = crowd(FIRMS, { ...BASE, price: 2_606, stock: 0, employees: 3 });
+    decideFirms(rising, SURE, 0);
+    const above = pricesOf(rising).filter((price) => 63 * price > 164_220).length;
+    expect(above).toBeGreaterThan(900);
+    expect(rising.economyScratch.stats[STAT_ABOVE_MARKUP]).toBe(above);
+  });
+
   it('replays from the seed, month by month', () => {
     const [first, again, next] = [0, 0, 1].map((month) => {
       const world = crowd(FIRMS, { ...WHOLE, stock: 0 });
@@ -280,8 +301,10 @@ describe('production', () => {
     world.firms.employees[4] = 9;
     produce(world, LENGNICK);
     expect(Array.from(world.firms.stock.subarray(0, 5))).toEqual([5, 3, 31, 300, 0]);
+    expect(world.economyScratch.stats[STAT_PRODUCED]).toBe(3 + 21 + 300);
     produce(world, { ...LENGNICK, unitsPerWorkerDay: 5 });
     expect(Array.from(world.firms.stock.subarray(0, 4))).toEqual([5, 8, 66, 800]);
+    expect(world.economyScratch.stats[STAT_PRODUCED]).toBe(3 + 21 + 300 + 5 + 35 + 500);
   });
 });
 
@@ -318,6 +341,7 @@ describe('firm turnover', () => {
       closeFirmMonth(world, LENGNICK);
       expect(rowOf(world, 0), `month ${count}`).toEqual({ ...idle, idleMonths: count });
       expect(stats[STAT_EXITS]).toBe(0);
+      expect(stats[STAT_WRITE_OFF]).toBe(0);
     }
     sell(world);
     closeFirmMonth(world, LENGNICK);
@@ -335,6 +359,8 @@ describe('firm turnover', () => {
       idleMonths: 0,
     });
     expect(stats[STAT_EXITS]).toBe(1);
+    // The 9 units it held are written off, and stay out of the other firms' stock.
+    expect(stats[STAT_WRITE_OFF]).toBe(9);
     expect(world.cash.balance[firmAccount(world.cash, 0)]).toBe(777);
     expect(checkCash(world.cash)).toBe(OK);
     for (const f of [1, 2, 3]) expect(world.firms.idleMonths[f], `firm ${f}`).toBe(0);
@@ -406,6 +432,7 @@ describe('firm turnover', () => {
     // Nothing sells, so the first and last firms are idle for three months and both exit.
     for (let month = 0; month < 3; month++) closeFirmMonth(world, LENGNICK);
     expect(world.economyScratch.stats[STAT_EXITS]).toBe(2);
+    expect(world.economyScratch.stats[STAT_WRITE_OFF]).toBe(9 + 3);
     expect(Array.from(world.cash.balance)).toEqual(before);
     const empty = createWorld(42, 'phone', undefined, 40);
     expect(() => closeFirmMonth(empty, LENGNICK)).not.toThrow();

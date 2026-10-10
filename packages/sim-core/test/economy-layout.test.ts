@@ -159,12 +159,38 @@ describe('the economy parameters', () => {
 });
 
 describe('the economy statistics', () => {
+  const slotConstants = (): [string, number][] => {
+    const found: [string, number][] = [];
+    for (const [name, value] of Object.entries(stats)) {
+      if (name.startsWith('STAT_') && typeof value === 'number') found.push([name, value]);
+    }
+    return found;
+  };
+
   it('number their slots from 0 without a gap or a repeat', () => {
-    const slots = Object.entries(stats)
-      .filter(([name]) => name.startsWith('STAT_'))
-      .map(([, slot]) => slot as number);
+    const slots = slotConstants().map(([, slot]) => slot);
     expect(slots.sort((a, b) => a - b)).toEqual(Array.from({ length: stats.STATS }, (_, slot) => slot));
-    expect(stats.STATS).toBe(17);
+    expect(stats.STATS).toBe(29);
+  });
+
+  it('name every slot in flow-log schema 1, the levels first and then the flows', () => {
+    expect(stats.FLOW_LOG_SCHEMA).toBe(1);
+    expect(stats.STAT_NAMES).toEqual([
+      'unemployed', 'vacancies', 'price_mean', 'wage_mean', 'household_cash', 'firm_cash', 'stock', 'size_squares',
+      'size_cubes', 'sales_units', 'sales_cents', 'price_changes', 'price_change_ppm', 'hires', 'switches', 'firings',
+      'wage_bill', 'profits_paid', 'exits', 'issued', 'produced', 'write_off', 'job_visits', 'above_markup',
+      'spell_months', 'long_spells', 'stayers', 'stayer_cuts', 'taxes',
+    ]);
+    for (const [constant, slot] of slotConstants()) {
+      expect(stats.STAT_NAMES[slot], constant).toBe(constant.slice('STAT_'.length).toLowerCase());
+    }
+  });
+
+  it('clear the flows each morning and leave the levels as the last day set them', () => {
+    const row = new Float64Array(stats.STATS).fill(7);
+    stats.clearFlows(row);
+    expect(Array.from(row.subarray(0, stats.STAT_SALES_UNITS))).toEqual(new Array(stats.STAT_SALES_UNITS).fill(7));
+    expect(Array.from(row.subarray(stats.STAT_SALES_UNITS))).toEqual(new Array(stats.STATS - stats.STAT_SALES_UNITS).fill(0));
   });
 });
 
@@ -208,6 +234,9 @@ describe('the economy scratch', () => {
       firmTally: [Int32Array, 50],
       pay: [Float64Array, 50],
       stats: [Float64Array, stats.STATS],
+      spellMonths: [Uint8Array, 500],
+      yearEmployer: [Int32Array, 500],
+      yearWage: [Float64Array, 50],
     } as const;
     for (const name of Object.keys(shapes) as (keyof typeof shapes)[]) {
       const [kind, length] = shapes[name];
@@ -215,6 +244,11 @@ describe('the economy scratch', () => {
       expect(scratch[name], name).toHaveLength(length);
     }
     expect(arena.canonical).toEqual([]);
+  });
+
+  it("opens last year's employers as nobody's, so no one is a stayer before the first year end", () => {
+    const { yearEmployer } = createEconomyScratch(reserveArena(PHONE_MEMORY_BYTES), 500, 50);
+    expect(yearEmployer.every((employer) => employer === -1)).toBe(true);
   });
 });
 
@@ -237,9 +271,10 @@ describe('the economy layout of a world', () => {
     expect(firms.capacity).toBe(1_000);
     expect(agents.employer.subarray(0, blobs).every((employer) => employer === -1)).toBe(true);
     expect(agents.suppliers.subarray(0, blobs * SUPPLIERS).every((supplier) => supplier === -1)).toBe(true);
+    const { yearEmployer, ...zeroScratch } = economyScratch;
     const zeroed = {
       ...firms,
-      ...economyScratch,
+      ...zeroScratch,
       reservationWage: agents.reservationWage,
       stockedOut: agents.stockedOut,
       plannedUnits: agents.plannedUnits,
@@ -248,6 +283,7 @@ describe('the economy layout of a world', () => {
     for (const [name, column] of Object.entries(zeroed)) {
       if (ArrayBuffer.isView(column)) expect(isZeroed(column), name).toBe(true);
     }
+    expect(yearEmployer.every((employer) => employer === -1)).toBe(true);
   });
 
   it('hashes the economy columns, firm rows and firm accounts, and skips the scratch', () => {

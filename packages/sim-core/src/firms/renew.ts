@@ -1,5 +1,5 @@
 import type { EconomyParams } from '../economy/params.ts';
-import { STAT_EXITS } from '../economy/stats.ts';
+import { STAT_EXITS, STAT_WRITE_OFF } from '../economy/stats.ts';
 import type { World } from '../world/world.ts';
 import type { FirmStore } from './store.ts';
 
@@ -13,10 +13,12 @@ export function closeFirmMonth(world: World, params: EconomyParams): void {
   const price = Math.floor(sumOf(firms.price, count) / count);
   const wage = Math.floor(sumOf(firms.wage, count) / count);
   let exits = 0;
+  let writtenOff = 0;
   for (let f = 0; f < count; f++) {
     const idle = firms.employees[f] === 0 && firms.demand[f] === 0;
     const idleMonths = idle ? Math.min(firms.idleMonths[f] + 1, MAX_IDLE_MONTHS) : 0;
     if (params.idleMonthsToExit > 0 && idleMonths >= params.idleMonthsToExit) {
+      writtenOff += firms.stock[f];
       reenter(firms, f, price, wage, params.demandFloor);
       exits++;
     } else {
@@ -25,7 +27,9 @@ export function closeFirmMonth(world: World, params: EconomyParams): void {
       firms.demand[f] = 0;
     }
   }
-  world.economyScratch.stats[STAT_EXITS] += exits;
+  const stats = world.economyScratch.stats;
+  stats[STAT_EXITS] += exits;
+  stats[STAT_WRITE_OFF] += writtenOff;
 }
 
 function sumOf(column: Float64Array, count: number): number {

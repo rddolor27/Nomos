@@ -9,15 +9,16 @@ import { updateReservationWages } from '../labour/reservation.ts';
 import { searchJobs } from '../labour/search.ts';
 import { issueFiat } from '../money/fiat.ts';
 import { OK, checkInvariants, failInvariant } from '../money/invariants.ts';
-import { DAYS_PER_MONTH, dayOfMonth, monthOf } from '../time/calendar.ts';
+import { DAYS_PER_MONTH, DAYS_PER_YEAR, dayOfMonth, dayOfYear, monthOf } from '../time/calendar.ts';
 import { payWages } from '../wages/payroll.ts';
 import { stepWages } from '../wages/wage-step.ts';
 import { distributeProfits } from '../wealth/profits.ts';
 import type { World } from '../world/world.ts';
 import type { EconomyParams } from './params.ts';
-import { clearDaySums, clearMonthSums, recordDay } from './stats.ts';
+import { clearFlows, recordDay, recordMonth, recordYear } from './stats.ts';
 
 const LAST_DAY_OF_MONTH = DAYS_PER_MONTH - 1;
+const LAST_DAY_OF_YEAR = DAYS_PER_YEAR - 1;
 
 // A1 (R2): firms first, then households. stepWages reads last month's vacancies, which decideFirms then resets, and
 // households plan with the prices their searches settled on.
@@ -44,17 +45,17 @@ export function endMonth(world: World, params: EconomyParams, month: number): vo
 export function economyDay(world: World, params: EconomyParams, day: number): void {
   const month = monthOf(day);
   const dayInMonth = dayOfMonth(day);
-  const stats = world.economyScratch.stats;
-  clearDaySums(stats);
-  if (dayInMonth === 0) {
-    clearMonthSums(stats);
-    startMonth(world, params, month);
-  }
+  clearFlows(world.economyScratch.stats);
+  if (dayInMonth === 0) startMonth(world, params, month);
   // A2: households shop before firms produce, so a purchase takes earlier output.
   shopDay(world, params, day);
   produce(world, params);
-  if (dayInMonth === LAST_DAY_OF_MONTH) endMonth(world, params, month);
+  if (dayInMonth === LAST_DAY_OF_MONTH) {
+    endMonth(world, params, month);
+    recordMonth(world);
+  }
   recordDay(world);
+  if (dayOfYear(day) === LAST_DAY_OF_YEAR) recordYear(world);
   if (!world.checks) return;
   const code = checkInvariants(world.cash, world.claims);
   if (code !== OK) failInvariant(code);

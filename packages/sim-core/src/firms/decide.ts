@@ -1,5 +1,5 @@
 import type { EconomyParams } from '../economy/params.ts';
-import { STAT_PRICE_CHANGES, STAT_PRICE_CHANGE_PPM } from '../economy/stats.ts';
+import { STAT_ABOVE_MARKUP, STAT_PRICE_CHANGES, STAT_PRICE_CHANGE_PPM } from '../economy/stats.ts';
 import { PPM, mulPpm, mulPpmUp } from '../money/ppm.ts';
 import { draw3 } from '../random/draw.ts';
 import { FIRM_DRAW } from '../random/streams.ts';
@@ -32,9 +32,11 @@ function repriceFirm(world: World, params: EconomyParams, month: number, f: numb
   const wage = firms.wage[f];
   const unitsPerMonth = DAYS_PER_MONTH * params.unitsPerWorkerDay;
   const monthOutputCents = unitsPerMonth * price;
+  const ceilingCents = wage + mulPpm(wage, params.markupHighPpm);
+  const stats = world.economyScratch.stats;
   let eta = 0;
   let next = price;
-  if (firms.stock[f] < low && monthOutputCents < wage + mulPpm(wage, params.markupHighPpm)) {
+  if (firms.stock[f] < low && monthOutputCents < ceilingCents) {
     eta = priceStep(world.seed, params, month, f);
     next = price + mulPpm(price, eta);
   } else if (firms.stock[f] > high && monthOutputCents > wage + mulPpm(wage, params.markupLowPpm)) {
@@ -44,10 +46,10 @@ function repriceFirm(world: World, params: EconomyParams, month: number, f: numb
   next = Math.max(next, costFloor(wage, unitsPerMonth));
   firms.price[f] = next;
   if (eta > 0 && next !== price) {
-    const stats = world.economyScratch.stats;
     stats[STAT_PRICE_CHANGES] += 1;
     stats[STAT_PRICE_CHANGE_PPM] += eta;
   }
+  if (unitsPerMonth * next > ceilingCents) stats[STAT_ABOVE_MARKUP] += 1;
 }
 
 // Lengnick's theta and vartheta: with chance priceChancePpm the step is eta ppm, uniform over 0 to priceStepPpm, else 0.
