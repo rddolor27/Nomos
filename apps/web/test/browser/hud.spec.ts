@@ -7,6 +7,15 @@ test.use({ baseURL: WEB });
 const TOWN = '/?tier=phone';
 // The HUD refreshes 4 times a second, so a value read this long after a change is settled.
 const SETTLE_MS = 400;
+const TOUCH_TARGET_CSS_PX = 44;
+// The buttons between the HUD's 8 px of padding.
+const ONE_ROW_CSS_PX = TOUCH_TARGET_CSS_PX + 2 * 8;
+const HUD_BUTTONS = '#hud > button, #speed button';
+// The inspector's longest line, about 75 characters. On a phone it may be 20rem of 15 px wide, and a line of text is
+// 21 px tall.
+const LONG_LINE = 'Marisol Ardent-Vale, works at Shop 12 for 1,428.00 a month, wallet 3,100.00';
+const INSPECTOR_MAX_CSS_PX = 20 * 15;
+const LINE_CSS_PX = 21;
 
 async function open(page: Page, path = TOWN): Promise<void> {
   await page.goto(path);
@@ -74,12 +83,62 @@ test('sets the speed from the buttons and the keys 1 to 3, and the town runs fas
   await expect(sixteen).toHaveAttribute('aria-pressed', 'false');
 });
 
-test("lists each system's milliseconds", async ({ page }) => {
+test("lists each system's milliseconds for ?dev=1 only", async ({ page }) => {
   await open(page);
+  await expect.poll(() => tick(page)).toBeGreaterThan(0);
+  await expect(page.locator('#hud-systems')).toHaveCount(0);
+
+  await open(page, `${TOWN}&dev=1`);
   const rows = page.locator('#hud-systems dd');
   await expect.poll(() => rows.count()).toBeGreaterThanOrEqual(2);
   for (const text of await rows.allTextContents()) expect(text).toMatch(/^\d+\.\d{2} ms$/);
   await expect(page.locator('#hud-systems dt').last()).toHaveText('frame');
+});
+
+test('keeps the HUD to one row of 44 px buttons, and scrolls it only on a phone', async ({ page }) => {
+  await open(page);
+  await expect.poll(() => tick(page)).toBeGreaterThan(0);
+  for (const [size, scrolls] of [
+    [{ width: 1280, height: 720 }, false],
+    [{ width: 390, height: 844 }, true],
+  ] as const) {
+    await page.setViewportSize(size);
+    // Play, the three speeds and Map.
+    const buttons = await page.locator(HUD_BUTTONS).all();
+    expect(buttons).toHaveLength(5);
+    for (const button of buttons) {
+      const box = await button.boundingBox();
+      if (!box) throw new Error('a HUD button has no box');
+      expect(box.width).toBeGreaterThanOrEqual(TOUCH_TARGET_CSS_PX);
+      expect(box.height).toBeGreaterThanOrEqual(TOUCH_TARGET_CSS_PX);
+    }
+    const row = await page.locator('#hud').evaluate((hud) => ({
+      height: hud.getBoundingClientRect().height,
+      overflows: hud.scrollWidth > hud.clientWidth,
+    }));
+    expect(row.height, `the HUD's height at ${size.width} px`).toBeLessThanOrEqual(ONE_ROW_CSS_PX);
+    expect(row.overflows, `the HUD's sideways scroll at ${size.width} px`).toBe(scrolls);
+  }
+});
+
+test('wraps the inspector line within itself where the HUD row scrolls', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await open(page);
+  await page.waitForFunction(() => performance.getEntriesByName('app:interactive').length > 0);
+  await page.locator('#view').press('Enter');
+  const line = page.locator('#inspector');
+  await expect(line).toHaveText(/./);
+
+  // The longest line the inspector writes is about 75 characters, which would make the row about 500 px wider.
+  await line.evaluate((node, text) => {
+    node.textContent = text;
+  }, LONG_LINE);
+  const box = await line.boundingBox();
+  if (!box) throw new Error('the inspector line has no box');
+  expect(box.width).toBeLessThanOrEqual(INSPECTOR_MAX_CSS_PX);
+  expect(box.height).toBeGreaterThan(LINE_CSS_PX);
+  const hud = await page.locator('#hud').boundingBox();
+  expect(hud?.height).toBeLessThanOrEqual(ONE_ROW_CSS_PX);
 });
 
 test('says when Canvas2D caps the agents', async ({ page }) => {

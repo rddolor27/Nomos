@@ -27,14 +27,14 @@
       .btn:disabled { opacity: .5; cursor: not-allowed; }
       .btn:focus-visible { outline: 3px solid var(--ui-accent); outline-offset: 2px; }
       #hud, .ui-view { grid-area: 1 / 1; }
-      #hud { align-self: start; z-index: 1; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; padding: 8px;
+      #hud { align-self: start; z-index: 1; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 8px;
         background: var(--ui-bar); font-variant-numeric: tabular-nums; }
-      #play { min-width: 6.5em; }
+      #play { min-width: 5em; }
       #hud p, #hud fieldset, #hud dl, #hud dd { margin: 0; border: 0; padding: 0; }
       #hud legend { float: left; padding: 0; }
-      #hud legend, #hud label { margin-right: 8px; }
+      #hud legend, #hud label { margin-right: 4px; }
       #hud dl, #hud dl div { display: flex; flex-wrap: wrap; gap: 4px 16px; }
-      #hud dl { color: var(--ui-muted); font-size: var(--ui-small); }
+      #hud dl, #hud > span { color: var(--ui-muted); font-size: var(--ui-small); }
       #hud dl div { column-gap: 6px; }
       .ui-view { position: relative; overflow: hidden; touch-action: none; }
       /* The canvas covers the view's own outline and the HUD its top edge, so the focus ring is an overlay above both. Its
@@ -52,6 +52,7 @@
         #hud, #hud dl { flex-wrap: nowrap; }
         #hud { overflow-x: auto; }
         #hud > *, #hud dl div { flex: none; }
+        #inspector { max-width: 20rem; }
         #side { padding-top: 16px; }
         .lil-gui.lil-auto-place { position: static; }
       }

@@ -124,7 +124,42 @@ function bindSpeedKeys(root: HTMLElement, app: App, bar: SpeedBar): void {
   });
 }
 
-export function mountHud(root: HTMLElement, app: App): void {
+// The developer readout, made for ?dev=1 only so it never crowds the row: each system's milliseconds a tick, and the
+// frame's last.
+class SystemRows {
+  private readonly app: App;
+  private readonly list: HTMLElement;
+  private readonly frame: Write;
+  private readonly frameRow: Element | null;
+  private readonly rows = new Map<string, Write>();
+  private latest: Record<string, number> = {};
+
+  constructor(root: HTMLElement, app: App) {
+    this.app = app;
+    this.list = root.ownerDocument.createElement('dl');
+    this.list.id = 'hud-systems';
+    root.append(this.list);
+    this.frame = row(this.list, 'frame', null);
+    this.frameRow = this.list.lastElementChild;
+    app.onStats((_tick, systemMs) => {
+      this.latest = systemMs;
+    });
+  }
+
+  refresh(): void {
+    for (const [name, ms] of Object.entries(this.latest)) {
+      let write = this.rows.get(name);
+      if (!write) {
+        write = row(this.list, name, this.frameRow);
+        this.rows.set(name, write);
+      }
+      write(formatMs(ms));
+    }
+    this.frame(formatMs(frameMedianMs(this.app.frameMs)));
+  }
+}
+
+export function mountHud(root: HTMLElement, app: App, dev: boolean): void {
   const doc = root.ownerDocument;
   const play = element<HTMLButtonElement>(doc, '#play');
   bindPlay(play, app);
@@ -137,16 +172,7 @@ export function mountHud(root: HTMLElement, app: App): void {
   const tier = readout(root, 'hud-tier');
   const zoom = readout(root, 'hud-zoom');
   mountSkinToggle(root, skinRenderer(app), skinFromQuery(doc.location.search) ?? 'auto');
-  const systems = doc.createElement('dl');
-  systems.id = 'hud-systems';
-  root.append(systems);
-  const frame = row(systems, 'frame', null);
-  const frameRow = systems.lastElementChild;
-  const systemRows = new Map<string, Write>();
-  let latest: Record<string, number> = {};
-  app.onStats((_tick, systemMs) => {
-    latest = systemMs;
-  });
+  const systems = dev ? new SystemRows(root, app) : null;
   // The status line stays last, after everything mounted here.
   root.append(element(doc, '#status'));
 
@@ -156,15 +182,7 @@ export function mountHud(root: HTMLElement, app: App): void {
     tier(TIER_LABELS[app.tier]);
     zoom(`Zoom ${app.camera.zoom}×`);
     speedBar.show(app.speed);
-    for (const [name, ms] of Object.entries(latest)) {
-      let write = systemRows.get(name);
-      if (!write) {
-        write = row(systems, name, frameRow);
-        systemRows.set(name, write);
-      }
-      write(formatMs(ms));
-    }
-    frame(formatMs(frameMedianMs(app.frameMs)));
+    systems?.refresh();
   };
   refresh();
   setInterval(refresh, REFRESH_MS);

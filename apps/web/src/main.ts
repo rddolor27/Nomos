@@ -59,7 +59,7 @@ async function afterFirstFrame(app: App, dev: boolean): Promise<void> {
   const cameraInputModule = import('./view/camera-input.ts');
   const chartsModule = import('./panels/charts.ts');
   const controlsModule = dev ? import('./panels/controls.ts') : null;
-  mountHud(element(document, '#hud'), app);
+  mountHud(element(document, '#hud'), app, dev);
   const { bindCameraInput, loadTownSkin } = await cameraInputModule;
   bindCameraInput(element(document, '#view'), app);
   await nextTask();
