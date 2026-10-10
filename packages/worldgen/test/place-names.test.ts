@@ -83,13 +83,13 @@ describe('place names', { timeout: 60_000 }, () => {
     const map = generateWorld(SEED, 'standard');
     const names = placeNames(map);
     const count = map.countries.capital.length;
-    expect(names.slice(0, count)).toEqual(['Karapit', 'Chuen', 'Neixo', 'Ephanystra', 'Byzach']);
+    expect(names.slice(0, count)).toEqual(['Kapsembia', 'Chubena', 'Ndudos', 'Ephanystra', 'Byzach']);
     expect(Array.from(map.countries.capital, (id) => names[count + id])).toEqual([
-      'Thra',
-      'Megandos',
+      'Thrachis',
+      'Megalqah',
       'Agreira',
-      'Papseunos',
-      'Kullut',
+      'Paohnderg',
+      'Kuiulek',
     ]);
   });
 

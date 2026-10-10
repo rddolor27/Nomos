@@ -11,7 +11,7 @@ describe('the map worker', { timeout: 60_000 }, () => {
     expect(reply.type).toBe('world');
     expect(worldFingerprint(reply.map)).toBe(0x4a765ce2);
     expect(reply.names).toHaveLength(reply.map.countries.capital.length + reply.map.settlements.cell.length);
-    expect(reply.names.slice(0, 2)).toEqual(['Karapit', 'Chuen']);
+    expect(reply.names.slice(0, 2)).toEqual(['Kapsembia', 'Chubena']);
     expect(Object.keys(reply.stageMs)).toEqual([
       'shape', 'rain', 'drain', 'climate', 'biomes', 'settle', 'countries', 'regions', 'farm', 'roads', 'lanes', 'features', 'names', 'contexts',
     ]);
