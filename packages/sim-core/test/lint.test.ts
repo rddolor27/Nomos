@@ -254,10 +254,13 @@ describe('the hot-path lint', { timeout: 30_000 }, () => {
       'packages/sim-core/src/consumption/planted.ts',
       'packages/sim-core/src/money/planted.ts',
       'packages/sim-protocol/src/snapshot/planted.ts',
+      'packages/sim-protocol/src/economy/planted.ts',
     ];
     for (const filePath of hot) {
       expect(await hotMessageCount(inTick('g([1])'), filePath), filePath).toBeGreaterThan(0);
     }
+    const feedCreator = 'export function createFeed(): { a: Int32Array } {\n  return { a: new Int32Array(4) };\n}\n';
+    expect(await hotMessageCount(feedCreator, 'packages/sim-protocol/src/economy/planted.ts')).toBe(0);
     const cold = [
       'packages/sim-core/src/random/planted.ts',
       'packages/sim-core/src/memory/planted.ts',

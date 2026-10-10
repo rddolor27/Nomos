@@ -68,8 +68,13 @@ function syntaxBansWithout(exempt) {
 
 // Every sim-core concern folder is per-tick code by default, so a new one is linted from its first file, and cold code
 // says so with a COLD name. random/ (the variadic draw and below serve non-tick code), memory/ (take makes the views at
-// creation), apportion.ts (BigInt, R4) and warm.ts (a throwaway world) never run per tick.
-const HOT_FOLDERS = ['packages/sim-core/src/*/**/*.ts', 'packages/sim-protocol/src/snapshot/**/*.ts'];
+// creation), apportion.ts (BigInt, R4) and warm.ts (a throwaway world) never run per tick. sim-protocol's snapshot writer and
+// economy feed run in the worker's turn, so they are hot too.
+const HOT_FOLDERS = [
+  'packages/sim-core/src/*/**/*.ts',
+  'packages/sim-protocol/src/snapshot/**/*.ts',
+  'packages/sim-protocol/src/economy/**/*.ts',
+];
 const NOT_HOT = [
   'packages/sim-core/src/{random,memory}/**',
   'packages/sim-core/src/maths/apportion.ts',
