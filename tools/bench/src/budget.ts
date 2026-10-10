@@ -1,8 +1,9 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
-import { BUDGET_ROWS, TIERS } from './compute/budgets.ts';
+import { BUDGET_ROWS, MIN_SAMPLES, SPAWN_ROW, TIERS } from './compute/budgets.ts';
 import { formatVerdict, judge } from './compute/judge.ts';
 import { readLoadavg } from './machine/loadavg.ts';
 import { SAMPLE_DAYS, sampleTier } from './compute/sample.ts';
+import { sampleSpawn } from './compute/spawn.ts';
 
 const RESULTS = new URL('../bench-results/', import.meta.url);
 
@@ -18,7 +19,21 @@ const runs = TIERS.map((tier) => {
   return { tier, loadavg: { before, after }, verdicts, samples: days };
 });
 
+// Spawning is timed once a sample, not per tick, so it has its own run beside the tiers'.
+const spawnBefore = readLoadavg();
+const spawnSamples = sampleSpawn(MIN_SAMPLES, () => performance.now());
+const spawnAfter = readLoadavg();
+const spawnVerdicts = judge([SPAWN_ROW], 'desktop', spawnSamples);
+console.log(`spawn: loadavg ${spawnBefore} before, ${spawnAfter} after`);
+for (const verdict of spawnVerdicts) console.log(formatVerdict(verdict));
+const spawn = {
+  loadavg: { before: spawnBefore, after: spawnAfter },
+  verdicts: spawnVerdicts,
+  samples: { [SPAWN_ROW.system]: Array.from(spawnSamples[SPAWN_ROW.system]) },
+};
+
 mkdirSync(RESULTS, { recursive: true });
-const report = { engine: 'node', version: process.version, v8: process.versions.v8, runs };
+const report = { engine: 'node', version: process.version, v8: process.versions.v8, runs, spawn };
 writeFileSync(new URL('budget-node.json', RESULTS), `${JSON.stringify(report, null, 2)}\n`);
-if (runs.some((run) => run.verdicts.some((verdict) => !verdict.pass))) process.exitCode = 1;
+const failed = [...runs.flatMap((run) => run.verdicts), ...spawnVerdicts].some((verdict) => !verdict.pass);
+if (failed) process.exitCode = 1;

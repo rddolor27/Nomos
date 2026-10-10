@@ -16,6 +16,10 @@ export const BUDGET_ROWS: readonly BudgetRow[] = [
   { system: 'snapshot', reduce: 'mean', rmMs: { phone: 0.1, 'phone-plus': 0.2, desktop: 0.6 } },
 ];
 
+// In ms to spawn 100k people, not per tick, so it stays out of BUDGET_ROWS, which sampleTier times at every tier.
+// Measured 33.2 ms (fastest of 9, Node 24.18, Windows), rounded up to 5 ms; M9 spawns only districts in view, never 100k at once.
+export const SPAWN_ROW: BudgetRow = { system: 'spawn', reduce: 'mean', rmMs: { desktop: 35 } };
+
 export const TIERS: readonly Tier[] = ['phone', 'phone-plus', 'desktop'];
 
 // Medians drifted 10.8% between runs on a shared machine, so the gate judges the fastest of at least 9 samples (R5).
