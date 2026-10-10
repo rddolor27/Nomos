@@ -29,14 +29,14 @@ The owner can overturn any of these.
 - **Spawn:** the bench row for 100,000 agents is 35 ms, since M9 spawns only the districts in view.
 - **The economy (M2.3):**
   - the pay-cut target is a tier-2 gap until M5's treasury brings inflation;
-  - `burnInDays` is 17,295, from a 40,000-day run (Ruling 18);
-  - no credit line, since Ruling 14's trigger didn't trip (s.d. 0.0104); recheck at M2.2b and M5;
-  - exits off in `CITY` (`shortPayExitPpm` 0) until entry is designed; not yet applied.
+  - `burnInDays` is 18,428, from a 40,000-day run with exits off (Ruling 18);
+  - no credit line, since Ruling 14's trigger didn't trip (s.d. 0.0110 on seeds 2001–2050); recheck at M2.2b and M5;
+  - exits off in `CITY` (`shortPayExitPpm` 0) until entry is designed (Ruling 19), so the exit target is a tier-2 gap meanwhile.
 
 ## Open
 
 Beyond the checkpoint's Open list:
-- **Browser specs.** `hud.spec.ts`'s "zooms and pans", `town-skin.spec.ts`'s 2560×1440 case and `map-goto.spec.ts` are fixed by pausing the sim or crowding the scene (9d4c402, 25a084b, c44c526, fa9f56f). `map-crowd.spec.ts` went with the map crowd (75e2652); its one zoom-bar test moved to `map-goto.spec.ts`. CI's browser job has failed on every push since 01:42 on 10 October.
+- **Browser specs.** `hud.spec.ts`'s "zooms and pans", `town-skin.spec.ts`'s 2560×1440 case and `map-goto.spec.ts` are fixed by pausing the sim or crowding the scene (9d4c402, 25a084b, c44c526, fa9f56f). `map-crowd.spec.ts` went with the map crowd (75e2652); its one zoom-bar test moved to `map-goto.spec.ts`. CI passed its check and browser jobs on 3476e70 (run 81, read before the git-only ruling); later runs weren't read.
 - **Stale docs:**
   - the 48×28 town in `place-camera.test.ts:11`, `interfaces.md`'s Places sizes, `countries.md:46`, the M3.1 plan (line 41) and the M0.4 plan (line 83);
   - the old hash `b3b2c251` in `interfaces.md:163`, the M8.1 plan (line 300) and the M8.3 plan (lines 85 and 1844).
@@ -44,6 +44,7 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 10 Oct: **M2.3 closed** (41febe1..9a1bbff), with the review's fixes. Exits are off in `CITY` (Ruling 19). A hire resets the spell count, the slow-search bound applies only when someone is slow, and `design --out` must be new or empty. Okun is measured on units produced, and `design` runs 2 threads off CI. With exits off, the burn-in is 18,428 days. On seeds 2001–2050 all six tier-1 targets hold, Okun holds at −0.81, and `unemployment_sd` is 0.0110. The long test passed 13/13 in 74 s, and the goldens held (`6a652730`, `746a06a3`).
 - 10 Oct: **the world map's walking dots removed** (owner; 75e2652, f1f9341, 1090702). The app, the map renderer, the protocol and worldgen lose the map crowd, and `interfaces.md` follows. No world or replay hash moves, since the crowd was never in the world. The M8.1, M8.3 and M3.1 plans say so too, and M8.3's Tasks 16–19 point to git for their old steps.
 - 10 Oct: **git only, no `gh`** (owner). The M0 and M1.6 plans no longer name `gh`: their CI steps now just push `main`, and the owner starts `release.yml` from the Actions page.
 - 10 Oct: **testing and rules restructured** (owner). `pnpm check` runs every check but the browser specs, and CI's check job runs only it. The stdlib workflow and the engine scripts are gone, perf runs by hand, and the place tests check 2 worlds. `pnpm check` passed locally in 349 s, with the unit tests at 65 s, down from 175 s.
