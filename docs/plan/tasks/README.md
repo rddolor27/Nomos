@@ -61,7 +61,7 @@ The plan's own effort lines sum to about 221.5–340.5 days before launch, but m
 | --- | --- | --- | --- |
 | [M2.1 Lengnick core](m2-economy/m2.1-lengnick-core/task.md) | Lengnick's households and firms in fixed and fiat money, passing the known-answer tests | 7–10 days | [step plan](m2-economy/m2.1-lengnick-core/plan.md) |
 | [M2.2 Spawn and fold](m2-economy/m2.2-spawn-and-fold/task.md) | A city spawned from a ledger record and folded back into it exactly | 2–3.5 days | [step plan](m2-economy/m2.2-spawn-and-fold/plan.md) |
-| [M2.3 Calibration and design runner](m2-economy/m2.3-calibration-and-design-runner/task.md) | Two presets that hit the measured economy targets, and a headless design runner | 4–7 days | [brief](m2-economy/m2.3-calibration-and-design-runner/plan.md) |
+| [M2.3 Calibration and design runner](m2-economy/m2.3-calibration-and-design-runner/task.md) | Two presets that hit the measured economy targets, and a headless design runner | 4–7 days | [step plan](m2-economy/m2.3-calibration-and-design-runner/plan.md) |
 | [M2.4 Goods and food](m2-economy/m2.4-goods-and-food/task.md) | Eight sectors, a call auction per good, and dated food lots that balance in portions | 4–6.5 days | [brief](m2-economy/m2.4-goods-and-food/plan.md) |
 | [M2.5 Household wealth](m2-economy/m2.5-household-wealth/task.md) | Balance sheets, dividends, saving by income quintile, and wealth spawned from the record | 4–6.5 days | [brief](m2-economy/m2.5-household-wealth/plan.md) |
 | [M2.6 Culture in the basket](m2-economy/m2.6-culture-in-the-basket/task.md) | Culture that moves food tastes only, at equal cost and independent of wealth | 3–5 days | [brief](m2-economy/m2.6-culture-in-the-basket/plan.md) |
