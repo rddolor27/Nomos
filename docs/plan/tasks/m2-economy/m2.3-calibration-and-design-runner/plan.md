@@ -45,6 +45,7 @@ The owner let the coordinator settle M2.3's open questions. These rulings are th
    - At month end, a firm with workers whose pay per worker fell below `shortPayExitPpm` of its wage (A15) exits.
    - Its workers are laid off and its stock is written off into `STAT_WRITE_OFF`. The row re-enters at once as M2.1 Ruling 7's entrant, keeping the few cents A15 left it, so no money moves.
    - An idle exit writes its stock off too, which closes M2.1's write-off flag.
+   - `CITY`'s exits are off (Ruling 19). `shortPayExitPpm` stays a param, and the tests switch the mechanism on.
 6. **The city's markup band binds.** With `markupClamp` 1, a price step stops at the band's edge. `LENGNICK` keeps 0, Lengnick's rule, where the band only gates a step. That rule, plus wage cuts, explains M2.1's 66% of firm-months above 1.15.
 7. **`stockHighPpm` becomes the excess over one month's demand,** like the markups, because `mulPpm` takes at most 1,000,000 ppm. `LENGNICK`'s 1,000,000 becomes 0, the same band.
 8. **The flow log is the stats row.**
@@ -96,6 +97,14 @@ The owner let the coordinator settle M2.3's open questions. These rulings are th
     - Over 40,000 days, MSER-5 cuts 11,530 days of the mean price and 10,900 of the unemployment share, so `burnInDays` is 17,295 (measured here).
     - After day 11,000 the mean price still drifts down about 0.06% per 1,000 days (measured here).
     - Measured after day 17,295 on seeds 1–20, all six tier-1 targets hold, with more room than after day 10,000. Seeds 1001–1050 were still unseen.
+    - Ruling 19 then turned the city's exits off, which moved the price's cut. The same run (seeds 1–5, 40,000 days, Node 24.18.0) now cuts 12,285 days of the mean price and 10,900 of the unemployment share, both in its first half, so `burnInDays` is 18,428 (measured here).
+19. **`CITY`'s exits stay off until entry is designed** (coordinator, 10 October 2026), after the M2.3 review found a loop.
+    - **The bug:** a re-entered firm row has 0 workers. Shop search weights shops by workers (`firmByWorkers`) and runs before job search in `startMonth`, so no household ever links to the row (measured by the review).
+    - **The loop:** the row hires, sells nothing, pays under 30% of its wage and exits again, every month. On seed 1001, 98% of the exits were repeats (measured by the review).
+    - **The ruling:** `CITY.shortPayExitPpm` is 0. `LENGNICK` doesn't move, and the economy golden stays `6a652730`.
+    - The exit target, 1.45–1.65% of firm-months, is a tier-2 documented gap meanwhile: the city's exits are 0 on every seed (measured here).
+    - With exits off on seeds 1–20 (warm-up 10,000 days), all six tier-1 targets still hold (measured here).
+    - The burn-in was measured again (Ruling 18), and the re-tune was confirmed once on seeds 2001–2050, since the review had seen 1001–1050 (Ruling 12).
 
 ## The two presets
 
