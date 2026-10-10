@@ -4,6 +4,7 @@ import { shopDay } from '../consumption/shop.ts';
 import { decideFirms } from '../firms/decide.ts';
 import { produce } from '../firms/produce.ts';
 import { closeFirmMonth } from '../firms/renew.ts';
+import { layOff, layOffExiting } from '../labour/layoffs.ts';
 import { fireOnNotice } from '../labour/notice.ts';
 import { updateReservationWages } from '../labour/reservation.ts';
 import { searchJobs } from '../labour/search.ts';
@@ -31,21 +32,25 @@ export function startMonth(world: World, params: EconomyParams, month: number): 
 }
 
 // A14 and A17: pay comes first, since the reservation wage reads it and a notice lays off only after it. Profits empty an
-// idle firm before closeFirmMonth can retire its row, so an exit moves no money (Ruling 7).
+// idle firm before closeFirmMonth can retire its row, so an exit moves no money (Ruling 7), and the workers of a firm that
+// exited short of pay lose their jobs right after.
 export function endMonth(world: World, params: EconomyParams, month: number): void {
   payWages(world);
   updateReservationWages(world, params);
   fireOnNotice(world, month);
   distributeProfits(world, params, month);
   closeFirmMonth(world, params);
+  layOffExiting(world);
   issueFiat(world, params, month);
 }
 
-// Day 0 opens month 0. The step does not call this yet, so tests and the CLI run it once per sim day.
-export function economyDay(world: World, params: EconomyParams, day: number): void {
+// Day 0 opens month 0. The step does not call this yet, so tests and the CLI run it once per sim day. layoffs is a
+// scenario's unemployment shock: that many people lose their jobs at the day's start, before a month's first search.
+export function economyDay(world: World, params: EconomyParams, day: number, layoffs = 0): void {
   const month = monthOf(day);
   const dayInMonth = dayOfMonth(day);
   clearFlows(world.economyScratch.stats);
+  if (layoffs > 0) layOff(world, layoffs, day);
   if (dayInMonth === 0) startMonth(world, params, month);
   // A2: households shop before firms produce, so a purchase takes earlier output.
   shopDay(world, params, day);

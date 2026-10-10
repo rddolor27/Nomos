@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { CITY } from '../src/economy/city.ts';
 import { economyDay } from '../src/economy/economy.ts';
 import { LENGNICK, type EconomyParams } from '../src/economy/params.ts';
 import { startEconomy } from '../src/economy/start.ts';
@@ -19,6 +20,7 @@ type Row = Record<string, number>;
 
 const SEEDS = [1, 2, 3];
 const DAYS = 2_500;
+const SHOCKS: Readonly<Record<number, number>> = { 1_000: 50, 1_050: 30 };
 const LAST_DAY_OF_MONTH = DAYS_PER_MONTH - 1;
 const LAST_DAY_OF_YEAR = DAYS_PER_YEAR - 1;
 const NO_FIRM = -1;
@@ -49,35 +51,47 @@ function expectBalanced(was: Row, now: Row, label: string): void {
   expect(now.taxes, `${label}: taxes`).toBe(0);
 }
 
-// Runs the days from day 1 and returns each column's total, so a test can tell its identities were not met by zeros.
-function runBalanced(params: EconomyParams, seed: number, days: number): Row {
+// Runs the days, with the layoffs a scenario asks for on its days, and checks every day from day 1 against the day before.
+// Returns the rows, so a test can tell its identities were not met by zeros.
+function runBalanced(params: EconomyParams, seed: number, days: number, shocks: Readonly<Record<number, number>> = {}): Row[] {
   const world = startedWorld(seed, params);
-  economyDay(world, params, 0);
-  let was = rowOf(world);
-  const totals: Row = Object.fromEntries(STAT_NAMES.map((name) => [name, 0]));
-  for (let day = 1; day < days; day++) {
-    economyDay(world, params, day);
-    const now = rowOf(world);
-    expectBalanced(was, now, `seed ${seed}, day ${day}`);
-    for (const name of STAT_NAMES) totals[name] += now[name];
-    was = now;
+  const rows: Row[] = [];
+  for (let day = 0; day < days; day++) {
+    economyDay(world, params, day, shocks[day] ?? 0);
+    rows.push(rowOf(world));
+    if (day > 0) expectBalanced(rows[day - 1], rows[day], `seed ${seed}, day ${day}`);
   }
-  return totals;
+  return rows;
+}
+
+function totalOf(rows: readonly Row[], name: string): number {
+  return rows.reduce((sum, row) => sum + row[name], 0);
 }
 
 describe('the flow log', () => {
   it('balances jobs, money and goods every day', { timeout: 120_000 }, () => {
     for (const seed of SEEDS) {
-      const totals = runBalanced(LENGNICK, seed, DAYS);
+      const rows = runBalanced(LENGNICK, seed, DAYS);
       for (const name of ['hires', 'firings', 'wage_bill', 'profits_paid', 'sales_cents', 'sales_units', 'produced']) {
-        expect(totals[name], `seed ${seed}: ${name}`).toBeGreaterThan(0);
+        expect(totalOf(rows, name), `seed ${seed}: ${name}`).toBeGreaterThan(0);
       }
     }
   });
 
   it('balances the money an issue adds to households', { timeout: 60_000 }, () => {
-    const totals = runBalanced({ ...LENGNICK, fiatIssuePpm: 10_000 }, 4, 1_000);
-    expect(totals.issued).toBeGreaterThan(0);
+    const rows = runBalanced({ ...LENGNICK, fiatIssuePpm: 10_000 }, 4, 1_000);
+    expect(totalOf(rows, 'issued')).toBeGreaterThan(0);
+  });
+
+  it('balances the city through two layoff shocks, short-pay exits and slow searchers', { timeout: 120_000 }, () => {
+    // Day 1,000 is a day 13 of its month and day 1,050 a day 0, so the shock comes alone and then before a search.
+    for (const seed of SEEDS) {
+      const rows = runBalanced(CITY, seed, DAYS, SHOCKS);
+      expect([rows[1_000].firings, rows[1_050].firings], `seed ${seed}`).toEqual([50, 30]);
+      for (const name of ['hires', 'job_visits', 'exits', 'write_off', 'spell_months']) {
+        expect(totalOf(rows, name), `seed ${seed}: ${name}`).toBeGreaterThan(0);
+      }
+    }
   });
 
   it('sets the spell and year columns on the days that close a month and a year, and on no others', () => {

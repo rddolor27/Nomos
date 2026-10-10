@@ -7,7 +7,8 @@ import { DAYS_PER_MONTH } from '../time/calendar.ts';
 // and cents for money. The paper's symbols: psi_price priceSearchPpm, xi cheaperPpm, psi_quant stockoutSearchPpm, beta
 // jobSearches, pi onJobSearchPpm, alpha consumptionPowerPpm, gamma wageCutMonths, delta wageStepPpm, phi stockLowPpm and
 // stockHighPpm, phi_p - 1 markupLowPpm and markupHighPpm, vartheta priceStepPpm, theta priceChancePpm, lambda
-// unitsPerWorkerDay and chi bufferPpm.
+// unitsPerWorkerDay and chi bufferPpm. The city mechanisms (M2.3) have no symbol: slowSearcherPpm, slowJobSearches,
+// shortPayExitPpm and markupClamp, which LENGNICK leaves off.
 export interface EconomyParams {
   readonly households: number;
   readonly firms: number;
@@ -15,16 +16,23 @@ export interface EconomyParams {
   readonly cheaperPpm: number;
   readonly stockoutSearchPpm: number;
   readonly jobSearches: number;
+  // The share of people, fixed for life and drawn from the person alone (labour/search.ts), who visit only slowJobSearches
+  // firms a month while unemployed, where everyone else visits jobSearches. 0 makes nobody slow.
+  readonly slowSearcherPpm: number;
+  readonly slowJobSearches: number;
   readonly onJobSearchPpm: number;
   readonly consumptionPowerPpm: number;
   readonly reservationCutPpm: number;
   readonly wageCutMonths: number;
   readonly wageStepPpm: number;
   readonly stockLowPpm: number;
+  // The excess over a month's demand, like the markups, because mulPpm takes 0 to 1,000,000 ppm.
   readonly stockHighPpm: number;
-  // The excess over 1, because mulPpm takes 0 to 1,000,000 ppm.
+  // The excess over 1, for the same reason.
   readonly markupLowPpm: number;
   readonly markupHighPpm: number;
+  // 1 stops a price step at the edge of the markup band, 0 (Lengnick's rule) lets the band only gate a step.
+  readonly markupClamp: number;
   readonly priceStepPpm: number;
   readonly priceChancePpm: number;
   readonly unitsPerWorkerDay: number;
@@ -32,6 +40,8 @@ export interface EconomyParams {
   // Units; 0 turns the floor off, as it does exit below.
   readonly demandFloor: number;
   readonly idleMonthsToExit: number;
+  // A firm with workers that paid them under this share of its wage at a month's end exits; 0 turns it off (A15).
+  readonly shortPayExitPpm: number;
   // A month's issue as a share of the money stock; 0 is closed money.
   readonly fiatIssuePpm: number;
   readonly openingCash: number;
@@ -48,21 +58,25 @@ export const LENGNICK = Object.freeze<EconomyParams>({
   cheaperPpm: 10_000,
   stockoutSearchPpm: 250_000,
   jobSearches: 5,
+  slowSearcherPpm: 0,
+  slowJobSearches: 5,
   onJobSearchPpm: 100_000,
   consumptionPowerPpm: 900_000,
   reservationCutPpm: 100_000,
   wageCutMonths: 24,
   wageStepPpm: 19_000,
   stockLowPpm: 250_000,
-  stockHighPpm: 1_000_000,
+  stockHighPpm: 0,
   markupLowPpm: 25_000,
   markupHighPpm: 150_000,
+  markupClamp: 0,
   priceStepPpm: 20_000,
   priceChancePpm: 750_000,
   unitsPerWorkerDay: 3,
   bufferPpm: 100_000,
   demandFloor: 63,
   idleMonthsToExit: 3,
+  shortPayExitPpm: 0,
   fiatIssuePpm: 0,
   openingCash: 310_000,
   openingWage: 142_800,
@@ -85,6 +99,8 @@ export function checkParams(params: EconomyParams, tier: Tier): void {
   requireBetween('fiatIssuePpm', params.fiatIssuePpm, 0, MAX_FIAT_ISSUE_PPM);
   requireBetween('wageCutMonths', params.wageCutMonths, 0, MAX_MONTH_COUNT);
   requireBetween('idleMonthsToExit', params.idleMonthsToExit, 0, MAX_MONTH_COUNT);
+  requireBetween('slowJobSearches', params.slowJobSearches, 1, params.jobSearches);
+  requireBetween('markupClamp', params.markupClamp, 0, 1);
   checkOpeningPrice(params);
 }
 

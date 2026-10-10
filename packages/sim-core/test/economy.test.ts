@@ -242,6 +242,35 @@ describe('economyDay', () => {
     expect(stats[STAT_FIRM_CASH]).toBe(firmCash(world));
   });
 
+  it('lays off the number of people it is given at the start of the day, as firings, and only that day', () => {
+    const world = startedWorld(7);
+    const stats = world.economyScratch.stats;
+    runDays(world, LENGNICK, 0, 10);
+    const employed = employedHouseholds(world);
+    // Day 10 has no search and no notice in it, so the shock is all that moves jobs.
+    economyDay(world, LENGNICK, 10, 25);
+    expect(stats[STAT_FIRINGS]).toBe(25);
+    expect(employedHouseholds(world)).toBe(employed - 25);
+    expect(workers(world)).toBe(employed - 25);
+    expect(stats[STAT_UNEMPLOYED]).toBe(HOUSEHOLDS - employed + 25);
+    economyDay(world, LENGNICK, 11);
+    expect(stats[STAT_FIRINGS]).toBe(0);
+  });
+
+  it("lays off before a month's first search, so a month's day 0 can rehire, and keeps the jobs counted", () => {
+    const world = startedWorld(8);
+    const stats = world.economyScratch.stats;
+    runDays(world, LENGNICK, 0, DAYS_PER_MONTH);
+    // No stock opens a vacancy at every firm on the month's first day.
+    world.firms.stock.fill(0, 0, FIRMS);
+    const unemployed = HOUSEHOLDS - employedHouseholds(world);
+    economyDay(world, LENGNICK, DAYS_PER_MONTH, 40);
+    expect(stats[STAT_FIRINGS]).toBe(40);
+    expect(stats[STAT_HIRES]).toBeGreaterThan(0);
+    expect(stats[STAT_UNEMPLOYED]).toBe(unemployed + 40 - stats[STAT_HIRES]);
+    expect(workers(world)).toBe(employedHouseholds(world));
+  });
+
   it("records the day's end from the state", () => {
     const world = startedWorld(4);
     runDays(world, LENGNICK, 0, 50);

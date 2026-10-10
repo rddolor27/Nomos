@@ -18,7 +18,7 @@ export const STAT_STOCK = 6;
 export const STAT_SIZE_SQUARES = 7;
 export const STAT_SIZE_CUBES = 8;
 
-// Every day.
+// The flows follow, each group with the days a system writes it. Every day:
 export const STAT_SALES_UNITS = 9;
 export const STAT_SALES_CENTS = 10;
 // A month's first day. STAT_PRICE_CHANGE_PPM adds up the sizes of the changes.
@@ -26,14 +26,15 @@ export const STAT_PRICE_CHANGES = 11;
 export const STAT_PRICE_CHANGE_PPM = 12;
 export const STAT_HIRES = 13;
 export const STAT_SWITCHES = 14;
-// A month's last day, and the day of a layoff shock.
+// A month's last day, and STAT_FIRINGS also the day of a layoff shock.
 export const STAT_FIRINGS = 15;
 export const STAT_WAGE_BILL = 16;
 export const STAT_PROFITS_PAID = 17;
 export const STAT_EXITS = 18;
 export const STAT_ISSUED = 19;
+// Every day: units made.
 export const STAT_PRODUCED = 20;
-// Units of stock a firm's exit writes off, at a month's last day.
+// A month's last day: units of stock that exits write off.
 export const STAT_WRITE_OFF = 21;
 // A month's first day: visits by the unemployed, and firms priced above the markup ceiling once they have repriced.
 export const STAT_JOB_VISITS = 22;

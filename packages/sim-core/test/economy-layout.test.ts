@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { SUPPLIERS } from '../src/agents/store.ts';
+import { CITY } from '../src/economy/city.ts';
 import { LENGNICK, checkParams, type EconomyParams } from '../src/economy/params.ts';
 import { createEconomyScratch } from '../src/economy/scratch.ts';
 import * as stats from '../src/economy/stats.ts';
@@ -77,21 +78,33 @@ describe('the economy parameters', () => {
       wageCutMonths: 24,
       wageStepPpm: 19_000,
       stockLowPpm: 250_000,
-      stockHighPpm: 1_000_000,
+      stockHighPpm: 0,
       markupLowPpm: 25_000,
       markupHighPpm: 150_000,
+      markupClamp: 0,
       priceStepPpm: 20_000,
       priceChancePpm: 750_000,
       unitsPerWorkerDay: 3,
       bufferPpm: 100_000,
       demandFloor: 63,
       idleMonthsToExit: 3,
+      shortPayExitPpm: 0,
+      slowSearcherPpm: 0,
+      slowJobSearches: 5,
       fiatIssuePpm: 0,
       openingCash: 310_000,
       openingWage: 142_800,
       openingPrice: 2_500,
       burnInDays: 9_893,
     });
+  });
+
+  it('switch the city mechanisms off in the replication', () => {
+    expect([LENGNICK.markupClamp, LENGNICK.shortPayExitPpm, LENGNICK.slowSearcherPpm]).toEqual([0, 0, 0]);
+    // Its slow searchers would look as often as everyone else if the share were on.
+    expect(LENGNICK.slowJobSearches).toBe(LENGNICK.jobSearches);
+    // The top of the stock band is the excess over one month's demand, so 0 is a month.
+    expect(LENGNICK.stockHighPpm).toBe(0);
   });
 
   it('pass the preset in every tier', () => {
@@ -115,7 +128,7 @@ describe('the economy parameters', () => {
 
   it('keep every ppm field within 0 to 1,000,000 and fiat issue within 1% a month', () => {
     const ppm = Object.keys(LENGNICK).filter((field) => field.endsWith('Ppm')) as (keyof EconomyParams)[];
-    expect(ppm).toHaveLength(15);
+    expect(ppm).toHaveLength(17);
     for (const field of ppm) {
       const most = field === 'fiatIssuePpm' ? 10_000 : 1_000_000;
       // A markup of 0 on top, or of 100% below, leaves the opening price outside its band, which is checked on its own.
@@ -131,6 +144,18 @@ describe('the economy parameters', () => {
       accepts({ [field]: 255 });
       refuses({ [field]: 256 }, field);
     }
+  });
+
+  it("keep a slow searcher's visits from 1 up to everyone else's, and the markup clamp a switch", () => {
+    accepts({ slowJobSearches: 1 });
+    accepts({ slowJobSearches: 5 });
+    refuses({ slowJobSearches: 0 }, 'slowJobSearches');
+    refuses({ slowJobSearches: 6 }, 'slowJobSearches');
+    accepts({ jobSearches: 3, slowJobSearches: 3 });
+    refuses({ jobSearches: 3 }, 'slowJobSearches');
+    accepts({ markupClamp: 1 });
+    refuses({ markupClamp: 2 }, 'markupClamp');
+    refuses({ markupClamp: -1 }, 'markupClamp');
   });
 
   it('refuse a fractional or negative field, since cents and counts are whole', () => {
@@ -155,6 +180,38 @@ describe('the economy parameters', () => {
     expect(() => checkParams({ ...LENGNICK, openingPrice: 2_323 }, 'phone')).toThrow(
       "openingPrice prices a month's output at 146349 cents, outside the band 146370 to 164220",
     );
+  });
+});
+
+describe('the city preset', () => {
+  it('writes out every field of the replication, and changes the ones in the presets table', () => {
+    expect(Object.isFrozen(CITY)).toBe(true);
+    const changed = {
+      stockLowPpm: 800_000,
+      stockHighPpm: 600_000,
+      markupLowPpm: 360_000,
+      markupHighPpm: 500_000,
+      markupClamp: 1,
+      openingPrice: 3_200,
+      shortPayExitPpm: 1_000_000,
+      slowSearcherPpm: 100_000,
+      slowJobSearches: 1,
+    };
+    expect(CITY).toEqual({ ...LENGNICK, ...changed });
+    expect(Object.keys(CITY).sort()).toEqual(Object.keys(LENGNICK).sort());
+  });
+
+  it('passes in every tier, with closed money', () => {
+    for (const tier of TIERS) expect(() => checkParams(CITY, tier), tier).not.toThrow();
+    expect(CITY.fiatIssuePpm).toBe(0);
+  });
+
+  it('opens at 1.41 wages for a month of output, inside the markups of 1.36 to 1.50', () => {
+    const monthPrice = DAYS_PER_MONTH * CITY.unitsPerWorkerDay * CITY.openingPrice;
+    // The band is 142,800 + 36% = 194,208 to 142,800 + 50% = 214,200.
+    expect(monthPrice).toBe(201_600);
+    expect(monthPrice).toBeGreaterThanOrEqual(194_208);
+    expect(monthPrice).toBeLessThanOrEqual(214_200);
   });
 });
 
@@ -237,6 +294,7 @@ describe('the economy scratch', () => {
       spellMonths: [Uint8Array, 500],
       yearEmployer: [Int32Array, 500],
       yearWage: [Float64Array, 50],
+      exiting: [Uint8Array, 50],
     } as const;
     for (const name of Object.keys(shapes) as (keyof typeof shapes)[]) {
       const [kind, length] = shapes[name];

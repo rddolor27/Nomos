@@ -1,15 +1,23 @@
 import type { EconomyParams } from '../economy/params.ts';
 import { STAT_HIRES, STAT_JOB_VISITS, STAT_SWITCHES } from '../economy/stats.ts';
 import { PPM } from '../money/ppm.ts';
-import { draw3, draw4 } from '../random/draw.ts';
+import { draw2, draw3, draw4 } from '../random/draw.ts';
 import { keyedShuffle } from '../random/shuffle.ts';
 import { LABOUR_DRAW } from '../random/streams.ts';
 import type { World } from '../world/world.ts';
 
-// Purposes drawn on LABOUR_DRAW, distinct across labour/ so that no two draws share a key.
+// Purposes drawn on LABOUR_DRAW, distinct across labour/ so that no two draws share a key: notice.ts takes 3, layoffs.ts 5.
 const ORDER = 0;
 const SAMPLE = 1;
 const LOOK = 2;
+const SLOW_SEARCHER = 4;
+
+// M2.3 Ruling 4: whether a person visits few firms while unemployed. It is fixed for life and keyed on the person alone,
+// never on a look, a culture, a household, a wallet or anyone else's trait, and no column holds it, so nothing can show it.
+export function isSlowSearcher(seed: number, person: number, slowSearcherPpm: number): boolean {
+  if (slowSearcherPpm === 0) return false;
+  return draw2(seed, LABOUR_DRAW, person, SLOW_SEARCHER) % PPM < slowSearcherPpm;
+}
 
 // A firm row drawn with replacement for sample k of a household's search in a month (A13).
 export function sampledFirm(seed: number, month: number, household: number, sample: number, firms: number): number {
@@ -27,7 +35,9 @@ function searchUnemployed(world: World, params: EconomyParams, month: number, ho
   const firms = world.firms;
   const stats = world.economyScratch.stats;
   const wantedCents = world.agents.reservationWage[household];
-  for (let k = 0; k < params.jobSearches; k++) {
+  const slow = isSlowSearcher(world.seed, household, params.slowSearcherPpm);
+  const visits = slow ? params.slowJobSearches : params.jobSearches;
+  for (let k = 0; k < visits; k++) {
     stats[STAT_JOB_VISITS]++;
     const f = sampledFirm(world.seed, month, household, k, firms.count[0]);
     if (firms.vacancy[f] !== 0 && firms.wage[f] >= wantedCents) {

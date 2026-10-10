@@ -1,13 +1,16 @@
+import { readFileSync, readdirSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { LENGNICK, type EconomyParams } from '../src/economy/params.ts';
 import { STAT_FIRINGS, STAT_HIRES, STAT_JOB_VISITS, STAT_SWITCHES } from '../src/economy/stats.ts';
+import { layOff, layOffExiting } from '../src/labour/layoffs.ts';
 import { fireOnNotice } from '../src/labour/notice.ts';
 import { updateReservationWages } from '../src/labour/reservation.ts';
-import { sampledFirm, searchJobs } from '../src/labour/search.ts';
+import { isSlowSearcher, sampledFirm, searchJobs } from '../src/labour/search.ts';
 import { OK, checkCash } from '../src/money/invariants.ts';
 import { firmAccount, issue } from '../src/money/ledger.ts';
 import { PPM } from '../src/money/ppm.ts';
-import { draw3, draw4 } from '../src/random/draw.ts';
+import { draw2, draw3, draw4 } from '../src/random/draw.ts';
 import { LABOUR_DRAW } from '../src/random/streams.ts';
 import { payWages } from '../src/wages/payroll.ts';
 import { stateHash } from '../src/world/checkpoint.ts';
@@ -52,6 +55,23 @@ function expectCounted(world: World, label: string): void {
 
 function reservationWagesOf(world: World, households: number): number[] {
   return Array.from(world.agents.reservationWage.subarray(0, households));
+}
+
+// Pearson's test of independence on a rows x cols table, with expected counts from its margins.
+function chiSquaredIndependence(table: Uint32Array, rows: number, cols: number, total: number): number {
+  const rowSums = new Float64Array(rows);
+  const colSums = new Float64Array(cols);
+  for (let i = 0; i < table.length; i++) {
+    rowSums[Math.floor(i / cols)] += table[i];
+    colSums[i % cols] += table[i];
+  }
+  let sum = 0;
+  for (let i = 0; i < table.length; i++) {
+    const expected = (rowSums[Math.floor(i / cols)] * colSums[i % cols]) / total;
+    const diff = table[i] - expected;
+    sum += (diff * diff) / expected;
+  }
+  return sum;
 }
 
 describe('updateReservationWages', () => {
@@ -339,6 +359,134 @@ describe('searchJobs', () => {
   });
 });
 
+// The unemployed searcher's visits when nobody is hiring: all of them, whatever its reach.
+function visitsOf(world: World, person: number, params: EconomyParams, month = 0): number {
+  world.agents.employer[person] = NO_FIRM;
+  world.firms.employees[0]--;
+  world.economyScratch.stats.fill(0);
+  searchJobs(world, params, month);
+  const visits = world.economyScratch.stats[STAT_JOB_VISITS];
+  employ(world, person, 0);
+  return visits;
+}
+
+// People 0 to people - 1 all work at firm 0, so a person who loses the job is the only unemployed searcher.
+function workingWorld(people: number): World {
+  const world = labourWorld(people, 6);
+  clearJobs(world);
+  for (let h = 0; h < people; h++) employ(world, h, 0);
+  return world;
+}
+
+describe('the slow searchers', () => {
+  const PEOPLE = 300;
+  const SLOW: EconomyParams = { ...LENGNICK, slowSearcherPpm: 300_000, slowJobSearches: 1 };
+  const slowByDraw = (person: number, share: number): boolean => draw2(42, LABOUR_DRAW, person, 4) % PPM < share;
+
+  it('visit at most slowJobSearches firms while everyone else visits jobSearches', () => {
+    const world = workingWorld(PEOPLE);
+    let slow = 0;
+    for (let person = 0; person < PEOPLE; person++) {
+      const visits = visitsOf(world, person, SLOW);
+      expect(visits, `person ${person}`).toBe(slowByDraw(person, SLOW.slowSearcherPpm) ? SLOW.slowJobSearches : SLOW.jobSearches);
+      if (visits === SLOW.slowJobSearches) slow++;
+    }
+    // A share of 300,000 ppm is 90 of 300, with an SD of 8.
+    expect(slow).toBeGreaterThan(60);
+    expect(slow).toBeLessThan(120);
+  });
+
+  it('are nobody at a share of 0 and everybody at a share of 1,000,000', () => {
+    const world = workingWorld(50);
+    for (let person = 0; person < 50; person++) {
+      expect(visitsOf(world, person, { ...SLOW, slowSearcherPpm: 0 }), `person ${person}`).toBe(SLOW.jobSearches);
+      expect(visitsOf(world, person, { ...SLOW, slowSearcherPpm: PPM }), `person ${person}`).toBe(SLOW.slowJobSearches);
+    }
+  });
+
+  it('keep their reach for life, month after month', () => {
+    const world = workingWorld(100);
+    const reach = (month: number): number[] => Array.from({ length: 100 }, (_, person) => visitsOf(world, person, SLOW, month));
+    const first = reach(0);
+    expect(first).toContain(SLOW.slowJobSearches);
+    for (const month of [1, 2, 17, 400]) expect(reach(month), `month ${month}`).toEqual(first);
+  });
+
+  it('are drawn from the person and purpose 4 of LABOUR_DRAW alone, which a replay depends on', () => {
+    for (const seed of [1, 42, 0xffff_ffff]) {
+      for (const person of [0, 1, 7, 9_999]) {
+        expect(isSlowSearcher(seed, person, 300_000), `seed ${seed}, person ${person}`).toBe(
+          draw2(seed, LABOUR_DRAW, person, 4) % PPM < 300_000,
+        );
+      }
+    }
+    expect(isSlowSearcher(42, 3, 0)).toBe(false);
+    expect(isSlowSearcher(42, 3, PPM)).toBe(true);
+  });
+
+  it("do not depend on a look, a culture, a home, a wallet or a reservation wage", () => {
+    const world = workingWorld(PEOPLE);
+    const { agents, households, cash } = world;
+    const reach = (): number[] => Array.from({ length: PEOPLE }, (_, person) => visitsOf(world, person, SLOW));
+    const before = reach();
+    for (let person = 0; person < PEOPLE; person++) {
+      agents.look[person] = (person * 37 + 11) % 96;
+      agents.culture[person] = (person * 5 + 1) % 4;
+      agents.birthCulture[person] = (person * 3 + 2) % 4;
+      agents.customs[person] = 0x3210 + person;
+      agents.homeRegion[person] = person % 17;
+      households.size[person] = 1 + (person % 5);
+      cash.balance[cash.firstWallet + person] = 1_000 * person * person;
+      agents.reservationWage[person] = 50 + person;
+    }
+    expect(reach()).toEqual(before);
+  });
+
+  it('are spread evenly over looks and cultures, and are not shared by neighbouring people', () => {
+    const people = 10_000;
+    const { agents } = createWorld(42, 'phone', undefined, people);
+    const hues = 6;
+    const cultures = 4;
+    const byHue = new Uint32Array(hues * 2);
+    const byCulture = new Uint32Array(cultures * 2);
+    const pairs = new Uint32Array(4);
+    for (let person = 0; person < people; person++) {
+      const slow = isSlowSearcher(42, person, 300_000) ? 1 : 0;
+      byHue[(agents.look[person] % hues) * 2 + slow]++;
+      byCulture[agents.culture[person] * 2 + slow]++;
+      if (person % 2 === 0) pairs[slow * 2 + (isSlowSearcher(42, person + 1, 300_000) ? 1 : 0)]++;
+    }
+    // Pearson's test of independence at p = 0.001: 5, 3 and 1 degrees of freedom.
+    expect(chiSquaredIndependence(byHue, hues, 2, people)).toBeLessThan(20.52);
+    expect(chiSquaredIndependence(byCulture, cultures, 2, people)).toBeLessThan(16.27);
+    expect(chiSquaredIndependence(pairs, 2, 2, people / 2)).toBeLessThan(10.83);
+    const slowShare = (byHue[1] + byHue[3] + byHue[5] + byHue[7] + byHue[9] + byHue[11]) / people;
+    expect(slowShare).toBeGreaterThan(0.28);
+    expect(slowShare).toBeLessThan(0.32);
+  });
+
+  it('are named in no code that draws a look, reads a culture or renders a body', () => {
+    const roots = [
+      '../../sim-culture/src',
+      '../src/consumption',
+      '../src/agents',
+      '../../sim-protocol/src/snapshot',
+      '../../render-gl/src',
+    ];
+    const trait = /slowSearcher|isSlowSearcher|slowJobSearches|SLOW_SEARCHER|LABOUR_DRAW/;
+    let scanned = 0;
+    for (const root of roots) {
+      const dir = fileURLToPath(new URL(root, import.meta.url));
+      for (const file of readdirSync(dir, { recursive: true, encoding: 'utf8' })) {
+        if (!file.endsWith('.ts')) continue;
+        expect(readFileSync(`${dir}/${file}`, 'utf8'), `${root}/${file}`).not.toMatch(trait);
+        scanned++;
+      }
+    }
+    expect(scanned).toBeGreaterThan(20);
+  });
+});
+
 describe('sampledFirm', () => {
   const firmsAt = (month: number, sample: number): number[] =>
     Array.from({ length: 300 }, (_, h) => sampledFirm(42, month, h, sample, 100));
@@ -356,6 +504,112 @@ describe('sampledFirm', () => {
     for (const [month, household, sample] of [[7, 3, 2], [0, 0, 0], [251, 9_999, 4]]) {
       expect(sampledFirm(42, month, household, sample, 1_000)).toBe(draw4(42, LABOUR_DRAW, month, household, sample, 1) % 1_000);
     }
+  });
+});
+
+describe('layOff', () => {
+  const PEOPLE = 200;
+  const FIRMS = 20;
+
+  function crowdedWorld(): World {
+    const world = labourWorld(PEOPLE, FIRMS);
+    clearJobs(world);
+    for (let h = 0; h < PEOPLE; h++) employ(world, h, h % FIRMS);
+    return world;
+  }
+
+  it('lays off exactly count employed people, counts them as firings and keeps every headcount', () => {
+    const world = crowdedWorld();
+    layOff(world, 50, 1_000);
+    expect(laidOff(world, PEOPLE)).toHaveLength(50);
+    expect(world.economyScratch.stats[STAT_FIRINGS]).toBe(50);
+    expect(Array.from(world.firms.employees.subarray(0, FIRMS)).reduce((sum, staff) => sum + staff, 0)).toBe(PEOPLE - 50);
+    expectCounted(world, 'after the shock');
+  });
+
+  it('adds to the firings already counted that day', () => {
+    const world = crowdedWorld();
+    world.economyScratch.stats[STAT_FIRINGS] = 4;
+    layOff(world, 10, 3);
+    expect(world.economyScratch.stats[STAT_FIRINGS]).toBe(14);
+  });
+
+  it('picks the same people for the same seed and day, and others on another day', () => {
+    const [first, again, other] = [1_000, 1_000, 1_001].map((day) => {
+      const world = crowdedWorld();
+      layOff(world, 50, day);
+      return laidOff(world, PEOPLE);
+    });
+    expect(again).toEqual(first);
+    expect(other).not.toEqual(first);
+  });
+
+  it('lays off every employed person when count is larger, and leaves the unemployed alone', () => {
+    const world = crowdedWorld();
+    for (let h = 0; h < 20; h++) {
+      world.agents.employer[h] = NO_FIRM;
+      world.firms.employees[h % FIRMS]--;
+    }
+    layOff(world, 1_000, 7);
+    expect(laidOff(world, PEOPLE)).toHaveLength(PEOPLE);
+    expect(world.economyScratch.stats[STAT_FIRINGS]).toBe(PEOPLE - 20);
+    expect(Array.from(world.firms.employees.subarray(0, FIRMS))).toEqual(new Array(FIRMS).fill(0));
+  });
+
+  it('lays nobody off for a count of 0', () => {
+    const world = crowdedWorld();
+    layOff(world, 0, 7);
+    expect(laidOff(world, PEOPLE)).toEqual([]);
+    expect(world.economyScratch.stats[STAT_FIRINGS]).toBe(0);
+  });
+
+  it('picks in a keyed order, so each person goes about equally often and not the first in the index', () => {
+    const world = crowdedWorld();
+    const picks = new Array<number>(PEOPLE).fill(0);
+    for (let day = 0; day < 400; day++) {
+      clearJobs(world);
+      for (let h = 0; h < PEOPLE; h++) employ(world, h, h % FIRMS);
+      layOff(world, 20, day);
+      for (const person of laidOff(world, PEOPLE)) picks[person]++;
+    }
+    // 40 expected for each person, with an SD of 6.
+    expect(Math.min(...picks)).toBeGreaterThan(10);
+    expect(Math.max(...picks)).toBeLessThan(75);
+  });
+});
+
+describe('layOffExiting', () => {
+  function crowdedWorld(): World {
+    const world = labourWorld(40, 4);
+    clearJobs(world);
+    for (let h = 0; h < 40; h++) employ(world, h, h % 4);
+    return world;
+  }
+
+  it('lays off everyone at a firm marked as exiting, counts them, and empties those firms', () => {
+    const world = crowdedWorld();
+    world.economyScratch.exiting[1] = 1;
+    world.economyScratch.exiting[3] = 1;
+    layOffExiting(world);
+    expect(laidOff(world, 40)).toEqual(Array.from({ length: 20 }, (_, i) => 1 + 2 * i));
+    expect(Array.from(world.firms.employees.subarray(0, 4))).toEqual([10, 0, 10, 0]);
+    expect(world.economyScratch.stats[STAT_FIRINGS]).toBe(20);
+    expectCounted(world, 'after the exits');
+  });
+
+  it('reads only the firms the store counts', () => {
+    const world = crowdedWorld();
+    world.economyScratch.exiting[4] = 1;
+    layOffExiting(world);
+    expect(laidOff(world, 40)).toEqual([]);
+  });
+
+  it('changes nothing when no firm is marked', () => {
+    const world = crowdedWorld();
+    const before = stateHash(world);
+    layOffExiting(world);
+    expect(stateHash(world)).toBe(before);
+    expect(world.economyScratch.stats[STAT_FIRINGS]).toBe(0);
   });
 });
 

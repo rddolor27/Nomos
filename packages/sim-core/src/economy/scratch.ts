@@ -16,7 +16,7 @@ export interface EconomyScratch {
   readonly firmPrefix: Int32Array;
   // labour/.
   readonly firmTally: Int32Array;
-  // wages/.
+  // wages/ writes each firm's pay per worker at a month's end, and firms/renew.ts reads it.
   readonly pay: Float64Array;
   // The economy day sets the day-end slots, and each system adds to its own.
   readonly stats: Float64Array;
@@ -24,6 +24,8 @@ export interface EconomyScratch {
   readonly spellMonths: Uint8Array;
   readonly yearEmployer: Int32Array;
   readonly yearWage: Float64Array;
+  // 1 for a firm that exits with workers at this month's end: firms/renew.ts writes it, and labour/layoffs.ts reads it.
+  readonly exiting: Uint8Array;
 }
 
 export function createEconomyScratch(arena: Arena, agents: number, firms: number): EconomyScratch {
@@ -38,6 +40,7 @@ export function createEconomyScratch(arena: Arena, agents: number, firms: number
     spellMonths: take(arena, Uint8Array, agents, false),
     yearEmployer: take(arena, Int32Array, agents, false),
     yearWage: take(arena, Float64Array, firms, false),
+    exiting: take(arena, Uint8Array, firms, false),
   };
   // Nobody held a job at a year end that has not come yet, so no one is a stayer at the first.
   scratch.yearEmployer.fill(NO_FIRM);

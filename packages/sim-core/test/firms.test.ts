@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest';
+import { CITY } from '../src/economy/city.ts';
 import { LENGNICK, type EconomyParams } from '../src/economy/params.ts';
 import {
   STAT_ABOVE_MARKUP,
   STAT_EXITS,
+  STAT_FIRINGS,
   STAT_PRICE_CHANGES,
   STAT_PRICE_CHANGE_PPM,
   STAT_PRODUCED,
@@ -11,6 +13,7 @@ import {
 import { decideFirms } from '../src/firms/decide.ts';
 import { produce } from '../src/firms/produce.ts';
 import { closeFirmMonth } from '../src/firms/renew.ts';
+import { layOffExiting } from '../src/labour/layoffs.ts';
 import { OK, checkCash } from '../src/money/invariants.ts';
 import { firmAccount, issue } from '../src/money/ledger.ts';
 import { mulPpm } from '../src/money/ppm.ts';
@@ -114,6 +117,18 @@ describe('the stock band', () => {
     ]);
     decideFirms(world, STILL, 0);
     expect(flagsOf(world)).toEqual([[1, 0], [0, 0], [0, 0], [0, 1], [1, 0], [0, 0], [0, 1]]);
+  });
+
+  it("tops out at one month's demand for the replication, and at 1.6 months for the city", () => {
+    expect(LENGNICK.stockHighPpm).toBe(0);
+    // A month's demand of 1,000 puts the replication's band at 250 to 1,000 and the city's at 800 to 1,600.
+    const rows = [799, 800, 1_000, 1_600, 1_601].map((stock) => ({ ...BASE, lastDemand: 1_000, stock, employees: 3 }));
+    const replication = worldWith(rows);
+    decideFirms(replication, STILL, 0);
+    expect(flagsOf(replication)).toEqual([[0, 0], [0, 0], [0, 0], [0, 1], [0, 1]]);
+    const city = worldWith(rows);
+    decideFirms(city, { ...CITY, priceChancePpm: 0 }, 0);
+    expect(flagsOf(city)).toEqual([[1, 0], [0, 0], [0, 0], [0, 0], [0, 1]]);
   });
 
   it('leaves the band to last month alone when the floor is off', () => {
@@ -263,6 +278,44 @@ describe('the price rule', () => {
     expect(pricesOf(world)).toEqual([10]);
     expect(world.economyScratch.stats[STAT_PRICE_CHANGES]).toBe(0);
     expect(world.economyScratch.stats[STAT_PRICE_CHANGE_PPM]).toBe(0);
+  });
+
+  it('stops a rise at the markup ceiling and a cut at its floor when the clamp is on, and overshoots when it is off', () => {
+    // At the preset's wage the band is 146,370 to 164,220: the highest price inside it is 2,606 and the lowest 2,324.
+    const rising = { ...BASE, price: 2_600, stock: 0, employees: 3 };
+    const falling = { ...BASE, price: 2_330, stock: 100, employees: 3 };
+    const repriced = (row: Row, params: EconomyParams): World => {
+      const world = crowd(FIRMS, row);
+      decideFirms(world, params, 0);
+      return world;
+    };
+    const clamped = { ...SURE, markupClamp: 1 };
+
+    expect(Math.max(...pricesOf(repriced(rising, SURE)))).toBeGreaterThan(2_606);
+    expect(Math.min(...pricesOf(repriced(falling, SURE)))).toBeLessThan(2_324);
+    expect(repriced(rising, SURE).economyScratch.stats[STAT_ABOVE_MARKUP]).toBeGreaterThan(0);
+
+    const up = repriced(rising, clamped);
+    expect([Math.min(...pricesOf(up)), Math.max(...pricesOf(up))]).toEqual([2_600, 2_606]);
+    expect(up.economyScratch.stats[STAT_ABOVE_MARKUP]).toBe(0);
+    const down = repriced(falling, clamped);
+    expect([Math.min(...pricesOf(down)), Math.max(...pricesOf(down))]).toEqual([2_324, 2_330]);
+  });
+
+  it('reaches the band edge exactly when a wage divides it, and lets the cost floor lift a price past the ceiling', () => {
+    // At a wage of 63,000 the edges are 63 x 1,150 and 63 x 1,025, so a clamped step reaches them and stops.
+    const clamped = { ...SURE, markupClamp: 1 };
+    const up = crowd(FIRMS, { wage: 63_000, price: 1_149, stock: 0, employees: 3 });
+    decideFirms(up, clamped, 0);
+    expect(Math.max(...pricesOf(up))).toBe(1_150);
+    const down = crowd(FIRMS, { wage: 63_000, price: 1_026, stock: 100, employees: 3 });
+    decideFirms(down, clamped, 0);
+    expect(Math.min(...pricesOf(down))).toBe(1_025);
+    // A wage of 64 puts the ceiling at floor(73 / 63) = 1 cent, under the cost floor of 2: the clamp comes first.
+    const tiny = worldWith([{ wage: 64, price: 1, stock: 0, employees: 3 }]);
+    decideFirms(tiny, clamped, 0);
+    expect(pricesOf(tiny)).toEqual([2]);
+    expect(tiny.economyScratch.stats[STAT_ABOVE_MARKUP]).toBe(1);
   });
 
   it('counts the firms left above the markup ceiling once they have repriced', () => {
@@ -424,6 +477,86 @@ describe('firm turnover', () => {
     expect(world.firms.idleMonths[0]).toBe(255);
     expect(world.firms.price[0]).toBe(1_000);
     expect(world.economyScratch.stats[STAT_EXITS]).toBe(0);
+  });
+
+  describe('when a firm cannot pay its workers', () => {
+    const WAGE = 100_000;
+    const NO_FIRM = -1;
+    const EXIT_AT_ALL = { ...LENGNICK, shortPayExitPpm: 1_000_000 };
+
+    // Firm 0 has three workers (people 0-2), firm 1 two (people 3-4), and firm 2 none. Each of the first two has sold.
+    function shortPayWorld(pay: readonly number[]): World {
+      const world = worldWith([
+        { price: 3_000, wage: WAGE, stock: 12, employees: 3, demand: 10 },
+        { price: 2_000, wage: WAGE, stock: 7, employees: 2, demand: 10 },
+        { price: 1_000, wage: WAGE, stock: 5 },
+      ]);
+      [0, 0, 0, 1, 1].forEach((firm, person) => {
+        world.agents.employer[person] = firm;
+      });
+      world.economyScratch.pay.set(pay);
+      return world;
+    }
+
+    it('exits a firm that paid under the share of its wage, lays its workers off and writes its stock off', () => {
+      const world = shortPayWorld([WAGE - 1, WAGE, 0]);
+      const before = Array.from(world.cash.balance);
+      closeFirmMonth(world, EXIT_AT_ALL);
+      const stats = world.economyScratch.stats;
+      expect(Array.from(world.economyScratch.exiting.subarray(0, 3))).toEqual([1, 0, 0]);
+      expect([stats[STAT_EXITS], stats[STAT_WRITE_OFF]]).toEqual([1, 12]);
+      // The row re-enters as an entrant at the firms' means, with no stock and the demand floor for last month's demand.
+      expect(rowOf(world, 0)).toMatchObject({ price: 2_000, wage: WAGE, stock: 0, demand: 0, lastDemand: 63, idleMonths: 0 });
+      expect(rowOf(world, 1)).toMatchObject({ price: 2_000, stock: 7, lastDemand: 10 });
+
+      layOffExiting(world);
+      expect(Array.from(world.agents.employer.subarray(0, 5))).toEqual([NO_FIRM, NO_FIRM, NO_FIRM, 1, 1]);
+      expect(Array.from(world.firms.employees.subarray(0, 3))).toEqual([0, 2, 0]);
+      expect(stats[STAT_FIRINGS]).toBe(3);
+      expect(Array.from(world.cash.balance)).toEqual(before);
+      expect(checkCash(world.cash)).toBe(OK);
+    });
+
+    it('keeps every firm when the share is 0, whatever it paid', () => {
+      const world = shortPayWorld([0, 0, 0]);
+      closeFirmMonth(world, LENGNICK);
+      layOffExiting(world);
+      const stats = world.economyScratch.stats;
+      expect(Array.from(world.economyScratch.exiting.subarray(0, 3))).toEqual([0, 0, 0]);
+      expect([stats[STAT_EXITS], stats[STAT_WRITE_OFF], stats[STAT_FIRINGS]]).toEqual([0, 0, 0]);
+      expect(Array.from(world.agents.employer.subarray(0, 5))).toEqual([0, 0, 0, 1, 1]);
+      expect(Array.from(world.firms.employees.subarray(0, 3))).toEqual([3, 2, 0]);
+      expect(rowOf(world, 0).stock).toBe(12);
+    });
+
+    it('exits only on pay strictly under the share, and never a firm with no workers', () => {
+      const half = { ...LENGNICK, shortPayExitPpm: 500_000 };
+      const exits = (pay: readonly number[]): number[] => {
+        const world = shortPayWorld(pay);
+        closeFirmMonth(world, half);
+        return Array.from(world.economyScratch.exiting.subarray(0, 3));
+      };
+      expect(exits([WAGE / 2, WAGE / 2, 0])).toEqual([0, 0, 0]);
+      expect(exits([WAGE / 2 - 1, WAGE / 2, 0])).toEqual([1, 0, 0]);
+      expect(exits([WAGE / 2 - 1, WAGE / 2 - 1, 0])).toEqual([1, 1, 0]);
+    });
+
+    it("clears every firm's mark at each month end, so a stale one never lays anyone off", () => {
+      const world = shortPayWorld([WAGE, WAGE, WAGE]);
+      world.economyScratch.exiting.fill(1);
+      closeFirmMonth(world, EXIT_AT_ALL);
+      expect(Array.from(world.economyScratch.exiting.subarray(0, 3))).toEqual([0, 0, 0]);
+      layOffExiting(world);
+      expect(Array.from(world.agents.employer.subarray(0, 5))).toEqual([0, 0, 0, 1, 1]);
+    });
+
+    it('takes the exit and the idle exit together, each writing its stock off once', () => {
+      const world = shortPayWorld([WAGE - 1, WAGE, 0]);
+      world.firms.idleMonths[2] = 2;
+      closeFirmMonth(world, EXIT_AT_ALL);
+      const stats = world.economyScratch.stats;
+      expect([stats[STAT_EXITS], stats[STAT_WRITE_OFF]]).toEqual([2, 12 + 5]);
+    });
   });
 
   it('moves no money when firms exit, and does nothing with no firms', () => {

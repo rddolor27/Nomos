@@ -1,4 +1,5 @@
 export * from './random/draw.ts';
+export * from './random/shuffle.ts';
 export * from './maths/int.ts';
 export * from './random/noise.ts';
 export * from './time/calendar.ts';
@@ -35,6 +36,7 @@ export * from './step/warm.ts';
 export * from './world/ground.ts';
 export * from './consumption/stand-in.ts';
 export * from './economy/params.ts';
+export * from './economy/city.ts';
 export * from './economy/stats.ts';
 export * from './economy/start.ts';
 export * from './economy/economy.ts';

@@ -17,7 +17,7 @@ export function decideFirms(world: World, params: EconomyParams, month: number):
   for (let f = 0; f < count; f++) {
     const demand = Math.max(firms.lastDemand[f], params.demandFloor);
     const low = mulPpmUp(demand, params.stockLowPpm);
-    const high = mulPpmUp(demand, params.stockHighPpm);
+    const high = demand + mulPpmUp(demand, params.stockHighPpm);
     firms.vacancy[f] = firms.stock[f] < low ? 1 : 0;
     firms.notice[f] = firms.stock[f] > high && firms.employees[f] > 0 ? 1 : 0;
     repriceFirm(world, params, month, f, low, high);
@@ -38,10 +38,10 @@ function repriceFirm(world: World, params: EconomyParams, month: number, f: numb
   let next = price;
   if (firms.stock[f] < low && monthOutputCents < ceilingCents) {
     eta = priceStep(world.seed, params, month, f);
-    next = price + mulPpm(price, eta);
+    next = risenPrice(params, price, eta, ceilingCents, unitsPerMonth);
   } else if (firms.stock[f] > high && monthOutputCents > wage + mulPpm(wage, params.markupLowPpm)) {
     eta = priceStep(world.seed, params, month, f);
-    next = price - mulPpm(price, eta);
+    next = cutPrice(params, price, eta, wage, unitsPerMonth);
   }
   next = Math.max(next, costFloor(wage, unitsPerMonth));
   firms.price[f] = next;
@@ -52,6 +52,21 @@ function repriceFirm(world: World, params: EconomyParams, month: number, f: numb
   if (unitsPerMonth * next > ceilingCents) stats[STAT_ABOVE_MARKUP] += 1;
 }
 
+// M2.3 Ruling 6: with markupClamp a step stops at the edge of the markup band, in whole cents rounded inward, so the
+// price it ends on is inside the band whenever the band holds a whole price. Lengnick's rule (0) lets the band only gate
+// a step, so a step can overshoot it.
+function risenPrice(params: EconomyParams, price: number, eta: number, ceilingCents: number, unitsPerMonth: number): number {
+  const next = price + mulPpm(price, eta);
+  if (params.markupClamp === 0) return next;
+  return Math.min(next, Math.floor(ceilingCents / unitsPerMonth));
+}
+
+function cutPrice(params: EconomyParams, price: number, eta: number, wage: number, unitsPerMonth: number): number {
+  const next = price - mulPpm(price, eta);
+  if (params.markupClamp === 0) return next;
+  return Math.max(next, ceilDiv(wage + mulPpmUp(wage, params.markupLowPpm), unitsPerMonth));
+}
+
 // Lengnick's theta and vartheta: with chance priceChancePpm the step is eta ppm, uniform over 0 to priceStepPpm, else 0.
 function priceStep(seed: number, params: EconomyParams, month: number, f: number): number {
   if (draw3(seed, FIRM_DRAW, month, f, PRICE_CHANCE) % PPM >= params.priceChancePpm) return 0;
@@ -60,5 +75,9 @@ function priceStep(seed: number, params: EconomyParams, month: number, f: number
 
 // A18: the wage over a worker's month of output, rounded up, and never under a cent.
 function costFloor(wage: number, unitsPerMonth: number): number {
-  return Math.max(1, Math.floor((wage + unitsPerMonth - 1) / unitsPerMonth));
+  return Math.max(1, ceilDiv(wage, unitsPerMonth));
+}
+
+function ceilDiv(cents: number, units: number): number {
+  return Math.floor((cents + units - 1) / units);
 }
