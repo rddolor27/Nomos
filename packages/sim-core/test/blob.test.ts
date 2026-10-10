@@ -8,14 +8,17 @@ import { run } from './run.ts';
 
 const ROWS = 64;
 const READ_WRITE = ['action', 'facing', 'heading', 'vx', 'vy', 'x', 'y'];
-const READ_ONLY = ['cash', 'index', 'nameKey', 'wallet'];
+const READ_ONLY = ['cash', 'employer', 'index', 'nameKey', 'wallet'];
 
 describe('the Blob handle', () => {
   it('reads and writes its row through every accessor', () => {
     const { agents, cash, blob } = createWorld(42, 'phone');
-    const { count, x, y, vx, vy, heading, action, facing, nameKey } = agents;
-    // Every wallet holds its own balance, so a getter that reads a neighbour's wallet shows.
-    for (let i = 0; i < count[0]; i++) issue(cash, walletAccount(cash, i), i);
+    const { count, x, y, vx, vy, heading, action, facing, nameKey, employer } = agents;
+    // Every wallet holds its own balance and employer, so a getter that reads a neighbour's shows.
+    for (let i = 0; i < count[0]; i++) {
+      issue(cash, walletAccount(cash, i), i);
+      employer[i] = 2 * i - 1;
+    }
     for (let k = 0; k < ROWS; k++) {
       const i = draw2(42, 1, k, 0) % count[0];
       blob.at(i);
@@ -24,6 +27,7 @@ describe('the Blob handle', () => {
         x[i], y[i], vx[i], vy[i], heading[i], action[i], facing[i],
       ]);
       expect(blob.nameKey).toBe(nameKey[i]);
+      expect(blob.employer).toBe(employer[i]);
       expect(blob.wallet).toBe(walletAccount(cash, i));
       expect(blob.cash).toBe(cash.balance[blob.wallet]);
 
@@ -43,7 +47,7 @@ describe('the Blob handle', () => {
 
   it('lists exactly its accessors, and no look', () => {
     expect(Object.getOwnPropertyNames(Blob.prototype).sort()).toEqual([
-      'action', 'at', 'cash', 'constructor', 'facing', 'heading', 'index', 'nameKey', 'vx', 'vy', 'wallet', 'x', 'y',
+      'action', 'at', 'cash', 'constructor', 'employer', 'facing', 'heading', 'index', 'nameKey', 'vx', 'vy', 'wallet', 'x', 'y',
     ]);
     for (const name of READ_WRITE) expect(Object.getOwnPropertyDescriptor(Blob.prototype, name)?.set, name).toBeTypeOf('function');
     for (const name of READ_ONLY) expect(Object.getOwnPropertyDescriptor(Blob.prototype, name)?.set, name).toBeUndefined();

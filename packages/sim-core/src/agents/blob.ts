@@ -12,6 +12,7 @@ export class Blob {
   private readonly actionColumn: Uint8Array;
   private readonly facingColumn: Uint8Array;
   private readonly nameKeyColumn: Uint32Array;
+  private readonly employerColumn: Int32Array;
   private readonly balance: Float64Array;
   private readonly firstWallet: number;
   private row = 0;
@@ -25,6 +26,7 @@ export class Blob {
     this.actionColumn = agents.action;
     this.facingColumn = agents.facing;
     this.nameKeyColumn = agents.nameKey;
+    this.employerColumn = agents.employer;
     this.balance = cash.balance;
     this.firstWallet = cash.firstWallet;
   }
@@ -95,6 +97,11 @@ export class Blob {
 
   get nameKey(): number {
     return this.nameKeyColumn[this.row];
+  }
+
+  // The employing firm's row, or -1.
+  get employer(): number {
+    return this.employerColumn[this.row];
   }
 
   get wallet(): number {

@@ -30,6 +30,7 @@ export const STATS_MS = 250;
 export const SLEEP_MIN_MS = 4;
 // One tile.
 const INSPECT_RADIUS_Q8 = TILE_PX * SUBPIXELS;
+const NO_EMPLOYER = -1;
 
 export interface LoopHost {
   now(): number;
@@ -185,12 +186,14 @@ export function createSimLoop(host: LoopHost, cpuSlowdown = 1): { handle(msg: Ap
     const tick = currentTick(world);
     const agent = nearestAgent(world.agents, Math.round(x * SUBPIXELS), Math.round(y * SUBPIXELS), INSPECT_RADIUS_Q8);
     if (agent < 0) {
-      post({ type: 'inspected', tick, agent, nameKey: 0, cents: 0 }, noTransfer);
+      post({ type: 'inspected', tick, agent, nameKey: 0, cents: 0, employer: NO_EMPLOYER, wage: 0 }, noTransfer);
       return;
     }
     const blob = world.blob;
     blob.at(agent);
-    post({ type: 'inspected', tick, agent, nameKey: blob.nameKey, cents: blob.cash }, noTransfer);
+    const employer = blob.employer;
+    const wage = employer < 0 ? 0 : world.firms.wage[employer];
+    post({ type: 'inspected', tick, agent, nameKey: blob.nameKey, cents: blob.cash, employer, wage }, noTransfer);
   }
 
   // Waits before the post rather than after the handler, which would come too late: init posts ready and the spawn

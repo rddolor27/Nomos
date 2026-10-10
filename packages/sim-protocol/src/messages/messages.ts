@@ -20,4 +20,6 @@ export type WorkerMessage =
   | { type: 'snapshot'; tick: number; count: number; buffer: ArrayBuffer }
   | { type: 'stats'; tick: number; systemMs: Record<string, number> } // keyed by SYSTEM_NAMES plus 'snapshot'
   | { type: 'checkpoint'; tick: number; state: ArrayBuffer }
-  | { type: 'inspected'; tick: number; agent: number; nameKey: number; cents: number }; // agent -1: no blob within a tile
+  // agent -1: no blob within a tile. employer is the employing firm's row and wage its pay in cents a month, or -1 and 0 for
+  // someone out of work.
+  | { type: 'inspected'; tick: number; agent: number; nameKey: number; cents: number; employer: number; wage: number };

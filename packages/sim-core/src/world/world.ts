@@ -19,6 +19,8 @@ export const TICK = 0;
 export const RECORD_FRONT = 1;
 export const DAY_AGENTS = 2;
 export const DAY_HOUSEHOLDS = 3;
+// 1 for a town, whose step runs CITY's economy, and 0 for any other world (M2.2b).
+export const TOWN = 4;
 const GLOBAL_SLOTS = 8;
 
 // The settlement record is double-buffered: day slices fold into the back half, and the last slice flips

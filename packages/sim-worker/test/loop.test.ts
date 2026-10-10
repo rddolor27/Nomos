@@ -314,15 +314,33 @@ describe('the sim loop', () => {
     issue(cash, walletAccount(cash, agent), 1_234);
     expect(nearestAgent(agents, agents.x[agent], agents.y[agent], 4_096)).toBe(agent);
     page.handle({ type: 'inspect', x: agents.x[agent] / 256, y: agents.y[agent] / 256 });
+    // No economy has run here, so the blob has no employer and no wage.
     expect(page.ofType('inspected')).toEqual([
-      { type: 'inspected', tick: 0, agent, nameKey: agents.nameKey[agent], cents: 101_234 },
+      { type: 'inspected', tick: 0, agent, nameKey: agents.nameKey[agent], cents: 101_234, employer: -1, wage: 0 },
+    ]);
+  });
+
+  it("answers an employed blob's firm row and that firm's wage", () => {
+    const page = fakePage();
+    const { agents, firms } = page.world();
+    // Neighbouring firms hold other wages, so an answer from the wrong row or the wrong firm shows.
+    const agent = 7;
+    agents.employer[agent] = 3;
+    firms.wage[2] = 99_900;
+    firms.wage[3] = 142_800;
+    firms.wage[4] = 150_000;
+    page.handle({ type: 'inspect', x: agents.x[agent] / 256, y: agents.y[agent] / 256 });
+    expect(page.ofType('inspected')).toEqual([
+      { type: 'inspected', tick: 0, agent, nameKey: agents.nameKey[agent], cents: 100_000, employer: 3, wage: 142_800 },
     ]);
   });
 
   it('answers -1 off the map', () => {
     const page = fakePage();
     page.handle({ type: 'inspect', x: -1_000, y: -1_000 });
-    expect(page.ofType('inspected')).toEqual([{ type: 'inspected', tick: 0, agent: -1, nameKey: 0, cents: 0 }]);
+    expect(page.ofType('inspected')).toEqual([
+      { type: 'inspected', tick: 0, agent: -1, nameKey: 0, cents: 0, employer: -1, wage: 0 },
+    ]);
   });
 
   it('ignores inspect before init', () => {

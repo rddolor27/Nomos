@@ -1,4 +1,4 @@
-import { createWorld } from '@nomos/sim-core';
+import { TIER_AGENTS, createTown } from '@nomos/sim-core';
 import { parseMap, type AppMessage } from '@nomos/sim-protocol';
 import { createSimLoop } from './loop/loop.ts';
 
@@ -23,7 +23,7 @@ const loop = createSimLoop(
     },
     post: (msg, transfer) => self.postMessage(msg, transfer),
     // Nothing catches a bad map's MapError, so it leaves the handler and the page sees the Worker's error event.
-    makeWorld: (seed, tier, map, agents) => createWorld(seed, tier, parseMap(map), agents),
+    makeWorld: (seed, tier, map, agents = TIER_AGENTS[tier]) => createTown(seed, tier, parseMap(map), agents),
   },
   cpuSlowdown,
 );

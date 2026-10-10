@@ -48,3 +48,4 @@ export * from './spawn/homes.ts';
 export * from './spawn/record.ts';
 export * from './spawn/fold.ts';
 export * from './spawn/spawn.ts';
+export * from './spawn/town.ts';
