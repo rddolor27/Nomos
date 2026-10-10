@@ -19,7 +19,7 @@ from licenses import ASSETS, LICENSES, write_licenses  # noqa: E402
 from mapfile import (ENTITY_CIVIC, ENTITY_HOME, ENTITY_SHOP, ENTITY_WORKPLACE, WALK_BLOCKED, WALK_DOOR,  # noqa: E402
                      WALK_OPEN, WALK_ROAD, Entity, save_or_check, write_map)
 from model import PlaceContext  # noqa: E402
-from place import CLIFFS, build_site, tile_for  # noqa: E402
+from place import CLIFFS, RANK, build_site, tile_for  # noqa: E402
 from showcase import Sheets  # noqa: E402
 from spritekit import PALETTE  # noqa: E402
 
@@ -32,6 +32,8 @@ TOWN = PlaceContext(seed=0xC0FFEE42, name='Highcourt', biome='grassland', temper
 ANIMALS = ('cow', 'sheep', 'goat', 'horse', 'chicken', 'duck', 'dog', 'cat')
 # Ground never takes a role, alert, edge, background or body-hue colour, so these are the only choices.
 GROUND_COLOURS = ('GRASS_L', 'GRASS', 'LEAF_D', 'SAND', 'SAND_D', 'WOOD_L', 'WOOD_D', 'WATER_L', 'WATER')
+# Cut stone's grey sits nearest light water, so roads choose among the dry colours and never read as a river.
+DRY_GROUND = tuple(name for name in GROUND_COLOURS if not name.startswith('WATER'))
 BUILT_COLOURS = {'home': 'PLUM', 'workplace': 'STONE', 'shop': 'CREAM_D', 'civic': 'STONE_L', 'landmark': 'WOOD'}
 ENTITY_KINDS = {'home': ENTITY_HOME, 'workplace': ENTITY_WORKPLACE, 'shop': ENTITY_SHOP, 'civic': ENTITY_CIVIC}
 KIND_OF_PREFIX = {'house': 'home', 'work': 'workplace', 'shop': 'shop', 'civic': 'civic', 'landmark': 'landmark'}
@@ -118,19 +120,19 @@ def first_tiles(site):
     return first
 
 
-def nearest_ground_colour(image):
-    """The ground palette name nearest a tile's mean opaque colour, by squared RGB distance in exact integers."""
+def nearest_ground_colour(image, names=GROUND_COLOURS):
+    """The palette name among names nearest a tile's mean opaque colour, by squared RGB distance in exact integers."""
     pixels = np.asarray(image).reshape(-1, 4)
     opaque = pixels[pixels[:, 3] == 255, :3].astype(np.int64)
     total, count = [int(v) for v in opaque.sum(axis=0)], len(opaque)
-    return min(GROUND_COLOURS, key=lambda name: sum((total[k] - count * PALETTE[name][k]) ** 2 for k in range(3)))
+    return min(names, key=lambda name: sum((total[k] - count * PALETTE[name][k]) ** 2 for k in range(3)))
 
 
 def kind_colour(kind, ground, sheets):
     if kind in BUILT_COLOURS:
         return PALETTE[BUILT_COLOURS[kind]]
     image, _ = sheets.get(*ground[kind])
-    return PALETTE[nearest_ground_colour(image)]
+    return PALETTE[nearest_ground_colour(image, DRY_GROUND if kind in RANK else GROUND_COLOURS)]
 
 
 def town_map(ctx):
