@@ -1,0 +1,7 @@
+#economy:not(:empty) { margin-bottom: 24px; border-bottom: 1px solid var(--ui-raised); }
+#economy p { margin: 0 0 24px; color: var(--ui-muted); }
+#economy figcaption { display: flex; justify-content: space-between; gap: 16px; }
+#economy figcaption span { font-variant-numeric: tabular-nums; }
+#economy caption { margin-bottom: 8px; font-weight: 600; text-align: left; }
+#economy > table { margin-bottom: 24px; }
+#economy > table th:first-child, #economy > table td:first-child { text-align: left; }

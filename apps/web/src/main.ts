@@ -44,6 +44,13 @@ function nextTask(): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, 0));
 }
 
+// Nothing waits on the economy panel: the app keeps the latest economy message for it, so it can mount after the page is
+// interactive, and a chunk that fails to load leaves the rest of the page alone.
+async function mountEconomyPanel(app: App): Promise<void> {
+  const { mountEconomy } = await import('./panels/economy.ts');
+  mountEconomy(element(document, '#economy'), app);
+}
+
 // uPlot, lil-gui and the view input download only after the first frame (R5), all at once, since one after the other
 // costs a round trip; each mount still runs in a task of its own, so input never waits behind them all
 // (load-memory.md §2).
@@ -63,6 +70,7 @@ async function afterFirstFrame(app: App): Promise<void> {
   const { mountControls } = await controlsModule;
   mountControls(app);
   performance.mark('app:interactive');
+  mountEconomyPanel(app).catch((error: unknown) => console.error(error));
   // Last, as nothing waits on it; its art and layout then load in idle time (web rules).
   await loadTownSkin(app);
 }

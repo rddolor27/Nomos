@@ -1,6 +1,6 @@
 import { contrastRatio } from '@nomos/render-gl';
 import { expect, test } from 'vitest';
-import { addSample, chartData, seriesOptions, tableCells, type Plot } from '../src/panels/charts.ts';
+import { addSample, chartData, levelRange, seriesOptions, tableCells, type Plot } from '../src/panels/charts.ts';
 
 // The page background in index.html, its --ui-bg token.
 const PAGE = 0x20242c;
@@ -67,6 +67,15 @@ test('gives each of the first four series its own colour and repeats them after 
 
   expect(new Set(strokes.slice(0, 4)).size).toBe(4);
   expect(strokes.slice(4)).toEqual(strokes.slice(0, 4));
+});
+
+test('keeps a level half a percent from its edges, and pads a larger move by a tenth of it', () => {
+  // The chart is unused: uPlot passes itself first.
+  const chart = undefined as never;
+
+  expect(levelRange(chart, 100, 100)).toEqual([99.5, 100.5]);
+  expect(levelRange(chart, 90, 110)).toEqual([88, 112]);
+  expect(levelRange(chart, null, null)).toEqual([null, null]);
 });
 
 test('keeps every series colour 3:1 from the page', () => {

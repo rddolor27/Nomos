@@ -36,21 +36,36 @@ const FRAME_CAPTION = 'Frame time (ms)';
 const SERIES_COLOURS = ['#56B4E9', '#E69F00', '#BBBBBB', '#F0E442'];
 // Whole ticks only, so the x axis never labels a tick 7.5.
 const TICK_INCREMENTS = [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10_000, 20_000, 50_000, 100_000];
+// Whole days, and the economy's 21-day month, which is when its series step, so a step lands on a tick.
+const DAY_INCREMENTS = [1, 7, 21, 42, 84];
+// The default 50 px would label every other month in the side column's 320 px.
+const DAY_TICK_SPACE_PX = 36;
+const LEVEL_MIN_PAD = 0.005;
+const RANGE_PAD = 0.1;
 
 const NUMBER = new Intl.NumberFormat('en', { maximumFractionDigits: 3 });
 const MILLISECONDS = new Intl.NumberFormat('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 // The axes take the page's text and a recessive grid from index.html's tokens, read once as the charts mount.
-function chartAxes(root: HTMLElement): uPlot.Axis[] {
+function baseAxis(root: HTMLElement): uPlot.Axis {
   const tokens = getComputedStyle(root);
   const grid = { stroke: tokens.getPropertyValue('--ui-raised').trim() };
-  const axis: uPlot.Axis = {
+  return {
     stroke: tokens.getPropertyValue('--ui-text').trim(),
     grid,
     ticks: grid,
     values: (_, splits) => splits.map((split) => NUMBER.format(split)),
   };
+}
+
+function chartAxes(root: HTMLElement): uPlot.Axis[] {
+  const axis = baseAxis(root);
   return [{ ...axis, label: 'Tick', incrs: TICK_INCREMENTS }, { ...axis, label: 'Time (ms)' }];
+}
+
+function dayAxes(root: HTMLElement, label: string): uPlot.Axis[] {
+  const axis = baseAxis(root);
+  return [{ ...axis, label: 'Day', incrs: DAY_INCREMENTS, space: DAY_TICK_SPACE_PX }, { ...axis, label }];
 }
 
 function formatted(format: Intl.NumberFormat, value: number | null): string {
@@ -92,18 +107,49 @@ export function seriesOptions(labels: string[]): uPlot.Series[] {
   return [tick, ...systems];
 }
 
-function el<K extends keyof HTMLElementTagNameMap>(tag: K, text = '', ...children: Node[]): HTMLElementTagNameMap[K] {
+export function el<K extends keyof HTMLElementTagNameMap>(
+  tag: K,
+  text = '',
+  ...children: Node[]
+): HTMLElementTagNameMap[K] {
   const element = document.createElement(tag);
   element.textContent = text;
   element.append(...children);
   return element;
 }
 
+export function dataTable(
+  caption: string,
+  headings: readonly string[],
+  tbody: HTMLTableSectionElement,
+): HTMLTableElement {
+  const columns = headings.map((heading) => Object.assign(el('th', heading), { scope: 'col' }));
+  return el('table', '', el('caption', caption), el('thead', '', el('tr', '', ...columns)), tbody);
+}
+
+// Rewrites the rows in place, so a refresh makes no node and writes only the cells whose text changed.
+export function setRows(tbody: HTMLTableSectionElement, rows: readonly (readonly string[])[]): void {
+  while (tbody.rows.length > rows.length) tbody.deleteRow(-1);
+  for (let r = 0; r < rows.length; r++) {
+    const row = r < tbody.rows.length ? tbody.rows[r] : tbody.insertRow();
+    const texts = rows[r];
+    for (let c = 0; c < texts.length; c++) {
+      const cell = c < row.cells.length ? row.cells[c] : row.insertCell();
+      if (cell.textContent !== texts[c]) cell.textContent = texts[c];
+    }
+  }
+}
+
+function fitWidth(chart: uPlot, host: HTMLElement): void {
+  new ResizeObserver(() => {
+    if (host.clientWidth !== chart.width) chart.setSize({ width: host.clientWidth, height: CHART_HEIGHT });
+  }).observe(host);
+}
+
 function createView(root: HTMLElement, plot: Plot, axes: uPlot.Axis[]): View {
   const host = el('div');
   const tbody = el('tbody');
-  const headings = ['Tick', ...plot.labels].map((label) => Object.assign(el('th', label), { scope: 'col' }));
-  const table = el('table', '', el('caption', plot.caption), el('thead', '', el('tr', '', ...headings)), tbody);
+  const table = dataTable(plot.caption, ['Tick', ...plot.labels], tbody);
   const details = el('details', '', el('summary', 'Data table'), table);
   root.append(el('figure', '', el('figcaption', plot.caption), host, details));
 
@@ -120,15 +166,79 @@ function createView(root: HTMLElement, plot: Plot, axes: uPlot.Axis[]): View {
   );
   // The data table carries the same labels, so assistive tech skips uPlot's legend, a second table in the figure.
   chart.root.querySelector('.u-legend')?.setAttribute('aria-hidden', 'true');
-  new ResizeObserver(() => {
-    if (host.clientWidth !== chart.width) chart.setSize({ width: host.clientWidth, height: CHART_HEIGHT });
-  }).observe(host);
+  fitWidth(chart, host);
   return { plot, chart, tbody };
 }
 
 function render({ plot, chart, tbody }: View): void {
   chart.setData(chartData(plot));
-  tbody.replaceChildren(...tableCells(plot).map((cells) => el('tr', '', ...cells.map((text) => el('td', text)))));
+  setRows(tbody, tableCells(plot));
+}
+
+// A level that barely moves, such as a price that steps a few hundredths of a percent a month, keeps a half percent of
+// itself each side, so its step reads as a step and not a cliff; a larger move gets uPlot's own 10% pad.
+export function levelRange(_chart: uPlot, min: number | null, max: number | null): uPlot.Range.MinMax {
+  if (min === null || max === null) return [null, null];
+  const pad = Math.max((max - min) * RANGE_PAD, Math.abs(max) * LEVEL_MIN_PAD);
+  return [min - pad, max + pad];
+}
+
+// 'level' suits a price or a wage, which a flat axis would hide, and 'zero' a rate, whose floor is 0.
+const DAY_RANGES: Record<'level' | 'zero', uPlot.Scale.Range> = { level: levelRange, zero: [0, null] };
+
+export interface DaySpec {
+  title: string;
+  // The y axis' label, which carries the unit.
+  axis: string;
+  // An index into the series colours.
+  colour: number;
+  range: keyof typeof DAY_RANGES;
+}
+
+// One measure by day (M2.2b): its title and latest value, a line, labelled axes and a data table. Its single series
+// needs no legend, as the title names it, and no cursor, since the table holds every value. The caller owns the arrays
+// and refills them in place; the uPlot views are made once here, one for each count of days.
+export class DayChart {
+  private readonly chart: uPlot;
+  private readonly tbody: HTMLTableSectionElement;
+  private readonly latest: HTMLElement;
+  private readonly views: uPlot.AlignedData[];
+
+  constructor(root: HTMLElement, spec: DaySpec, days: Float64Array, values: Float64Array) {
+    const host = el('div');
+    this.latest = el('span');
+    this.tbody = el('tbody');
+    const table = dataTable(spec.title, ['Day', spec.title], this.tbody);
+    const details = el('details', '', el('summary', 'Data table'), table);
+    root.append(el('figure', '', el('figcaption', spec.title, this.latest), host, details));
+
+    this.views = Array.from({ length: days.length + 1 }, (_, count) => [
+      days.subarray(0, count),
+      values.subarray(0, count),
+    ]);
+    this.chart = new uPlot(
+      {
+        width: host.clientWidth,
+        height: CHART_HEIGHT,
+        legend: { show: false },
+        cursor: { show: false },
+        scales: { x: { time: false }, y: { range: DAY_RANGES[spec.range] } },
+        axes: dayAxes(root, spec.axis),
+        series: [{}, { stroke: SERIES_COLOURS[spec.colour], width: 2 }],
+      },
+      this.views[0],
+      host,
+    );
+    fitWidth(this.chart, host);
+  }
+
+  // Draws the first `count` days of the arrays. The rows are the data table, newest first, and the second cell of the
+  // first is the latest value.
+  show(count: number, rows: readonly (readonly string[])[]): void {
+    this.chart.setData(this.views[count]);
+    setRows(this.tbody, rows);
+    this.latest.textContent = rows[0][1];
+  }
 }
 
 // Nothing is drawn until the first stats arrive, which name the systems. After that the charts and tables follow once a

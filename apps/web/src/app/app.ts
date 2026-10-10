@@ -1,5 +1,13 @@
 import { createWorldRenderer, fitCamera, observeDeviceSize, type Camera, type WorldRenderer } from '@nomos/render-gl';
-import { TICK_MS, parseMap, type AppMessage, type MapV1, type Tier, type WorkerMessage } from '@nomos/sim-protocol';
+import {
+  TICK_MS,
+  parseMap,
+  type AppMessage,
+  type EconomyMessage,
+  type MapV1,
+  type Tier,
+  type WorkerMessage,
+} from '@nomos/sim-protocol';
 import type { Boot } from './boot.ts';
 import { startAgents } from './tiers.ts';
 
@@ -7,6 +15,7 @@ import { startAgents } from './tiers.ts';
 const FRAME_SAMPLES = 60;
 
 export type StatsListener = (tick: number, systemMs: Record<string, number>) => void;
+export type EconomyListener = (message: EconomyMessage) => void;
 
 export interface Start {
   seed: number;
@@ -34,6 +43,9 @@ export interface App {
   firstFrame: Promise<void>;
   setPaused(paused: boolean): void;
   onStats(listener: StatsListener): void;
+  // The listener gets the latest economy message at once, if one has come, so a panel that mounts late draws what it
+  // missed, and every message after it.
+  onEconomy(listener: EconomyListener): void;
   // Asks for a draw on the next frame, for a change the camera does not show, such as the skin.
   redraw(): void;
 }
@@ -167,6 +179,8 @@ export async function startApp(boot: Boot, doc: Document, start: Start): Promise
 
   const scene = createScene(map);
   const listeners: StatsListener[] = [];
+  const economyListeners: EconomyListener[] = [];
+  let economy: EconomyMessage | null = null;
   const app: App = {
     renderer,
     worker,
@@ -187,6 +201,10 @@ export async function startApp(boot: Boot, doc: Document, start: Start): Promise
     onStats(listener) {
       listeners.push(listener);
     },
+    onEconomy(listener) {
+      economyListeners.push(listener);
+      if (economy) listener(economy);
+    },
     redraw() {
       scene.dirty = true;
     },
@@ -198,11 +216,16 @@ export async function startApp(boot: Boot, doc: Document, start: Start): Promise
     performance.mark('sim:ready');
     if (!app.paused && doc.visibilityState === 'visible') post({ type: 'resume' });
   };
+  const pushEconomy = (message: EconomyMessage): void => {
+    economy = message;
+    economyListeners.forEach((listener) => listener(message));
+  };
   // A checkpoint, the answer to pagehide's request, waits for M6's saves.
   worker.addEventListener('message', ({ data }: MessageEvent<WorkerMessage>) => {
     if (data.type === 'snapshot') pushSnapshot(app, scene, data);
     else if (data.type === 'stats') listeners.forEach((listener) => listener(data.tick, data.systemMs));
     else if (data.type === 'ready') onReady(data.agents);
+    else if (data.type === 'economy') pushEconomy(data);
   });
   const workerStopped = (detail?: string): void => {
     status.textContent = `The simulation stopped: ${detail || 'its worker did not start'}`;
