@@ -4,8 +4,8 @@ import { WEB } from './web.ts';
 test.skip(({ browserName }) => browserName !== 'chromium', 'the charts and controls are plain DOM, so one engine proves it');
 test.use({ baseURL: WEB });
 
-async function openInteractive(page: Page): Promise<void> {
-  await page.goto('/?tier=phone');
+async function openInteractive(page: Page, path = '/?tier=phone'): Promise<void> {
+  await page.goto(path);
   await page.waitForFunction(() => performance.getEntriesByName('app:interactive').length > 0);
 }
 
@@ -13,9 +13,16 @@ function count(text: string | null): number {
   return Number(text?.replaceAll(',', ''));
 }
 
-test('loads uPlot and lil-gui after the first frame', async ({ page }) => {
-  await openInteractive(page);
-  const loads = await page.evaluate(() => {
+interface Loads {
+  firstFrame: number;
+  charts: number[];
+  controls: number[];
+  cameraInput: number[];
+}
+
+// The first frame's mark, and when each lazy chunk started loading.
+async function loadStarts(page: Page): Promise<Loads> {
+  return page.evaluate(() => {
     const startsOf = (chunk: RegExp): number[] =>
       performance
         .getEntriesByType('resource')
@@ -28,12 +35,27 @@ test('loads uPlot and lil-gui after the first frame', async ({ page }) => {
       cameraInput: startsOf(/^\/assets\/camera-input-[\w-]+\.js$/),
     };
   });
+}
+
+test('loads uPlot after the first frame, and no developer panel without ?dev=1', async ({ page }) => {
+  await openInteractive(page);
+  const loads = await loadStarts(page);
   expect(loads.charts).toHaveLength(1);
-  expect(loads.controls).toHaveLength(1);
   expect(loads.cameraInput).toHaveLength(1);
   expect(loads.charts[0]).toBeGreaterThanOrEqual(loads.firstFrame);
-  expect(loads.controls[0]).toBeGreaterThanOrEqual(loads.firstFrame);
   expect(loads.cameraInput[0]).toBeGreaterThanOrEqual(loads.firstFrame);
+  expect(loads.controls).toEqual([]);
+  await expect(page.locator('.lil-gui')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Map', exact: true })).toHaveCount(1);
+});
+
+test('loads lil-gui after the first frame for ?dev=1, with its Zoom slider and no second Map button', async ({ page }) => {
+  await openInteractive(page, '/?tier=phone&dev=1');
+  const loads = await loadStarts(page);
+  expect(loads.controls).toHaveLength(1);
+  expect(loads.controls[0]).toBeGreaterThanOrEqual(loads.firstFrame);
+  await expect(page.locator('.lil-gui').getByRole('textbox', { name: 'Zoom' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Map', exact: true })).toHaveCount(1);
 });
 
 test('gives every chart a data table', async ({ page }) => {

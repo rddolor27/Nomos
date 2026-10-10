@@ -95,6 +95,23 @@ function skinRenderer(app: App): SkinRenderer {
   };
 }
 
+// The map and its scene load only when asked for, in a chunk of their own (interfaces.md, In web).
+function showMap(app: App, button: HTMLElement): void {
+  import('../map/map-view.ts')
+    .then(({ openMap }) => openMap(app, button))
+    .catch((error: unknown) => console.error(error));
+}
+
+// Its name stays exactly "Map": the map's specs find it by that name, and it takes the focus back when the map closes.
+function mapButton(doc: Document, app: App): HTMLButtonElement {
+  const button = doc.createElement('button');
+  button.type = 'button';
+  button.className = 'btn';
+  button.textContent = 'Map';
+  button.addEventListener('click', () => showMap(app, button));
+  return button;
+}
+
 // A digit pressed on a HUD control picks a speed, as in the town view (view/camera-input.ts), so a click on a button
 // does not leave the keys dead.
 function bindSpeedKeys(root: HTMLElement, app: App, bar: SpeedBar): void {
@@ -112,7 +129,7 @@ export function mountHud(root: HTMLElement, app: App): void {
   const play = element<HTMLButtonElement>(doc, '#play');
   bindPlay(play, app);
   const speedBar = new SpeedBar(doc, (speed) => app.setSpeed(speed));
-  play.after(speedBar.root);
+  play.after(speedBar.root, mapButton(doc, app));
   bindSpeedKeys(root, app, speedBar);
   app.worker.addEventListener('error', () => speedBar.disable());
   const tick = readout(root, 'hud-tick', 'Tick ');

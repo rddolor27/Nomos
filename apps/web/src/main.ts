@@ -2,7 +2,7 @@ import { element, startApp, type App } from './app/app.ts';
 import { SIM_BUILD, takeBoot } from './app/boot.ts';
 import { frameMedianMs, mountHud } from './panels/hud.ts';
 import { bindLifecycle } from './app/lifecycle.ts';
-import { backendFrom, seedFrom } from './app/query.ts';
+import { backendFrom, devFrom, seedFrom } from './app/query.ts';
 import { chooseTier, deviceClass, loadVerdict, saveVerdict, tierFromQuery, tierVerdict } from './app/tiers.ts';
 
 performance.mark('main:eval');
@@ -51,14 +51,14 @@ async function mountEconomyPanel(app: App): Promise<void> {
   mountEconomy(element(document, '#economy'), app);
 }
 
-// uPlot, lil-gui and the view input download only after the first frame (R5), all at once, since one after the other
-// costs a round trip; each mount still runs in a task of its own, so input never waits behind them all
+// uPlot, the view input and, for ?dev=1 only, lil-gui download only after the first frame (R5), all at once, since one
+// after the other costs a round trip; each mount still runs in a task of its own, so input never waits behind them all
 // (load-memory.md §2).
-async function afterFirstFrame(app: App): Promise<void> {
+async function afterFirstFrame(app: App, dev: boolean): Promise<void> {
   await app.firstFrame;
   const cameraInputModule = import('./view/camera-input.ts');
   const chartsModule = import('./panels/charts.ts');
-  const controlsModule = import('./panels/controls.ts');
+  const controlsModule = dev ? import('./panels/controls.ts') : null;
   mountHud(element(document, '#hud'), app);
   const { bindCameraInput, loadTownSkin } = await cameraInputModule;
   bindCameraInput(element(document, '#view'), app);
@@ -66,9 +66,11 @@ async function afterFirstFrame(app: App): Promise<void> {
   const { mountCharts } = await chartsModule;
   const charts = mountCharts(element(document, '#charts'));
   app.onStats((tick, systemMs) => charts.push(tick, systemMs, frameMedianMs(app.frameMs)));
-  await nextTask();
-  const { mountControls } = await controlsModule;
-  mountControls(app);
+  if (controlsModule) {
+    await nextTask();
+    const { mountControls } = await controlsModule;
+    mountControls(app);
+  }
   performance.mark('app:interactive');
   mountEconomyPanel(app).catch((error: unknown) => console.error(error));
   // Last, as nothing waits on it; its art and layout then load in idle time (web rules).
@@ -89,12 +91,13 @@ const start = {
   backend: backendFrom(search),
   paused: prefersReducedMotion(window),
 };
+const dev = devFrom(search);
 
 startApp(takeBoot(), document, start)
   .then((app) => {
     bindLifecycle(document, window, app);
     if (device === 'phone' && tier === 'phone' && verdict === null) checkTier(app, storage);
-    return afterFirstFrame(app);
+    return afterFirstFrame(app, dev);
   })
   // startApp has already said in #status what failed; the console keeps the detail.
   .catch((error: unknown) => console.error(error));

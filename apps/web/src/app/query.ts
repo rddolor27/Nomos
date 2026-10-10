@@ -10,3 +10,8 @@ export function seedFrom(search: string, random: () => number): number {
 export function backendFrom(search: string): 'auto' | 'canvas2d' {
   return new URLSearchParams(search).has('canvas') ? 'canvas2d' : 'auto';
 }
+
+// The developer panel, and the readouts beside it, show only for ?dev=1.
+export function devFrom(search: string): boolean {
+  return new URLSearchParams(search).get('dev') === '1';
+}

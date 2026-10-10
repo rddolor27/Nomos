@@ -107,13 +107,13 @@ function brokenBorders(map: WorldMap, edges: readonly Edge[], colours: readonly 
   return broken;
 }
 
-// openAtScale opens the town at /, whose chunks load after its first frame. The Map control mounts after them all, so
-// waiting for it keeps the next navigation from cutting an import short, which Firefox and WebKit log as an error.
-// The atlas page's files are answered with HTML, as vite preview answers a missing file, so the page fails to load and
-// the view stays flat whether or not the build made it.
+// openAtScale opens the town at /, whose chunks load after its first frame. The page marks app:interactive once they
+// have mounted, so waiting for it keeps the next navigation from cutting an import short, which Firefox and WebKit log
+// as an error. The atlas page's files are answered with HTML, as vite preview answers a missing file, so the page fails
+// to load and the view stays flat whether or not the build made it.
 async function openFlatMap(page: Page): Promise<void> {
   const mapControl = page.getByRole('button', { name: 'Map', exact: true });
-  await mapControl.waitFor();
+  await page.waitForFunction(() => performance.getEntriesByName('app:interactive').length > 0);
   await page.route('**/atlas/map.*', (route) => route.fulfill({ contentType: 'text/html', body: '<!doctype html>' }));
   await page.setViewportSize(VIEWPORT);
   await page.goto(`/?seed=${SEED}&tier=phone`);
