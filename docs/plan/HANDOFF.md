@@ -369,3 +369,25 @@ If the session ended: check `git log` for those Task lines, and `git status` for
   - a code and economy review;
   - `senior-qa`'s gates and bench;
   - the `interfaces.md` update.
+- 10 Oct: **Owner decision: proof-of-concept mode.** Usage was too expensive and testing too slow.
+  - Browser tests run in Chromium only, which covers Chrome and Brave (3d92e2e). Firefox, WebKit and Bun return before launch.
+  - The process is lighter:
+    - targeted tests;
+    - no `senior-qa` pass;
+    - one Opus review, only for money or determinism changes;
+    - Sonnet by default;
+    - short docs (the local `models.md`).
+  - The shared doc still names five engines and the 2% pay cut. Update both at the next sync, with the owner.
+- **M2.3's review found one critical bug, still unfixed.**
+  - A re-entered firm row can never get a customer, because `firmByWorkers` weights shops by workers and shop search runs before job search.
+  - So the row hires, sells nothing and exits again, every month. On seed 1001, 98% of exits were such repeats.
+  - **Ruling (coordinator), not yet applied:** exits off in `CITY` (`shortPayExitPpm` 0) until entry is designed. Then re-check on seeds 1–20, re-measure the burn-in, and confirm on 2001–2050.
+  - **Four minor findings, also unfixed:**
+    - the spell counter in `hire()`;
+    - the `slowJobSearches` bound;
+    - `design --out` reusing a folder;
+    - Okun measured on units sold.
+  - **A docs item:** M6.6's fairness line, which Ruling 3's fourth condition requires.
+- **Paused:** the owner stopped all implementation to rework the project structure, testing and dev guidelines.
+  - The QA pass and the fix agent were stopped before changing any file.
+  - Checkpoint 0034 holds the state.
