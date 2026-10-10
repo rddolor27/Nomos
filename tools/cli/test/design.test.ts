@@ -26,6 +26,7 @@ import {
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { listCells, parseGrid } from '../src/design/grid.ts';
 import { runPool } from '../src/design/pool.ts';
+import { defaultThreads } from '../src/design/run.ts';
 import { PRESETS } from '../src/economy/presets.ts';
 import { SUMMARY_COLUMNS } from '../src/targets/summarize.ts';
 
@@ -140,6 +141,17 @@ describe('a Latin hypercube', () => {
   it("does not move a knob's points when another knob is added after it", () => {
     const alone = listCells(parseGrid({ ...BASE, seeds: [1], sizes: [1000], shocks: [BASE.shocks[0]], lhs: { ...LHS, ranges: { priceStepPpm: [0, 99] } } }));
     expect(alone.map((cell) => cell.params.priceStepPpm)).toEqual(hypercube(LHS.seed).step);
+  });
+});
+
+describe('the default thread count', () => {
+  it('is two off CI, whatever the machine, and every core but one in CI', () => {
+    expect([4, 12, 64].map((cores) => defaultThreads(false, cores))).toEqual([2, 2, 2]);
+    expect([4, 12, 64].map((cores) => defaultThreads(true, cores))).toEqual([3, 11, 63]);
+  });
+
+  it('never falls under one thread in CI', () => {
+    expect(defaultThreads(true, 1)).toBe(1);
   });
 });
 
