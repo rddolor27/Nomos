@@ -59,7 +59,7 @@ function eat(world: World, household: number, day: number): void {
 
 // Runs before shopDay each day, so food comes first (M2.4 Ruling 2). A world with goods off eats nothing.
 export function buyFood(world: World, day: number): void {
-  if (world.globals[GOODS] === 0) return;
+  if (world.globals[GOODS] !== 1) return;
   const households = world.agents.count[0];
   const order = world.economyScratch.order;
   keyedShuffle(order, households, world.seed, SHOP_DRAW, day, FOOD_ORDER);

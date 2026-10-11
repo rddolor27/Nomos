@@ -21,7 +21,7 @@ import { OK, checkCash } from '../src/money/invariants.ts';
 import { issue, retire, walletAccount } from '../src/money/ledger.ts';
 import { DAYS_PER_MONTH } from '../src/time/calendar.ts';
 import { stateHash } from '../src/world/checkpoint.ts';
-import { createWorld, type World } from '../src/world/world.ts';
+import { GOODS, createWorld, type World } from '../src/world/world.ts';
 
 const GOODS_CITY: EconomyParams = { ...CITY, goods: 1 };
 // A town of one firm for each good and one worker each, where every household's links are the town's seven firms.
@@ -109,6 +109,17 @@ describe('eating', () => {
     const off = started(7, { ...CITY, goods: 0 });
     buyFood(off, 0);
     expect([off.economyScratch.stats[STAT_EATEN], off.economyScratch.stats[STAT_UNMET]]).toEqual([0, 0]);
+  });
+
+  it('eats only while the goods flag is exactly 1, as every other goods gate reads it', () => {
+    const world = started(42, SEVEN);
+    const stats = world.economyScratch.stats;
+    world.globals[GOODS] = 2;
+    buyFood(world, 0);
+    expect([stats[STAT_EATEN], stats[STAT_UNMET]]).toEqual([0, 0]);
+    world.globals[GOODS] = 1;
+    buyFood(world, 0);
+    expect(stats[STAT_EATEN] + stats[STAT_UNMET]).toBe(SEVEN.households * PORTIONS_PER_DAY);
   });
 });
 
