@@ -9,7 +9,6 @@ import {
   STAT_EATEN,
   STAT_GOOD_PRICE,
   STAT_GOOD_STOCK,
-  STAT_PRICE_MEAN,
   STAT_SOLD,
   STAT_SOLD_CENTS,
   STAT_SPOILED,
@@ -42,7 +41,6 @@ export function createEconomyFeed(): EconomyMessage {
     type: 'economy',
     day: -1,
     days: 0,
-    meanPriceCents: new Float64Array(FEED_DAYS),
     meanWageCents: new Float64Array(FEED_DAYS),
     unemploymentPpm: new Float64Array(FEED_DAYS),
     soldUnits: createGoodSeries(),
@@ -66,7 +64,6 @@ export function economyDayEnded(world: World): boolean {
 }
 
 function dropOldestDay(feed: EconomyMessage): void {
-  feed.meanPriceCents.copyWithin(0, 1);
   feed.meanWageCents.copyWithin(0, 1);
   feed.unemploymentPpm.copyWithin(0, 1);
   feed.eaten.copyWithin(0, 1);
@@ -112,7 +109,6 @@ export function writeEconomyFeed(world: World, feed: EconomyMessage): void {
   else feed.days++;
   const newest = feed.days - 1;
   feed.day = dayOf(world.globals[TICK] - 1);
-  feed.meanPriceCents[newest] = stats[STAT_PRICE_MEAN];
   feed.meanWageCents[newest] = stats[STAT_WAGE_MEAN];
   feed.unemploymentPpm[newest] = Math.floor((stats[STAT_UNEMPLOYED] * PPM) / world.agents.count[0]);
   writeGoods(stats, feed, newest);

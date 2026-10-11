@@ -2,7 +2,7 @@ import {
   ACTION_WALK,
   ECONOMY_TICKS,
   PURCHASE_RING,
-  STAT_PRICE_MEAN,
+  STAT_WAGE_MEAN,
   TICKS_PER_DAY,
   createTown,
   createWorld,
@@ -383,12 +383,12 @@ describe('the sim loop', () => {
     const [first, ...others] = page.ofType('economy');
     expect(others).toEqual([]);
     expect([first.day, first.days, first.trades]).toEqual([0, 1, PURCHASE_RING]);
-    expect(first.meanPriceCents[0]).toBe(page.world().economyScratch.stats[STAT_PRICE_MEAN]);
+    expect(first.meanWageCents[0]).toBe(page.world().economyScratch.stats[STAT_WAGE_MEAN]);
 
     page.advance(TICKS_PER_DAY * TICK_MS);
     const posted = page.ofType('economy');
     expect(posted.map(({ day, days }) => [day, days])).toEqual([[0, 1], [1, 2]]);
-    expect(posted[1].meanPriceCents[0]).toBe(first.meanPriceCents[0]);
+    expect(posted[1].meanWageCents[0]).toBe(first.meanWageCents[0]);
   });
 
   it('posts no economy from a world that is not a town', () => {

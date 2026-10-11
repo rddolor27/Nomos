@@ -29,8 +29,6 @@ export interface EconomyMessage {
   // FEED_DAYS.
   day: number;
   days: number;
-  // The firms' mean price, in cents a unit.
-  meanPriceCents: Float64Array;
   // The firms' mean wage, in cents a month.
   meanWageCents: Float64Array;
   // The share of households out of work, in parts per million.

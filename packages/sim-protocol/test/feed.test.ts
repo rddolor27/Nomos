@@ -10,7 +10,6 @@ import {
   STAT_EATEN,
   STAT_GOOD_PRICE,
   STAT_GOOD_STOCK,
-  STAT_PRICE_MEAN,
   STAT_SALES_CENTS,
   STAT_SOLD,
   STAT_SOLD_CENTS,
@@ -78,8 +77,7 @@ describe('the economy feed', () => {
     const { firms, economyScratch } = world;
     const stats = economyScratch.stats;
     expect([feed.day, feed.days]).toEqual([0, 1]);
-    expect(stats[STAT_PRICE_MEAN]).toBeGreaterThan(0);
-    expect(feed.meanPriceCents[0]).toBe(stats[STAT_PRICE_MEAN]);
+    expect(stats[STAT_WAGE_MEAN]).toBeGreaterThan(0);
     expect(feed.meanWageCents[0]).toBe(stats[STAT_WAGE_MEAN]);
     expect(unemploymentPpm(world)).toBeGreaterThan(0);
     expect(feed.unemploymentPpm[0]).toBe(unemploymentPpm(world));
@@ -151,7 +149,6 @@ describe('the economy feed', () => {
     const world = town();
     const feed = createEconomyFeed();
     const stats = world.economyScratch.stats;
-    const price: number[] = [];
     const wage: number[] = [];
     const unemployment: number[] = [];
     const bread: number[] = [];
@@ -160,7 +157,6 @@ describe('the economy feed', () => {
 
     for (let day = 0; day <= FEED_DAYS; day++) {
       economyDay(world, CITY, day);
-      price.push(stats[STAT_PRICE_MEAN]);
       wage.push(stats[STAT_WAGE_MEAN]);
       unemployment.push(unemploymentPpm(world));
       bread.push(stats[STAT_SOLD + BREAD]);
@@ -172,14 +168,12 @@ describe('the economy feed', () => {
 
     expect(FEED_DAYS).toBe(112);
     expect([feed.day, feed.days]).toEqual([FEED_DAYS, FEED_DAYS]);
-    expect(Array.from(feed.meanPriceCents)).toEqual(price.slice(1));
     expect(Array.from(feed.meanWageCents)).toEqual(wage.slice(1));
     expect(Array.from(feed.unemploymentPpm)).toEqual(unemployment.slice(1));
     expect(Array.from(feed.soldUnits[BREAD - BREAD])).toEqual(bread.slice(1));
     expect(Array.from(feed.stockUnits[CLOTH - BREAD])).toEqual(cloth.slice(1));
     expect(Array.from(feed.eaten)).toEqual(eaten.slice(1));
     // The series move, so a feed in another order or a day off would not match.
-    expect(new Set(price).size).toBeGreaterThan(1);
     expect(new Set(wage).size).toBeGreaterThan(1);
     expect(new Set(bread).size).toBeGreaterThan(1);
     expect(new Set(cloth).size).toBeGreaterThan(1);
