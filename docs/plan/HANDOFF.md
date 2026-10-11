@@ -85,6 +85,12 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 11 Oct: **M2.2c Task 4, the worker's switch** (4b71ce3..4442610).
+  - **The messages:** `open { place, map }` runs out the day with no snapshots and switches at the boundary. `opened { place, agents, width, height, tick }` replies, and a snapshot of the new town follows. A refused or same-town `open` replies with the live town.
+  - **The live card:** `inspectAgent { agent }` re-inspects a row, answering −1 past the count.
+  - **Speed:** one switch in `warmUp()` compiles the path. A switch takes 4–5 ms, and the run-up up to about 35 ms (Node).
+  - **Bytes:** the worker chunk is 17,700 B, so its limit is 18.7 kB. The M0 stand-in went to 30.5 kB, and initial JS holds within 35 kB.
+- 11 Oct: **M2.2c's sim side is under its Opus determinism review,** while Task 6 wires live towns into the app.
 - 11 Oct: **M2.2c Task 3, the ledger table and the switch** (32b6dac, 5da0886, 9495705, da09a8c).
   - **Away towns:** they aim at a live town's mean (`AWAY_LEVEL_PPM`: employed 1,003,359, price 1,006,192, wage 1,019,599). The gap they fix was smaller than first thought: 0.3%, 0.6% and 2.0%.
   - **The table:** a 512-town ledger (`MAX_TOWNS`, 56 KiB) at the arena's end.
