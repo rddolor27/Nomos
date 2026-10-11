@@ -95,22 +95,26 @@ function standsOn(map: MapV1, entity: MapEntity, margin: number): boolean {
   return inside && (walk === WALK_OPEN || walk === WALK_ROAD);
 }
 
+// A village's or hamlet's plaza is its green, whose door may lie on the path that rings it.
+function doorsProblems(label: string, tier: string | null, map: MapV1): string[] {
+  const margin = (tier ?? '') in GREENS_OF_TIER ? 0 : 1;
+  const plazas = leisureOf(map, ENTITY_PLAZA).filter((entity) => !standsOn(map, entity, margin));
+  const greens = leisureOf(map, ENTITY_GREEN).filter((entity) => !standsOn(map, entity, 0));
+  return [
+    ...plazas.map(() => `${label}: the door of its plaza is not on open ground in it`),
+    ...greens.map(() => `${label}: the door of a green is not on open ground in it`),
+  ];
+}
+
 // Each place has one plaza and, if it is walled, up to its tier's greens, all with doors on open ground, and it lists them after
 // every building, so a premises keeps its index.
 function leisureProblems(label: string, tier: string | null, map: MapV1): string[] {
-  const problems: string[] = [];
-  const plazas = leisureOf(map, ENTITY_PLAZA);
-  const greens = leisureOf(map, ENTITY_GREEN);
-  if (plazas.length !== 1) problems.push(`${label}: ${plazas.length} plazas`);
-  if (greens.length > (GREENS_OF_TIER[tier ?? ''] ?? 0)) problems.push(`${label}: ${greens.length} greens`);
-  // A village's or hamlet's plaza is its green, whose door may lie on the path that rings it.
-  const margin = (tier ?? '') in GREENS_OF_TIER ? 0 : 1;
-  for (const entity of [...plazas, ...greens]) {
-    if (!standsOn(map, entity, entity.kind === ENTITY_PLAZA ? margin : 0)) {
-      problems.push(`${label}: the door of its ${entity.kind === ENTITY_PLAZA ? 'plaza' : 'green'} is not on open ground in it`);
-    }
-  }
+  const plazas = leisureOf(map, ENTITY_PLAZA).length;
+  const greens = leisureOf(map, ENTITY_GREEN).length;
   const firstLeisure = map.entities.findIndex((entity) => entity.kind > ENTITY_CIVIC);
+  const problems = doorsProblems(label, tier, map);
+  if (plazas !== 1) problems.push(`${label}: ${plazas} plazas`);
+  if (greens > (GREENS_OF_TIER[tier ?? ''] ?? 0)) problems.push(`${label}: ${greens} greens`);
   if (map.entities.slice(firstLeisure).some((entity) => entity.kind <= ENTITY_CIVIC)) problems.push(`${label}: a building follows a leisure place`);
   return problems;
 }
