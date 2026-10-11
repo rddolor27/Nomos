@@ -9,6 +9,10 @@ export interface AtlasFrame {
   anchor: [number, number];
   // A body frame's face offset in atlas.json, where the place pass draws its face and emote; no map frame has one.
   face?: [number, number];
+  // A body frame's hold point, the carried item's top-left pixel, and its three eating steps; a frame that carries no item
+  // has neither, and only a standing frame has the steps.
+  hold?: [number, number];
+  eat?: [[number, number], [number, number], [number, number]];
 }
 
 // Frames are keyed "<sheet>/<frame>" and found by name, never by atlas index (R9).

@@ -69,6 +69,8 @@ export interface Retained {
   words: Uint32Array[];
   slot: number;
   count: number;
+  // The current snapshot's tick, which the Town skin's eating loop steps with.
+  tick: number;
 }
 
 // One backend behind WorldRenderer. draw returns the agents it drew.

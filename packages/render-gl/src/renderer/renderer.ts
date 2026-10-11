@@ -40,7 +40,7 @@ function grow(retained: Retained, agents: number): void {
   retained.words = retained.copies.map((copy) => new Uint32Array(copy.buffer));
 }
 
-function retain(retained: Retained, frame: { count: number; buffer: ArrayBuffer }): void {
+function retain(retained: Retained, frame: { tick: number; count: number; buffer: ArrayBuffer }): void {
   const bytes = frame.count * SNAPSHOT_BYTES;
   // Until a snapshot arrives the copies are empty. The first is its own previous one too, or a frame drawn before the
   // second, as a paused spawn's is, would slide agents in from (0, 0).
@@ -52,6 +52,7 @@ function retain(retained: Retained, frame: { count: number; buffer: ArrayBuffer 
   retained.copies[retained.slot].set(snapshot);
   if (first) retained.copies[retained.slot ^ 1].set(snapshot);
   retained.count = frame.count;
+  retained.tick = frame.tick;
 }
 
 function canvas2d(canvas: HTMLCanvasElement, retained: Retained): Painter {
@@ -95,6 +96,7 @@ export function createWorldRenderer(canvas: HTMLCanvasElement, options: Renderer
       words: [new Uint32Array(0), new Uint32Array(0)],
       slot: 0,
       count: 0,
+      tick: 0,
     },
     canvas,
     painter: null,

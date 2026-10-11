@@ -54,7 +54,8 @@ void main() {
 }`;
 
 // One instance per agent: a (fill + 2)-pixel square on the texel its interpolated position falls in. In edgeAt, the
-// minimap's alpha flags the grounds that take the outline; elsewhere, and off the map, a dot takes the rim.
+// minimap's alpha flags the grounds that take the outline; elsewhere, and off the map, a dot takes the rim. A blob indoors
+// (word bit 7) is sent outside the clip volume, so it draws nothing.
 const DOTS_VERTEX = `#version 300 es
 precision highp float;
 precision highp int;
@@ -97,7 +98,8 @@ void main() {
   v_fill = u_fills[v_role];
   v_edge = edgeAt(texel);
   ivec2 corner = v_centre - (u_half + 1) + ivec2(gl_VertexID & 1, gl_VertexID >> 1) * (2 * u_half + 3);
-  gl_Position = vec4(vec2(corner) / vec2(u_viewport) * vec2(2.0, -2.0) + vec2(-1.0, 1.0), 0.0, 1.0);
+  vec2 clip = vec2(corner) / vec2(u_viewport) * vec2(2.0, -2.0) + vec2(-1.0, 1.0);
+  gl_Position = ((a_word >> 7u) & 1u) == 1u ? vec4(2.0, 2.0, 2.0, 1.0) : vec4(clip, 0.0, 1.0);
 }`;
 
 // The quad covers exactly the mask's cells, and each pixel reads its cell from the baked dotMask.

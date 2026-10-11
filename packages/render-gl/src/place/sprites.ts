@@ -1,9 +1,13 @@
 import { NO_CODE, PLACE_FACINGS, PLACE_TILE_PX, type PlaceLayout, type PlacePeople } from '@nomos/sim-protocol/place';
 import {
+  EAT_AT,
   EYES,
+  FACE_AT,
   FACINGS,
+  HOLD_AT,
   HUES,
   NO_FRAME,
+  NO_POINT,
   RECORD_SHORTS,
   STEMS,
   frameRecords,
@@ -14,17 +18,21 @@ import {
 
 // A sprite instance: its art-pixel corner, then its atlas x, y, w and h.
 export const INSTANCE_SHORTS = 6;
-// Body, pattern, face, job item and emote.
-const MOST_LAYERS = 5;
+// Body, pattern, face, job item, carried item and emote.
+const MOST_LAYERS = 6;
 const UP = PLACE_FACINGS.indexOf('up');
 // placedraw.py's person_layers: an emote sits 7 px right of the anchor and 15 px above the face.
 const EMOTE_X = 7;
 const EMOTE_Y = -15;
+// The eating loop runs four steps, 0, 1, 2, 1, over the body frame's three eating steps for the item, and the mouth alternates
+// 0, 1, 0, 1 with the step's low bit. A person's eat column is 1 plus the loop's step, so 0 is not eating.
+const EAT_POINT = Uint8Array.of(0, 1, 2, 1);
 
-function put(data: Int16Array, at: number, records: Int16Array, record: number, x: number, y: number): number {
+// The sprite's top-left art pixel at (left, top).
+function putCorner(data: Int16Array, at: number, records: Int16Array, record: number, left: number, top: number): number {
   const r = RECORD_SHORTS * record;
-  data[at] = x - records[r + 4];
-  data[at + 1] = y - records[r + 5];
+  data[at] = left;
+  data[at + 1] = top;
   data[at + 2] = records[r];
   data[at + 3] = records[r + 1];
   data[at + 4] = records[r + 2];
@@ -32,10 +40,21 @@ function put(data: Int16Array, at: number, records: Int16Array, record: number, 
   return at + INSTANCE_SHORTS;
 }
 
-function worn(table: Int16Array, slot: number): number {
+// The sprite's anchor at (x, y).
+function put(data: Int16Array, at: number, records: Int16Array, record: number, x: number, y: number): number {
+  const r = RECORD_SHORTS * record;
+  return putCorner(data, at, records, record, x - records[r + 4], y - records[r + 5]);
+}
+
+function worn(table: Int16Array, slot: number, what = 'a person in this pose and facing'): number {
   const record = table[slot];
-  if (record === NO_FRAME) throw new Error('the atlas has no sprite for a person in this pose and facing');
+  if (record === NO_FRAME) throw new Error(`the atlas has no sprite for ${what}`);
   return record;
+}
+
+// A street column's value for person j, or 0 where the people have no such column.
+function streetOf(column: Uint8Array | undefined, j: number): number {
+  return column === undefined ? 0 : column[j];
 }
 
 // Each tile's anchor is its bottom-centre art pixel, as placedraw.py stamps it.
@@ -56,7 +75,53 @@ function putGround(data: Int16Array, at: number, ground: Int32Array, records: In
   for (const i of rows) at = put(data, at, records, ground[3 * i], ground[3 * i + 1], ground[3 * i + 2]);
 }
 
-// The face, job item and emote, placed from the body frame's face offset.
+// The resting face, or the chewing one while the person eats, at (x, y), the body's anchor moved by its face offset. Facing
+// up shows none.
+function putFace(
+  data: Int16Array,
+  at: number,
+  frames: PersonFrames,
+  people: PlacePeople,
+  j: number,
+  eyes: number,
+  x: number,
+  y: number,
+): number {
+  const facing = people.facing[j];
+  if (facing === UP) return at;
+  const eat = streetOf(people.eat, j);
+  const face =
+    eat === 0
+      ? worn(frames.face, (people.expression[j] * EYES + eyes) * FACINGS + facing)
+      : worn(frames.chew, ((eat - 1) & 1) * FACINGS + facing);
+  return put(data, at, frames.records, face, x, y);
+}
+
+// The good a person carries, never mirrored: its top-left is the body frame's hold point, or one of its eating steps while
+// the person eats, on the body's own canvas. Facing up carries none, and neither does a frame with no hold, such as a sitter's.
+function putItem(
+  data: Int16Array,
+  at: number,
+  frames: PersonFrames,
+  people: PlacePeople,
+  j: number,
+  body: number,
+  x: number,
+  y: number,
+): number {
+  const good = streetOf(people.item, j);
+  if (good === 0 || people.facing[j] === UP) return at;
+  const { records } = frames;
+  const eat = streetOf(people.eat, j);
+  const b = RECORD_SHORTS * body;
+  const from = b + (eat === 0 ? HOLD_AT : EAT_AT + 2 * EAT_POINT[eat - 1]);
+  if (records[from] === NO_POINT) return at;
+  const left = x - records[b + 4] + records[from];
+  const top = y - records[b + 5] + records[from + 1];
+  return putCorner(data, at, records, worn(frames.carry, good, 'a carried good'), left, top);
+}
+
+// The face, job item, carried item and emote, placed from the body frame's face offset and hold point.
 function putOverlays(
   data: Int16Array,
   at: number,
@@ -70,21 +135,19 @@ function putOverlays(
   y: number,
 ): number {
   const { records } = frames;
-  const faceX = records[RECORD_SHORTS * body + 6];
-  const faceY = records[RECORD_SHORTS * body + 7];
-  const facing = people.facing[j];
-  if (facing !== UP) {
-    const face = worn(frames.face, (people.expression[j] * EYES + eyes) * FACINGS + facing);
-    at = put(data, at, records, face, x + faceX, y + faceY);
-  }
+  const faceX = records[RECORD_SHORTS * body + FACE_AT];
+  const faceY = records[RECORD_SHORTS * body + FACE_AT + 1];
+  at = putFace(data, at, frames, people, j, eyes, x + faceX, y + faceY);
   if (people.job[j] !== NO_CODE) at = put(data, at, records, worn(frames.job, people.job[j] * STEMS + stem), x, y);
+  at = putItem(data, at, frames, people, j, body, x, y);
   if (people.emote[j] !== NO_CODE) at = put(data, at, records, worn(frames.emote, people.emote[j]), x + EMOTE_X, y + faceY + EMOTE_Y);
   return at;
 }
 
-// looks.py's layers from the person's look and pose, then placedraw.py's person_layers. A look is hue look % 6, eyes
-// floor(look / 6) % 4 and pattern floor(look / 24).
+// looks.py's layers from the person's look and pose, then placedraw.py's person_layers, with the carried item after the job
+// item. A look is hue look % 6, eyes floor(look / 6) % 4 and pattern floor(look / 24). A person indoors draws nothing.
 export function putPerson(data: Int16Array, at: number, frames: PersonFrames, people: PlacePeople, j: number): number {
+  if (streetOf(people.indoors, j) === 1) return at;
   const look = people.look[j];
   const hue = look % HUES;
   const pattern = Math.floor(look / (HUES * EYES));
@@ -118,7 +181,7 @@ export class PlaceSprites {
   // The place's size in art px.
   readonly width: number;
   readonly height: number;
-  // INSTANCE_SHORTS shorts a sprite, room for every person wearing all five layers.
+  // INSTANCE_SHORTS shorts a sprite, room for every person wearing all six layers.
   readonly data: Int16Array;
   // The tiles and ground sprites at the front of data.
   readonly fixed: number;

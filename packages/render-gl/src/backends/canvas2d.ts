@@ -1,4 +1,4 @@
-import { SNAPSHOT_BYTES, TILE_PX, jobOf } from '@nomos/sim-protocol';
+import { SNAPSHOT_BYTES, TILE_PX, indoorsOf, jobOf } from '@nomos/sim-protocol';
 import { BACKGROUND, OUTLINE, RIM, rgbOf } from '../dots/colour.ts';
 import { JUMP_PX, MASK_FILL, MASK_GROUND, ROLES, ROLE_SHAPE, dotCentre, dotFill, dotMask, roleOfJob } from '../dots/dots.ts';
 import skinA from '../dots/skin-a.json';
@@ -78,6 +78,7 @@ function drawDots(ctx: CanvasRenderingContext2D, retained: Retained, images: HTM
   let drawn = 0;
   for (let i = 0; i < count && drawn < CANVAS2D_AGENT_CAP; i++) {
     const at = i * FLOATS_PER_AGENT;
+    if (indoorsOf(words[at + 2]) === 1) continue;
     const jump = Math.abs(cur[at] - prev[at]) > JUMP_PX || Math.abs(cur[at + 1] - prev[at + 1]) > JUMP_PX;
     const x = along(prev[at], cur[at], alpha, jump);
     const y = along(prev[at + 1], cur[at + 1], alpha, jump);

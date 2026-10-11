@@ -1,5 +1,7 @@
 import { CROWD_HUES } from '../world-map/world-map.ts';
 
+export { ITEM_GOODS } from './item-goods.ts';
+
 // A zoomed-in place as tools/worldgen/place.py lays it out: a settlement's centre district or a wonder's vista, with its
 // ground, buildings and props and its look-only blob people (owner, 9 October 2026). The map worker builds one on
 // request and render-gl's place pass draws it (M3.1's plan, the town view).
@@ -19,6 +21,9 @@ export const NO_CODE = 255;
 
 // A column per field of place.py's Person. x and y are the anchor, the ground point, in art pixels from the place's
 // top-left corner, and lift raises a sitter onto a bench. step is a walker's frame, 0 or 1, and 0 for anyone else.
+// The street's columns (M2.7) belong to the Town skin's people, since a layout the map worker builds has no street life, so
+// they are optional and a missing one reads as 0: item is the good carried, 0 for none or its code in ITEM_GOODS, eat is 0
+// or 1 plus the step of the eating loop, and indoors is 1 for a person inside a building, whom no pass draws.
 export interface PlacePeople {
   look: Uint8Array;
   pose: Uint8Array;
@@ -30,6 +35,9 @@ export interface PlacePeople {
   x: Int32Array;
   y: Int32Array;
   lift: Uint8Array;
+  item?: Uint8Array;
+  eat?: Uint8Array;
+  indoors?: Uint8Array;
 }
 
 // frames names each sprite once, as "<sheet>/<frame>", the key of tools/atlas's frame table, in order of first use:

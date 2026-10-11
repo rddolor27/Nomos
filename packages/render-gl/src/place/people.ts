@@ -1,4 +1,5 @@
 import {
+  ITEM_GOODS,
   LOOK_EYES,
   LOOK_HUES,
   LOOK_PATTERNS,
@@ -8,19 +9,36 @@ import {
   PLACE_JOBS,
   PLACE_POSES,
 } from '@nomos/sim-protocol/place';
-import type { AtlasPage } from '../map/frames.ts';
+import type { AtlasFrame, AtlasPage } from '../map/frames.ts';
 
 export type Frames = AtlasPage['frames'];
 
-// A frame's record: its atlas x, y, w and h, its anchor's x and y, and its face offset's x and y, 0 where it has none.
-export const RECORD_SHORTS = 8;
+// A frame's record: its atlas x, y, w and h, its anchor's x and y, its face offset's x and y (0 where it has none), its hold
+// point's x and y, and the x and y of each of its three eating steps. A frame that carries no item has NO_POINT for all eight.
+export const FACE_AT = 6;
+export const HOLD_AT = 8;
+export const EAT_AT = 10;
+const EAT_POINTS = 3;
+export const RECORD_SHORTS = EAT_AT + 2 * EAT_POINTS;
 export const NO_FRAME = -1;
+// A hold point can sit a pixel left of its frame, so the smallest short, which none reaches, marks no point.
+export const NO_POINT = -32768;
 
 export const HUES = LOOK_HUES.length;
 export const EYES = LOOK_EYES.length;
 export const FACINGS = PLACE_FACINGS.length;
 // stemOf's index runs over every pose, facing and walk step.
 export const STEMS = PLACE_POSES.length * FACINGS * 2;
+// The mouths of the eating loop.
+export const CHEWS = 2;
+
+// The carried item's top-left on a frame: its hold point, then its eating steps. A frame with a hold and no steps, such as a
+// walking one, repeats the hold for each, so a blob that eats while it walks keeps its item.
+function itemPoints(frame: AtlasFrame): number[] {
+  if (!frame.hold) return Array.from({ length: RECORD_SHORTS - HOLD_AT }, () => NO_POINT);
+  const steps = frame.eat ?? [frame.hold, frame.hold, frame.hold];
+  return [...frame.hold, ...steps.flat()];
+}
 
 // The records of the named frames, in order; a name the atlas lacks throws.
 export function frameRecords(names: readonly string[], frames: Frames): Int16Array {
@@ -29,7 +47,8 @@ export function frameRecords(names: readonly string[], frames: Frames): Int16Arr
     const frame = frames[name];
     if (!frame) throw new Error(`the atlas has no frame ${name}`);
     const [faceX, faceY] = frame.face ?? [0, 0];
-    out.set([frame.x, frame.y, frame.w, frame.h, frame.anchor[0], frame.anchor[1], faceX, faceY], RECORD_SHORTS * i);
+    const record = [frame.x, frame.y, frame.w, frame.h, frame.anchor[0], frame.anchor[1], faceX, faceY, ...itemPoints(frame)];
+    out.set(record, RECORD_SHORTS * i);
   });
   return out;
 }
@@ -70,6 +89,17 @@ function jobName(slot: number): string {
   return `characters/job_${PLACE_JOBS[Math.floor(slot / STEMS)]}_${stemName(slot % STEMS)}`;
 }
 
+// The two mouths the eating loop alternates; the face is not drawn facing up.
+function chewName(slot: number): string | null {
+  const facing = PLACE_FACINGS[slot % FACINGS];
+  return facing === 'up' ? null : `characters/face_chew_${Math.floor(slot / FACINGS)}_${facing}`;
+}
+
+// Item code 0 carries nothing; code c carries ITEM_GOODS[c - 1].
+function carryName(code: number): string | null {
+  return code === 0 ? null : `icons/carry_${ITEM_GOODS[code - 1]}`;
+}
+
 // Every sprite a person can wear, as frame records with tables of indices into them. Each table holds NO_FRAME where
 // the atlas has no sprite, such as for a sitter facing up, or where a person wears none, such as a plain pattern.
 export interface PersonFrames {
@@ -83,6 +113,10 @@ export interface PersonFrames {
   // By job * STEMS + stem.
   readonly job: Int16Array;
   readonly emote: Int16Array;
+  // By mouth * FACINGS + facing, the chewing face of the eating loop.
+  readonly chew: Int16Array;
+  // By item code, as the visual word gives it.
+  readonly carry: Int16Array;
 }
 
 export function personFrames(frames: Frames): PersonFrames {
@@ -100,5 +134,7 @@ export function personFrames(frames: Frames): PersonFrames {
   const face = table(PLACE_EXPRESSIONS.length * EYES * FACINGS, faceName);
   const job = table(PLACE_JOBS.length * STEMS, jobName);
   const emote = table(PLACE_EMOTES.length, (slot) => `icons/emote_${PLACE_EMOTES[slot]}`);
-  return { records: frameRecords(names, frames), body, pattern, face, job, emote };
+  const chew = table(CHEWS * FACINGS, chewName);
+  const carry = table(ITEM_GOODS.length + 1, carryName);
+  return { records: frameRecords(names, frames), body, pattern, face, job, emote, chew, carry };
 }

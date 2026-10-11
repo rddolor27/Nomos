@@ -6,7 +6,10 @@ import {
   FACING_UP,
   SNAPSHOT_BYTES,
   actionOf,
+  eatingOf,
   facingOf,
+  indoorsOf,
+  itemOf,
   lookOf,
 } from '@nomos/sim-protocol';
 import { NO_CODE, PLACE_EXPRESSIONS, PLACE_FACINGS, PLACE_POSES, type PlacePeople } from '@nomos/sim-protocol/place';
@@ -23,6 +26,9 @@ const LEFT = PLACE_FACINGS.indexOf('left');
 const RIGHT = PLACE_FACINGS.indexOf('right');
 // The walk frame changes every 8 art px walked, as the town view's walkers step.
 const STRIDE_SHIFT = 3;
+// The eating loop moves on every 3 ticks, through 4 steps.
+const EAT_TICKS = 3;
+const EAT_STEP_MASK = 3;
 
 // The place's facing for each of the visual word's facing codes, which run in another order.
 function wordFacings(): Uint8Array {
@@ -36,7 +42,7 @@ function wordFacings(): Uint8Array {
 
 const FACING_OF_WORD = wordFacings();
 
-function peopleFor(count: number): PlacePeople {
+function peopleFor(count: number): Required<PlacePeople> {
   return {
     look: new Uint8Array(count),
     pose: new Uint8Array(count),
@@ -48,6 +54,9 @@ function peopleFor(count: number): PlacePeople {
     x: new Int32Array(count),
     y: new Int32Array(count),
     lift: new Uint8Array(count),
+    item: new Uint8Array(count),
+    eat: new Uint8Array(count),
+    indoors: new Uint8Array(count),
   };
 }
 
@@ -64,13 +73,22 @@ function facingFor(dx: number, dy: number, jump: boolean, word: number): number 
   return dy > 0 ? DOWN : UP;
 }
 
+// What the word says of the street: the good carried, how far into the eating loop the blob is (0 when it isn't eating), and
+// whether it is indoors. Every blob carrying a good shows the same icon, whatever its wallet.
+function writeStreet(people: Required<PlacePeople>, i: number, word: number, eatStep: number): void {
+  people.item[i] = itemOf(word);
+  people.eat[i] = eatingOf(word) === 1 ? 1 + eatStep : 0;
+  people.indoors[i] = indoorsOf(word);
+}
+
 function writePerson(
-  people: PlacePeople,
+  people: Required<PlacePeople>,
   i: number,
   cur: Float32Array,
   prev: Float32Array,
   word: number,
   alpha: number,
+  eatStep: number,
 ): void {
   const at = i * FLOATS_PER_AGENT;
   const dx = cur[at] - prev[at];
@@ -88,14 +106,16 @@ function writePerson(
   people.pose[i] = walking ? WALK : STAND;
   people.facing[i] = facing;
   people.step[i] = walking ? (along >> STRIDE_SHIFT) & 1 : 0;
+  writeStreet(people, i, word, eatStep);
 }
 
 // The sim's agents as a place's people, one person per agent, rewritten every draw from the two latest snapshots
 // (owner request, 10 October 2026). A snapshot's world px are art px, and an agent's point is its person's anchor, the
-// ground under its feet. Expression is neutral, with no job or emote yet.
+// ground under its feet. Expression is neutral, with no job or emote yet, and the street's bits of the word, the good
+// carried, eating and indoors, go to the street's columns (M2.7).
 export class TownPeople {
   // Made again only when the agent count changes, so a draw allocates nothing.
-  columns: PlacePeople;
+  columns: Required<PlacePeople>;
 
   constructor() {
     this.columns = peopleFor(0);
@@ -114,6 +134,7 @@ export class TownPeople {
     const cur = retained.floats[slot];
     const prev = retained.floats[slot ^ 1];
     const words = retained.words[slot];
-    for (let i = 0; i < count; i++) writePerson(this.columns, i, cur, prev, words[i * FLOATS_PER_AGENT + 2], alpha);
+    const eatStep = Math.floor(retained.tick / EAT_TICKS) & EAT_STEP_MASK;
+    for (let i = 0; i < count; i++) writePerson(this.columns, i, cur, prev, words[i * FLOATS_PER_AGENT + 2], alpha, eatStep);
   }
 }

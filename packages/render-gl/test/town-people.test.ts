@@ -24,8 +24,13 @@ function idler(look: number, facing = FACING_DOWN): number {
   return packVisual(look, ACTION_IDLE, 0, 0, facing, 0);
 }
 
+// A blob standing in the street: the good it carries, whether it eats and whether it is indoors.
+function streeter(look: number, item: number, eating: number, indoors: number): number {
+  return packVisual(look, ACTION_IDLE, 0, 0, FACING_DOWN, 0, indoors, item, eating);
+}
+
 // The renderer's two latest snapshots, slot 0 the current one, as pushSnapshot leaves them.
-function retained(prev: Agent[], cur: Agent[]): Retained {
+function retained(prev: Agent[], cur: Agent[], tick = 0): Retained {
   const copies = [cur, prev].map((agents) => {
     const bytes = new Uint8Array(agents.length * SNAPSHOT_BYTES);
     const view = new DataView(bytes.buffer);
@@ -44,12 +49,13 @@ function retained(prev: Agent[], cur: Agent[]): Retained {
     words: copies.map((copy) => new Uint32Array(copy.buffer)),
     slot: 0,
     count: cur.length,
+    tick,
   };
 }
 
-function written(prev: Agent[], cur: Agent[], alpha = 1): TownPeople {
+function written(prev: Agent[], cur: Agent[], alpha = 1, tick = 0): TownPeople {
   const people = new TownPeople();
-  const snapshots = retained(prev, cur);
+  const snapshots = retained(prev, cur, tick);
   people.fit(snapshots.count);
   people.write(snapshots, alpha);
   return people;
@@ -109,6 +115,22 @@ describe('the Town skin\'s people', () => {
     expect([...columns.step]).toEqual([0, 0, 1, 1, 0, 1, 0, 1, 0, 0]);
   });
 
+  it('read the street bits of the word: the good carried, eating by the tick, and indoors, all 0 for a bare word', () => {
+    const agents: Agent[] = [[8, 8, streeter(1, 1, 0, 0)], [8, 8, streeter(2, 7, 1, 0)], [8, 8, streeter(3, 2, 0, 1)], [8, 8, idler(4)]];
+    const { columns } = written(agents, agents, 1, 7);
+
+    expect([...columns.item]).toEqual([1, 7, 2, 0]);
+    expect([...columns.eat]).toEqual([0, 3, 0, 0]);
+    expect([...columns.indoors]).toEqual([0, 0, 1, 0]);
+  });
+
+  it('step the eating loop every 3 ticks through 4 steps, and start it again after the fourth', () => {
+    const eater: Agent[] = [[8, 8, streeter(1, 1, 1, 0)]];
+    const steps = [0, 2, 3, 5, 6, 9, 11, 12, 15].map((tick) => written(eater, eater, 1, tick).columns.eat[0]);
+
+    expect(steps).toEqual([1, 1, 2, 2, 3, 4, 4, 1, 2]);
+  });
+
   it('make their columns again only when the agent count changes', () => {
     const people = new TownPeople();
     const before = people.columns;
@@ -120,6 +142,6 @@ describe('the Town skin\'s people', () => {
     people.write(retained(agents, agents), 1);
     expect([people.fit(3), people.columns === three, three.x.length]).toEqual([false, true, 3]);
     expect(people.fit(5)).toBe(true);
-    expect(people.columns.look.length).toBe(5);
+    expect([people.columns.look.length, people.columns.item.length, people.columns.eat.length, people.columns.indoors.length]).toEqual([5, 5, 5, 5]);
   });
 });
