@@ -46,27 +46,6 @@ export interface PlaceLayout {
   people: PlacePeople;
 }
 
-// The loops look-only walkers follow, which place.py has no part in. Loop r belongs to person[r] and steps through
-// cells[offsets[r]] to cells[offsets[r + 1] - 1], 4-adjacent tiles people may walk on, each y * width + x. It then steps
-// back to its first cell, the person's own tile.
-export interface PlaceWalks {
-  person: Uint16Array;
-  offsets: Int32Array;
-  cells: Int32Array;
-}
-
-// The street crowd (M3.1 part 2): look-only walkers in proportion to the population, on loops of their own spread over
-// the place. Crowd loop r steps through cells[offsets[r]] to cells[offsets[r + 1] - 1] and back, as PlaceWalks' loops do.
-// Walker k has look look[k] and expression expression[k], and follows loop loop[k], starting phase[k] art px along it.
-export interface PlaceCrowd {
-  look: Uint8Array;
-  expression: Uint8Array;
-  loop: Uint16Array;
-  phase: Uint16Array;
-  offsets: Int32Array;
-  cells: Int32Array;
-}
-
 // Place p is settlement p, or wonder p minus the settlement count: the order of tools/worldgen/world.py's place_contexts.
 export type PlaceRequest = { type: 'place'; place: number };
 // map is a settlement's ground as .nmap bytes, which the page hands the sim worker in an open message to run the town live

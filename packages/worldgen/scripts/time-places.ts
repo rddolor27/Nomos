@@ -1,22 +1,16 @@
 // M3.1 part 3's build-time baseline: node packages/worldgen/scripts/time-places.ts [--worlds N]. Takes up to six places
 // of each tier from the first standard worlds from 5EED0001, in context order, builds each once to warm it and once
 // timed, and prints a line per tier. After each layout task a capital's and a city's median stays within 2x of the
-// baseline's and their worst within 2.5x of its worst, on the same machine.
+// baseline's and their worst within 2.5x of its worst, on the same machine. Since M2.2c it times buildPlace, the layout
+// and the ground, where the baseline also timed the walk loops and the street crowd, so only later lines compare.
 import { parseArgs } from 'node:util';
 import { TIER_NAMES } from '@nomos/sim-protocol/world-map';
-import { generateWorld, placeContexts, type PlaceContext } from '../src/index.ts';
-import { crowdedPlace } from '../src/place/street-crowd.ts';
+import { buildPlace, generateWorld, placeContexts, type PlaceContext } from '../src/index.ts';
 
 const FIRST_SEED = 0x5eed0001;
 const WORLDS = 6;
 const PER_TIER = 6;
 const TIER_WIDTH = Math.max(...TIER_NAMES.map((tier) => tier.length));
-
-interface Build {
-  readonly ms: number;
-  readonly walkCells: number;
-  readonly crowdCells: number;
-}
 
 function worldCount(text: string): number {
   const n = Number(text);
@@ -36,12 +30,11 @@ function sample(worlds: number): Map<string, PlaceContext[]> {
   return byTier;
 }
 
-function timedBuild(ctx: PlaceContext): Build {
-  crowdedPlace(ctx);
+function timedBuild(ctx: PlaceContext): number {
+  buildPlace(ctx);
   const start = performance.now();
-  const { walks, crowd } = crowdedPlace(ctx);
-  const ms = performance.now() - start;
-  return { ms, walkCells: walks.cells.length, crowdCells: crowd.cells.length };
+  buildPlace(ctx);
+  return performance.now() - start;
 }
 
 function median(values: readonly number[]): number {
@@ -50,15 +43,12 @@ function median(values: readonly number[]): number {
   return sorted.length % 2 === 1 ? sorted[middle] : (sorted[middle - 1] + sorted[middle]) / 2;
 }
 
-function lineOf(tier: string, builds: readonly Build[]): string {
-  const ms = builds.map((build) => build.ms);
+function lineOf(tier: string, ms: readonly number[]): string {
   return [
     tier.padEnd(TIER_WIDTH),
-    `n=${builds.length}`,
+    `n=${ms.length}`,
     `median ${median(ms).toFixed(1)} ms`,
     `worst ${Math.max(...ms).toFixed(1)} ms`,
-    `walk cells ${Math.max(...builds.map((build) => build.walkCells))}`,
-    `crowd cells ${Math.max(...builds.map((build) => build.crowdCells))}`,
   ].join('  ');
 }
 
