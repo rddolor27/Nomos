@@ -652,7 +652,12 @@ The owner asked on 10 October 2026 for the town view's art on the first screen. 
   - **pose:** walk when `actionOf(word)` is walk, else stand. Expression is neutral, with no job or emote yet.
   - **facing:** from the move between the two snapshots, along its larger axis, or `facingOf(word)` for a blob that stood still or jumped.
   - **step:** `(along >> 3) & 1`, where `along` is the drawn x of a blob facing left or right and the drawn y of any other, so the walk frame changes every 8 art px walked; 0 for a stander.
-  - The columns regrow to the agent count when it changes, the one time the place is set again; a frame allocates nothing.
+  - The columns regrow to the agent count when it changes, and `setLayout` sets the place again; a frame allocates nothing.
+- **`setLayout(layout: PlaceLayout)`** (M2.2c Task 5, 787cfe9) swaps the town drawn, on the same canvas, context and atlas: its ground, buildings and size, from the next draw.
+  - It draws nothing itself, so the caller redraws.
+  - The sim's agents stay its people, and the layout's own `people` are never drawn.
+  - It makes the sprite list at once, so a frame the atlas lacks throws there and the skin keeps its old town.
+  - `setPeople` became `setPlace(layout)`.
 - **Imports:** `src/place`, `src/map`'s `frames.ts` for its types, the renderer's types, and `sim-protocol`.
 
 ### In `web`
