@@ -58,6 +58,13 @@ The owner can overturn any of these.
     - **Family:** until M5's births, the household is the family, and visits go to friends.
     - **Soldiers' pay:** M0.2's local-government account, until M5's treasury.
     - **Scheduling:** decisions follow M2.7's `endTick` scan. A bucketed timing wheel comes only if a budget gate fails, and `sim-core.md` now says so.
+- **12 October 2026, 01:10, the build order** (owner): ring towns first, then lives. The owner then added the bell-curve town, Part 4's Task 27.
+  - **The coordinator's order:** Task 22, then Task 27, then M3.2's Tasks 2–6.
+    - Task 27 runs before Task 26, since the walls wait for the owner's pick of the diagonal pieces.
+    - Task 27's greens give M3.2 leisure sites.
+    - Until Task 26's gates exist, the inn and the stable aim at the plaza's centre.
+  - **Beside them:** the wall-art preview (Task 24), M3.2's mockups (Task 1) and M2.7 Part 1's Opus review.
+  - **Pushes:** the next push follows Task 27. The place goldens and the browser specs' Highcourt counts are re-pinned then, not only at Task 30.
 - **M2.2c's go** (09:31): build it right after M2.4 Part 1. Highcourt is each world's capital. Away towns keep living in summary form, not frozen, so an Opus pass settles how before Task 3.
 
 **The designers' calls, 10 October 2026:**
@@ -101,9 +108,8 @@ Beyond the checkpoint's Open list:
   - move `SystemRows` into the controls chunk;
   - the charts chunk has only 0.08 kB spare.
 - **Names:** re-running `build-real-world.ts` would overwrite the 42 hand-added religion words. A test catches that, and a merge file would make them last.
-- **The owner's go:** both new briefs wait for it.
-  - **M3.1 Part 4,** first its Task 22, the style draw and the ring town. It holds Part 3's walls, towers, gates and farms as Tasks 26–30.
-  - **M3.2,** first Tasks 1–6: blobs gathering, sitting and chatting under speech bubbles.
+- **The owner's go:** given at 01:10 on 12 October for M3.1 Part 4's Tasks 22 and 27 and Task 24's preview, and for M3.2's Tasks 1–6.
+  - Part 4's Tasks 23, 25, 26 and 28–30 and M3.2's Tasks 7–11 still wait for it. Task 26 also waits for the owner's pick of the wall art.
   - M0.5 waits only on the owner's device timings.
 - **Backlog from before the restructure** (checkpoint 0034 and the nomos-bd hand-off):
   - **Unbuilt tasks:** M0.8's leftovers (lil-gui behind `?dev=1`, the town's Fit, Home and pinch, and `toolbar.ts` in the Layout table), and M8.1's Tasks 31 and 33–35.
@@ -119,6 +125,7 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 12 Oct, 01:10: **building starts** on the owner's go: M3.1 Part 4's Task 22, with Task 24's preview, M3.2's Task 1 mockups and M2.7 Part 1's Opus review beside it.
 - 12 Oct: **M3.2 briefed** (8aafff7): blobs with lives of their own, in 11 tasks, at 15–23.5 full-time days (unsourced estimate). Its first visible slice, Tasks 1–6, shows blobs on the plaza and greens, on doorsteps, and chatting under speech bubbles. The mockups come first, and the build waits for the owner's go.
 - 12 Oct: **M3.1 Part 4 briefed** (67a794b): varied town layouts and walls, in 9 tasks, 22–30, at 13–20 full-time days, 7–11 of them Part 3's folded tasks (unsourced estimate). Its first visible slice, Task 22, is the style draw with ring towns, Highcourt among them. It waits for the owner's go, and its art preview comes first.
 - 11–12 Oct: **M2.7 Part 1 implemented; it pauses before its Opus review**, as the owner asked.
