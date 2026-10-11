@@ -17,11 +17,13 @@ function endRun(world: World, i: number, tick: number): void {
 
 // Movement for a town with streets, in move's place: every blob is indoors, at a post or on a run (M2.7). A blob that is not
 // walking waits for its end tick, and one that walks takes its heading's step, with no wall to check, since pathRuns' ways lie
-// over open cells. Only the blob's own row and the town's errand rows change here, never money, stock or an economy row.
+// over open cells. Only the blob's own row and the town's errand rows change here, never money, stock or an economy row. A blob
+// that comes free is listed, in blob order, for the life system to choose for this same tick (M3.2 Ruling 2).
 export function walkStreets(world: World): void {
   const tick = world.globals[TICK];
   const { agents, errands } = world;
   const count = agents.count[0];
+  world.life.dueCount[0] = 0;
   const { x, y, vx, vy } = agents;
   const { phase, endTick } = errands;
   for (let i = 0; i < count; i++) {

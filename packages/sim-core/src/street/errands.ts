@@ -9,25 +9,32 @@ export const PURPOSE_WORK = 0;
 export const PURPOSE_FOOD = 1;
 export const PURPOSE_GOODS = 2;
 
-// Why a blob does what it does (M3.2 Ruling 3), where the phase says where and how it is. SLEEP is any time at home with nothing
-// to do, asleep or waiting for the day to plan. A fetch is the trip to a premises for what the blob bought, there and home.
+// Why a blob does what it does (M3.2 Ruling 3), where the phase says where and how it is. SLEEP is the night, or waiting for the
+// day to plan. A fetch is the trip to a premises for what the blob bought, there and home. The last four are free time, which the
+// life system hands out (life/choose.ts): STAY at home indoors, the DOORSTEP on its own door tile, and an outing to the PLAZA or to
+// a GREEN, there and home.
 export const ACTIVITY_SLEEP = 0;
 export const ACTIVITY_WORK = 1;
 export const ACTIVITY_FETCH = 2;
 export const ACTIVITY_EAT = 3;
+export const ACTIVITY_STAY = 4;
+export const ACTIVITY_DOORSTEP = 5;
+export const ACTIVITY_PLAZA = 6;
+export const ACTIVITY_GREEN = 7;
 
 // Where and how a blob is in its day. A blob is indoors at home in ASLEEP, and in LEAVING until the tick it sets out, with its
 // trip's runs already in its row. It stands still until endTick at a post (WORKING indoors at the premises, KEEPING behind a
-// stall's counter, BUYING at a door, EATING on its own doorstep), and walks from GOING on: out along the runs, or home along
-// them backwards.
+// stall's counter, BUYING at a door, EATING on its own doorstep, STAYING at a free-time spot: the doorstep or a site), and
+// walks from GOING on: out along the runs, or home along them backwards.
 export const PHASE_ASLEEP = 0;
 export const PHASE_LEAVING = 1;
 export const PHASE_WORKING = 2;
 export const PHASE_KEEPING = 3;
 export const PHASE_BUYING = 4;
 export const PHASE_EATING = 5;
-export const PHASE_GOING = 6;
-export const PHASE_COMING = 7;
+export const PHASE_STAYING = 6;
+export const PHASE_GOING = 7;
+export const PHASE_COMING = 8;
 export const FIRST_WALKING = PHASE_GOING;
 
 // Indoors at home or at work, so not on the street to draw or to pick.
@@ -55,7 +62,7 @@ export interface Errands {
   readonly activity: Uint8Array;
   // The good fetched or carried, or 0.
   readonly good: Uint8Array;
-  // The trip's site: its index in the town's sites, a premises so far.
+  // The trip's site: its index in the town's sites, a premises for work and fetching and a leisure site for an outing.
   readonly shop: Uint8Array;
   // The run being walked.
   readonly run: Uint8Array;

@@ -1,10 +1,12 @@
 import { FACING_DOWN, FACING_UP } from '../agents/actions.ts';
 import { isFood } from '../goods/goods.ts';
+import { endStay, parkFree, startStaying } from '../life/activities.ts';
+import { mealEaten, settleNeeds } from '../life/needs.ts';
 import { drawBelow3 } from '../random/draw.ts';
 import { STREET_DRAW } from '../random/streams.ts';
 import { TICKS_PER_DAY, dayOf, isRestDay } from '../time/calendar.ts';
 import { tileOf } from '../world/ground.ts';
-import type { World } from '../world/world.ts';
+import { TICK, type World } from '../world/world.ts';
 import {
   ACTIVITY_EAT,
   ACTIVITY_FETCH,
@@ -17,6 +19,7 @@ import {
   PHASE_GOING,
   PHASE_KEEPING,
   PHASE_LEAVING,
+  PHASE_STAYING,
   PHASE_WORKING,
   PURPOSE_FOOD,
   PURPOSE_GOODS,
@@ -34,6 +37,10 @@ import { pathRuns, RUN_BYTES } from './runs.ts';
 //     time its way leaves before night.
 //   - Every trip is home by 22:00, since it starts only if it fits, so the streets are empty from then to 06:00.
 // Every time is a keyed draw on STREET_DRAW, so no rule reads a look, culture or wallet.
+//
+// What the trips leave of the day is the blob's own (M3.2 Ruling 5): when its trips are done, and when it wakes with none, it is
+// free, and the life system chooses how it spends the time until half past nine (life/choose.ts). A blob with no time left goes to
+// bed, as before.
 export const OPENING_MINUTE = 360;
 const NIGHT_MINUTE = 1_320;
 const WAKE_MINUTE = 240;
@@ -78,6 +85,7 @@ function spotDrawn(world: World, i: number, day: number, purpose: number): numbe
 // Asleep until a keyed minute of the planning window of `day`, with no trip in the row.
 export function sleepUntil(world: World, i: number, day: number): void {
   const errands = world.errands;
+  settleNeeds(world.life, errands, i, world.globals[TICK]);
   errands.phase[i] = PHASE_ASLEEP;
   errands.activity[i] = ACTIVITY_SLEEP;
   errands.good[i] = 0;
@@ -97,6 +105,7 @@ function pathTo(world: World, i: number, shop: number): number {
 
 function setOffAt(world: World, i: number, activity: number, shop: number, tick: number): void {
   const errands = world.errands;
+  settleNeeds(world.life, errands, i, world.globals[TICK]);
   errands.phase[i] = PHASE_LEAVING;
   errands.activity[i] = activity;
   errands.shop[i] = shop;
@@ -151,22 +160,21 @@ function planShopping(world: World, i: number, tick: number, purpose: number): b
 }
 
 // The day's first plan, when a blob wakes in the small hours: work if it has a way to it, else the one shopping trip of a
-// workday, else nothing.
+// workday, else nothing, and the day is its own.
 function planDay(world: World, i: number, tick: number): void {
   const day = dayOf(tick);
   if (planWork(world, i, day) || planShopping(world, i, tick, PURPOSE_FOOD) || planShopping(world, i, tick, PURPOSE_GOODS)) return;
-  sleepUntil(world, i, day + 1);
+  parkFree(world, i, tick);
 }
 
-// Home from work: the day's one shopping trip, if it fits.
+// Home from work: the day's one shopping trip, if it fits, else free time.
 function afterWork(world: World, i: number, tick: number): void {
-  if (!planShopping(world, i, tick, PURPOSE_FOOD)) sleepUntil(world, i, dayOf(tick) + 1);
+  if (!planShopping(world, i, tick, PURPOSE_FOOD)) parkFree(world, i, tick);
 }
 
-// Home and fed: a rest day has a second trip for goods.
+// Home and fed: a rest day has a second trip for goods, and then free time.
 function afterFood(world: World, i: number, tick: number): void {
-  const day = dayOf(tick);
-  if (!isRestDay(day) || !planShopping(world, i, tick, PURPOSE_GOODS)) sleepUntil(world, i, day + 1);
+  if (!isRestDay(dayOf(tick)) || !planShopping(world, i, tick, PURPOSE_GOODS)) parkFree(world, i, tick);
 }
 
 function depart(world: World, i: number, tick: number): void {
@@ -219,6 +227,7 @@ function startHome(world: World, i: number, tick: number): void {
 // Home with food: it is eaten on the doorstep, at a keyed point of the home door's tile, for EAT_TICKS.
 function startEating(world: World, i: number, tick: number): void {
   const { agents, errands } = world;
+  mealEaten(world.life, errands, i, tick);
   placeAtSpot(world, i, tileOf(agents.x[i]), tileOf(agents.y[i]), spotDrawn(world, i, dayOf(tick), DRAW_HOME_SPOT));
   halt(world, i, FACING_DOWN);
   errands.phase[i] = PHASE_EATING;
@@ -226,29 +235,36 @@ function startEating(world: World, i: number, tick: number): void {
   errands.endTick[i] = tick + EAT_TICKS;
 }
 
-// Home from work, which shops once; or from a shop, with food to eat at the door, or with goods, which end the day's trips.
+// Home from work, which shops once; or from a shop, with food to eat at the door, or with goods, which end the day's trips; or
+// from an outing, which has none. A blob with no trip left is free.
 function arriveHome(world: World, i: number, tick: number): void {
   const errands = world.errands;
   halt(world, i, FACING_DOWN);
   if (errands.activity[i] === ACTIVITY_WORK) afterWork(world, i, tick);
   else if (isFood(errands.good[i])) startEating(world, i, tick);
-  else sleepUntil(world, i, dayOf(tick) + 1);
+  else parkFree(world, i, tick);
 }
 
-// The last run is done: the blob is at the door it walked to, or at home.
+// The last run is done: the blob is at the door it walked to, in the site it walked to, or at home.
 export function arrive(world: World, i: number, tick: number): void {
   const errands = world.errands;
+  const activity = errands.activity[i];
   if (errands.phase[i] === PHASE_COMING) arriveHome(world, i, tick);
-  else if (errands.activity[i] === ACTIVITY_WORK) startWork(world, i, tick);
-  else startBuying(world, i, tick);
+  else if (activity === ACTIVITY_WORK) startWork(world, i, tick);
+  else if (activity === ACTIVITY_FETCH) startBuying(world, i, tick);
+  else startStaying(world, i, tick);
 }
 
-// A blob whose phase has run out, at `tick`.
+// A blob whose phase has run out, at `tick`. Asleep at night means planning the day, and asleep by day means a stay indoors is
+// over and the blob is free again.
 export function wake(world: World, i: number, tick: number): void {
   const errands = world.errands;
   const phase = errands.phase[i];
-  if (phase === PHASE_ASLEEP) planDay(world, i, tick);
-  else if (phase === PHASE_LEAVING) depart(world, i, tick);
+  if (phase === PHASE_ASLEEP) {
+    if (errands.activity[i] === ACTIVITY_SLEEP) planDay(world, i, tick);
+    else parkFree(world, i, tick);
+  } else if (phase === PHASE_LEAVING) depart(world, i, tick);
+  else if (phase === PHASE_STAYING) endStay(world, i, tick);
   else if (phase <= PHASE_BUYING) startHome(world, i, tick);
   else {
     errands.good[i] = 0;
