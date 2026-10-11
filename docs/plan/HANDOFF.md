@@ -36,7 +36,7 @@ The owner can overturn any of these.
 
 **The coordinator's rulings:**
 - **Places:** 176×112 for capitals and cities, 152×96 for towns, and the walls' look as drawn.
-- **The first screen:** one blob per 2, 3 or 4 walkable tiles on desktop, phone-plus and phone (`TIER_TILES_PER_AGENT`), while a `?tier=` URL still runs a whole tier for perf. The Town skin holds up to 9,000 blobs in view, and stays up to 10,350.
+- **The first screen:** one blob per bed in Highcourt's homes, 2,688 on every tier, by the owner's ruling of 11 October 2026 (218b1d2). The old rule of one blob per 2–4 walkable tiles is gone. A `?tier=` URL still runs a whole tier in stand-in homes for perf. The Town skin holds up to 9,000 blobs in view, and stays up to 10,350.
 - **Spawn:** the bench row for 100,000 agents is 35 ms, since M9 spawns only the districts in view.
 - **The economy (M2.3):**
   - the pay-cut target is a tier-2 gap until M5's treasury brings inflation;
