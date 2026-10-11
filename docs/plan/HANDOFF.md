@@ -85,6 +85,11 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 11 Oct: **M2.7 Part 1, Task 2: premises in the layout, with Task 7's sprite swap** (5aa6991..4066620).
+  - **Built:** `placeTrades` gives each market good 2 stalls on the plaza, and each shop trade 4 shops in a capital or city and 3 in a town, spread round the plaza in rounds. Doors use the sprite's own `door`, and a village's one shop sells all seven goods. Highcourt has 22 premises.
+  - **The coordinator's ruling:** the premises take street frontage, so Highcourt holds 375 homes and 2,600 blobs, down from 387 and 2,688. Placing them after the houses kept 2,688 but scattered shops to the map's edge.
+  - **Pins:** Highcourt's are `498f12cb` and `4bf399fa`, and 317 of 1,033 place goldens moved; nothing in `goldens.json` moved. `scripts/place-goldens.ts` now writes the place goldens.
+  - **The phone tunnel:** stopped at the owner's word, with port 4175 freed. `cloudflared.exe` stays in `dist/cloudflared/`.
 - 11 Oct: **M2.2c done:** every town runs the sim (1f9c645..ffb41e8).
   - **Task 7:** it removed 555 lines of walk loops and street crowd, so `buildPlace(ctx)` returns `{ layout, map }`.
   - **Hashes:** Highcourt's pins `ff861cb3` and `da92906e` and `town.nmap` held. The goldens are `switch` `cc4584e8`, `visit` `a7bd4005` and the away row.
