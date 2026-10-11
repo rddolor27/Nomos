@@ -2,6 +2,7 @@ import { TICKS_PER_DAY, dayOf } from '../time/calendar.ts';
 import { dayBoundary } from '../day/day.ts';
 import { CITY } from '../economy/city.ts';
 import { ECONOMY_TICKS, runEconomySystem } from '../economy/economy.ts';
+import { decideLives } from '../life/choose.ts';
 import { OK, checkInvariants, failInvariant } from '../money/invariants.ts';
 import { SPOILAGE_RULE, daySliceCount, runDaySlice } from '../day/slices.ts';
 import { move } from '../movement/wander.ts';
@@ -12,11 +13,13 @@ export interface SystemTimer {
   lap(system: number): void;
 }
 
-// A system's index here is the number step passes to SystemTimer.lap.
-export const SYSTEM_NAMES: readonly string[] = ['day', 'move', 'economy'];
+// A system's index here is the number step passes to SystemTimer.lap. `life` chooses for the blobs `move` found free (M3.2), so
+// it runs after the economy, and a world without streets laps it too, having nobody to choose for.
+export const SYSTEM_NAMES: readonly string[] = ['day', 'move', 'economy', 'life'];
 const DAY_SYSTEM = 0;
 const MOVE_SYSTEM = 1;
 const ECONOMY_SYSTEM = 2;
+const LIFE_SYSTEM = 3;
 
 export function step(world: World, timer?: SystemTimer): void {
   runDayWork(world);
@@ -26,6 +29,8 @@ export function step(world: World, timer?: SystemTimer): void {
   timer?.lap(MOVE_SYSTEM);
   runEconomyTick(world);
   timer?.lap(ECONOMY_SYSTEM);
+  if (world.globals[STREETS] === 1) decideLives(world);
+  timer?.lap(LIFE_SYSTEM);
   world.globals[TICK] += 1;
   if (!world.checks) return;
   const code = checkInvariants(world.cash, world.claims);

@@ -3,8 +3,8 @@ import { describe, expect, it } from 'vitest';
 import { BUDGET_ROWS, ECONOMY_SYSTEM } from '../src/compute/budgets.ts';
 import { BENCH_WARM_DAYS, SAMPLE_DAYS, sampleTier } from '../src/compute/sample.ts';
 
-// sampleTier reads the clock six times a tick: at its start, at the day, move and economy laps, and around the snapshot.
-const READS_PER_TICK = 6;
+// sampleTier reads the clock seven times a tick: at its start, at the day, move, economy and life laps, and around the snapshot.
+const READS_PER_TICK = 7;
 const DAY_LAP_READ = 1;
 const ECONOMY_LAP_READ = 3;
 const BOUNDARY_MS = 1.0;
