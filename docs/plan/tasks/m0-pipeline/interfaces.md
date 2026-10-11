@@ -25,7 +25,7 @@ Dependencies point one way:
 - `sim-culture` imports values only from the `@nomos/sim-core/kernels` subpath (the draws, `DAYS_PER_YEAR`, the stream ids `CULTURE` and `FESTIVAL`, and the culture column helpers), whose modules never import it. `sim-core`'s `consumption/` and its orchestration call `sim-culture`, and dependency-cruiser keeps modules acyclic (M0.6);
 - `web` imports `sim-culture` only in `src/panels/inspector.ts`, which loads on demand, for `personName` (M0.7);
 - `tools/names` writes `sim-culture`'s generated `naming/words.ts` and checks it; no package imports `tools/names` at run time. `names` imports `@nomos/sim-core/kernels`, for the keyed draw that picks its sounds (M0.7);
-- `worldgen` imports values only from `@nomos/sim-core/kernels`, `@nomos/sim-protocol/world-map` and, from M3.1, `@nomos/sim-protocol/place`. In `web`, only the map worker's modules reach it, and `render-gl`'s `./map` and `./place` exports draw its output (M8.1 and M3.1, below).
+- `worldgen` imports values only from `@nomos/sim-core/kernels`, `@nomos/sim-protocol/world-map` and, from M3.1, `@nomos/sim-protocol/place` and, from M2.2c, `@nomos/sim-protocol/map`. In `web`, only the map worker's modules reach it, and `render-gl`'s `./map` and `./place` exports draw its output (M8.1 and M3.1, below).
 
 The world step lives in `sim-core`, so headless runs and the worker run the same code.
 
@@ -67,12 +67,12 @@ The tables give the layout M0.7 builds, including the files it adds. A renamed f
 | `src/` | `index.ts` | The barrel |
 | `snapshot/` | `snapshot.ts`, `visual.ts`, `jobs.ts` | Snapshot v1, the visual word and job ids |
 | `messages/` | `messages.ts`, `lifecycle.ts` | Worker messages and the page lifecycle |
-| `map/` | `map.ts` | The binary map |
+| `map/` | `map.ts` | The binary map, its parser and its encoder, behind the `./map` export (M2.2c) |
 | `sprites/` | `sprite-manifest.ts` (generated) | The sprite-manifest types |
 | `shared/` | `calendar.ts`, `columns.ts`, `steering.ts` | Constants re-exported from `sim-core`, and the wander rule with its keyed draw and steps, so `render-gl` and the app never import it |
 | `world-map/` | `world-map.ts` | The world map, the body hues and the map worker's messages, behind the `./world-map` export (M8.1) |
 | `place/` | `place-layout.ts` | A place's layout, its walk loops and the map worker's place messages, behind the `./place` export (M3.1) |
-| `economy/` | `feed.ts` | The economy feed: a town's last 112 days of three figures and the day's last 16 trades, which the worker posts as the `economy` message (M2.2b) |
+| `economy/` | `feed.ts` | The economy feed: a town's last 112 days of its mean wage, unemployment, food eaten, spoiled and unmet, and each of 7 goods' sales, stock and price, and the day's last 16 trades, which the worker posts as the `economy` message (M2.2b; goods and food in M2.4 Part 1) |
 
 **`packages/sim-worker/src`:** `index.ts` and `worker.ts` (the `./worker` export) at `src/`, and `loop/loop.ts`.
 
@@ -98,8 +98,8 @@ Skin B and Skin C arrive as `blobs/` and `town/` beside `dots/` (M1.3, M3.3). M8
 | `src/` | `main.ts` | The entry `index.html` loads |
 | `app/` | `app.ts`, `boot.ts`, `lifecycle.ts`, `query.ts`, `tiers.ts` | The app shell: boot hand-off, worker link, query, tiers and the page lifecycle |
 | `view/` | `camera-input.ts`; `atlas.ts` (`townAtlas()`, one atlas fetch that the Town skin and the blob card share); `pinch.ts` (`Pinch`, two-pointer zoom in whole steps); `zoom-bar.ts` (`ZoomBar`, the town's −, + and Fit); `town-skin.ts` (the Town skin) | Pointer and keyboard input on the view: the click that inspects, wheel, keys, pinch, Home to fit through `App.fit()` (M0.8, b44ed12), and keys 1–3 for speed (M2.2b). It loads after the first frame, as the charts do (M0.7). `camera-input.ts` also imports the Town skin's loader, `town-skin.ts`, once the page is interactive |
-| `panels/` | `hud.ts` (the row, its Map button and `SystemRows`), `charts.ts` (also `DayChart`, `dataTable`, `setRows`, `el` and `levelRange`), `controls.ts` (the `?dev=1` Zoom slider), `inspector.ts` (`blobCard(reply)` and `mountInspector(hud, view, worker)`; `#inspector` only says "No blob here"), `blob-modal.ts` and `blob-modal.css` (`BlobModal`, the blob card, a non-modal dialog), `toolbar.ts` (the compact bar the map and the town view share, M0.8); `shop-name.ts` (`shopName(firm)`: Shop N is firm row N − 1), `economy.ts` and `economy.css` (`EconomyPanel`, `mountEconomy`, `MEASURES`, `fillSeries` and `tradeRows`) and `speed-bar.ts` (`SpeedBar`, `speedForKey`), all M2.2b | The HUD, the lazy charts, the economy panel, the developer controls, the on-demand inspector, and the map's toolbar |
-| `map/` | `generate.ts` and `map-worker.ts` (M8.1); `map-view.ts`, `map-input.ts`, `labels.ts`, `legend.ts` and `goto.ts` (M8.3); `place-builder.ts`, `place-view.ts` and `walkers.ts` (M3.1); `town.ts` (the Town skin) | The map: its worker and the worker's lazy place builder, the lazy view the Map control opens, and the town view a place opens into. `town.ts` pins Highcourt's place context for the builder |
+| `panels/` | `hud.ts` (the row, its Map button and `SystemRows`), `charts.ts` (also `DayChart`, which takes several series, `DaySpec`, whose `labels` and `colours` name and colour them, `dataTable`, `setRows`, `el` and `levelRange`), `controls.ts` (the `?dev=1` Zoom slider), `inspector.ts` (`blobCard(reply)` and `mountInspector(hud, view, worker)`; `#inspector` only says "No blob here"), `blob-modal.ts` and `blob-modal.css` (`BlobModal`, the blob card, a non-modal dialog), `toolbar.ts` (the compact bar the map and the town view share, M0.8); `shop-name.ts` (`shopName(good, firm)`: the good's `SHOP_NAMES` entry and N, so firm row N − 1 is "Bakery N" when it sells bread), `economy.ts` and `economy.css` (`EconomyPanel`, `mountEconomy`, `MEASURES`, `fillSeries`, `goodsRows` and `tradeLines`) and `speed-bar.ts` (`SpeedBar`, `speedForKey`), all M2.2b, and M2.4 Part 1 reworked `shop-name.ts`, `economy.ts` and `DayChart` for goods (9a10e94..dba1b48) | The HUD, the lazy charts, the economy panel, the developer controls, the on-demand inspector, and the map's toolbar |
+| `map/` | `generate.ts` and `map-worker.ts` (M8.1); `map-view.ts`, `map-input.ts`, `labels.ts`, `legend.ts` and `goto.ts` (M8.3); `place-builder.ts`, `place-view.ts` and `walkers.ts` (M3.1) | The map: its worker and the worker's lazy place builder, the lazy view the Map control opens, and the town view a place opens into. Highcourt's place context, `TOWN`, lives in worldgen's `place/town.ts` (M2.2c) |
 
 `apps/web/vite/` keeps the build plugins. Vite names a lazy chunk after its file, so the size-limit globs `charts-*.js` and `controls-*.js` hold after the move, and the view input's and the inspector's chunks need entries of their own. So do the economy panel's chunk and the shop-name chunk that the inspector and the panel share (M2.2b).
 
@@ -138,7 +138,6 @@ Grids live in `tools/cli/grids/`, outside `src/`.
 
 - **Creation:** `createWorld(seed: number, tier: Tier, ground?: Ground, agents?: number): World`, and `restoreWorld(seed, tier, state: ArrayBuffer, ground?: Ground): World` for checkpoints. A `World` holds the agent store, the ledgers, the tick counter, `world.ground`, and `world.blob`, the world's `Blob` handle, made once in `layoutWorld` (M0.7).
   - `agents` is how many blobs spawn, a whole number from 1 to the tier's count, which is the default. The layout always holds the tier's whole count, so a smaller town moves no offset and `restoreWorld` needs no count. `populate(world, people?)` throws `RangeError` outside that range. Blob `id` keys every spawn draw, so a smaller town is the first `agents` blobs of the full one.
-  - `townAgents(tier, ground): number` is how many a town holds: its walkable tiles divided by `TIER_TILES_PER_AGENT` (phone 4, phone-plus 3, desktop 2), rounded down, at least `SUPPLIERS` (7), so a town always seats its firms (the M2.2b review), and at most the tier's count. `walkableTiles(ground)` counts the open tiles. The owner asked on 10 October 2026 for a first screen of about one blob to two walkable tiles on desktop, and fewer on phones.
 - **Checks:** while `world.checks` is true, the default, `step` runs `checkInvariants` after every tick. Tests and the CLI keep the default. The worker sets it from `init.checks`, which the app sends as true only from development builds, because wallets make the check cost grow with population. `warmUp`'s throwaway world runs with checks off, as production does (M0.7).
 - **Ground (M0.4):** `{ width, height, walk: Uint8Array }` in `sim-core`, tiles row-major from the top-left, where nonzero means walkable. A `MapV1` is a `Ground`, so `sim-core` never imports `sim-protocol`.
   - The ground is an unhashed input: it stays out of the arena and the hash, and a restore must pass the same ground.
@@ -174,8 +173,8 @@ Grids live in `tools/cli/grids/`, outside `src/`.
 - `stateHash(world: World): number`: a 32-bit hash over every replay-relevant column and ledger, the value the determinism checks compare. M0.6 adds `stateHashExcept(world, skip: readonly ArrayBufferView[]): number`, of which `stateHash` is the case with nothing skipped, so no golden moves; the relabel test skips the culture columns. M2.4 adds the goods store, which it mixes in last while the `GOODS` slot is 1 (Goods and food, below).
 - `World.cultureUid`: a canonical `Uint8Array(MAX_CULTURES)` of stable culture uids, c + 1 per culture and 0 when unused. Culture-level draws key on it, never on the index (M0.6, R8).
 - Seed 42's replay hashes at tick 1,000, one per tier, live in `packages/sim-core/test/fixtures/goldens.json`, keyed `"<seed>/<tier>"`; the Node and browser checks both read it. A commit that moves the sim on purpose regenerates it with `node packages/sim-core/scripts/goldens.ts` (M0.6). Since M2.2's household rows, they are `746a06a3` on phone, `7560155c` on phone-plus and `10699866` on desktop. `node tools/cli/src/main.ts --seed 42 --tier phone --ticks 1000` prints the phone hash.
-- `Tier` is `'phone' | 'phone-plus' | 'desktop'`, with agent caps of 10,000, 25,000 and 100,000. `sim-protocol` re-exports `Tier`, `TIER_AGENTS` and `townAgents` from its `messages.ts` (M0.3).
-- Highcourt's replay hashes at tick 1,000, seed 42, on `town.nmap` at the town's own crowd, are pinned in `packages/sim-protocol/test/town-map.test.ts`: `4b1a37d3` for phone (3,965 blobs) and `49f7323c` for desktop (7,931), on the 176 × 112 town. M2.2b builds that world with `createTown` instead of `createWorld`, which moved both from `e5be40f9` and `d0a2c4ea`, then adds the town's walking start (to `7693e501` and `22dae2ca`) and the economy in the step (to `d11bb532` and `8eb639aa`). M2.4 Task 4 turned `CITY`'s goods on, which moved them to these. The goldens above run on the stand-in ground with `createWorld`, so a new map or a change to the town moves only these.
+- `Tier` is `'phone' | 'phone-plus' | 'desktop'`, with agent caps of 10,000, 25,000 and 100,000. `sim-protocol` re-exports only `Tier` and `TIER_AGENTS` from its `messages.ts` (M0.3).
+- Highcourt's replay hashes at tick 1,000, seed 42, on `town.nmap` at the town's own crowd, are pinned in `packages/sim-protocol/test/town-map.test.ts`: `9ca2ad77` for phone and `4cd678eb` for desktop, on the 176 × 112 town, where both tiers spawn 2,688 blobs in its 387 homes and 985 households, one to a bed. M2.2b builds that world with `createTown` instead of `createWorld`, which moved both from `e5be40f9` and `d0a2c4ea`, then adds the town's walking start (to `7693e501` and `22dae2ca`) and the economy in the step (to `d11bb532` and `8eb639aa`). M2.4 Task 4 turned `CITY`'s goods on (to `4b1a37d3` and `49f7323c`), and M2.2c Task 2's one blob to a bed moved them to these. The goldens above run on the stand-in ground with `createWorld`, so a new map or a change to the town moves only these.
 
 ## Agents and the Blob handle (owner: M0.7)
 
@@ -227,7 +226,7 @@ Grids live in `tools/cli/grids/`, outside `src/`.
 ## Worker messages (owner: M0.3)
 
 - App to worker:
-  - `{ type: 'init', seed, tier, map: ArrayBuffer, checks: boolean, agents?: number }`; `checks` sets `world.checks`, and the app sends true only from development builds (M0.7). `agents` is the town's people, passed to `createTown` since M2.2b (`createWorld` before); leaving it out spawns the tier's whole count, as the bench and the harness do. The app sends `townAgents(tier, map)`, or the tier's whole count when the URL names the tier with `?tier=`, which is how the perf specs keep their 10,000, 25,000 and 100,000.
+  - `{ type: 'init', seed, tier, map: ArrayBuffer, checks: boolean, agents?: number }`; `checks` sets `world.checks`, and the app sends true only from development builds (M0.7). The app sends `agents` only when the URL names the tier with `?tier=`, from `startAgents(tier, tierNamed)`: the tier's whole count, which is how the perf specs keep their 10,000, 25,000 and 100,000. The worker then calls `createStandInTown`, which seats that many in stand-in homes. Left out, as on every other start, it calls `createTown` and seats one blob to a bed of the map's homes (M2.2c Task 2).
   - `{ type: 'pause' }` and `{ type: 'resume' }`
   - `{ type: 'return', buffer: ArrayBuffer }`
   - `{ type: 'checkpoint' }`, which the app sends on `pagehide`
@@ -240,8 +239,8 @@ Grids live in `tools/cli/grids/`, outside `src/`.
   - `{ type: 'snapshot', tick, count, buffer: ArrayBuffer }`
   - `{ type: 'stats', tick, systemMs: Record<string, number> }`, keyed by `SYSTEM_NAMES` plus `snapshot`, the mean milliseconds per snapshot (M0.3)
   - `{ type: 'checkpoint', tick, state: ArrayBuffer }`, the answer to the app's `checkpoint`
-  - `{ type: 'inspected', tick, agent, nameKey, cents, employer, wage, look, action, home, members }`, the answer to `inspect`: the nearest blob within one tile (16 world pixels), or `agent` −1 with `nameKey` and `cents` 0 (M0.7). `employer` is the blob's firm row and `wage` that firm's pay in cents a month, or −1 and 0 for someone out of work, and for `agent` −1 (M2.2b). `look` is one of 96 (hue `look % 6`, eyes `floor(look / 6) % 4`, pattern `floor(look / 24)`), `action` an `ACTION_*` code, `home` the row of its household's home or −1, and `members` the name keys of the others in its household, in household order, at most 5; for `agent` −1 they are 0, 0, −1 and [] (the blob modal, 5b6e505)
-  - `{ type: 'economy', day, days, meanPriceCents, meanWageCents, unemploymentPpm, trades, tradeShop, tradeUnits, tradeCents }`, a town's feed after each day's last economy tick, and from a town only (M2.2b, The economy on screen, below)
+  - `{ type: 'inspected', tick, agent, nameKey, cents, employer, employerGood, wage, look, action, home, members }`, the answer to `inspect`: the nearest blob within one tile (16 world pixels), or `agent` −1 with `nameKey` and `cents` 0 (M0.7). `employer` is the blob's firm row, `employerGood` that firm's good (an index into `GOOD_NAMES`) and `wage` its pay in cents a month, or −1, 0 (`GENERIC`) and 0 for someone out of work, and for `agent` −1 (M2.2b; `employerGood` in M2.4 Task 5). `look` is one of 96 (hue `look % 6`, eyes `floor(look / 6) % 4`, pattern `floor(look / 24)`), `action` an `ACTION_*` code, `home` the row of its household's home or −1, and `members` the name keys of the others in its household, in household order, at most 5; for `agent` −1 they are 0, 0, −1 and [] (the blob modal, 5b6e505)
+  - `{ type: 'economy', day, days, meanWageCents, unemploymentPpm, soldUnits, stockUnits, paidCents, eaten, spoiled, unmet, trades, tradeShop, tradeGood, tradeUnits, tradeCents }`, a town's feed after each day's last economy tick, and from a town only (M2.2b, The economy on screen, below; goods and food from M2.4 Part 1)
 - `sim-protocol`'s `bindPageLifecycle(doc, win, post): void` sends `pause` and `resume` on `visibilitychange`, and `checkpoint` on `pagehide`. M0.5 wraps it.
 - `sim-worker`'s `createSimLoop(host: LoopHost, cpuSlowdown = 1): { handle(msg: AppMessage): void }` runs the loop. A `cpuSlowdown` above 1 makes the worker wait before each reply, and after its warm-up, as a CPU that many times slower would, since CDP's CPU throttling skips workers. Only the startup gate sets it, through a `__nomosCpuSlowdown` global that its server prefixes to the worker chunk (M0.6, R5).
 - The startup gate's server, `startServer(options: ServeOptions): Promise<Served>` in `apps/web/test/serve.ts`, serves a build over an emulated Fast 4G link, with `latencyMs` 165, `bytesPerSecond` 1,012,500 and `setupRtts` 3 by default. Its `workerSlowdown`, 1 by default, is the `cpuSlowdown` it prefixes to the worker chunk (M0.6, R5).
@@ -250,7 +249,7 @@ Grids live in `tools/cli/grids/`, outside `src/`.
 ## The binary map, version 1 (owner: M0.4)
 
 - One format for generated and hand-made maps (R9): terrain kinds, IntGrid walkability, and entities (homes with capacity, workplaces, shops with hours, civic buildings).
-- It lives in `sim-protocol` as `parseMap(buffer: ArrayBuffer): MapV1`, which throws `MapError` on a bad or short buffer, such as a 404 page, never a `RangeError` or half a map. Files start with `MAP_MAGIC` ("NMAP"), end in `MAP_EXTENSION` (`.nmap`) and are served as `MAP_CONTENT_TYPE` (`application/x-protobuf`), a compressible type (R5).
+- It lives in `sim-protocol` as `parseMap(buffer: ArrayBuffer): MapV1`, which throws `MapError` on a bad or short buffer, such as a 404 page, never a `RangeError` or half a map. `writeMap(map: MapV1): ArrayBuffer` is the format's one encoder (M2.2c Task 1, 62103c0): it writes the bytes `parseMap` reads, and trusts its map, whose one maker is worldgen's ground, so a script or test that writes a file parses it back. Both sit behind the `@nomos/sim-protocol/map` export, which also gives worldgen the format's codes. Files start with `MAP_MAGIC` ("NMAP"), end in `MAP_EXTENSION` (`.nmap`) and are served as `MAP_CONTENT_TYPE` (`application/x-protobuf`), a compressible type (R5).
 - `MapV1` is `{ version: 1, width, height, kinds: TerrainKind[], frames: string[], terrain: Uint8Array, walk: Uint8Array, tiles: Uint16Array, entities: MapEntity[] }`:
   - `TerrainKind` is `{ name, rgb }`;
   - `walk` holds `WALK_BLOCKED`, `WALK_OPEN`, `WALK_ROAD` or `WALK_DOOR` (0–3);
@@ -317,7 +316,7 @@ M8.1 ports `tools/worldgen` to TypeScript, and M8.3 draws what it makes. The own
 
 | Folder | Files | Concern |
 | --- | --- | --- |
-| `src/` | `index.ts` | The barrel: `generateWorld`, `worldFingerprint`, `placeNames` and `StageTimer`, and from M3.1 `placeContexts`, `buildPlace` and `PlaceContext` |
+| `src/` | `index.ts` | The barrel: `generateWorld`, `worldFingerprint`, `placeNames` and `StageTimer`, and from M3.1 `placeContexts`, `buildPlace` and `PlaceContext`, and from M2.2c `TOWN` |
 | `random/` | `streams.ts`, `keyed.ts` | `rng.py`'s world streams, and its `chance` and `shuffled` |
 | `grid/` | `grid.ts`, `heap.ts` | `grid.py`'s neighbours, distances and parts, cell coordinates, and the binary heap behind every Dijkstra and A\* |
 | `terrain/` | `templates.ts`, `chains.ts`, `shape.ts` | `terrain.py` |
@@ -330,9 +329,9 @@ M8.1 ports `tools/worldgen` to TypeScript, and M8.3 draws what it makes. The own
 | `features/` | `survey.ts`, `wonders.ts`, `landmarks.ts` | `features.py` |
 | `names/` | `place-names.ts`, `words.ts` (generated), `LICENSE-fmg.txt` | Place and country names |
 | `world/` | `draft.ts`, `generate.ts`, `fingerprint.ts` | The world being built, the pipeline, and `world.fingerprint` |
-| `place/` | `site.ts`, `build.ts`, the stage files (among them `walls.ts` and `farms.ts`, from M3.1's Part 3), `looks.ts`, `contexts.ts`, `layout.ts`, `walks.ts`, `street-crowd.ts` and `frames.ts` (generated) | `place.py`, `looks.py`'s `look_for` and `world.py`'s place contexts, plus the walk loops and the street crowd Python lacks (M3.1, Places below) |
+| `place/` | `site.ts`, `build.ts`, the stage files (among them `walls.ts` and `farms.ts`, from M3.1's Part 3), `looks.ts`, `contexts.ts`, `layout.ts`, `walks.ts`, `street-crowd.ts`, `ground.ts`, `town.ts`, `frames.ts` (generated) and `kind-colours.ts` (generated) | `place.py`, `looks.py`'s `look_for` and `world.py`'s place contexts, plus the walk loops and the street crowd Python lacks (M3.1, Places below). From M2.2c, `export_map.py`'s `town_map` is `ground.ts`, its map colours are `kind-colours.ts`, and Highcourt's context is `town.ts` |
 
-- **Imports:** values only from `@nomos/sim-core/kernels`, `@nomos/sim-protocol/world-map` and `@nomos/sim-protocol/place`.
+- **Imports:** values only from `@nomos/sim-core/kernels`, `@nomos/sim-protocol/world-map`, `@nomos/sim-protocol/place` and, from M2.2c, `@nomos/sim-protocol/map`, for the map format's codes.
   - `kernels` gives the keyed draw, value noise and integer maths. M8.1 adds `mix`, `draw`, `below`, `value`, `fbm`, `floorDiv`, `floorMod` and a new `isqrt` to its exports.
   - `world-map` is a leaf module holding the codes and the `WorldMap` type, so each code has one home.
 - **Lints:** M0.6's generator profile covers `packages/worldgen/src`:
@@ -437,7 +436,7 @@ The map's look-only crowd of walking dots (M8.3, owner, 9 October 2026) was remo
 
 ### Who imports what
 
-- `worldgen` imports values only from `@nomos/sim-core/kernels` and `@nomos/sim-protocol/world-map`, and nothing imports it but the map worker and tests. Dependency-cruiser enforces both.
+- `worldgen` imports values only from `@nomos/sim-core/kernels`, `@nomos/sim-protocol/world-map`, `@nomos/sim-protocol/place` and `@nomos/sim-protocol/map`, and nothing imports it but the map worker and tests. Dependency-cruiser enforces both.
 - **In `web`,** only `src/map/generate.ts`, which answers a `generate` message, `src/map/map-worker.ts`, which binds it to the worker's messages, and `src/map/place-builder.ts`, the worker's lazy part that builds places (M3.1), may reach `@nomos/worldgen`.
   - The page starts the worker with `new Worker(new URL('./map-worker.ts', import.meta.url), { type: 'module', name: 'map' })`.
   - So Vite builds it as its own chunk, `map-worker-*.js`, whose name never matches the sim worker's `worker-*.js` glob.
@@ -536,9 +535,13 @@ The owner asked on 9 October 2026 to zoom into a settlement on the map and see t
 - **`placeContexts(map: WorldMap): PlaceContext[]`** ports `world.py`'s `_context` and `place_contexts`.
   - Settlements come first in id order, seeded `draw(world seed, PLACE, 0, cell)`; then wonders in placement order, seeded `draw(world seed, PLACE, 1, kind)`.
   - `PlaceContext` holds `model.py`'s fields, in its order.
-- **`buildPlace(ctx): { layout: PlaceLayout, walks: PlaceWalks }`** ports `place.py` one function to one function, in `worldgen`'s `place/`.
+- **`buildPlace(ctx): { layout: PlaceLayout, walks: PlaceWalks, map: MapV1 | null }`** ports `place.py` one function to one function, in `worldgen`'s `place/`. `map` is the place's ground (below), or null for a wonder, whose vista has none. `walks` goes in M2.2c's Task 7.
   - Its frame table, `place/frames.ts`, is generated by `scripts/place-frames.ts`. It holds only the fields `place.py` reads: w, the anchor, the footprint and the door.
   - Looks are `look_for(place seed, person index)` on the `LOOK` stream. `worldgen`'s `streams.ts` holds `PLACE` 10, `LOOK` 11 and `CROWD` 12, as `rng.py` does.
+- **The ground** (M2.2c Task 1, 62103c0..2e6471a): `place/ground.ts`'s `groundOf(site)` ports `export_map.py`'s `town_map`, a settlement's walk grid and its buildings with their doors as `MapV1` holds them, and `buildPlace` returns it as `map`. `writeMap` of Highcourt's ground equals `town.nmap` byte for byte.
+  - A dock's door lies in the water it stands at, as `export_map.py` leaves it.
+  - Kind colours come from the generated `place/kind-colours.ts`, which `tools/sprites/kind_colours.py` writes from the sheets, since TypeScript can't read their pixels.
+  - Beds by house form: hut 2, detached and row 4, farmhouse 6, apartment 24. An unknown form throws.
 - **Walk loops,** in TypeScript only:
   - A tile is walkable if it is a road, or a standable tile with nothing standing on it.
   - `place.py`'s walkers, and 350 per mille of the standers with no job, each get a loop: 3–6 waypoints within 10 steps of their tile, joined by shortest paths inside that reach.
@@ -552,7 +555,7 @@ The owner asked on 9 October 2026 to zoom into a settlement on the map and see t
   - **Wall rings:** half-sizes of 64 × 40 for capitals and cities, in stone, and 56 × 30 for towns, as a palisade. Each is centred on the plaza's centre and kept 6 tiles inside the place's edge.
   - **Gates** are 2 tiles wide. A front gate is a standing sprite over road that marks nothing solid; a side gate is a solid pier and cap beside a 2-tile gap.
   - **Bridges:** main and country roads cross rivers on ground-layer bridge pieces. The water tiles stay water and become road.
-  - **`town.nmap`** gains the built kind `wall`, and `farm_` buildings count as workplaces.
+  - **`town.nmap`** gains no `wall` kind yet, since no wall is laid before M3.1's Task 12. Its built kinds stay `home`, `workplace`, `shop`, `civic` and `landmark`, and `groundOf` throws for a footprinted sprite of any other prefix, such as the `farm_` buildings of M3.1's Task 14, until its table names that prefix.
 
 ### Goldens
 
@@ -568,7 +571,7 @@ The owner asked on 9 October 2026 to zoom into a settlement on the map and see t
 
 - After a world, `generate.ts` keeps its place contexts, made before the world's buffers are transferred away, and times them as the `contexts` stage.
 - The first `PlaceRequest` imports `place-builder.ts`, which builds as its own chunk, `place-builder-*.js`, so opening the map pays nothing for places. `ms` times the build alone.
-- A `TownRequest` goes through the same lazy builder: `buildTownAnswer` answers with `buildPlace(TOWN).layout`, where `TOWN`, in `map/town.ts`, is Highcourt's context as `tools/worldgen/export_map.py` pins it. `apps/web/test/town.test.ts` holds it to Python's field by field, and its layout to `assets/maps/town.nmap` tile for tile, so the art the Town skin draws is the ground the sim walks.
+- A `TownRequest` goes through the same lazy builder: `buildTownAnswer` answers with `buildPlace(TOWN).layout`, where `TOWN` is Highcourt's context as `tools/worldgen/export_map.py` pinned it. Since M2.2c Task 1 (6f3996b) it lives in worldgen's `place/town.ts`, because `apps/web/src/map/town.ts` is gone. `apps/web/test/town.test.ts` holds the layout to `assets/maps/town.nmap` tile for tile, so the art the Town skin draws is the ground the sim walks. `worldgen/scripts/town-map.ts` writes `town.nmap` from `buildPlace(TOWN).map`, and `test:headless` runs its `--check`.
 - `map-worker.ts` installs its message handler only once. WebKit runs a module worker's script a second time when a dynamically imported module imports it back.
 
 ### The atlas in every build
@@ -661,7 +664,7 @@ The owner asked on 10 October 2026 for the town view's art on the first screen. 
   - once both are in, makes a `TownSkin` on the app renderer's backend, so `?canvas` draws it in Canvas2D, lends it with `app.renderer.setTown` and redraws.
   - A failed load keeps the dots and logs why.
 - **Skins:** the HUD's toggle is unchanged.
-  - Auto shows the town at `autoSkin`'s town level: from 6.9 CSS px a tile with at most 9,000 agents in view, kept down to 5.1 px and 10,350 agents, since the 176 × 112 town starts 7,931 on desktop.
+  - Auto shows the town at `autoSkin`'s town level: from 6.9 CSS px a tile with at most 9,000 agents in view, kept down to 5.1 px and 10,350 agents, since the 176 × 112 town starts 2,688 on every tier.
   - Dots and Town fix the skin, and Blobs still shows dots.
   - Until the town is lent, Town and Auto draw dots.
 - **Chunks:** `vite.config.ts`'s `render-gl` chunk group leaves out `src/town` too, so the town never joins the renderer chunk.
@@ -797,7 +800,7 @@ M2.2b spawns every app world as a town that runs `CITY`, and shows the economy o
   - **Layout, `sim-core`:**
     - `economy/settled.ts` holds `settledRecord(preset: EconomyParams): Float64Array`, moved from the design runner's `cell.ts`;
     - `economy/city-record.ts`, generated, holds `CITY_RECORD`, which is `settledRecord(CITY)` as a 14-field `Float64Array`. Nothing writes to it;
-    - `spawn/town.ts` holds `createTown` and `spawnTown`;
+    - `spawn/town.ts` holds `createTown`, `createStandInTown` and `spawnTown`;
     - `scripts/city-record.ts` writes `city-record.ts` in about 2.4 s, and `--check` compares a fresh `settledRecord(CITY)` with it instead. `test:headless` runs the check, and a commit that changes `CITY` or the economy day runs `node packages/sim-core/scripts/city-record.ts` and commits the result;
     - the barrel exports the three modules.
   - **The record:** `scaleRecord(record, people, out)`, in `spawn/record.ts`, replaces the design runner's `scaledRecord` and writes all 14 fields of `out`:
@@ -805,14 +808,20 @@ M2.2b spawns every app world as a town that runs `CITY`, and shows the economy o
     - `unemployed` is filled up to `people` − `employed`, and one-person households are added until the households hold `people` exactly;
     - a town keeps at least `SUPPLIERS` (7) firms;
     - from a 1,000-person record at a multiple of 1,000, its output is the runner's, so no design cell moves.
+  - **The households** (M2.2c Task 2):
+    - `spawn/record.ts` gains `HOUSEHOLD_MIX`, the per mille of households of 1 to 6 people: 220, 280, 200, 170, 80 and 50, which is 22, 28, 20, 17, 8 and 5%, a mean of 2.76 people (unsourced estimate);
+    - it also gains `townRecord(beds, largestHome, out)`, which scales `CITY_RECORD` to `beds` and sets the households. Those of s people, from 2 up to `largestHome`, number ⌊beds × mix(s) ÷ 2,760⌋, with mix in per mille, and one-person households take the rest, so people equal beds. It reads no look or culture;
+    - `spawn/homes.ts` gains `bedCount(homes)`, `largestHome(homes)`, `createStandInTownHomes(ground, people)`, which makes homes of 6 beds and trims the last to the beds left so that they equal `people`, and `fitHouseholds(record, homes, seed, key)`;
+    - `fitHouseholds` gives the households of 2 to 6 the room a place's homes have, largest first, and turns those that don't fit into one-person households, so the people stay the same, one to a bed. A record that fits is left as it is. A village of huts and a few farmhouses has no room for the mix's households of 5 and 6, which `seatHouseholds` would throw on. `key` is the one `spawnFromLedger` seats under, since the order of the homes decides what fits. `seatHouseholds` is unchanged.
   - **The town:**
-    - `createTown(seed, tier, ground, people): World` lays out an empty world of the tier's whole size with `layoutWorld`, so a smaller town moves no offset, and calls `spawnTown`;
-    - `spawnTown(world, people)` fills an empty world through `spawnFromLedger` from `CITY_RECORD` scaled to `people`, with `CITY`, a stand-in home to every 3 people, settlement 0 and day 0, and marks it a town. It stands apart from `createTown` for the warm-up, which lays out a world of its own (Task 3);
+    - `createTown(seed, tier, ground, homes): World` lays out an empty world of the tier's whole size with `layoutWorld`, so a smaller town moves no offset, and calls `spawnTown` (M2.2c Task 2; it took `people` before);
+    - `createStandInTown(seed, tier, ground, people): World` is new in M2.2c Task 2. It calls `createTown` with `createStandInTownHomes(ground, people)`, for `?tier=`, the bench and tests, where no map draws any houses;
+    - `spawnTown(world, homes)` fills an empty world with one blob to a bed of `homes`, or to the layout's agent rows if the beds outnumber them. It scales `CITY_RECORD` to those people with `townRecord`, fits the households to the homes with `fitHouseholds`, spawns the record through `spawnFromLedger` with `CITY`, settlement 0 and day 0, and marks the world a town. It stands apart from `createTown` for the warm-up, which lays out a world of its own (Task 3);
     - the mark is global slot `TOWN` = 4, in `world/world.ts` beside `TICK` (0), `RECORD_FRONT` (1), `DAY_AGENTS` (2) and `DAY_HOUSEHOLDS` (3). It is 1 for a town, whose step runs `CITY`'s economy (Task 3), and 0 for any other world. It is canonical, so checkpoints and the hash carry it;
     - blobs spawn at their home's door, as `spawnFromLedger` places them, and `spawnTown` then starts three in four walking, as `populate` does (Task 3).
-  - **The worker:** `worker.ts` binds `makeWorld` to `createTown(seed, tier, parseMap(map), agents ?? TIER_AGENTS[tier])`.
-    - The first screen's crowd is as ruled: 3,965, 5,287 or 7,931 by tier, or a whole tier under `?tier=`, whose firms then fill the tier's firm rows exactly (1,000, 2,500 and 10,000).
-    - `inspected` gains `employer` and `wage` (Worker messages, above). The loop reads them from `world.blob.employer` and `world.firms.wage`.
+  - **The worker:** `worker.ts` binds `makeWorld` to `createStandInTown(seed, tier, ground, agents)` when `init` sends `agents`, and to `createTown(seed, tier, ground, homes)` otherwise. The `ground` is `parseMap(map)` and the `homes` are the map's home entities, so home row r is the r-th home entity and the blob card's "House r + 1" is a drawn house (M2.2c Task 2; it bound `createTown(seed, tier, parseMap(map), agents ?? TIER_AGENTS[tier])` before).
+    - The first screen's crowd is Highcourt's beds: 2,688 blobs on every tier. A whole tier under `?tier=` sits in stand-in homes, and its firms then fill the tier's firm rows exactly (1,000, 2,500 and 10,000).
+    - `inspected` gains `employer` and `wage` (Worker messages, above), and `employerGood` in M2.4 Task 5. The loop reads them from `world.blob.employer`, `world.firms.wage` and `world.goods.good`.
   - **Hashes:** Highcourt's pins moved (The world step, above). `goldens.json` did not: `42/phone` stays `746a06a3` and the economy `6a652730`.
   - **Speed:** a cold `createTown` takes 18–21 ms for 3,965 people and 23 ms for 7,931, where `createWorld` takes 6–9 ms and 11 ms. The worker's start gains about 11 ms, not the brief's 1 ms (measured here, Node 24.18.0 on Windows, fresh process, load not recorded).
 - **Task 3, the economy in the step:**
@@ -831,9 +840,9 @@ M2.2b spawns every app world as a town that runs `CITY`, and shows the economy o
     - **An accepted quirk** (coordinator, 11 October 2026): an inspect answered between ticks 14 and 15 of a month's last day shows an exiting firm's worker at the re-entered row's wage, until `layOffExiting` runs a tick later. It is display only.
     - `SYSTEM_NAMES` gains `economy`, which `step` laps on every tick, so the stats message's `economy` is the mean over all 1,440 ticks of a day, not over the 20 that run it.
   - **The warm-up:** `warmUp` spawns a town with `spawnTown` in its 1,024-agent, 1 MiB layout and runs `economyDay` with each of its 40 days of day work, so a month's start and end both compile. It grows from 27 ms to 46 ms (measured here, Node 24.18.0 on Windows, three runs each, load not recorded). It runs after the first snapshot, so the first frame never waits for it, and whatever the page sends meanwhile waits about 19 ms longer. Its throwaway town runs on `WARM_SEED` 1, whose first mix is 2^31 or more, so V8's warmed code survives a real seed (the allocation fix).
-  - **The bench:** `createBenchWorld(tier)` makes `createTown(BENCH_SEED, tier, standInGround(), TIER_AGENTS[tier])`, a town of the tier's whole crowd. `sampleTier` also gives `economy`, the worst tick of each day, which `ECONOMY_SYSTEM` names and `budget.ts` prints per tier as `<tier> economy: worst tick … ms on the best of 9 days, no budget`, judging nothing. The Chromium run carries the samples in its report.
+  - **The bench:** `createBenchWorld(tier)` makes `createStandInTown(BENCH_SEED, tier, standInGround(), TIER_AGENTS[tier])`, a town of the tier's whole crowd. `sampleTier` also gives `economy`, the worst tick of each day, which `ECONOMY_SYSTEM` names and `budget.ts` prints per tier as `<tier> economy: worst tick … ms on the best of 9 days, no budget`, judging nothing. The Chromium run carries the samples in its report.
     - Its 9 sampled days are days 1 to 9, after one dropped warm day, so they hold neither a month's start (day 0) nor its end (day 20), and the printed worst tick is the daily shopping tick. At the phone sizes a month's first-day `searchShops` costs more (the table below), so the printed figure understates the worst tick there.
-  - **Hashes:** `goldens.json` gains `town`: `{ seed: 42, tier: 'phone', people: 1000, ticks: 1000, hash: 'b76fca4c' }`, which M2.4 Task 4 moved to `1621b72b`. `townHash(seed, tier, people, ticks)`, in `test/engines/checks.ts`, spawns a town on the stand-in ground and steps it, and `checkGoldens` replays it with the rest, so Node and Chromium both run its case: 5 + 20 cases in all. No other golden moved: `42/phone` is still `746a06a3` and the economy `6a652730`. Highcourt's pins were `d11bb532` (phone) and `8eb639aa` (desktop), and are now `4b1a37d3` and `49f7323c`.
+  - **Hashes:** `goldens.json` gains `town`: `{ seed: 42, tier: 'phone', people: 1000, ticks: 1000, hash: 'b76fca4c' }`, which M2.4 Task 4 moved to `1621b72b` and M2.2c Task 2 to `1043e0ad`. `townHash(seed, tier, people, ticks)`, in `test/engines/checks.ts`, spawns a town with `createStandInTown` on the stand-in ground and steps it, and `checkGoldens` replays it with the rest, so Node and Chromium both run its case: 5 + 20 cases in all. No other golden moved: `42/phone` is still `746a06a3` and the economy `6a652730`. Highcourt's pins were `d11bb532` (phone) and `8eb639aa` (desktop), then `4b1a37d3` and `49f7323c`, and are now `9ca2ad77` and `4cd678eb` (M2.2c Task 2: 2,688 blobs in 387 homes and 985 households).
   - **The walking start** (coordinator, 10 October 2026): `spawnTown` starts three in four blobs walking after `spawnFromLedger`, so the first screen moves from its first frame.
     - For blob p, with s = `draw3(seed, SPAWN_DRAW, key, p, 13)` and key = `draw2(seed, SPAWN_DRAW, 0, 0)`, the settlement and day `spawnFromLedger` keys on, a blob where s & `WALK_START_MASK` (3, now exported from `world/world.ts`) isn't 0 starts on heading s >>> 24, with the `vx`, `vy` and `facing` that follow. The rest stay idle on heading 0, facing down.
     - Purpose 13 is the next free one on `SPAWN_DRAW`, after `spawn.ts`'s 1 to 12 (M2.4 takes 14). In seed 42's town of 3,965, 2,998 walk (75.6%).
@@ -857,15 +866,17 @@ M2.2b spawns every app world as a town that runs `CITY`, and shows the economy o
     - The barrel exports `economy/scratch.ts`. The scratch grows by 264 bytes, none hashed, so no golden moved: `42/phone` is still `746a06a3`, `town` was `b76fca4c` (M2.4 Task 4 moved it to `1621b72b`) and the economy `6a652730`.
     - **Cost:** `logPurchase` takes 2.28 ns, and a town of 3,965 makes about 3,930 purchases in a `shopDay` of 0.443 ms, so the ring adds about 2% to shopping (measured here, Node 24.18.0 on Windows, a desktop, one run, load not recorded).
   - **The feed,** in `sim-protocol`'s new `economy/` folder, `feed.ts`:
-    - `createEconomyFeed(): EconomyMessage` makes the message once, with room for `FEED_DAYS` (112, a year) days and `FEED_TRADES` (16) trades. `writeEconomyFeed(world, feed)` fills it in place and allocates nothing.
+    - `createEconomyFeed(): EconomyMessage` makes the message once, with room for `FEED_DAYS` (112, a year) days and `FEED_TRADES` (16) trades. `FEED_GOODS` (7) is how many goods it lists, `BREAD` to `FUEL`, and `feed.ts` re-exports `BREAD`, `FUEL`, `GOOD_NAMES` and `SHOP_NAMES` from `sim-core`, so the app names goods without importing it (M2.4 Task 5, 9a10e94). `writeEconomyFeed(world, feed)` fills it in place and allocates nothing.
     - `economyDayEnded(world)` is true for a town right after the step that runs a day's last economy tick. Then `globals[TICK]` mod 1,440 is `ECONOMY_TICKS`, the day's row of stats is whole (Task 3), and the loop writes the feed.
-    - A write adds the day that just ended, `dayOf(tick − 1)`. Once 112 days are held, each write first shifts the three series down one place, so they stay oldest first.
+    - A write adds the day that just ended, `dayOf(tick − 1)`. Once 112 days are held, each write first shifts every series down one place, so they stay oldest first.
   - **The `economy` message,** `EconomyMessage` in `messages.ts`, is the feed itself:
-    - `day` is the day that just ended, counted from 0, and `days` the points held, up to 112. Point i of the three series is day `day − days + 1 + i`, oldest first, and a slot at `days` or past is 0.
-    - `meanPriceCents` (cents a unit) and `meanWageCents` (cents a month) are the stats row's `price_mean` and `wage_mean`: the mean over the town's firms, unrounded and not weighted by their workers.
+    - `day` is the day that just ended, counted from 0, and `days` the points held, up to 112. Point i of every series is day `day − days + 1 + i`, oldest first, and a slot at `days` or past is 0.
+    - `meanWageCents` (cents a month) is the stats row's `wage_mean`: the mean over the town's firms, unrounded and not weighted by their workers. `meanPriceCents` is gone (M2.4 Task 6, dba1b48), since the panel charts what was paid for each good instead (M2.4 Ruling 6).
     - `unemploymentPpm` is floor(1,000,000 × the row's `unemployed` ÷ all households), the share out of work. It is a rate for each day, so a later change in population leaves the old points right.
-    - `trades` is how many of the day's last purchases are held, up to 16. Trade i, oldest first, is `tradeUnits[i]` units bought from firm row `tradeShop[i]` for `tradeCents[i]` cents. A page names firm row r "Shop r + 1", as the inspector does. Slots from `trades` on are 0. Since M2.4 Task 3 the 16 are the foods' last 8, oldest first, then the other goods' last 8, and a good's shop is `goods.good[tradeShop[i]]`; Task 5 gives each trade its good.
-    - Each array has an `ArrayBuffer` of its own, so a post copies only the 2,944 bytes of the three 112-point series and the three 16-trade columns.
+    - `soldUnits`, `stockUnits` and `paidCents` each hold a series for the `FEED_GOODS` (7) goods, and series g is good `BREAD + g` (M2.4 Task 5). They are the units sold in the day (portions for a food), the units in stock at its end, and the price paid in cents a unit: the day's sales cents over its units, unrounded, or the posted mean price on a day nothing sells.
+    - `eaten`, `spoiled` and `unmet` are the day's food in portions: eaten, spoiled across the four foods, and wanted but never bought.
+    - `trades` is how many of the day's last purchases are held, up to 16. Trade i, oldest first, is `tradeUnits[i]` units of the good `tradeGood[i]` bought from firm row `tradeShop[i]` for `tradeCents[i]` cents. A page names firm row r after that good, as in "Bakery r + 1", as the inspector does. Slots from `trades` on are 0. Since M2.4 Task 3 the 16 are the foods' last 8, oldest first, then the other goods' last 8. `tradeGood[i]` is `goods.good[tradeShop[i]]`, read when the feed is written (M2.4 Task 5).
+    - Each array has an `ArrayBuffer` of its own, so a post copies only the 23,568 bytes of the 26 112-point series and the four 16-trade columns (computed).
   - **The loop** makes one feed for each `Session`, at `init`, so a new run starts its days over. After each `step` it calls `economyDayEnded` and writes the feed, and once the turn's ticks and snapshot are done it posts the feed, with no transfer list. A world that is not a town posts none.
     - At 1× the first post lands at tick 20, 2.0 s after Play (18 and 1.8 s until M2.4 Task 3), and one follows every 1,440 ticks, which is 144 s.
     - Nothing allocates per tick: the feed's buffers are made once, and the day's one post is the copy `postMessage` makes of every message.
@@ -891,7 +902,7 @@ M2.2b spawns every app world as a town that runs `CITY`, and shows the economy o
 
 ## Goods and food (owner: M2.4)
 
-M2.4 Part 1 gives the economy seven goods and food, as its [brief](../m2-economy/m2.4-goods-and-food/plan.md) lays out. Each task adds its names here, in its own docs commit. Tasks 1 to 3 leave `CITY.goods` at 0, so no hash moved: `42/phone` is still `746a06a3`, the economy `6a652730`, `town` `b76fca4c`, the 20 spawn hashes and Highcourt's pins `d11bb532` and `8eb639aa`. Task 4 turns it on, which moves `town` to `1621b72b` and the pins to `4b1a37d3` and `49f7323c` and leaves the rest.
+M2.4 Part 1 gives the economy seven goods and food, as its [brief](../m2-economy/m2.4-goods-and-food/plan.md) lays out. Each task adds its names here, in its own docs commit. Tasks 1 to 3 leave `CITY.goods` at 0, so no hash moved: `42/phone` is still `746a06a3`, the economy `6a652730`, `town` `b76fca4c`, the 20 spawn hashes and Highcourt's pins `d11bb532` and `8eb639aa`. Task 4 turns it on, which moves `town` to `1621b72b` and the pins to `4b1a37d3` and `49f7323c` and leaves the rest. M2.2c Task 2's one blob to a bed then moved `town` to `1043e0ad` and the pins to `9ca2ad77` and `4cd678eb`, and left the rest.
 
 - **Task 1, the goods:**
   - **Layout, `sim-core`:** the new folder `goods/`, exported by the barrel.
@@ -947,6 +958,6 @@ M2.4 Part 1 gives the economy seven goods and food, as its [brief](../m2-economy
 - **Task 4, `CITY` gains goods:**
   - `CITY.goods` is 1 and `CITY.burnInDays` is 29,865. MSER-5 on seeds 1 to 5 over 40,000 days cut 19,910 days of the mean price and 11,445 of the unemployment share, up from M2.3's 12,285 and 10,900, and 1.5 × 19,910 is 29,865 (measured here, Node 24.18.0 on Windows, 11 October 2026, 4,077 days a second against M2.3's 7,774 without goods, load not recorded).
   - `CITY_RECORD` is now `[1000, 0, 0, 0, 0, 0, 944, 56, 100, 297096887, 12903113, 3337, 141233, 39861]`: 944 employed of 1,000, a goods price of 3,337 and 39,861 units of goods stock. `confirm-city.json` runs 31,983 days after a 29,865-day warm-up. `design.json` follows it: a 29,865-day warm-up, a shock on day 31,983 and 34,083 days (2a0950b), and `city-targets.test.ts` pins it to `confirm-city.json`.
-  - **Hashes:** `town` is `1621b72b` (was `b76fca4c`) and Highcourt's pins are `4b1a37d3` (phone) and `49f7323c` (desktop). `42/phone` `746a06a3`, the economy `6a652730`, the other tier goldens and the 20 spawn hashes did not move.
+  - **Hashes:** `town` became `1621b72b` (was `b76fca4c`) and Highcourt's pins `4b1a37d3` (phone) and `49f7323c` (desktop). M2.2c Task 2 then moved them to `1043e0ad`, `9ca2ad77` and `4cd678eb`, at 2,688 blobs in 387 homes and 985 households. `42/phone` `746a06a3`, the economy `6a652730`, the other tier goldens and the 20 spawn hashes moved in neither.
   - **`tools/cli`'s `targets`** reads 14 more schema 2 columns and reports `food_share` (food's cents over `sales_cents`), `spoil_share` (food spoiled over food made) and `unmet_share` (unmet over eaten plus unmet) over the window, each as a reported measure with no band.
   - The 50-seed confirmation, on seeds 2001 to 2050, holds all six tier-1 targets (4b1b32b; M2.4's `task.md` has the table). `ECONOMY_LONG=1 nice -n 19 pnpm vitest run tools/cli/test/city-targets.test.ts` passed 14 of 14 in 3 min 41 s on 2 threads (measured here, Node 24.18.0, a Ryzen 5 3600 at about 1% load).
