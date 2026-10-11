@@ -85,6 +85,14 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 11 Oct: **M2.2c Task 6, live towns in the app** (5d9ca58..d9625f0, 80901c1).
+  - **Opening a town:** Enter on any map town shows "Opening <name>…", then swaps the Town skin to that town, which runs live with one blob per bed. The camera fits it, and the HUD and the economy panel restart.
+  - **Getting back:** "Back to Highcourt" returns the folded 2,688. Place 0 is Highcourt in every world.
+  - **Gone:** the decorative walkers, Pause people and `town-view-qa.spec.ts`. The town view now opens wonders only.
+  - **The blob card:** it refreshes every second by `inspectAgent`.
+  - **Checks:** towns, town-view, inspector, map-goto, map, economy, a11y, after-first-frame, town-zoom and town-skin specs pass. One HUD timing test timed out once under load and passed alone.
+  - **Bytes:** initial JS is 29.74 of 35 kB, and the inspector chunk got 1 kB of room (80901c1).
+  - **Known:** the HUD wraps to two rows below about 1,500 px while away from Highcourt. A `?tier=` session can't go back to Highcourt.
 - 11 Oct: **M2.2c's review fixes** (a4064fe..41635ff).
   - **The refusal:** a switch whose homes can't seat the town is refused before any fold (`homesSeat`).
   - **A mid-month spawn** floors the firms' cash at the month so far's payroll and starts demand at the month so far. A day-15 spawn reads 6.3% unemployed at first and 3.7% after its first month end, against 7.6% and 3.0% for a day-0 spawn.
