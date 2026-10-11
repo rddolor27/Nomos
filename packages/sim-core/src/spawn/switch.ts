@@ -60,8 +60,9 @@ function leaveTown(world: World): void {
 }
 
 // Back to the layout's fresh state, so the next spawn finds what it finds in a new world. MINT takes back every cent of the
-// wallets and the firms, since a row's cash sits outside the ledger until it spawns again. The two fills clear the agent
-// columns and the firms, scratch, households and goods; the stand-in cultures layoutWorld wrote sit between them and stay.
+// wallets and the firms, since a row's cash sits outside the ledger until it spawns again. The first fill clears every agent
+// column, culture and look included. Nothing in spawn/ reads them, and addAgent rewrites each blob's row as it spawns, so the
+// zeroes never show. The second fill clears the firms, scratch, households and goods; the cultureUid table between them stays.
 function emptyTown(world: World): void {
   retireCash(world);
   world.agentBytes.fill(0);
