@@ -49,15 +49,15 @@ These are the architect's rulings of 12 October 2026. The owner can overturn any
 5. **Determinism and M2.7's street code.**
    - **The timetable:** Tasks 3–7 hand the chooser any free time before 21:30. Task 8 cuts the timetable to the night, the wake and the shift.
    - **Sites** are premises plus leisure places: the plaza (its fountain, or a village's well), meadow greens and up to 3 water edges.
-     - `sim-protocol`'s `map/leisure.ts` finds them from frames and terrain alone, so M3.1 Part 4's layouts suit it.
-     - `MAX_SITES` is 32, a field each: 631 KB at 176 × 112 (computed), about 14 ms to build (inference).
+     - `sim-protocol`'s `map/leisure.ts` finds them in the map. Frames and terrain alone couldn't tell a green from a field, so the generator declares the plaza and the greens as `ENTITY_PLAZA` and `ENTITY_GREEN`. Water banks come from terrain (Task 2, as built).
+     - `MAX_SITES` is 32, a field each: 631 KB at 176 × 112 (computed). Highcourt's 29 take 571,648 bytes and a median 16.5 ms to build (measured, Task 2).
    - **Legs:** a leg runs forward on a site's field to the site, or backward along a cell's own runs to a home or spot. So no home needs a field.
      - Between two cells, both ways run to the hub with the least Manhattan sum, and the walk switches where they meet.
      - Stamping cells in a scratch grid finds the meeting point.
      - An unfetched purchase makes its premises the hub.
    - **The store,** `life/store.ts`, sits at the arena's end, so no offset moves.
-     - It holds 65 hashed bytes a blob: needs 8, settle tick 4, traits 3, activity and reason 2, purchases and portions 2, `chatUntil`, `chatWith`, `host` and the leg's end cell 4 each, and friends 30. It also hashes each site's crowd.
-     - The home cell, household size and hub sit outside the hash.
+     - It holds 64 hashed bytes a blob: needs 8, settle tick 4, traits 3, the reason 1, purchases and portions 2, `chatUntil`, `chatWith`, `host` and the leg's end cell 4 each, and friends 30. It also hashes each site's crowd.
+     - Task 2 put `activity` in the errand store, hashed there. The home cell, the household size and the hub sit outside the hash.
      - In all it is about 72 bytes a blob, 7.2 MB at 100,000 (computed). A blob then totals about 172 of the plan's 256 bytes (inference).
    - **The hash:** the store mixes in after the errand store while `STREETS` is 1. Only Highcourt's pins move, so `42/phone` `746a06a3`, the economy `6a652730` and the other goldens hold.
    - **Checkpoints:** every end is an absolute tick, so a checkpoint mid-chat replays.

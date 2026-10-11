@@ -137,6 +137,17 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 12 Oct, 05:05: **M3.2 Task 2: sites and legs** (6e4f2dd..b7a5321).
+  - **Sites:** every town lists its leisure sites. Highcourt has 29 fields in all: 22 premises, the plaza, 3 greens and 3 riverbanks.
+  - **The map:** the generator now declares the plaza and greens (`ENTITY_PLAZA`, `ENTITY_GREEN`), since frames and terrain couldn't tell a green from a field. `town.nmap` grew by 72 bytes.
+  - **Legs:** a blob can walk between any two cells through a hub's field.
+    - All 387 Highcourt homes reach the plaza and back.
+    - Home-to-home legs run 1.139 times the shortest way on average, at 1.35 µs a leg with no allocation.
+  - **Activity:** a new `activity` byte, hashed in the errand store, says why a blob is out. Trips and times are unchanged: the hash of everything else matched over 10,000 ticks.
+  - **Pins:**
+    - the `streets` golden is `e6bf62d6`, and Highcourt's pins are `624cfb6e` and `87e11b4e`;
+    - `42/phone` and the economy held.
+  - **For Task 3:** the worker doesn't pass the sites to `createShops` yet.
 - 12 Oct, 04:10: **pushed** M3.1 Part 4's Tasks 22, 27 and 23 and M2.7 Part 1's fixes (7bea466..e764299), after the pre-push round (c30fc16, a37bcfe, d46493b).
   - **Bytes:** the place builder chunk measured 22.64 kB, so its limit rose to 23.64 kB. The first-frame total is 46.69 of 100 kB, initial JS 32.98 of 35 kB, and the town map 12.32 of 40 kB.
   - **Specs:**
