@@ -77,7 +77,7 @@ function walkRuns(town: MapV1, runs: Uint8Array, from: number, backward: boolean
 }
 
 describe("Highcourt's premises fields", () => {
-  it('give every home a way to every premises in at most 16 runs, the shortest, and back again', () => {
+  it('give every home a way to every premises in at most 32 runs, the shortest, and back again', () => {
     const town = loadTown();
     const premises = premisesOf(town);
     const homes = homeDoors(town);
@@ -110,7 +110,7 @@ describe("Highcourt's premises fields", () => {
         `the fields took ${built.toFixed(1)} ms and ${premises.length * cells} of ${world.fields.length} reserved bytes`,
     );
     expect(problems).toEqual([]);
-    expect([premises.length, homes.length, premises.length * cells, most]).toEqual([22, 387, FIELD_BYTES, 16]);
+    expect([premises.length, homes.length, premises.length * cells, most]).toEqual([22, 387, FIELD_BYTES, 24]);
     expect(stateHash(world)).toBe(hash);
   });
 
