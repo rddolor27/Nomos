@@ -9,14 +9,15 @@ import { economyDay } from '../../src/economy/economy.ts';
 import { LENGNICK, type EconomyParams } from '../../src/economy/params.ts';
 import { startEconomy } from '../../src/economy/start.ts';
 import type { Tier } from '../../src/memory/tiers.ts';
+import { stepAwayTown } from '../../src/spawn/away.ts';
 import { createStandInHomes, createStandInTownHomes } from '../../src/spawn/homes.ts';
-import { LEDGER_FIELDS } from '../../src/spawn/record.ts';
+import { LEDGER_FIELDS, townRecord } from '../../src/spawn/record.ts';
 import { spawnFromLedger } from '../../src/spawn/spawn.ts';
 import { createStandInTown, createTown } from '../../src/spawn/town.ts';
-import { DAYS_PER_MONTH } from '../../src/time/calendar.ts';
+import { DAYS_PER_MONTH, TICKS_PER_DAY } from '../../src/time/calendar.ts';
 import { stateHash } from '../../src/world/checkpoint.ts';
 import { standInGround } from '../../src/world/ground.ts';
-import { createWorld, layoutWorld } from '../../src/world/world.ts';
+import { TICK, createWorld, layoutWorld } from '../../src/world/world.ts';
 import { randomRecord } from './records.ts';
 
 interface DrawCase {
@@ -73,6 +74,10 @@ export interface Goldens {
   // Place p is a stand-in town of people[p], and place 0 is live at tick 0. Each [tick, place] of requests asks to enter that
   // place at that tick, and the world is hashed after ticks.
   switch: { seed: number; tier: Tier; people: number[]; requests: [number, number][]; ticks: number; hash: string };
+  // A town of people beds, its largest home holding largestHome, left away through summary months 1 to months: it ends as row.
+  away: { seed: number; people: number; largestHome: number; months: number; row: number[] };
+  // The switch's place 1 entered for the first time by one step on day, and hashed after it.
+  visit: { seed: number; tier: Tier; people: number[]; day: number; hash: string };
   // seed is randomRecord's, and hashes[index] is spawnHash(seed, index).
   spawn: { seed: number; hashes: string[] };
 }
@@ -155,6 +160,29 @@ export function switchHash(
   return stateHash(world).toString(16).padStart(8, '0');
 }
 
+// A town's first record, advanced by the summary month once for each of months 1 to `months`, as a town off screen is. The
+// step's noise and rounding use Math.sqrt and Math.round, which the browser has to agree on.
+export function awayRow(seed: number, people: number, largestHome: number, months: number): number[] {
+  const row = new Float64Array(LEDGER_FIELDS);
+  townRecord(people, largestHome, row);
+  const anchor = new Float64Array(LEDGER_FIELDS);
+  for (let month = 1; month <= months; month++) stepAwayTown(row, 0, seed, month, anchor);
+  return Array.from(row);
+}
+
+// Place 1 is entered for the first time by a single step at the first tick of `day`, which is the way a switch lands: the live
+// town folds, and the new one spawns after the summary months that began before the day, with the month so far filled in. The
+// days between are skipped, since the hash covers the new town and the two rows alone.
+export function visitHash(seed: number, tier: Tier, people: readonly number[], day: number): string {
+  const ground = standInGround();
+  const homes = people.map((count) => createStandInTownHomes(ground, count));
+  const world = createTown(seed, tier, ground, homes[0]);
+  if (!requestTown(world, 1, ground, homes[1])) throw new Error('the request for place 1 was refused');
+  world.globals[TICK] = day * TICKS_PER_DAY;
+  step(world);
+  return stateHash(world).toString(16).padStart(8, '0');
+}
+
 // A random record fits a phone world laid out for 1,500 agents in 1 MiB, and 500 stand-in homes hold over twice its
 // people, so any record seats. Each index spawns into its own world seed, settlement and day.
 const SPAWN_AGENTS = 1_500;
@@ -185,6 +213,10 @@ export function checkGoldens(goldens: Goldens): EngineReport {
   const { hash: switchWant, ...switched } = goldens.switch;
   const switchGot = switchHash(switched.seed, switched.tier, switched.people, switched.requests, switched.ticks);
   checkCase(report, 'switch', switched, switchGot, switchWant);
+  const { row: awayWant, ...away } = goldens.away;
+  checkCase(report, 'away', away, awayRow(away.seed, away.people, away.largestHome, away.months).join(), awayWant.join());
+  const { hash: visitWant, ...visit } = goldens.visit;
+  checkCase(report, 'visit', visit, visitHash(visit.seed, visit.tier, visit.people, visit.day), visitWant);
   const { seed, hashes } = goldens.spawn;
   for (let index = 0; index < hashes.length; index++) {
     checkCase(report, 'spawn', { seed, index }, spawnHash(seed, index), hashes[index]);

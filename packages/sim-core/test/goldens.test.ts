@@ -3,12 +3,14 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import {
+  awayRow,
   checkGoldens,
   checkKernels,
   economyHash,
   spawnHash,
   switchHash,
   townHash,
+  visitHash,
   type Goldens,
   type KernelFixture,
 } from './engines/checks.ts';
@@ -20,7 +22,7 @@ const CLI = fileURLToPath(new URL('../../../tools/cli/src/main.ts', import.meta.
 describe('the engine checks', { timeout: 30_000 }, () => {
   it('matches the goldens in Node', () => {
     expect(goldens.spawn.hashes).toHaveLength(20);
-    expect(checkGoldens(goldens)).toEqual({ cases: 6 + 20, failures: [] });
+    expect(checkGoldens(goldens)).toEqual({ cases: 8 + 20, failures: [] });
   });
 
   it('reports a wrong economy hash, and a run that depends on its seed and its months', () => {
@@ -65,6 +67,36 @@ describe('the engine checks', { timeout: 30_000 }, () => {
     const unswitched = switchHash(seed, tier, people, [], ticks);
     const switchedOnce = switchHash(seed, tier, people, requests.slice(0, 1), ticks);
     expect(new Set([goldens.switch.hash, switchHash(seed + 1, tier, people, requests, ticks), unswitched, switchedOnce]).size).toBe(4);
+  });
+
+  it('reports a wrong away row, and a row that depends on its seed and its months', () => {
+    const { seed, people, largestHome, months, row } = goldens.away;
+    const wrong = {
+      ...goldens,
+      hashes: {},
+      spawn: { ...goldens.spawn, hashes: [] },
+      away: { ...goldens.away, row: row.map((value, field) => (field === 0 ? value + 1 : value)) },
+    };
+    const { failures } = checkGoldens(wrong);
+    expect(failures).toHaveLength(1);
+    expect(failures[0]).toContain('away');
+    const rows = [row, awayRow(seed + 1, people, largestHome, months), awayRow(seed, people, largestHome, months + 1)];
+    expect(new Set(rows.map((each) => each.join())).size).toBe(3);
+  });
+
+  it('reports a wrong first-visit hash, and a visit that depends on its seed and its day', () => {
+    const { seed, tier, people, day } = goldens.visit;
+    const wrong = {
+      ...goldens,
+      hashes: {},
+      spawn: { ...goldens.spawn, hashes: [] },
+      visit: { ...goldens.visit, hash: '00000000' },
+    };
+    const { failures } = checkGoldens(wrong);
+    expect(failures).toHaveLength(1);
+    expect(failures[0]).toContain('visit');
+    const hashes = [goldens.visit.hash, visitHash(seed + 1, tier, people, day), visitHash(seed, tier, people, day + 21)];
+    expect(new Set(hashes).size).toBe(3);
   });
 
   it('reports a wrong spawn hash, and spawns that depend on their record', () => {
