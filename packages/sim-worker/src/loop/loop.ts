@@ -55,7 +55,7 @@ export const NIGHT_SPEEDUP = 8;
 const NIGHT_FROM_MINUTE = 1_320;
 const NIGHT_TO_MINUTE = 360;
 // A town with streets is first shown at 07:00 (coordinator, 11 October 2026; M2.7 Ruling 3). At 06:00 every blob is indoors, so
-// the first screen would be an empty town, where 1,793 of Highcourt's 2,600 are out by 07:00. The run up to it is pacing only:
+// the first screen would be an empty town, where 1,212 of Highcourt's 1,720 are out by 07:00. The run up to it is pacing only:
 // it moves no tick's state.
 const FIRST_VIEW_MINUTE = 420;
 // One tile.
