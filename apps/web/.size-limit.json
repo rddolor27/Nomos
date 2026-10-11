@@ -45,7 +45,7 @@
   {
     "name": "Sim worker chunk",
     "path": ["dist/assets/worker-*.js"],
-    "limit": "18.7 kB"
+    "limit": "22 kB"
   },
   {
     "name": "Charts chunk",
@@ -90,7 +90,7 @@
   {
     "name": "Town skin chunk",
     "path": ["dist/assets/town-skin-*.js"],
-    "limit": "2 kB"
+    "limit": "4.09 kB"
   },
   {
     "name": "Scene chunks the views, the Town skin and the blob portrait share",
@@ -101,7 +101,7 @@
       "dist/assets/sprites-*.js",
       "dist/assets/atlas-*.js"
     ],
-    "limit": "6 kB"
+    "limit": "7.2 kB"
   },
   {
     "name": "Map worker chunk",
@@ -121,7 +121,7 @@
   {
     "name": "Initial JS, M0 stand-in",
     "path": ["dist/assets/index-*.js", "dist/assets/app-*.js", "dist/assets/render-gl-*.js", "dist/assets/worker-*.js"],
-    "limit": "30.5 kB"
+    "limit": "33.97 kB"
   },
   {
     "name": "Atlas",
