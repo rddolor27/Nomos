@@ -544,18 +544,22 @@ describe('the sim loop', () => {
     expect([page.tick(), world.inputs.cursor[0]]).toEqual([700, 0]);
   });
 
-  it('opens a town with streets at 06:00, running its night at once and posting the economy day that fell in it', () => {
+  it('opens a town with streets at 06:00, running its night at once and posting the economy day that fell in it on Play', () => {
     const page = fakePage({ streets: true });
 
     expect(page.tick()).toBe(OPENING_TICK);
-    expect(page.posted.map(({ type }) => type)).toEqual(['ready', 'snapshot', 'economy']);
-    const [, spawn, economy] = page.posted;
-    expect(spawn).toMatchObject({ type: 'snapshot', tick: OPENING_TICK, count: TOWN_PEOPLE });
-    expect(economy).toMatchObject({ type: 'economy', day: 0, days: 1 });
-
+    expect(page.posted.map(({ type }) => type)).toEqual(['ready', 'snapshot']);
+    expect(page.posted[1]).toMatchObject({ type: 'snapshot', tick: OPENING_TICK, count: TOWN_PEOPLE });
     const twin = streetTown(42, 'phone', TOWN_PEOPLE);
     while (currentTick(twin) < OPENING_TICK) step(twin);
     expect(stateHash(page.world())).toBe(stateHash(twin));
+
+    // Day 0's economy ended in the night, so its row waits for the first turn, and no turn after posts it again.
+    page.handle({ type: 'resume' });
+    page.advance(TICK_MS);
+    expect(page.ofType('economy')).toMatchObject([{ type: 'economy', day: 0, days: 1 }]);
+    page.advance(5 * TICK_MS);
+    expect(page.ofType('economy')).toHaveLength(1);
   });
 
   it('runs a switched town with streets up to its 06:00, but a request for the live town stays where it is', () => {
@@ -576,14 +580,16 @@ describe('the sim loop', () => {
     expect(opened).toEqual({ type: 'opened', place: 1, agents: OPENED_PEOPLE, width: 64, height: 64, tick: landedAt });
     const [live, switched] = page.ofType('snapshot').slice(1);
     expect([live.tick, switched.tick, switched.count]).toEqual([restingAt, landedAt, OPENED_PEOPLE]);
-    expect(page.ofType('economy').map(({ day, days }) => [day, days])).toEqual([
-      [0, 1],
-      [2, 1],
-    ]);
 
     requestTown(twin, 1, SMALL_GROUND, streetSite(new ArrayBuffer(OPENED_PEOPLE)).homes, STREET_SHOPS);
     while (currentTick(twin) < landedAt) step(twin);
     expect(stateHash(world)).toBe(stateHash(twin));
+
+    // The first row the panel gets is the new town's, the one that ended in its night, and the old town's waiting one is gone.
+    expect(page.ofType('economy')).toEqual([]);
+    page.handle({ type: 'resume' });
+    page.advance(TICK_MS);
+    expect(page.ofType('economy').map(({ day, days }) => [day, days])).toEqual([[2, 1]]);
   });
 
   it('answers inspect with the nearest blob within a tile', () => {

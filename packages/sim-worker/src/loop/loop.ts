@@ -93,7 +93,8 @@ export function createSimLoop(host: LoopHost, cpuSlowdown = 1): { handle(msg: Ap
   let running = false;
   let speed: Speed = 1;
   let turnPending = false;
-  // A town's day ended in the turn under way, so the turn posts its economy feed.
+  // A town's day has ended since its economy feed was last posted, in a turn or in the night an opening ran, so the next turn
+  // posts it.
   let feedDue = false;
   let lastMs = 0;
   let accMs = 0;
@@ -147,13 +148,12 @@ export function createSimLoop(host: LoopHost, cpuSlowdown = 1): { handle(msg: Ap
     const world = host.makeWorld(seed, tier, map, agents);
     world.checks = checks;
     const feed = createEconomyFeed();
-    const fed = runNight(world, feed);
+    feedDue = runNight(world, feed);
     const pool = createSnapshotPool(world.agents.capacity);
     session = { world, pool, feed };
     post({ type: 'ready', agents: world.agents.count[0] }, []);
     // The spawn, so a page that starts paused, as under reduced motion, still draws its agents (M0.5).
     postSnapshot(world, pool);
-    if (fed) post(feed, noTransfer);
     // After the replies, so the first frame never waits for it; whatever the page sends meanwhile queues behind it. A
     // slower CPU would warm up for longer, so a slowed worker holds the queue for that long too.
     warmUp();
@@ -180,14 +180,16 @@ export function createSimLoop(host: LoopHost, cpuSlowdown = 1): { handle(msg: Ap
     lastMs = startMs;
     const untilMs = startMs + MAX_TURN_MS * speed;
     let ticks = 0;
-    feedDue = false;
     while (accMs >= TICK_MS && host.now() < untilMs) {
       accMs -= TICK_MS;
       ticks += runSlot(world, session.feed, untilMs);
     }
     ticksTimed += ticks;
     if (ticks > 0) postSnapshot(world, session.pool);
-    if (feedDue) post(session.feed, noTransfer);
+    if (feedDue) {
+      post(session.feed, noTransfer);
+      feedDue = false;
+    }
     if (startMs - statsFromMs >= STATS_MS) postStats(world, startMs);
     scheduleTurn(TICK_MS - accMs);
   }
@@ -274,19 +276,17 @@ export function createSimLoop(host: LoopHost, cpuSlowdown = 1): { handle(msg: Ap
   // with streets then opens at 06:00, which only a real switch runs up to.
   function openTown(session: Session, place: number, map: ArrayBuffer): void {
     const world = session.world;
-    let fed = false;
     if (place !== world.focus[0]) {
       const { ground, homes, shops } = host.readTown(map);
       if (requestTown(world, place, ground, homes, shops)) {
         while (world.focus[FOCUS_PENDING] !== NO_PLACE) step(world);
         session.feed = createEconomyFeed();
-        fed = runNight(world, session.feed);
+        feedDue = runNight(world, session.feed);
       }
     }
     const { width, height } = world.ground;
     post({ type: 'opened', place: world.focus[0], agents: world.agents.count[0], width, height, tick: currentTick(world) }, noTransfer);
     postSnapshot(world, session.pool);
-    if (fed) post(session.feed, noTransfer);
   }
 
   // Waits before the post rather than after the handler, which would come too late: init posts ready and the spawn
@@ -319,8 +319,8 @@ function isStreetNight(world: World): boolean {
 }
 
 // A town with streets opens at 06:00 (M2.7 Ruling 3), so its night runs at once, with no snapshots, as a switch runs out a day.
-// The day's economy ends inside it, so its row goes into the feed as a turn would write it. Whether it did tells the caller to
-// post the row, which the panel would otherwise wait a day for.
+// The day's economy ends inside it, so its row goes into the feed as a turn would write it. Whether it did tells the caller that
+// the feed is due, so the next turn posts it, where the panel would otherwise wait a day for its first row.
 function runNight(world: World, feed: EconomyMessage): boolean {
   let fed = false;
   while (streetsAsleep(world)) {
