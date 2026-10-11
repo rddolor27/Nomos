@@ -39,6 +39,10 @@ export const TOLERANCE = 0.1;
 // review).
 export const ALLOCATION_DAYS: readonly number[] = [1, DAYS_PER_MONTH - 1, DAYS_PER_MONTH];
 
+// The day the allocation gate measures in the street world: a plain workday, with every blob out on its errands. The street path
+// runs no once-a-month system, so the economy's two month days stay with the stand-in town.
+export const STREET_ALLOCATION_DAYS: readonly number[] = [1];
+
 // The allocation gate's limit beside its zero scavenges (R5).
 export const MAX_HEAP_GROWTH_BYTES_PER_TICK = 65_536;
 

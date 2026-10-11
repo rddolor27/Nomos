@@ -4,12 +4,13 @@ import {
   ALLOCATION_DAYS,
   MAX_HEAP_GROWTH_BYTES_PER_TICK,
   MAX_YOUNG_BYTES_PER_DAY,
+  STREET_ALLOCATION_DAYS,
   TIERS,
   allocationLimit,
   type AllocationLimit,
 } from './compute/budgets.ts';
 import { readLoadavg } from './machine/loadavg.ts';
-import { BENCH_WARM_DAYS, createBenchWorld } from './compute/sample.ts';
+import { BENCH_WARM_DAYS, createBenchWorld, createStreetBenchWorld } from './compute/sample.ts';
 
 interface DayAllocation {
   readonly day: number;
@@ -23,6 +24,7 @@ interface DayAllocation {
 
 interface TierAllocation {
   readonly tier: Tier;
+  readonly streets: boolean;
   readonly loadavg: { readonly before: string | null; readonly after: string | null };
   readonly days: readonly DayAllocation[];
   readonly pass: boolean;
@@ -40,17 +42,20 @@ async function checkDay(world: World, view: Uint32Array, day: number): Promise<D
   return { day, ticks: TICKS_PER_DAY, scavenges, youngBytes, heapGrowthPerTick, limit, pass };
 }
 
-async function checkTier(tier: Tier): Promise<TierAllocation> {
+// The stand-in town, whose blobs wander, or with `streets` the town whose blobs walk errands to shops, which holds the street path.
+async function checkTier(tier: Tier, streets: boolean): Promise<TierAllocation> {
   const before = readLoadavg();
-  const { world, view } = createBenchWorld(tier);
+  const { world, view } = streets ? createStreetBenchWorld(tier) : createBenchWorld(tier);
   runTicks(world, BENCH_WARM_DAYS * TICKS_PER_DAY, view);
   const days: DayAllocation[] = [];
-  for (const day of ALLOCATION_DAYS) days.push(await checkDay(world, view, day));
-  return { tier, loadavg: { before, after: readLoadavg() }, days, pass: days.every((result) => result.pass) };
+  for (const day of streets ? STREET_ALLOCATION_DAYS : ALLOCATION_DAYS) days.push(await checkDay(world, view, day));
+  return { tier, streets, loadavg: { before, after: readLoadavg() }, days, pass: days.every((result) => result.pass) };
 }
 
 const tiers: TierAllocation[] = [];
-for (const tier of TIERS) tiers.push(await checkTier(tier));
+for (const streets of [false, true]) {
+  for (const tier of TIERS) tiers.push(await checkTier(tier, streets));
+}
 const report = {
   engine: 'node',
   version: process.version,

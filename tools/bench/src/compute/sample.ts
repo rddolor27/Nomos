@@ -12,6 +12,7 @@ import {
 } from '@nomos/sim-core';
 import { createSnapshotPool, takeView, writeSnapshot } from '@nomos/sim-protocol';
 import { BUDGET_ROWS, ECONOMY_SYSTEM } from './budgets.ts';
+import { createStreetTown } from './street-town.ts';
 
 export const BENCH_SEED = 42;
 // Named apart from sim-core's WARM_DAYS (40), which warmUp runs on a throwaway world.
@@ -31,7 +32,17 @@ export interface BenchWorld {
 // one snapshot view to write. A town runs CITY's economy in the step (M2.2b).
 export function createBenchWorld(tier: Tier): BenchWorld {
   warmUp();
-  const world = createStandInTown(BENCH_SEED, tier, standInGround(), TIER_AGENTS[tier]);
+  return benchWorldOf(createStandInTown(BENCH_SEED, tier, standInGround(), TIER_AGENTS[tier]));
+}
+
+// The same crowd as a town with streets, whose blobs walk to work and to three shops: the street path, which the stand-in town
+// has no shops to run. Only the allocation gate uses it so far, as the budget rows hold no street figures yet.
+export function createStreetBenchWorld(tier: Tier): BenchWorld {
+  warmUp();
+  return benchWorldOf(createStreetTown(BENCH_SEED, tier));
+}
+
+function benchWorldOf(world: World): BenchWorld {
   world.checks = false;
   const view = takeView(createSnapshotPool(world.agents.capacity));
   if (view === null) throw new Error('a new snapshot pool has no free view');

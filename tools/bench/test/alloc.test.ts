@@ -1,23 +1,24 @@
 import { setFlagsFromString } from 'node:v8';
 import { runInNewContext } from 'node:vm';
-import { DAYS_PER_MONTH, TICKS_PER_DAY, dayOfMonth } from '@nomos/sim-core';
+import { DAYS_PER_MONTH, FIRST_WALKING, TICKS_PER_DAY, TIER_AGENTS, dayOfMonth } from '@nomos/sim-core';
 import { describe, expect, it } from 'vitest';
 import { allocationWindow, runTicks } from '../src/compute/allocation.ts';
 import {
   ALLOCATION_DAYS,
   MAX_HEAP_GROWTH_BYTES_PER_TICK,
   MAX_YOUNG_BYTES_PER_DAY,
+  STREET_ALLOCATION_DAYS,
   allocationLimit,
 } from '../src/compute/budgets.ts';
-import { BENCH_WARM_DAYS, createBenchWorld, type BenchWorld } from '../src/compute/sample.ts';
+import { BENCH_WARM_DAYS, createBenchWorld, createStreetBenchWorld, type BenchWorld } from '../src/compute/sample.ts';
 
 // Vitest runs without --expose-gc, so the tests expose gc themselves. Each window then starts from a full collection,
 // as the CLI's does, so no scavenge left due by earlier work can land in it.
 setFlagsFromString('--expose-gc');
 globalThis.gc ??= runInNewContext('gc');
 
-function warmedPhoneWorld(): BenchWorld {
-  const bench = createBenchWorld('phone');
+function warmedPhoneWorld(create: typeof createBenchWorld = createBenchWorld): BenchWorld {
+  const bench = create('phone');
   runTicks(bench.world, BENCH_WARM_DAYS * TICKS_PER_DAY, bench.view);
   return bench;
 }
@@ -30,6 +31,23 @@ describe('the allocation window', { timeout: 120_000 }, () => {
     expect(scavenges).toBe(0);
     expect(youngBytes).toBeLessThanOrEqual(MAX_YOUNG_BYTES_PER_DAY);
     expect(heapGrowthPerTick).toBeLessThan(MAX_HEAP_GROWTH_BYTES_PER_TICK);
+  });
+
+  // The stand-in town has no shops, so it never runs the street path: this world is the one that does.
+  it('sees no scavenge in a day of phone ticks with the crowd on its errands', async () => {
+    const { world, view } = warmedPhoneWorld(createStreetBenchWorld);
+    const { scavenges, youngBytes, heapGrowthPerTick } = await allocationWindow(world, TICKS_PER_DAY, view);
+    expect(scavenges).toBe(0);
+    expect(youngBytes).toBeLessThanOrEqual(MAX_YOUNG_BYTES_PER_DAY);
+    expect(heapGrowthPerTick).toBeLessThan(MAX_HEAP_GROWTH_BYTES_PER_TICK);
+  });
+
+  it('has most of the street world walking at half past seven', () => {
+    const { world, view } = createStreetBenchWorld('phone');
+    runTicks(world, 450, view);
+    let walking = 0;
+    for (let blob = 0; blob < world.agents.count[0]; blob++) walking += world.errands.phase[blob] >= FIRST_WALKING ? 1 : 0;
+    expect(walking).toBeGreaterThan(TIER_AGENTS.phone / 2);
   });
 
   it('counts a planted allocator', async () => {
@@ -64,6 +82,12 @@ describe('the allocation days', () => {
   it('come in order and after the warm days, which the gate walks through once', () => {
     expect(ALLOCATION_DAYS[0]).toBeGreaterThanOrEqual(BENCH_WARM_DAYS);
     expect(ALLOCATION_DAYS.every((day, i) => i === 0 || day > ALLOCATION_DAYS[i - 1])).toBe(true);
+  });
+
+  it('give the street world one plain workday after the warm days', () => {
+    expect(STREET_ALLOCATION_DAYS).toEqual([1]);
+    expect(STREET_ALLOCATION_DAYS[0]).toBeGreaterThanOrEqual(BENCH_WARM_DAYS);
+    expect(allocationLimit(STREET_ALLOCATION_DAYS[0])).toEqual({ scavenges: 0, youngBytes: MAX_YOUNG_BYTES_PER_DAY });
   });
 });
 
