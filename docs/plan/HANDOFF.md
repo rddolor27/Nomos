@@ -85,6 +85,11 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 11 Oct, 22:15: **M2.7 Part 1 resumed** after the owner's GPU change. Three Sonnet agents run on separate files:
+  - **Errands:** Task 4's last steps, then Task 5's wiring and fast nights. Its files: `sim-core`, `sim-worker`, `sim-protocol`'s `map/premises.ts` and `snapshot/street.ts`.
+  - **Drawing:** Task 6, the `hold` and `eat` sprite fields, then the carried item, eating and the indoors skip. Its files: `render-gl`'s `place/`, `town/people.ts`, the painters and the harness, plus the sprite schema, `tools/sprites` and `tools/atlas`. It's the only Playwright runner.
+  - **Pips:** Task 8, in `render-gl`'s `town/pips.ts` and `town-skin.ts`, plus `apps/web` and `.size-limit.json`.
+  - **If a session ends mid-run:** each agent commits finished pieces only. Check `git log` after 9af85c6 for what landed, and `git status` for half-done edits; stash those by path before resuming.
 - 11 Oct: **M2.7 Part 1, Task 4: errands, paused partway** for the owner's GPU change (093cd98, 1ae12d6).
   - **Committed:**
     - the errand store, hashed only while `globals[STREETS]` is 1, with `STREET_DRAW`;
