@@ -47,10 +47,10 @@ export function openingPriceOf(good: number, unitPriceCents: number): number {
   return isFood(good) ? Math.floor(unitPriceCents / PORTIONS_PER_UNIT) : unitPriceCents;
 }
 
-// Shares total over goods 1 to 7 at their shares into out[1..7]: every good starts at its floor, or at least, and single
-// units then go to the good furthest under its share, or come back from the one furthest over it, ties to the lower good.
-// With least 1 and a total of 7 or more, each good holds one. The standing is total x share less the unit count x 10,000,
-// exact below 2^53.
+// Splits total over goods 1 to 7 into out[1..7] by their shares. Each good starts at the floor of its share, or at least
+// if that is more, and single units then go to the good furthest under its share, or come back from the one furthest
+// over it, ties to the lower good. So 100 rows give 5, 5, 5, 4, 27, 27 and 27, and with least 1 and 7 rows or more every
+// good holds one. A good's standing is total x share less its units x 10,000, exact below 2^53.
 export function splitByGood(total: number, least: number, out: Int32Array | Float64Array): void {
   if (total < least * LISTED_GOODS) {
     throw new RangeError(`${total} cannot give each of ${LISTED_GOODS} goods ${least}`);

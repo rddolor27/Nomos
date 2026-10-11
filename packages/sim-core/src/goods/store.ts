@@ -19,8 +19,8 @@ export interface GoodsStore {
   // The hash's region: the three columns above and their padding.
   readonly byteOffset: number;
   readonly byteLength: number;
-  // Scratch outside the hash, indexed by good. assignGoods fills firstRow and rowCount from the layout, which start and
-  // spawn set once and nothing moves; spawn also puts each good's jobs in jobs.
+  // Scratch outside the hash, indexed by good: assignGoods fills firstRow and rowCount, which nothing moves after start or
+  // spawn, and spawn puts each good's jobs in jobs.
   readonly firstRow: Int32Array;
   readonly rowCount: Int32Array;
   readonly jobs: Int32Array;
