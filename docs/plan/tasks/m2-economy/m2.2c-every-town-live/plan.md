@@ -1,6 +1,13 @@
 # M2.2c Every town runs the sim: brief
 
 > **Status:** brief (11 October 2026). Ask the owner for a go before Task 1, as the ask-first ruling says. Open questions are at the end.
+>
+> **The owner's answers (11 October 2026, 09:31):**
+> - **Go:** build M2.2c right after M2.4 Part 1 closes.
+> - **Highcourt:** it is each world's capital, as Ruling 1 has it.
+> - **Away towns:** they keep living while away, in a summary form. This replaces Ruling 2's frozen towns and adds about 1–2 days.
+>
+> **Before Task 3:** an Opus pass settles how an away town advances. One option is a summary model of its ledger row at each day boundary; another is a fast-forward over the days missed when the player returns. It must also say how this stays deterministic and logged, and what it costs at many towns. R4's "shadow-canonical" history is the reference. The pass adds a task for it, and Ruling 2's switch then spawns a town from its advanced row.
 
 **Task:** [task.md](task.md). Each task writes its code, then its tests: the main case and one edge. It runs only those, at `nice -n 19`, with a typecheck of the packages it touched, then commits. Bare paths are in `packages/sim-core/src/` for sim tasks and `apps/web/src/` for web tasks.
 

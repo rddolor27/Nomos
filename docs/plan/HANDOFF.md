@@ -26,6 +26,7 @@ The owner can overturn any of these.
 - **Crowds:** a town holds one blob per bed in its houses, so Highcourt drops to about 2,688.
 - **The blob modal:** a click shows the blob's picture, name, job and pay, home and household, what it is doing, and its look.
 - **The order:** first food and goods (M2.4 Part 1) beside the modal; then every town running the sim; then trips to work and shops. Ask again before each step.
+- **M2.2c's go** (09:31): build it right after M2.4 Part 1. Highcourt is each world's capital. Away towns keep living in summary form, not frozen, so an Opus pass settles how before Task 3.
 
 **The designers' calls, 10 October 2026:**
 - houses: the corner houses' L-shaped wing, cream doors, and handed pieces drawn at random rather than in pairs;
