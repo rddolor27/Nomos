@@ -5,7 +5,7 @@ import type { PlaceCamera } from '../place/camera.ts';
 import { createPlaceRenderer, type PlaceRenderer } from '../place/renderer.ts';
 import type { Camera, TownPainter, TownView } from '../renderer/types.ts';
 import { TownPeople } from './people.ts';
-import { TownPips, type PipSite } from './pips.ts';
+import { TownPips, withPipFrames, type PipSite } from './pips.ts';
 
 const NO_SITES: readonly PipSite[] = [];
 
@@ -38,8 +38,9 @@ export class TownSkin implements TownPainter {
     sites: readonly PipSite[] = NO_SITES,
   ) {
     this.place = createPlaceRenderer(canvas, options);
-    this.frames = page.frames;
-    this.pips = new TownPips(layout, sites, page.frames);
+    // The place draws with the atlas's frames and the pips' re-anchored copies of the beads.
+    this.frames = withPipFrames(page.frames);
+    this.pips = new TownPips(layout, sites, this.frames);
     this.people = new TownPeople();
     this.camera = null;
     this.placeCamera = { x: 0, y: 0, scale: 1 };
@@ -49,7 +50,7 @@ export class TownSkin implements TownPainter {
     this.shown = false;
     this.redrawSoon = this.redraw.bind(this);
     this.place.init();
-    this.place.setAtlas(page);
+    this.place.setAtlas({ image: page.image, frames: this.frames });
     // Before any agent, so a frame the atlas cannot draw throws here, while the town loads, never in a draw.
     this.setPlace(this.pips);
   }
