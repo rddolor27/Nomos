@@ -139,6 +139,18 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 12 Oct, 09:05: **M3.2 Task 6: the blob card** (f39be12, 26c6059, 8932f38, d1361e9).
+  - **Built:** `inspected` gains the activity, phase, reason, partner, needs and traits. The card gains four rows:
+    - Doing, such as "Chatting with Pselgea Tris" or "At the plaza: wants company";
+    - Feeling, the strongest need over 60%, else "Content";
+    - Needs, as percents;
+    - Personality, such as "Sociable, a homebody, restless".
+  - **Checks:** the new `street.spec.ts` opens two chatters' cards on the plaza and finds each names the other, with axe passing on desktop and phone. The inspector chunk is 7.15 of 7.6 kB.
+  - **The engineer's rulings:** the spec runs at 4×, since at 16× a snapshot can miss a 20-tick chat. A trait is named only in a byte's low or high third.
+  - **Follow-ups:**
+    - `reason` goes stale from 04:00 to 06:00 (a `parkFree` reset, for a sim engineer);
+    - the card's 11 rows nearly fill 720 px, and wrap on a phone (for a `ui-designer`);
+    - a click on two blobs standing on one point opens the lower row.
 - 12 Oct, 08:40: **M3.2 Task 5: drawing** (cc7d654, 98b454b).
   - **Built:** in the Town skin:
     - `ACTION_SIT` blobs draw `sit_*` on the ground;
