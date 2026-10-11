@@ -1,4 +1,5 @@
-"""Icons: goods and food, freshness badges, the coin, emote bubbles and HUD pips.
+"""Icons: goods and food, freshness badges, the coin, emote bubbles, HUD pips, the goods a blob carries and the pips that
+show a premises's stock.
 
 Every sprite is a hand-drawn ASCII grid in the 32-colour palette. Icons are drawn as fills
 with a clear 1-px border, and spritekit.add_outline gives each the same OUTLINE ring.
@@ -25,6 +26,8 @@ KEY = sk.cmap(
     L='BODY_L', B='BODY', b='BODY_S', D='BODY_D',
     P='PINK', p='PINK_D',
     M='PLUM',
+    I='ICE_L', i='ICE', J='ICE_S', j='ICE_D',
+    K='LILAC_L', k='LILAC', Q='LILAC_S', q='LILAC_D',
 )
 OUTLINE = sk.PALETTE['OUTLINE']
 
@@ -482,6 +485,82 @@ FRESHNESS_8 = {
     ],
 }
 
+# ---------------------------------------------------------------------------- carried goods, 8x8
+# What a blob carries home from the street (M2.7): one frame per good, held by every hue alike, so no item says what its
+# carrier earns. Plain pictograms, and never a sack, which reads as a crime costume.
+CARRY_8 = {
+    'bread': [  # a scored loaf
+        "........",
+        "..SSSS..",
+        ".STCTCt.",
+        ".TTSTSt.",
+        ".TTTTTt.",
+        "..tttu..",
+        "........",
+        "........",
+    ],
+    'vegetables': [  # a bunch of greens tied with twine, two carrots below
+        "........",
+        ".G.Gg.g.",
+        ".GgGgGf.",
+        "..gGgf..",
+        "..SSSs..",
+        ".RR.RRr.",
+        "..R..Rr.",
+        "........",
+    ],
+    'fish': [  # a silver fish with a blue tail
+        "........",
+        "........",
+        "..111.a.",
+        ".1O11aa.",
+        ".W111aa.",
+        "..WWW.a.",
+        "........",
+        "........",
+    ],
+    'milk': [  # a jug with a blue stopper and a handle
+        "........",
+        "..aa....",
+        "..Wc....",
+        ".WWWc.c.",
+        ".WWWc.c.",
+        ".WaWcc..",
+        ".WWWc...",
+        "........",
+    ],
+    'cloth': [  # a bolt folded over twice: lilac on ice
+        "........",
+        ".KKKKQ..",
+        ".kkkkQM.",
+        ".qqqqqM.",
+        ".Iiiiij.",
+        ".JJJJJj.",
+        "........",
+        "........",
+    ],
+    'tools': [  # a hammer and a saw
+        "........",
+        ".111.t..",
+        ".232.t..",
+        "..t.11..",
+        "..t.11..",
+        "..t.23..",
+        "..u.3...",
+        "........",
+    ],
+    'fuel': [  # firewood: a pile of three log ends, as the Fuel Store's sign and woodpile show it
+        "........",
+        "..tTt...",
+        "..TST...",
+        "..tTt...",
+        ".tTttTt.",
+        ".TSTTST.",
+        ".tTttTt.",
+        "........",
+    ],
+}
+
 COIN_16 = [
     "................",
     ".....bbbbbb.....",
@@ -695,6 +774,22 @@ PIPS = {
     ],
 }
 
+# Stock pips (M2.7): a premises's stock against a day's demand, 0 to 3, over its roof. Three beads in a triangle light
+# bottom left, bottom right, then top; the unlit ones show the capacity. A bead is 2x2, so it stays a bead and not a tally mark.
+BEADS = ((1, 5), (5, 5), (3, 1))
+
+
+def _beads(level):
+    rows = [['.'] * 8 for _ in range(8)]
+    for i, (x, y) in enumerate(BEADS):
+        for dy, line in enumerate(('WC', 'Cc') if i < level else ('12', '23')):
+            rows[y + dy][x:x + 2] = line
+    return [''.join(row) for row in rows]
+
+
+STOCK_PIPS = [_beads(level) for level in range(4)]
+
+
 def bubble(name):
     rows = [''.join(g if g != '.' else b for g, b in zip(glyph, base))
             for glyph, base in zip(EMOTES[name], BUBBLE)]
@@ -718,6 +813,10 @@ def build():
         sheet.add(f'emote_{name}', bubble(name), anchor=BUBBLE_TIP)
     for name, rows in PIPS.items():
         sheet.add(f'pip_{name}', icon(rows, 8, name))
+    for name, rows in CARRY_8.items():
+        sheet.add(f'carry_{name}', icon(rows, 8, name))
+    for level, rows in enumerate(STOCK_PIPS):
+        sheet.add(f'pip_stock_{level}', icon(rows, 8, f'stock {level}'))
     return sheet
 
 

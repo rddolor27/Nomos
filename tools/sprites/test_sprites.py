@@ -12,7 +12,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import characters as ch  # noqa: E402
 from build_all import CATEGORIES  # noqa: E402
-from spritekit import BODY_HUES, PALETTE  # noqa: E402
+from spritekit import BODY_HUES, PALETTE, body_hue  # noqa: E402
 
 NAME = re.compile(r'^[a-z0-9]+(?:-[a-z0-9]+)*(?:_[a-z0-9]+(?:-[a-z0-9]+)*)*$')
 UNOUTLINED = ('terrain_', 'crop_')
@@ -21,6 +21,7 @@ FACINGS = ('down', 'left', 'right')
 RESTING_FACES = ('neutral', 'blink', 'neutral-dot', 'blink-dot', 'neutral-tall', 'blink-tall', 'neutral-wide', 'blink-wide')
 PAD = 4        # room round the 18x22 body canvas for an item held out past its edge
 ITEM_PX = 8    # the plan's carried items are 8x8
+CARRIED = ('bread', 'vegetables', 'fish', 'milk', 'cloth', 'tools', 'fuel')
 
 
 def outline_is_only_edges(im):
@@ -111,7 +112,31 @@ def chew_problems():
     return problems
 
 
-STREET_CHECKS = [('street holds', hold_problems), ('street chewing faces', chew_problems)]
+def carry_problems():
+    """Each carried good is one 8x8 frame for all six hues, which no hue recolours, and the stock pips show 0 to 3 lit
+    beads."""
+    problems = []
+    frames = {name: im for name, im, _, _ in importlib.import_module('icons').build().frames}
+    carried = sorted(name for name in frames if name.startswith('carry_'))
+    if carried != sorted(f'carry_{good}' for good in CARRIED):
+        problems.append(f'carried goods are {carried}, not one frame for each of {CARRIED}')
+    for good in CARRIED:
+        item = frames[f'carry_{good}']
+        if item.size != (ITEM_PX, ITEM_PX):
+            problems.append(f'carry_{good} is {item.size[0]}x{item.size[1]}, not {ITEM_PX}x{ITEM_PX}')
+        for hue in BODY_HUES:
+            if not (np.array(body_hue(item, hue)) == np.array(item)).all():
+                problems.append(f'carry_{good}: the {hue} hue recolours it')
+    for level in range(4):
+        pip = np.array(frames[f'pip_stock_{level}'])
+        lit = ((pip[:, :, :3] == PALETTE['WHITE']).all(axis=2) & (pip[:, :, 3] > 0)).sum()
+        if pip.shape[:2] != (ITEM_PX, ITEM_PX) or lit != level:
+            problems.append(f'pip_stock_{level}: {lit} lit beads on a {pip.shape[1]}x{pip.shape[0]} frame')
+    return problems
+
+
+STREET_CHECKS = [('street holds', hold_problems), ('street chewing faces', chew_problems),
+                 ('street carried goods', carry_problems)]
 
 
 def main():
