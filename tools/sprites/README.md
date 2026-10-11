@@ -25,6 +25,7 @@ Original pixel art for Nomos, drawn as code. Each module draws one category with
 - Job items go on the head or in bands across the body. A blob is all face, so a panel under the eyes reads as teeth or a mask. Check every job item on all six hues.
 - Looks are cosmetic: hue, eye shape and pattern are drawn independently at random at birth, never inherited and never read by the sim, so no look marks a group, a status or a mood. Every eye shape is open and calm. Patterns are tone-on-tone marks in the body's light tone, kept off the face and lower face, with no stripes or emblem motifs.
 - Culture shows in things such as emblems, banners, dishes and festival props, never on bodies or clothes. Emblem colours are mid tones, unlike the pastel body hues, and avoid the police navy, the merchant teal and the reds and oranges that round 3 keeps for crime.
+- What a blob buys is a separate 8×8 item shown over the body at the frame's `hold` point: one frame for every hue, so no item says what its carrier earns, and no sack, which reads as a crime costume. Eating swaps the resting face for `face_chew_0` and `face_chew_1`, the same round eyes over a mouth that shuts and opens, and moves the item to the mouth: the loop runs the `eat` positions 0, 1, 2, 1 under the faces 0, 1, 0, 1.
 - Police iconography stays neutral: no weapons, flags or heroic poses.
 - Soldiers defend and patrol the roads and never police towns, so nothing about them reads as police. Their job item is a steel kettle hat and a leather baldric slanting to a sheathed sword, in steel and leather only: no police navy, merchant teal, crime red or culture colour. Weapons stay sheathed or shouldered, and nothing military carries a flag, banner or heraldry.
 - No role wears black. `OUTLINE` is for outlines only, never a fill.
@@ -65,6 +66,7 @@ Every frame has `x`, `y`, `w`, `h` and `anchor`. Some carry more:
 | `colour` | The culture colour an emblem or banner carries, for the culture lens |
 | `cord_row` | Row where festival strips hang, so any strips join |
 | `hitch` | Point where a cart hitches to its animal |
+| `hold`, `eat` | On a body frame that carries an item, the top-left pixel of the item's 8×8 sprite, and on standing frames its three positions while eating; the item is drawn unflipped, so a right frame holds its own point. Facing up, sitting and sneaking carry none. Written by `characters.build(holds=True)`, which waits until the manifest schema names them |
 | `face`, `hue`, `pose`, `facing`, `frame`, `job`, `eyes`, `pattern` | Character metadata; `face` is the offset for face overlays, `eyes` the eye shape of a resting face |
 | `review_only` | Review strips, never drawn in the game |
 

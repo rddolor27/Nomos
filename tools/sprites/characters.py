@@ -15,6 +15,9 @@ Crime is an act, never a costume: the sneak is a pose any agent may take, with n
 mark. Faces show events (a purchase, a refused price, a blink), never income, wealth or a level
 of happiness. Job items are removable clothing and follow the body into every pose.
 
+What a blob buys is carried as a separate 8x8 item (icons.py's carry_<good>) at the body frame's hold point, one frame for
+every hue, and shown over the body last. Eating swaps the resting face for a chewing one and lifts the item to the mouth.
+
 Build: python tools/sprites/characters.py
 """
 import numpy as np
@@ -184,6 +187,17 @@ EYE_FACES = {
                               (14, 1, '.WWW....WWW.')]},
     'blink-wide': {'down': [(13, 3, 'OOOOO..OOOOO')], 'left': [(13, 1, 'OOOOO..OOOOO')]},
 }
+# Eating faces (M2.7): the resting round eyes, open and calm for every look, over a mouth that shuts and opens as the blob
+# chews. Marks are the mouth only, as (row, x, text) stamps: chew_0 is a dash, chew_1 a small round mouth with its pink inside.
+CHEW_MOUTHS = {
+    'chew_0': {'down': [(16, 8, 'OO')], 'left': [(16, 3, 'OO')]},
+    'chew_1': {'down': [(15, 8, 'OO'), (16, 7, 'OppO'), (17, 8, 'OO')],
+               'left': [(15, 4, 'OO'), (16, 3, 'OppO'), (17, 4, 'OO')]},
+}
+
+
+def _eye_stamps(expression, view):
+    return [(EYE_ROW + i, x, row) for x, eye in zip(EYE_X[view], FACES[expression][view]) for i, row in enumerate(eye)]
 
 
 def face(expression, facing):
@@ -191,10 +205,10 @@ def face(expression, facing):
     view = 'left' if facing == 'right' else facing
     if expression in EYE_FACES:
         stamps = EYE_FACES[expression][view]
+    elif expression in CHEW_MOUTHS:
+        stamps = _eye_stamps('neutral', view) + CHEW_MOUTHS[expression][view]
     else:
-        stamps = []
-        for x, eye in zip(EYE_X[view], FACES[expression][view]):
-            stamps += [(EYE_ROW + i, x, row) for i, row in enumerate(eye)]
+        stamps = _eye_stamps(expression, view)
     a = np.array(sk.from_ascii(_stamp(stamps), KEY))
     a[~_mask(body_fill('stand', 'left'))] = 0
     return _flip(Image.fromarray(a), facing)
@@ -471,6 +485,45 @@ def job_item(job, pose, facing):
     return _flip(Image.fromarray(a), facing)
 
 
+# ---------------------------------------------------------------------------- what a blob carries
+ITEM = 8       # an item is one 8x8 sprite, icons.py's carry_<good>, the same frame on every hue and drawn over the body
+# The item's top-left pixel on the body's 18x22 canvas: on the front hip, the same for the down and left views. It bobs with the
+# body, a pixel lower on the squashed walk frame and one higher on the hop. The right view mirrors the left about the canvas,
+# facing up shows no item, and the sit and sneak poses carry none.
+HOLD = {'stand': (0, 15), 'walk_0': (-1, 16), 'walk_1': (0, 14)}
+# Eating: the standing blob lifts the item 1 px and slides it to its mouth in three steps, as (dx, dy) from its hold, in the
+# left and down views. The loop runs the steps 0, 1, 2, 1, under the chew faces 0, 1, 0, 1.
+EAT_STEPS = {'down': ((0, 0), (2, -1), (5, -1)), 'left': ((0, 0), (1, -1), (2, -1))}
+
+
+def _item_x(x, facing):
+    return W - ITEM - x if facing == 'right' else x
+
+
+def hold_point(pose, facing):
+    """The top-left pixel of the carried item on a body frame, or None where the item is not drawn."""
+    if facing == 'up' or pose not in HOLD:
+        return None
+    x, y = HOLD[pose]
+    return [_item_x(x, facing), y]
+
+
+def eat_points(facing):
+    """The item's top-left pixel on each eating step of the standing pose, or None facing up."""
+    if facing == 'up':
+        return None
+    x, y = HOLD['stand']
+    return [[_item_x(x + dx, facing), y + dy] for dx, dy in EAT_STEPS['left' if facing == 'right' else facing]]
+
+
+def hold_fields(pose, facing):
+    """A body frame's `hold`, and its `eat` steps if it stands, as manifest fields; none where no item is drawn."""
+    hold = hold_point(pose, facing)
+    if hold is None:
+        return {}
+    return {'hold': hold, 'eat': eat_points(facing)} if pose == 'stand' else {'hold': hold}
+
+
 # ---------------------------------------------------------------------------- composites
 def character(pose, facing, job=None, expression='neutral', hue='sun', eyes='round', pattern='plain'):
     """Body, pattern, face and job item drawn together, as the renderer stacks them."""
@@ -507,16 +560,19 @@ CROWD = {
 }
 
 
-def build():
+def build(holds=False):
+    """The characters sheet. `holds` writes each body frame's `hold` and `eat` fields, which wait until the manifest schema
+    (packages/sim-protocol/schema/sprite-manifest.schema.json) names them: with them left in, its test rejects the manifest."""
     sheet = sk.Sheet('characters')
     for stem, pose, facing in frames():
         meta = {'pose': pose.split('_')[0], 'facing': facing}
         if pose.startswith('walk'):
             meta['frame'] = int(pose[-1])
         face_at = {'face': face_offset(pose, facing)} if facing != 'up' else {}
+        hold_at = hold_fields(pose, facing) if holds else {}
         for hue in sk.BODY_HUES:
             sheet.add(f'blob_{hue}_{stem}', sk.body_hue(body(pose, facing), hue), anchor=ANCHOR, hue=hue,
-                      layer='body', **meta, **face_at)
+                      layer='body', **meta, **face_at, **hold_at)
         for pattern in PATTERNS:
             marks = body_pattern(pattern, pose, facing)
             for hue in sk.BODY_HUES:
@@ -528,6 +584,10 @@ def build():
         for facing in ('down', 'left', 'right'):
             sheet.add(f'face_{expression}_{facing}', face(expression, facing), anchor=ANCHOR,
                       layer='face', facing=facing, **style)
+    for expression in CHEW_MOUTHS:
+        for facing in ('down', 'left', 'right'):
+            sheet.add(f'face_{expression}_{facing}', face(expression, facing), anchor=ANCHOR,
+                      layer='face', facing=facing)
     for job in JOBS:
         for stem, pose, facing in frames():
             sheet.add(f'job_{job}_{stem}', job_item(job, pose, facing), anchor=ANCHOR,
