@@ -139,6 +139,19 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 12 Oct, 07:20: **M3.2 Task 4: chats** (989e823..fa18f21).
+  - **Built:** `street/chat.ts`'s `pairChats`, run as the `chat` system after `life`. It uses a per-cell mailbox, a quarter of blobs looking each tick, and one exact check. A pair stops face to face, and both arrive the chat's length late.
+  - **Spots:** plaza and green spots now cluster within 6 × 5 tiles of the site's door, so outings meet.
+  - **Highcourt, day 0:** 767 chats:
+    - 662 between neighbours on their doorsteps, and 28 between a sitter and a passer-by;
+    - 51 between walkers, 20 on the plaza and 6 on a green;
+    - 257 of them between 19:00 and 20:00, and none after 21:00.
+  - **The snapshot:** emote ids coin 1, speech 2, music 3, ball 4, heart 5 and question 6, plus `ACTION_SIT` and `ACTION_TALK`, with no new bits.
+  - **Pins:** the `streets` golden is `22af632a`, and Highcourt's pins are `4db351f9` and `ba53250f`. `42/phone` and the economy held.
+  - **Cost:** `chat` takes 0.017 ms a tick at 10k and 0.043 at 25k, and the allocation gate passes.
+  - **Bytes:** initial JS is 37.09 of 40 kB, and the worker chunk 25.10 kB, above its 22 kB limit until the push.
+  - **The engineer's ruling:** a chat is cut short so that both blobs are home by 22:00.
+- **The coordinator's call (07:20):** M3.2's Task 9 draws the bubbles now, with the recommended A designs, rather than stand-ins, pending the owner's pick. A switch to B is one line in `showcase_lives.py`'s `PICKS` and in `icons.py`.
 - 12 Oct, 06:15: **M3.2 Task 3: the life store and free time** (4bc3acc..6adae58).
   - **Built:**
     - `life/`, guarded, with a rule that bars `money/`;
