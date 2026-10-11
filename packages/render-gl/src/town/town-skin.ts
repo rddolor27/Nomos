@@ -5,6 +5,9 @@ import type { PlaceCamera } from '../place/camera.ts';
 import { createPlaceRenderer, type PlaceRenderer } from '../place/renderer.ts';
 import type { Camera, TownPainter, TownView } from '../renderer/types.ts';
 import { TownPeople } from './people.ts';
+import { TownPips, type PipSite } from './pips.ts';
+
+const NO_SITES: readonly PipSite[] = [];
 
 // Skin C's first cut, the Town skin: a town drawn by the place pass with the sim's agents as its people (owner request,
 // 10 October 2026), Highcourt first and any other after setLayout (M2.2c). It draws on a canvas of its own over the
@@ -12,7 +15,8 @@ import { TownPeople } from './people.ts';
 // dots' camera places the town as it is.
 export class TownSkin implements TownPainter {
   private readonly place: PlaceRenderer;
-  private layout: PlaceLayout;
+  private readonly frames: AtlasPage['frames'];
+  private pips: TownPips;
   private readonly people: TownPeople;
   // The last camera drawn, and the place's camera made from it once, as the place renderer re-reads only a new one.
   private camera: Camera | null;
@@ -25,9 +29,17 @@ export class TownSkin implements TownPainter {
   // redraw, bound once for requestAnimationFrame.
   private readonly redrawSoon: FrameRequestCallback;
 
-  constructor(canvas: HTMLCanvasElement, layout: PlaceLayout, page: AtlasPage, options: LifecycleOptions = {}) {
+  // `sites` are the town's shops and stalls, which wear stock pips (M2.7, setPips).
+  constructor(
+    canvas: HTMLCanvasElement,
+    layout: PlaceLayout,
+    page: AtlasPage,
+    options: LifecycleOptions = {},
+    sites: readonly PipSite[] = NO_SITES,
+  ) {
     this.place = createPlaceRenderer(canvas, options);
-    this.layout = layout;
+    this.frames = page.frames;
+    this.pips = new TownPips(layout, sites, page.frames);
     this.people = new TownPeople();
     this.camera = null;
     this.placeCamera = { x: 0, y: 0, scale: 1 };
@@ -39,7 +51,7 @@ export class TownSkin implements TownPainter {
     this.place.init();
     this.place.setAtlas(page);
     // Before any agent, so a frame the atlas cannot draw throws here, while the town loads, never in a draw.
-    this.setPlace(layout);
+    this.setPlace(this.pips);
   }
 
   // The canvas drawn on, which the Canvas2D fallback replaces.
@@ -49,10 +61,17 @@ export class TownSkin implements TownPainter {
 
   // Swaps the town drawn: its ground, buildings and size, from the next draw. The sim's agents stay its people, rewritten
   // by that draw, and the layout's own people are never drawn. The sprite list is made here, so a frame the atlas cannot
-  // draw throws here, never in a draw.
-  setLayout(layout: PlaceLayout): void {
-    this.setPlace(layout);
-    this.layout = layout;
+  // draw throws here, never in a draw. The new town's pips stay hidden until setPips.
+  setLayout(layout: PlaceLayout, sites: readonly PipSite[] = NO_SITES): void {
+    const pips = new TownPips(layout, sites, this.frames);
+    this.setPlace(pips);
+    this.pips = pips;
+  }
+
+  // Lights the pip over each of the town's sites to its level, 0 to 3, and closes each stall at 0, from the next draw. A level
+  // past 3 hides the pip. Nothing is made, so the page may call it on every economy day.
+  setPips(levels: ArrayLike<number>): void {
+    this.pips.set(levels);
   }
 
   draw(camera: Camera, alpha: number, view: TownView): number | undefined {
@@ -63,7 +82,7 @@ export class TownSkin implements TownPainter {
     this.show(true, view.canvas);
     const { retained } = view;
     this.fit(view);
-    if (this.people.fit(retained.count)) this.setPlace(this.layout);
+    if (this.people.fit(retained.count)) this.setPlace(this.pips);
     this.people.write(retained, alpha);
     if (camera !== this.camera) {
       this.camera = camera;
@@ -77,9 +96,10 @@ export class TownSkin implements TownPainter {
     this.place.dispose();
   }
 
-  // The place draws the sim's columns as the layout's people, so it takes them again whenever they are made again.
-  private setPlace(layout: PlaceLayout): void {
-    this.place.setPlace({ ...layout, people: this.people.columns });
+  // The place draws the sim's columns as the layout's people, so it takes them again whenever they are made again. It also
+  // takes the pips' layout, whose standing sprites setPips rewrites in place.
+  private setPlace(pips: TownPips): void {
+    this.place.setPlace({ ...pips.layout, people: this.people.columns });
   }
 
   private redraw(): void {
