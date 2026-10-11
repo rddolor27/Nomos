@@ -85,6 +85,17 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 11 Oct: **M2.4 Part 1's review** (Opus, pinned to c520ca7). Nothing is critical: money, the food identity, goods-0 replay, the hash rule, the draws and the hot paths hold.
+  - **Being fixed:**
+    - the burn-in, re-measured at 80,000 days, since the 40,000-day cut sat 18 batches inside MSER-5's limit;
+    - small towns' food jobs;
+    - `buyFood`'s gate;
+    - a goods-0 pin to M2.3;
+    - a stale test note;
+    - Okun counting all output.
+  - **The coordinator's rulings:**
+    - food firms' prices sticking above the markup ceiling is a Part 2 gap, since it thins `price_change_share` to 9.4%, which still holds;
+    - Ruling 6's goods table shows spoilage as the four foods' total, with no per-food column, so the ruling is amended rather than the feed grown.
 - 11 Oct: **M2.2c, Tasks 1 and 2.**
   - **Task 1, the ground port** (62103c0..2e6471a): it rebuilds `town.nmap` byte for byte, and 12 other places match the frozen Python too. The most beds in a place of 2 worlds is 3,176.
   - **Task 2, one blob per bed** (369f3ee):
