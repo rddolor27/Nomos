@@ -1,5 +1,5 @@
 import type { PipSite } from '@nomos/render-gl/town';
-import { BREAD, FEED_GOODS, type EconomyMessage, type MapV1 } from '@nomos/sim-protocol';
+import { BREAD, type EconomyMessage, type MapV1 } from '@nomos/sim-protocol';
 import { PLACE_TILE_PX } from '@nomos/sim-protocol/place';
 import { premisesOf, sells, type Premises } from '@nomos/sim-protocol/premises';
 
@@ -45,7 +45,7 @@ export class StockPips {
     for (let p = 0; p < this.premises.length; p++) {
       let stock = 0;
       let sold = 0;
-      for (let g = 0; g < FEED_GOODS; g++) {
+      for (let g = 0; g < feed.stockUnits.length; g++) {
         if (!sells(this.premises[p], BREAD + g)) continue;
         stock += feed.stockUnits[g][newest];
         sold += feed.soldUnits[g][newest];
