@@ -40,9 +40,9 @@ It builds on M2.7 Part 1's street, M2.2c's households of 1–6 in drawn homes, a
   - needs stored as Int32 deadlines (R6);
   - round 2's optional items.
 - **Owner decision first:**
-  - the street's pace, before Task 8: keep 4 ticks a tile, where Highcourt's ways average 259 ticks (measured), or walk twice as fast;
-  - family in other homes, before Task 7: until M5's births, household members are the only family, and visits go to friends;
-  - who pays soldiers before Task 10: pay comes from taxes, which arrive only with M5's treasury (R1), so choose a stopgap, such as M0.2's local-government account.
+  - the street's pace, before Task 8: keep 4 ticks a tile, where Highcourt's ways average 259 ticks (measured), or walk twice as fast. Settled on 12 October 2026 by the coordinator: keep the pace until the owner sees Task 6's evenings on screen, then walk faster if they look like walking only;
+  - family in other homes, before Task 7: until M5's births, household members are the only family, and visits go to friends. Settled on 12 October 2026 by the coordinator, as suggested;
+  - who pays soldiers before Task 10: pay comes from taxes, which arrive only with M5's treasury (R1), so choose a stopgap, such as M0.2's local-government account. Settled on 12 October 2026 by the coordinator: the local-government account, until M5's treasury.
 - **Exit checks:**
   - **Rush hours** emerge without scripting. Over 2 worlds, hourly departures peak within ±1 hour of shift starts and ends, and the plaza's crowd peaks after work (R1).
   - **Choices:** over 2 worlds × 28 days, every activity wins sometimes and loses sometimes when it is a candidate (R1).

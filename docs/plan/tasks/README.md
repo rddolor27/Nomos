@@ -9,16 +9,16 @@ Estimates are full-time days for one person coding by hand (unsourced estimates)
 | [M0 Pipeline](m0-pipeline/milestone.md) | 8 | 26–40 days |
 | [M1 Lab mode](m1-lab-mode/milestone.md) | 6 | 23.5–38 days |
 | [M2 Economy](m2-economy/milestone.md) | 9 | 42–66.5 days |
-| [M3 City life](m3-city-life/milestone.md) | 8 | 65.5–101 days |
+| [M3 City life](m3-city-life/milestone.md) | 8 | 68.5–106.5 days |
 | [M4 Crime and police](m4-crime-and-police/milestone.md) | 7 | 28–40 days |
 | [M5 Society and policy](m5-society-and-policy/milestone.md) | 7 | 36–56 days |
 | [M6 Scale and sharing](m6-scale-and-sharing/milestone.md) | 7 | 49–81 days |
 | [M7 Country of ledgers](m7-country-of-ledgers/milestone.md) | 7 | 37–59 days |
 | [M8 Country map](m8-country-map/milestone.md) | 8 | 52.5–82 days |
-| **Before launch, M0–M8** | | **359.5–563.5 days** |
+| **Before launch, M0–M8** | | **362.5–569 days** |
 | [M9 Zoom across scales](m9-zoom-across-scales/milestone.md) | 6 | 25–40 days |
 | [M10 Weather](m10-weather/milestone.md) | 4 | 16–27 days |
-| **Everything** | | **400.5–630.5 days** |
+| **Everything** | | **403.5–636 days** |
 
 The plan's own effort lines sum to about 221.5–340.5 days before launch, but many tasks that rounds 2, 6, 8 and 9 added carry no estimate there. These breakdowns estimate every task, which is why their sum is larger.
 
@@ -74,7 +74,7 @@ The plan's own effort lines sum to about 221.5–340.5 days before launch, but m
 | Sub-milestone | Delivers | Estimate | How |
 | --- | --- | --- | --- |
 | [M3.1 Town generator](m3-city-life/m3.1-town-generator/task.md) | The TypeScript place generator: a 256² town from a seed, with walkability and entities in the binary map | 7.5–11 days | [brief](m3-city-life/m3.1-town-generator/plan.md) |
-| [M3.2 Daily routines](m3-city-life/m3.2-daily-routines/task.md) | Agents who work, shop, eat and sleep on schedule, and the inspector that explains them | 12–18 days | [brief](m3-city-life/m3.2-daily-routines/plan.md) |
+| [M3.2 Daily routines](m3-city-life/m3.2-daily-routines/task.md) | Blobs with lives of their own (owner, 12 October 2026): needs, a keyed personality, work, errands, outings, chats, visits and friends, and a card that explains them | 15–23.5 days | [brief](m3-city-life/m3.2-daily-routines/plan.md) |
 | [M3.3 Skin C town](m3-city-life/m3.3-skin-c-town/task.md) | The pixel-art town: tiles, roofs, light periods, automatic skins, the phone path and the follow-cam | 5–7.5 days | [brief](m3-city-life/m3.3-skin-c-town/plan.md) |
 | [M3.4 Build mode and default town](m3-city-life/m3.4-build-mode-and-default-town/task.md) | The owner's Build mode, and the hand-edited default town within budget on phones | 11–17 days | [brief](m3-city-life/m3.4-build-mode-and-default-town/plan.md) |
 | [M3.5 Food and harvest](m3-city-life/m3.5-food-and-harvest/task.md) | Pantries, shelf lives, a food-insecurity tally and one grain harvest a year | 6–9 days | [brief](m3-city-life/m3.5-food-and-harvest/plan.md) |
@@ -193,9 +193,9 @@ Each must be settled before its sub-milestone starts. The task files give the co
 | M3.1 | the town walls' look, from the asset-designer's mockups, before the full sprite set is drawn. Settled on 10 October 2026: the owner asked for the assets to be drawn and then added to the plans, and their previews went to the owner |
 | M3.1 | how many blobs the grown starting town holds on each device tier, within the tick budgets |
 | M3.1 | the preview of the diagonal wall pieces and the optional road-corner tiles, before they are final |
-| M3.2 | the street's pace, before Task 8: keep 4 ticks a tile, where Highcourt's ways average 259 ticks (measured), or walk twice as fast |
-| M3.2 | family in other homes, before Task 7: until M5's births, household members are the only family, and visits go to friends |
-| M3.2 | who pays soldiers before Task 10: pay comes from taxes, which arrive only with M5's treasury (R1), so choose a stopgap, such as M0.2's local-government account |
+| M3.2 | the street's pace, before Task 8: keep 4 ticks a tile, where Highcourt's ways average 259 ticks (measured), or walk twice as fast. Settled on 12 October 2026 by the coordinator: keep the pace until the owner sees Task 6's evenings on screen, then walk faster if they look like walking only |
+| M3.2 | family in other homes, before Task 7: until M5's births, household members are the only family, and visits go to friends. Settled on 12 October 2026 by the coordinator, as suggested |
+| M3.2 | who pays soldiers before Task 10: pay comes from taxes, which arrive only with M5's treasury (R1), so choose a stopgap, such as M0.2's local-government account. Settled on 12 October 2026 by the coordinator: the local-government account, until M5's treasury |
 | M3.3 | whether the optional human sheet survives content rule 1's one shared blob body; round 3 tied it to M1's playtest of the blob cast |
 | M3.7 | customs pass on at birth, but births, partner choice and ageing arrive only in M5. Pull minimal births forward, or test transmission on a harness until then |
 | M3.7 | eight culture emblems share four music styles. Either each culture draws one at world generation, or more styles are written; this also sets M3.8's festival music ([Sound](../sound.md)) |

@@ -33,7 +33,7 @@ The world step lives in `sim-core`, so headless runs and the worker run the same
 
 The owner decided on 9 October 2026 that every package groups its source into module folders by concern. The rules:
 - **Entry files only at `src/`:** `index.ts`, a subpath export such as `kernels.ts`, and any file that a package script, CI or a test runs or bundles by path. Every other source file sits in a concern folder directly under `src/`, and a lint reports any that doesn't.
-- **One level of concern folders.** The culture wall matches `packages/sim-*/src/<concern>/`, so `crime`, `police`, `labour`, `wages`, `wealth`, `money`, `ability`, `housing` and `migration` are each a top-level folder when they arrive, never nested in another folder. `money/` is guarded as wealth, since every wallet lives there (M0.7 review), `spawn/` since it decides homes, jobs and cash (M2.2), and `street/` since it reads jobs and homes (M2.7).
+- **One level of concern folders.** The culture wall matches `packages/sim-*/src/<concern>/`, so `crime`, `police`, `labour`, `wages`, `wealth`, `money`, `ability`, `housing` and `migration` are each a top-level folder when they arrive, never nested in another folder. `money/` is guarded as wealth, since every wallet lives there (M0.7 review), `spawn/` since it decides homes, jobs and cash (M2.2), and `street/` since it reads jobs and homes (M2.7). M3.2 plans `life/`, guarded since M4's crime will read where blobs are, and barred from importing `money/`, so no need reads a wallet.
 - **Named for the concern,** never for a kind of code such as `utils/`. A concern may start with one file and grows in place, so paths and lint globs stay stable.
 - **Imports by path inside a package.** A source module imports another folder's module by its path; only other packages and tests use `index.ts`.
 - **The barrel caveat:** `sim-core`'s `index.ts` re-exports `consumption/stand-in.ts`, which imports `sim-culture`, so the barrel reaches `sim-culture`. In `sim-core`, only `consumption/` and `index.ts` may reach `sim-culture`, which dependency-cruiser enforces; M2.6 adds `step/` when the step first calls consumption. Guarded code elsewhere imports `@nomos/sim-core/kernels` or module paths, never the barrel.
@@ -57,7 +57,8 @@ The tables give the layout M0.7 builds, including the files it adds. A renamed f
 | `step/` | `step.ts`, `warm.ts` | The world step and its warm-up |
 | `consumption/` | `stand-in.ts` | Consumption's stand-in, the one `sim-core` folder that reads culture |
 | `goods/` | `goods.ts`, `store.ts`, `food.ts` (M2.4) | The seven goods and their table, the goods store a firm row holds beside `FirmStore`, and the dated food ring ([Goods and food](#goods-and-food-owner-m24)) |
-| `street/` | `fields.ts`, `runs.ts`, `shops.ts`, `errands.ts`, `motion.ts`, `timetable.ts`, `walk.ts`, `open.ts` (M2.7) | The flow field to each premises and the straight runs read from it, the shops, the errand store, the day's timetable and the walk, and the opening and closing of a town's streets ([Street link](#street-link-part-1-owner-m27)) |
+| `street/` | `fields.ts`, `runs.ts`, `shops.ts`, `errands.ts`, `motion.ts`, `timetable.ts`, `walk.ts`, `open.ts` (M2.7); `legs.ts` and `chat.ts` (planned, M3.2) | The flow field to each premises and the straight runs read from it, the shops, the errand store, the day's timetable and the walk, and the opening and closing of a town's streets ([Street link](#street-link-part-1-owner-m27)); from M3.2, legs between any two cells and chats |
+| `life/` | `store.ts`, `traits.ts`, `needs.ts`, `choose.ts`, `activities.ts`, `friends.ts` (planned, M3.2) | Each blob's needs, personality, choices and friends ([Lives of their own](#lives-of-their-own-owner-m32)) |
 
 `world/checkpoint.ts` takes `stateHash`, `stateHashExcept`, `checkpoint` and `restoreWorld`; `world/world.ts` keeps the `World`, its global slots, `layoutWorld`, `populate`, `createWorld`, `currentTick` and `committed`.
 
@@ -68,7 +69,7 @@ The tables give the layout M0.7 builds, including the files it adds. A renamed f
 | `src/` | `index.ts` | The barrel |
 | `snapshot/` | `snapshot.ts`, `visual.ts`, `jobs.ts`, `street.ts` (M2.7) | Snapshot v1, the visual word, job ids, and what a blob shows of its errand |
 | `messages/` | `messages.ts`, `lifecycle.ts` | Worker messages and the page lifecycle |
-| `map/` | `map.ts`, `premises.ts` | The binary map, its parser and its encoder, behind the `./map` export (M2.2c), and the premises a map's frames name, behind the `./premises` export (M2.7) |
+| `map/` | `map.ts`, `premises.ts`; `leisure.ts` (planned, M3.2) | The binary map, its parser and its encoder, behind the `./map` export (M2.2c), and the premises a map's frames name, behind the `./premises` export (M2.7); from M3.2, the leisure sites its frames and terrain name |
 | `sprites/` | `sprite-manifest.ts` (generated) | The sprite-manifest types |
 | `shared/` | `calendar.ts`, `columns.ts`, `steering.ts` | Constants re-exported from `sim-core`, and the wander rule with its keyed draw and steps, so `render-gl` and the app never import it |
 | `world-map/` | `world-map.ts` | The world map, the body hues and the map worker's messages, behind the `./world-map` export (M8.1) |
@@ -146,7 +147,7 @@ Grids live in `tools/cli/grids/`, outside `src/`.
   - `layoutWorld` throws `RangeError` when `walk.length` isn't `width × height`, and `populate` when no tile is open.
 - **Stepping:** `step(world: World, timer?: SystemTimer): void`, one tick per call.
   - `SystemTimer` is `{ lap(system: number): void }`, called after each system, so the worker and the benches time systems without clocks in `sim-core`.
-  - `SYSTEM_NAMES` is `['day', 'move']` in M0.3, and later systems append to it. M2.2b appends `economy`, so it is `['day', 'move', 'economy']`, and `step` laps all three on every tick. A town with streets (the `STREETS` slot is 1) runs `walkStreets` in `move`'s slot, under the same name (M2.7, below).
+  - `SYSTEM_NAMES` is `['day', 'move']` in M0.3, and later systems append to it. M2.2b appends `economy`, so it is `['day', 'move', 'economy']`, and `step` laps all three on every tick. A town with streets (the `STREETS` slot is 1) runs `walkStreets` in `move`'s slot, under the same name (M2.7, below). M3.2 plans `life` and `chat` after `economy`.
 - **Movement:** the owner asked on 9 October 2026 that blobs walk in any direction, and the design below is the sim engineer's. `move`, in `wander.ts`, walks blobs on any of 256 headings, so paths curve instead of running along lines.
   - **Headings:** the new column `heading`, a 1-byte `Uint8Array` after `facing` in `AGENT_COLUMNS`, runs clockwise on screen from down: 0 walks down (+y), 64 left, 128 up and 192 right. It is needed because `vx` and `vy` can't give a heading back without trigonometry.
   - **Steps:** `walk.ts` exports `WALK_X_Q8` and `WALK_Y_Q8`, two `Int16Array`s of 256. They hold the step per tick on each heading in Q8 sub-pixels, −1,024 sin and 1,024 cos of 2πh / 256, rounded.
@@ -1171,3 +1172,23 @@ M2.7 Part 1 gives blobs somewhere to buy and eat, as its [brief](../m2-economy/m
   - The art is `icons/carry_<good>` for the seven goods and `characters/face_chew_<0 or 1>_<down, left or right>`. The place pass's street layers took the shared scene chunks to 6.2 kB, so their limit rose to 7.2 kB (The Town skin, Chunks).
   - Unit tests hold the sprite list to the hold point, the eating loop and the indoors skip. The browser spec `town-street.spec.ts` checks a carrier, an eater and a blob indoors by pixels and hashes in WebGL2 and Canvas2D, and `dots.spec.ts` checks that neither backend draws a blob indoors.
 - **Task 8, stock pips** (a962ced..70d3965): each shop and stall wears three beads for its good's stock, and a market stall that holds none draws closed. The names are in The Town skin: `PipSite`, `setPips`, `TownPips` and `withPipFrames` in `@nomos/render-gl/town`, and `App.map`, `stockLevel`, `StockPips` and the mount's feed in `web`. A level is per good, since the feed has no per-shop stock.
+
+## Lives of their own (owner: M3.2)
+
+The owner asked on 12 October 2026 for blobs with lives of their own. M3.2's [brief](../m3-city-life/m3.2-daily-routines/plan.md) (8aafff7) plans these names, and nothing is built yet.
+- **The life store,** `life/store.ts`, sits at the arena's end, so no offset moves. It holds about 72 bytes a blob. 65 of them are hashed, after the errand store and only while `STREETS` is 1, so only Highcourt's pins move. The hashed bytes are:
+  - `hunger`, `rest`, `fun` and `company` (`Uint16`, from 0, met, to 65,535) and the `Int32` tick they last settled;
+  - the traits `sociable`, `homebody` and `restless`, a byte each;
+  - `activity` and its reason, the day's purchases and portions, `chatUntil`, `chatWith`, `host` and the leg's end cell;
+  - six friend slots, each a friend + 1 (`Int32`) and a strength (`Uint8`).
+
+  The store also hashes each site's crowd.
+- **Streams:** `TRAIT_DRAW` (`AGENT_SALT + 15`, 0x10F), drawn at birth in `spawn/spawn.ts` as `draw1(seed, TRAIT_DRAW, id)`, and `LIFE_DRAW` (`AGENT_SALT + 16`, 0x110), for the keyed pick among a blob's top three options.
+- **Phase and activity:** `phase` says where and how a blob is, and the new `activity` byte says why, so M2.7's purposes leave the phase.
+- **Portions:** `buyPortions` writes `dayPortions` beside `dayFood`. The street reads `dayFood`, `dayGoods` and `dayPortions` and never writes them, since money moves only at the economy tick.
+- **Sites:** `sim-protocol`'s `map/leisure.ts` finds them from frames and terrain alone: the plaza (its fountain, or a village's well), meadow greens, and up to 3 water edges. Premises and sites together take up to `MAX_SITES` (32) fields, 631 KB at 176 × 112 (computed).
+- **Legs and chats:** `street/legs.ts` walks between any two cells through a hub's field. `street/chat.ts` pairs blobs through a per-cell mailbox that holds one waiting blob per 2 × 2-tile cell.
+- **Systems:** `SYSTEM_NAMES` gains `life` and `chat` after `economy`.
+- **Messages:**
+  - new emote ids beside `EMOTE_COIN`, in `visual.ts` and `snapshot/street.ts`, for speech, music, ball, heart and question;
+  - `inspected` gains the activity, its reason, the chat partner, the needs and the traits (Task 6), then the friends (Task 7).

@@ -46,6 +46,18 @@ The owner can overturn any of these.
   - **Activities:** talking and visiting (friends over time), play and leisure, wandering and browsing, and work and errands as part of the day.
   - **The economy** still decides each day's purchases, and the blob fits the trip into its own day.
   - Plan only.
+  - **The brief,** M3.2 (8aafff7). The sim-architect's rulings, which the owner can overturn:
+    - **Needs:** hunger, rest, fun and company change only when a blob's state changes. Work is a duty, not a need, and no need reads a wallet.
+    - **Personality:** sociable, homebody and restless, keyed at birth, never from a look or a culture.
+    - **Choosing:** a blob decides when its activity ends. It scores its options in integers and picks among the top three by a keyed draw.
+    - **Chats:** blobs meet through a per-cell mailbox and stop face to face under speech bubbles.
+    - **Friends:** each blob has six slots, which chats build and time fades. Only the card shows them.
+    - **Money** still moves only at the economy tick. The life store is hashed only in towns with streets, so only Highcourt's pins move.
+  - **The coordinator's calls,** which the owner can overturn:
+    - **Pace:** blobs keep 4 ticks a tile until the owner sees Task 6's evenings on screen. They walk faster if the evenings look like walking only.
+    - **Family:** until M5's births, the household is the family, and visits go to friends.
+    - **Soldiers' pay:** M0.2's local-government account, until M5's treasury.
+    - **Scheduling:** decisions follow M2.7's `endTick` scan. A bucketed timing wheel comes only if a budget gate fails, and `sim-core.md` now says so.
 - **M2.2c's go** (09:31): build it right after M2.4 Part 1. Highcourt is each world's capital. Away towns keep living in summary form, not frozen, so an Opus pass settles how before Task 3.
 
 **The designers' calls, 10 October 2026:**
@@ -76,7 +88,7 @@ Beyond the checkpoint's Open list:
 - **Stale docs:**
   - the 48×28 town in `place-camera.test.ts:11`, `interfaces.md`'s Places sizes, `countries.md:46`, the M3.1 plan (line 41) and the M0.4 plan (line 83);
   - the old hash `b3b2c251` in `interfaces.md:163`, the M8.1 plan (line 300) and the M8.3 plan (lines 85 and 1844).
-- **The shared plan doc** still names five engines, Deno and the 2% pay cut. It also lacks M3.1 Part 3, whose suggested tag is "(Towns)". Update it at the next sync, with the owner, along with the deferred items in `git show 6736fb6:docs/plan/HANDOFF.md`.
+- **The shared plan doc** still names five engines, Deno and the 2% pay cut. It also lacks M3.1 Part 3, whose suggested tag is "(Towns)", and M3.2's drops: Huff's shop choice, the timing wheel and need deadlines. Update it at the next sync, with the owner, along with the deferred items in `git show 6736fb6:docs/plan/HANDOFF.md`.
 - **Local specs:** a stray `vite preview` on port 4173 serves the last build of `apps/web/dist`, and Playwright reuses it outside CI. Build before a local spec run.
 - **Perf to check:** the economy's month-start `searchShops` (1.78 ms at 10k), and `createTown`'s extra 11 ms at the worker's start. `pnpm budget`'s sampled days miss a month's start. perf.yml, which the owner starts by hand, measures them.
 - **perf.yml:** it hasn't run since the economy joined the step. The owner starts it from the Actions page. Watch the startup gate, the tick budget at 10k, and the allocation allowance on a month's last day, whose readings swing 0.24–0.92 MB.
@@ -89,7 +101,10 @@ Beyond the checkpoint's Open list:
   - move `SystemRows` into the controls chunk;
   - the charts chunk has only 0.08 kB spare.
 - **Names:** re-running `build-real-world.ts` would overwrite the 42 hand-added religion words. A test catches that, and a merge file would make them last.
-- **The owner's go:** M3.1 Part 4, first its Task 22, the style draw and the ring town. It holds Part 3's walls, towers, gates and farms as Tasks 26–30. M0.5 waits only on the owner's device timings.
+- **The owner's go:** both new briefs wait for it.
+  - **M3.1 Part 4,** first its Task 22, the style draw and the ring town. It holds Part 3's walls, towers, gates and farms as Tasks 26–30.
+  - **M3.2,** first Tasks 1–6: blobs gathering, sitting and chatting under speech bubbles.
+  - M0.5 waits only on the owner's device timings.
 - **Backlog from before the restructure** (checkpoint 0034 and the nomos-bd hand-off):
   - **Unbuilt tasks:** M0.8's leftovers (lil-gui behind `?dev=1`, the town's Fit, Home and pinch, and `toolbar.ts` in the Layout table), and M8.1's Tasks 31 and 33–35.
   - **Checks:** the `names-only-in-the-inspector` dependency rule isn't `reachable`, and `fallback.spec` centres on the old 48×28 map.
@@ -104,6 +119,7 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 12 Oct: **M3.2 briefed** (8aafff7): blobs with lives of their own, in 11 tasks, at 15–23.5 full-time days (unsourced estimate). Its first visible slice, Tasks 1–6, shows blobs on the plaza and greens, on doorsteps, and chatting under speech bubbles. The mockups come first, and the build waits for the owner's go.
 - 12 Oct: **M3.1 Part 4 briefed** (67a794b): varied town layouts and walls, in 9 tasks, 22–30, at 13–20 full-time days, 7–11 of them Part 3's folded tasks (unsourced estimate). Its first visible slice, Task 22, is the style draw with ring towns, Highcourt among them. It waits for the owner's go, and its art preview comes first.
 - 11–12 Oct: **M2.7 Part 1 implemented; it pauses before its Opus review**, as the owner asked.
   - **Built:**
