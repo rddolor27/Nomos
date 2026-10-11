@@ -83,6 +83,15 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 11 Oct: **M2.4 Part 1, Tasks 1–2** (24981a8..6072558).
+  - **Built:** the seven goods, start and spawn by good, the dated food ring that spoils, and flow log schema 2.
+  - **Hashes:** `CITY.goods` stays 0 until Task 4, so no hash moved.
+  - **An interruption:** the agent hit the old account's usage limit right after its docs commit, and only two comment edits were left (committed).
+- 11 Oct: **the blob modal** (5b6e505..b8bb600, owner request).
+  - **What a click shows:** a card with the blob's own sprite drawn large, its name, job, pay, wallet, house, household, what it is doing, and its look. On phones it is a bottom sheet.
+  - **How it behaves:** it is a non-modal dialog, so the town stays live, and Escape closes it from any focus.
+  - **Checks:** inspector 19/19, with the portrait equal pixel for pixel to the atlas, and axe at desktop and 390×844. No hash moved.
+  - **Known:** every card says "Lives with: No one" until households of 1–6 fill real homes (Step 2), and "Doing" is a snapshot from the click.
 - 11 Oct: **M2.4 Part 1 briefed** (a38fc16): goods and food on screen.
   - **The goods:** seven, one per supplier link: bread, vegetables, fish and milk as food, and cloth, tools and fuel.
   - **Eating:** every blob eats 3 portions a day, and food spoils from a 16-day ring per shop.
