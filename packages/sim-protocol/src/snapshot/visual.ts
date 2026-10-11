@@ -14,9 +14,13 @@ export {
   FACING_UP,
 } from '@nomos/sim-core';
 
-// Snapshot v1's visual word (interfaces.md). Bit 7 and bits 27-31 are reserved, and there is no wanted bit (R1, R3).
+// Snapshot v1's visual word (interfaces.md). Bit 31 is reserved, and there is no wanted bit (R1, R3). M2.7's street bits
+// are `indoors` (bit 7), `item`, the good carried (bits 27-29, 0 none or the good's id, BREAD 1 to FUEL 7), and `eating`
+// (bit 30).
 const LOOK_SHIFT = 0;
 const LOOK_BITS = 7;
+const INDOORS_SHIFT = 7;
+const INDOORS_BITS = 1;
 const ACTION_SHIFT = 8;
 const ACTION_BITS = 3;
 const EMOTE_SHIFT = 11;
@@ -27,6 +31,10 @@ const FACING_SHIFT = 24;
 const FACING_BITS = 2;
 const TRUE_ONLY_SHIFT = 26;
 const TRUE_ONLY_BITS = 1;
+const ITEM_SHIFT = 27;
+const ITEM_BITS = 3;
+const EATING_SHIFT = 30;
+const EATING_BITS = 1;
 
 export const VISUAL_FIELDS: readonly { name: string; shift: number; bits: number }[] = [
   { name: 'look', shift: LOOK_SHIFT, bits: LOOK_BITS },
@@ -35,6 +43,9 @@ export const VISUAL_FIELDS: readonly { name: string; shift: number; bits: number
   { name: 'job', shift: JOB_SHIFT, bits: JOB_BITS },
   { name: 'facing', shift: FACING_SHIFT, bits: FACING_BITS },
   { name: 'trueOnly', shift: TRUE_ONLY_SHIFT, bits: TRUE_ONLY_BITS },
+  { name: 'indoors', shift: INDOORS_SHIFT, bits: INDOORS_BITS },
+  { name: 'item', shift: ITEM_SHIFT, bits: ITEM_BITS },
+  { name: 'eating', shift: EATING_SHIFT, bits: EATING_BITS },
 ];
 
 function maskOf(bits: number): number {
@@ -49,8 +60,9 @@ function readBits(word: number, shift: number, bits: number): number {
   return (word >>> shift) & maskOf(bits);
 }
 
-// Each field is masked so a stray value never reaches a neighbour or a reserved bit. The top bit used is 26, so the
-// result is a non-negative int32, which is already a valid uint32 and needs no >>> 0.
+// Each field is masked so a stray value never reaches a neighbour or a reserved bit. The top bit used is 30, so the
+// result is a non-negative int32, which is already a valid uint32 and needs no >>> 0. The street's three default to 0, so
+// a caller with no street keeps the words it always packed.
 export function packVisual(
   look: number,
   action: number,
@@ -58,6 +70,9 @@ export function packVisual(
   job: number,
   facing: number,
   trueOnly: number,
+  indoors = 0,
+  item = 0,
+  eating = 0,
 ): number {
   return (
     placeBits(look, LOOK_SHIFT, LOOK_BITS) |
@@ -65,7 +80,10 @@ export function packVisual(
     placeBits(emote, EMOTE_SHIFT, EMOTE_BITS) |
     placeBits(job, JOB_SHIFT, JOB_BITS) |
     placeBits(facing, FACING_SHIFT, FACING_BITS) |
-    placeBits(trueOnly, TRUE_ONLY_SHIFT, TRUE_ONLY_BITS)
+    placeBits(trueOnly, TRUE_ONLY_SHIFT, TRUE_ONLY_BITS) |
+    placeBits(indoors, INDOORS_SHIFT, INDOORS_BITS) |
+    placeBits(item, ITEM_SHIFT, ITEM_BITS) |
+    placeBits(eating, EATING_SHIFT, EATING_BITS)
   );
 }
 
@@ -91,4 +109,16 @@ export function facingOf(word: number): number {
 
 export function isTrueOnly(word: number): number {
   return readBits(word, TRUE_ONLY_SHIFT, TRUE_ONLY_BITS);
+}
+
+export function indoorsOf(word: number): number {
+  return readBits(word, INDOORS_SHIFT, INDOORS_BITS);
+}
+
+export function itemOf(word: number): number {
+  return readBits(word, ITEM_SHIFT, ITEM_BITS);
+}
+
+export function eatingOf(word: number): number {
+  return readBits(word, EATING_SHIFT, EATING_BITS);
 }

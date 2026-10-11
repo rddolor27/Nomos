@@ -1,5 +1,6 @@
 import { SUBPIXELS, type World } from '@nomos/sim-core';
 import { SNAPSHOT_BUFFERS, SNAPSHOT_BYTES } from '../messages/messages.ts';
+import { eatingAt, indoorsAt, itemAt } from './street.ts';
 import { packVisual } from './visual.ts';
 
 const SNAPSHOT_WORDS = SNAPSHOT_BYTES / Uint32Array.BYTES_PER_ELEMENT;
@@ -59,7 +60,7 @@ export function writeSnapshot(world: World, view: Uint32Array): number {
     const at = i * SNAPSHOT_WORDS;
     view[at] = float32Bits(x[i] * PX_PER_SUBPIXEL);
     view[at + 1] = float32Bits(y[i] * PX_PER_SUBPIXEL);
-    view[at + 2] = packVisual(look[i], action[i], 0, 0, facing[i], 0);
+    view[at + 2] = packVisual(look[i], action[i], 0, 0, facing[i], 0, indoorsAt(), itemAt(), eatingAt());
   }
   return agents;
 }

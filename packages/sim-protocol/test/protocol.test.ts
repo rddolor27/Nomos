@@ -40,10 +40,10 @@ import {
   packVisual,
 } from '../src/index.ts';
 
-const RESERVED_BITS = 0xf8000080;
+const RESERVED_BITS = 0x80000000;
 
-function packRow([look, action, emote, job, facing, trueOnly]: number[]): number {
-  return packVisual(look, action, emote, job, facing, trueOnly);
+function packRow([look, action, emote, job, facing, trueOnly, indoors = 0, item = 0, eating = 0]: number[]): number {
+  return packVisual(look, action, emote, job, facing, trueOnly, indoors, item, eating);
 }
 
 function fieldsOf(word: number): number[] {
@@ -87,6 +87,9 @@ describe('the sim protocol', () => {
       { name: 'job', shift: 16, bits: 8 },
       { name: 'facing', shift: 24, bits: 2 },
       { name: 'trueOnly', shift: 26, bits: 1 },
+      { name: 'indoors', shift: 7, bits: 1 },
+      { name: 'item', shift: 27, bits: 3 },
+      { name: 'eating', shift: 30, bits: 1 },
     ]);
     expect(VISUAL_FIELDS.map(({ name }) => name)).not.toContain('wanted');
     expect([FACING_DOWN, FACING_LEFT, FACING_UP, FACING_RIGHT]).toEqual([0, 1, 2, 3]);
