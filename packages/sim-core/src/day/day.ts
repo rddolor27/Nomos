@@ -1,6 +1,8 @@
 import { stepAwayTowns } from '../spawn/away.ts';
 import type { Homes } from '../spawn/homes.ts';
 import { homesSeat, switchTown } from '../spawn/switch.ts';
+import { streetsFit } from '../street/open.ts';
+import { NO_SHOPS, type Shops } from '../street/shops.ts';
 import { dayOf, dayOfMonth, dayOfYear, monthOf, yearOf } from '../time/calendar.ts';
 import type { Ground } from '../world/ground.ts';
 import { INPUT_CAPACITY, INPUT_FOCUS, INPUT_LAYOFFS } from '../world/inputs.ts';
@@ -29,28 +31,30 @@ export function logFocus(world: World, settlement: number): boolean {
   return logInput(world, INPUT_FOCUS, settlement, 0);
 }
 
-// Asks a town to enter `place`, on `ground` and in `homes`, at the next day boundary, where switchTown spawns it (M2.2c
-// Ruling 2). It logs the focus input and keeps the town it names in one call, so a checkpoint never falls between them, and
-// a later request of the same day replaces an earlier one. It returns false, and changes nothing, when the world is not a
+// Asks a town to enter `place`, on `ground`, in `homes` and with `shops`, at the next day boundary, where switchTown spawns it
+// (M2.2c Ruling 2). It logs the focus input and keeps the town it names in one call, so a checkpoint never falls between them,
+// and a later request of the same day replaces an earlier one. It returns false, and changes nothing, when the world is not a
 // town, the place has no row in the ledger table, the homes cannot seat the town (homesSeat: fewer beds than a household has
-// suppliers, or than the people the place's row holds), or the log is full. A request for the live town switches nothing. It
-// sits here beside logFocus because the boundary below calls switchTown, so spawn/switch.ts may not import this file.
-export function requestTown(world: World, place: number, ground: Ground, homes: Homes): boolean {
+// suppliers, or than the people the place's row holds), the layout's fields cannot hold the shops' (streetsFit), or the log is
+// full. A request for the live town switches nothing. It sits here beside logFocus because the boundary below calls
+// switchTown, so spawn/switch.ts may not import this file.
+export function requestTown(world: World, place: number, ground: Ground, homes: Homes, shops: Shops = NO_SHOPS): boolean {
   if (world.globals[TOWN] !== 1 || !Number.isInteger(place) || place < 0 || place >= MAX_TOWNS) return false;
-  if (!homesSeat(world, place, homes) || !logFocus(world, place)) return false;
-  attachTown(world, place, ground, homes);
+  if (!homesSeat(world, place, homes) || !streetsFit(world, ground, shops) || !logFocus(world, place)) return false;
+  attachTown(world, place, ground, homes, shops);
   return true;
 }
 
-// Keeps the ground and homes the next boundary spawns `place` on, and marks the place pending in the arena. requestTown does
-// both with its log entry. A world restored from a checkpoint holds the pending place (focus[FOCUS_PENDING]) and the log
-// entry but not the ground and homes, so whoever restores it attaches them before the boundary, which throws without them.
-// It trusts its caller's place, which requestTown has checked.
-export function attachTown(world: World, place: number, ground: Ground, homes: Homes): void {
+// Keeps the ground, homes and shops the next boundary spawns `place` on, and marks the place pending in the arena. requestTown
+// does both with its log entry. A world restored from a checkpoint holds the pending place (focus[FOCUS_PENDING]) and the log
+// entry but not the ground, homes and shops, so whoever restores it attaches them before the boundary, which throws without
+// them. It trusts its caller's place, which requestTown has checked.
+export function attachTown(world: World, place: number, ground: Ground, homes: Homes, shops: Shops = NO_SHOPS): void {
   const request = world.request;
   request.place = place;
   request.ground = ground;
   request.homes = homes;
+  request.shops = shops;
   world.focus[FOCUS_PENDING] = place;
 }
 

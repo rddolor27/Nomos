@@ -4,7 +4,10 @@ import { CITY } from '../economy/city.ts';
 import { openYearEmployers } from '../economy/scratch.ts';
 import { floorDiv } from '../maths/int.ts';
 import { firmAccount, retire, walletAccount } from '../money/ledger.ts';
+import { closeStreets, streetsFit } from '../street/open.ts';
+import type { Shops } from '../street/shops.ts';
 import { DAYS_PER_MONTH, dayOf, dayOfMonth, monthOf } from '../time/calendar.ts';
+import type { Ground } from '../world/ground.ts';
 import { FOCUS_PENDING, NO_PLACE, TICK, type World } from '../world/world.ts';
 import { stepAwayTown } from './away.ts';
 import { foldToLedger } from './fold.ts';
@@ -31,9 +34,9 @@ export function homesSeat(world: World, place: number, homes: Homes): boolean {
 // Spends the pending request at a day boundary, before the day's window opens (M2.2c Ruling 2), for `place`, the town the
 // boundary's last logged focus names. The live town folds into its ledger row and hands its money back to MINT, and the
 // requested town spawns on the request's ground from its own row, keyed (place, day). A focus on the live town switches
-// nothing. The request is spent either way. Both checks come before the fold, so a throw leaves the live town and every row as
+// nothing. The request is spent either way. The checks come before the fold, so a throw leaves the live town and every row as
 // they were: nothing after them throws on a row this module wrote. A world restored from a checkpoint holds the pending place
-// and its log entry but not the ground and homes, so a place with none attached throws.
+// and its log entry but not the ground, homes and shops, so a place with none attached throws.
 export function switchTown(world: World, place: number): void {
   const request = world.request;
   const attachedFor = request.place;
@@ -42,15 +45,23 @@ export function switchTown(world: World, place: number): void {
   if (place === NO_PLACE || place === world.focus[0]) return;
   if (attachedFor !== place) throw new RangeError(`no ground and homes are attached for place ${place}`);
   requireSeats(world, place, request.homes);
+  requireStreets(world, place, request.ground, request.shops);
   leaveTown(world);
   world.ground = request.ground;
-  enterTown(world, place, request.homes, dayOf(world.globals[TICK]));
+  enterTown(world, place, request.homes, request.shops, dayOf(world.globals[TICK]));
 }
 
 function requireSeats(world: World, place: number, homes: Homes): void {
   if (homesSeat(world, place, homes)) return;
   const people = populationAt(world.townRecords, place * LEDGER_FIELDS);
   throw new RangeError(`place ${place} holds ${people} people, and its homes have ${bedCount(homes)} beds`);
+}
+
+function requireStreets(world: World, place: number, ground: Ground, shops: Shops): void {
+  if (streetsFit(world, ground, shops)) return;
+  throw new RangeError(
+    `place ${place} has ${shops.count} premises on a ${ground.width} x ${ground.height} ground, and the layout's fields cannot hold them`,
+  );
 }
 
 function leaveTown(world: World): void {
@@ -63,11 +74,13 @@ function leaveTown(world: World): void {
 // wallets and the firms, since a row's cash sits outside the ledger until it spawns again. The first fill clears every agent
 // column, culture and look included. Nothing in spawn/ reads them, and addAgent rewrites each blob's row as it spawns, so the
 // zeroes never show. The second fill clears the firms, scratch, households and goods; the cultureUid table between them stays.
+// The errand store empties last, and a town that wanders again until its own streets open.
 function emptyTown(world: World): void {
   retireCash(world);
   world.agentBytes.fill(0);
   world.economyBytes.fill(0);
   openYearEmployers(world.economyScratch);
+  closeStreets(world);
 }
 
 function retireCash(world: World): void {
@@ -84,13 +97,13 @@ function retireCash(world: World): void {
 
 // Spawns `place` from its row, which a first visit makes first. A month's first-day systems make its consumption plans and
 // start its firms' demand counters, so a town that spawns on any other day has the month so far filled in at once.
-function enterTown(world: World, place: number, homes: Homes, day: number): void {
+function enterTown(world: World, place: number, homes: Homes, shops: Shops, day: number): void {
   const row = world.recordRow;
   if (populationAt(world.townRecords, place * LEDGER_FIELDS) === 0) openTown(world, place, homes, day);
   readRow(world.townRecords, place, row);
   const dayInMonth = dayOfMonth(day);
   if (dayInMonth !== 0) fundPayroll(row, dayInMonth);
-  seatTown(world, row, homes, place, day);
+  seatTown(world, row, homes, place, day, shops);
   if (dayInMonth !== 0) startMidMonth(world, dayInMonth);
   world.focus[0] = place;
 }

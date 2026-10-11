@@ -46,13 +46,23 @@ export function cellStepOf(k: number, width: number): number {
 export function buildFields(ground: Ground, doors: Int32Array, out: Uint8Array): void {
   const count = doors.length;
   if (count === 0) return;
+  requireFields(ground, doors, out.length);
   const { width, height } = ground;
   const cells = width * height;
-  requireRoom(width, height, count, out.length);
-  for (let p = 0; p < count; p++) requireDoor(doors[p], cells, p);
   markOpenSteps(ground.walk, width, height);
   for (let k = 0; k < DIRECTIONS; k++) cellStep[k] = cellStepOf(k, width);
   for (let p = 0; p < count; p++) flood(doors[p], cells, out, p * cells);
+}
+
+// Throws what buildFields would, before it writes anything, so a switch can refuse a town before it folds the live one
+// (M2.7 Task 3's note).
+export function requireFields(ground: Ground, doors: Int32Array, room: number): void {
+  const { width, height } = ground;
+  requireRoom(width, height, doors.length, room);
+  if (doors.length > MAX_PREMISES) {
+    throw new RangeError(`${doors.length} premises are past the ${MAX_PREMISES} a layout reserves`);
+  }
+  for (let p = 0; p < doors.length; p++) requireDoor(doors[p], width * height, p);
 }
 
 function requireRoom(width: number, height: number, count: number, room: number): void {

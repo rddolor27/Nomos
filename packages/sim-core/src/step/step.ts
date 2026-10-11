@@ -5,7 +5,8 @@ import { ECONOMY_TICKS, runEconomySystem } from '../economy/economy.ts';
 import { OK, checkInvariants, failInvariant } from '../money/invariants.ts';
 import { SPOILAGE_RULE, daySliceCount, runDaySlice } from '../day/slices.ts';
 import { move } from '../movement/wander.ts';
-import { DAY_AGENTS, DAY_HOUSEHOLDS, DAY_LAYOFFS, TICK, TOWN, type World } from '../world/world.ts';
+import { walkStreets } from '../street/walk.ts';
+import { DAY_AGENTS, DAY_HOUSEHOLDS, DAY_LAYOFFS, STREETS, TICK, TOWN, type World } from '../world/world.ts';
 
 export interface SystemTimer {
   lap(system: number): void;
@@ -20,7 +21,8 @@ const ECONOMY_SYSTEM = 2;
 export function step(world: World, timer?: SystemTimer): void {
   runDayWork(world);
   timer?.lap(DAY_SYSTEM);
-  move(world);
+  if (world.globals[STREETS] === 1) walkStreets(world);
+  else move(world);
   timer?.lap(MOVE_SYSTEM);
   runEconomyTick(world);
   timer?.lap(ECONOMY_SYSTEM);

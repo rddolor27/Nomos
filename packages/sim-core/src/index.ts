@@ -56,3 +56,6 @@ export * from './spawn/town.ts';
 export * from './spawn/switch.ts';
 export * from './street/fields.ts';
 export * from './street/runs.ts';
+export * from './street/shops.ts';
+export * from './street/errands.ts';
+export * from './street/walk.ts';
