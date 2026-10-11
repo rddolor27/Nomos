@@ -1,6 +1,16 @@
 import { SUPPLIERS, addAgent } from '../agents/store.ts';
 import type { EconomyParams } from '../economy/params.ts';
-import { BREAD, CLOTH, FUEL, goodOfLink, isFood, openingPriceOf, outputPerWorkerDay, splitByGood } from '../goods/goods.ts';
+import {
+  BREAD,
+  CLOTH,
+  FUEL,
+  foodWorkersFor,
+  goodOfLink,
+  isFood,
+  openingPriceOf,
+  outputPerWorkerDay,
+  splitJobs,
+} from '../goods/goods.ts';
 import { assignGoods, ringSlot } from '../goods/store.ts';
 import { MAX_HOUSEHOLD } from '../households/store.ts';
 import { apportionByStride } from '../maths/apportion.ts';
@@ -23,6 +33,7 @@ import {
   LEDGER_STOCK,
   LEDGER_WAGE,
   checkRecord,
+  populationOf,
 } from './record.ts';
 
 // Purposes on SPAWN_DRAW after homes.ts's HOME_ORDER (0), one to a use. A draw keys (key, index, purpose) and an
@@ -67,7 +78,7 @@ export function spawnFromLedger(
   seatHouseholds(households.size, households.count[0], households.home, homes, world.seed, key);
   spawnPeople(world, homes, key);
   if (params.goods === 1) {
-    hireByGood(world, record, key);
+    hireByGood(world, record, params, key);
     postPricesByGood(world, record, key);
     stockByGood(world, record, params, key, day);
     linkByGood(world, key);
@@ -232,14 +243,16 @@ function linkedBefore(suppliers: Int32Array, first: number, links: number, firm:
 
 // A goods world's firms (M2.4). The rows run good by good in table order, the foods first, then cloth, tools and fuel,
 // so the goods firms the record counts are the rows from the first cloth row on.
-// The employed are split over the goods as the rows are, then over each good's rows by the size table. Hired places in
-// the keyed order run firm by firm in row order, so a good's places are a run, as its rows are.
-function hireByGood(world: World, record: Float64Array, key: number): void {
+// The employed are split over the goods as the rows are, but with the foods at least the workers their people's portions
+// take (the review's fix: a town of 30 spawned a worker to a food and made 72 portions of the 90 it eats), then over each
+// good's rows by the size table. A food firm's lastDemand stays a month of its own output, as the people now eat it. Hired
+// places in the keyed order run firm by firm in row order, so a good's places are a run, as its rows are.
+function hireByGood(world: World, record: Float64Array, params: EconomyParams, key: number): void {
   const { agents, firms, goods, seed } = world;
   const firmCount = record[LEDGER_FIRMS];
   firms.count[0] = firmCount;
   assignGoods(goods, firmCount);
-  splitByGood(record[LEDGER_EMPLOYED], 0, goods.jobs);
+  splitJobs(record[LEDGER_EMPLOYED], foodWorkersFor(populationOf(record), params.unitsPerWorkerDay), goods.jobs);
   keyedShuffle(world.economyScratch.order, agents.count[0], seed, SPAWN_DRAW, key, JOB_ORDER);
   let hired = 0;
   for (let good = BREAD; good <= FUEL; good++) hired = hireGood(world, key, good, hired);

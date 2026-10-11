@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { SUPPLIERS } from '../src/agents/store.ts';
 import { CITY } from '../src/economy/city.ts';
+import { CITY_RECORD } from '../src/economy/city-record.ts';
 import { LENGNICK, checkParams, type EconomyParams } from '../src/economy/params.ts';
 import { startEconomy } from '../src/economy/start.ts';
 import {
@@ -12,13 +13,16 @@ import {
   GOOD_COUNT,
   GOOD_NAMES,
   MILK,
+  PORTIONS_PER_DAY,
   SHARE_PER_10K,
   SHOP_NAMES,
+  foodWorkersFor,
   goodOfLink,
   isFood,
   openingPriceOf,
   outputPerWorkerDay,
   splitByGood,
+  splitJobs,
 } from '../src/goods/goods.ts';
 import { FOOD_RING, assignGoods, createGoodsStore, ringSlot } from '../src/goods/store.ts';
 import { PHONE_MEMORY_BYTES, reserveArena } from '../src/memory/arena.ts';
@@ -33,6 +37,8 @@ import {
   LEDGER_FIRM_CASH,
   LEDGER_HOUSEHOLD_CASH,
   LEDGER_PRICE,
+  populationOf,
+  scaleRecord,
 } from '../src/spawn/record.ts';
 import { spawnFromLedger } from '../src/spawn/spawn.ts';
 import { DAYS_PER_MONTH } from '../src/time/calendar.ts';
@@ -92,6 +98,32 @@ describe('splitByGood', () => {
   it('splits jobs with no least, so a good may hold none', () => {
     expect(splitOf(3, 0)).toEqual([0, 0, 0, 0, 1, 1, 1]);
     expect(splitOf(0, 0)).toEqual([0, 0, 0, 0, 0, 0, 0]);
+  });
+});
+
+describe('splitJobs', () => {
+  function jobsOf(employed: number, foodLeast: number): number[] {
+    const out = new Int32Array(GOOD_COUNT);
+    splitJobs(employed, foodLeast, out);
+    return Array.from(out.subarray(BREAD));
+  }
+
+  it('needs a sixth of a job for each blob, rounded up: 3 portions a day over the 18 a worker makes', () => {
+    expect([30, 31, 1_000, 2_688].map((people) => foodWorkersFor(people, CITY.unitsPerWorkerDay))).toEqual([5, 6, 167, 448]);
+    expect(foodWorkersFor(30, 5)).toBe(3);
+  });
+
+  it("lifts the foods to the workers they need when the shares leave them short, and keeps a split that feeds", () => {
+    // 28 employed give each food a worker, 72 of the 90 portions 30 blobs eat; 5 give bread a second.
+    expect(splitOf(28, 0)).toEqual([1, 1, 1, 1, 8, 8, 8]);
+    expect(jobsOf(28, 5)).toEqual([2, 1, 1, 1, 8, 7, 8]);
+    // 944 employed give the foods 170 jobs, over the 167 that 1,000 blobs need, so the split is the shares' own.
+    expect(jobsOf(944, 167)).toEqual(splitOf(944, 0));
+  });
+
+  it('gives the foods every job when the employed are fewer than they need, and none when no one works', () => {
+    expect(jobsOf(3, 4)).toEqual([1, 1, 1, 0, 0, 0, 0]);
+    expect(jobsOf(0, 4)).toEqual([0, 0, 0, 0, 0, 0, 0]);
   });
 });
 
@@ -315,6 +347,20 @@ function sevenFirms(): Float64Array {
   return record;
 }
 
+// CITY's record scaled to a town of `people`, as spawnTown scales it.
+function townOf(people: number): Float64Array {
+  const record = new Float64Array(LEDGER_FIELDS);
+  scaleRecord(CITY_RECORD, people, record);
+  return record;
+}
+
+// The portions the food firms of a spawned world make in a day.
+function foodMadeADay(world: World): number {
+  let workers = 0;
+  for (let f = 0; f < world.goods.firstRow[CLOTH]; f++) workers += world.firms.employees[f];
+  return workers * FOOD_PER_WORKER;
+}
+
 describe('a goods world spawned from a record', () => {
   it('folds back into each of 100 random records field for field, the money exact', () => {
     for (let index = 0; index < 100; index++) {
@@ -326,7 +372,7 @@ describe('a goods world spawned from a record', () => {
     }
   });
 
-  it('links every blob at firms of good k + 1, and splits the jobs over the goods by the same shares', () => {
+  it('links every blob at firms of good k + 1, and splits the jobs over the goods as splitJobs does', () => {
     for (let index = 0; index < 20; index++) {
       const record = recordAt(index);
       const world = spawnedGoods(record, index + 1, index);
@@ -335,7 +381,7 @@ describe('a goods world spawned from a record', () => {
       const rows = new Int32Array(GOOD_COUNT);
       splitByGood(record[LEDGER_FIRMS], 1, rows);
       const jobs = new Int32Array(GOOD_COUNT);
-      splitByGood(record[LEDGER_EMPLOYED], 0, jobs);
+      splitJobs(record[LEDGER_EMPLOYED], foodWorkersFor(populationOf(record), CITY.unitsPerWorkerDay), jobs);
       const staff = new Int32Array(firms.count[0]);
       for (let p = 0; p < agents.count[0]; p++) if (agents.employer[p] >= 0) staff[agents.employer[p]]++;
       expect(Array.from(firms.employees.subarray(0, firms.count[0])), `record ${index}`).toEqual(Array.from(staff));
@@ -368,6 +414,24 @@ describe('a goods world spawned from a record', () => {
         expect(firms.lastDemand[f], `goods row ${f}`).toBe(DAYS_PER_MONTH * 3 * firms.employees[f]);
       }
     }
+  });
+
+  it('spawns the food workers a town eats: 5 of the 28 employed in a town of 30, where the shares gave 4', () => {
+    expect(foodMadeADay(spawnedGoods(townOf(30), 1, 0))).toBe(30 * PORTIONS_PER_DAY);
+    for (const people of [150, 1_000]) {
+      expect(foodMadeADay(spawnedGoods(townOf(people), 1, 0)), `${people} people`).toBeGreaterThanOrEqual(people * PORTIONS_PER_DAY);
+    }
+    // 1,000 blobs eat 3,000 portions, 167 workers' worth, and the shares already put 170 of the 944 employed in food.
+    expect(foodMadeADay(spawnedGoods(townOf(1_000), 1, 0))).toBe(170 * FOOD_PER_WORKER);
+  });
+
+  it('puts every worker in food when a town has fewer than its people need, and folds back exactly', () => {
+    const record = new Float64Array(LEDGER_FIELDS);
+    record.set([20, 0, 0, 0, 0, 0, 3, 17, 7, 1_000_000, 70_000, 3_200, 142_800, 90]);
+    const world = spawnedGoods(record, 1, 0);
+    expect(foodMadeADay(world)).toBe(3 * FOOD_PER_WORKER);
+    expect(Array.from(world.firms.employees.subarray(4, 7))).toEqual([0, 0, 0]);
+    expect(folded(world)).toEqual(Array.from(record));
   });
 
   it('holds one firm of each good in the fewest firms a record may have, and folds back exactly', () => {

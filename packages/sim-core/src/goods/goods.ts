@@ -1,3 +1,5 @@
+import { floorDiv } from '../maths/int.ts';
+
 // Seven goods, one to each supplier link (M2.4 Ruling 1), and good 0, the generic good of a world that runs with goods 0.
 // A blob's link k sells good k + 1, and the firm rows of a good run together, in this table's order.
 export const GENERIC = 0;
@@ -23,8 +25,6 @@ export const DAYS_ON_SALE = Uint8Array.of(0, 4, 7, 3, 14, 0, 0, 0);
 
 // A good's share of firm rows and of jobs, in parts of 10,000: 4.5% for each food, then 27.33, 27.33 and 27.34%.
 export const SHARE_PER_10K = Int32Array.of(0, 450, 450, 450, 450, 2733, 2733, 2734);
-const SHARE_UNIT = 10_000;
-const LISTED_GOODS = FUEL - BREAD + 1;
 
 // A worker makes 6 portions of food where one makes a unit of anything else (18 against 3), so a portion is priced at a
 // sixth of a unit.
@@ -51,40 +51,84 @@ export function openingPriceOf(good: number, unitPriceCents: number): number {
   return isFood(good) ? Math.floor(unitPriceCents / PORTIONS_PER_UNIT) : unitPriceCents;
 }
 
+// The workers whose food feeds `people`, rounded up: a worker makes 18 portions a day where a blob eats 3, so a sixth of a
+// job feeds a blob.
+export function foodWorkersFor(people: number, unitsPerWorkerDay: number): number {
+  const perWorker = outputPerWorkerDay(BREAD, unitsPerWorkerDay);
+  return floorDiv(people * PORTIONS_PER_DAY + perWorker - 1, perWorker);
+}
+
 // Splits total over goods 1 to 7 into out[1..7] by their shares. Each good starts at the floor of its share, or at least
 // if that is more, and single units then go to the good furthest under its share, or come back from the one furthest
 // over it, ties to the lower good. So 100 rows give 5, 5, 5, 4, 27, 27 and 27, and with least 1 and 7 rows or more every
-// good holds one. A good's standing is total x share less its units x 10,000, exact below 2^53.
+// good holds one.
 export function splitByGood(total: number, least: number, out: Int32Array | Float64Array): void {
-  if (total < least * LISTED_GOODS) {
-    throw new RangeError(`${total} cannot give each of ${LISTED_GOODS} goods ${least}`);
-  }
+  splitOver(total, least, BREAD, FUEL, out);
+}
+
+// The employed as jobs for goods 1 to 7: splitByGood's split, unless it leaves the four foods under foodLeast jobs, as the
+// shares do a small town by rounding. Then the foods take foodLeast, or all the employed if fewer, over themselves by their
+// shares, and cloth, tools and fuel share the rest by theirs. A town of 30 has 28 employed: the shares give each food a
+// worker, 72 portions of the 90 its blobs eat, and foodLeast of 5 gives bread two.
+export function splitJobs(employed: number, foodLeast: number, out: Int32Array | Float64Array): void {
+  splitByGood(employed, 0, out);
+  const foods = Math.min(foodLeast, employed);
+  if (jobsInFoods(out) >= foods) return;
+  splitOver(foods, 0, BREAD, MILK, out);
+  splitOver(employed - foods, 0, CLOTH, FUEL, out);
+}
+
+function jobsInFoods(units: Int32Array | Float64Array): number {
+  let total = 0;
+  for (let good = BREAD; good <= MILK; good++) total += units[good];
+  return total;
+}
+
+// splitByGood over goods first to last, each good's share taken of the range's. A good's standing is total x share less its
+// units x the range's shares, exact below 2^53.
+function splitOver(total: number, least: number, first: number, last: number, out: Int32Array | Float64Array): void {
+  const goods = last - first + 1;
+  if (total < least * goods) throw new RangeError(`${total} cannot give each of ${goods} goods ${least}`);
+  const shares = sharesOf(first, last);
   let placed = 0;
-  for (let good = BREAD; good <= FUEL; good++) {
-    out[good] = Math.max(least, Math.floor((total * SHARE_PER_10K[good]) / SHARE_UNIT));
+  for (let good = first; good <= last; good++) {
+    out[good] = Math.max(least, Math.floor((total * SHARE_PER_10K[good]) / shares));
     placed += out[good];
   }
-  for (; placed < total; placed++) out[mostBehind(total, out)]++;
-  for (; placed > total; placed--) out[mostAhead(total, out, least)]--;
+  for (; placed < total; placed++) out[mostBehind(total, out, first, last, shares)]++;
+  for (; placed > total; placed--) out[mostAhead(total, out, least, first, last, shares)]--;
 }
 
-function standing(total: number, units: number, good: number): number {
-  return total * SHARE_PER_10K[good] - units * SHARE_UNIT;
+function sharesOf(first: number, last: number): number {
+  let shares = 0;
+  for (let good = first; good <= last; good++) shares += SHARE_PER_10K[good];
+  return shares;
 }
 
-function mostBehind(total: number, units: Int32Array | Float64Array): number {
-  let best = BREAD;
-  for (let good = BREAD + 1; good <= FUEL; good++) {
-    if (standing(total, units[good], good) > standing(total, units[best], best)) best = good;
+function standing(total: number, units: number, good: number, shares: number): number {
+  return total * SHARE_PER_10K[good] - units * shares;
+}
+
+function mostBehind(total: number, units: Int32Array | Float64Array, first: number, last: number, shares: number): number {
+  let best = first;
+  for (let good = first + 1; good <= last; good++) {
+    if (standing(total, units[good], good, shares) > standing(total, units[best], best, shares)) best = good;
   }
   return best;
 }
 
 // Among the goods above least, so none is taken below it.
-function mostAhead(total: number, units: Int32Array | Float64Array, least: number): number {
+function mostAhead(
+  total: number,
+  units: Int32Array | Float64Array,
+  least: number,
+  first: number,
+  last: number,
+  shares: number,
+): number {
   let best = -1;
-  for (let good = BREAD; good <= FUEL; good++) {
-    if (units[good] > least && (best < 0 || standing(total, units[good], good) < standing(total, units[best], best))) {
+  for (let good = first; good <= last; good++) {
+    if (units[good] > least && (best < 0 || standing(total, units[good], good, shares) < standing(total, units[best], best, shares))) {
       best = good;
     }
   }
