@@ -6,12 +6,13 @@ import { createPlaceRenderer, type PlaceRenderer } from '../place/renderer.ts';
 import type { Camera, TownPainter, TownView } from '../renderer/types.ts';
 import { TownPeople } from './people.ts';
 
-// Skin C's first cut, the Town skin: Highcourt drawn by the place pass with the sim's agents as its people (owner
-// request, 10 October 2026). It draws on a canvas of its own over the dots' canvas, and hides that one while it shows,
-// so assistive tech meets one picture. A world px is an art px, so the dots' camera places the town as it is.
+// Skin C's first cut, the Town skin: a town drawn by the place pass with the sim's agents as its people (owner request,
+// 10 October 2026), Highcourt first and any other after setLayout (M2.2c). It draws on a canvas of its own over the
+// dots' canvas, and hides that one while it shows, so assistive tech meets one picture. A world px is an art px, so the
+// dots' camera places the town as it is.
 export class TownSkin implements TownPainter {
   private readonly place: PlaceRenderer;
-  private readonly layout: PlaceLayout;
+  private layout: PlaceLayout;
   private readonly people: TownPeople;
   // The last camera drawn, and the place's camera made from it once, as the place renderer re-reads only a new one.
   private camera: Camera | null;
@@ -38,12 +39,20 @@ export class TownSkin implements TownPainter {
     this.place.init();
     this.place.setAtlas(page);
     // Before any agent, so a frame the atlas cannot draw throws here, while the town loads, never in a draw.
-    this.setPeople();
+    this.setPlace(layout);
   }
 
   // The canvas drawn on, which the Canvas2D fallback replaces.
   get canvas(): HTMLCanvasElement {
     return this.place.canvas;
+  }
+
+  // Swaps the town drawn: its ground, buildings and size, from the next draw. The sim's agents stay its people, rewritten
+  // by that draw, and the layout's own people are never drawn. The sprite list is made here, so a frame the atlas cannot
+  // draw throws here, never in a draw.
+  setLayout(layout: PlaceLayout): void {
+    this.setPlace(layout);
+    this.layout = layout;
   }
 
   draw(camera: Camera, alpha: number, view: TownView): number | undefined {
@@ -54,7 +63,7 @@ export class TownSkin implements TownPainter {
     this.show(true, view.canvas);
     const { retained } = view;
     this.fit(view);
-    if (this.people.fit(retained.count)) this.setPeople();
+    if (this.people.fit(retained.count)) this.setPlace(this.layout);
     this.people.write(retained, alpha);
     if (camera !== this.camera) {
       this.camera = camera;
@@ -68,8 +77,9 @@ export class TownSkin implements TownPainter {
     this.place.dispose();
   }
 
-  private setPeople(): void {
-    this.place.setPlace({ ...this.layout, people: this.people.columns });
+  // The place draws the sim's columns as the layout's people, so it takes them again whenever they are made again.
+  private setPlace(layout: PlaceLayout): void {
+    this.place.setPlace({ ...layout, people: this.people.columns });
   }
 
   private redraw(): void {
