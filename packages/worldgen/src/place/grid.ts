@@ -35,7 +35,9 @@ export function gridKnobs(site: Site): GridKnobs {
     rowGap: 6 + site.below(3, PLAN, ROW_GAP),
     crossGap: 16 + site.below(17, PLAN, CROSS_GAP),
     shift: site.below(2, PLAN, SHIFT),
-    skip: site.below(201, PLAN, SKIP),
+    // Up to a tenth, where Part 4 dealt a fifth: a block whose row piece is left out has no street to face, and with a
+    // fifth Task 27's median grid capital held 358 houses inside the wall, in the first 2 standard worlds.
+    skip: site.below(101, PLAN, SKIP),
   };
 }
 

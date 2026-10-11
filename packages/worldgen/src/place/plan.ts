@@ -36,9 +36,10 @@ export const WEIGHTS: Readonly<Record<string, readonly number[]>> = {
   town: [1, 2, 1],
 };
 // The ring line's half-sizes. A ring town's is rounder than Part 3's, which winding towns and grids keep, and each
-// holds about the same area.
-const ROUND: Readonly<Record<string, Pair>> = { capital: [60, 44], city: [60, 44], town: [50, 34] };
-const BOXED: Readonly<Record<string, Pair>> = { capital: [64, 40], city: [64, 40], town: [56, 30] };
+// holds up to a tenth more than Part 3's area (129 × 81 and 113 × 61): at Part 3's own, Task 27's houses left the median
+// capital or city at 374 inside the wall and the median ring town at 216, over the first 6 standard worlds.
+const ROUND: Readonly<Record<string, Pair>> = { capital: [63, 46], city: [63, 46], town: [54, 36] };
+const BOXED: Readonly<Record<string, Pair>> = { capital: [67, 42], city: [67, 42], town: [58, 31] };
 // Tiles the ring line keeps from the place's edge, for the farm belt.
 const BELT_MIN = 6;
 // Tiles a cut corner leaves between a gate's road and the end of the straight edge.

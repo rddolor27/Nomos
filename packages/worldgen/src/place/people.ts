@@ -188,11 +188,12 @@ function builders(site: Site): Job[] {
   return works.length > 0 ? [['builder', works]] : [];
 }
 
-// Standable tiles in front of each door of a building, reach either side, on the door's row and the one below.
+// Standable tiles in front of each door of a building, reach either side, on the door's row and the one below. A large
+// civic building's name extends its small one's, so the clinic's nurse stands at either.
 function around(site: Site, name: string, reach: number): Cell[] {
   const tiles: Cell[] = [];
   for (const door of site.doors) {
-    if (door.name !== name) continue;
+    if (!door.name.startsWith(name)) continue;
     for (let dx = -reach; dx <= reach; dx++) {
       for (const dy of [0, 1]) {
         const x = door.x + dx;

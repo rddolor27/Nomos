@@ -30,11 +30,13 @@ const USED: Record<string, readonly string[]> = {
     'tree_blossom', 'tree_palm',
   ],
   buildings: [
-    'civic_clinic', 'civic_courthouse', 'civic_police-station', 'civic_records-office', 'civic_school',
-    'civic_town-hall', 'shop_bakery', 'shop_draper_bolts', 'shop_draper_rail', 'shop_fuel-store_shed',
-    'shop_fuel-store_stack', 'shop_general', 'shop_market-stall', 'shop_market-stall_fish', 'shop_market-stall_milk',
-    'shop_market-stall_vegetables', 'shop_warehouse', 'work_dock', 'work_farm', 'work_fuel-works', 'work_lumber-camp',
-    'work_mine', 'work_pasture', 'work_quarry', 'work_smithy', 'work_workshop',
+    'civic_clinic', 'civic_clinic_large', 'civic_courthouse', 'civic_courthouse_large', 'civic_library_large',
+    'civic_police-station', 'civic_records-office', 'civic_school', 'civic_school_large', 'civic_town-hall',
+    'civic_town-hall_large', 'shop_bakery', 'shop_draper_bolts', 'shop_draper_rail', 'shop_fuel-store_shed',
+    'shop_fuel-store_stack', 'shop_general', 'shop_inn', 'shop_market-stall', 'shop_market-stall_fish',
+    'shop_market-stall_milk', 'shop_market-stall_vegetables', 'shop_warehouse', 'work_dock', 'work_farm',
+    'work_fuel-works', 'work_lumber-camp', 'work_mine', 'work_pasture', 'work_quarry', 'work_smithy', 'work_stable',
+    'work_workshop',
   ],
   landmarks: [
     'landmark_amphitheatre', 'landmark_clock-tower', 'landmark_fountain_0', 'landmark_garden-terraces',
@@ -47,7 +49,11 @@ const USED: Record<string, readonly string[]> = {
     'wonder_waterfall_0',
   ],
 };
-export const HOUSE_FORMS = ['apartment', 'detached', 'farmhouse', 'hut', 'row-left', 'row-middle', 'row-right'];
+export const HOUSE_FORMS = [
+  'apartment', 'cabin', 'corner-left', 'corner-right', 'detached', 'farmhouse', 'hut', 'row-left', 'row-left-handed',
+  'row-middle', 'row-middle-handed', 'row-right', 'row-right-handed', 'townhouse-left', 'townhouse-left-handed',
+  'townhouse-middle', 'townhouse-middle-handed', 'townhouse-right', 'townhouse-right-handed',
+];
 // Every house of a form shares its size, anchor and door, whatever its material and roof; the test checks each one.
 const SAMPLE_HOUSE = 'brick';
 const SAMPLE_ROOF = 'green';

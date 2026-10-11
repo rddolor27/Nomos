@@ -51,6 +51,8 @@ export interface LotOptions {
   spur?: number;
   groundOk?: CellTest;
   salt?: number;
+  // Tiles that stay clear of any footprint round the lot, MARGIN unless set.
+  margin?: number;
 }
 
 // What one findLot call looks for, so that its rows can be searched apart.
@@ -97,7 +99,7 @@ export const PROP_Y = 12;
 export const BEAST_Y = 13;
 export const PERSON_Y = 14;
 // find_lot's and fits' margin: no footprint may touch another's.
-const MARGIN = 1;
+export const MARGIN = 1;
 const SPUR_STEPS: readonly Cell[] = [
   [0, 1],
   [-1, 0],
@@ -189,6 +191,8 @@ export class Site {
   readonly doors: Door[] = [];
   readonly fields: Rect[] = [];
   readonly pastures: Rect[] = [];
+  // A walled town's greens, meadow kept clear, which M3.2 will use as leisure sites.
+  readonly townGreens: Rect[] = [];
   people: Person[] = [];
 
   constructor(ctx: PlaceContext, w: number, h: number) {
@@ -361,9 +365,11 @@ export class Site {
 
   // place.py's order is ground, margin, then above. What stands nearby is checked first here, since most lots a search
   // tries are taken and the ground test costs most. Budget: a capital or city builds within twice Task 9's median.
-  fits(tx: number, ty: number, fw: number, fh: number, up: number, groundOk: CellTest): boolean {
+  fits(tx: number, ty: number, fw: number, fh: number, up: number, groundOk: CellTest, margin = MARGIN): boolean {
     if (tx < 0 || ty - up < 0 || tx + fw > this.w || ty + fh > this.h) return false;
-    return this.clearAround(tx, ty, fw, fh) && this.clearAbove(tx, ty, fw, up) && this.groundFits(tx, ty, fw, fh, groundOk);
+    return (
+      this.clearAround(tx, ty, fw, fh, margin) && this.clearAbove(tx, ty, fw, up) && this.groundFits(tx, ty, fw, fh, groundOk)
+    );
   }
 
   // Free tiles leading from (x, y) to a road, at most limit of them, or null.
@@ -426,7 +432,7 @@ export class Site {
     for (const tx of cols) {
       const gap = rowGap + Math.abs(tx + floorDiv(fw, 2) - target[0]);
       if (best !== null && gap * 8 > best.cost) break;
-      if (!this.doorsReach(search, tx, ty) || !this.fits(tx, ty, fw, fh, up, ok)) continue;
+      if (!this.doorsReach(search, tx, ty) || !this.fits(tx, ty, fw, fh, up, ok, options.margin)) continue;
       const lot = this.lotAt(tx, ty, fw, fh, doors, target, options);
       if (lot !== null && (best === null || readsBefore(lot, best))) best = lot;
     }
@@ -499,9 +505,9 @@ export class Site {
     return true;
   }
 
-  private clearAround(tx: number, ty: number, fw: number, fh: number): boolean {
-    for (let cy = ty - MARGIN; cy < ty + fh + MARGIN; cy++) {
-      for (let cx = tx - MARGIN; cx < tx + fw + MARGIN; cx++) {
+  private clearAround(tx: number, ty: number, fw: number, fh: number, margin: number): boolean {
+    for (let cy = ty - margin; cy < ty + fh + margin; cy++) {
+      for (let cx = tx - margin; cx < tx + fw + margin; cx++) {
         if (this.inside(cx, cy) && this.solid[this.at(cx, cy)] !== null) return false;
       }
     }

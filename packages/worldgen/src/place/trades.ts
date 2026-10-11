@@ -13,7 +13,7 @@ const STALLS = 2;
 const SHOPS: Readonly<Record<string, number>> = { capital: 4, city: 4, town: 3 };
 // The eight sectors of a town round its plaza, clockwise from north. Trade t starts at sector 3t, so the seven start apart,
 // and its n shops then fall 8 / n sectors apart.
-const SECTORS: readonly Cell[] = [[0, -1], [1, -1], [1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1]];
+export const SECTORS: readonly Cell[] = [[0, -1], [1, -1], [1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1]];
 const SECTOR_STEP = 3;
 // A shop's door may lie this many steps from a street, or this many when its sector has no lot and it goes by the plaza.
 const SHOP_SPUR = 1;
@@ -41,6 +41,32 @@ export function placeTrades(site: Site): void {
       doors[site.at(x, y)] = 1;
     });
   }
+}
+
+// The inns and the stable of a town (M3.1's Part 3, Task 13, Rule 8): look-only buildings that sell and employ nothing,
+// since no trade has their frames. M2.7's premises place the bakeries and smithies. Gates come with Part 4's Task 26, so
+// until then each aims at the plaza's middle.
+const INNS_AND_STABLES: Readonly<Record<string, readonly string[]>> = {
+  capital: ['shop_inn', 'shop_inn', 'work_stable'],
+  city: ['shop_inn', 'shop_inn', 'work_stable'],
+  town: ['shop_inn', 'work_stable'],
+};
+// Lot salts of these buildings, clear of the premises' and the houses'.
+const INN_SALT = 300;
+
+export function placeInnsAndStables(site: Site): void {
+  const doors = doorTiles(site);
+  (INNS_AND_STABLES[site.ctx.tier ?? ''] ?? []).forEach((name, k) => {
+    const f = frame('buildings', name);
+    const up = rise(f);
+    const groundOk = inView(site, doors, up, (x, y) => site.buildable(x, y));
+    const search = { spur: SHOP_SPUR, groundOk, salt: INN_SALT + k };
+    const lot = site.findLot(f.footprintW, f.footprintH, up, [doorOffset(f)], [site.cx, site.cy], search);
+    if (lot === null) return;
+    site.settle('buildings', name, lot);
+    const { x, y } = site.doors[site.doors.length - 1];
+    doors[site.at(x, y)] = 1;
+  });
 }
 
 // The tiles of the doors built so far, which no premises's image may rise over.

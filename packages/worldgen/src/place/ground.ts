@@ -50,22 +50,31 @@ const ENTITY_OF_BUILT: Readonly<Record<string, MapEntity['kind']>> = {
   shop: ENTITY_SHOP,
   civic: ENTITY_CIVIC,
 };
-// export_map.py's placeholders from the plan: a home's capacity by form, and a shop's opening and closing minute.
+// export_map.py's placeholders from the plan: a home's capacity by form, and a shop's opening and closing minute. A handed
+// piece holds as many as its plain one.
 const CAPACITY: Readonly<Record<string, number>> = {
   hut: 2,
+  cabin: 3,
   detached: 4,
   'row-left': 4,
   'row-middle': 4,
   'row-right': 4,
+  'townhouse-left': 6,
+  'townhouse-middle': 6,
+  'townhouse-right': 6,
+  'corner-left': 6,
+  'corner-right': 6,
   farmhouse: 6,
   apartment: 24,
 };
+const HANDED = '-handed';
 const STALL_HOURS: readonly [number, number] = [360, 840];
 const SHOP_HOURS: readonly [number, number] = [480, 1200];
 // The premises' hours (M2.7) are placeholders too: a stall keeps the generic stall's, the Bakery opens at 06:00 and closes at
-// 18:00, and every other shop keeps the general shop's.
+// 18:00, the Inn at 07:00 and 23:00, and every other shop keeps the general shop's.
 const HOURS: Readonly<Record<string, readonly [opens: number, closes: number]>> = {
   shop_general: SHOP_HOURS,
+  shop_inn: [420, 1380],
   'shop_market-stall': STALL_HOURS,
   'shop_market-stall_fish': STALL_HOURS,
   'shop_market-stall_milk': STALL_HOURS,
@@ -153,10 +162,14 @@ function placedOf(site: Site, found: readonly Footprint[]): Placed[] {
   return placed;
 }
 
+// The beds of a house, by the form in its name: house_<material>_<form>_roof-<roof>.
+function bedsOf(name: string): number {
+  return lookup(CAPACITY, name.split('_')[2].replace(HANDED, ''), `${name} is a house of no known form`);
+}
+
 function entityOf({ footprint: f, door }: Placed, frame: number): MapEntity {
   const kind = lookup(ENTITY_OF_BUILT, builtKind(f.name), `${f.name} makes no entity`);
-  const form = f.name.split('_')[2];
-  const capacity = kind === ENTITY_HOME ? lookup(CAPACITY, form, `${f.name} is a house of no known form`) : 0;
+  const capacity = kind === ENTITY_HOME ? bedsOf(f.name) : 0;
   const [opens, closes] = kind === ENTITY_SHOP ? lookup(HOURS, f.name, `${f.name} has no opening hours`) : NO_HOURS;
   return { kind, x: f.tx, y: f.ty, w: f.fw, h: f.fh, doorX: door[0], doorY: door[1], frame, capacity, opens, closes };
 }

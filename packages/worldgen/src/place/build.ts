@@ -4,6 +4,7 @@ import type { PlaceLayout } from '@nomos/sim-protocol/place';
 import { herd } from './animals.ts';
 import type { PlaceContext } from './context.ts';
 import { decorate, placeFields } from './decor.ts';
+import { placeGreens } from './greens.ts';
 import { groundOf } from './ground.ts';
 import { placeHouses } from './houses.ts';
 import { placeLandmarks, placeWindmill } from './landmarks.ts';
@@ -12,7 +13,7 @@ import { plant, plantAvenues } from './nature.ts';
 import { settlementPeople } from './people.ts';
 import { layRoads } from './roads.ts';
 import {
-  CIVIC,
+  civicOf,
   layTown,
   layVillage,
   placeCivic,
@@ -24,7 +25,7 @@ import {
 } from './settlement.ts';
 import { Site } from './site.ts';
 import { layGround, layRidges, layWater, riverPoints } from './terrain.ts';
-import { placeTrades } from './trades.ts';
+import { placeInnsAndStables, placeTrades } from './trades.ts';
 import { buildVista, VISTA_SIZE } from './vista.ts';
 
 const SIZES: Readonly<Record<string, readonly [number, number]>> = {
@@ -104,9 +105,10 @@ export function settleCentre(site: Site): void {
   }
   plantAvenues(site, layTown(site));
   layRoads(site);
-  placeCivic(site, CIVIC[tier].slice(0, 1));
+  const civic = civicOf(site);
+  placeCivic(site, civic.slice(0, 1));
   placePlaza(site);
-  placeCivic(site, CIVIC[tier].slice(1));
+  placeCivic(site, civic.slice(1), 1);
 }
 
 // The dock, landmarks, works, a town's premises, houses, fields and the windmill. The premises follow the landmarks and
@@ -117,6 +119,8 @@ export function settleBuildings(site: Site): void {
   placeLandmarks(site);
   placeWorks(site);
   placeTrades(site);
+  placeInnsAndStables(site);
+  placeGreens(site);
   placeHouses(site);
   if (ctx.tier === 'village' || ctx.tier === 'hamlet' || ctx.biome === 'farmland' || ctx.farmland) settleFields(site);
   if (ctx.landmarks.includes('windmill')) placeWindmill(site);

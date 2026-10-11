@@ -6,27 +6,32 @@ import { landmarkFrame } from './landmarks.ts';
 import { planOf, ringOf, type Plan } from './plan.ts';
 import { layRings } from './rings.ts';
 import { centreSpot, pave, roadSides, straight } from './roads.ts';
-import { frame, OPEN, rise, type Cell, type Lot, type Site } from './site.ts';
+import { doorOffset, frame, OPEN, rise, type Cell, type CellTest, type Lot, type Site } from './site.ts';
 import type { Wall } from './walls.ts';
 
 type Pair = readonly [number, number];
 
 export const PLAZAS: Readonly<Record<string, Pair>> = { capital: [28, 8], city: [26, 8], town: [20, 6] };
-const CAPITAL_CIVIC = [
-  'civic_town-hall',
-  'civic_courthouse',
+// A capital's and a city's civic set is the large one (M3.1's Part 3, Task 13, Rule 7). The first is the hall, which faces
+// the plaza from the north.
+const LARGE_CIVIC = [
+  'civic_town-hall_large',
+  'civic_courthouse_large',
+  'civic_library_large',
   'civic_records-office',
   'civic_police-station',
-  'civic_clinic',
-  'civic_school',
+  'civic_clinic_large',
+  'civic_school_large',
   'shop_general',
   'shop_warehouse',
 ];
 export const CIVIC: Readonly<Record<string, readonly string[]>> = {
-  capital: CAPITAL_CIVIC,
-  city: CAPITAL_CIVIC,
+  capital: LARGE_CIVIC,
+  city: LARGE_CIVIC,
   town: ['civic_town-hall', 'civic_police-station', 'civic_clinic', 'civic_school', 'shop_general'],
 };
+// Tiles past the ring line that the works of a walled place aim at.
+const BEYOND = 4;
 const OUTSKIRTS: readonly Pair[] = [
   [-1, 0],
   [1, 0],
@@ -137,20 +142,26 @@ function layGreenTile(site: Site, x: number, y: number, inner: boolean): void {
   }
 }
 
-export function placeCivic(site: Site, names: readonly string[]): void {
+// The civic buildings of a town, city or capital, in building order: the hall first, and no civic library where the
+// landmarks hold one.
+export function civicOf(site: Site): string[] {
+  const library = site.ctx.landmarks.includes('library');
+  return CIVIC[site.ctx.tier ?? ''].filter((name) => !(library && name === 'civic_library_large'));
+}
+
+// Builds `names`, the civic buildings from position `first` of the place's list. A building's lot salt is its position.
+export function placeCivic(site: Site, names: readonly string[], first = 0): void {
   const [, py, , ph] = plazaOf(site);
-  for (const name of names) {
+  names.forEach((name, k) => {
     const f = frame('buildings', name);
-    const fw = f.footprintW;
     let target: Cell = [site.cx, site.cy];
-    if (name === 'civic_town-hall') target = [site.cx, py];
+    if (name.startsWith('civic_town-hall')) target = [site.cx, py];
     else if (name === 'shop_warehouse') {
       target = [site.cx + floorDiv(site.w, 3) * (site.chance(500, LOT, 90) ? 1 : -1), site.cy + ph];
     }
-    const salt = CAPITAL_CIVIC.indexOf(name);
-    const lot = site.findLot(fw, f.footprintH, rise(f), [floorDiv(fw * TILE, 2)], target, { spur: 1, salt });
+    const lot = site.findLot(f.footprintW, f.footprintH, rise(f), [doorOffset(f)], target, { spur: 1, salt: first + k });
     if (lot) site.settle('buildings', name, lot);
-  }
+  });
 }
 
 export function onPlaza(site: Site, x: number, y: number): boolean {
@@ -199,10 +210,26 @@ export function placeVillageShop(site: Site): void {
   }
 }
 
-// A keyed point between the centre and the edge of the place.
+// A keyed point past a walled place's ring line, where its direction points, or a third of the way to the edge of an open
+// place.
 export function outskirts(site: Site, salt: number): Cell {
   const [dx, dy] = site.pick(OUTSKIRTS, WORK, salt);
-  return [site.cx + floorDiv(dx * site.w, 3), site.cy + floorDiv(dy * site.h, 3)];
+  const { wall } = site;
+  if (wall === null) return [site.cx + floorDiv(dx * site.w, 3), site.cy + floorDiv(dy * site.h, 3)];
+  return [beyond(dx, site.cx, wall.x0, wall.x1), beyond(dy, site.cy, wall.y0, wall.y1)];
+}
+
+// BEYOND tiles past the edge of the ring line that `step` points to, or `middle` along a zero step.
+function beyond(step: number, middle: number, lo: number, hi: number): number {
+  if (step === 0) return middle;
+  return step > 0 ? hi + BEYOND : lo - BEYOND;
+}
+
+// The works of a walled place that go out to its outskirts stand past the ring line, however near the nearest lot inside
+// it lies to a road. Undefined for an open place, whose works take any buildable ground.
+function pastWall(site: Site): CellTest | undefined {
+  const { wall } = site;
+  return wall === null ? undefined : (x, y) => site.buildable(x, y) && !wall.contains(x, y);
 }
 
 export function placeWorks(site: Site): void {
@@ -213,9 +240,10 @@ export function placeWorks(site: Site): void {
     const fh = f.footprintH;
     const central = name === 'work_workshop' || name === 'work_fuel-works';
     const target = central ? ([site.cx, site.cy] as const) : outskirts(site, 10 + i);
+    const groundOk = central ? undefined : pastWall(site);
     const lot =
-      site.findLot(fw, fh, rise(f), [floorDiv(fw * TILE, 2)], target, { spur: 4, salt: 20 + i }) ??
-      site.findLot(fw, fh, rise(f), [], target, { salt: 30 + i });
+      site.findLot(fw, fh, rise(f), [floorDiv(fw * TILE, 2)], target, { spur: 4, groundOk, salt: 20 + i }) ??
+      site.findLot(fw, fh, rise(f), [], target, { groundOk, salt: 30 + i });
     if (lot) site.settle('buildings', name, lot);
   });
 }
