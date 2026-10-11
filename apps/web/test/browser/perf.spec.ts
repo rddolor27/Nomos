@@ -157,15 +157,15 @@ test('pans the Country and Region views within 2 ms a frame', async ({ page, bro
   expect.soft(region.median, "the Region view's median frame, in ms").toBeLessThanOrEqual(MAP_FRAME_MS);
 });
 
-// The town view lives in the map's panel, so the map's 2 ms bar holds for it too (M3.1 Task 7). Its walkers walk while
-// the drag pans the capital; ?canvas draws the town, the map and the town view in Canvas2D.
+// The town view lives in the map's panel, so the map's 2 ms bar holds for it too (M3.1 Task 7). ?canvas draws the town, the
+// map and the town view in Canvas2D.
 test('pans the town view of a capital within 2 ms a frame, in WebGL2 and in Canvas2D', async ({ page, browser }) => {
   test.setTimeout(240_000);
   await enterCapital(page, CROWDED);
   const webgl = summarise(await timePan(page, 'place'));
   const shown = await page.evaluate(() => {
     const canvas = document.querySelector<HTMLCanvasElement>('#place canvas');
-    return { backend: window.__place?.backend, walkers: window.__place?.walkers ?? 0, size: `${canvas?.width} x ${canvas?.height}` };
+    return { backend: window.__place?.backend, size: `${canvas?.width} x ${canvas?.height}` };
   });
   await enterCapital(page, `${CROWDED}&canvas`);
   const canvas = summarise(await timePan(page, 'place'));
@@ -173,7 +173,7 @@ test('pans the town view of a capital within 2 ms a frame, in WebGL2 and in Canv
   expect([shown.backend, fallback]).toEqual(['webgl2', 'canvas2d']);
 
   const notes = [
-    { type: 'Town view, WebGL2', description: `${inMs(webgl)}, with ${shown.walkers} walkers walking` },
+    { type: 'Town view, WebGL2', description: inMs(webgl) },
     { type: 'Town view, Canvas2D', description: inMs(canvas) },
     { type: 'canvas', description: `${shown.size} device px at DPR 1, at 2 device px per art px; desktop CPU, unthrottled` },
     { type: 'browser', description: `Chromium ${browser.version()}` },

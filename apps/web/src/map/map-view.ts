@@ -401,7 +401,6 @@ function placeHost(panel: MapPanel): PlaceHost {
   panel.host ??= {
     map: panel.parts.section,
     backend: panel.app.renderer.backend === 'canvas2d' ? 'canvas2d' : 'auto',
-    phone: panel.app.tier === 'phone',
     request: (place, onReply, onFail) => requestPlace(panel, place, onReply, onFail),
     left: () => {
       panel.placeOpen = false;

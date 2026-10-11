@@ -61,10 +61,6 @@ async function placeShown(page: Page): Promise<void> {
   await expect.poll(() => page.evaluate(() => window.__place?.ready), { timeout: 30_000 }).toBe(true);
 }
 
-function walker(page: Page): Promise<[number, number]> {
-  return page.evaluate(() => [window.__place?.walkerX ?? -1, window.__place?.walkerY ?? -1]);
-}
-
 function mapCamera(page: Page): Promise<string> {
   return page.evaluate(() => JSON.stringify(window.__map?.camera));
 }
@@ -89,7 +85,7 @@ async function coloursIn(page: Page, png: Buffer): Promise<number> {
 }
 
 // Each engine draws the place through its own WebGL2, so this one runs in all three.
-test('enters a settlement from the map, draws it with its walkers walking, and returns to the map as it was', async ({ page }) => {
+test('enters a settlement from the map, draws it, and returns to the map as it was', async ({ page }) => {
   const loaded: string[] = [];
   page.on('request', (request) => {
     if (TOWN_VIEW_LOAD.test(request.url())) loaded.push(new URL(request.url()).pathname);
@@ -112,12 +108,10 @@ test('enters a settlement from the map, draws it with its walkers walking, and r
   ]);
   await expect(page.locator('#place h2')).toHaveText(capital);
   await expect(page.locator('#place-status')).toHaveText(
-    new RegExp(`^${capital}, a capital of [\\d,]+ people in .+: [\\d,]+ people are out, [\\d,]+ of them walking\\.$`),
+    new RegExp(`^${capital}, a capital of [\\d,]+ people in .+: [\\d,]+ people are out\\.$`),
   );
   await expect(page.getByRole('img', { name: new RegExp(`^${capital}: .*homes.* and [\\d,]+ people$`) })).toBeVisible();
   expect(await coloursIn(page, await page.locator('#place canvas').screenshot())).toBeGreaterThan(MANY_COLOURS);
-  const first = await walker(page);
-  await expect.poll(() => walker(page), { message: 'the first walker, a second on' }).not.toEqual(first);
 
   await page.keyboard.press('Escape');
   await expect(page.locator('#place')).toBeHidden();
@@ -257,31 +251,7 @@ test.describe('in one engine', () => {
     await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
     await placeShown(page);
     await expect(page.locator('#place h2')).toHaveText(name);
-    await expect(page.locator('#place-status')).toHaveText(new RegExp(`^${name}, a wonder in .+: [\\d,]+ (person is|people are) out`));
-  });
-
-  test('holds the walkers still under Pause people', async ({ page }) => {
-    await openMap(page);
-    const capital = await goToCapital(page);
-    await page.getByRole('button', { name: `Enter ${capital}` }).click();
-    await placeShown(page);
-    const pause = page.locator('#place').getByRole('button', { name: 'Pause people' });
-    await pause.click();
-    await expect(pause).toHaveAttribute('aria-pressed', 'true');
-    const held = await walker(page);
-    await page.waitForTimeout(1000);
-    expect(await walker(page)).toEqual(held);
-  });
-
-  test('keeps the walkers where place.py put them under reduced motion', async ({ page }) => {
-    await page.emulateMedia({ reducedMotion: 'reduce' });
-    await openMap(page);
-    const capital = await goToCapital(page);
-    await page.getByRole('button', { name: `Enter ${capital}` }).click();
-    await placeShown(page);
-    const still = await walker(page);
-    await page.waitForTimeout(1000);
-    expect(await walker(page)).toEqual(still);
+    await expect(page.locator('#place-status')).toHaveText(new RegExp(`^${name}, a wonder in .+: [\\d,]+ (person is|people are) out\\.$`));
   });
 
   test('tries the art again after it failed to load, on the next entry and on Try again, keeping focus in the view', async ({ page }) => {

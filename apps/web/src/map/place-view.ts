@@ -14,8 +14,7 @@ import {
 import { PLACE_TILE_PX, type PlaceLayout, type PlaceReply } from '@nomos/sim-protocol/place';
 import type { PlaceInfo } from './goto.ts';
 import { bindMapInput, zoomAtCentre, type MapInputTarget } from './map-input.ts';
-import { Walkers, withCrowd } from './walkers.ts';
-import { OverflowMenu, addToolbarStyles, group, iconButton, zoomGroup } from '../panels/toolbar.ts';
+import { addToolbarStyles, group, iconButton, zoomGroup } from '../panels/toolbar.ts';
 
 // What the town view's browser tests read, as window.__map exposes the map.
 interface PlaceHook {
@@ -25,12 +24,8 @@ interface PlaceHook {
   ready: boolean;
   backend: string;
   scale: number;
-  // The last frame's main-thread time: moving the walkers and renderer.draw.
+  // The last frame's main-thread time: renderer.draw.
   frameMs: number;
-  walkers: number;
-  // Where the first walker stands, in art px.
-  walkerX: number;
-  walkerY: number;
 }
 
 declare global {
@@ -44,8 +39,6 @@ export interface PlaceHost {
   // The map's section, which the town view covers, inert, while it shows.
   readonly map: HTMLElement;
   readonly backend: 'auto' | 'canvas2d';
-  // The phone tier, which draws a smaller street crowd.
-  readonly phone: boolean;
   // Asks the map worker for a place; one of the two callbacks runs, in time.
   request(place: number, onReply: (reply: PlaceReply) => void, onFail: (why: string) => void): void;
   // Runs once the town view has hidden, before focus goes back.
@@ -61,7 +54,6 @@ interface Parts {
   fit: HTMLButtonElement;
   zoomIn: HTMLButtonElement;
   zoomOut: HTMLButtonElement;
-  pause: HTMLButtonElement;
   title: HTMLElement;
   about: HTMLElement;
   status: HTMLElement;
@@ -79,7 +71,6 @@ interface PlaceView {
   readonly parts: Parts;
   readonly hook: PlaceHook;
   readonly onFrame: FrameRequestCallback;
-  readonly reducedMotion: MediaQueryList;
   canvas: HTMLCanvasElement;
   renderer: PlaceRenderer | null;
   // The town atlas, loaded on the first entry; a failed load is tried again on the next entry or on Try again.
@@ -88,20 +79,14 @@ interface PlaceView {
   pageFailed: boolean;
   info: PlaceInfo | null;
   layout: PlaceLayout | null;
-  walkers: Walkers | null;
   failure: string;
   camera: PlaceCamera;
   fitted: boolean;
   deviceWidth: number;
   deviceHeight: number;
   dpr: number;
-  // How long the walkers have walked, and the last walking frame's time, or -1 after a frame that stood still.
-  walkedMs: number;
-  lastWalkMs: number;
   frameAsked: boolean;
   returnFocus: HTMLElement | null;
-  // Pause people, which stays set from one entry to the next.
-  paused: boolean;
 }
 
 // The town view covers the map, with the map's bar, over the ground the pass fills a place with.
@@ -117,11 +102,6 @@ const KEYS =
   'to the map.';
 // An arrow press moves two tiles.
 const ARROW_TILES = 2;
-// The most street-crowd walkers drawn (M3.1 part 2).
-const CROWD_ON_DESKTOPS = 3000;
-const CROWD_ON_PHONES = 600;
-// A frame later than this walks the walkers only this far, so a stalled tab never jumps them across the place.
-const MOST_WALK_MS = 100;
 // What a place holds, by its standing sprites' frames, as the picture's name tells it.
 const HOLDINGS: [part: string, one: string, many: string][] = [
   ['houses/', 'home', 'homes'],
@@ -169,7 +149,6 @@ function buildParts(): Parts {
     fit: make('button', { type: 'button', class: 'btn' }, 'Fit'),
     zoomIn: make('button', { type: 'button', class: 'btn', 'aria-label': 'Zoom in' }, '+'),
     zoomOut: make('button', { type: 'button', class: 'btn', 'aria-label': 'Zoom out' }, '\u{2212}'),
-    pause: make('button', { type: 'button', class: 'btn', 'aria-pressed': 'false' }, 'Pause people'),
     title: make('h2', { id: 'place-title' }),
     about: make('p', {}),
     status: make('p', { id: 'place-status', role: 'status' }),
@@ -177,9 +156,8 @@ function buildParts(): Parts {
     canvas: make('canvas', { 'aria-hidden': 'true' }),
     info: make('div', { class: 'ui-info' }),
   };
-  const { back, retry, fit, zoomIn, zoomOut, pause, title, about, status } = parts;
-  const more = new OverflowMenu(document, 'place-more', pause);
-  parts.bar.append(back, group(document, 'ui-title', title, about), zoomGroup(document, zoomOut, zoomIn, fit), more.root);
+  const { back, retry, fit, zoomIn, zoomOut, title, about, status } = parts;
+  parts.bar.append(back, group(document, 'ui-title', title, about), zoomGroup(document, zoomOut, zoomIn, fit));
   parts.info.append(group(document, 'ui-panel', status, retry));
   parts.picture.append(parts.canvas);
   parts.section.append(parts.keys, parts.bar, parts.picture, parts.info);
@@ -192,12 +170,11 @@ function createView(host: PlaceHost): PlaceView {
   const view: PlaceView = {
     host,
     parts,
-    hook: { open: false, place: -1, ready: false, backend: '', scale: 0, frameMs: 0, walkers: 0, walkerX: 0, walkerY: 0 },
-    onFrame: (nowMs) => {
+    hook: { open: false, place: -1, ready: false, backend: '', scale: 0, frameMs: 0 },
+    onFrame: () => {
       view.frameAsked = false;
-      drawNow(view, nowMs);
+      drawNow(view);
     },
-    reducedMotion: matchMedia('(prefers-reduced-motion: reduce)'),
     canvas: parts.canvas,
     renderer: null,
     page: null,
@@ -205,18 +182,14 @@ function createView(host: PlaceHost): PlaceView {
     pageFailed: false,
     info: null,
     layout: null,
-    walkers: null,
     failure: '',
     camera: { x: 0, y: 0, scale: PLACE_SCALES[0] },
     fitted: false,
     deviceWidth: 0,
     deviceHeight: 0,
     dpr: 1,
-    walkedMs: 0,
-    lastWalkMs: -1,
     frameAsked: false,
     returnFocus: null,
-    paused: false,
   };
   bindView(view);
   window.__place = view.hook;
@@ -238,22 +211,19 @@ function bindView(view: PlaceView): void {
   parts.fit.addEventListener('click', () => fit(view));
   parts.zoomIn.addEventListener('click', () => zoomAtCentre(parts.section, target, 1));
   parts.zoomOut.addEventListener('click', () => zoomAtCentre(parts.section, target, -1));
-  parts.pause.addEventListener('click', () => togglePause(view));
   // A drag captures the pointer on the section, which would take a button's click.
   for (const part of [parts.bar, parts.info]) part.addEventListener('pointerdown', (event) => event.stopPropagation());
-  view.reducedMotion.addEventListener('change', () => onMotionPreference(view));
   bindMapInput(parts.section, target);
   observeDeviceSize(parts.section, (width, height, dpr) => onSize(view, width, height, dpr));
 }
 
 function show(view: PlaceView, info: PlaceInfo, returnFocus: HTMLElement): void {
-  Object.assign(view, { info, returnFocus, layout: null, walkers: null, failure: '', fitted: false, walkedMs: 0, lastWalkMs: -1 });
-  Object.assign(view.hook, { open: true, place: info.place, ready: false, walkers: 0 });
+  Object.assign(view, { info, returnFocus, layout: null, failure: '', fitted: false });
+  Object.assign(view.hook, { open: true, place: info.place, ready: false });
   const { parts } = view;
   parts.title.textContent = info.name;
   parts.about.textContent = aboutText(info);
   parts.picture.setAttribute('aria-label', `${info.name}, being built`);
-  parts.pause.setAttribute('aria-pressed', String(view.paused));
   view.host.map.inert = true;
   parts.section.hidden = false;
   view.renderer = openRenderer(view);
@@ -286,7 +256,6 @@ function leave(view: PlaceView): void {
   view.parts.section.hidden = true;
   closeRenderer(view);
   view.layout = null;
-  view.walkers = null;
   view.host.map.inert = false;
   view.host.left();
   view.returnFocus?.focus();
@@ -312,20 +281,10 @@ function closeRenderer(view: PlaceView): void {
 }
 
 // A reply for a place left behind changes nothing.
-// The street crowd's first walkers, as many as this device draws within the 2 ms bar: phones and the Canvas2D fallback
-// draw fewer (owner, 10 October 2026).
-function crowdShown(view: PlaceView, reply: PlaceReply): number {
-  const fewer = view.host.phone || view.renderer?.backend === 'canvas2d';
-  return Math.min(reply.crowd.look.length, fewer ? CROWD_ON_PHONES : CROWD_ON_DESKTOPS);
-}
-
 function adopt(view: PlaceView, info: PlaceInfo, reply: PlaceReply): void {
   if (!view.hook.open || view.info !== info) return;
-  const n = crowdShown(view, reply);
-  const layout = withCrowd(reply.layout, reply.crowd, n);
+  const { layout } = reply;
   view.layout = layout;
-  view.walkers = new Walkers(layout, reply.walks, reply.crowd, n);
-  view.hook.walkers = view.walkers.count;
   view.renderer?.setPlace(layout);
   view.parts.picture.setAttribute('aria-label', holdingsText(info, layout));
   if (view.deviceWidth > 0 && view.deviceHeight > 0) openCamera(view);
@@ -395,13 +354,13 @@ function holdingsText(info: PlaceInfo, layout: PlaceLayout): string {
 }
 
 function statusText(view: PlaceView): string {
-  const { info, layout, walkers } = view;
+  const { info, layout } = view;
   if (!info) return '';
   if (view.failure) return `${info.name} could not be built: ${view.failure}`;
   if (view.pageFailed) return `${info.name} could not be drawn, as its art did not load.`;
-  if (!layout || !walkers || !view.page) return `Building ${info.name}…`;
+  if (!layout || !view.page) return `Building ${info.name}…`;
   const out = count(layout.people.look.length, 'person is', 'people are');
-  return `${info.name}, ${kindText(info)}: ${out} out, ${walkers.count.toLocaleString('en')} of them walking.`;
+  return `${info.name}, ${kindText(info)}: ${out} out.`;
 }
 
 // Rewriting the same text would make some screen readers announce it again. Try again shows only after a failure.
@@ -442,21 +401,6 @@ function fit(view: PlaceView): void {
   requestDraw(view);
 }
 
-function togglePause(view: PlaceView): void {
-  view.paused = !view.paused;
-  view.parts.pause.setAttribute('aria-pressed', String(view.paused));
-  requestDraw(view);
-}
-
-// Read live: switched on, the walkers go back to where place.py put them; switched off, they walk on.
-function onMotionPreference(view: PlaceView): void {
-  if (view.reducedMotion.matches && view.walkers) {
-    view.walkers.standStill();
-    view.walkedMs = 0;
-  }
-  requestDraw(view);
-}
-
 // Drawn at once, inside the observer, so a resized canvas never shows a blank frame before the next one.
 function onSize(view: PlaceView, width: number, height: number, dpr: number): void {
   Object.assign(view, { deviceWidth: width, deviceHeight: height, dpr });
@@ -464,7 +408,7 @@ function onSize(view: PlaceView, width: number, height: number, dpr: number): vo
   view.renderer.resize(width, height, dpr);
   if (!view.fitted) openCamera(view);
   else moveCamera(view, view.camera);
-  drawNow(view, performance.now());
+  drawNow(view);
 }
 
 function requestDraw(view: PlaceView): void {
@@ -473,40 +417,19 @@ function requestDraw(view: PlaceView): void {
   requestAnimationFrame(view.onFrame);
 }
 
-function walking(view: PlaceView): boolean {
-  return view.walkers !== null && view.walkers.count > 0 && !view.paused && !view.reducedMotion.matches;
-}
-
-// The walkers' clock runs only on walking frames, so a pause or a hidden tab holds them where they stand. It counts whole
-// ms, small integers that never box into heap numbers as a frame's fractional times would.
-function walk(view: PlaceView, walkers: Walkers, nowMs: number): void {
-  const now = Math.floor(nowMs);
-  if (view.lastWalkMs >= 0) view.walkedMs += Math.min(MOST_WALK_MS, Math.max(0, now - view.lastWalkMs));
-  view.lastWalkMs = now;
-  walkers.walk(view.walkedMs);
-}
-
 // The backend too, which a lost context can turn to Canvas2D.
-function readHook(view: PlaceView, renderer: PlaceRenderer, layout: PlaceLayout, walkers: Walkers | null): void {
+function readHook(view: PlaceView, renderer: PlaceRenderer): void {
   const { hook } = view;
   hook.ready = view.page !== null;
   hook.backend = renderer.backend;
   hook.scale = view.camera.scale;
-  if (walkers && walkers.count > 0) {
-    hook.walkerX = layout.people.x[walkers.person(0)];
-    hook.walkerY = layout.people.y[walkers.person(0)];
-  }
 }
 
-function drawNow(view: PlaceView, nowMs: number): void {
-  const { renderer, layout, walkers } = view;
+function drawNow(view: PlaceView): void {
+  const { renderer, layout } = view;
   if (!renderer || !layout || view.deviceWidth === 0 || view.deviceHeight === 0) return;
   const startMs = performance.now();
-  const walks = walkers !== null && walking(view);
-  if (walks) walk(view, walkers, nowMs);
-  else view.lastWalkMs = -1;
   renderer.draw(view.camera);
   view.hook.frameMs = performance.now() - startMs;
-  readHook(view, renderer, layout, walkers);
-  if (walks) requestDraw(view);
+  readHook(view, renderer);
 }
