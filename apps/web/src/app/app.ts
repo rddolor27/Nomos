@@ -9,6 +9,7 @@ import {
   type Tier,
   type WorkerMessage,
 } from '@nomos/sim-protocol';
+import type { PlaceLayout } from '@nomos/sim-protocol/place';
 import type { Boot } from './boot.ts';
 import { startAgents } from './tiers.ts';
 
@@ -17,6 +18,7 @@ const FRAME_SAMPLES = 60;
 
 export type StatsListener = (tick: number, systemMs: Record<string, number>) => void;
 export type EconomyListener = (message: EconomyMessage) => void;
+export type TownListener = (layout: PlaceLayout, name: string) => void;
 
 export interface Start {
   seed: number;
@@ -55,6 +57,14 @@ export interface App {
   // Fits the whole town in the view, centred, as the camera is at the first frame. A view too small to measure fits on its
   // first real size.
   fit(): void;
+  // True from the page's open message to the worker's opened: the worker runs a day out first, and a query sent meanwhile
+  // is answered for the new town.
+  opening: boolean;
+  // Swaps the town the view fits and the renderer draws, fits the camera to it with a camera of its own, and tells the
+  // listeners its layout and name. The new town's blobs come in its first snapshot.
+  showTown(map: MapV1, layout: PlaceLayout, name: string): void;
+  // The listener gets the town last shown at once, if one has been, so a Town skin that loads late draws it.
+  onTown(listener: TownListener): void;
 }
 
 declare global {
@@ -188,6 +198,8 @@ export async function startApp(boot: Boot, doc: Document, start: Start): Promise
   const listeners: StatsListener[] = [];
   const economyListeners: EconomyListener[] = [];
   let economy: EconomyMessage | null = null;
+  const townListeners: TownListener[] = [];
+  let town: { layout: PlaceLayout; name: string } | null = null;
   const app: App = {
     renderer,
     worker,
@@ -223,6 +235,18 @@ export async function startApp(boot: Boot, doc: Document, start: Start): Promise
     fit() {
       scene.fitted = false;
       fit(app, scene);
+    },
+    opening: false,
+    showTown(next, layout, name) {
+      scene.map = next;
+      renderer.setMap(next);
+      app.fit();
+      town = { layout, name };
+      townListeners.forEach((listener) => listener(layout, name));
+    },
+    onTown(listener) {
+      townListeners.push(listener);
+      if (town) listener(town.layout, town.name);
     },
   };
 

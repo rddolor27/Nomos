@@ -15,9 +15,10 @@ import {
 import type { PlaceError, PlaceReply, PlaceRequest } from '@nomos/sim-protocol/place';
 import type { MapAppMessage, MapWorkerMessage, WorldMap } from '@nomos/sim-protocol/world-map';
 import type { App } from '../app/app.ts';
-import { cameraOn, goToGroups, mountGoTo, placeInFocus, placeInfo, placeUnder } from './goto.ts';
+import { cameraOn, goToGroups, mountGoTo, placeInFocus, placeInfo, placeUnder, type PlaceInfo } from './goto.ts';
 import { mountLabels, type Labels } from './labels.ts';
 import { legendRows, mountLegend } from './legend.ts';
+import { HOME_PLACE, LiveTown } from './live-town.ts';
 import { bindMapInput, zoomAtCentre, type MapInputTarget } from './map-input.ts';
 import type { PlaceHost } from './place-view.ts';
 import { OverflowMenu, addToolbarStyles, group, iconButton, zoomGroup } from '../panels/toolbar.ts';
@@ -73,6 +74,8 @@ interface MapPanel {
   readonly parts: Parts;
   // The town's view and HUD, inert under the map (Ruling 8).
   readonly town: readonly HTMLElement[];
+  // The town the sim runs, which a settlement entered from the map replaces (M2.2c).
+  readonly live: LiveTown;
   readonly hook: MapHook;
   readonly onFrame: FrameRequestCallback;
   canvas: HTMLCanvasElement;
@@ -82,6 +85,8 @@ interface MapPanel {
   world: MapWorkerMessage | null;
   making: boolean;
   failure: string;
+  // What entering a settlement last said: that it is opening, or why it could not.
+  notice: string;
   page: AtlasPage | null;
   pageFailed: boolean;
   labels: Labels | null;
@@ -135,7 +140,7 @@ let mapPanel: MapPanel | null = null;
 
 // The Map control's one call. The first builds the panel; every call shows it and focuses it.
 export function openMap(app: App, returnFocus: HTMLElement): void {
-  mapPanel ??= createPanel(app);
+  mapPanel ??= createPanel(app, returnFocus);
   show(mapPanel, returnFocus);
 }
 
@@ -195,7 +200,8 @@ function buildParts(doc: Document): Parts {
   return parts;
 }
 
-function createPanel(app: App): MapPanel {
+// mapButton is the Map control, the one caller, which the town's way back to Highcourt sits beside.
+function createPanel(app: App, mapButton: HTMLElement): MapPanel {
   const parts = buildParts(document);
   const town = [byId(document, 'view'), byId(document, 'hud')];
   town[0].after(parts.section);
@@ -203,6 +209,7 @@ function createPanel(app: App): MapPanel {
     app,
     parts,
     town,
+    live: new LiveTown(app, { mapButton, status: byId(document, 'status'), view: town[0] }, () => enterHome(panel)),
     hook: { open: false, view: 'country', frameMs: 0, camera: null, map: null },
     onFrame: () => {
       panel.frameAsked = false;
@@ -215,6 +222,7 @@ function createPanel(app: App): MapPanel {
     world: null,
     making: false,
     failure: '',
+    notice: '',
     page: null,
     pageFailed: false,
     labels: null,
@@ -281,6 +289,7 @@ function show(panel: MapPanel, returnFocus: HTMLElement): void {
   if (!panel.hook.open) {
     panel.resumeTown = !panel.app.paused;
     if (panel.resumeTown) panel.app.setPaused(true);
+    panel.notice = '';
     setTownInert(panel, true);
     panel.parts.section.hidden = false;
     panel.hook.open = true;
@@ -410,12 +419,18 @@ function placeHost(panel: MapPanel): PlaceHost {
   return panel.host;
 }
 
-// The town view, the place pass and the town atlas load on the first entry only, in a chunk of their own.
+// A settlement opens live in the main view and a wonder as a still vista over the map.
 function enter(panel: MapPanel, place: number, returnFocus: HTMLElement): void {
   if (!panel.world || panel.placeOpen || place < 0) return;
+  const info = placeInfo(panel.world.map, panel.world.names, place);
+  if (info.kind === 'wonder') enterWonder(panel, info, returnFocus);
+  else enterTown(panel, info);
+}
+
+// The town view, the place pass and the town atlas load on the first entry only, in a chunk of their own.
+function enterWonder(panel: MapPanel, info: PlaceInfo, returnFocus: HTMLElement): void {
   panel.placeOpen = true;
   const entry = ++panel.entries;
-  const info = placeInfo(panel.world.map, panel.world.names, place);
   import('./place-view.ts')
     .then(({ openPlace }) => {
       if (entry === panel.entries) openPlace(placeHost(panel), info, returnFocus);
@@ -425,6 +440,47 @@ function enter(panel: MapPanel, place: number, returnFocus: HTMLElement): void {
       requestDraw(panel);
       console.error(error);
     });
+}
+
+// The map worker lays the settlement out and writes its ground, and the sim worker runs it from there (M2.2c). The town
+// already live needs no switch, so entering it only closes the map. A map closed while the place is built opens nothing.
+function enterTown(panel: MapPanel, info: PlaceInfo): void {
+  const { live } = panel;
+  if (info.place === live.place) {
+    close(panel);
+    return;
+  }
+  if (live.busy) return;
+  const entry = ++panel.entries;
+  panel.notice = `Opening ${info.name}…`;
+  showStatus(panel);
+  requestPlace(
+    panel,
+    info.place,
+    (reply) => {
+      if (entry !== panel.entries) return;
+      if (reply.map === null) {
+        failOpening(panel, `${info.name} could not be opened: its place has no ground.`);
+        return;
+      }
+      panel.notice = '';
+      live.open({ place: info.place, name: info.name, layout: reply.layout, ground: reply.map });
+      close(panel);
+    },
+    (why) => failOpening(panel, `${info.name} could not be opened: ${why}`),
+  );
+}
+
+// The Back to Highcourt control, which works with the map closed.
+function enterHome(panel: MapPanel): void {
+  if (panel.world) enterTown(panel, placeInfo(panel.world.map, panel.world.names, HOME_PLACE));
+}
+
+// The map's status line says why while the map shows, and the HUD's alert for after it closes, or if it was closed already.
+function failOpening(panel: MapPanel, why: string): void {
+  panel.notice = why;
+  showStatus(panel);
+  panel.live.say(why);
 }
 
 // A world that arrives after a closing waits for the next opening, where show mounts it.
@@ -498,6 +554,7 @@ function loadPage(panel: MapPanel): void {
 function statusText(panel: MapPanel): string {
   if (panel.failure) return `The map could not be made: ${panel.failure}`;
   if (!panel.world) return 'Making the map…';
+  if (panel.notice) return panel.notice;
   const ready = `${panel.world.map.countries.capital.length} countries; the legend lists them.`;
   return panel.pageFailed ? `${ready} The map shows flat colours, as its art did not load.` : ready;
 }

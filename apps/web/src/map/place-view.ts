@@ -115,7 +115,7 @@ const HOLDINGS: [part: string, one: string, many: string][] = [
 
 let placeView: PlaceView | null = null;
 
-// The map view's one call, made when a place is entered.
+// The map view's one call, made when a wonder is entered; a settlement opens live in the main view instead (M2.2c).
 export function openPlace(host: PlaceHost, info: PlaceInfo, returnFocus: HTMLElement): void {
   placeView ??= createView(host);
   show(placeView, info, returnFocus);
@@ -321,11 +321,9 @@ function loadPage(view: PlaceView): void {
   );
 }
 
-// Such as "a town of 1,800 people in Velantia"; every tier name starts with a consonant.
+// Such as "a wonder in Velantia".
 function kindText(info: PlaceInfo): string {
-  const where = info.country ? ` in ${info.country}` : '';
-  if (info.kind === 'wonder') return `a wonder${where}`;
-  return `a ${info.kind} of ${info.population.toLocaleString('en')} people${where}`;
+  return info.country ? `a wonder in ${info.country}` : 'a wonder';
 }
 
 function aboutText(info: PlaceInfo): string {

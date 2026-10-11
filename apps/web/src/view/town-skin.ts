@@ -12,6 +12,10 @@ function whenIdle(run: () => void): void {
   else setTimeout(run, 0);
 }
 
+function townLabel(name: string): string {
+  return `${name}, with every agent as a blob`;
+}
+
 // Over the dots' canvas, hidden until the town first draws.
 function townCanvas(): HTMLCanvasElement {
   const canvas = document.createElement('canvas');
@@ -21,7 +25,7 @@ function townCanvas(): HTMLCanvasElement {
   canvas.style.top = '0';
   canvas.style.left = '0';
   canvas.setAttribute('role', 'img');
-  canvas.setAttribute('aria-label', 'Highcourt, with every agent as a blob');
+  canvas.setAttribute('aria-label', townLabel('Highcourt'));
   return canvas;
 }
 
@@ -43,12 +47,43 @@ function requestTown(): Promise<PlaceLayout> {
   });
 }
 
-async function lendTown(app: App, canvas: HTMLCanvasElement): Promise<void> {
-  const [layout, page] = await Promise.all([requestTown(), townAtlas()]);
-  // The town follows the dots' backend, so ?canvas draws both in Canvas2D.
-  const backend = app.renderer.backend === 'canvas2d' ? 'canvas2d' : 'auto';
-  app.renderer.setTown(new TownSkin(canvas, layout, page, { backend }));
-  app.redraw();
+// The Town skin as the page lends it, and the town it draws: Highcourt until the sim opens another (M2.2c). The app tells
+// it of each town opened, and of the last one if it was opened before the skin was lent, so the skin always draws the town
+// the sim runs.
+class TownSkinMount {
+  private readonly app: App;
+  private readonly canvas: HTMLCanvasElement;
+  private skin: TownSkin | null;
+  private shown: { layout: PlaceLayout; name: string } | null;
+
+  constructor(app: App, canvas: HTMLCanvasElement) {
+    this.app = app;
+    this.canvas = canvas;
+    this.skin = null;
+    this.shown = null;
+    app.onTown(this.show.bind(this));
+  }
+
+  async lend(): Promise<void> {
+    const [home, page] = await Promise.all([requestTown(), townAtlas()]);
+    // The town follows the dots' backend, so ?canvas draws both in Canvas2D.
+    const backend = this.app.renderer.backend === 'canvas2d' ? 'canvas2d' : 'auto';
+    const { shown } = this;
+    const skin = new TownSkin(this.canvas, shown?.layout ?? home, page, { backend });
+    // The Canvas2D fallback draws on a clone of the canvas, so the name goes on the skin's own.
+    if (shown) skin.canvas.setAttribute('aria-label', townLabel(shown.name));
+    this.skin = skin;
+    this.app.renderer.setTown(skin);
+    this.app.redraw();
+  }
+
+  // A frame the atlas lacks throws here, and the skin keeps the town it had. The app redraws.
+  private show(layout: PlaceLayout, name: string): void {
+    this.shown = { layout, name };
+    if (this.skin === null) return;
+    this.skin.setLayout(layout);
+    this.skin.canvas.setAttribute('aria-label', townLabel(name));
+  }
 }
 
 // The Town skin (interfaces.md, The Town skin): Highcourt from the map worker and the town atlas, both fetched in idle
@@ -57,8 +92,9 @@ async function lendTown(app: App, canvas: HTMLCanvasElement): Promise<void> {
 export function mountTownSkin(app: App): void {
   const canvas = townCanvas();
   element(document, '#view').append(canvas);
+  const mount = new TownSkinMount(app, canvas);
   whenIdle(() => {
-    lendTown(app, canvas).catch((error: unknown) => {
+    mount.lend().catch((error: unknown) => {
       console.error('The Town skin did not load, so the town stays dots:', error);
     });
   });

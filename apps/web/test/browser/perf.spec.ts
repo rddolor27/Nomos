@@ -14,8 +14,6 @@ const FRAMES = 120;
 // tier changes no timed frame. The phone tier keeps the town's play before the click from holding SwiftShader's main
 // thread; reduced motion would pause it too.
 const TOWN = '/?seed=42&tier=phone';
-// Seed 14's first capital holds 526,831 people, so its street crowd fills the 3,000 cap; the phone tier would draw 600.
-const CROWDED = '/?seed=14&tier=phone-plus';
 const ATLAS_PAGE = /\/atlas\/map\.webp$/;
 // A press holds the map still for its first 5 CSS px, a tap's slop (map-input.ts), so the timed moves start past it.
 const TAP_SLOP_CSS_PX = 5;
@@ -71,15 +69,26 @@ async function timePan(page: Page, view: Timed = 'map'): Promise<number[]> {
   return times;
 }
 
-// The first country's capital, the largest kind of place, entered from the Go to list and its Enter button.
-async function enterCapital(page: Page, query: string): Promise<void> {
+// The first wonder, the one kind of place that still opens over the map (a settlement opens live in the town's own view):
+// a tap on its cell in the fitted map jumps to it, and its Enter button opens it.
+async function enterWonder(page: Page, query: string): Promise<void> {
   await page.goto(query);
   await page.getByRole('button', { name: 'Map', exact: true }).click();
   await expect(page.locator('#map .map-legend li')).not.toHaveCount(0, { timeout: 60_000 });
-  const list = page.getByRole('combobox', { name: 'Go to a settlement' });
-  const capital = (await list.locator('optgroup').first().locator('option').first().textContent()) ?? '';
-  await list.selectOption({ label: capital });
-  await page.getByRole('button', { name: `Enter ${capital}` }).click();
+  await expect.poll(() => page.evaluate(() => window.__map?.camera !== null), { timeout: 30_000 }).toBe(true);
+  const box = await page.locator('#map canvas').boundingBox();
+  const spot = await page.evaluate(() => {
+    const { map, camera } = window.__map ?? {};
+    if (!map || !camera) throw new Error('the map has no world yet');
+    const cell = map.wonders.cell[0];
+    return [
+      (((cell % map.width) + 0.5 - camera.x) * camera.cellPx) / devicePixelRatio,
+      ((Math.floor(cell / map.width) + 0.5 - camera.y) * camera.cellPx) / devicePixelRatio,
+    ];
+  });
+  if (!box) throw new Error('the map canvas is not on screen');
+  await page.mouse.click(box.x + spot[0], box.y + spot[1]);
+  await page.getByRole('button', { name: /^Enter / }).click();
   await expect.poll(() => page.evaluate(() => window.__place?.ready), { timeout: 30_000 }).toBe(true);
 }
 
@@ -157,17 +166,17 @@ test('pans the Country and Region views within 2 ms a frame', async ({ page, bro
   expect.soft(region.median, "the Region view's median frame, in ms").toBeLessThanOrEqual(MAP_FRAME_MS);
 });
 
-// The town view lives in the map's panel, so the map's 2 ms bar holds for it too (M3.1 Task 7). ?canvas draws the town, the
-// map and the town view in Canvas2D.
-test('pans the town view of a capital within 2 ms a frame, in WebGL2 and in Canvas2D', async ({ page, browser }) => {
+// The town view lives in the map's panel, so the map's 2 ms bar holds for it too (M3.1 Task 7). Since M2.2c only a wonder's
+// vista opens there. ?canvas draws the town, the map and the town view in Canvas2D.
+test("pans a wonder's town view within 2 ms a frame, in WebGL2 and in Canvas2D", async ({ page, browser }) => {
   test.setTimeout(240_000);
-  await enterCapital(page, CROWDED);
+  await enterWonder(page, TOWN);
   const webgl = summarise(await timePan(page, 'place'));
   const shown = await page.evaluate(() => {
     const canvas = document.querySelector<HTMLCanvasElement>('#place canvas');
-    return { backend: window.__place?.backend, size: `${canvas?.width} x ${canvas?.height}` };
+    return { backend: window.__place?.backend, scale: window.__place?.scale, size: `${canvas?.width} x ${canvas?.height}` };
   });
-  await enterCapital(page, `${CROWDED}&canvas`);
+  await enterWonder(page, `${TOWN}&canvas`);
   const canvas = summarise(await timePan(page, 'place'));
   const fallback = await page.evaluate(() => window.__place?.backend);
   expect([shown.backend, fallback]).toEqual(['webgl2', 'canvas2d']);
@@ -175,7 +184,10 @@ test('pans the town view of a capital within 2 ms a frame, in WebGL2 and in Canv
   const notes = [
     { type: 'Town view, WebGL2', description: inMs(webgl) },
     { type: 'Town view, Canvas2D', description: inMs(canvas) },
-    { type: 'canvas', description: `${shown.size} device px at DPR 1, at 2 device px per art px; desktop CPU, unthrottled` },
+    {
+      type: 'canvas',
+      description: `${shown.size} device px at DPR 1, at ${shown.scale} device px per art px; desktop CPU, unthrottled`,
+    },
     { type: 'browser', description: `Chromium ${browser.version()}` },
     {
       type: 'load average',

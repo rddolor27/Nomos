@@ -4,7 +4,8 @@ import { WEB } from './web.ts';
 
 test.use({ baseURL: WEB });
 
-// The map's world comes from the seed alone, and the phone tier keeps the town light (M3.1's plan, Task 7).
+// The still vista a wonder opens into, over the map. A settlement opens live in the main view instead (towns.spec.ts). The
+// map's world comes from the seed alone, and the phone tier keeps the town light (M3.1's plan, Task 7).
 const TOWN = '/?seed=42&tier=phone';
 const TOWN_VIEW_LOAD = /\/place-view-[^/]+\.js$|\/atlas\/atlas\.(json|webp)$/;
 // A drawn place shows dozens of colours; a blank or flat canvas, one or two.
@@ -56,6 +57,27 @@ async function goToCapital(page: Page): Promise<string> {
   return capital;
 }
 
+// The first wonder, which the list lacks: jumped to by the Fit view and a tap on its cell, which centres it and puts it in
+// focus.
+async function goToWonder(page: Page): Promise<string> {
+  await page.getByRole('button', { name: 'Fit' }).click();
+  await page.waitForTimeout(300);
+  const box = await page.locator('#map canvas').boundingBox();
+  const spot = await page.evaluate(() => {
+    const { map, camera } = window.__map ?? {};
+    if (!map || !camera) throw new Error('the map has no world yet');
+    const cell = map.wonders.cell[0];
+    const x = ((cell % map.width) + 0.5 - camera.x) * camera.cellPx;
+    const y = (Math.floor(cell / map.width) + 0.5 - camera.y) * camera.cellPx;
+    return [x / devicePixelRatio, y / devicePixelRatio];
+  });
+  if (!box) throw new Error('the map canvas is not on screen');
+  await page.mouse.click(box.x + spot[0], box.y + spot[1]);
+  const enter = page.getByRole('button', { name: /^Enter / });
+  await expect(enter).toBeVisible();
+  return ((await enter.textContent()) ?? '').replace(/^Enter /, '');
+}
+
 async function placeShown(page: Page): Promise<void> {
   await expect(page.locator('#place')).toBeVisible();
   await expect.poll(() => page.evaluate(() => window.__place?.ready), { timeout: 30_000 }).toBe(true);
@@ -85,18 +107,18 @@ async function coloursIn(page: Page, png: Buffer): Promise<number> {
 }
 
 // Each engine draws the place through its own WebGL2, so this one runs in all three.
-test('enters a settlement from the map, draws it, and returns to the map as it was', async ({ page }) => {
+test("enters a wonder's vista from the map, draws it, and returns to the map as it was", async ({ page }) => {
   const loaded: string[] = [];
   page.on('request', (request) => {
     if (TOWN_VIEW_LOAD.test(request.url())) loaded.push(new URL(request.url()).pathname);
   });
   await openMap(page);
-  const capital = await goToCapital(page);
+  const name = await goToWonder(page);
   const before = await mapCamera(page);
   // The first screen's Town skin loads the atlas in idle time, so only the town view's own chunk waits for an entry.
   expect(loaded.filter((path) => path.startsWith('/assets/')), 'the town view, before any entry').toEqual([]);
 
-  const enter = page.getByRole('button', { name: `Enter ${capital}` });
+  const enter = page.getByRole('button', { name: `Enter ${name}` });
   await enter.click();
   await placeShown(page);
   await expect(page.getByRole('button', { name: 'Back to map' })).toBeFocused();
@@ -106,11 +128,11 @@ test('enters a settlement from the map, draws it, and returns to the map as it w
     '/atlas/atlas.json',
     '/atlas/atlas.webp',
   ]);
-  await expect(page.locator('#place h2')).toHaveText(capital);
+  await expect(page.locator('#place h2')).toHaveText(name);
   await expect(page.locator('#place-status')).toHaveText(
-    new RegExp(`^${capital}, a capital of [\\d,]+ people in .+: [\\d,]+ people are out\\.$`),
+    new RegExp(`^${name}, a wonder in .+: [\\d,]+ (person is|people are) out\\.$`),
   );
-  await expect(page.getByRole('img', { name: new RegExp(`^${capital}: .*homes.* and [\\d,]+ people$`) })).toBeVisible();
+  await expect(page.getByRole('img', { name: new RegExp(`^${name}: .*[\\d,]+ (person|people)$`) })).toBeVisible();
   expect(await coloursIn(page, await page.locator('#place canvas').screenshot())).toBeGreaterThan(MANY_COLOURS);
 
   await page.keyboard.press('Escape');
@@ -125,22 +147,27 @@ test.describe('in one engine', () => {
 
   test('opens the place nearest the cursor past the closest step, and goes back past the smallest scale', async ({ page }) => {
     await openMap(page);
-    const capital = await goToCapital(page);
+    const name = await goToWonder(page);
     const box = await page.locator('#map canvas').boundingBox();
     if (!box) throw new Error('the map canvas is not on screen');
-    // The jump lands at 64 CSS px a cell; the ladder stops at 128, two notches on, and the third opens the capital.
+    // The jump lands at 64 CSS px a cell; the ladder stops at 128, two notches on, and the third opens the wonder.
     await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
     for (let notch = 0; notch < 3; notch++) {
       await page.mouse.wheel(0, -100);
       await page.waitForTimeout(300);
     }
     await placeShown(page);
-    await expect(page.locator('#place h2')).toHaveText(capital);
-    // It opens at 2 CSS px per art px; the smallest scale is 1, and one notch past it leaves.
-    expect(await page.evaluate(() => window.__place?.scale)).toBe(2);
-    await page.mouse.wheel(0, 100);
-    await expect.poll(() => page.evaluate(() => window.__place?.scale)).toBe(1);
-    await page.waitForTimeout(300);
+    await expect(page.locator('#place h2')).toHaveText(name);
+    // The small vista opens at the scale that fits the view, never under 2 CSS px per art px. Each notch out is a step down
+    // to the smallest scale, 1, and one notch past it leaves.
+    let scale = (await page.evaluate(() => window.__place?.scale)) ?? 0;
+    expect(scale).toBeGreaterThanOrEqual(2);
+    while (scale > 1) {
+      await page.mouse.wheel(0, 100);
+      await expect.poll(() => page.evaluate(() => window.__place?.scale)).toBeLessThan(scale);
+      scale = (await page.evaluate(() => window.__place?.scale)) ?? 0;
+      await page.waitForTimeout(300);
+    }
     await page.mouse.wheel(0, 100);
     await expect(page.locator('#place')).toBeHidden();
     await expect(page.locator('#map')).toBeFocused();
@@ -148,18 +175,16 @@ test.describe('in one engine', () => {
 
   test('names the picture afresh on every entry', async ({ page }) => {
     await openMap(page);
-    const capital = await goToCapital(page);
-    await page.getByRole('button', { name: `Enter ${capital}` }).click();
+    const name = await goToWonder(page);
+    const enter = page.getByRole('button', { name: `Enter ${name}` });
+    await enter.click();
     await placeShown(page);
-    await expect(page.getByRole('img', { name: new RegExp(`^${capital}: `) })).toBeVisible();
+    await expect(page.getByRole('img', { name: new RegExp(`^${name}: `) })).toBeVisible();
     await page.keyboard.press('Escape');
-    // The first country's next settlement: the town view's canvas has been swapped since the first entry.
-    const other = (await goToList(page).locator('optgroup').first().locator('option').nth(1).textContent()) ?? '';
-    await goToList(page).selectOption({ label: other });
-    await page.getByRole('button', { name: `Enter ${other}` }).click();
+    // The town view's canvas has been swapped since the first entry, and the name stays on its wrapper.
+    await enter.click();
     await placeShown(page);
-    await expect(page.getByRole('img', { name: new RegExp(`^${other}: `) })).toBeVisible();
-    await expect(page.getByRole('img', { name: new RegExp(`^${capital}: `) })).toHaveCount(0);
+    await expect(page.getByRole('img', { name: new RegExp(`^${name}: `) })).toHaveCount(1);
   });
 
   test('never opens a town view whose map closed while it loaded', async ({ page }) => {
@@ -172,8 +197,8 @@ test.describe('in one engine', () => {
       await route.continue();
     });
     await openMap(page);
-    const capital = await goToCapital(page);
-    await page.getByRole('button', { name: `Enter ${capital}` }).click();
+    const name = await goToWonder(page);
+    await page.getByRole('button', { name: `Enter ${name}` }).click();
     await page.getByRole('button', { name: 'Close map' }).click();
     await expect(page.locator('#map')).toBeHidden();
     release();
@@ -182,9 +207,9 @@ test.describe('in one engine', () => {
     await expect(page.locator('#hud')).toHaveJSProperty('inert', false);
     // The map opens again, draws, and enters on request.
     await page.getByRole('button', { name: 'Map', exact: true }).click();
-    await page.getByRole('button', { name: `Enter ${capital}` }).click();
+    await page.getByRole('button', { name: `Enter ${name}` }).click();
     await expect(page.locator('#place')).toBeVisible();
-    await expect(page.locator('#place h2')).toHaveText(capital);
+    await expect(page.locator('#place h2')).toHaveText(name);
   });
 
   test('tells of a place the worker could not build, with Try again, and keeps the map whole', async ({ page, context }) => {
@@ -192,10 +217,10 @@ test.describe('in one engine', () => {
     // Without its builder chunk, the map's worker answers the request with a place-error for that place.
     await context.route(/\/place-builder-[\w-]{8}\.js$/, (route) => route.abort());
     await showMap(page);
-    const capital = await goToCapital(page);
-    await page.getByRole('button', { name: `Enter ${capital}` }).click();
+    const name = await goToWonder(page);
+    await page.getByRole('button', { name: `Enter ${name}` }).click();
     await expect(page.locator('#place-status')).toHaveText(
-      new RegExp(`^${capital} could not be built: .*(fetch|import|load)`, 'i'),
+      new RegExp(`^${name} could not be built: .*(fetch|import|load)`, 'i'),
     );
     await expect(page.getByRole('button', { name: 'Try again' })).toBeVisible();
     await page.getByRole('button', { name: 'Back to map' }).click();
@@ -216,42 +241,17 @@ test.describe('in one engine', () => {
     await expect(page.locator('#map')).toBeFocused();
   });
 
-  test('opens the settlement in focus on a tap, and Back to map returns', async ({ page }) => {
+  test('opens the wonder in focus on a tap, and Back to map returns', async ({ page }) => {
     await openMap(page);
-    await goToCapital(page);
+    const name = await goToWonder(page);
     const box = await page.locator('#map canvas').boundingBox();
     if (!box) throw new Error('the map canvas is not on screen');
-    await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
-    await placeShown(page);
-    await page.getByRole('button', { name: 'Back to map' }).click();
-    await expect(page.locator('#place')).toBeHidden();
-    await expect(page.locator('#map')).toBeFocused();
-  });
-
-  test("enters a wonder's vista: a tap centres it, and a second tap opens it", async ({ page }) => {
-    await openMap(page);
-    await goToCapital(page);
-    // The first wonder, jumped to by the Fit view and a tap on its cell.
-    await page.getByRole('button', { name: 'Fit' }).click();
-    await page.waitForTimeout(300);
-    const box = await page.locator('#map canvas').boundingBox();
-    const spot = await page.evaluate(() => {
-      const { map, camera } = window.__map ?? {};
-      if (!map || !camera) throw new Error('the map has no world yet');
-      const cell = map.wonders.cell[0];
-      const x = ((cell % map.width) + 0.5 - camera.x) * camera.cellPx;
-      const y = (Math.floor(cell / map.width) + 0.5 - camera.y) * camera.cellPx;
-      return [x / devicePixelRatio, y / devicePixelRatio];
-    });
-    if (!box) throw new Error('the map canvas is not on screen');
-    await page.mouse.click(box.x + spot[0], box.y + spot[1]);
-    const enter = page.getByRole('button', { name: /^Enter / });
-    await expect(enter).toBeVisible();
-    const name = ((await enter.textContent()) ?? '').replace(/^Enter /, '');
     await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
     await placeShown(page);
     await expect(page.locator('#place h2')).toHaveText(name);
-    await expect(page.locator('#place-status')).toHaveText(new RegExp(`^${name}, a wonder in .+: [\\d,]+ (person is|people are) out\\.$`));
+    await page.getByRole('button', { name: 'Back to map' }).click();
+    await expect(page.locator('#place')).toBeHidden();
+    await expect(page.locator('#map')).toBeFocused();
   });
 
   test('tries the art again after it failed to load, on the next entry and on Try again, keeping focus in the view', async ({ page }) => {
@@ -265,25 +265,25 @@ test.describe('in one engine', () => {
     });
     await page.route('**/atlas/atlas.json', missing);
     await showMap(page);
-    const capital = await goToCapital(page);
-    const enter = page.getByRole('button', { name: `Enter ${capital}` });
+    const name = await goToWonder(page);
+    const enter = page.getByRole('button', { name: `Enter ${name}` });
     const status = page.locator('#place-status');
     const again = page.getByRole('button', { name: 'Try again' });
     await enter.click();
-    await expect(status).toHaveText(`${capital} could not be drawn, as its art did not load.`);
+    await expect(status).toHaveText(`${name} could not be drawn, as its art did not load.`);
     await expect(again).toBeVisible();
 
     await page.keyboard.press('Escape');
     await enter.click();
     await expect.poll(() => asked, { message: 'atlas.json, asked for again on the second entry' }).toBe(2);
-    await expect(status).toHaveText(`${capital} could not be drawn, as its art did not load.`);
+    await expect(status).toHaveText(`${name} could not be drawn, as its art did not load.`);
 
     await page.unroute('**/atlas/atlas.json', missing);
     await again.focus();
     await page.keyboard.press('Enter');
     await placeShown(page);
     await expect(again).toBeHidden();
-    await expect(status).toHaveText(new RegExp(`^${capital}, a capital of`));
+    await expect(status).toHaveText(new RegExp(`^${name}, a wonder in`));
     await expect(page.getByRole('button', { name: 'Back to map' })).toBeFocused();
     await page.keyboard.press('Escape');
     await expect(page.locator('#place')).toBeHidden();
@@ -291,9 +291,9 @@ test.describe('in one engine', () => {
 
   test('passes axe in the town view and on the map with Enter showing', async ({ page }) => {
     await openMap(page);
-    const capital = await goToCapital(page);
+    const name = await goToWonder(page);
     const onMap = await new AxeBuilder({ page }).include('#map').analyze();
-    await page.getByRole('button', { name: `Enter ${capital}` }).click();
+    await page.getByRole('button', { name: `Enter ${name}` }).click();
     await placeShown(page);
     const inTown = await new AxeBuilder({ page }).include('#place').analyze();
     const found = [...onMap.violations, ...inTown.violations].map(({ id, impact, nodes }) => ({

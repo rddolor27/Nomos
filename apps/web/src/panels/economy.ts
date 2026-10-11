@@ -1,4 +1,4 @@
-import { BREAD, FEED_DAYS, FUEL, GOOD_NAMES, type EconomyMessage } from '@nomos/sim-protocol';
+import { BREAD, FEED_DAYS, FUEL, GOOD_NAMES, type EconomyMessage, type WorkerMessage } from '@nomos/sim-protocol';
 import type { App } from '../app/app.ts';
 import { DayChart, dataTable, el, setRows, type DaySpec } from './charts.ts';
 import { shopName } from './shop-name.ts';
@@ -171,6 +171,8 @@ export class EconomyPanel {
   private readonly days = new Float64Array(FEED_DAYS);
   private readonly values = MEASURES.map((measure) => measure.labels.map(() => new Float64Array(FEED_DAYS)));
   private body: Body | null = null;
+  // The figures shown are of a town the sim has left, and the note stands in for them.
+  private stale = false;
 
   constructor(root: HTMLElement) {
     this.root = root;
@@ -185,10 +187,23 @@ export class EconomyPanel {
     return { goods, charts, trades: new TradeList(this.root) };
   }
 
+  // A new town's days start over, so the figures of the town left give way to the note until its first day ends.
+  restart(): void {
+    if (this.body === null || this.stale) return;
+    this.stale = true;
+    this.root.prepend(this.note);
+    for (const child of this.root.children) child.toggleAttribute('hidden', child !== this.note);
+  }
+
   show(message: EconomyMessage): void {
     const { day, days } = message;
     if (days === 0) return;
     const body = (this.body ??= this.build());
+    if (this.stale) {
+      this.stale = false;
+      this.note.remove();
+      for (const child of this.root.children) child.removeAttribute('hidden');
+    }
     for (let i = 0; i < days; i++) this.days[i] = day - days + 1 + i;
     body.goods.show(message);
     for (let index = 0; index < MEASURES.length; index++) {
@@ -201,4 +216,12 @@ export class EconomyPanel {
 export function mountEconomy(root: HTMLElement, app: App): void {
   const panel = new EconomyPanel(root);
   app.onEconomy((message) => panel.show(message));
+  // Each town the sim opens starts its feed afresh (M2.2c), so the panel starts over with it. A refused open names the town
+  // still live, and its feed goes on. The page starts in Highcourt, place 0.
+  let place = 0;
+  app.worker.addEventListener('message', ({ data }: MessageEvent<WorkerMessage>) => {
+    if (data.type !== 'opened' || data.place === place) return;
+    place = data.place;
+    panel.restart();
+  });
 }
