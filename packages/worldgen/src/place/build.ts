@@ -2,6 +2,7 @@ import { floorDiv } from '@nomos/sim-core/kernels';
 import type { MapV1 } from '@nomos/sim-protocol/map';
 import type { PlaceLayout } from '@nomos/sim-protocol/place';
 import { herd } from './animals.ts';
+import { connect } from './connect.ts';
 import type { PlaceContext } from './context.ts';
 import { decorate, placeFields } from './decor.ts';
 import { placeGreens } from './greens.ts';
@@ -94,13 +95,15 @@ export function settleWater(site: Site): void {
   if (ROCKY.includes(ctx.biome)) layRidges(site, ctx.biome === 'hills' ? 1 : 2, spare);
 }
 
-// A town's plaza, ring, roads, avenues, town hall and civic buildings, or a village's green, roads and shop.
+// A town's plaza, ring, roads, avenues, town hall and civic buildings, or a village's green, roads and shop, and last the
+// lanes that join every road to the middle.
 export function settleCentre(site: Site): void {
   const tier = site.ctx.tier ?? '';
   if (!(tier in PLAZAS)) {
     layVillage(site);
     layRoads(site);
     placeVillageShop(site);
+    connect(site);
     return;
   }
   plantAvenues(site, layTown(site));
@@ -109,6 +112,7 @@ export function settleCentre(site: Site): void {
   placeCivic(site, civic.slice(0, 1));
   placePlaza(site);
   placeCivic(site, civic.slice(1), 1);
+  connect(site);
 }
 
 // The dock, landmarks, works, a town's premises, houses, fields and the windmill. The premises follow the landmarks and

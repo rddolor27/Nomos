@@ -186,7 +186,7 @@ function builtKinds(site: Site, found: readonly Footprint[]): (string | null)[] 
   return built;
 }
 
-function walkAt(site: Site, c: number, isDoor: boolean): number {
+export function walkAt(site: Site, c: number, isDoor: boolean): number {
   if (isDoor) return WALK_DOOR;
   const solid = site.solid[c];
   if (site.big[c] === 1 || (solid !== null && !ANIMALS.includes(solid))) return WALK_BLOCKED;
