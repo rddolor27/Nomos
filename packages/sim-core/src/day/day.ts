@@ -6,7 +6,7 @@ import type { Ground } from '../world/ground.ts';
 import { INPUT_CAPACITY, INPUT_FOCUS, INPUT_LAYOFFS } from '../world/inputs.ts';
 import { openDayWindow } from './slices.ts';
 import { rekeyStride } from './stride.ts';
-import { DAY_LAYOFFS, MAX_TOWNS, NO_PLACE, TICK, TOWN, type World } from '../world/world.ts';
+import { DAY_LAYOFFS, FOCUS_PENDING, MAX_TOWNS, NO_PLACE, TICK, TOWN, type World } from '../world/world.ts';
 
 const LOGGED = 0;
 const APPLIED = 1;
@@ -38,11 +38,20 @@ export function logFocus(world: World, settlement: number): boolean {
 export function requestTown(world: World, place: number, ground: Ground, homes: Homes): boolean {
   if (world.globals[TOWN] !== 1 || !Number.isInteger(place) || place < 0 || place >= MAX_TOWNS) return false;
   if (!homesSeat(world, place, homes) || !logFocus(world, place)) return false;
+  attachTown(world, place, ground, homes);
+  return true;
+}
+
+// Keeps the ground and homes the next boundary spawns `place` on, and marks the place pending in the arena. requestTown does
+// both with its log entry. A world restored from a checkpoint holds the pending place (focus[FOCUS_PENDING]) and the log
+// entry but not the ground and homes, so whoever restores it attaches them before the boundary, which throws without them.
+// It trusts its caller's place, which requestTown has checked.
+export function attachTown(world: World, place: number, ground: Ground, homes: Homes): void {
   const request = world.request;
   request.place = place;
   request.ground = ground;
   request.homes = homes;
-  return true;
+  world.focus[FOCUS_PENDING] = place;
 }
 
 // A count under 1 would cancel other layoffs in the boundary's sum, and one past the largest int32 would wrap into one.
@@ -75,10 +84,10 @@ export function dayBoundary(world: World): void {
   openDayWindow(world);
 }
 
-// In a town the focus is a switch to the pending request, and the last focus logged since the boundary only matters to a
-// world that is not a town, where it sets the watched settlement.
+// In a town the last focus logged since the boundary is a switch to that place, and in a world that is not a town it sets
+// the watched settlement.
 function applyFocus(world: World, place: number): void {
-  if (world.globals[TOWN] === 1) switchTown(world);
+  if (world.globals[TOWN] === 1) switchTown(world, place);
   else world.focus[0] = place;
 }
 

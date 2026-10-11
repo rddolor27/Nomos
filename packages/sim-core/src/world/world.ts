@@ -53,9 +53,13 @@ export const MAX_TOWNS = 512;
 // the rest.
 export const WALK_START_MASK = 3;
 
-// The town the next day boundary spawns, which requestTown fills and switchTown spends (M2.2c). place is NO_PLACE while
-// nothing is pending. The ground and homes are inputs, like the world's own ground: the hash skips them, and a replay
-// rebuilds them from the world seed.
+// The slot of World.focus that holds the place the next day boundary switches to, or NO_PLACE.
+export const FOCUS_PENDING = 1;
+
+// The ground and homes of the town the next day boundary spawns, which attachTown fills and switchTown spends (M2.2c). place
+// is the town they were attached for, or NO_PLACE while none are. They are inputs, like the world's own ground: the hash skips
+// them, a checkpoint does not carry them, and a replay rebuilds them from the world seed. The pending place itself is in the
+// arena, at focus[FOCUS_PENDING].
 export interface TownRequest {
   place: number;
   ground: Ground;
@@ -80,9 +84,10 @@ export interface World {
   readonly inputs: InputLog;
   // c + 1 per culture and 0 when unused. Culture-level draws key on these stable uids, never on the index (R8).
   readonly cultureUid: Uint8Array;
-  // The watched settlement, or -1. In a town it is the live town, which only switchTown changes. A switch folds the live town
-  // into its ledger row, so the order of visits shapes history (R4's consequential focus), and the hash covers the live place
-  // once a row is held.
+  // focus[0] is the watched settlement, or -1. In a town it is the live town, which only switchTown changes. A switch folds the
+  // live town into its ledger row, so the order of visits shapes history (R4's consequential focus), and the hash covers the
+  // live place once a row is held. focus[FOCUS_PENDING] is the place requestTown asked for, until the boundary spends it. It
+  // sits in the arena so that a checkpoint carries a switch that waits, and the hash leaves it out, as it does the input log.
   readonly focus: Int32Array;
   // Each settlement's ledger row, LEDGER_FIELDS to a row, and a row of scratch beside them (M2.2c Ruling 3). A row with no
   // people is unvisited. They sit last in the arena, so no offset moved. The hash mixes a town's visited rows, and a
@@ -130,8 +135,9 @@ export function layoutWorld(
   const stride = createStride(arena, agents, STRIDE_DAYS, STRIDE);
   const inputs = createInputLog(arena);
   const cultureUid = take(arena, Uint8Array, MAX_CULTURES, true);
-  const focus = take(arena, Int32Array, 1, false);
-  focus[0] = NO_PLACE;
+  // The second slot fits the 8 bytes the first one pads to, so no offset moves.
+  const focus = take(arena, Int32Array, 2, false);
+  focus.fill(NO_PLACE);
   const economyFrom = arena.top;
   const firms = createFirmStore(arena, TIER_FIRMS[tier]);
   const economyScratch = createEconomyScratch(arena, agents, TIER_FIRMS[tier]);

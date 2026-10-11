@@ -1,5 +1,6 @@
 import {
   ACTION_IDLE,
+  FOCUS_PENDING,
   GENERIC,
   NO_HOME,
   NO_HOUSEHOLD,
@@ -257,7 +258,7 @@ export function createSimLoop(host: LoopHost, cpuSlowdown = 1): { handle(msg: Ap
     if (place !== world.focus[0]) {
       const { ground, homes } = host.readTown(map);
       if (requestTown(world, place, ground, homes)) {
-        while (world.request.place !== NO_PLACE) step(world);
+        while (world.focus[FOCUS_PENDING] !== NO_PLACE) step(world);
         session.feed = createEconomyFeed();
       }
     }

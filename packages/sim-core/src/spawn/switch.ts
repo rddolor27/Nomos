@@ -5,7 +5,7 @@ import { openYearEmployers } from '../economy/scratch.ts';
 import { floorDiv } from '../maths/int.ts';
 import { firmAccount, retire, walletAccount } from '../money/ledger.ts';
 import { DAYS_PER_MONTH, dayOf, dayOfMonth, monthOf } from '../time/calendar.ts';
-import { NO_PLACE, TICK, type World } from '../world/world.ts';
+import { FOCUS_PENDING, NO_PLACE, TICK, type World } from '../world/world.ts';
 import { stepAwayTown } from './away.ts';
 import { foldToLedger } from './fold.ts';
 import { bedCount, type Homes } from './homes.ts';
@@ -28,15 +28,19 @@ export function homesSeat(world: World, place: number, homes: Homes): boolean {
   return bedCount(homes) >= Math.max(SUPPLIERS, populationAt(world.townRecords, place * LEDGER_FIELDS));
 }
 
-// Spends the pending request at a day boundary, before the day's window opens (M2.2c Ruling 2). The live town folds into
-// its ledger row and hands its money back to MINT, and the requested town spawns on the request's ground from its own row,
-// keyed (place, day). A request for the live town, or none, switches nothing. The homes are checked before the fold, so a
-// throw leaves the live town and every row as they were: nothing after the check throws on a row this module wrote.
-export function switchTown(world: World): void {
+// Spends the pending request at a day boundary, before the day's window opens (M2.2c Ruling 2), for `place`, the town the
+// boundary's last logged focus names. The live town folds into its ledger row and hands its money back to MINT, and the
+// requested town spawns on the request's ground from its own row, keyed (place, day). A focus on the live town switches
+// nothing. The request is spent either way. Both checks come before the fold, so a throw leaves the live town and every row as
+// they were: nothing after them throws on a row this module wrote. A world restored from a checkpoint holds the pending place
+// and its log entry but not the ground and homes, so a place with none attached throws.
+export function switchTown(world: World, place: number): void {
   const request = world.request;
-  const place = request.place;
+  const attachedFor = request.place;
   request.place = NO_PLACE;
+  world.focus[FOCUS_PENDING] = NO_PLACE;
   if (place === NO_PLACE || place === world.focus[0]) return;
+  if (attachedFor !== place) throw new RangeError(`no ground and homes are attached for place ${place}`);
   requireSeats(world, place, request.homes);
   leaveTown(world);
   world.ground = request.ground;

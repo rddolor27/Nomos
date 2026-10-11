@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { SUPPLIERS } from '../src/agents/store.ts';
-import { dayBoundary, requestTown } from '../src/day/day.ts';
+import { attachTown, dayBoundary, requestTown } from '../src/day/day.ts';
 import { CITY_RECORD } from '../src/economy/city-record.ts';
 import { ECONOMY_TICKS } from '../src/economy/economy.ts';
 import { STAT_WAGE_BILL } from '../src/economy/stats.ts';
@@ -338,7 +338,7 @@ describe('switchTown', () => {
     expect(() => boundary(world, 4)).toThrow(RangeError);
     expect(stateHash(world)).toBe(hash);
     expect(Array.from(world.townRecords)).toEqual(table);
-    expect([world.focus[0], world.agents.count[0], world.request.place]).toEqual([1, PEOPLE[1], NO_PLACE]);
+    expect([world.focus[0], world.agents.count[0], world.focus[1]]).toEqual([1, PEOPLE[1], NO_PLACE]);
     expectOnlyTheLiveTownsMoney(world);
   });
 
@@ -395,7 +395,7 @@ describe('requestTown', () => {
 
     // Place 0 holds 1,000 people, as a ?tier= start's crowd would in the homes of Highcourt's 2,688 beds.
     expect(requestTown(world, 0, GROUND, homesFor(2))).toBe(false);
-    expect([stateHash(world), world.inputs.cursor[0], world.request.place]).toEqual([hash, logged, NO_PLACE]);
+    expect([stateHash(world), world.inputs.cursor[0], world.focus[1]]).toEqual([hash, logged, NO_PLACE]);
     expect(Array.from(world.townRecords)).toEqual(table);
     boundary(world, 4);
     expect([world.focus[0], world.agents.count[0]]).toEqual([1, PEOPLE[1]]);
@@ -429,5 +429,37 @@ describe('the ledger table in the state', () => {
     expect(stateHash(restored)).toBe(hash);
     expect(rowOf(restored, 0)).toEqual(rowOf(world, 0));
     expect(restored.focus[0]).toBe(1);
+  });
+});
+
+describe('the pending switch in the arena', () => {
+  // A request waits at tick 300, and a checkpoint of the world is restored, with the live town's ground as a restore has it.
+  function restoredWithRequest(): { original: World; restored: World } {
+    const original = run(townWorld(), 300);
+    request(original, 1);
+    return { original, restored: restoreWorld(SEED, 'phone', checkpoint(original), original.ground) };
+  }
+
+  it('is carried by a checkpoint, and a restored world with its ground and homes attached reaches the same hash at the boundary', () => {
+    const { original, restored } = restoredWithRequest();
+    expect([original.focus[1], restored.focus[1]]).toEqual([1, 1]);
+    attachTown(restored, 1, SMALL_GROUND, homesFor(1));
+
+    run(original, TICKS_PER_DAY + 1);
+    run(restored, TICKS_PER_DAY + 1);
+
+    expect([restored.focus[0], restored.focus[1], restored.agents.count[0]]).toEqual([1, NO_PLACE, PEOPLE[1]]);
+    expect(stateHash(restored)).toBe(stateHash(original));
+  });
+
+  it('makes a boundary throw when nothing is attached for the pending place, with the live town as it was', () => {
+    const { restored } = restoredWithRequest();
+    run(restored, TICKS_PER_DAY);
+    const hash = stateHash(restored);
+
+    expect(() => step(restored)).toThrow(RangeError);
+    expect(stateHash(restored)).toBe(hash);
+    expect([restored.focus[0], restored.focus[1], restored.agents.count[0]]).toEqual([0, NO_PLACE, PEOPLE[0]]);
+    expectOnlyTheLiveTownsMoney(restored);
   });
 });
