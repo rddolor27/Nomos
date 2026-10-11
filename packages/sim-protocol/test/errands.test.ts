@@ -1,8 +1,12 @@
 import { readFileSync } from 'node:fs';
 import {
+  ACTIVITY_DOORSTEP,
   ACTIVITY_EAT,
   ACTIVITY_FETCH,
+  ACTIVITY_GREEN,
+  ACTIVITY_PLAZA,
   ACTIVITY_SLEEP,
+  ACTIVITY_STAY,
   ACTIVITY_WORK,
   FIRST_WALKING,
   PHASE_ASLEEP,
@@ -12,6 +16,7 @@ import {
   PHASE_GOING,
   PHASE_KEEPING,
   PHASE_LEAVING,
+  PHASE_STAYING,
   PHASE_WORKING,
   carriedIn,
   checkpoint,
@@ -30,7 +35,7 @@ import {
   type World,
 } from '@nomos/sim-core';
 import { describe, expect, it } from 'vitest';
-import { ENTITY_HOME, WALK_BLOCKED, parseMap, premisesOf, type MapV1 } from '../src/index.ts';
+import { ENTITY_HOME, WALK_BLOCKED, leisureOf, parseMap, premisesOf, type MapV1 } from '../src/index.ts';
 
 const townFile = new URL('../../../assets/maps/town.nmap', import.meta.url);
 const SEED = 42;
@@ -44,9 +49,10 @@ const EAT_TICKS = 24;
 const town: MapV1 = parseMap(new Uint8Array(readFileSync(townFile)).buffer);
 const premises = premisesOf(town);
 
+// Built as the worker builds it, with the plaza, greens and water edges after the premises, where blobs spend their free time.
 function highcourt(ground: Ground = town): World {
   const homes = createHomes(town.entities.filter((entity) => entity.kind === ENTITY_HOME));
-  const world = createTown(SEED, 'phone', ground, homes, createShops(premises));
+  const world = createTown(SEED, 'phone', ground, homes, createShops([...premises, ...leisureOf(town)]));
   // The streets never touch money, and the ledger's check would cost more than the rest of the tick.
   world.checks = false;
   return world;
@@ -117,15 +123,17 @@ function peopleOf(world: World, home: number): number[] {
 }
 
 // The activities each phase can have: the phase says where and how a blob is, and the activity why.
+const OUTINGS = [ACTIVITY_PLAZA, ACTIVITY_GREEN];
 const WHY: Readonly<Record<number, readonly number[]>> = {
-  [PHASE_ASLEEP]: [ACTIVITY_SLEEP],
-  [PHASE_LEAVING]: [ACTIVITY_WORK, ACTIVITY_FETCH],
+  [PHASE_ASLEEP]: [ACTIVITY_SLEEP, ACTIVITY_STAY],
+  [PHASE_LEAVING]: [ACTIVITY_WORK, ACTIVITY_FETCH, ...OUTINGS],
   [PHASE_WORKING]: [ACTIVITY_WORK],
   [PHASE_KEEPING]: [ACTIVITY_WORK],
   [PHASE_BUYING]: [ACTIVITY_FETCH],
   [PHASE_EATING]: [ACTIVITY_EAT],
-  [PHASE_GOING]: [ACTIVITY_WORK, ACTIVITY_FETCH],
-  [PHASE_COMING]: [ACTIVITY_WORK, ACTIVITY_FETCH],
+  [PHASE_STAYING]: [ACTIVITY_DOORSTEP, ...OUTINGS],
+  [PHASE_GOING]: [ACTIVITY_WORK, ACTIVITY_FETCH, ...OUTINGS],
+  [PHASE_COMING]: [ACTIVITY_WORK, ACTIVITY_FETCH, ...OUTINGS],
 };
 
 // A blob eats food, fetches something, and works or sleeps with its hands empty.
@@ -151,18 +159,18 @@ function walkersIn(world: World): number {
   return walkers;
 }
 
-// The ticks from the world's tick to `until` at which a blob of `people` is not asleep at home, summed over the blobs.
-function ticksAwake(world: World, people: number[], until: number): number {
+// The ticks from the world's tick to `until` at which a blob of `people` is on the move, summed over the blobs.
+function ticksWalking(world: World, people: number[], until: number): number {
   let ticks = 0;
   while (currentTick(world) < until) {
     step(world);
-    for (const person of people) ticks += world.errands.phase[person] === PHASE_ASLEEP ? 0 : 1;
+    for (const person of people) ticks += world.errands.phase[person] >= FIRST_WALKING ? 1 : 0;
   }
   return ticks;
 }
 
-function positionsOf(world: World, people: number[]): number[][] {
-  return people.map((person) => [world.agents.x[person], world.agents.y[person]]);
+function tilesOf(world: World, people: number[]): number[][] {
+  return people.map((person) => [tileOf(world.agents.x[person]), tileOf(world.agents.y[person])]);
 }
 
 // The town's ground with the eight cells round a door cell walled up, which cuts that cell off from every premises.
@@ -187,32 +195,25 @@ describe('Highcourt on its streets', { timeout: 60_000 }, () => {
 
     const stops = follow(world, buyer, NIGHT);
 
-    expect(stops.map((stop) => stop.phase)).toEqual([
-      PHASE_LEAVING,
-      PHASE_GOING,
-      PHASE_BUYING,
-      PHASE_COMING,
-      PHASE_EATING,
-      PHASE_ASLEEP,
-    ]);
-    // It fetches the whole way there and home, eats, and is back to sleeping once it is in.
-    expect(stops.map((stop) => stop.activity)).toEqual([
+    expect(stops.slice(0, 5).map((stop) => stop.phase)).toEqual([PHASE_LEAVING, PHASE_GOING, PHASE_BUYING, PHASE_COMING, PHASE_EATING]);
+    // It fetches the whole way there and home, eats, and is free once it has eaten: the day's trips are done.
+    expect(stops.slice(0, 5).map((stop) => stop.activity)).toEqual([
       ACTIVITY_FETCH,
       ACTIVITY_FETCH,
       ACTIVITY_FETCH,
       ACTIVITY_FETCH,
       ACTIVITY_EAT,
-      ACTIVITY_SLEEP,
     ]);
+    expect([ACTIVITY_STAY, ACTIVITY_DOORSTEP, ACTIVITY_PLAZA, ACTIVITY_GREEN]).toContain(stops[5].activity);
     // The good is the one the economy sold it today, and the shop it walks to sells it, by its door.
     expect(good).toBe(goods.good[errands.dayFood[buyer] - 1]);
     expect((premises[shop].goods >> good) & 1).toBe(1);
     const door: [number, number] = [premises[shop].doorX, premises[shop].doorY];
     expect(stops[2].tile).toEqual(door);
     expect(stops[3].tick - stops[2].tick).toBe(BUY_TICKS);
-    // It carries the good from the shop's door to its own, eats it there, and is indoors again with nothing in its hands.
-    expect(stops.map((stop) => stop.item)).toEqual([0, 0, 0, good, good, 0]);
-    expect(stops.map((stop) => stop.indoors)).toEqual([true, false, false, false, false, true]);
+    // It carries the good from the shop's door to its own, eats it there, and has nothing in its hands once it has.
+    expect(stops.slice(0, 6).map((stop) => stop.item)).toEqual([0, 0, 0, good, good, 0]);
+    expect(stops.slice(0, 5).map((stop) => stop.indoors)).toEqual([true, false, false, false, false]);
     expect([stops[4].tile, stops[5].tile]).toEqual([home, home]);
     expect(stops[5].tick - stops[4].tick).toBe(EAT_TICKS);
     expect(stops[1].tick).toBeGreaterThan(MORNING);
@@ -241,15 +242,15 @@ describe('Highcourt on its streets', { timeout: 60_000 }, () => {
     expect(stops.slice(0, 4).map((stop) => stop.activity)).toEqual(new Array<number>(4).fill(ACTIVITY_WORK));
     expect(stops[2].tile).toEqual([premises[shop].doorX, premises[shop].doorY - (keeping ? 1 : 0)]);
     expect(stops[2].indoors).toBe(!keeping);
-    // It arrives in the morning, leaves between 15:00 and 15:59, and reaches the door of its home.
+    // It arrives in the morning, leaves between 15:00 and 15:59, and reaches the door of its home, where it is done with work.
     expect(stops[2].tick).toBeLessThanOrEqual(MORNING + 60 + 300);
     expect(stops[3].tick).toBeGreaterThanOrEqual(900);
     expect(stops[3].tick).toBeLessThanOrEqual(960);
     expect(stops[4].tile).toEqual(home);
-    expect(stops[4].indoors).toBe(true);
+    expect(stops[4].activity).not.toBe(ACTIVITY_WORK);
   });
 
-  it("keeps every blob's activity and good in step with its phase through a day, and shows all four activities", () => {
+  it("keeps every blob's activity and good in step with its phase through a day, and shows all eight activities", () => {
     const world = highcourt();
     const seen = new Set<number>();
     let stray = 0;
@@ -260,7 +261,16 @@ describe('Highcourt on its streets', { timeout: 60_000 }, () => {
     }
 
     expect(stray).toBe(0);
-    expect(Array.from(seen).sort()).toEqual([ACTIVITY_SLEEP, ACTIVITY_WORK, ACTIVITY_FETCH, ACTIVITY_EAT]);
+    expect(Array.from(seen).sort()).toEqual([
+      ACTIVITY_SLEEP,
+      ACTIVITY_WORK,
+      ACTIVITY_FETCH,
+      ACTIVITY_EAT,
+      ACTIVITY_STAY,
+      ACTIVITY_DOORSTEP,
+      ACTIVITY_PLAZA,
+      ACTIVITY_GREEN,
+    ]);
   });
 
   it('replays to the same hash from a checkpoint taken while blobs are mid-trip', () => {
@@ -280,24 +290,24 @@ describe('Highcourt on its streets', { timeout: 60_000 }, () => {
     expect(stateHash(live)).not.toBe(hashAtCheckpoint);
   });
 
-  it("keeps a walled-off home's blobs asleep all day, while the same home's blobs walk in the open town", () => {
+  it("keeps a walled-off home's blobs at home all day, free but never on a trip, while the same home's blobs walk in the open town", () => {
     const open = highcourt();
     runTo(open, MORNING);
     const home = homeOf(open, firstLeaving(open, ACTIVITY_FETCH, true));
     const people = peopleOf(open, home);
-    const [x, y] = positionsOf(open, people)[0];
-    const awakeOpen = ticksAwake(open, people, NIGHT);
+    const [tileX, tileY] = tilesOf(open, people)[0];
+    const walkedOpen = ticksWalking(open, people, NIGHT);
 
-    const walled = highcourt(walledAround([tileOf(x), tileOf(y)]));
+    const walled = highcourt(walledAround([tileX, tileY]));
     expect(peopleOf(walled, home)).toEqual(people);
-    const started = positionsOf(walled, people);
-    const awakeByMorning = ticksAwake(walled, people, MORNING + 240);
+    const started = tilesOf(walled, people);
+    const walkedByMorning = ticksWalking(walled, people, MORNING + 240);
     const walkingElsewhere = walkersIn(walled);
-    const awakeAfter = ticksAwake(walled, people, NIGHT);
+    const walkedAfter = ticksWalking(walled, people, NIGHT);
 
-    expect(awakeOpen).toBeGreaterThan(0);
-    expect([awakeByMorning, awakeAfter]).toEqual([0, 0]);
-    expect(positionsOf(walled, people)).toEqual(started);
+    expect(walkedOpen).toBeGreaterThan(0);
+    expect([walkedByMorning, walkedAfter]).toEqual([0, 0]);
+    expect(tilesOf(walled, people)).toEqual(started);
     expect(walkingElsewhere).toBeGreaterThan(1_000);
   });
 });
