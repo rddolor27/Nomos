@@ -1,10 +1,31 @@
 import { describe, expect, it } from 'vitest';
-import { SUBPIXELS, createWorld, step } from '@nomos/sim-core';
+import {
+  BREAD,
+  FUEL,
+  PHASE_BUYING,
+  PHASE_COMING,
+  PHASE_EATING,
+  PHASE_GOING,
+  PHASE_WORKING,
+  PURPOSE_FOOD,
+  PURPOSE_GOODS,
+  SUBPIXELS,
+  createShops,
+  createStandInTownHomes,
+  createTown,
+  createWorld,
+  step,
+  type Ground,
+  type World,
+} from '@nomos/sim-core';
 import {
   ACTION_WALK,
   TIER_AGENTS,
   createSnapshotPool,
+  eatingOf,
   giveBack,
+  indoorsOf,
+  itemOf,
   packVisual,
   takeView,
   writeSnapshot,
@@ -63,5 +84,65 @@ describe('writeSnapshot', () => {
     expect(count).toBe(10_000);
     expect(broken).toEqual([]);
     expect(action.some((code) => code === ACTION_WALK)).toBe(true);
+  });
+});
+
+const SMALL_GROUND: Ground = { width: 64, height: 64, walk: new Uint8Array(64 * 64).fill(1) };
+const PEOPLE = 120;
+
+// A town on the small ground. One general shop selling every good gives it streets, and none leaves its blobs wandering.
+function townOf(streets: boolean): World {
+  const shops = createShops(streets ? [{ doorX: 32, doorY: 32, goods: 0xfe, stall: false }] : []);
+  return createTown(42, 'phone', SMALL_GROUND, createStandInTownHomes(SMALL_GROUND, PEOPLE), shops);
+}
+
+// Each blob's visual word, at 3 * blob + 2.
+function wordsOf(world: World): number[] {
+  const view = mustTake(createSnapshotPool(world.agents.capacity));
+  writeSnapshot(world, view);
+  return Array.from({ length: world.agents.count[0] }, (_, blob) => view[3 * blob + 2]);
+}
+
+describe('the street in the snapshot', () => {
+  it('shows what a blob carries and whether it eats or is indoors, from its errand row', () => {
+    const world = townOf(true);
+    const { phase, good } = world.errands;
+    // Blob 0 walks home with bread, 1 eats it on the doorstep, 2 is at work, 3 walks out for bread with none yet, 4 buys at a
+    // counter and 5 carries fuel home.
+    const errands = [
+      [PHASE_COMING + PURPOSE_FOOD, BREAD],
+      [PHASE_EATING, BREAD],
+      [PHASE_WORKING, 0],
+      [PHASE_GOING + PURPOSE_FOOD, BREAD],
+      [PHASE_BUYING, BREAD],
+      [PHASE_COMING + PURPOSE_GOODS, FUEL],
+    ];
+    errands.forEach(([phaseOf, goodOf], blob) => {
+      phase[blob] = phaseOf;
+      good[blob] = goodOf;
+    });
+
+    const words = wordsOf(world);
+
+    expect(errands.map((_, blob) => [indoorsOf(words[blob]), itemOf(words[blob]), eatingOf(words[blob])])).toEqual([
+      [0, BREAD, 0],
+      [0, BREAD, 1],
+      [1, 0, 0],
+      [0, 0, 0],
+      [0, 0, 0],
+      [0, FUEL, 0],
+    ]);
+    // The rest of a word is the blob's own, and a blob no errand has woken is asleep indoors with nothing in its hands.
+    const { look, action, facing } = world.agents;
+    expect(words[0]).toBe(packVisual(look[0], action[0], 0, 0, facing[0], 0, 0, BREAD, 0));
+    expect(words[PEOPLE - 1]).toBe(packVisual(look[PEOPLE - 1], action[PEOPLE - 1], 0, 0, facing[PEOPLE - 1], 0, 1, 0, 0));
+  });
+
+  it('puts no one indoors in a town without streets, whose empty store reads as asleep', () => {
+    const wandering = wordsOf(townOf(false));
+    const onStreets = wordsOf(townOf(true));
+
+    expect(wandering.map(indoorsOf)).toEqual(new Array<number>(PEOPLE).fill(0));
+    expect(onStreets.map(indoorsOf)).toEqual(new Array<number>(PEOPLE).fill(1));
   });
 });
