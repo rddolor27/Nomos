@@ -85,7 +85,7 @@ describe('the town map', () => {
 
     expect(homes.length).toBeGreaterThanOrEqual(20);
     expect(shops.length).toBeGreaterThanOrEqual(1);
-    expect(civicFrames).toEqual(expect.arrayContaining(['buildings/civic_police-station', 'buildings/civic_town-hall']));
+    expect(civicFrames).toEqual(expect.arrayContaining(['buildings/civic_police-station', 'buildings/civic_town-hall_large']));
   });
 
   it('replays seed 42 on the first screen to a fixed hash', () => {
@@ -98,7 +98,7 @@ describe('the town map', () => {
       hashes[tier] = stateHash(world).toString(16).padStart(8, '0');
     }
 
-    expect(hashes).toEqual({ phone: '26c91a01', desktop: '636e4015' });
+    expect(hashes).toEqual({ phone: '3795465f', desktop: '8b3b7ca0' });
   });
 
   it('fits the map budget', () => {

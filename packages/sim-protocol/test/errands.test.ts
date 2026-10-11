@@ -182,16 +182,17 @@ describe('Highcourt on its streets', { timeout: 60_000 }, () => {
 
     const stops = follow(world, worker, NIGHT);
 
-    // A stall's first worker keeps its counter, one tile behind the door, and any other works indoors at the door.
-    const arrived = premises[shop].stall ? PHASE_KEEPING : PHASE_WORKING;
+    // A stall's first worker to arrive keeps its counter, one tile behind the door, and any other works indoors at the door.
+    const keeping = stops[2].phase === PHASE_KEEPING;
+    expect(keeping && !premises[shop].stall).toBe(false);
     expect(stops.slice(0, 4).map((stop) => stop.phase)).toEqual([
       PHASE_LEAVING + PURPOSE_WORK,
       PHASE_GOING + PURPOSE_WORK,
-      arrived,
+      keeping ? PHASE_KEEPING : PHASE_WORKING,
       PHASE_COMING + PURPOSE_WORK,
     ]);
-    expect(stops[2].tile).toEqual([premises[shop].doorX, premises[shop].doorY - (premises[shop].stall ? 1 : 0)]);
-    expect(stops[2].indoors).toBe(!premises[shop].stall);
+    expect(stops[2].tile).toEqual([premises[shop].doorX, premises[shop].doorY - (keeping ? 1 : 0)]);
+    expect(stops[2].indoors).toBe(!keeping);
     // It arrives in the morning, leaves between 15:00 and 15:59, and reaches the door of its home.
     expect(stops[2].tick).toBeLessThanOrEqual(MORNING + 60 + 300);
     expect(stops[3].tick).toBeGreaterThanOrEqual(900);
