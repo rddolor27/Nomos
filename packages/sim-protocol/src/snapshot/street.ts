@@ -48,8 +48,9 @@ function sittingWord(errands: Errands, blob: number, tick: number): number {
 
 // A blob in a chat stands to talk. A chat stops a walker for the ticks before chatUntil and sets it off again in the step of tick
 // chatUntil, so the world, which waits to run that step, still shows the chat then. A blob that never chatted has no partner, which
-// tells the world's first tick, with chatUntil still 0, from the last of a chat.
-function chattingAt(life: Life, blob: number, tick: number): boolean {
+// tells the world's first tick, with chatUntil still 0, from the last of a chat. The blob card asks the same, so it names a partner
+// exactly while the bubble shows.
+export function chattingAt(life: Life, blob: number, tick: number): boolean {
   return life.chatWith[blob] !== 0 && tick <= life.chatUntil[blob];
 }
 

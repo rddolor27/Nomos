@@ -2,6 +2,7 @@ import {
   ACTION_IDLE,
   FOCUS_PENDING,
   GENERIC,
+  NEEDS,
   NO_HOME,
   NO_HOUSEHOLD,
   NO_PLACE,
@@ -13,6 +14,7 @@ import {
   currentTick,
   firstMemberOf,
   householdOf,
+  levelAt,
   minuteOf,
   nearestAgent,
   requestTown,
@@ -26,7 +28,9 @@ import {
   type World,
 } from '@nomos/sim-core';
 import {
+  NO_ACTIVITY,
   TICK_MS,
+  chattingAt,
   createEconomyFeed,
   createSnapshotPool,
   economyDayEnded,
@@ -61,6 +65,7 @@ const FIRST_VIEW_MINUTE = 420;
 // One tile.
 const INSPECT_RADIUS_Q8 = TILE_PX * SUBPIXELS;
 const NO_EMPLOYER = -1;
+const NO_PARTNER = -1;
 
 // The town an open message's map holds: its ground, the homes on it and the shops that give it streets. A site with no shops
 // wanders, as a stand-in town does.
@@ -90,6 +95,7 @@ interface Session {
 type SnapshotMessage = Extract<WorkerMessage, { type: 'snapshot' }>;
 type StatsMessage = Extract<WorkerMessage, { type: 'stats' }>;
 type InspectedMessage = Extract<WorkerMessage, { type: 'inspected' }>;
+type LifeReply = Pick<InspectedMessage, 'activity' | 'phase' | 'reason' | 'partner' | 'partnerKey' | 'needs' | 'traits'>;
 
 // cpuSlowdown stands in for CDP's CPU throttling, which skips workers: the startup gate sets it (R5 load notes §2).
 export function createSimLoop(host: LoopHost, cpuSlowdown = 1): { handle(msg: AppMessage): void } {
@@ -359,6 +365,31 @@ function noBlobReply(tick: number): InspectedMessage {
     home: NO_HOME,
     members: [],
     bought: [],
+    ...noLife(),
+  };
+}
+
+// Nobody found, and a town that wanders, have no street life to report.
+function noLife(): LifeReply {
+  return { activity: NO_ACTIVITY, phase: 0, reason: 0, partner: NO_PARTNER, partnerKey: 0, needs: [], traits: [] };
+}
+
+// What the errand and life stores say of a blob's day: its needs carried on to now, and its chat partner while the snapshot shows the
+// bubble, so the card and the bubble agree.
+function lifeOf(world: World, tick: number, agent: number): LifeReply {
+  if (world.globals[STREETS] !== 1) return noLife();
+  const { agents, errands, life } = world;
+  const partner = chattingAt(life, agent, tick) ? life.chatWith[agent] - 1 : NO_PARTNER;
+  const needs: number[] = [];
+  for (let need = 0; need < NEEDS; need++) needs.push(levelAt(life, errands, agent, need, tick));
+  return {
+    activity: errands.activity[agent],
+    phase: errands.phase[agent],
+    reason: life.reason[agent],
+    partner,
+    partnerKey: partner === NO_PARTNER ? 0 : agents.nameKey[partner],
+    needs,
+    traits: [life.sociable[agent], life.homebody[agent], life.restless[agent]],
   };
 }
 
@@ -382,6 +413,7 @@ function blobReply(world: World, tick: number, agent: number): InspectedMessage 
     home: household === NO_HOUSEHOLD ? NO_HOME : households.home[household],
     members: housemateKeys(world, household, agent),
     bought: purchasesOf(world, agent),
+    ...lifeOf(world, tick, agent),
   };
 }
 

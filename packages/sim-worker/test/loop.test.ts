@@ -1,9 +1,13 @@
 import {
   ACTION_WALK,
+  ACTIVITY_PLAZA,
   ECONOMY_TICKS,
   MAX_TOWNS,
+  NEEDS,
+  NEED_COMPANY,
   PHASE_ASLEEP,
   PHASE_GOING,
+  PHASE_STAYING,
   PURCHASE_RING,
   STAT_WAGE_MEAN,
   TICKS_PER_DAY,
@@ -55,6 +59,8 @@ const OPENING_TICK = 420;
 const DAWN_TICK = 360;
 // One general shop selling every good, which gives a town on the small ground streets.
 const STREET_SHOPS = createShops([{ doorX: 32, doorY: 32, goods: 0xfe, stall: false }]);
+// What an answer says of the street life of nobody, or of a blob in a town that wanders.
+const NO_LIFE = { activity: -1, phase: 0, reason: 0, partner: -1, partnerKey: 0, needs: [], traits: [] };
 
 function standInSite(map: ArrayBuffer): TownSite {
   return { ground: SMALL_GROUND, homes: createStandInTownHomes(SMALL_GROUND, map.byteLength) };
@@ -626,6 +632,7 @@ describe('the sim loop', () => {
         home: -1,
         members: [],
         bought: [],
+        ...NO_LIFE,
       },
     ]);
   });
@@ -718,6 +725,62 @@ describe('the sim loop', () => {
     expect(boughtBy(buyer + 1)).toEqual([]);
   });
 
+  it("answers a street blob's activity, phase, reason and traits, and its needs carried on to now", () => {
+    const page = fakePage({ streets: true });
+    const { errands, life } = page.world();
+    const agent = 7;
+    // At the plaza for 10 ticks since the needs last settled: it eases fun by 260 a tick and company by 220, and hunger and rest rise
+    // by 20 and 10. The rows either side are untouched, so an answer from the wrong row shows.
+    errands.phase[agent] = PHASE_STAYING;
+    errands.activity[agent] = ACTIVITY_PLAZA;
+    life.reason[agent] = NEED_COMPANY + 1;
+    life.settleTick[agent] = page.tick() - 10;
+    life.needs.set([1_000, 2_000, 30_000, 40_000], agent * NEEDS);
+    life.sociable[agent] = 200;
+    life.homebody[agent] = 30;
+    life.restless[agent] = 128;
+
+    page.handle({ type: 'inspectAgent', agent });
+    expect(page.ofType('inspected')[0]).toMatchObject({
+      agent,
+      activity: ACTIVITY_PLAZA,
+      phase: PHASE_STAYING,
+      reason: NEED_COMPANY + 1,
+      partner: -1,
+      partnerKey: 0,
+      needs: [1_200, 2_100, 27_400, 37_800],
+      traits: [200, 30, 128],
+    });
+  });
+
+  it('names the chat partner while the snapshot shows the chat, and none before a chat or once it has ended', () => {
+    const page = fakePage({ streets: true });
+    const { agents, life } = page.world();
+    const [agent, partner] = [7, 12];
+    const now = page.tick();
+    const partnerOf = (): number[] => {
+      page.handle({ type: 'inspectAgent', agent });
+      const replies = page.ofType('inspected');
+      return [replies[replies.length - 1].partner, replies[replies.length - 1].partnerKey];
+    };
+
+    expect(partnerOf()).toEqual([-1, 0]);
+    // The partner is stored as the row + 1, and stays after the chat, so only the tick says whether the chat is on.
+    life.chatWith[agent] = partner + 1;
+    life.chatUntil[agent] = now + 5;
+    expect(partnerOf()).toEqual([partner, agents.nameKey[partner]]);
+    life.chatUntil[agent] = now;
+    expect(partnerOf()).toEqual([partner, agents.nameKey[partner]]);
+    life.chatUntil[agent] = now - 1;
+    expect(partnerOf()).toEqual([-1, 0]);
+  });
+
+  it('has no street life to report for a blob in a town that wanders', () => {
+    const page = fakePage({ town: true });
+    page.handle({ type: 'inspectAgent', agent: 3 });
+    expect(page.ofType('inspected')[0]).toMatchObject({ agent: 3, ...NO_LIFE });
+  });
+
   it('answers -1 off the map, with every other field empty', () => {
     const page = fakePage();
     page.handle({ type: 'inspect', x: -1_000, y: -1_000 });
@@ -736,6 +799,7 @@ describe('the sim loop', () => {
         home: -1,
         members: [],
         bought: [],
+        ...NO_LIFE,
       },
     ]);
   });
@@ -805,6 +869,7 @@ describe('the sim loop', () => {
       home: -1,
       members: [],
       bought: [],
+      ...NO_LIFE,
     };
     expect([pastCount, atCount]).toEqual([nobody, nobody]);
     expect(lastRow.agent).toBe(OPENED_PEOPLE - 1);

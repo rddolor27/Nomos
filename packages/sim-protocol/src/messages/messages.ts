@@ -2,6 +2,24 @@ import type { Tier } from '@nomos/sim-core';
 
 export type { Tier };
 export { TIER_AGENTS } from '@nomos/sim-core';
+// The codes `inspected` carries for a blob's life (M3.2 Task 6), which the card words: why it is where it is, how, and its needs.
+export {
+  ACTIVITY_DOORSTEP,
+  ACTIVITY_EAT,
+  ACTIVITY_FETCH,
+  ACTIVITY_GREEN,
+  ACTIVITY_PLAZA,
+  ACTIVITY_SLEEP,
+  ACTIVITY_STAY,
+  ACTIVITY_WORK,
+  MAX_LEVEL,
+  PHASE_COMING,
+  PHASE_GOING,
+  PHASE_LEAVING,
+} from '@nomos/sim-core';
+
+// The activity of a blob in a town that wanders, which has no street life to report.
+export const NO_ACTIVITY = -1;
 
 // Snapshot v1 (interfaces.md): float32 x, float32 y and the uint32 visual word, in three pooled buffers that circulate.
 export const SNAPSHOT_BYTES = 12;
@@ -76,6 +94,13 @@ export type WorkerMessage =
   // in its household, in household order: none for someone who lives alone, and at most five. bought is what the economy day
   // sold the blob today, from the errand store: the first food it bought and the first other good, in that order, and none
   // before it has bought any.
+  //
+  // The last seven fields are the blob's life (M3.2 Task 6), read from the errand and life stores of a town with streets. activity
+  // is its ACTIVITY_* and phase its PHASE_* (where and how it is), reason what drove a free-time choice (0 for none, else the need
+  // + 1), and needs the four levels from 0, met, to MAX_LEVEL, hunger, rest, fun and company, as of tick. partner is the row of the
+  // blob it is chatting with, while the snapshot shows the chat, and partnerKey that blob's name key; they are -1 and 0 otherwise.
+  // traits are sociable, homebody and restless, 0 to 255 each. A town that wanders has no street life, so there activity is
+  // NO_ACTIVITY, and needs and traits are empty.
   | {
       type: 'inspected';
       tick: number;
@@ -90,5 +115,12 @@ export type WorkerMessage =
       home: number;
       members: number[];
       bought: Purchase[];
+      activity: number;
+      phase: number;
+      reason: number;
+      partner: number;
+      partnerKey: number;
+      needs: number[];
+      traits: number[];
     }
   | EconomyMessage;
