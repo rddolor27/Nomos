@@ -78,26 +78,38 @@ export function sitOnDoorstep(world: World, blob: number, tick: number, left: nu
   errands.endTick[blob] = tick + stayTicks(world, blob, tick, left);
 }
 
-// A keyed tile of the site's covered ground that its field reaches, the first from a keyed start that does, else its door: the
-// plaza has a fountain in it and the greens may have trees, so not every tile is ground to stand on. The walk over the tiles
-// steps a column and a row and divides once, exactly, since a division that leaves a remainder is a heap number in cold code.
+// How far from a site's door, in tiles across and up or down, its blobs choose to stand. Highcourt's plaza is 28 tiles wide and its
+// blobs, spread over all of it, were seldom within reach of one another to chat (street/chat.ts), so they gather round the
+// fountain, in front of which its door lies: 160 plaza chats over day 0 of ten seeds, where the whole plaza gave 98 (measured here).
+export const CLUSTER_X = 6;
+export const CLUSTER_Y = 5;
+
+// A keyed tile of the part of the site's covered ground within CLUSTER_X and CLUSTER_Y of its door that its field reaches, the first
+// from a keyed start that does, else its door: the plaza has a fountain in it and the greens may have trees, so not every tile is
+// ground to stand on. The walk over the tiles steps a column and a row and divides once, exactly, since a division that leaves a
+// remainder is a heap number in cold code.
 function spotCell(world: World, site: number, blob: number, tick: number): number {
   const { fields, ground, life, errands } = world;
   const { width, height } = ground;
-  const across = life.areaW[site];
-  const rows = life.areaH[site];
+  const doorX = errands.siteX[site];
+  const doorY = errands.siteY[site];
+  const left = Math.max(life.areaX[site], doorX - CLUSTER_X);
+  const top = Math.max(life.areaY[site], doorY - CLUSTER_Y);
+  const across = Math.min(life.areaX[site] + life.areaW[site], doorX + CLUSTER_X + 1) - left;
+  const rows = Math.min(life.areaY[site] + life.areaH[site], doorY + CLUSTER_Y + 1) - top;
+  if (across < 1 || rows < 1) return doorY * width + doorX;
   const tiles = across * rows;
   const first = drawBelow3(world.seed, LIFE_DRAW, blob, tick, DRAW_SPOT, tiles);
   const field = site * width * height;
   let column = first % across;
   let row = (first - column) / across;
   for (let n = 0; n < tiles; n++) {
-    const cell = (life.areaY[site] + row) * width + life.areaX[site] + column;
+    const cell = (top + row) * width + left + column;
     if (fields[field + cell] !== UNREACHED) return cell;
     column = (column + 1) % across;
     if (column === 0) row = (row + 1) % rows;
   }
-  return errands.siteY[site] * width + errands.siteX[site];
+  return doorY * width + doorX;
 }
 
 // Sets the blob off to a spot in the site with the leg from where it stands, and returns whether it can: a leg that is cut off,
