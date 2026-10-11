@@ -14,6 +14,11 @@ export const ENTITY_HOME = 1;
 export const ENTITY_WORKPLACE = 2;
 export const ENTITY_SHOP = 3;
 export const ENTITY_CIVIC = 4;
+// M3.2's leisure places, which blobs go to for their own sake. A plaza is where a place gathers: a town's paved square, its
+// door beside the fountain, or a village's green, its door beside the well. A green is open ground kept clear, its door at
+// its middle. Neither is built on, so their doors are no door tiles, and their frames are the ground tile under the door.
+export const ENTITY_PLAZA = 5;
+export const ENTITY_GREEN = 6;
 
 export const NO_FRAME = 0xffff;
 
@@ -33,7 +38,7 @@ export interface TerrainKind {
 }
 
 export interface MapEntity {
-  kind: 1 | 2 | 3 | 4;
+  kind: 1 | 2 | 3 | 4 | 5 | 6;
   x: number;
   y: number;
   w: number;
@@ -67,6 +72,8 @@ const ENTITY_KIND_NAMES: Record<MapEntity['kind'], string> = {
   [ENTITY_WORKPLACE]: 'workplace',
   [ENTITY_SHOP]: 'shop',
   [ENTITY_CIVIC]: 'civic',
+  [ENTITY_PLAZA]: 'plaza',
+  [ENTITY_GREEN]: 'green',
 };
 
 interface Cursor {
@@ -176,7 +183,7 @@ function checkTiles(tiles: Uint16Array, frameCount: number): void {
 }
 
 function isEntityKind(value: number): value is MapEntity['kind'] {
-  return value >= ENTITY_HOME && value <= ENTITY_CIVIC;
+  return value >= ENTITY_HOME && value <= ENTITY_GREEN;
 }
 
 function homeCapacity(capacity: number, closes: number, what: string): number {
@@ -236,7 +243,7 @@ function readEntity(cursor: Cursor, index: number, header: Header): MapEntity {
   const frame = readU16(cursor, what);
   const a = readU16(cursor, what);
   const b = readU16(cursor, what);
-  if (!isEntityKind(kind)) throw new MapError(`${what} has kind ${kind}, but entity kinds run ${ENTITY_HOME}-${ENTITY_CIVIC}`);
+  if (!isEntityKind(kind)) throw new MapError(`${what} has kind ${kind}, but entity kinds run ${ENTITY_HOME}-${ENTITY_GREEN}`);
   if (reserved !== 0) throw new MapError(`${what} sets its reserved byte to ${reserved}`);
   const entity: MapEntity = { kind, x, y, w, h, doorX, doorY, frame, ...usageOf(kind, a, b, what) };
   checkPlacement(entity, header, what);

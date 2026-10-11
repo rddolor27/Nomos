@@ -2,7 +2,9 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import {
   ENTITY_CIVIC,
+  ENTITY_GREEN,
   ENTITY_HOME,
+  ENTITY_PLAZA,
   ENTITY_SHOP,
   ENTITY_WORKPLACE,
   MAP_CONTENT_TYPE,
@@ -251,7 +253,7 @@ function rejections(): Rejection[] {
     spec('a tile index past the frames', withCell(base, 'tiles', 6, 5), /tile cell 6/),
     spec('the tile index just below NO_FRAME', withCell(base, 'tiles', 6, 0xfffe), /tile cell 6/),
     spec('entity kind 0', withEntity(base, HOME, { kind: 0 }), /entity 0 has kind 0/),
-    spec('entity kind 5', withEntity(base, HOME, { kind: 5 }), /entity 0 has kind 5/),
+    spec('entity kind 7', withEntity(base, HOME, { kind: 7 }), /entity 0 has kind 7/),
     spec('a set reserved byte', withEntity(base, WORKPLACE, { reserved: 1 }), /entity 1 .*reserved/),
     spec('a footprint past the right edge', withEntity(base, CIVIC, { x: 4, w: 2 }), /entity 3 .*footprint/),
     spec('a footprint past the bottom edge', withEntity(base, CIVIC, { y: 3, h: 2 }), /entity 3 .*footprint/),
@@ -267,6 +269,8 @@ function rejections(): Rejection[] {
     spec('a shop that closes after midnight', withEntity(base, SHOP, { a: 600, b: 1441 }), /entity 2 .*closes at 1441/),
     spec('a workplace with a capacity', withEntity(base, WORKPLACE, { a: 4 }), /entity 1 .*workplace/),
     spec('a civic building with hours', withEntity(base, CIVIC, { a: 480, b: 1200 }), /entity 3 .*civic/),
+    spec('a plaza with a capacity', withEntity(base, CIVIC, { kind: ENTITY_PLAZA, a: 4 }), /entity 3 .*plaza/),
+    spec('a green with hours', withEntity(base, CIVIC, { kind: ENTITY_GREEN, a: 480, b: 1200 }), /entity 3 .*green/),
     ['a trailing byte', Uint8Array.from([...valid, 0]), /trailing bytes/],
     ['one entity too many', patchedU16(valid, ENTITY_COUNT_AT, 5), /ends inside entity 4/],
     ['one entity too few', patchedU16(valid, ENTITY_COUNT_AT, 3), /trailing bytes/],
@@ -278,7 +282,7 @@ describe('parseMap', () => {
   it('pins the constants the format fixes', () => {
     expect(MAP_MAGIC).toBe(0x50414d4e);
     expect([WALK_BLOCKED, WALK_OPEN, WALK_ROAD, WALK_DOOR]).toEqual([0, 1, 2, 3]);
-    expect([ENTITY_HOME, ENTITY_WORKPLACE, ENTITY_SHOP, ENTITY_CIVIC]).toEqual([1, 2, 3, 4]);
+    expect([ENTITY_HOME, ENTITY_WORKPLACE, ENTITY_SHOP, ENTITY_CIVIC, ENTITY_PLAZA, ENTITY_GREEN]).toEqual([1, 2, 3, 4, 5, 6]);
     expect(NO_FRAME).toBe(0xffff);
     expect(MAP_EXTENSION).toBe('.nmap');
     expect(MAP_CONTENT_TYPE).toBe('application/x-protobuf');
@@ -327,6 +331,7 @@ describe('parseMap', () => {
       ['a shop open all day', withEntity(base, SHOP, { a: 0, b: 1440 })],
       ['a shop open the last minute', withEntity(base, SHOP, { a: 1439, b: 1440 })],
       ['a home of capacity 65535', withEntity(base, HOME, { a: 65535 })],
+      ['a plaza and a green', withEntity(withEntity(base, WORKPLACE, { kind: ENTITY_PLAZA }), CIVIC, { kind: ENTITY_GREEN })],
     ];
 
     const refused = limits.flatMap(([label, map]) => {
@@ -348,6 +353,7 @@ describe('writeMap', () => {
     const specs: MapSpec[] = [
       base,
       withEntity(withEntity(base, SHOP, { a: 0, b: 1440 }), HOME, { a: 65535 }),
+      withEntity(withEntity(base, WORKPLACE, { kind: ENTITY_PLAZA }), CIVIC, { kind: ENTITY_GREEN }),
       { ...base, kinds: [{ name: 'x'.repeat(255), rgb: 0xffffff }, ...base.kinds.slice(1)] },
       { ...base, ...row, width: 1024, height: 1 },
     ];
