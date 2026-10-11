@@ -66,6 +66,8 @@ The owner can overturn any of these.
   - **Beside them:** the wall-art preview (Task 24), M3.2's mockups (Task 1) and M2.7 Part 1's Opus review.
   - **Task 23 joins the build** (coordinator, 02:05), after Task 27. Ring towns need ways of up to 32 runs, since 42 of Highcourt's 6,160 ways now need more than 16, and M3.2's legs need every door to reach the plaza.
   - **Pushes:** the next push follows Task 23. The place goldens and the browser specs' Highcourt counts are re-pinned then, not only at Task 30.
+- **12 October 2026, 06:30, the first-load JS budget** (owner): it rises from 35 to 40 KB brotli, so M3.2's sim fits. The 100 KB before the first frame stands. A worker split comes back before launch.
+- **Testing on other devices:** the app needs https or localhost. Its workers share memory through COOP/COEP, which a browser allows only in a secure context, so a plain-http address on the LAN shows a blank page. Use the Cloudflare tunnel (`dist/cloudflared/cloudflared.exe tunnel --url http://localhost:<port> --http-host-header localhost:<port>`), since Vite 8's preview refuses other host names.
 - **M2.2c's go** (09:31): build it right after M2.4 Part 1. Highcourt is each world's capital. Away towns keep living in summary form, not frozen, so an Opus pass settles how before Task 3.
 
 **The designers' calls, 10 October 2026:**
@@ -96,7 +98,7 @@ Beyond the checkpoint's Open list:
 - **Stale docs:**
   - the 48×28 town in `place-camera.test.ts:11`, `interfaces.md`'s Places sizes, `countries.md:46`, the M3.1 plan (line 41) and the M0.4 plan (line 83);
   - the old hash `b3b2c251` in `interfaces.md:163`, the M8.1 plan (line 300) and the M8.3 plan (lines 85 and 1844).
-- **The shared plan doc** still names five engines, Deno and the 2% pay cut. It also lacks M3.1 Part 3, whose suggested tag is "(Towns)", and M3.2's drops: Huff's shop choice, the timing wheel and need deadlines. Update it at the next sync, with the owner, along with the deferred items in `git show 6736fb6:docs/plan/HANDOFF.md`.
+- **The shared plan doc** still names five engines, Deno and the 2% pay cut. It also lacks M3.1 Part 3, whose suggested tag is "(Towns)", and M3.2's drops: Huff's shop choice, the timing wheel and need deadlines. Its Performance budget needs the owner's 40 KB of first-load JS (12 October 2026). Update it at the next sync, with the owner, along with the deferred items in `git show 6736fb6:docs/plan/HANDOFF.md`.
 - **Local specs:** a stray `vite preview` on port 4173 serves the last build of `apps/web/dist`, and Playwright reuses it outside CI. Build before a local spec run.
 - **Perf to check:** the economy's month-start `searchShops` (1.78 ms at 10k), and `createTown`'s extra 11 ms at the worker's start. `pnpm budget`'s sampled days miss a month's start. perf.yml, which the owner starts by hand, measures them.
 - **Street snapshots:** the street world stays out of the budget sampling, because its `snapshot` row is over its limits (measured here, Node):
@@ -153,7 +155,7 @@ Beyond the checkpoint's Open list:
   - **Cost:** `life` takes 0.010 ms a tick at 10k and 0.025 at 25k (measured here, Node).
   - **The allocation gate** now checks the street world on day 4 (e1e1ada). Days 1–3 reach 18 KB while V8 compiles the new code, since `warmUp` has no street town.
   - **Bytes over the limits** (measured at 06:24):
-    - initial JS is 36.12 of 35 kB, over the first-frame budget, and the owner is asked;
+    - initial JS is 36.12 kB, over the old 35 kB budget, so the owner raised the budget to 40 kB (06:30);
     - the sim worker chunk is 24.13 of 22 kB.
 - 12 Oct, 05:05: **M3.2 Task 2: sites and legs** (6e4f2dd..b7a5321).
   - **Sites:** every town lists its leisure sites. Highcourt has 29 fields in all: 22 premises, the plaza, 3 greens and 3 riverbanks.
