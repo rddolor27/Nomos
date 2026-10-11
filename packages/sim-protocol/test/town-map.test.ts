@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { brotliCompressSync, constants } from 'node:zlib';
-import { createHomes, createTown, currentTick, stateHash, step, type Homes } from '@nomos/sim-core';
+import { createHomes, createShops, createTown, currentTick, stateHash, step, type Homes } from '@nomos/sim-core';
 import { describe, expect, it } from 'vitest';
 import {
   ENTITY_CIVIC,
@@ -10,6 +10,7 @@ import {
   WALK_BLOCKED,
   WALK_DOOR,
   parseMap,
+  premisesOf,
   type MapEntity,
   type MapV1,
 } from '../src/index.ts';
@@ -90,13 +91,14 @@ describe('the town map', () => {
   it('replays seed 42 on the first screen to a fixed hash', () => {
     const town = loadTown();
     const hashes: Record<string, string> = {};
+    // Built as the worker builds it, with the map's shops, so blobs walk their errands; with none they wandered to 498f12cb and 4bf399fa.
     for (const tier of ['phone', 'desktop'] as const) {
-      const world = createTown(42, tier, town, homesOf(town));
+      const world = createTown(42, tier, town, homesOf(town), createShops(premisesOf(town)));
       while (currentTick(world) < 1_000) step(world);
       hashes[tier] = stateHash(world).toString(16).padStart(8, '0');
     }
 
-    expect(hashes).toEqual({ phone: '498f12cb', desktop: '4bf399fa' });
+    expect(hashes).toEqual({ phone: 'cca95710', desktop: 'a9f09068' });
   });
 
   it('fits the map budget', () => {
