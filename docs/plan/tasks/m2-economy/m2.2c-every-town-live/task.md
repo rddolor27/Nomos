@@ -21,7 +21,7 @@ On 11 October 2026 the owner chose Step 2: every town runs the sim (owner). Toda
   - the TypeScript port writes `town.nmap` byte for byte as Python wrote it, and its `--check` runs in CI;
   - Highcourt spawns 2,688 blobs in its 387 drawn homes with no bed empty or over-full, in households of 1–6. Every settlement of 2 worlds spawns and folds back exactly, in people and cents;
   - the blob card's "Lives with" names the other members of a blob's household, and "House N" is a drawn house;
-  - a town left and re-entered within a month spawns from its folded row exactly. One away over a month start spawns from its row after one summary month, and money plus MINT sums to zero across the switch;
+  - a town left and re-entered within a month spawns from its folded row exactly, except the household and firm cash split. A mid-month spawn floors the firms' cash at the month so far's payroll, and starts demand at the month so far (62d18b7). One away over a month start spawns from its row after one summary month, and money plus MINT sums to zero across the switch;
   - a summary month keeps a row's people, households, firms and cash to the cent and within `checkRecord`'s bounds, and moves its unemployment back toward its first record;
   - a switch logged mid-day applies at the next day boundary, and a twin given the same log reaches the same hash at tick 3,000. `goldens.json`'s new `switch` hash replays in Node and Chromium;
   - in the browser, entering a town from the map shows its own blobs live in the Town skin, the economy panel restarts for it, and Back reaches Highcourt's folded crowd;

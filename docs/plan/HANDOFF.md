@@ -85,6 +85,13 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 11 Oct: **M2.2c's review fixes** (a4064fe..41635ff).
+  - **The refusal:** a switch whose homes can't seat the town is refused before any fold (`homesSeat`).
+  - **A mid-month spawn** floors the firms' cash at the month so far's payroll and starts demand at the month so far. A day-15 spawn reads 6.3% unemployed at first and 3.7% after its first month end, against 7.6% and 3.0% for a day-0 spawn.
+  - **The pending switch** is `focus[1]` (`FOCUS_PENDING`), with `attachTown`.
+  - **New goldens:** `visit` `a7bd4005` and the away row. `switch` is now `cc4584e8`.
+  - **The away fit:** bias-corrected φ, so employed 4.93%, price 1.00% (the floor) and wage 1.95% a month.
+  - **A known limit:** under `?tier=` the way back to Highcourt is refused, since 10,000 can't fit its 2,688 beds. That mode is for perf only.
 - 11 Oct: **M2.2c's Opus determinism review.** Nothing is critical: on the default path a switch replays exactly, keeps money exact and allocates nothing per tick.
   - **Important, being fixed:**
     - a re-entry with fewer beds than people threw after the fold and lost a row's cash, reachable via `?tier=`, so the request is now refused first;

@@ -25,7 +25,7 @@ The architect's, from 11 October 2026, built on the owner's rulings of that day.
 2. **Switching.** Entering settlement p sends the sim worker `{ type: 'open', place: p, map }`, with the place's `.nmap` bytes from the map worker.
    - **When:** the worker keeps the parsed ground and homes as pending, and logs `INPUT_FOCUS` with the existing `logFocus`. A focus change that writes canonical state waits for a day boundary ([R4 report](../../../../research/round-4-multi-scale/report.md), its fourth replay rule). So the worker runs the rest of the day at once, posting no snapshots.
    - **What:** at that boundary, before the day's window opens, `switchTown(world)` folds the live town (`world.focus[0]`) into its row with `foldToLedger`. It moves that town's money back to MINT and empties its agents, households and firms. It spawns row p on the pending ground, keyed on (p, day), and starts three in four walking. A spawn off a month's first day makes the month's consumption plans at once.
-   - **The culture wall:** the emptying keeps the stand-in culture column `layoutWorld` wrote, since guarded `spawn/` may not write culture.
+   - **The culture wall:** the emptying zeroes every agent row, the culture columns included, as the review found (e2f04ed). `spawn/` reads none of them, and `addAgent` rewrites each spawned row, so no rule sees a zeroed culture.
    - **Atomic:** the worker handles `open` in one turn, so no checkpoint or inspect falls between the log and the switch.
    - **Old worlds:** a focus on the live town switches nothing. In a world that isn't a town, a focus only sets `focus[0]`, as now, so `day.test.ts`'s focus tests hold.
    - **Away towns keep living** as summary rows (Ruling 8), so a switch spawns a town from its advanced row.
