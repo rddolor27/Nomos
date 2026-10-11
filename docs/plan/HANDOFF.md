@@ -137,6 +137,16 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 12 Oct, 04:10: **pushed** M3.1 Part 4's Tasks 22, 27 and 23 and M2.7 Part 1's fixes (7bea466..e764299), after the pre-push round (c30fc16, a37bcfe, d46493b).
+  - **Bytes:** the place builder chunk measured 22.64 kB, so its limit rose to 23.64 kB. The first-frame total is 46.69 of 100 kB, initial JS 32.98 of 35 kB, and the town map 12.32 of 40 kB.
+  - **Specs:**
+    - render-gl's `skin-a.json` was regenerated, and `hud.spec.ts` and `worker-map.spec.ts` re-pinned to 1,720 agents;
+    - every other app and render-gl spec passed unchanged;
+    - both engines specs matched in Chromium.
+  - **Screenshots** in `dist/qa/varied-towns/` went to the owner.
+  - **Follow-ups:**
+    - each river has one footbridge, so the far bank's blobs walk to it in single file;
+    - keepers reach their stalls at 07:30, so the plaza's stalls stand empty at the 07:00 opening.
 - 12 Oct, 03:55: **M3.1 Part 4, Task 23: every door reaches the plaza, and 32 runs,** with the M2.7 review's finding 2 (2ff6ad2..81b552e).
   - **`connect`** joins every road to the plaza with the existing footbridge and ford pieces.
     - In the first 2 worlds, 4 river-cut places each got one crossing, which reaches 168 doors a walk had missed.
