@@ -1,3 +1,4 @@
+import { SUPPLIERS } from '../agents/store.ts';
 import { planConsumption } from '../consumption/plan.ts';
 import { CITY } from '../economy/city.ts';
 import { openYearEmployers } from '../economy/scratch.ts';
@@ -6,22 +7,36 @@ import { dayOf, dayOfMonth, monthOf } from '../time/calendar.ts';
 import { NO_PLACE, TICK, type World } from '../world/world.ts';
 import { stepAwayTown } from './away.ts';
 import { foldToLedger } from './fold.ts';
-import type { Homes } from './homes.ts';
+import { bedCount, type Homes } from './homes.ts';
 import { LEDGER_FIELDS, populationAt } from './record.ts';
 import { firstRecord, seatTown } from './town.ts';
 
+// Whether `homes` can seat the town `place` spawns. A row nobody has visited needs the beds a household has suppliers (the
+// least a town spawns with), and a visited row a bed for each of its people, which a crowd folded in bigger homes, such as a
+// ?tier= start's stand-in town, can outnumber (M2.2c review).
+export function homesSeat(world: World, place: number, homes: Homes): boolean {
+  return bedCount(homes) >= Math.max(SUPPLIERS, populationAt(world.townRecords, place * LEDGER_FIELDS));
+}
+
 // Spends the pending request at a day boundary, before the day's window opens (M2.2c Ruling 2). The live town folds into
 // its ledger row and hands its money back to MINT, and the requested town spawns on the request's ground from its own row,
-// keyed (place, day). A request for the live town, or none, switches nothing. A throw midway leaves the world half-written,
-// as it does in spawnFromLedger, and the caller drops it; requestTown screens what could throw.
+// keyed (place, day). A request for the live town, or none, switches nothing. The homes are checked before the fold, so a
+// throw leaves the live town and every row as they were: nothing after the check throws on a row this module wrote.
 export function switchTown(world: World): void {
   const request = world.request;
   const place = request.place;
   request.place = NO_PLACE;
   if (place === NO_PLACE || place === world.focus[0]) return;
+  requireSeats(world, place, request.homes);
   leaveTown(world);
   world.ground = request.ground;
   enterTown(world, place, request.homes, dayOf(world.globals[TICK]));
+}
+
+function requireSeats(world: World, place: number, homes: Homes): void {
+  if (homesSeat(world, place, homes)) return;
+  const people = populationAt(world.townRecords, place * LEDGER_FIELDS);
+  throw new RangeError(`place ${place} holds ${people} people, and its homes have ${bedCount(homes)} beds`);
 }
 
 function leaveTown(world: World): void {

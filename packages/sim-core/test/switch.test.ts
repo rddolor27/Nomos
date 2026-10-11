@@ -28,7 +28,7 @@ import { step } from '../src/step/step.ts';
 import { TICKS_PER_DAY } from '../src/time/calendar.ts';
 import { checkpoint, restoreWorld, stateHash } from '../src/world/checkpoint.ts';
 import { standInGround, type Ground } from '../src/world/ground.ts';
-import { MAX_TOWNS, TICK, createWorld, currentTick, layoutWorld, type World } from '../src/world/world.ts';
+import { MAX_TOWNS, NO_PLACE, TICK, createWorld, currentTick, layoutWorld, type World } from '../src/world/world.ts';
 import { run } from './run.ts';
 
 const SEED = 42;
@@ -225,6 +225,23 @@ describe('switchTown', () => {
     expect(folded(world)).toEqual(Array.from(trimmed));
   });
 
+  it("checks the request's homes before it folds, so beds that fall short throw with the live town and every row as they were", () => {
+    const world = townWorld();
+    enter(world, 1, 3);
+    request(world, 0);
+    // Place 0 folded 1,000 people, and these homes have 300 beds.
+    world.request.homes = homesFor(2);
+    world.globals[TICK] = 4 * TICKS_PER_DAY;
+    const hash = stateHash(world);
+    const table = Array.from(world.townRecords);
+
+    expect(() => boundary(world, 4)).toThrow(RangeError);
+    expect(stateHash(world)).toBe(hash);
+    expect(Array.from(world.townRecords)).toEqual(table);
+    expect([world.focus[0], world.agents.count[0], world.request.place]).toEqual([1, PEOPLE[1], NO_PLACE]);
+    expectOnlyTheLiveTownsMoney(world);
+  });
+
   it("lands a request logged at a day's tick 5 on the next tick 0, and a twin replaying the log reaches the same hash at tick 3,000", () => {
     const requests: [number, number][] = [
       [5, 1],
@@ -266,6 +283,26 @@ describe('requestTown', () => {
     expect(world.inputs.cursor[0]).toBe(1);
     expect(Array.from(world.agents.x.subarray(0, PEOPLE[0]))).toEqual(where);
     expect(rowOf(world, 0).every((field) => field === 0)).toBe(true);
+  });
+
+  it('refuses a return into fewer beds than the town folded people, which would fold the live town and then throw', () => {
+    const world = townWorld();
+    enter(world, 1, 3);
+    const left = rowOf(world, 0);
+    const hash = stateHash(world);
+    const table = Array.from(world.townRecords);
+    const logged = world.inputs.cursor[0];
+
+    // Place 0 holds 1,000 people, as a ?tier= start's crowd would in the homes of Highcourt's 2,688 beds.
+    expect(requestTown(world, 0, GROUND, homesFor(2))).toBe(false);
+    expect([stateHash(world), world.inputs.cursor[0], world.request.place]).toEqual([hash, logged, NO_PLACE]);
+    expect(Array.from(world.townRecords)).toEqual(table);
+    boundary(world, 4);
+    expect([world.focus[0], world.agents.count[0]]).toEqual([1, PEOPLE[1]]);
+
+    enter(world, 0, 5);
+    expect([world.focus[0], world.agents.count[0]]).toEqual([0, PEOPLE[0]]);
+    expect(rowOf(world, 0)).toEqual(left);
   });
 });
 

@@ -1,7 +1,6 @@
-import { SUPPLIERS } from '../agents/store.ts';
 import { stepAwayTowns } from '../spawn/away.ts';
-import { bedCount, type Homes } from '../spawn/homes.ts';
-import { switchTown } from '../spawn/switch.ts';
+import type { Homes } from '../spawn/homes.ts';
+import { homesSeat, switchTown } from '../spawn/switch.ts';
 import { dayOf, dayOfMonth, dayOfYear, monthOf, yearOf } from '../time/calendar.ts';
 import type { Ground } from '../world/ground.ts';
 import { INPUT_CAPACITY, INPUT_FOCUS, INPUT_LAYOFFS } from '../world/inputs.ts';
@@ -33,12 +32,12 @@ export function logFocus(world: World, settlement: number): boolean {
 // Asks a town to enter `place`, on `ground` and in `homes`, at the next day boundary, where switchTown spawns it (M2.2c
 // Ruling 2). It logs the focus input and keeps the town it names in one call, so a checkpoint never falls between them, and
 // a later request of the same day replaces an earlier one. It returns false, and changes nothing, when the world is not a
-// town, the place has no row in the ledger table, the homes hold fewer beds than a household has suppliers (the least a town
-// spawns with), or the log is full. A request for the live town switches nothing. It sits here beside logFocus because the
-// boundary below calls switchTown, so spawn/switch.ts may not import this file.
+// town, the place has no row in the ledger table, the homes cannot seat the town (homesSeat: fewer beds than a household has
+// suppliers, or than the people the place's row holds), or the log is full. A request for the live town switches nothing. It
+// sits here beside logFocus because the boundary below calls switchTown, so spawn/switch.ts may not import this file.
 export function requestTown(world: World, place: number, ground: Ground, homes: Homes): boolean {
   if (world.globals[TOWN] !== 1 || !Number.isInteger(place) || place < 0 || place >= MAX_TOWNS) return false;
-  if (bedCount(homes) < SUPPLIERS || !logFocus(world, place)) return false;
+  if (!homesSeat(world, place, homes) || !logFocus(world, place)) return false;
   const request = world.request;
   request.place = place;
   request.ground = ground;
