@@ -69,7 +69,7 @@ Every frame has `x`, `y`, `w`, `h` and `anchor`. Some carry more:
 | `colour` | The culture colour an emblem or banner carries, for the culture lens |
 | `cord_row` | Row where festival strips hang, so any strips join |
 | `hitch` | Point where a cart hitches to its animal |
-| `hold`, `eat` | On a body frame that carries an item, the top-left pixel of the item's 8×8 sprite, and on standing frames its three positions while eating; the item is drawn unflipped, so a right frame holds its own point. Facing up, sitting and sneaking carry none. Written by `characters.build(holds=True)`, which waits until the manifest schema names them |
+| `hold`, `eat` | On a body frame that carries an item, the top-left pixel of the item's 8×8 sprite, and on standing frames its three positions while eating; the item is drawn unflipped, so a right frame holds its own point. Facing up, sitting and sneaking carry none. Written by `characters.build()`, and named by the manifest schema |
 | `face`, `hue`, `pose`, `facing`, `frame`, `job`, `eyes`, `pattern` | Character metadata; `face` is the offset for face overlays, `eyes` the eye shape of a resting face |
 | `review_only` | Review strips, never drawn in the game |
 
