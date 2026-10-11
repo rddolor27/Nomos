@@ -2,10 +2,10 @@
 
 Run `python tools/atlas/build_atlas.py [--out DIR]`, default dist/atlas/. It writes atlas.webp (lossless), atlas.png
 (shrunk by oxipng when that is installed) and atlas.json, each frame's place keyed "<category>/<name>", with the body
-frames' face offsets that the place pass needs (M3.1). That town page leaves out the frames ending in _snow or _night
-(M3.1's Part 3, Ruling 14). It also writes the map scene's page, map.webp, map.png and map.json (M8.3), which keeps
-every map frame. Frames are packed, not sheets, because houses.png alone is 2,316 px tall. The output is a build
-product and is never committed.
+frames' face offsets, hold points and eating steps that the place pass needs (M3.1, M2.7). That town page leaves out
+the frames ending in _snow or _night (M3.1's Part 3, Ruling 14). It also writes the map scene's page, map.webp, map.png
+and map.json (M8.3), which keeps every map frame. Frames are packed, not sheets, because houses.png alone is 2,316 px
+tall. The output is a build product and is never committed.
 """
 import argparse
 import json
@@ -43,6 +43,10 @@ class Frame(NamedTuple):
     anchor: list
     # A body frame's face offset, where tools/worldgen/placedraw.py draws its face and emote; None for other frames.
     face: list | None
+    # A body frame's hold point, where the carried item's top-left pixel sits, and the three steps of that item while its blob
+    # eats; None where the frame carries no item.
+    hold: list | None
+    eat: list | None
 
 
 def read_frames():
@@ -53,7 +57,8 @@ def read_frames():
         manifest = json.loads(path.read_text(encoding='utf-8'))
         sheet = SPRITES / manifest['image']
         for name, f in manifest['frames'].items():
-            frames.append(Frame(f'{path.stem}/{name}', sheet, f['x'], f['y'], f['w'], f['h'], f['anchor'], f.get('face')))
+            frames.append(Frame(f'{path.stem}/{name}', sheet, f['x'], f['y'], f['w'], f['h'], f['anchor'], f.get('face'),
+                                f.get('hold'), f.get('eat')))
     return frames
 
 
@@ -89,8 +94,10 @@ def compose(frames, places, width, height):
 
 def frame_entry(f, place):
     entry = {'x': place[0], 'y': place[1], 'w': f.w, 'h': f.h, 'anchor': f.anchor}
-    if f.face is not None:
-        entry['face'] = f.face
+    for field in ('face', 'hold', 'eat'):
+        value = getattr(f, field)
+        if value is not None:
+            entry[field] = value
     return entry
 
 

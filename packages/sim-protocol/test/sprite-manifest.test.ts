@@ -41,6 +41,8 @@ const REJECTED: Record<string, Json> = {
   'an unknown layer': mutated((_, frame) => { frame.layer = 'sky'; }),
   'a corners key of the wrong length': mutated((_, frame) => { frame.corners = '101'; }),
   'a boolean view': mutated((_, frame) => { frame.view = true; }),
+  'a hold of three numbers': mutated((_, frame) => { frame.hold = [0, 15, 1]; }),
+  'two eating steps': mutated((_, frame) => { frame.eat = [[0, 15], [2, 14]]; }),
   'an image that is not a lowercase png': mutated((manifest) => { manifest.image = 'Buildings.PNG'; }),
   'a size of zero': mutated((manifest) => { manifest.size = [0, 584]; }),
   'a frame without an anchor': mutated((_, frame) => { delete frame.anchor; }),
@@ -62,7 +64,10 @@ describe('the sprite manifest schema', () => {
       image: 'tiny.png',
       size: [32, 16],
       tile: 16,
-      frames: { tile_grass: { x: 0, y: 0, w: 16, h: 16, anchor: [8, 15], layer: 'ground', joins: 'lr', corners: '1100' } },
+      frames: {
+        tile_grass: { x: 0, y: 0, w: 16, h: 16, anchor: [8, 15], layer: 'ground', joins: 'lr', corners: '1100' },
+        blob_sun_stand_down: { x: 16, y: 0, w: 18, h: 22, anchor: [9, 20], hold: [0, 15], eat: [[0, 15], [2, 14], [5, 14]] },
+      },
     };
 
     expect(validator()(sample)).toEqual([]);

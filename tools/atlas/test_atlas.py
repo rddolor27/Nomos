@@ -1,9 +1,9 @@
 """Checks the atlas build against the sprite manifests. Run: python tools/atlas/test_atlas.py
 
-Every manifest frame must be packed once with its size, anchor and any face offset, and no two may overlap, every 37th
-frame must keep its pixels in both the WebP and the PNG, no side may pass 2,048 px, and a pack too big for
-2,048 x 2,048 must fail. The town page leaves out the snow and night variants and fails past 1,920 px tall; every run
-prints its height and bytes (M3.1's Part 3, Task 10)."""
+Every manifest frame must be packed once with its size, anchor and any face offset, hold point and eating steps, and no
+two may overlap, every 37th frame must keep its pixels in both the WebP and the PNG, no side may pass 2,048 px, and a
+pack too big for 2,048 x 2,048 must fail. The town page leaves out the snow and night variants and fails past 1,920 px
+tall; every run prints its height and bytes (M3.1's Part 3, Task 10)."""
 import json
 import subprocess
 import sys
@@ -36,8 +36,8 @@ def load_rgba(path):
 
 
 def manifest_frames():
-    """key -> (sheet, x, y, w, h, anchor, face) for every frame of every manifest, read without the build's help; face
-    is None where a frame has no face offset."""
+    """key -> (sheet, x, y, w, h, anchor, face, hold, eat) for every frame of every manifest, read without the build's
+    help; face, hold and eat are None where a frame has none."""
     frames = {}
     for path in sorted(SPRITES.glob('*.json')):
         if path.name == NOT_A_MANIFEST:
@@ -45,7 +45,7 @@ def manifest_frames():
         manifest = json.loads(path.read_text(encoding='utf-8'))
         for name, f in manifest['frames'].items():
             frames[f'{path.stem}/{name}'] = (SPRITES / manifest['image'], f['x'], f['y'], f['w'], f['h'], f['anchor'],
-                                             f.get('face'))
+                                             f.get('face'), f.get('hold'), f.get('eat'))
     return frames
 
 
@@ -103,9 +103,9 @@ def placement_problems(index, expected):
     for key, p in index['frames'].items():
         if key not in expected:
             continue
-        _, _, _, w, h, anchor, face = expected[key]
-        if (p['w'], p['h'], p['anchor'], p.get('face')) != (w, h, anchor, face):
-            problems.append(f'{key}: size, anchor or face offset differs from its manifest')
+        _, _, _, w, h, anchor, face, hold, eat = expected[key]
+        if (p['w'], p['h'], p['anchor'], p.get('face'), p.get('hold'), p.get('eat')) != (w, h, anchor, face, hold, eat):
+            problems.append(f'{key}: size, anchor, face offset, hold or eating steps differ from its manifest')
         elif p['x'] < 0 or p['y'] < 0 or p['x'] + w > width or p['y'] + h > height:
             problems.append(f'{key}: lies outside the atlas')
         else:
@@ -120,7 +120,7 @@ def pixel_problems(index, expected, out, images=IMAGES, every=SAMPLE_EVERY):
     sheets = {}
     atlases = {name: load_rgba(out / name) for name in images}
     for key in sorted(expected)[::every]:
-        sheet_path, x, y, w, h, _, _ = expected[key]
+        sheet_path, x, y, w, h, *_ = expected[key]
         if sheet_path not in sheets:
             sheets[sheet_path] = load_rgba(sheet_path)
         source = sheets[sheet_path].crop((x, y, x + w, y + h))

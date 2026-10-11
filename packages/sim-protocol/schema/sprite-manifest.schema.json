@@ -29,6 +29,13 @@
           "door": { "type": "array", "items": { "type": "integer" }, "minItems": 2, "maxItems": 2 },
           "face": { "type": "array", "items": { "type": "integer" }, "minItems": 2, "maxItems": 2 },
           "hitch": { "type": "array", "items": { "type": "integer" }, "minItems": 2, "maxItems": 2 },
+          "hold": { "type": "array", "items": { "type": "integer" }, "minItems": 2, "maxItems": 2 },
+          "eat": {
+            "type": "array",
+            "items": { "type": "array", "items": { "type": "integer" }, "minItems": 2, "maxItems": 2 },
+            "minItems": 3,
+            "maxItems": 3
+          },
           "joins": { "enum": ["", "l", "lr", "r", "u", "ul", "ur"] },
           "layer": { "enum": ["body", "face", "ground", "job", "night", "pattern", "snow"] },
           "night": { "type": "string", "pattern": "^[a-z0-9]+(?:[_-][a-z0-9]+)*$" },

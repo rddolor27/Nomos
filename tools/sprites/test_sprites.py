@@ -58,7 +58,7 @@ def check(name):
 # ---------------------------------------------------------------------------- M2.7: life on the street
 @functools.cache
 def characters_sheet():
-    return ch.build(holds=True)
+    return ch.build()
 
 
 def body_canvas(im, dx=0, dy=0):

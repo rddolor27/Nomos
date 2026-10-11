@@ -48,6 +48,16 @@ export interface SpriteFrame {
    * @maxItems 2
    */
   hitch?: [number, number];
+  /**
+   * @minItems 2
+   * @maxItems 2
+   */
+  hold?: [number, number];
+  /**
+   * @minItems 3
+   * @maxItems 3
+   */
+  eat?: [[number, number], [number, number], [number, number]];
   joins?: '' | 'l' | 'lr' | 'r' | 'u' | 'ul' | 'ur';
   layer?: 'body' | 'face' | 'ground' | 'job' | 'night' | 'pattern' | 'snow';
   night?: string;

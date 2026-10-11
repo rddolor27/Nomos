@@ -560,16 +560,14 @@ CROWD = {
 }
 
 
-def build(holds=False):
-    """The characters sheet. `holds` writes each body frame's `hold` and `eat` fields, which wait until the manifest schema
-    (packages/sim-protocol/schema/sprite-manifest.schema.json) names them: with them left in, its test rejects the manifest."""
+def build():
     sheet = sk.Sheet('characters')
     for stem, pose, facing in frames():
         meta = {'pose': pose.split('_')[0], 'facing': facing}
         if pose.startswith('walk'):
             meta['frame'] = int(pose[-1])
         face_at = {'face': face_offset(pose, facing)} if facing != 'up' else {}
-        hold_at = hold_fields(pose, facing) if holds else {}
+        hold_at = hold_fields(pose, facing)
         for hue in sk.BODY_HUES:
             sheet.add(f'blob_{hue}_{stem}', sk.body_hue(body(pose, facing), hue), anchor=ANCHOR, hue=hue,
                       layer='body', **meta, **face_at, **hold_at)
