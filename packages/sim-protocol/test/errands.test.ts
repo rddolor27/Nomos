@@ -107,6 +107,37 @@ function peopleOf(world: World, home: number): number[] {
   return people;
 }
 
+function walkersIn(world: World): number {
+  let walkers = 0;
+  for (let blob = 0; blob < world.agents.count[0]; blob++) walkers += world.errands.phase[blob] >= FIRST_WALKING ? 1 : 0;
+  return walkers;
+}
+
+// The ticks from the world's tick to `until` at which a blob of `people` is not asleep at home, summed over the blobs.
+function ticksAwake(world: World, people: number[], until: number): number {
+  let ticks = 0;
+  while (currentTick(world) < until) {
+    step(world);
+    for (const person of people) ticks += world.errands.phase[person] === PHASE_ASLEEP ? 0 : 1;
+  }
+  return ticks;
+}
+
+function positionsOf(world: World, people: number[]): number[][] {
+  return people.map((person) => [world.agents.x[person], world.agents.y[person]]);
+}
+
+// The town's ground with the eight cells round a door cell walled up, which cuts that cell off from every premises.
+function walledAround(tile: number[]): Ground {
+  const walk = town.walk.slice();
+  for (let dy = -1; dy <= 1; dy++) {
+    for (let dx = -1; dx <= 1; dx++) {
+      if (dx !== 0 || dy !== 0) walk[(tile[1] + dy) * town.width + tile[0] + dx] = WALK_BLOCKED;
+    }
+  }
+  return { width: town.width, height: town.height, walk };
+}
+
 describe('Highcourt on its streets', { timeout: 60_000 }, () => {
   it('sends a buyer to its shop for its good, home with it, and out on its doorstep to eat it', () => {
     const world = highcourt();
@@ -172,9 +203,7 @@ describe('Highcourt on its streets', { timeout: 60_000 }, () => {
   it('replays to the same hash from a checkpoint taken while blobs are mid-trip', () => {
     const live = highcourt();
     runTo(live, MORNING + 90);
-    let walking = 0;
-    for (let blob = 0; blob < live.agents.count[0]; blob++) walking += live.errands.phase[blob] >= FIRST_WALKING ? 1 : 0;
-    expect(walking).toBeGreaterThan(1_000);
+    expect(walkersIn(live)).toBeGreaterThan(1_000);
     const saved = checkpoint(live);
     const hashAtCheckpoint = stateHash(live);
 
@@ -193,36 +222,19 @@ describe('Highcourt on its streets', { timeout: 60_000 }, () => {
     runTo(open, MORNING);
     const home = homeOf(open, firstIn(open, PHASE_LEAVING + PURPOSE_FOOD));
     const people = peopleOf(open, home);
-    const homeDoor = [tileOf(open.agents.x[people[0]]), tileOf(open.agents.y[people[0]])];
-    let walkedOpen = 0;
-    while (currentTick(open) < NIGHT) {
-      step(open);
-      for (const person of people) walkedOpen += open.errands.phase[person] >= FIRST_WALKING ? 1 : 0;
-    }
+    const [x, y] = positionsOf(open, people)[0];
+    const awakeOpen = ticksAwake(open, people, NIGHT);
 
-    // Eight walls round the door cell cut it off from every premises.
-    const walk = town.walk.slice();
-    for (let dy = -1; dy <= 1; dy++) {
-      for (let dx = -1; dx <= 1; dx++) {
-        if (dx !== 0 || dy !== 0) walk[(homeDoor[1] + dy) * town.width + homeDoor[0] + dx] = WALK_BLOCKED;
-      }
-    }
-    const walled = highcourt({ width: town.width, height: town.height, walk });
+    const walled = highcourt(walledAround([tileOf(x), tileOf(y)]));
     expect(peopleOf(walled, home)).toEqual(people);
-    const started = people.map((person) => [walled.agents.x[person], walled.agents.y[person]]);
-    let walkedWalled = 0;
-    let walkedElsewhere = 0;
-    while (currentTick(walled) < NIGHT) {
-      step(walled);
-      for (const person of people) walkedWalled += walled.errands.phase[person] !== PHASE_ASLEEP ? 1 : 0;
-      if (currentTick(walled) === MORNING + 240) {
-        for (let blob = 0; blob < walled.agents.count[0]; blob++) walkedElsewhere += walled.errands.phase[blob] >= FIRST_WALKING ? 1 : 0;
-      }
-    }
+    const started = positionsOf(walled, people);
+    const awakeByMorning = ticksAwake(walled, people, MORNING + 240);
+    const walkingElsewhere = walkersIn(walled);
+    const awakeAfter = ticksAwake(walled, people, NIGHT);
 
-    expect(walkedOpen).toBeGreaterThan(0);
-    expect(walkedWalled).toBe(0);
-    expect(people.map((person) => [walled.agents.x[person], walled.agents.y[person]])).toEqual(started);
-    expect(walkedElsewhere).toBeGreaterThan(1_000);
+    expect(awakeOpen).toBeGreaterThan(0);
+    expect([awakeByMorning, awakeAfter]).toEqual([0, 0]);
+    expect(positionsOf(walled, people)).toEqual(started);
+    expect(walkingElsewhere).toBeGreaterThan(1_000);
   });
 });
