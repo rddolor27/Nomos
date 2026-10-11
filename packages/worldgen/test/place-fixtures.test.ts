@@ -26,7 +26,7 @@ const places: FixturePlace[] = (JSON.parse(readFileSync(FIXTURE, 'utf8')).places
 
 function plain(layout: PlaceLayout): Omit<FixturePlace, 'name' | 'context'> {
   const people = {} as Record<keyof PlacePeople, number[]>;
-  for (const field of Object.keys(layout.people) as (keyof PlacePeople)[]) people[field] = Array.from(layout.people[field]);
+  for (const field of Object.keys(layout.people) as (keyof PlacePeople)[]) people[field] = Array.from(layout.people[field] ?? []);
   return {
     width: layout.width,
     height: layout.height,
