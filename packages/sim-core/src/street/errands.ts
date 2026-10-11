@@ -1,6 +1,7 @@
 import { take, type Arena } from '../memory/arena.ts';
 import { MAX_PREMISES, MAX_SITES } from './fields.ts';
 import { RUN_BYTES } from './runs.ts';
+import { NO_SITE } from './shops.ts';
 
 // What a trip is for. A phase of a trip is its base plus the purpose.
 export const PURPOSE_WORK = 0;
@@ -66,8 +67,18 @@ export interface Errands {
   readonly siteY: Int32Array;
   readonly shopStall: Uint8Array;
   readonly firmShop: Uint8Array;
+  // Each blob's home door tile as y * width + x, written when the streets open, outside the hash. A blob away from home plans its
+  // way back, and to a friend's home, from these (street/legs.ts).
+  readonly homeCell: Int32Array;
   // Every byte of the store, to empty at a switch in one fill.
   readonly bytes: Uint8Array;
+}
+
+// How many sites the town's streets hold: the slots from 0 that have a kind.
+export function sitesOf(errands: Errands): number {
+  let sites = 0;
+  while (sites < MAX_SITES && errands.siteKind[sites] !== NO_SITE) sites++;
+  return sites;
 }
 
 export function createErrands(arena: Arena, agents: number, firms: number): Errands {
@@ -86,6 +97,7 @@ export function createErrands(arena: Arena, agents: number, firms: number): Erra
   const siteY = take(arena, Int32Array, MAX_SITES, false);
   const shopStall = take(arena, Uint8Array, MAX_PREMISES, false);
   const firmShop = take(arena, Uint8Array, firms, false);
+  const homeCell = take(arena, Int32Array, agents, false);
   return {
     capacity: agents,
     dayFood,
@@ -104,6 +116,7 @@ export function createErrands(arena: Arena, agents: number, firms: number): Erra
     siteY,
     shopStall,
     firmShop,
+    homeCell,
     bytes: new Uint8Array(arena.memory.buffer, dayFood.byteOffset, arena.top - dayFood.byteOffset),
   };
 }

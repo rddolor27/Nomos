@@ -1,3 +1,4 @@
+import type { Homes } from '../spawn/homes.ts';
 import { dayOf } from '../time/calendar.ts';
 import type { Ground } from '../world/ground.ts';
 import { STREETS, TICK, type World } from '../world/world.ts';
@@ -61,10 +62,21 @@ function assignFirmShops(world: World, shops: Shops): void {
   }
 }
 
-// Gives the live town its streets: the flow field to each site, the sites and the firm rows the premises trade, and a night for
-// every blob to wake from, in a keyed minute of the planning window of today. The world must be a freshly spawned town, whose
-// errand store is empty. A ground or layout the fields do not fit throws before anything is written.
-export function createStreets(world: World, shops: Shops): void {
+// Each blob's home door tile, household by household as spawnPeople seated them.
+function fillHomeCells(world: World, homes: Homes): void {
+  const { households, errands, ground } = world;
+  let blob = 0;
+  for (let h = 0; h < households.count[0]; h++) {
+    const home = households.home[h];
+    const cell = homes.doorY[home] * ground.width + homes.doorX[home];
+    for (let member = 0; member < households.size[h]; member++) errands.homeCell[blob++] = cell;
+  }
+}
+
+// Gives the live town its streets: the flow field to each site, the sites and the firm rows the premises trade, each blob's home
+// tile, and a night for every blob to wake from, in a keyed minute of the planning window of today. The world must be a freshly
+// spawned town, whose errand store is empty. A ground or layout the fields do not fit throws before anything is written.
+export function createStreets(world: World, shops: Shops, homes: Homes): void {
   const { ground, errands, fields, globals } = world;
   requireSites(shops);
   buildFields(ground, createDoorCells(shops, ground.width), fields);
@@ -75,6 +87,7 @@ export function createStreets(world: World, shops: Shops): void {
   }
   for (let p = 0; p < shops.premises; p++) errands.shopStall[p] = shops.stall[p];
   assignFirmShops(world, shops);
+  fillHomeCells(world, homes);
   globals[STREETS] = 1;
   const day = dayOf(globals[TICK]);
   for (let i = 0; i < world.agents.count[0]; i++) sleepUntil(world, i, day);

@@ -65,7 +65,7 @@ export function seatTown(
   const key = draw2(world.seed, SPAWN_DRAW, place, day);
   fitHouseholds(record, homes, world.seed, key);
   spawnFromLedger(world, record, homes, CITY, place, day);
-  if (shops.premises > 0) createStreets(world, shops);
+  if (shops.premises > 0) createStreets(world, shops, homes);
   else startWalking(world, key);
 }
 
