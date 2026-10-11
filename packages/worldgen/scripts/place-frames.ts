@@ -31,8 +31,10 @@ const USED: Record<string, readonly string[]> = {
   ],
   buildings: [
     'civic_clinic', 'civic_courthouse', 'civic_police-station', 'civic_records-office', 'civic_school',
-    'civic_town-hall', 'shop_general', 'shop_market-stall', 'shop_warehouse', 'work_dock', 'work_farm',
-    'work_fuel-works', 'work_lumber-camp', 'work_mine', 'work_pasture', 'work_quarry', 'work_workshop',
+    'civic_town-hall', 'shop_bakery', 'shop_draper_bolts', 'shop_draper_rail', 'shop_fuel-store_shed',
+    'shop_fuel-store_stack', 'shop_general', 'shop_market-stall', 'shop_market-stall_fish', 'shop_market-stall_milk',
+    'shop_market-stall_vegetables', 'shop_warehouse', 'work_dock', 'work_farm', 'work_fuel-works', 'work_lumber-camp',
+    'work_mine', 'work_pasture', 'work_quarry', 'work_smithy', 'work_workshop',
   ],
   landmarks: [
     'landmark_amphitheatre', 'landmark_clock-tower', 'landmark_fountain_0', 'landmark_garden-terraces',
