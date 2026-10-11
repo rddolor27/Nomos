@@ -321,6 +321,14 @@ describe('the street on the place sprite list', () => {
     expect(layersOf([streeter(STAND, UP, 1, 2)]).some(([name]) => name.includes('/face_'))).toBe(false);
   });
 
+  it("draws a buyer's coin bubble last, over its body and face, where the emote layer puts it", () => {
+    const buyer = [0, STAND, UP, 0, 0, NO_CODE, PLACE_EMOTES.indexOf('coin'), 40, 30, 0, 0, 0];
+    const layout = crowd([buyer]);
+
+    expect(layersOf([buyer]).at(-1)?.[0]).toBe('icons/emote_coin');
+    expect(drawn(packed(layout))).toEqual(reference(layout));
+  });
+
   it('draws nothing for a person indoors, however much it carries, and leaves the others as they were', () => {
     const outside = (x: number, facing: number): number[] => [0, STAND, facing, 0, 0, NO_CODE, NO_CODE, x, 30, 1];
     const home = [3, STAND, DOWN, 0, 0, NO_CODE, NO_CODE, 50, 30, 7, 2, 1];

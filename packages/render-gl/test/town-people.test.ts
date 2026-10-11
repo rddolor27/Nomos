@@ -1,6 +1,7 @@
 import {
   ACTION_IDLE,
   ACTION_WALK,
+  EMOTE_COIN,
   FACING_DOWN,
   FACING_LEFT,
   FACING_RIGHT,
@@ -8,7 +9,7 @@ import {
   SNAPSHOT_BYTES,
   packVisual,
 } from '@nomos/sim-protocol';
-import { NO_CODE, PLACE_EXPRESSIONS, PLACE_FACINGS, PLACE_POSES } from '@nomos/sim-protocol/place';
+import { NO_CODE, PLACE_EMOTES, PLACE_EXPRESSIONS, PLACE_FACINGS, PLACE_POSES } from '@nomos/sim-protocol/place';
 import { describe, expect, it } from 'vitest';
 import type { Retained } from '../src/renderer/types.ts';
 import { TownPeople } from '../src/town/people.ts';
@@ -27,6 +28,11 @@ function idler(look: number, facing = FACING_DOWN): number {
 // A blob standing in the street: the good it carries, whether it eats and whether it is indoors.
 function streeter(look: number, item: number, eating: number, indoors: number): number {
   return packVisual(look, ACTION_IDLE, 0, 0, FACING_DOWN, 0, indoors, item, eating);
+}
+
+// A blob at a counter, facing it, under an emote id of the word.
+function bubbler(look: number, emote: number): number {
+  return packVisual(look, ACTION_IDLE, emote, 0, FACING_UP, 0);
 }
 
 // The renderer's two latest snapshots, slot 0 the current one, as pushSnapshot leaves them.
@@ -122,6 +128,13 @@ describe('the Town skin\'s people', () => {
     expect([...columns.item]).toEqual([1, 7, 2, 0]);
     expect([...columns.eat]).toEqual([0, 3, 0, 0]);
     expect([...columns.indoors]).toEqual([0, 0, 1, 0]);
+  });
+
+  it("show a buyer's coin as the place's coin emote, and no emote for a bare word or an id with none", () => {
+    const agents: Agent[] = [[8, 8, bubbler(1, EMOTE_COIN)], [8, 8, idler(2)], [8, 8, bubbler(3, 31)]];
+    const { columns } = written(agents, agents);
+
+    expect([...columns.emote]).toEqual([PLACE_EMOTES.indexOf('coin'), NO_CODE, NO_CODE]);
   });
 
   it('step the eating loop every 3 ticks through 4 steps, and start it again after the fourth', () => {

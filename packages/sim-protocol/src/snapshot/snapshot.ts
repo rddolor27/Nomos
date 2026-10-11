@@ -1,6 +1,6 @@
 import { STREETS, SUBPIXELS, type World } from '@nomos/sim-core';
 import { SNAPSHOT_BUFFERS, SNAPSHOT_BYTES } from '../messages/messages.ts';
-import { eatingAt, indoorsAt, itemAt } from './street.ts';
+import { eatingAt, emoteAt, indoorsAt, itemAt } from './street.ts';
 import { packVisual } from './visual.ts';
 
 const SNAPSHOT_WORDS = SNAPSHOT_BYTES / Uint32Array.BYTES_PER_ELEMENT;
@@ -71,6 +71,7 @@ export function writeSnapshot(world: World, view: Uint32Array): number {
 // Node 24.18.0 on Windows, load not recorded).
 function addStreet(world: World, view: Uint32Array, agents: number): void {
   for (let i = 0; i < agents; i++) {
-    view[i * SNAPSHOT_WORDS + 2] |= packVisual(0, 0, 0, 0, 0, 0, indoorsAt(world, i), itemAt(world, i), eatingAt(world, i));
+    const street = packVisual(0, 0, emoteAt(world, i), 0, 0, 0, indoorsAt(world, i), itemAt(world, i), eatingAt(world, i));
+    view[i * SNAPSHOT_WORDS + 2] |= street;
   }
 }

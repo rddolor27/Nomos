@@ -1,5 +1,6 @@
 import {
   ACTION_WALK,
+  EMOTE_COIN,
   FACING_DOWN,
   FACING_LEFT,
   FACING_RIGHT,
@@ -7,12 +8,13 @@ import {
   SNAPSHOT_BYTES,
   actionOf,
   eatingOf,
+  emoteOf,
   facingOf,
   indoorsOf,
   itemOf,
   lookOf,
 } from '@nomos/sim-protocol';
-import { NO_CODE, PLACE_EXPRESSIONS, PLACE_FACINGS, PLACE_POSES, type PlacePeople } from '@nomos/sim-protocol/place';
+import { NO_CODE, PLACE_EMOTES, PLACE_EXPRESSIONS, PLACE_FACINGS, PLACE_POSES, type PlacePeople } from '@nomos/sim-protocol/place';
 import { JUMP_PX } from '../dots/dots.ts';
 import type { Retained } from '../renderer/types.ts';
 
@@ -41,6 +43,17 @@ function wordFacings(): Uint8Array {
 }
 
 const FACING_OF_WORD = wordFacings();
+
+// The word's emote field is 5 bits, and its ids run in another order than the place's emotes: id 0 is none.
+const EMOTE_IDS = 32;
+
+function wordEmotes(): Uint8Array {
+  const table = new Uint8Array(EMOTE_IDS).fill(NO_CODE);
+  table[EMOTE_COIN] = PLACE_EMOTES.indexOf('coin');
+  return table;
+}
+
+const EMOTE_OF_WORD = wordEmotes();
 
 function peopleFor(count: number): Required<PlacePeople> {
   return {
@@ -73,9 +86,10 @@ function facingFor(dx: number, dy: number, jump: boolean, word: number): number 
   return dy > 0 ? DOWN : UP;
 }
 
-// What the word says of the street: the good carried, how far into the eating loop the blob is (0 when it isn't eating), and
-// whether it is indoors. Every blob carrying a good shows the same icon, whatever its wallet.
+// What the word says of the street: the bubble over the blob, the good carried, how far into the eating loop the blob is (0
+// when it isn't eating), and whether it is indoors. Every blob carrying a good shows the same icon, whatever its wallet.
 function writeStreet(people: Required<PlacePeople>, i: number, word: number, eatStep: number): void {
+  people.emote[i] = EMOTE_OF_WORD[emoteOf(word)];
   people.item[i] = itemOf(word);
   people.eat[i] = eatingOf(word) === 1 ? 1 + eatStep : 0;
   people.indoors[i] = indoorsOf(word);
@@ -111,8 +125,8 @@ function writePerson(
 
 // The sim's agents as a place's people, one person per agent, rewritten every draw from the two latest snapshots
 // (owner request, 10 October 2026). A snapshot's world px are art px, and an agent's point is its person's anchor, the
-// ground under its feet. Expression is neutral, with no job or emote yet, and the street's bits of the word, the good
-// carried, eating and indoors, go to the street's columns (M2.7).
+// ground under its feet. Expression is neutral, with no job yet, and the street's bits of the word, the coin bubble of a buyer,
+// the good carried, eating and indoors, go to the emote and street columns (M2.7).
 export class TownPeople {
   // Made again only when the agent count changes, so a draw allocates nothing.
   columns: Required<PlacePeople>;

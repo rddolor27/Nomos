@@ -36,6 +36,9 @@ const ITEM_BITS = 3;
 const EATING_SHIFT = 30;
 const EATING_BITS = 1;
 
+// The emote ids of the word's emote field, where 0 is none. The coin is the bubble over a buyer at a counter (M2.7 Ruling 8).
+export const EMOTE_COIN = 1;
+
 export const VISUAL_FIELDS: readonly { name: string; shift: number; bits: number }[] = [
   { name: 'look', shift: LOOK_SHIFT, bits: LOOK_BITS },
   { name: 'action', shift: ACTION_SHIFT, bits: ACTION_BITS },

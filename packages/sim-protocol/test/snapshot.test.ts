@@ -20,9 +20,11 @@ import {
 } from '@nomos/sim-core';
 import {
   ACTION_WALK,
+  EMOTE_COIN,
   TIER_AGENTS,
   createSnapshotPool,
   eatingOf,
+  emoteOf,
   giveBack,
   indoorsOf,
   itemOf,
@@ -132,6 +134,8 @@ describe('the street in the snapshot', () => {
       [0, 0, 0],
       [0, FUEL, 0],
     ]);
+    // Only the blob buying at a counter wears the coin bubble.
+    expect(errands.map((_, blob) => emoteOf(words[blob]))).toEqual([0, 0, 0, 0, EMOTE_COIN, 0]);
     // The rest of a word is the blob's own, and a blob no errand has woken is asleep indoors with nothing in its hands.
     const { look, action, facing } = world.agents;
     expect(words[0]).toBe(packVisual(look[0], action[0], 0, 0, facing[0], 0, 0, BREAD, 0));
@@ -144,5 +148,7 @@ describe('the street in the snapshot', () => {
 
     expect(wandering.map(indoorsOf)).toEqual(new Array<number>(PEOPLE).fill(0));
     expect(onStreets.map(indoorsOf)).toEqual(new Array<number>(PEOPLE).fill(1));
+    // Neither has a buyer yet, and a town without streets never asks the store, so no word carries a bubble.
+    expect([...wandering, ...onStreets].map(emoteOf)).toEqual(new Array<number>(2 * PEOPLE).fill(0));
   });
 });
