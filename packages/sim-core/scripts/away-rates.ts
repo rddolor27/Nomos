@@ -1,5 +1,5 @@
-// Writes src/spawn/away-rates.ts, the shares and noise of M2.2c Ruling 8's summary month, fitted to a live town. It takes
-// about 2.5 s: run it in any commit that changes CITY, CITY_RECORD or the economy day, and commit the result. --check
+// Writes src/spawn/away-rates.ts, the level, shares and noise of M2.2c Ruling 8's summary month, fitted to a live town. It
+// takes about 2.5 s: run it in any commit that changes CITY, CITY_RECORD or the economy day, and commit the result. --check
 // compares instead, as test:headless does.
 import { readFileSync, writeFileSync } from 'node:fs';
 import { CITY } from '../src/economy/city.ts';
@@ -34,6 +34,7 @@ interface Fit {
   readonly mean: number;
   readonly deviation: number;
   readonly lag1: number;
+  readonly levelPpm: number;
   readonly sharePpm: number;
   readonly noisePpm: number;
 }
@@ -58,9 +59,10 @@ function monthStartLevels(seed: number): Float64Array[] {
 }
 
 // An AR(1) about the runs' mean: the share is 1 - phi, phi being the lag-1 autocorrelation (pairs within a run), and the
-// noise is s sqrt(1 - phi^2), s being the standard deviation. Ruling 8 says "about the record", but the record is one
-// snapshot of seed 42, and at the first fit it sat 1 to 4 deviations off these runs' means, which put the price's and the
-// wage's lag-1 about it above 1, where no share closes a gap.
+// noise is s sqrt(1 - phi^2), s being the standard deviation. The record is one snapshot of seed 42 and sits off these
+// runs' means, by up to 4 deviations, which put the price's and the wage's lag-1 about it above 1, where no share closes a
+// gap. So an away town drifts to the mean, the record times the level: one that drifted to the record would come back
+// cheaper and worse paid than a live town.
 function fitField(runs: readonly Float64Array[], record: number): Fit {
   let count = 0;
   let total = 0;
@@ -87,6 +89,7 @@ function fitField(runs: readonly Float64Array[], record: number): Fit {
     mean,
     deviation,
     lag1,
+    levelPpm: Math.round((mean / record) * PPM),
     sharePpm: Math.round(share * PPM),
     noisePpm: Math.round((noise / record) * PPM),
   };
@@ -104,14 +107,17 @@ function fitAll(): Fit[] {
 }
 
 function moduleSource(fits: readonly Fit[]): string {
+  const levels = fits.map((fit) => fit.levelPpm).join(', ');
   const shares = fits.map((fit) => fit.sharePpm).join(', ');
   const noises = fits.map((fit) => fit.noisePpm).join(', ');
   return [
     HEADER,
     `// Fitted to a live CITY town of ${PEOPLE} people spawned from CITY_RECORD, at the starts of months ${FIRST_MONTH} to ${LAST_MONTH} on seeds ${SEEDS.join(' and ')}.`,
-    `// One entry each for ${FIELD_NAMES.join(', ')}, in that order. A share is the part of its gap to the first record that a field`,
-    "// closes in a month, and a noise the deviation of a month's step, as a share of the record's level at that size.",
+    `// One entry each for ${FIELD_NAMES.join(', ')}, in that order. A level is the live town's mean as a share of the first`,
+    '// record, which a field drifts to; a share is the part of its gap to that mean that the field closes in a month; and a',
+    "// noise is the deviation of a month's step, as a share of the record's level at that size.",
     `export const AWAY_FIT_PEOPLE = ${PEOPLE};`,
+    `export const AWAY_LEVEL_PPM = /* @__PURE__ */ new Int32Array([${levels}]);`,
     `export const AWAY_SHARE_PPM = /* @__PURE__ */ new Int32Array([${shares}]);`,
     `export const AWAY_NOISE_PPM = /* @__PURE__ */ new Int32Array([${noises}]);`,
     '',
@@ -122,8 +128,8 @@ function report(fits: readonly Fit[]): void {
   fits.forEach((fit, drift) => {
     const offset = (fit.mean - fit.record) / fit.deviation;
     console.log(
-      `${FIELD_NAMES[drift].padEnd(8)} record ${fit.record}, mean ${fit.mean.toFixed(1)} (${offset.toFixed(2)} sd from it), sd ${fit.deviation.toFixed(2)}, ` +
-        `lag-1 ${fit.lag1.toFixed(4)}, share ${(fit.sharePpm / PPM).toFixed(4)}, noise ${(fit.noisePpm / PPM).toFixed(6)} of the record`,
+      `${FIELD_NAMES[drift].padEnd(8)} record ${fit.record}, mean ${fit.mean.toFixed(1)} (${offset.toFixed(2)} sd from it, level ${(fit.levelPpm / PPM).toFixed(6)}), ` +
+        `sd ${fit.deviation.toFixed(2)}, lag-1 ${fit.lag1.toFixed(4)}, share ${(fit.sharePpm / PPM).toFixed(4)}, noise ${(fit.noisePpm / PPM).toFixed(6)} of the record`,
     );
   });
 }

@@ -4,7 +4,7 @@ import { floorDiv } from '../maths/int.ts';
 import { PPM, mulPpm } from '../money/ppm.ts';
 import { drawBelow4 } from '../random/draw.ts';
 import { AWAY_DRAW } from '../random/streams.ts';
-import { AWAY_FIT_PEOPLE, AWAY_NOISE_PPM, AWAY_SHARE_PPM } from './away-rates.ts';
+import { AWAY_FIT_PEOPLE, AWAY_LEVEL_PPM, AWAY_NOISE_PPM, AWAY_SHARE_PPM } from './away-rates.ts';
 import {
   LEDGER_EMPLOYED,
   LEDGER_FIELDS,
@@ -19,10 +19,11 @@ import {
 } from './record.ts';
 
 // The summary month (M2.2c Ruling 8): a town off screen advances its ledger row once a month and never runs its economy.
-// Employed, price and wage close a fitted share of their distance to the town's first record, scaleRecord(CITY_RECORD,
-// people), and take zero-mean keyed noise. Stock and the split of cash between households and firms return to that
-// record. People, households, firms and the cash total never change, since this cut moves no person or money between towns.
-// A row reads only itself, so no town's step depends on another's.
+// Employed, price and wage close a fitted share of their distance to a live town's mean, which is the town's first record,
+// scaleRecord(CITY_RECORD, people), times a fitted level, and take zero-mean keyed noise. The record itself sits off that
+// mean, so a drift to it would bring an away town back cheaper and worse paid than a live one. Stock and the split of cash
+// between households and firms return to the first record. People, households, firms and the cash total never change, since
+// this cut moves no person or money between towns. A row reads only itself, so no town's step depends on another's.
 
 // The fields that drift, in the order away-rates.ts lists their shares and noise.
 export const AWAY_FIELDS = /* @__PURE__ */ Uint8Array.of(LEDGER_EMPLOYED, LEDGER_PRICE, LEDGER_WAGE);
@@ -64,10 +65,12 @@ function peopleAt(rows: Float64Array, first: number): number {
   return people;
 }
 
-// AR(1) about the first record: the part of the gap the fit keeps, plus the month's noise, rounded to a whole unit.
+// AR(1) about a live town's mean: the part of the gap the fit keeps, plus the month's noise, rounded to a whole unit. The mean
+// is the record's level times AWAY_LEVEL_PPM, which can pass PPM: mulPpm stays exact for a ppm just over PPM on levels this
+// small. The noise is a share of the record's level, as the fit measured it.
 function driftedLevel(
   current: number,
-  level: number,
+  record: number,
   drift: number,
   people: number,
   seed: number,
@@ -75,14 +78,15 @@ function driftedLevel(
   month: number,
   field: number,
 ): number {
-  const gap = current - level;
-  const keptMilli = mulPpm(Math.abs(gap) * MILLI, PPM - AWAY_SHARE_PPM[drift]);
-  const width = noiseWidth(level, drift, people);
+  const meanMilli = mulPpm(record * MILLI, AWAY_LEVEL_PPM[drift]);
+  const gapMilli = current * MILLI - meanMilli;
+  const keptMilli = mulPpm(Math.abs(gapMilli), PPM - AWAY_SHARE_PPM[drift]);
+  const width = noiseWidth(record, drift, people);
   const noiseMilli =
     drawBelow4(seed, AWAY_DRAW, town, month, field, 0, width) +
     drawBelow4(seed, AWAY_DRAW, town, month, field, 1, width) -
     (width - 1);
-  return level + floorDiv((gap < 0 ? -keptMilli : keptMilli) + noiseMilli + HALF_MILLI, MILLI);
+  return floorDiv(meanMilli + (gapMilli < 0 ? -keptMilli : keptMilli) + noiseMilli + HALF_MILLI, MILLI);
 }
 
 // Two draws below n sum, less n - 1, to a zero-mean triangle of variance (n^2 - 1) / 6 thousandths, so n is the root of 6

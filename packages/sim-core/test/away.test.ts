@@ -6,7 +6,7 @@ import { PPM } from '../src/money/ppm.ts';
 import * as streams from '../src/random/streams.ts';
 import { AWAY_DRAW, layerOf } from '../src/random/streams.ts';
 import { AWAY_FIELDS, stepAwayTown, stepAwayTowns } from '../src/spawn/away.ts';
-import { AWAY_NOISE_PPM, AWAY_SHARE_PPM } from '../src/spawn/away-rates.ts';
+import { AWAY_LEVEL_PPM, AWAY_NOISE_PPM, AWAY_SHARE_PPM } from '../src/spawn/away-rates.ts';
 import { foldToLedger } from '../src/spawn/fold.ts';
 import { createStandInTownHomes } from '../src/spawn/homes.ts';
 import {
@@ -59,6 +59,11 @@ function scratch(): Float64Array {
 
 function cashOf(row: ArrayLike<number>): number {
   return row[LEDGER_HOUSEHOLD_CASH] + row[LEDGER_FIRM_CASH];
+}
+
+// The level an away town of 1,000 people drifts to: the live town's mean, the first record's field times its fitted level.
+function liveMean(field: number): number {
+  return (CITY_RECORD[field] * AWAY_LEVEL_PPM[AWAY_FIELDS.indexOf(field)]) / PPM;
 }
 
 // A -0 in a row would change the state hash that later carries the table.
@@ -153,35 +158,37 @@ describe('stepAwayTown', () => {
     expect(new Set(steps.map((step) => step.join())).size).toBe(4);
   });
 
-  it("pulls a row at three times its record's unemployment back toward it within 12 months", () => {
+  it("pulls a row at three times its record's unemployment back toward the live mean within 12 months", () => {
     const row = Float64Array.from(CITY_RECORD);
     row[LEDGER_UNEMPLOYED] *= 3;
     row[LEDGER_EMPLOYED] = 1_000 - row[LEDGER_UNEMPLOYED];
-    const gap = (employed: number): number => Math.abs(employed - CITY_RECORD[LEDGER_EMPLOYED]);
+    const gap = (employed: number): number => Math.abs(employed - liveMean(LEDGER_EMPLOYED));
 
     for (const seed of [SEED, SEED + 1]) {
       expect(gap(stepped(row, 12, seed)[LEDGER_EMPLOYED]), `seed ${seed}`).toBeLessThan(gap(row[LEDGER_EMPLOYED]));
     }
   });
 
-  it("closes a price's gap by the fitted share on average, though that is under a cent a month", () => {
+  it("closes a price's gap to the live mean by the fitted share on average, though that is under a cent a month", () => {
     const gap = 20;
     const months = 20_000;
     const share = AWAY_SHARE_PPM[AWAY_FIELDS.indexOf(LEDGER_PRICE)] / PPM;
+    const mean = liveMean(LEDGER_PRICE);
+    const start = Math.round(mean) + gap;
     const row = scratch();
     const anchor = scratch();
     let total = 0;
     for (let month = 1; month <= months; month++) {
       row.set(CITY_RECORD);
-      row[LEDGER_PRICE] += gap;
+      row[LEDGER_PRICE] = start;
       stepAwayTown(row, 0, SEED, month, anchor);
       total += row[LEDGER_PRICE];
     }
 
-    expect(Math.abs(total / months - CITY_RECORD[LEDGER_PRICE] - gap * (1 - share))).toBeLessThan(0.12);
+    expect(Math.abs(total / months - (mean + (start - mean) * (1 - share)))).toBeLessThan(0.12);
   });
 
-  it('holds the fitted spread about the first record at 1,000 people for 20,000 months', () => {
+  it('holds the fitted spread about the live mean, not the first record, at 1,000 people for 20,000 months', () => {
     const months = 20_000;
     const table = tableOf(CITY_RECORD);
     const anchor = scratch();
@@ -192,21 +199,21 @@ describe('stepAwayTown', () => {
     }
 
     for (let drift = 0; drift < AWAY_FIELDS.length; drift++) {
-      const level = CITY_RECORD[AWAY_FIELDS[drift]];
+      const record = CITY_RECORD[AWAY_FIELDS[drift]];
       const share = AWAY_SHARE_PPM[drift] / PPM;
-      const wanted = ((AWAY_NOISE_PPM[drift] / PPM) * level) / Math.sqrt(1 - (1 - share) * (1 - share));
+      const wanted = ((AWAY_NOISE_PPM[drift] / PPM) * record) / Math.sqrt(1 - (1 - share) * (1 - share));
       const mean = series[drift].reduce((sum, x) => sum + x, 0) / months;
       const spread = Math.sqrt(series[drift].reduce((sum, x) => sum + (x - mean) * (x - mean), 0) / months);
 
       expect(share, `share ${drift}`).toBeGreaterThanOrEqual(0.01);
       expect(Math.abs(spread / wanted - 1), `spread ${drift}`).toBeLessThan(0.2);
-      expect(Math.abs(mean - level), `mean ${drift}`).toBeLessThan(wanted / 2);
+      expect(Math.abs(mean - liveMean(AWAY_FIELDS[drift])), `mean ${drift}`).toBeLessThan(wanted / 2);
     }
   });
 
   it('replays: Highcourt after 12 months on seed 42 is these 14 fields', () => {
     expect(rowAt(stepped(highcourt(), 12), 0)).toEqual([
-      229, 272, 194, 165, 77, 48, 2_456, 232, 268, 798_803_642, 34_476_357, 3_370, 141_524, 117_290,
+      229, 272, 194, 165, 77, 48, 2_462, 226, 268, 798_803_642, 34_476_357, 3_375, 142_508, 117_290,
     ]);
   });
 
