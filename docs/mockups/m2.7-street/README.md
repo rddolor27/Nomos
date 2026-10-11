@@ -2,7 +2,7 @@
 
 Task 1 of the [M2.7 plan](../../plan/tasks/m2-economy/m2.7-street-link-and-the-112-day-year/plan.md). Nothing here is a final sprite: the owner picks one variant on each sheet, and Task 7 draws the set in `tools/sprites`.
 
-`docs/mockups/generator/street_sheets.py` draws each sheet at native pixel size and scales it with nearest-neighbour, 4×. The art is original, in `spritekit.PALETTE` colours with the house outline and top-left light, drawn on the repo's own blob (`characters.py`) and building kit. `test_street.py` beside it checks the palette, the sizes and the outline rule. No third-party art.
+`docs/mockups/generator/street_sheets.py` draws each sheet, and `street_scene.py` the scene, at native pixel size, then scales with nearest-neighbour: 4× for the sheets, 3× for the scene. The art is original, in `spritekit.PALETTE` colours with the house outline and top-left light, drawn on the repo's own blob (`characters.py`) and building kit. `test_street.py` beside it checks the palette, the sizes and the outline rule. No third-party art.
 
 | Sheet | Shows | Pick |
 | --- | --- | --- |
@@ -12,8 +12,11 @@ Task 1 of the [M2.7 plan](../../plan/tasks/m2-economy/m2.7-street-link-and-the-1
 | `04-market-stalls.png` | The vegetable, fish and milk stalls at 48×48, beside the stall today. | Look 1 one teal canopy, 2 canopy colour by good, or 3 the good's icon on the sign. |
 | `05-shop-fronts.png` | The Draper's and the Fuel Store's fronts at 64×48, each in 2 looks and in snow, beside the Bakery, Smithy and general store. | Draper look 1 bolts in the window or 2 cloth on a rail; Fuel Store look 1 open log shed or 2 long stack. |
 | `06-stock-pips.png` | Stock pips for 0 to 3 in three designs, alone and over a premises. | Design 1 beads, 2 crates or 3 a jar filling. |
+| `07-street-scene.png` | The town at 16-px tiles with my picks: bread out of the Bakery, a blob eating on its doorstep, a keeper behind a stall with a buyer under the coin bubble, goods carried home, and stock pips over every premises. | None: say if anything reads badly in place. |
 
 My picks are hold 1, face 1, stall look 2, Draper look 2, Fuel Store look 1 and pips design 1.
+
+Several buildings per trade, the owner's answer of 11 October, means a town holds many Draper and Fuel Store fronts. Both looks of a front can ship, with `placeTrades` drawing one per building, instead of one pick.
 
 ## Hold points
 
