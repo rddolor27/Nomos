@@ -143,6 +143,10 @@ Beyond the checkpoint's Open list:
   - **Red until Task 23:** `street-fields.test.ts`, since 42 of Highcourt's 6,160 ways need more than 16 runs.
   - **Timing:** a capital builds in a median of 147.5–155.8 ms and at worst 188–216 ms, against 250 and 350 (measured here, Node, with 4 agents running).
   - **Also fixed:** `place-fixtures.test.ts` had failed worldgen's typecheck since ed4542f (cc34bd8).
+  - **Screenshots** (`dist/qa/ring-towns/`, sent to the owner):
+    - **The rings** show in a whole-town view. Fit stops at 1× zoom, which shows only the middle 59 × 50 tiles of a 176 × 112 town at 1,280 × 800, so the first screen barely shows them.
+    - **Rivers cut towns:** only main roads bridge them. From the plaza, a walk reaches 235 of Jukithorch's 279 homes and 295 of Tucarvi's 342; Highcourt and Pydonican are whole. Task 23's `connect` adds the crossings.
+    - **The HUD** wraps to two rows in any town but Highcourt (backlog).
 - 12 Oct: **the art previews** went to the owner: M3.2's bubbles and scenes (cb21a68, cf0a97b), and Part 4's diagonal walls and street corners (f4f0fd3, 815b263).
 - 12 Oct: **M2.7 Part 1's Opus review** (read-only, `4918377..6df48bb`) found nothing critical. Replay, the `STREETS` hash rule, checkpoints, money and fairness hold.
   - **Fixed** (8d03710..6d01d09):
