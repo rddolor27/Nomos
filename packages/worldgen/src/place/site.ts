@@ -6,6 +6,7 @@ import { PLACE } from '../random/streams.ts';
 import type { PlaceContext } from './context.ts';
 import { FRAMES } from './frames.ts';
 import { LOT } from './keys.ts';
+import type { Plan } from './plan.ts';
 import type { Wall } from './walls.ts';
 
 export type Cell = readonly [x: number, y: number];
@@ -179,6 +180,7 @@ export class Site {
   cx: number;
   cy: number;
   plaza: Rect | null = null;
+  plan: Plan | null = null;
   wall: Wall | null = null;
   green: Cell[] = [];
   readonly entries: { side: string; x: number; y: number }[] = [];

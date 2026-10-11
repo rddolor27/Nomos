@@ -142,6 +142,16 @@ export function layRoad(site: Site, x: number, y: number, kind: string): void {
   if (OPEN.includes(site.kind[c]) || (rank >= 0 && rank < RANK.indexOf(kind))) site.kind[c] = kind;
 }
 
+// Lays one tile of a street. A street skips water and starts again past it, so a town's bridges are its main roads'.
+export function layStreet(site: Site, x: number, y: number): void {
+  if (!site.water(x, y)) layRoad(site, x, y, ROADS.street[1]);
+}
+
+// Lays one tile of a lane that runs through a town, which skips water as a street does.
+export function layLane(site: Site, x: number, y: number): void {
+  if (!site.water(x, y)) layRoad(site, x, y, ROADS.lane[1]);
+}
+
 // Lays a road of its role's width along cells in order, each cell the middle of the road. A lane or track crosses a
 // river on footbridges or a paved causeway, a wider road on a stone bridge.
 export function pave(site: Site, cells: readonly Cell[], role = 'lane'): void {

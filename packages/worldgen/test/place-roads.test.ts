@@ -6,9 +6,11 @@ import { buildSite, siteFor } from '../src/place/build.ts';
 import type { PlaceContext } from '../src/place/context.ts';
 import { layRoad } from '../src/place/roads.ts';
 import { frame, type Cell, type Site } from '../src/place/site.ts';
+import type { Wall } from '../src/place/walls.ts';
 
 // M3.1's Part 3, Task 11: roads by role, the ring a walled town keeps for its wall, and the stone bridges wide roads
-// cross rivers on. Every place is built once, and each test reads its share of the findings.
+// cross rivers on. Part 4 made the ring an octagon and dealt each town one of three street plans, so the places of the
+// two worlds cover every style. Every place is built once, and each test reads its share of the findings.
 const WORLDS = 2;
 const FIRST_SEED = 0x5eed0001;
 const WALLED = ['capital', 'city', 'town'];
@@ -22,18 +24,13 @@ const STEPS: readonly Cell[] = [
 ];
 // A spoke this long, counted in road tiles from the plaza to the ring line, is lined with trees.
 const AVENUE_CELLS = 12;
-
-interface Ring {
-  x0: number;
-  y0: number;
-  x1: number;
-  y1: number;
-}
+const CORNERS = ['nw', 'ne', 'se', 'sw'];
 
 interface Findings {
   settlements: number;
   walledTiers: number;
   rings: number;
+  styles: Set<string>;
   pieces: number;
   avenues: number;
   surface: string[];
@@ -60,16 +57,12 @@ const BARE: PlaceContext = {
   wonder: null,
 };
 
-function strictlyInside({ x0, y0, x1, y1 }: Ring, x: number, y: number): boolean {
-  return x0 < x && x < x1 && y0 < y && y < y1;
-}
-
-function surfaceProblems(label: string, site: Site, ring: Ring): string[] {
+function surfaceProblems(label: string, site: Site, ring: Wall): string[] {
   const problems: string[] = [];
   for (let y = 0; y < site.h; y++) {
     for (let x = 0; x < site.w; x++) {
       const kind = site.kind[site.at(x, y)];
-      const inside = strictlyInside(ring, x, y);
+      const inside = ring.contains(x, y);
       if ((kind === 'stone' || kind === 'cobble') && !inside) problems.push(`${label}: ${kind} outside the ring at ${x},${y}`);
       if (kind === 'gravel' && inside) problems.push(`${label}: gravel inside the ring at ${x},${y}`);
     }
@@ -77,18 +70,31 @@ function surfaceProblems(label: string, site: Site, ring: Ring): string[] {
   return problems;
 }
 
-// The ring line's four lines, each tile by tile from its west or north end.
-function ringLines({ x0, y0, x1, y1 }: Ring): Cell[][] {
-  const lines: Cell[][] = [[], [], [], []];
-  for (let x = x0; x <= x1; x++) {
-    lines[0].push([x, y0]);
-    lines[2].push([x, y1]);
+// The ring line's four straight edges, N, E, S and W, each tile by tile from its west or north end, between the
+// vertices where the corner cuts begin.
+function straightEdges({ x0, y0, x1, y1, cuts }: Wall): Cell[][] {
+  const edges: Cell[][] = [[], [], [], []];
+  for (let x = x0 + cuts; x <= x1 - cuts; x++) {
+    edges[0].push([x, y0]);
+    edges[2].push([x, y1]);
   }
-  for (let y = y0; y <= y1; y++) {
-    lines[1].push([x1, y]);
-    lines[3].push([x0, y]);
+  for (let y = y0 + cuts; y <= y1 - cuts; y++) {
+    edges[1].push([x1, y]);
+    edges[3].push([x0, y]);
   }
-  return lines;
+  return edges;
+}
+
+// The four diagonal cuts, without their vertices: NW, NE, SE and SW.
+function cutEdges({ x0, y0, x1, y1, cuts }: Wall): Cell[][] {
+  const edges: Cell[][] = [[], [], [], []];
+  for (let k = 1; k < cuts; k++) {
+    edges[0].push([x0 + cuts - k, y0 + k]);
+    edges[1].push([x1 - cuts + k, y0 + k]);
+    edges[2].push([x1 - cuts + k, y1 - k]);
+    edges[3].push([x0 + k, y1 - cuts + k]);
+  }
+  return edges;
 }
 
 // Each run of road tiles along a ring line, as its length.
@@ -107,11 +113,17 @@ function roadRuns(site: Site, line: readonly Cell[]): number[] {
   return runs;
 }
 
-function crossingProblems(label: string, site: Site, ring: Ring): string[] {
+// A road crosses the straight edges in pairs of tiles, which a gate takes, and crosses no cut at all.
+function crossingProblems(label: string, site: Site, ring: Wall): string[] {
   const problems: string[] = [];
-  ringLines(ring).forEach((line, side) => {
-    for (const run of roadRuns(site, line)) {
+  straightEdges(ring).forEach((edge, side) => {
+    for (const run of roadRuns(site, edge)) {
       if (run !== 2) problems.push(`${label}: ${run} road tiles cross the ring's ${'nesw'[side]} line together`);
+    }
+  });
+  cutEdges(ring).forEach((edge, corner) => {
+    for (const run of roadRuns(site, edge)) {
+      problems.push(`${label}: ${run} road tiles cross the ring's ${CORNERS[corner]} cut`);
     }
   });
   return problems;
@@ -183,9 +195,19 @@ function stoneBridgePieces(site: Site): number {
   return site.ground.filter((s) => s.name.startsWith('bridge_')).length;
 }
 
-// One main road out of the plaza: the road tiles of the plaza's middle column or row, from the plaza's edge to the
-// ring line, and the step that takes it out.
-function spoke(site: Site, ring: Ring, side: number): { cells: Cell[]; dx: number; dy: number } {
+// Whether a road tile has road on both sides across the way (dx, dy) runs, as a main road's 3 tiles do and the 2-tile
+// plain street a ring town lays along a side no main road takes does not.
+function threeWide(site: Site, x: number, y: number, dx: number, dy: number): boolean {
+  return [-1, 0, 1].every((k) => {
+    const tx = x + k * Math.abs(dy);
+    const ty = y + k * Math.abs(dx);
+    return site.inside(tx, ty) && site.road[site.at(tx, ty)] === 1;
+  });
+}
+
+// One main road out of the plaza: the 3-wide road tiles of the plaza's middle column or row, from the plaza's edge to
+// the ring line, and the step that takes it out.
+function spoke(site: Site, ring: Wall, side: number): { cells: Cell[]; dx: number; dy: number } {
   const [px, py, pw, ph] = site.plaza ?? [0, 0, 0, 0];
   const starts: Cell[] = [
     [site.cx, py - 1],
@@ -195,7 +217,9 @@ function spoke(site: Site, ring: Ring, side: number): { cells: Cell[]; dx: numbe
   ];
   const [dx, dy] = STEPS[side];
   const cells: Cell[] = [];
-  for (let [x, y] = starts[side]; strictlyInside(ring, x, y) && site.road[site.at(x, y)]; x += dx, y += dy) cells.push([x, y]);
+  for (let [x, y] = starts[side]; ring.contains(x, y) && threeWide(site, x, y, dx, dy); x += dx, y += dy) {
+    cells.push([x, y]);
+  }
   return { cells, dx, dy };
 }
 
@@ -211,7 +235,7 @@ function treesBeside(site: Site, cells: readonly Cell[], dx: number, dy: number)
   return trees;
 }
 
-function treeProblems(label: string, site: Site, ring: Ring, found: Findings): string[] {
+function treeProblems(label: string, site: Site, ring: Wall, found: Findings): string[] {
   const problems: string[] = [];
   for (let side = 0; side < 4; side++) {
     const { cells, dx, dy } = spoke(site, ring, side);
@@ -225,8 +249,9 @@ function treeProblems(label: string, site: Site, ring: Ring, found: Findings): s
 
 function surveyWalled(label: string, site: Site, found: Findings): void {
   found.walledTiers++;
-  if (!site.wall) return;
+  if (!site.wall || !site.plan) return;
   found.rings++;
+  found.styles.add(site.plan.style);
   found.surface.push(...surfaceProblems(label, site, site.wall));
   found.crossings.push(...crossingProblems(label, site, site.wall));
   found.trees.push(...treeProblems(label, site, site.wall, found));
@@ -237,6 +262,7 @@ function survey(): Findings {
     settlements: 0,
     walledTiers: 0,
     rings: 0,
+    styles: new Set<string>(),
     pieces: 0,
     avenues: 0,
     surface: [],
@@ -286,13 +312,14 @@ describe(`the roads of every settlement of the first ${WORLDS} standard worlds`,
     found = survey();
   }, 900_000);
 
-  it('lays cut stone and cobbles only inside the ring line, and gravel only on or past it', () => {
+  it('lays cut stone and cobbles only inside the ring line, and gravel only on or past it, in every style', () => {
     expect(found.walledTiers).toBeGreaterThan(5 * WORLDS);
     expect(found.rings).toBe(found.walledTiers);
+    expect([...found.styles].sort()).toEqual(['grid', 'rings', 'winding']);
     expect(found.surface.slice(0, 20)).toEqual([]);
   });
 
-  it('crosses the ring line only in pairs of road tiles', () => {
+  it('crosses the ring line only in pairs of road tiles on its straight edges, and never on a cut', () => {
     expect(found.crossings.slice(0, 20)).toEqual([]);
   });
 

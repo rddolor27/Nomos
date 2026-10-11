@@ -21,6 +21,8 @@ export const INLET = 19;
 // Part 3's plan gives 20, 22, 23 and 25 to its later tasks, and 21 went to M2.7's premises.
 export const TRADE = 21;
 export const AVENUE = 24;
+// Part 4's street plan: the style of a town and every knob of its streets and ring line.
+export const PLAN = 26;
 
 // place.py's first keys of the CROWD draws on a place's seed.
 export const SPOT = 1;

@@ -1,7 +1,8 @@
 import type { PlaceContext } from './context.ts';
 
 // Highcourt, the starting town and every world's place 0, pinned field for field as tools/worldgen/export_map.py pinned
-// it to export town.nmap, so the ground the sim walks on and the art the Town skin draws stay the same town.
+// it to export town.nmap, so the ground the sim walks on and the art the Town skin draws stay the same town. Its streets
+// are rings (M3.1 Part 4, Ruling 8), so the first screen shows circles and retuned style weights never move it.
 export const TOWN: PlaceContext = {
   seed: 0xc0ffee42,
   name: 'Highcourt',
@@ -17,4 +18,5 @@ export const TOWN: PlaceContext = {
   farmland: '',
   landmarks: ['clock-tower', 'library', 'fountain'],
   wonder: null,
+  style: 'rings',
 };

@@ -1,20 +1,17 @@
 import { floorDiv } from '@nomos/sim-core/kernels';
 import { PLACE_TILE_PX as TILE } from '@nomos/sim-protocol/place';
+import { layGrid } from './grid.ts';
 import { LOT, MARK, WORK } from './keys.ts';
 import { landmarkFrame } from './landmarks.ts';
-import { centreSpot, layRoad, pave, ROADS, roadSides, straight } from './roads.ts';
+import { planOf, ringOf, type Plan } from './plan.ts';
+import { layRings } from './rings.ts';
+import { centreSpot, pave, roadSides, straight } from './roads.ts';
 import { frame, OPEN, rise, type Cell, type Lot, type Site } from './site.ts';
-import { Wall } from './walls.ts';
+import type { Wall } from './walls.ts';
 
 type Pair = readonly [number, number];
 
 export const PLAZAS: Readonly<Record<string, Pair>> = { capital: [28, 8], city: [26, 8], town: [20, 6] };
-// A wall ring's half-sizes round the plaza's centre, each edge kept BELT_MIN tiles inside the place for the farm belt.
-const RINGS: Readonly<Record<string, Pair>> = { capital: [64, 40], city: [64, 40], town: [56, 30] };
-const BELT_MIN = 6;
-// Rows from one street to the next, and columns from one cross street to the next.
-const BLOCK = 6;
-const CROSS = 24;
 const CAPITAL_CIVIC = [
   'civic_town-hall',
   'civic_courthouse',
@@ -44,8 +41,8 @@ export function plazaOf(site: Site): readonly [px: number, py: number, pw: numbe
   return site.plaza;
 }
 
-// The plaza, the ring kept for the wall, the main roads out through it and the streets inside. Returns each main road's
-// cells, from the plaza out.
+// The plaza, the ring kept for the wall, the main roads out through it and the streets inside, as the town's plan lays
+// them. Returns each main road's cells, from the plaza out.
 export function layTown(site: Site): Cell[][] {
   const tier = site.ctx.tier ?? '';
   const [pw, ph] = PLAZAS[tier];
@@ -61,23 +58,14 @@ export function layTown(site: Site): Cell[][] {
       site.keep[c] = 1;
     }
   }
-  const wall = ringOf(site, tier);
+  const plan = planOf(site);
+  const wall = ringOf(site, plan);
+  site.plan = plan;
   site.wall = wall;
   const mains = laySpokes(site, wall);
-  layStreets(site, wall);
+  layStreets(site, wall, plan, mains);
   wall.reserve(site);
   return mains;
-}
-
-function ringOf(site: Site, tier: string): Wall {
-  const [hx, hy] = RINGS[tier];
-  return new Wall(
-    Math.max(BELT_MIN, site.cx - hx),
-    Math.max(BELT_MIN, site.cy - hy),
-    Math.min(site.w - 1 - BELT_MIN, site.cx + hx),
-    Math.min(site.h - 1 - BELT_MIN, site.cy + hy),
-    tier === 'capital' || tier === 'city' ? 'stone' : 'palisade',
-  );
 }
 
 // A main road from the plaza's edge to each road side, along its middle column or row, that narrows to a country road
@@ -101,33 +89,22 @@ function laySpokes(site: Site, wall: Wall): Cell[][] {
   });
 }
 
-// Cobbled streets in a grid inside the ring: rows every BLOCK tiles north and south of the plaza, and columns beside it
-// and every CROSS tiles out. Each runs from 2 tiles inside one ring line to 2 inside the other and skips water, so a
-// town's bridges are its main roads'.
-function layStreets(site: Site, wall: Wall): void {
-  const [px, py, pw, ph] = plazaOf(site);
-  for (let r = py - BLOCK; r > wall.y0 + 1; r -= BLOCK) layStreetRow(site, wall, r);
-  for (let r = py + ph - 2 + BLOCK; r < wall.y1 - 2; r += BLOCK) layStreetRow(site, wall, r);
-  for (let c = px - 2; c > wall.x0 + 1; c -= CROSS) layStreetColumn(site, wall, c);
-  for (let c = px + pw; c < wall.x1 - 2; c += CROSS) layStreetColumn(site, wall, c);
-}
-
-function layStreetRow(site: Site, wall: Wall, r: number): void {
-  for (let x = wall.x0 + 2; x < wall.x1 - 1; x++) {
-    layStreet(site, x, r);
-    layStreet(site, x, r + 1);
+// The streets inside the ring: a ring town's rings and radials, or a grid, which a winding town lays until its lanes
+// come.
+function layStreets(site: Site, wall: Wall, plan: Plan, mains: readonly (readonly Cell[])[]): void {
+  const plaza = plazaOf(site);
+  if (plan.rings !== null) {
+    layRings(site, wall, plaza, [plan.line.hx, plan.line.hy], plan.rings, sidesWithoutMain(site, mains));
+  } else if (plan.grid !== null) {
+    layGrid(site, wall, plaza, plan.grid);
   }
 }
 
-function layStreetColumn(site: Site, wall: Wall, c: number): void {
-  for (let y = wall.y0 + 2; y < wall.y1 - 1; y++) {
-    layStreet(site, c, y);
-    layStreet(site, c + 1, y);
-  }
-}
-
-function layStreet(site: Site, x: number, y: number): void {
-  if (!site.water(x, y)) layRoad(site, x, y, ROADS.street[1]);
+// The sides of 'nesw' that no main road leaves by: those with no road from the map, and those whose road came to
+// nothing.
+function sidesWithoutMain(site: Site, mains: readonly (readonly Cell[])[]): string[] {
+  const sides = roadSides(site);
+  return [...'nesw'].filter((side) => !sides.some((s, i) => s === side && mains[i].length > 0));
 }
 
 export function layVillage(site: Site): void {
