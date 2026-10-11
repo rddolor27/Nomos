@@ -1,8 +1,10 @@
 import { floorDiv } from '@nomos/sim-core/kernels';
+import type { MapV1 } from '@nomos/sim-protocol/map';
 import type { PlaceLayout, PlaceWalks } from '@nomos/sim-protocol/place';
 import { herd } from './animals.ts';
 import type { PlaceContext } from './context.ts';
 import { decorate, placeFields } from './decor.ts';
+import { groundOf } from './ground.ts';
 import { placeHouses } from './houses.ts';
 import { placeLandmarks, placeWindmill } from './landmarks.ts';
 import { layoutOf } from './layout.ts';
@@ -37,11 +39,19 @@ const ROCKY = ['hills', 'mountain', 'peak'];
 // Biomes whose settlements keep a pasture beside their fields.
 const PASTORAL = ['farmland', 'grassland', 'hills'];
 
-// place.py's build, with the walk loops the port adds: a settlement's district or a wonder's vista as the map worker
-// sends it, the same for the same context.
-export function buildPlace(ctx: PlaceContext): { layout: PlaceLayout; walks: PlaceWalks } {
+// A built place: what is drawn, the loops look-only walkers follow, and the ground the sim walks on. A wonder's vista
+// has no ground to settle, so its map is null.
+export interface BuiltPlace {
+  layout: PlaceLayout;
+  walks: PlaceWalks;
+  map: MapV1 | null;
+}
+
+// place.py's build, with the walk loops and the ground the port adds: a settlement's district or a wonder's vista as the
+// map worker sends it, the same for the same context.
+export function buildPlace(ctx: PlaceContext): BuiltPlace {
   const site = buildSite(ctx);
-  return { layout: layoutOf(site), walks: placeWalks(site) };
+  return { layout: layoutOf(site), walks: placeWalks(site), map: ctx.wonder ? null : groundOf(site) };
 }
 
 export function buildSite(ctx: PlaceContext): Site {

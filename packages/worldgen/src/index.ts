@@ -4,4 +4,5 @@ export { placeNames } from './names/place-names.ts';
 export { buildPlace } from './place/build.ts';
 export { placeContexts } from './place/contexts.ts';
 export { crowdedPlace } from './place/street-crowd.ts';
+export { TOWN } from './place/town.ts';
 export type { PlaceContext } from './place/context.ts';

@@ -14,7 +14,8 @@ describe('the street crowd', () => {
   it('walks loops of its own over the place, one walker per two loop cells at most, with keyed looks', () => {
     const ctx = contexts[0];
     const { layout, walks, crowd } = crowdedPlace(ctx);
-    expect({ layout, walks }).toEqual(buildPlace(ctx));
+    const built = buildPlace(ctx);
+    expect({ layout, walks }).toEqual({ layout: built.layout, walks: built.walks });
     const loops = crowd.offsets.length - 1;
     const wanted = Math.min(3000, Math.floor(ctx.population / 150));
     expect(loops).toBeGreaterThan(0);
