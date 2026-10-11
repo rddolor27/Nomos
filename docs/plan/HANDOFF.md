@@ -85,6 +85,15 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 11 Oct: **M2.2c's Opus determinism review.** Nothing is critical: on the default path a switch replays exactly, keeps money exact and allocates nothing per tick.
+  - **Important, being fixed:**
+    - a re-entry with fewer beds than people threw after the fold and lost a row's cash, reachable via `?tier=`, so the request is now refused first;
+    - a mid-month spawn gave firms month-start cash, so unemployment hit about 15% against 3.5%, and the firms now get the month so far's share.
+  - **Minor, being fixed:**
+    - the pending switch moves into the arena;
+    - Chromium golden cases for the summary month;
+    - the away fit's φ is bias-corrected;
+    - one doc and comment note.
 - 11 Oct: **M2.2c Task 4, the worker's switch** (4b71ce3..4442610).
   - **The messages:** `open { place, map }` runs out the day with no snapshots and switches at the boundary. `opened { place, agents, width, height, tick }` replies, and a snapshot of the new town follows. A refused or same-town `open` replies with the live town.
   - **The live card:** `inspectAgent { agent }` re-inspects a row, answering −1 past the count.
