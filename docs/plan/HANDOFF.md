@@ -98,6 +98,17 @@ Beyond the checkpoint's Open list:
 - **The shared plan doc** still names five engines, Deno and the 2% pay cut. It also lacks M3.1 Part 3, whose suggested tag is "(Towns)", and M3.2's drops: Huff's shop choice, the timing wheel and need deadlines. Update it at the next sync, with the owner, along with the deferred items in `git show 6736fb6:docs/plan/HANDOFF.md`.
 - **Local specs:** a stray `vite preview` on port 4173 serves the last build of `apps/web/dist`, and Playwright reuses it outside CI. Build before a local spec run.
 - **Perf to check:** the economy's month-start `searchShops` (1.78 ms at 10k), and `createTown`'s extra 11 ms at the worker's start. `pnpm budget`'s sampled days miss a month's start. perf.yml, which the owner starts by hand, measures them.
+- **Street snapshots:** the street world stays out of the budget sampling, because its `snapshot` row is over its limits (measured here, Node):
+
+  | Blobs | `snapshot` | Limit |
+  | --- | --- | --- |
+  | 10k | 0.17 ms | 0.11 ms |
+  | 25k | 0.56 ms | 0.22 ms |
+  | 100k | 2.25 ms | 0.66 ms |
+
+  - Today's towns hold a few thousand blobs, such as Highcourt's 2,600, so no live budget breaks (inference).
+  - Before towns grow, an Opus task adds a streets flag to `sampleTier`, `budget.ts`, `browser-entry.ts` and `budget.spec.ts`, and makes `addStreet` cheaper.
+  - `movement/wander.ts:31` also draws an unreduced `draw2` per tick.
 - **perf.yml:** it hasn't run since the economy joined the step. The owner starts it from the Actions page. Watch the startup gate, the tick budget at 10k, and the allocation allowance on a month's last day, whose readings swing 0.24–0.92 MB.
 - **Speed at 100k:** at 16× the desktop tier saturates the worker, so M1.2's per-tier caps are still needed.
 - **A spawn transient:** a spawned town matches the record's totals, but every shop starts at one wage. So unemployment falls from 8.3% to 4.8% at day 21 before it settles.
@@ -126,9 +137,12 @@ Beyond the checkpoint's Open list:
 ## Log
 
 - 12 Oct: **M2.7 Part 1's Opus review** (read-only, `4918377..6df48bb`) found nothing critical. Replay, the `STREETS` hash rule, checkpoints, money and fairness hold.
-  - **Building now:**
-    - Finding 1, the one Important finding, is a test gap: no CI gate runs the street path in Chromium or the allocation gate. The fix adds a `streets` golden and a street world for the allocation gate.
-    - Findings 3 and 4: `draw3`'s unreduced uint32 in the tick, and `attachTown`'s silent default for the shops.
+  - **Fixed** (8d03710..6d01d09):
+    - **Finding 1,** the one Important finding, was a test gap: no CI gate ran the street path in Chromium or the allocation gate.
+      - A `streets` golden, `8e96a7c7`, now runs a street town with a mid-trip restore, and it matched in Chromium.
+      - The allocation gate gained a street world.
+    - **Finding 3 was real:** a street day allocated 134–137 KB before the fix and 4–9 KB after, against the 16 KiB limit (measured here, Node 24.18 on Windows).
+    - **Finding 4:** `attachTown` now requires the shops on a restore.
   - **Waiting:** finding 2, a trip that can end at 22:01, moves Highcourt's pins. It waits for the re-pin round before the push after Task 27.
   - **Backlog:** finding 5. Keeper election reads another blob's same-tick state, which races once the step is chunked across workers.
 - 12 Oct, 01:10: **building starts** on the owner's go: M3.1 Part 4's Task 22, with Task 24's preview, M3.2's Task 1 mockups and M2.7 Part 1's Opus review beside it.
