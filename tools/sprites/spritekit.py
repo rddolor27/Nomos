@@ -27,6 +27,7 @@ PALETTE = {
     'TEAL_D': (28, 110, 102),
     'WATER_L': (124, 196, 240),
     'WATER': (60, 124, 208),
+    'WATER_D': (30, 88, 166),  # the fish canopy's fold: clear of police NAVY, 15+ CIEDE2000 from the country colours
     'NAVY': (40, 58, 124),
     'NAVY_D': (24, 36, 84),
     'STONE_L': (154, 162, 180),

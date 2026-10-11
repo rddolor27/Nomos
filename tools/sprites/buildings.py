@@ -2280,11 +2280,12 @@ def clinic_large():
 # Fuel Store's fronts, which sell cloth and fuel. Each front comes in two looks so that a town with several draws one a
 # building. They are made like the Bakery and the Smithy: signs are pictograms, nothing shows wealth, and none gets less care.
 TRADE_SYM = {**SYM, **cmap(Q='LILAC_L', Z='LILAC', z='LILAC_S', q='LILAC_D', e='ICE_S', E='ICE_D',
-                           F='ROSE', f='ROSE_S', H='ROSE_L')}
+                           F='ROSE', f='ROSE_S', H='ROSE_L', D='WATER_D')}
 
 
 class TradeCanvas(Canvas):
-    """A canvas that also draws the lilac, ice and rose tones of cloth and canopies, and lays 8x8 icons over its art."""
+    """A canvas that also draws the lilac, ice, rose and dark water tones of cloth and canopies, and lays 8x8 icons
+    over its art."""
 
     def __init__(self, w, h):
         super().__init__(w, h)
@@ -2363,12 +2364,12 @@ CHURN = [               # a steel milk can with a lid and a handle at each shoul
 class MarketStall:
     """A 48x48 (3x2 tiles) open stall built like market_stall(): posts, a striped canopy over its valance, a brick counter
     and a coin sign on a chain. Only the canopy's colour and what lies on the counter change with the good. The canopies
-    are green, blue and lilac, never teal (the merchants'), red or orange (crime's)."""
+    are green, blue and lilac, never teal (the merchants'), navy (the police's), red or orange (crime's)."""
     W, H = 48, 48
     GOODS = ('vegetables', 'fish', 'milk')
     CANOPY = {              # the teal canopy's letters swapped: stripe, valance fold and the lit top rows
         'vegetables': {'T': 'G', 't': 'l'},
-        'fish': {'T': 'a', 't': 'N', 'g': 'A'},
+        'fish': {'T': 'a', 't': 'D', 'g': 'A'},
         'milk': {'T': 'Z', 't': 'q', 'g': 'Q'},
     }
     HANG = ((6, 17), (13, 19))      # where the fish stall hangs two fish from its rail

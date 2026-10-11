@@ -25,6 +25,7 @@ RESTING_FACES = ('neutral', 'blink', 'neutral-dot', 'blink-dot', 'neutral-tall',
 PAD = 4        # room round the 18x22 body canvas for an item held out past its edge
 ITEM_PX = 8    # the plan's carried items are 8x8
 CARRIED = ('bread', 'vegetables', 'fish', 'milk', 'cloth', 'tools', 'fuel')
+POLICE = ('NAVY', 'NAVY_D')     # the police's colours, which no market stall wears
 
 
 def outline_is_only_edges(im):
@@ -138,9 +139,16 @@ def carry_problems():
     return problems
 
 
+def uses(im, colour):
+    """True if any opaque pixel of the image is the palette colour."""
+    a = np.array(im)
+    return bool(((a[:, :, :3] == PALETTE[colour]).all(axis=2) & (a[:, :, 3] > 0)).any())
+
+
 def premises_problems():
     """The three stalls, 48x48 on 3x2 tiles with a canopy coloured by good and no snow twin, and the four shop fronts,
-    64x48 on 4x2 tiles, each with a snow twin that covers its roof only. Each has its door on the ground row."""
+    64x48 on 4x2 tiles, each with a snow twin that covers its roof only. Each has its door on the ground row, and no
+    market stall wears a police colour."""
     problems = []
     frames = {name: (im, meta) for name, im, _, meta in bd.build().frames}
     stalls = (('vegetables', 'GRASS'), ('fish', 'WATER'), ('milk', 'LILAC'))
@@ -162,6 +170,9 @@ def premises_problems():
             shades.pop(PALETTE[neutral], None)
         if shades.most_common(1)[0][0] != PALETTE[canopy] or 'snow' in meta:
             problems.append(f'shop_market-stall_{good}: its canopy is not {canopy}, or it has a snow twin')
+    for name, (im, _) in frames.items():
+        if name.startswith('shop_market-stall'):
+            problems += [f'{name}: uses {colour}, a police colour' for colour in POLICE if uses(im, colour)]
     for front in fronts:
         twin, meta = frames.get(f'{front}_snow', (None, {}))
         if twin is None or frames[front][1].get('snow') != f'{front}_snow' or meta.get('layer') != 'snow':
