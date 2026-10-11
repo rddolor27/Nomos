@@ -85,6 +85,11 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 11 Oct: **M2.4 Part 1 confirmed** (2a0950b, 4b1b32b), on seeds 2001–2050.
+  - **Tier 1:** all six targets hold. Price changes are 9.4%, the thinnest margin over its 9% floor.
+  - **Tiers 2 and 3:** all seven tier-2 targets still miss, as in M2.3. Unemployment's s.d. is 0.0107, only 0.0007 over Ruling 14's floor.
+  - **Shares:** food is 17.4% of spending, spoilage 2.2% (every seed inside R6's band) and unmet meals 3.0%.
+  - **The Okun ruling** (coordinator, 11 October 2026): Okun missed at −0.62 because `produced` counts cloth, tools and fuel only. Counting food at 6 portions a unit gives −0.82, inside the band, on the same seeds. That is a definition fix, like M2.3's move from units sold to units produced, not a re-tune. It lands with the review's fixes, and `CITY` stays unchanged.
 - 11 Oct: **M2.2c Ruling 8, away towns** (9baec40).
   - **The summary month:** a town not in view takes one a month (`spawn/away.ts`, `AWAY_DRAW` 0x201). Its unemployment, prices and wages drift back toward its first record, with keyed noise fitted to a live town, while people, households, firms and cash stay exact.
   - **First visits** catch up on the months already passed.
@@ -135,7 +140,7 @@ Beyond the checkpoint's Open list:
   - **The burn-in:** 29,865 days, from MSER-5 on seeds 1–5.
   - **A 10-seed probe** (2001–2010, not the confirmation): all six tier-1 medians are in band. Food is 17.4% of spending against ICP's 18.6%, 2.3% of food spoils (inside R6's 0.5–3%), and 2.8% of meals go unmet. Okun (−0.61) and size skew (0.97) miss their bands.
   - **Cost at 10k** (desktop, measured): `buyFood` takes 1.04 ms, and the worst tick is `searchShops` at 2.43 ms. At 100k, `buyFood` takes 11.3 ms, so perf.yml decides.
-  - **Left:** the 50-seed confirmation (`ECONOMY_LONG=1`, about 4 min), and `design.json`'s stale warm-up.
+  - **Closed since** (2a0950b, 4b1b32b): `design.json` follows the burn-in, and the 50-seed confirmation holds all six tier-1 targets.
 - 11 Oct: **M2.2c briefed** (1f9c645): every town runs the sim. It waits for the owner's go.
   - **One kind of town:** a place's layout plus a TypeScript port of its ground, with Highcourt as place 0, each world's capital.
   - **Switching:** entering a town logs `INPUT_FOCUS`. The worker runs out the day, then folds the old town and spawns the new at the boundary. Away towns stay frozen, as the owner's fold-and-spawn ruling means ("consequential focus" in R4's terms).
