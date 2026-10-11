@@ -35,6 +35,11 @@ The owner can overturn any of these.
   - Each town is dealt a style by a keyed draw: rings round the plaza with radial streets, organic lanes, or a looser grid. Houses follow the curves.
   - M3.1 Part 3's walls, towers, gates and farms are designed with them.
   - Plan only: build when the owner says go.
+- **12 October 2026, blobs with lives of their own** (owner), in M3.2.
+  - **Needs and wants:** hunger, rest, fun, company and money rise through the day, and each blob picks the activity that suits it best. A keyed random personality makes blobs differ.
+  - **Activities:** talking and visiting (friends over time), play and leisure, wandering and browsing, and work and errands as part of the day.
+  - **The economy** still decides each day's purchases, and the blob fits the trip into its own day.
+  - Plan only.
 - **M2.2c's go** (09:31): build it right after M2.4 Part 1. Highcourt is each world's capital. Away towns keep living in summary form, not frozen, so an Opus pass settles how before Task 3.
 
 **The designers' calls, 10 October 2026:**
