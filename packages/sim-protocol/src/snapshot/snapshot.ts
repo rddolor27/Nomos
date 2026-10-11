@@ -1,6 +1,6 @@
 import { STREETS, SUBPIXELS, type World } from '@nomos/sim-core';
 import { SNAPSHOT_BUFFERS, SNAPSHOT_BYTES } from '../messages/messages.ts';
-import { eatingAt, emoteAt, indoorsAt, itemAt } from './street.ts';
+import { addStreet } from './street.ts';
 import { packVisual } from './visual.ts';
 
 const SNAPSHOT_WORDS = SNAPSHOT_BYTES / Uint32Array.BYTES_PER_ELEMENT;
@@ -62,16 +62,9 @@ export function writeSnapshot(world: World, view: Uint32Array): number {
     view[at + 1] = float32Bits(y[i] * PX_PER_SUBPIXEL);
     view[at + 2] = packVisual(look[i], action[i], 0, 0, facing[i], 0);
   }
+  // The street's bits go in a second pass over a town with streets only. Read in the one loop for every blob of every world, the
+  // store's three fields more than doubled the 100k snapshot, from 0.38 to 0.83 ms against its 0.6 ms row (measured here,
+  // Node 24.18.0 on Windows, load not recorded).
   if (world.globals[STREETS] === 1) addStreet(world, view, agents);
   return agents;
-}
-
-// The street's bits go in a second pass over a town with streets only. Read in the one loop for every blob of every world, the
-// store's three fields more than doubled the 100k snapshot, from 0.38 to 0.83 ms against its 0.6 ms row (measured here,
-// Node 24.18.0 on Windows, load not recorded).
-function addStreet(world: World, view: Uint32Array, agents: number): void {
-  for (let i = 0; i < agents; i++) {
-    const street = packVisual(0, 0, emoteAt(world, i), 0, 0, 0, indoorsAt(world, i), itemAt(world, i), eatingAt(world, i));
-    view[i * SNAPSHOT_WORDS + 2] |= street;
-  }
 }

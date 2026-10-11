@@ -36,8 +36,15 @@ const ITEM_BITS = 3;
 const EATING_SHIFT = 30;
 const EATING_BITS = 1;
 
-// The emote ids of the word's emote field, where 0 is none. The coin is the bubble over a buyer at a counter (M2.7 Ruling 8).
+// The emote ids of the word's emote field, where 0 is none. The coin is the bubble over a buyer at a counter (M2.7 Ruling 8). The
+// rest are M3.2's (Ruling 3): speech over both of a chatting pair, an outing's sign (music on a green, the ball at the plaza, the
+// heart by water) and the question over a visitor whose friend is not at home (Task 7).
 export const EMOTE_COIN = 1;
+export const EMOTE_SPEECH = 2;
+export const EMOTE_MUSIC = 3;
+export const EMOTE_BALL = 4;
+export const EMOTE_HEART = 5;
+export const EMOTE_QUESTION = 6;
 
 export const VISUAL_FIELDS: readonly { name: string; shift: number; bits: number }[] = [
   { name: 'look', shift: LOOK_SHIFT, bits: LOOK_BITS },
