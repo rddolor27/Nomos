@@ -21,7 +21,7 @@ export type EconomyListener = (message: EconomyMessage) => void;
 export interface Start {
   seed: number;
   tier: Tier;
-  // The URL named the tier, so it runs its whole count instead of filling the town.
+  // The URL named the tier, so it runs its whole count in stand-in homes instead of the map's own homes.
   tierNamed: boolean;
   backend: 'auto' | 'canvas2d';
   // Starts as if the user had paused: no tick runs until Play, and the first frame shows the tick-0 snapshot.
@@ -171,7 +171,7 @@ export async function startApp(boot: Boot, doc: Document, start: Start): Promise
   // keeps, so the bytes can go to the worker. Nothing may await between the post and the listeners below, or a fast
   // worker's ready and spawn would arrive to find none.
   const { bytes, map } = await loadMap(boot, status);
-  const agents = startAgents(start.tier, map, start.tierNamed);
+  const agents = startAgents(start.tier, start.tierNamed);
   post({ type: 'init', seed: start.seed, tier: start.tier, map: bytes, checks: import.meta.env.DEV, agents }, [bytes]);
   const renderer = createWorldRenderer(element<HTMLCanvasElement>(doc, '#world'), {
     backend: start.backend,

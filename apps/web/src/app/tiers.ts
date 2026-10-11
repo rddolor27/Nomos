@@ -1,4 +1,4 @@
-import { TIER_AGENTS, townAgents, type MapV1, type Tier } from '@nomos/sim-protocol';
+import { TIER_AGENTS, type Tier } from '@nomos/sim-protocol';
 
 export const VERDICT_SAMPLES = 120;
 export const PHONE_PLUS_MAX_MS = 13.3;
@@ -33,10 +33,10 @@ export function chooseTier(device: 'phone' | 'desktop', verdict: Tier | null, ov
   return isPhoneTier(verdict) ? verdict : 'phone';
 }
 
-// Only a page that names its tier with ?tier= runs the tier's whole count, which the perf specs measure; every other
-// start fills the town.
-export function startAgents(tier: Tier, map: MapV1, tierNamed: boolean): number {
-  return tierNamed ? TIER_AGENTS[tier] : townAgents(tier, map);
+// Only a page that names its tier with ?tier= asks for the tier's whole count in stand-in homes, which the perf specs
+// measure; every other start sends none, and the worker seats one blob to a bed of the map's homes.
+export function startAgents(tier: Tier, tierNamed: boolean): number | undefined {
+  return tierNamed ? TIER_AGENTS[tier] : undefined;
 }
 
 // The check runs at the phone tier with the agents the town gave it, so its 95th-percentile tick is scaled to

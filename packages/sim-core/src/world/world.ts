@@ -2,18 +2,18 @@ import { ACTION_WALK } from '../agents/actions.ts';
 import { Blob } from '../agents/blob.ts';
 import { createClaims, type Claims } from '../money/claims.ts';
 import { below, draw2 } from '../random/draw.ts';
-import { openCells, pointInTileQ8, standInGround, walkableTiles, type Ground } from './ground.ts';
+import { openCells, pointInTileQ8, standInGround, type Ground } from './ground.ts';
 import { createInputLog, type InputLog } from './inputs.ts';
 import { createLedger, issue, walletAccount, type Ledger } from '../money/ledger.ts';
 import { reserveArena, take, type Arena } from '../memory/arena.ts';
-import { MAX_CULTURES, SUPPLIERS, addAgent, createAgentStore, type AgentStore } from '../agents/store.ts';
+import { MAX_CULTURES, addAgent, createAgentStore, type AgentStore } from '../agents/store.ts';
 import { createFirmStore, type FirmStore } from '../firms/store.ts';
 import { createGoodsStore, type GoodsStore } from '../goods/store.ts';
 import { createHouseholdStore, type HouseholdStore } from '../households/store.ts';
 import { createEconomyScratch, type EconomyScratch } from '../economy/scratch.ts';
 import { SPAWN, STRIDE } from '../random/streams.ts';
 import { STRIDE_DAYS, createStride, type Stride } from '../day/stride.ts';
-import { TIER_AGENTS, TIER_FIRMS, TIER_MEMORY_BYTES, TIER_TILES_PER_AGENT, type Tier } from '../memory/tiers.ts';
+import { TIER_AGENTS, TIER_FIRMS, TIER_MEMORY_BYTES, type Tier } from '../memory/tiers.ts';
 import { setHeading } from '../movement/walk.ts';
 
 export const TICK = 0;
@@ -76,13 +76,6 @@ export function createWorld(seed: number, tier: Tier, ground?: Ground, agents: n
   const world = layoutWorld(seed, tier, TIER_AGENTS[tier], TIER_MEMORY_BYTES[tier], ground);
   populate(world, agents);
   return world;
-}
-
-// A town's blobs: one to every TIER_TILES_PER_AGENT walkable tiles, never past the tier's own count, and never under the
-// SUPPLIERS firms a town keeps, since its firms cannot outnumber its people (checkRecord).
-export function townAgents(tier: Tier, ground: Ground): number {
-  const fitting = Math.floor(walkableTiles(ground) / TIER_TILES_PER_AGENT[tier]);
-  return Math.max(SUPPLIERS, Math.min(TIER_AGENTS[tier], fitting));
 }
 
 // No take is caught: create* is not atomic across its takes, so a world that does not fit is dropped whole.

@@ -1,7 +1,7 @@
 import type { Tier } from '@nomos/sim-core';
 
 export type { Tier };
-export { TIER_AGENTS, townAgents } from '@nomos/sim-core';
+export { TIER_AGENTS } from '@nomos/sim-core';
 
 // Snapshot v1 (interfaces.md): float32 x, float32 y and the uint32 visual word, in three pooled buffers that circulate.
 export const SNAPSHOT_BYTES = 12;
@@ -12,7 +12,7 @@ export const SPEEDS = [1, 4, 16] as const;
 export type Speed = (typeof SPEEDS)[number];
 
 export type AppMessage =
-  | { type: 'init'; seed: number; tier: Tier; map: ArrayBuffer; checks: boolean; agents?: number } // agents: omitted, the tier's whole count
+  | { type: 'init'; seed: number; tier: Tier; map: ArrayBuffer; checks: boolean; agents?: number } // agents: omitted, one blob to a bed of the map's homes; sent, that many in stand-in homes
   | { type: 'pause' }
   | { type: 'resume' }
   | { type: 'speed'; speed: Speed } // changes no state, so a watch-only run accepts it; a paused run keeps it for Play
