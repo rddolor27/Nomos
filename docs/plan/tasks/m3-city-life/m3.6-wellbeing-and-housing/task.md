@@ -5,6 +5,8 @@ Part of [M3 City life](../milestone.md).
 Needs M2's happiness income and household balance sheets, M0.2's claims ledger and quantity registries, and M3.5's missed-meal count.
 
 - **Builds:**
+  - the house card (owner, 12 October 2026): clicking a house opens a card like the blob card, with its residents (their pictures, names and jobs), its beds, the food in its pantry (from M3.5) and what the household bought today. It can be built early: residents and beds exist since M2.2c and purchases since M2.7, and only the pantry line waits for M3.5;
+  - the house's interior view, after the card (owner): the camera goes inside, to a small room with furniture and the household moving about. It needs interior art, with mockups shown to the owner first, and a view of its own;
   - life satisfaction (LS) in `AgentStore` (Int16 0–10,000, Int16 set point, Int32 income habit, saturating Uint16 event counters; about 12 bytes), updated in one order-independent daily pass into a back buffer (R6);
   - the LS drivers: income terms, −700 unemployed, −200 scarring, −450 after 7 days without contact, and the food-insecurity penalty as a labelled unsourced knob (default −150 per missed-meal day, floor −700) (R6);
   - low needs and low LS only lowering utility weights, except in physiological collapse, with the driver behind every effect named in the click-to-explain panel (R6);
