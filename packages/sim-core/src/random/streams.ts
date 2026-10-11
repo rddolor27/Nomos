@@ -18,6 +18,9 @@ export const WEALTH_DRAW = AGENT_SALT + 11;
 export const START_DRAW = AGENT_SALT + 12;
 // Spawn's own, apart from populate's SPAWN: its draws key on (settlement, day), so a place on a day is one city (M2.2).
 export const SPAWN_DRAW = AGENT_SALT + 13;
+// The first ledger stream: an away town's summary month keys on (town, month, field), so a draw of the live town's agents
+// can never shift it (M2.2c Ruling 8).
+export const AWAY_DRAW = LEDGER_SALT + 1;
 
 export function layerOf(stream: number): 'world' | 'agent' | 'ledger' {
   if (stream < AGENT_SALT) return 'world';
