@@ -516,6 +516,7 @@ test('keeps the card on a refresh answered for another blob, and closes it on on
         const data = {
           type: 'inspected', tick: 0, agent, nameKey: 1, cents: 0, employer: -1, employerGood: 0, wage: 0, look: 0, action: 0,
           home: -1, members: [], bought: [],
+          activity: -1, phase: 0, reason: 0, partner: -1, partnerKey: 0, needs: [], traits: [],
         };
         setTimeout(() => worker.dispatchEvent(new MessageEvent('message', { data })));
         Object.assign(window, { answered });
