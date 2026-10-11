@@ -11,8 +11,9 @@ import { run } from './run.ts';
 
 const SEED = 42;
 const PEOPLE = 1_000;
-// Five ticks in, on a month's first day: the wages, the firms and both searches have run and the consumption plans are next.
-const FIFTH_TICK = 5;
+// Six ticks in, on a month's first day: the day is open, the food has spoiled, and the wages, the firms and both searches
+// have run. The consumption plans are next.
+const SIXTH_TICK = 6;
 const CHECKPOINT_END_TICK = 3_000;
 
 function town(): World {
@@ -80,12 +81,12 @@ describe('the economy in the step', () => {
     expect(recorded()).not.toEqual(unrecorded);
   });
 
-  it('reaches the same hash at tick 3,000 from a checkpoint taken on a day\'s 5th tick', () => {
+  it('reaches the same hash at tick 3,000 from a checkpoint taken six ticks into the day, before the plans', () => {
     const whole = run(town(), CHECKPOINT_END_TICK);
-    const early = run(town(), FIFTH_TICK);
+    const early = run(town(), SIXTH_TICK);
     const restored = restoreWorld(SEED, 'phone', checkpoint(early), standInGround());
 
-    expect(currentTick(restored)).toBe(FIFTH_TICK);
+    expect(currentTick(restored)).toBe(SIXTH_TICK);
     expect(stateHash(run(restored, CHECKPOINT_END_TICK))).toBe(stateHash(whole));
     expect(stateHash(whole)).not.toBe(stateHash(early));
   });
