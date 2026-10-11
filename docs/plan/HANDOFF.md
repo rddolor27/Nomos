@@ -85,6 +85,13 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 11 Oct: **M2.2c, Tasks 1 and 2.**
+  - **Task 1, the ground port** (62103c0..2e6471a): it rebuilds `town.nmap` byte for byte, and 12 other places match the frozen Python too. The most beds in a place of 2 worlds is 3,176.
+  - **Task 2, one blob per bed** (369f3ee):
+    - Highcourt seats 2,688 blobs in 387 homes, as 985 households of sizes 1–6 (229, 272, 194, 165, 77, 48), and folds back exactly.
+    - `town` is now `1043e0ad`, and Highcourt's pins are `9ca2ad77` and `4cd678eb`; `746a06a3` and `6a652730` held.
+    - Plan defect, fixed by the engineer: households that don't fit a place's homes become one-person households (`fitHouseholds`). Task 3's `switchTown` must call it on a folded row too.
+    - The app's half, sending `agents` only under `?tier=`, is being built.
 - 11 Oct: **M2.4 Part 1 confirmed** (2a0950b, 4b1b32b), on seeds 2001–2050.
   - **Tier 1:** all six targets hold. Price changes are 9.4%, the thinnest margin over its 9% floor.
   - **Tiers 2 and 3:** all seven tier-2 targets still miss, as in M2.3. Unemployment's s.d. is 0.0107, only 0.0007 over Ruling 14's floor.
