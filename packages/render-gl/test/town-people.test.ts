@@ -1,7 +1,14 @@
 import {
   ACTION_IDLE,
+  ACTION_SIT,
+  ACTION_TALK,
   ACTION_WALK,
+  EMOTE_BALL,
   EMOTE_COIN,
+  EMOTE_HEART,
+  EMOTE_MUSIC,
+  EMOTE_QUESTION,
+  EMOTE_SPEECH,
   FACING_DOWN,
   FACING_LEFT,
   FACING_RIGHT,
@@ -9,10 +16,13 @@ import {
   SNAPSHOT_BYTES,
   packVisual,
 } from '@nomos/sim-protocol';
-import { NO_CODE, PLACE_EMOTES, PLACE_EXPRESSIONS, PLACE_FACINGS, PLACE_POSES } from '@nomos/sim-protocol/place';
+import { NO_CODE, PLACE_EMOTES, PLACE_EXPRESSIONS, PLACE_FACINGS, PLACE_POSES, type PlaceLayout } from '@nomos/sim-protocol/place';
 import { describe, expect, it } from 'vitest';
+import { personFrames } from '../src/place/people.ts';
+import { INSTANCE_SHORTS, PlaceSprites } from '../src/place/sprites.ts';
 import type { Retained } from '../src/renderer/types.ts';
 import { TownPeople } from '../src/town/people.ts';
+import { manifestFrames } from './manifest-frames.ts';
 
 // An agent in one snapshot: its world px, and its visual word.
 type Agent = [x: number, y: number, word: number];
@@ -33,6 +43,16 @@ function streeter(look: number, item: number, eating: number, indoors: number): 
 // A blob at a counter, facing it, under an emote id of the word.
 function bubbler(look: number, emote: number): number {
   return packVisual(look, ACTION_IDLE, emote, 0, FACING_UP, 0);
+}
+
+// A blob the street sat at its doorstep or spot, facing a keyed way.
+function sitter(look: number, facing: number): number {
+  return packVisual(look, ACTION_SIT, 0, 0, facing, 0);
+}
+
+// A blob in a chat, facing its partner, under the speech bubble every chatter shows.
+function chatter(look: number, facing: number): number {
+  return packVisual(look, ACTION_TALK, EMOTE_SPEECH, 0, facing, 0);
 }
 
 // The renderer's two latest snapshots, slot 0 the current one, as pushSnapshot leaves them.
@@ -65,6 +85,29 @@ function written(prev: Agent[], cur: Agent[], alpha = 1, tick = 0): TownPeople {
   people.fit(snapshots.count);
   people.write(snapshots, alpha);
   return people;
+}
+
+const FRAMES = manifestFrames();
+const NAME_AT = new Map(Object.entries(FRAMES).map(([name, frame]) => [frame.x, name]));
+const PEOPLE = personFrames(FRAMES);
+
+// The sprites the place pass draws for these agents, standing still, over a one-tile place: each person's body, face and bubble, in
+// drawing order, by the name of its frame.
+function drawnNames(agents: Agent[]): string[] {
+  const place: PlaceLayout = {
+    width: 1,
+    height: 1,
+    frames: ['nature/terrain_paving'],
+    tiles: Uint16Array.of(0),
+    ground: new Int32Array(0),
+    standing: new Int32Array(0),
+    people: written(agents, agents).columns,
+  };
+  const sprites = new PlaceSprites(place, FRAMES, PEOPLE);
+  sprites.pack();
+  const names: string[] = [];
+  for (let i = sprites.fixed; i < sprites.count; i++) names.push(NAME_AT.get(sprites.data[INSTANCE_SHORTS * i + 2]) ?? '?');
+  return names;
 }
 
 const facing = (name: (typeof PLACE_FACINGS)[number]): number => PLACE_FACINGS.indexOf(name);
@@ -135,6 +178,52 @@ describe('the Town skin\'s people', () => {
     const { columns } = written(agents, agents);
 
     expect([...columns.emote]).toEqual([PLACE_EMOTES.indexOf('coin'), NO_CODE, NO_CODE]);
+  });
+
+  it("show a chat's speech, an outing's sign and a visitor's question as the place's bubbles, by one table", () => {
+    const ids = [EMOTE_SPEECH, EMOTE_MUSIC, EMOTE_BALL, EMOTE_HEART, EMOTE_QUESTION];
+    const agents = ids.map((id, i): Agent => [8, 8, bubbler(i, id)]);
+    const { columns } = written(agents, agents);
+
+    expect([...columns.emote].map((code) => PLACE_EMOTES[code])).toEqual(['speech', 'music', 'ball', 'heart', 'question']);
+  });
+
+  it('face a chatter and a sitter as the word says, though they moved to stop, and stand a sitter that faces up', () => {
+    // Each moved up to the point it stops at: a walker halted to chat with a partner on its left, and three that took a seat.
+    const stopped: Agent[] = [
+      [100, 50, chatter(1, FACING_LEFT)],
+      [60, 50, sitter(2, FACING_DOWN)],
+      [60, 50, sitter(3, FACING_RIGHT)],
+      [60, 50, sitter(4, FACING_UP)],
+    ];
+    const moved = stopped.map(([x, y, word]): Agent => [x, y + 6, word]);
+    const { columns } = written(moved, stopped);
+
+    expect([...columns.facing].map((code) => PLACE_FACINGS[code])).toEqual(['left', 'down', 'right', 'up']);
+    expect([...columns.pose].map((code) => PLACE_POSES[code])).toEqual(['stand', 'sit', 'sit', 'stand']);
+    expect([...columns.step, ...columns.lift]).toEqual([0, 0, 0, 0, 0, 0, 0, 0]);
+  });
+
+  it('draw a chatting pair face to face under speech bubbles, and a sitter in its sit frame', () => {
+    const pair = drawnNames([[100, 80, chatter(0, FACING_RIGHT)], [120, 80, chatter(1, FACING_LEFT)]]);
+    const seated = drawnNames([[40, 40, sitter(2, FACING_LEFT)]]);
+
+    expect(pair).toEqual([
+      'characters/blob_sun_stand_right',
+      'characters/face_neutral_right',
+      'icons/emote_speech',
+      'characters/blob_lilac_stand_left',
+      'characters/face_neutral_left',
+      'icons/emote_speech',
+    ]);
+    expect(seated).toEqual(['characters/blob_rose_sit_left', 'characters/face_neutral_left']);
+  });
+
+  it('draw nothing for a blob indoors, whatever else its word says', () => {
+    const indoors = packVisual(3, ACTION_SIT, EMOTE_SPEECH, 0, FACING_DOWN, 0, 1);
+
+    expect(drawnNames([[40, 40, indoors]])).toEqual([]);
+    expect(drawnNames([[40, 40, indoors], [60, 40, sitter(2, FACING_DOWN)]])).toEqual(drawnNames([[60, 40, sitter(2, FACING_DOWN)]]));
   });
 
   it('step the eating loop every 3 ticks through 4 steps, and start it again after the fourth', () => {

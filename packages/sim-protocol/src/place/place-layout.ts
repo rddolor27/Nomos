@@ -8,7 +8,8 @@ export { ITEM_GOODS } from './item-goods.ts';
 export const PLACE_TILE_PX = 16;
 
 // The codes of place.py's people. A look is one of tools/worldgen/looks.py's 96: hue look % 6, eyes floor(look / 6) % 4
-// and pattern floor(look / 24). NO_CODE marks a person with no job, or with no emote.
+// and pattern floor(look / 24). NO_CODE marks a person with no job, or with no emote. place.py draws only the first six emotes;
+// speech, music and ball are the street's (M3.2), appended so no code of a saved layout moves.
 export const LOOK_HUES = CROWD_HUES;
 export const LOOK_EYES = ['round', 'dot', 'tall', 'wide'] as const;
 export const LOOK_PATTERNS = ['plain', 'speckle', 'spots', 'patch'] as const;
@@ -16,7 +17,7 @@ export const PLACE_POSES = ['stand', 'walk', 'sit'] as const;
 export const PLACE_FACINGS = ['down', 'up', 'left', 'right'] as const;
 export const PLACE_EXPRESSIONS = ['neutral', 'happy', 'blink'] as const;
 export const PLACE_JOBS = ['police', 'clinic', 'merchant', 'farmer', 'builder'] as const;
-export const PLACE_EMOTES = ['heart', 'coin', 'food', 'question', 'sweat', 'sleep'] as const;
+export const PLACE_EMOTES = ['heart', 'coin', 'food', 'question', 'sweat', 'sleep', 'speech', 'music', 'ball'] as const;
 export const NO_CODE = 255;
 
 // A column per field of place.py's Person. x and y are the anchor, the ground point, in art pixels from the place's
