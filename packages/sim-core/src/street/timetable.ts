@@ -58,7 +58,7 @@ const DRAW_HOME_SPOT = 8;
 const STAY_TICKS = Int32Array.of(0, BUY_TICKS + EAT_TICKS, BUY_TICKS);
 const START_SPREAD = Int32Array.of(WORK_OUT_SPREAD, FOOD_SPREAD, GOODS_SPREAD);
 const START_DRAW = Uint8Array.of(DRAW_WORK_OUT, DRAW_FOOD_OUT, DRAW_GOODS_OUT);
-const NO_START = -1;
+export const NO_START = -1;
 
 function minuteDrawn(world: World, i: number, day: number, purpose: number, spread: number): number {
   return drawBelow3(world.seed, STREET_DRAW, i, day, purpose, spread);
@@ -117,11 +117,12 @@ function planWork(world: World, i: number, day: number): boolean {
 }
 
 // The tick a shopping trip sets out, or NO_START when it cannot be home by night. A keyed tick from the first moment it may
-// leave, 06:00 or `tick`, over the trip's spread, or over what is left of the day when its length leaves less room than that.
-// A draw clamped to the last moment would pile every long way's trip onto the same tick of the night.
-function startOf(world: World, i: number, tick: number, purpose: number, ticks: number): number {
+// leave, 06:00 or the tick after `tick`, over the trip's spread, or over what is left of the day when its length leaves less room
+// than that. A draw clamped to the last moment would pile every long way's trip onto the same tick of the night. The blob can
+// leave no sooner than the next tick, since walkStreets has passed it in this one: a start at `tick` would run a tick late, to 22:01.
+export function startOf(world: World, i: number, tick: number, purpose: number, ticks: number): number {
   const day = dayOf(tick);
-  const earliest = Math.max(tick, day * TICKS_PER_DAY + OPENING_MINUTE);
+  const earliest = Math.max(tick + 1, day * TICKS_PER_DAY + OPENING_MINUTE);
   const latest = day * TICKS_PER_DAY + NIGHT_MINUTE - STAY_TICKS[purpose] - 2 * ticks;
   if (latest < earliest) return NO_START;
   return earliest + minuteDrawn(world, i, day, START_DRAW[purpose], Math.min(START_SPREAD[purpose], latest - earliest + 1));
