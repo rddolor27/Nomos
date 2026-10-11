@@ -57,6 +57,8 @@ export interface App {
   // Fits the whole town in the view, centred, as the camera is at the first frame. A view too small to measure fits on its
   // first real size.
   fit(): void;
+  // The ground the view fits and the renderer draws: the page's own map first, then each town shown.
+  readonly map: MapV1;
   // True from the page's open message to the worker's opened: the worker runs a day out first, and a query sent meanwhile
   // is answered for the new town.
   opening: boolean;
@@ -235,6 +237,9 @@ export async function startApp(boot: Boot, doc: Document, start: Start): Promise
     fit() {
       scene.fitted = false;
       fit(app, scene);
+    },
+    get map() {
+      return scene.map;
     },
     opening: false,
     showTown(next, layout, name) {

@@ -1,7 +1,9 @@
 import { TownSkin } from '@nomos/render-gl/town';
+import type { EconomyMessage } from '@nomos/sim-protocol';
 import type { PlaceLayout, TownError, TownReply, TownRequest } from '@nomos/sim-protocol/place';
 import { element, type App } from '../app/app.ts';
 import { townAtlas } from './atlas.ts';
+import { StockPips } from './stock-pips.ts';
 
 // Long enough for the HUD's and charts' first work, short enough that a busy page still gets its town.
 const IDLE_TIMEOUT_MS = 2000;
@@ -49,19 +51,25 @@ function requestTown(): Promise<PlaceLayout> {
 
 // The Town skin as the page lends it, and the town it draws: Highcourt until the sim opens another (M2.2c). The app tells
 // it of each town opened, and of the last one if it was opened before the skin was lent, so the skin always draws the town
-// the sim runs.
+// the sim runs. It also lights the stock pips over that town's shops and stalls from each day's economy feed (M2.7).
 class TownSkinMount {
   private readonly app: App;
   private readonly canvas: HTMLCanvasElement;
   private skin: TownSkin | null;
   private shown: { layout: PlaceLayout; name: string } | null;
+  // The shops and stalls of the town the sim runs, and the latest feed of it, which is none until its first day ends.
+  private stock: StockPips;
+  private feed: EconomyMessage | null;
 
   constructor(app: App, canvas: HTMLCanvasElement) {
     this.app = app;
     this.canvas = canvas;
     this.skin = null;
     this.shown = null;
+    this.stock = new StockPips(app.map);
+    this.feed = null;
     app.onTown(this.show.bind(this));
+    app.onEconomy(this.onEconomy.bind(this));
   }
 
   async lend(): Promise<void> {
@@ -69,20 +77,37 @@ class TownSkinMount {
     // The town follows the dots' backend, so ?canvas draws both in Canvas2D.
     const backend = this.app.renderer.backend === 'canvas2d' ? 'canvas2d' : 'auto';
     const { shown } = this;
-    const skin = new TownSkin(this.canvas, shown?.layout ?? home, page, { backend });
+    const skin = new TownSkin(this.canvas, shown?.layout ?? home, page, { backend }, this.stock.sites);
     // The Canvas2D fallback draws on a clone of the canvas, so the name goes on the skin's own.
     if (shown) skin.canvas.setAttribute('aria-label', townLabel(shown.name));
     this.skin = skin;
+    this.showStock();
     this.app.renderer.setTown(skin);
     this.app.redraw();
   }
 
-  // A frame the atlas lacks throws here, and the skin keeps the town it had. The app redraws.
+  // A frame the atlas lacks throws here, and the skin keeps the town it had. The app redraws. The feed so far is of the town
+  // left, so the new town's pips wait for its first day.
   private show(layout: PlaceLayout, name: string): void {
     this.shown = { layout, name };
-    if (this.skin === null) return;
-    this.skin.setLayout(layout);
-    this.skin.canvas.setAttribute('aria-label', townLabel(name));
+    const stock = new StockPips(this.app.map);
+    this.skin?.setLayout(layout, stock.sites);
+    this.stock = stock;
+    this.feed = null;
+    this.skin?.canvas.setAttribute('aria-label', townLabel(name));
+  }
+
+  private onEconomy(message: EconomyMessage): void {
+    if (message.days === 0) return;
+    this.feed = message;
+    this.showStock();
+  }
+
+  private showStock(): void {
+    const { skin, feed } = this;
+    if (skin === null || feed === null) return;
+    skin.setPips(this.stock.read(feed));
+    this.app.redraw();
   }
 }
 
