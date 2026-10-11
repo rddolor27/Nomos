@@ -73,6 +73,11 @@ function scaledDown(value: number, people: number, base: number): number {
   return whole * people + Math.floor((rest * people) / base);
 }
 
+// The firm cash scaleRecord gives a town of `people`: what its firms hold at a month's start, before the month's sales.
+export function firstFirmCash(people: number): number {
+  return scaledDown(CITY_RECORD[LEDGER_FIRM_CASH], people, populationOf(CITY_RECORD));
+}
+
 // Per mille of households with 1 to 6 people (M2.2c Ruling 3), a mean of 2.76 people. An unsourced estimate, to check against
 // UN DESA's household size database before M2.5.
 export const HOUSEHOLD_MIX = /* @__PURE__ */ Uint16Array.of(220, 280, 200, 170, 80, 50);

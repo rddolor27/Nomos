@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { SUPPLIERS } from '../src/agents/store.ts';
-import { planConsumption } from '../src/consumption/plan.ts';
 import { dayBoundary, requestTown } from '../src/day/day.ts';
-import { CITY } from '../src/economy/city.ts';
 import { CITY_RECORD } from '../src/economy/city-record.ts';
+import { ECONOMY_TICKS } from '../src/economy/economy.ts';
+import { STAT_WAGE_BILL } from '../src/economy/stats.ts';
 import { TIER_AGENTS, TIER_MEMORY_BYTES } from '../src/memory/tiers.ts';
 import { OK, checkInvariants } from '../src/money/invariants.ts';
 import { MINT } from '../src/money/ledger.ts';
@@ -19,6 +19,8 @@ import {
   LEDGER_HOUSEHOLDS,
   LEDGER_HOUSEHOLD_CASH,
   LEDGER_PRICE,
+  LEDGER_UNEMPLOYED,
+  LEDGER_WAGE,
   populationOf,
   scaleRecord,
   townRecord,
@@ -93,6 +95,43 @@ function enter(world: World, place: number, day: number, homes?: Homes): void {
   boundary(world, day);
 }
 
+const PAYROLL_DAY = 20;
+const PLAYED_DAYS = 62;
+
+function wageBill(world: World): number {
+  const { firms } = world;
+  let owed = 0;
+  for (let f = 0; f < firms.count[0]; f++) owed += firms.employees[f] * firms.wage[f];
+  return owed;
+}
+
+function unemployment(world: World): number {
+  const record = new Float64Array(LEDGER_FIELDS);
+  foldToLedger(world, record);
+  return record[LEDGER_UNEMPLOYED] / populationOf(record);
+}
+
+// Place 1 entered by the step on `day` and played to day 62: the wage bill the first payroll owed and what it paid, and the
+// highest share out of work on a day's end. The ledger is checked once at the end, since the phone tier's 10,000 wallets make
+// a check a tick slow.
+function playedFrom(day: number): { owed: number; paid: number; peak: number } {
+  const world = townWorld();
+  world.checks = false;
+  world.globals[TICK] = day * TICKS_PER_DAY;
+  request(world, 1);
+  const payTick = PAYROLL_DAY * TICKS_PER_DAY;
+  const played = { owed: 0, paid: 0, peak: 0 };
+  while (currentTick(world) < PLAYED_DAYS * TICKS_PER_DAY) {
+    if (currentTick(world) === payTick) played.owed = wageBill(world);
+    step(world);
+    const tick = currentTick(world);
+    if (tick === payTick + ECONOMY_TICKS) played.paid = world.economyScratch.stats[STAT_WAGE_BILL];
+    if (tick % TICKS_PER_DAY === 0) played.peak = Math.max(played.peak, unemployment(world));
+  }
+  expectOnlyTheLiveTownsMoney(world);
+  return played;
+}
+
 // A request at each of its ticks, in a step loop as the worker runs it.
 function drive(world: World, requests: readonly (readonly [number, number])[], toTick: number): World {
   while (currentTick(world) < toTick) {
@@ -107,15 +146,23 @@ function firstDifference(got: Uint8Array, want: Uint8Array): number {
   return got.length === want.length ? -1 : Math.min(got.length, want.length);
 }
 
+function cashOf(record: readonly number[]): number {
+  return record[LEDGER_HOUSEHOLD_CASH] + record[LEDGER_FIRM_CASH];
+}
+
+// A record without how its cash splits between households and firms, which a spawn off a month's first day moves.
+function withoutCashSplit(record: readonly number[]): number[] {
+  return record.map((value, field) => (field === LEDGER_HOUSEHOLD_CASH || field === LEDGER_FIRM_CASH ? 0 : value));
+}
+
 // MINT holds minus the live town's cash, and nothing else lost a cent.
 function expectOnlyTheLiveTownsMoney(world: World): void {
-  const live = folded(world);
-  expect(world.cash.balance[MINT]).toBe(-(live[LEDGER_HOUSEHOLD_CASH] + live[LEDGER_FIRM_CASH]));
+  expect(world.cash.balance[MINT]).toBe(-cashOf(folded(world)));
   expect(checkInvariants(world.cash, world.claims)).toBe(OK);
 }
 
 describe('switchTown', () => {
-  it("folds the live town into its row on the day's tick 0 and re-enters it within the month exactly, money for money", () => {
+  it("folds the live town into its row on the day's tick 0 and re-enters it within the month with every count and cent exact", () => {
     const world = run(townWorld(), 2 * TICKS_PER_DAY);
     const left = folded(world);
     request(world, 1);
@@ -136,8 +183,11 @@ describe('switchTown', () => {
 
     expect([world.focus[0], world.agents.count[0]]).toEqual([0, PEOPLE[0]]);
     expect(world.ground).toBe(GROUND);
-    expect(folded(world)).toEqual(left);
-    expect(world.cash.balance[MINT]).toBe(-(left[LEDGER_HOUSEHOLD_CASH] + left[LEDGER_FIRM_CASH]));
+    // Day 4's firms hold the cash a live town has by then, which the fold on day 2 did not yet: only the split moves.
+    expect(withoutCashSplit(folded(world))).toEqual(withoutCashSplit(left));
+    expect(cashOf(folded(world))).toBe(cashOf(left));
+    expect(folded(world)[LEDGER_FIRM_CASH]).toBeGreaterThan(left[LEDGER_FIRM_CASH]);
+    expect(world.cash.balance[MINT]).toBe(-cashOf(left));
     expectOnlyTheLiveTownsMoney(world);
   });
 
@@ -154,7 +204,8 @@ describe('switchTown', () => {
     expect(rowOf(world, 1)).toEqual(firstRecord(PEOPLE[1]));
 
     enter(world, 0, 22);
-    expect(folded(world)).toEqual(stepped);
+    expect(withoutCashSplit(folded(world))).toEqual(withoutCashSplit(stepped));
+    expect(cashOf(folded(world))).toBe(cashOf(stepped));
     expectOnlyTheLiveTownsMoney(world);
   });
 
@@ -180,23 +231,71 @@ describe('switchTown', () => {
     expect(rowOf(world, 0)).toEqual(left);
   });
 
-  it("makes the month's consumption plans at once off a month's first day, and leaves them to the economy on one", () => {
+  it("makes the month's plans and the firms' demand so far at once off a month's first day, and leaves both to the economy on one", () => {
     const world = townWorld();
-    const planned = (): number => world.agents.plannedUnits.subarray(0, world.agents.count[0]).reduce((sum, units) => sum + units, 0);
-    expect(planned()).toBe(0);
+    const sum = (column: Int32Array, count: number): number => column.subarray(0, count).reduce((total, value) => total + value, 0);
+    const planned = (): number => sum(world.agents.plannedUnits, world.agents.count[0]);
+    const demanded = (): number => sum(world.firms.demand, world.firms.count[0]);
+    expect([planned(), demanded()]).toEqual([0, 0]);
+
     enter(world, 1, 5);
+    const { firms } = world;
+    const wrong: number[] = [];
+    for (let f = 0; f < firms.count[0]; f++) if (firms.demand[f] !== Math.floor((firms.lastDemand[f] * 5) / 21)) wrong.push(f);
     expect(planned()).toBeGreaterThan(0);
+    expect(demanded()).toBeGreaterThan(0);
+    expect(wrong).toEqual([]);
+
     enter(world, 0, 21);
-    expect(planned()).toBe(0);
+    expect([planned(), demanded()]).toEqual([0, 0]);
+  });
+
+  it("moves the month so far's share of the wage bill from the households to the firms of a town that spawns mid-month", () => {
+    const world = townWorld();
+    const first = firstRecord(PEOPLE[1]);
+    const moved = Math.floor((first[LEDGER_EMPLOYED] * first[LEDGER_WAGE] * 15) / 21);
+    enter(world, 1, 15);
+    const got = folded(world);
+
+    expect(moved).toBeGreaterThan(0);
+    expect(got[LEDGER_FIRM_CASH]).toBe(first[LEDGER_FIRM_CASH] + moved);
+    expect(got[LEDGER_HOUSEHOLD_CASH]).toBe(first[LEDGER_HOUSEHOLD_CASH] - moved);
+    expect(withoutCashSplit(got)).toEqual(withoutCashSplit(first));
+    expectOnlyTheLiveTownsMoney(world);
+  });
+
+  it('stops at the cash a town holds, and leaves firms that already hold more as they are', () => {
+    const poor = firstRecord(OTHER_PEOPLE);
+    [poor[LEDGER_HOUSEHOLD_CASH], poor[LEDGER_FIRM_CASH]] = [1_000, 5_000];
+    const flush = firstRecord(OTHER_PEOPLE);
+    [flush[LEDGER_HOUSEHOLD_CASH], flush[LEDGER_FIRM_CASH]] = [30_000_000, 60_000_000];
+    const world = townWorld();
+    world.townRecords.set(poor, 2 * LEDGER_FIELDS);
+    world.townRecords.set(flush, 3 * LEDGER_FIELDS);
+    const cashes = (): number[] => [folded(world)[LEDGER_HOUSEHOLD_CASH], folded(world)[LEDGER_FIRM_CASH]];
+
+    enter(world, 2, 15);
+    expect(cashes()).toEqual([0, 6_000]);
+    enter(world, 3, 16);
+    expect(cashes()).toEqual([30_000_000, 60_000_000]);
+    expectOnlyTheLiveTownsMoney(world);
+  });
+
+  it("covers a mid-month spawn's first payroll, and holds its unemployment under a day-0 spawn's peak", () => {
+    const early = playedFrom(0);
+    const late = playedFrom(15);
+
+    expect(early.paid / early.owed).toBeGreaterThan(0.99);
+    expect(late.paid / late.owed).toBeGreaterThan(0.99);
+    expect(late.peak).toBeLessThan(early.peak + 0.01);
   });
 
   it('empties a town to a new world\'s layout, so a switched-in town is the one a fresh world spawns', () => {
     const world = run(townWorld(), 3 * TICKS_PER_DAY);
-    enter(world, 1, 3);
+    enter(world, 1, 21);
 
     const fresh = layoutWorld(SEED, 'phone', TIER_AGENTS.phone, TIER_MEMORY_BYTES.phone, SMALL_GROUND);
-    seatTown(fresh, Float64Array.from(firstRecord(PEOPLE[1])), homesFor(1), 1, 3);
-    planConsumption(fresh, CITY);
+    seatTown(fresh, Float64Array.from(firstRecord(PEOPLE[1])), homesFor(1), 1, 21);
 
     expect(firstDifference(world.agentBytes, fresh.agentBytes)).toBe(-1);
     expect(firstDifference(world.economyBytes, fresh.economyBytes)).toBe(-1);
@@ -221,8 +320,9 @@ describe('switchTown', () => {
     world.townRecords.set(row, LEDGER_FIELDS);
     enter(world, 1, day, village);
 
-    expect(populationOf(Float64Array.from(folded(world)))).toBe(26);
-    expect(folded(world)).toEqual(Array.from(trimmed));
+    const got = folded(world);
+    expect(populationOf(Float64Array.from(got))).toBe(26);
+    expect(withoutCashSplit(got)).toEqual(withoutCashSplit(Array.from(trimmed)));
   });
 
   it("checks the request's homes before it folds, so beds that fall short throw with the live town and every row as they were", () => {

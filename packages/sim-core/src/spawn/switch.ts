@@ -2,13 +2,23 @@ import { SUPPLIERS } from '../agents/store.ts';
 import { planConsumption } from '../consumption/plan.ts';
 import { CITY } from '../economy/city.ts';
 import { openYearEmployers } from '../economy/scratch.ts';
+import { floorDiv } from '../maths/int.ts';
 import { firmAccount, retire, walletAccount } from '../money/ledger.ts';
-import { dayOf, dayOfMonth, monthOf } from '../time/calendar.ts';
+import { DAYS_PER_MONTH, dayOf, dayOfMonth, monthOf } from '../time/calendar.ts';
 import { NO_PLACE, TICK, type World } from '../world/world.ts';
 import { stepAwayTown } from './away.ts';
 import { foldToLedger } from './fold.ts';
 import { bedCount, type Homes } from './homes.ts';
-import { LEDGER_FIELDS, populationAt } from './record.ts';
+import {
+  LEDGER_EMPLOYED,
+  LEDGER_FIELDS,
+  LEDGER_FIRM_CASH,
+  LEDGER_HOUSEHOLD_CASH,
+  LEDGER_WAGE,
+  firstFirmCash,
+  populationAt,
+  populationOf,
+} from './record.ts';
 import { firstRecord, seatTown } from './town.ts';
 
 // Whether `homes` can seat the town `place` spawns. A row nobody has visited needs the beds a household has suppliers (the
@@ -67,15 +77,38 @@ function retireCash(world: World): void {
   }
 }
 
-// Spawns `place` from its row, which a first visit makes first. The month's consumption plans come from a month's first
-// day, so a town that spawns on any other day makes them at once.
+// Spawns `place` from its row, which a first visit makes first. A month's first-day systems make its consumption plans and
+// start its firms' demand counters, so a town that spawns on any other day has the month so far filled in at once.
 function enterTown(world: World, place: number, homes: Homes, day: number): void {
   const row = world.recordRow;
   if (populationAt(world.townRecords, place * LEDGER_FIELDS) === 0) openTown(world, place, homes, day);
   readRow(world.townRecords, place, row);
+  const dayInMonth = dayOfMonth(day);
+  if (dayInMonth !== 0) fundPayroll(row, dayInMonth);
   seatTown(world, row, homes, place, day);
-  if (dayOfMonth(day) !== 0) planConsumption(world, CITY);
+  if (dayInMonth !== 0) startMidMonth(world, dayInMonth);
   world.focus[0] = place;
+}
+
+// The payroll due on a month's last day waits on the month's sales, and a town entering on day k has lost the first k days of
+// them: a first record and a summary month leave its firms the cash a month starts with. So its firms hold at least that plus
+// k/21 of the wage bill, moved from the households as resetCashSplit moves cash at a month start. A row folded earlier this
+// month, whose firms already hold more, keeps its cash.
+function fundPayroll(row: Float64Array, dayInMonth: number): void {
+  const total = row[LEDGER_HOUSEHOLD_CASH] + row[LEDGER_FIRM_CASH];
+  const monthSoFar = floorDiv(row[LEDGER_EMPLOYED] * row[LEDGER_WAGE] * dayInMonth, DAYS_PER_MONTH);
+  const firms = Math.max(row[LEDGER_FIRM_CASH], Math.min(total, firstFirmCash(populationOf(row)) + monthSoFar));
+  row[LEDGER_FIRM_CASH] = firms;
+  row[LEDGER_HOUSEHOLD_CASH] = total - firms;
+}
+
+// The plans cover the whole month, and the demand counters start at the share of a month's demand that the first k days would
+// have asked. Left at 0, the month's close would hand the next decisions a demand short by k/21, and the firms would read
+// their stock as long, give notice and lay people off.
+function startMidMonth(world: World, dayInMonth: number): void {
+  planConsumption(world, CITY);
+  const firms = world.firms;
+  for (let f = 0; f < firms.count[0]; f++) firms.demand[f] = floorDiv(firms.lastDemand[f] * dayInMonth, DAYS_PER_MONTH);
 }
 
 // A first visit: the town's first record, advanced through every month that began before today, as the summary month would
