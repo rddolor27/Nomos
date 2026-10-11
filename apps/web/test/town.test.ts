@@ -1,8 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { WALK_ROAD, parseMap } from '@nomos/sim-protocol';
-import { buildPlace } from '@nomos/worldgen';
+import { buildPlace, TOWN } from '@nomos/worldgen';
 import { describe, expect, it } from 'vitest';
-import { TOWN } from '../src/map/town.ts';
 
 const TOWN_MAP = new URL('../../../assets/maps/town.nmap', import.meta.url);
 const PAVED = 'nature/terrain_paving';

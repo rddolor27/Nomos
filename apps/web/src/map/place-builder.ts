@@ -1,6 +1,5 @@
 import { layoutBuffers, placeBuffers, type PlaceReply, type TownReply } from '@nomos/sim-protocol/place';
-import { buildPlace, crowdedPlace, type PlaceContext } from '@nomos/worldgen';
-import { TOWN } from './town.ts';
+import { buildPlace, crowdedPlace, TOWN, type PlaceContext } from '@nomos/worldgen';
 
 // The place builder, its own chunk: the map worker imports it on its first place request, so opening the map never
 // pays for it. Place p laid out with its walk loops and street crowd, timed, every buffer listed.

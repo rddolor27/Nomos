@@ -1,8 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { layoutBuffers, placeBuffers, type PlaceError, type PlaceReply } from '@nomos/sim-protocol/place';
-import { buildPlace, worldFingerprint } from '@nomos/worldgen';
+import { buildPlace, TOWN, worldFingerprint } from '@nomos/worldgen';
 import { answerGenerate, answerPlace, answerTown } from '../src/map/generate.ts';
-import { TOWN } from '../src/map/town.ts';
 
 describe('the map worker', { timeout: 60_000 }, () => {
   it('answers generate with the world, its names and its timings, every buffer listed', () => {
