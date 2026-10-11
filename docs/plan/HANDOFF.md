@@ -83,6 +83,13 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 11 Oct: **M2.2c briefed** (1f9c645): every town runs the sim. It waits for the owner's go.
+  - **One kind of town:** a place's layout plus a TypeScript port of its ground, with Highcourt as place 0, each world's capital.
+  - **Switching:** entering a town logs `INPUT_FOCUS`. The worker runs out the day, then folds the old town and spawns the new at the boundary. Away towns stay frozen, as the owner's fold-and-spawn ruling means ("consequential focus" in R4's terms).
+  - **Records:** a 14-field ledger row per settlement. A first visit scales `CITY_RECORD` to the town's beds, with a household mix of 22/28/20/17/8/5% for sizes 1–6 (an unsourced estimate, to check against UN DESA before M2.5).
+  - **Homes:** one blob per bed in the drawn houses, as "House N".
+  - **Walkers:** the decorative walkers go, and the Town skin draws every live town.
+  - **First slice:** Highcourt's 2,688 blobs in its own houses, with the card's "Lives with" filled.
 - 11 Oct: **M2.4 Part 1, Tasks 1–2** (24981a8..6072558).
   - **Built:** the seven goods, start and spawn by good, the dated food ring that spoils, and flow log schema 2.
   - **Hashes:** `CITY.goods` stays 0 until Task 4, so no hash moved.

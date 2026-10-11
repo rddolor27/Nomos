@@ -8,17 +8,17 @@ Estimates are full-time days for one person coding by hand (unsourced estimates)
 | --- | --- | --- |
 | [M0 Pipeline](m0-pipeline/milestone.md) | 8 | 26–40 days |
 | [M1 Lab mode](m1-lab-mode/milestone.md) | 6 | 23.5–38 days |
-| [M2 Economy](m2-economy/milestone.md) | 8 | 32–51.5 days |
+| [M2 Economy](m2-economy/milestone.md) | 9 | 37–58.5 days |
 | [M3 City life](m3-city-life/milestone.md) | 8 | 65.5–101 days |
 | [M4 Crime and police](m4-crime-and-police/milestone.md) | 7 | 28–40 days |
 | [M5 Society and policy](m5-society-and-policy/milestone.md) | 7 | 36–56 days |
 | [M6 Scale and sharing](m6-scale-and-sharing/milestone.md) | 7 | 49–81 days |
 | [M7 Country of ledgers](m7-country-of-ledgers/milestone.md) | 7 | 37–59 days |
 | [M8 Country map](m8-country-map/milestone.md) | 8 | 52.5–82 days |
-| **Before launch, M0–M8** | | **349.5–548.5 days** |
+| **Before launch, M0–M8** | | **354.5–555.5 days** |
 | [M9 Zoom across scales](m9-zoom-across-scales/milestone.md) | 6 | 25–40 days |
 | [M10 Weather](m10-weather/milestone.md) | 4 | 16–27 days |
-| **Everything** | | **390.5–615.5 days** |
+| **Everything** | | **395.5–622.5 days** |
 
 The plan's own effort lines sum to about 221.5–340.5 days before launch, but many tasks that rounds 2, 6, 8 and 9 added carry no estimate there. These breakdowns estimate every task, which is why their sum is larger.
 
@@ -63,6 +63,7 @@ The plan's own effort lines sum to about 221.5–340.5 days before launch, but m
 | [M2.2 Spawn and fold](m2-economy/m2.2-spawn-and-fold/task.md) | A city spawned from a ledger record and folded back into it exactly | 2–3.5 days | [step plan](m2-economy/m2.2-spawn-and-fold/plan.md) |
 | [M2.3 Calibration and design runner](m2-economy/m2.3-calibration-and-design-runner/task.md) | Two presets that hit the measured economy targets, and a headless design runner | 4–7 days | [step plan](m2-economy/m2.3-calibration-and-design-runner/plan.md) |
 | [M2.2b The economy on screen](m2-economy/m2.2b-economy-on-screen/task.md) | The economy in the live town: spawned settled from `CITY`'s record and run one system a tick, with job and wage in the inspector, a price, wage, unemployment and trades panel, and 1×, 4× and 16× speed | 5.5–8.5 days | [brief](m2-economy/m2.2b-economy-on-screen/plan.md) |
+| [M2.2c Every town runs the sim](m2-economy/m2.2c-every-town-live/task.md) | Every settlement opened from the map runs live from its own ledger row, one blob per bed in its drawn houses, in households of 1–6, and the decorative walkers are gone | 5–7 days | [brief](m2-economy/m2.2c-every-town-live/plan.md) |
 | [M2.4 Goods and food](m2-economy/m2.4-goods-and-food/task.md) | Part 1 (owner, 11 October 2026): seven goods, and food that blobs buy, eat and waste, on the panel daily. Part 2: sectors, call auctions, and dated food lots that balance in portions | 4–6.5 days | [brief](m2-economy/m2.4-goods-and-food/plan.md) |
 | [M2.5 Household wealth](m2-economy/m2.5-household-wealth/task.md) | Balance sheets, dividends, saving by income quintile, and wealth spawned from the record | 4–6.5 days | [brief](m2-economy/m2.5-household-wealth/plan.md) |
 | [M2.6 Culture in the basket](m2-economy/m2.6-culture-in-the-basket/task.md) | Culture that moves food tastes only, at equal cost and independent of wealth | 3–5 days | [brief](m2-economy/m2.6-culture-in-the-basket/plan.md) |
