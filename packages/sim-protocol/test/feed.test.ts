@@ -1,10 +1,22 @@
 import {
+  BREAD,
   CITY,
+  CLOTH,
   ECONOMY_TICKS,
+  FISH,
+  FUEL,
+  MILK,
   PPM,
+  STAT_EATEN,
+  STAT_GOOD_PRICE,
+  STAT_GOOD_STOCK,
   STAT_PRICE_MEAN,
   STAT_SALES_CENTS,
+  STAT_SOLD,
+  STAT_SOLD_CENTS,
+  STAT_SPOILED,
   STAT_UNEMPLOYED,
+  STAT_UNMET,
   STAT_WAGE_MEAN,
   FOOD_TRADES,
   GOODS_TRADES,
@@ -15,6 +27,7 @@ import {
   createTown,
   createWorld,
   economyDay,
+  isFood,
   logPurchase,
   runEconomySystem,
   standInGround,
@@ -22,7 +35,14 @@ import {
   type World,
 } from '@nomos/sim-core';
 import { describe, expect, it } from 'vitest';
-import { FEED_DAYS, FEED_TRADES, createEconomyFeed, economyDayEnded, writeEconomyFeed } from '../src/index.ts';
+import {
+  FEED_DAYS,
+  FEED_GOODS,
+  FEED_TRADES,
+  createEconomyFeed,
+  economyDayEnded,
+  writeEconomyFeed,
+} from '../src/index.ts';
 
 const SEED = 42;
 const PEOPLE = 300;
@@ -77,6 +97,56 @@ describe('the economy feed', () => {
     expect(tradedCents).toBeLessThan(stats[STAT_SALES_CENTS]);
   });
 
+  it("takes a day's figure of each good and of the food from the stats row", () => {
+    const world = town();
+    const feed = createEconomyFeed();
+    while (!economyDayEnded(world)) step(world);
+    writeEconomyFeed(world, feed);
+    const stats = world.economyScratch.stats;
+
+    expect(FEED_GOODS).toBe(7);
+    let foodSold = 0;
+    let foodSpoiled = 0;
+    for (let g = 0; g < FEED_GOODS; g++) {
+      const good = BREAD + g;
+      const sold = stats[STAT_SOLD + good];
+      expect(feed.soldUnits[g][0]).toBe(sold);
+      expect(feed.stockUnits[g][0]).toBe(stats[STAT_GOOD_STOCK + good]);
+      expect(feed.paidCents[g][0]).toBeGreaterThan(0);
+      if (sold > 0) expect(feed.paidCents[g][0] * sold).toBeCloseTo(stats[STAT_SOLD_CENTS + good], 6);
+      else expect(feed.paidCents[g][0]).toBe(stats[STAT_GOOD_PRICE + good]);
+      if (isFood(good)) {
+        foodSold += sold;
+        foodSpoiled += stats[STAT_SPOILED + good];
+      }
+    }
+    // Every portion eaten was sold that day.
+    expect(feed.soldUnits[0][0]).toBeGreaterThan(0);
+    expect(feed.eaten[0]).toBe(foodSold);
+    expect(feed.eaten[0]).toBe(stats[STAT_EATEN]);
+    expect(feed.spoiled[0]).toBe(foodSpoiled);
+    expect(feed.unmet[0]).toBe(stats[STAT_UNMET]);
+  });
+
+  it('prices a good nobody bought at its posted mean, and shows its 0 sold', () => {
+    const world = town();
+    const feed = createEconomyFeed();
+    while (!economyDayEnded(world)) step(world);
+    const stats = world.economyScratch.stats;
+    stats[STAT_SOLD + FISH] = 0;
+    stats[STAT_SOLD_CENTS + FISH] = 0;
+    stats[STAT_GOOD_PRICE + FISH] = 1_234.5;
+    // A good that sold is priced at its sales cents over its units, not at its posted mean.
+    stats[STAT_SOLD + BREAD] = 4;
+    stats[STAT_SOLD_CENTS + BREAD] = 2_222;
+    stats[STAT_GOOD_PRICE + BREAD] = 999;
+    writeEconomyFeed(world, feed);
+
+    const fish = FISH - BREAD;
+    expect([feed.soldUnits[fish][0], feed.paidCents[fish][0]]).toEqual([0, 1_234.5]);
+    expect([feed.soldUnits[0][0], feed.paidCents[0][0]]).toEqual([4, 555.5]);
+  });
+
   it('keeps the last 112 of 113 days, oldest first', () => {
     const world = town();
     const feed = createEconomyFeed();
@@ -84,12 +154,18 @@ describe('the economy feed', () => {
     const price: number[] = [];
     const wage: number[] = [];
     const unemployment: number[] = [];
+    const bread: number[] = [];
+    const cloth: number[] = [];
+    const eaten: number[] = [];
 
     for (let day = 0; day <= FEED_DAYS; day++) {
       economyDay(world, CITY, day);
       price.push(stats[STAT_PRICE_MEAN]);
       wage.push(stats[STAT_WAGE_MEAN]);
       unemployment.push(unemploymentPpm(world));
+      bread.push(stats[STAT_SOLD + BREAD]);
+      cloth.push(stats[STAT_GOOD_STOCK + CLOTH]);
+      eaten.push(stats[STAT_EATEN]);
       world.globals[TICK] = dayEndTick(day);
       writeEconomyFeed(world, feed);
     }
@@ -99,9 +175,36 @@ describe('the economy feed', () => {
     expect(Array.from(feed.meanPriceCents)).toEqual(price.slice(1));
     expect(Array.from(feed.meanWageCents)).toEqual(wage.slice(1));
     expect(Array.from(feed.unemploymentPpm)).toEqual(unemployment.slice(1));
+    expect(Array.from(feed.soldUnits[BREAD - BREAD])).toEqual(bread.slice(1));
+    expect(Array.from(feed.stockUnits[CLOTH - BREAD])).toEqual(cloth.slice(1));
+    expect(Array.from(feed.eaten)).toEqual(eaten.slice(1));
     // The series move, so a feed in another order or a day off would not match.
     expect(new Set(price).size).toBeGreaterThan(1);
     expect(new Set(wage).size).toBeGreaterThan(1);
+    expect(new Set(bread).size).toBeGreaterThan(1);
+    expect(new Set(cloth).size).toBeGreaterThan(1);
+  });
+
+  it("gives each trade the good of its shop's firm row, foods first", () => {
+    const world = town();
+    const feed = createEconomyFeed();
+    const scratch = world.economyScratch;
+    const { firstRow } = world.goods;
+
+    world.globals[TICK] = dayEndTick(0);
+    clearPurchases(scratch);
+    logPurchase(scratch, FOOD_TRADES, firstRow[MILK], 2, 3_000);
+    logPurchase(scratch, FOOD_TRADES, firstRow[BREAD], 1, 500);
+    logPurchase(scratch, FOOD_TRADES, firstRow[FISH], 3, 1_500);
+    logPurchase(scratch, GOODS_TRADES, firstRow[CLOTH], 1, 4_000);
+    logPurchase(scratch, GOODS_TRADES, firstRow[FUEL], 2, 6_000);
+    writeEconomyFeed(world, feed);
+
+    expect(feed.trades).toBe(5);
+    expect(Array.from(feed.tradeGood)).toEqual([MILK, BREAD, FISH, CLOTH, FUEL, ...Array(FEED_TRADES - 5).fill(0)]);
+    expect(Array.from(feed.tradeShop.subarray(0, 5))).toEqual(
+      [MILK, BREAD, FISH, CLOTH, FUEL].map((good) => firstRow[good]),
+    );
   });
 
   it("holds a busy day's last 8 food and last 8 goods purchases oldest first, and nothing of it on a quiet day", () => {
@@ -138,6 +241,7 @@ describe('the economy feed', () => {
     writeEconomyFeed(world, feed);
     expect(feed.trades).toBe(0);
     expect(feed.tradeShop.every((shop) => shop === 0)).toBe(true);
+    expect(feed.tradeGood.every((good) => good === 0)).toBe(true);
   });
 
   it("is due right after a town day's 20th tick, and never in a world that is not a town", () => {

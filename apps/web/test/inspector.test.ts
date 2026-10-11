@@ -18,6 +18,7 @@ const IN_WORK: Inspected = {
   nameKey: NAME_KEY,
   cents: 310_000,
   employer: 11,
+  employerGood: 0,
   wage: 142_800,
   look: 77,
   action: ACTION_WALK,

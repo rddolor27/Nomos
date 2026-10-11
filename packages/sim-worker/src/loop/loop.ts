@@ -1,5 +1,6 @@
 import {
   ACTION_IDLE,
+  GENERIC,
   NO_HOME,
   NO_HOUSEHOLD,
   SUBPIXELS,
@@ -254,6 +255,7 @@ function noBlobReply(tick: number): InspectedMessage {
     nameKey: 0,
     cents: 0,
     employer: NO_EMPLOYER,
+    employerGood: GENERIC,
     wage: 0,
     look: 0,
     action: ACTION_IDLE,
@@ -275,6 +277,7 @@ function blobReply(world: World, tick: number, agent: number): InspectedMessage 
     nameKey: blob.nameKey,
     cents: blob.cash,
     employer,
+    employerGood: employer < 0 ? GENERIC : world.goods.good[employer],
     wage: employer < 0 ? 0 : world.firms.wage[employer],
     look: world.agents.look[agent],
     action: blob.action,

@@ -418,6 +418,7 @@ describe('the sim loop', () => {
         nameKey: agents.nameKey[agent],
         cents: 101_234,
         employer: -1,
+        employerGood: 0,
         wage: 0,
         look: 77,
         action: ACTION_WALK,
@@ -448,18 +449,30 @@ describe('the sim loop', () => {
     expect(answerFor(6)).toEqual([6, -1, []]);
   });
 
-  it("answers an employed blob's firm row and that firm's wage", () => {
+  it("answers an employed blob's firm row, that firm's good and its wage", () => {
     const page = fakePage();
-    const { agents, firms } = page.world();
-    // Neighbouring firms hold other wages, so an answer from the wrong row or the wrong firm shows.
+    const { agents, firms, goods } = page.world();
+    // Neighbouring firms hold other wages and goods, so an answer from the wrong row or the wrong firm shows.
     const agent = 7;
     agents.employer[agent] = 3;
     firms.wage[2] = 99_900;
     firms.wage[3] = 142_800;
     firms.wage[4] = 150_000;
+    goods.good[2] = 1;
+    goods.good[3] = 3;
+    goods.good[4] = 6;
     page.handle({ type: 'inspect', x: agents.x[agent] / 256, y: agents.y[agent] / 256 });
     expect(page.ofType('inspected')).toMatchObject([
-      { type: 'inspected', tick: 0, agent, nameKey: agents.nameKey[agent], cents: 100_000, employer: 3, wage: 142_800 },
+      {
+        type: 'inspected',
+        tick: 0,
+        agent,
+        nameKey: agents.nameKey[agent],
+        cents: 100_000,
+        employer: 3,
+        employerGood: 3,
+        wage: 142_800,
+      },
     ]);
   });
 
@@ -474,6 +487,7 @@ describe('the sim loop', () => {
         nameKey: 0,
         cents: 0,
         employer: -1,
+        employerGood: 0,
         wage: 0,
         look: 0,
         action: 0,
