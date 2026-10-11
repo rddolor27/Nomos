@@ -18,6 +18,26 @@
     "ticks": 1000,
     "hash": "8f1f75bb"
   },
+  "switch": {
+    "seed": 42,
+    "tier": "phone",
+    "people": [
+      1000,
+      600
+    ],
+    "requests": [
+      [
+        500,
+        1
+      ],
+      [
+        2000,
+        0
+      ]
+    ],
+    "ticks": 3000,
+    "hash": "ce41f094"
+  },
   "spawn": {
     "seed": 2026,
     "hashes": [

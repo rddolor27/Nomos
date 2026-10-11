@@ -41,8 +41,14 @@ const MIN_POSTED_CENTS = 100;
 const MAX_STOCK = 2_147_483_647;
 
 export function populationOf(record: Float64Array): number {
+  return populationAt(record, 0);
+}
+
+// The people of the row that starts at `first` in a table of rows, or 0 for a row with none, which is how the ledger table
+// marks a town nobody has visited.
+export function populationAt(rows: Float64Array, first: number): number {
   let people = 0;
-  for (let size = 1; size <= MAX_HOUSEHOLD; size++) people += size * record[LEDGER_HOUSEHOLDS + size - 1];
+  for (let size = 1; size <= MAX_HOUSEHOLD; size++) people += size * rows[first + LEDGER_HOUSEHOLDS + size - 1];
   return people;
 }
 

@@ -1,17 +1,19 @@
 import { TIER_AGENTS, TIER_MEMORY_BYTES, type Tier } from '../memory/tiers.ts';
 import { mix } from '../random/draw.ts';
+import { LEDGER_FIELDS, populationAt } from '../spawn/record.ts';
 import type { Ground } from './ground.ts';
-import { GOODS, layoutWorld, type World } from './world.ts';
+import { GOODS, MAX_TOWNS, TOWN, layoutWorld, type World } from './world.ts';
 
 const NO_SKIP: readonly ArrayBufferView[] = [];
+const ROW_BYTES = LEDGER_FIELDS * Float64Array.BYTES_PER_ELEMENT;
 
 export function stateHash(world: World): number {
   return stateHashExcept(world, NO_SKIP);
 }
 
 // Skips each canonical region that starts where a given view does; the relabel test skips the culture regions (R8).
-// The goods store is the last region and counts only while globals[GOODS] is 1, so a world without goods hashes as it
-// did before the store existed (M2.4).
+// The goods store comes next and counts only while globals[GOODS] is 1, so a world without goods hashes as it did before
+// the store existed (M2.4). A town's ledger table is last (M2.2c).
 // The one view this makes is fine here: the hash runs between ticks, never inside step.
 export function stateHashExcept(world: World, skip: readonly ArrayBufferView[]): number {
   const words = new Uint32Array(world.arena.memory.buffer);
@@ -25,7 +27,24 @@ export function stateHashExcept(world: World, skip: readonly ArrayBufferView[]):
   if (world.globals[GOODS] === 1 && !startsAView(goods.byteOffset, skip)) {
     h = mixRegion(words, h, goods.byteOffset, goods.byteLength);
   }
+  if (world.globals[TOWN] === 1 && !startsAView(world.townRecords.byteOffset, skip)) h = mixTowns(world, words, h);
   return h;
+}
+
+// Each visited row, in row order after its index, then the live town, once a row is held. A row with no people is
+// unvisited and adds nothing, so a town that has never switched hashes as it did before the table, and the live town is
+// covered from the first switch on: only then does it say which row the next fold writes.
+function mixTowns(world: World, words: Uint32Array, from: number): number {
+  const rows = world.townRecords;
+  let h = from;
+  let visited = 0;
+  for (let town = 0; town < MAX_TOWNS; town++) {
+    const first = town * LEDGER_FIELDS;
+    if (populationAt(rows, first) === 0) continue;
+    h = mixRegion(words, mix(h ^ town), rows.byteOffset + first * Float64Array.BYTES_PER_ELEMENT, ROW_BYTES);
+    visited++;
+  }
+  return visited === 0 ? from : mix(h ^ world.focus[0]);
 }
 
 function mixRegion(words: Uint32Array, from: number, byteOffset: number, byteLength: number): number {

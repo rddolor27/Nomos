@@ -15,6 +15,8 @@ import { SPAWN, STRIDE } from '../random/streams.ts';
 import { STRIDE_DAYS, createStride, type Stride } from '../day/stride.ts';
 import { TIER_AGENTS, TIER_FIRMS, TIER_MEMORY_BYTES, type Tier } from '../memory/tiers.ts';
 import { setHeading } from '../movement/walk.ts';
+import { createHomes, type Homes } from '../spawn/homes.ts';
+import { LEDGER_FIELDS } from '../spawn/record.ts';
 
 export const TICK = 0;
 export const RECORD_FRONT = 1;
@@ -42,10 +44,23 @@ const SETTLEMENTS = 8;
 export const STAND_IN_CULTURES = 4;
 const LOAN_CAPACITY = 4_096;
 export const OPENING_CENTS = 100_000;
-const NO_FOCUS = -1;
+// The watched settlement before any town spawns, and a town request with nothing pending.
+export const NO_PLACE = -1;
+// Settlements with a ledger row (M2.2c Ruling 3). The first 400 large worlds, the size the app makes, hold at most 269
+// settlements and the 20 golden worlds at most 58, so 512 rows, which take 56 KiB, leave room to spare.
+export const MAX_TOWNS = 512;
 // Three in four blobs spawn walking, the share that walking settles at (wander.ts), so the first seconds look like
 // the rest.
 export const WALK_START_MASK = 3;
+
+// The town the next day boundary spawns, which requestTown fills and switchTown spends (M2.2c). place is NO_PLACE while
+// nothing is pending. The ground and homes are inputs, like the world's own ground: the hash skips them, and a replay
+// rebuilds them from the world seed.
+export interface TownRequest {
+  place: number;
+  ground: Ground;
+  homes: Homes;
+}
 
 export interface World {
   readonly seed: number;
@@ -65,9 +80,22 @@ export interface World {
   readonly inputs: InputLog;
   // c + 1 per culture and 0 when unused. Culture-level draws key on these stable uids, never on the index (R8).
   readonly cultureUid: Uint8Array;
-  // The watched settlement, or -1. Watching never writes canonical state (R4's shadow-canonical history).
+  // The watched settlement, or -1. In a town it is the live town, which only switchTown changes. A switch folds the live town
+  // into its ledger row, so the order of visits shapes history (R4's consequential focus), and the hash covers the live place
+  // once a row is held.
   readonly focus: Int32Array;
-  readonly ground: Ground;
+  // Each settlement's ledger row, LEDGER_FIELDS to a row, and a row of scratch beside them (M2.2c Ruling 3). A row with no
+  // people is unvisited. They sit last in the arena, so no offset moved. The hash mixes a town's visited rows, and a
+  // checkpoint copies them with the rest.
+  readonly townRecords: Float64Array;
+  readonly recordRow: Float64Array;
+  // The arena runs a town fills, so that switchTown empties it in two fills: the agent columns, then the firms, the
+  // economy's scratch, the households and the goods, which layoutWorld takes back to back.
+  readonly agentBytes: Uint8Array;
+  readonly economyBytes: Uint8Array;
+  readonly request: TownRequest;
+  // The live town's ground, which switchTown replaces.
+  ground: Ground;
   checks: boolean;
 }
 
@@ -92,7 +120,9 @@ export function layoutWorld(
   }
   const arena = reserveArena(memoryBytes);
   const globals = take(arena, Int32Array, GLOBAL_SLOTS, true);
+  const agentsFrom = arena.top;
   const store = createAgentStore(arena, agents);
+  const agentBytes = layoutBytes(arena, agentsFrom);
   const cash = createLedger(arena, SETTLEMENTS, agents, TIER_FIRMS[tier]);
   const blob = new Blob(store, cash);
   const claims = createClaims(arena, cash, LOAN_CAPACITY);
@@ -101,11 +131,15 @@ export function layoutWorld(
   const inputs = createInputLog(arena);
   const cultureUid = take(arena, Uint8Array, MAX_CULTURES, true);
   const focus = take(arena, Int32Array, 1, false);
-  focus[0] = NO_FOCUS;
+  focus[0] = NO_PLACE;
+  const economyFrom = arena.top;
   const firms = createFirmStore(arena, TIER_FIRMS[tier]);
   const economyScratch = createEconomyScratch(arena, agents, TIER_FIRMS[tier]);
   const households = createHouseholdStore(arena, agents);
   const goods = createGoodsStore(arena, TIER_FIRMS[tier]);
+  const economyBytes = layoutBytes(arena, economyFrom);
+  const townRecords = take(arena, Float64Array, MAX_TOWNS * LEDGER_FIELDS, false);
+  const recordRow = take(arena, Float64Array, LEDGER_FIELDS, false);
   const world: World = {
     seed,
     tier,
@@ -124,6 +158,11 @@ export function layoutWorld(
     inputs,
     cultureUid,
     focus,
+    townRecords,
+    recordRow,
+    agentBytes,
+    economyBytes,
+    request: { place: NO_PLACE, ground, homes: createHomes([]) },
     ground,
     checks: true,
   };
@@ -131,6 +170,11 @@ export function layoutWorld(
   // Nothing is committed before the first day's last slice.
   record[frontRecord(world) + RECORD_DAY] = -1;
   return world;
+}
+
+// The bytes the arena took since `from`, as one view to empty a run of stores in a single fill.
+function layoutBytes(arena: Arena, from: number): Uint8Array {
+  return new Uint8Array(arena.memory.buffer, from, arena.top - from);
 }
 
 export function populate(world: World, people: number = world.agents.capacity): void {

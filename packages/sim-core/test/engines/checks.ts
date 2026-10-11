@@ -4,14 +4,15 @@ import { fade, fbm, value } from '../../src/random/noise.ts';
 import { step } from '../../src/step/step.ts';
 import { LOOKS } from '../../src/agents/store.ts';
 import { LOOK } from '../../src/random/streams.ts';
+import { requestTown } from '../../src/day/day.ts';
 import { economyDay } from '../../src/economy/economy.ts';
 import { LENGNICK, type EconomyParams } from '../../src/economy/params.ts';
 import { startEconomy } from '../../src/economy/start.ts';
 import type { Tier } from '../../src/memory/tiers.ts';
-import { createStandInHomes } from '../../src/spawn/homes.ts';
+import { createStandInHomes, createStandInTownHomes } from '../../src/spawn/homes.ts';
 import { LEDGER_FIELDS } from '../../src/spawn/record.ts';
 import { spawnFromLedger } from '../../src/spawn/spawn.ts';
-import { createStandInTown } from '../../src/spawn/town.ts';
+import { createStandInTown, createTown } from '../../src/spawn/town.ts';
 import { DAYS_PER_MONTH } from '../../src/time/calendar.ts';
 import { stateHash } from '../../src/world/checkpoint.ts';
 import { standInGround } from '../../src/world/ground.ts';
@@ -69,6 +70,9 @@ export interface Goldens {
   economy: { seed: number; tier: Tier; months: number; hash: string };
   // A town of people on the stand-in ground, stepped for ticks.
   town: { seed: number; tier: Tier; people: number; ticks: number; hash: string };
+  // Place p is a stand-in town of people[p], and place 0 is live at tick 0. Each [tick, place] of requests asks to enter that
+  // place at that tick, and the world is hashed after ticks.
+  switch: { seed: number; tier: Tier; people: number[]; requests: [number, number][]; ticks: number; hash: string };
   // seed is randomRecord's, and hashes[index] is spawnHash(seed, index).
   spawn: { seed: number; hashes: string[] };
 }
@@ -128,6 +132,29 @@ export function townHash(seed: number, tier: Tier, people: number, ticks: number
   return stateHash(world).toString(16).padStart(8, '0');
 }
 
+// A town that switches towns inside the step: each request lands at the next day boundary, where the live town folds into
+// its ledger row and the requested one spawns, and the hash covers the table, the live place and the new town's blobs.
+export function switchHash(
+  seed: number,
+  tier: Tier,
+  people: readonly number[],
+  requests: readonly (readonly [number, number])[],
+  ticks: number,
+): string {
+  const ground = standInGround();
+  const homes = people.map((count) => createStandInTownHomes(ground, count));
+  const world = createTown(seed, tier, ground, homes[0]);
+  let next = 0;
+  for (let tick = 0; tick < ticks; tick++) {
+    while (next < requests.length && requests[next][0] === tick) {
+      const place = requests[next++][1];
+      if (!requestTown(world, place, ground, homes[place])) throw new Error(`the request for place ${place} was refused`);
+    }
+    step(world);
+  }
+  return stateHash(world).toString(16).padStart(8, '0');
+}
+
 // A random record fits a phone world laid out for 1,500 agents in 1 MiB, and 500 stand-in homes hold over twice its
 // people, so any record seats. Each index spawns into its own world seed, settlement and day.
 const SPAWN_AGENTS = 1_500;
@@ -155,6 +182,9 @@ export function checkGoldens(goldens: Goldens): EngineReport {
   checkCase(report, 'economy', run, economyHash(run.seed, run.tier, run.months), hash);
   const { hash: townWant, ...town } = goldens.town;
   checkCase(report, 'town', town, townHash(town.seed, town.tier, town.people, town.ticks), townWant);
+  const { hash: switchWant, ...switched } = goldens.switch;
+  const switchGot = switchHash(switched.seed, switched.tier, switched.people, switched.requests, switched.ticks);
+  checkCase(report, 'switch', switched, switchGot, switchWant);
   const { seed, hashes } = goldens.spawn;
   for (let index = 0; index < hashes.length; index++) {
     checkCase(report, 'spawn', { seed, index }, spawnHash(seed, index), hashes[index]);

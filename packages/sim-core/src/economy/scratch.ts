@@ -62,9 +62,14 @@ export function createEconomyScratch(arena: Arena, agents: number, firms: number
     purchaseCents: take(arena, Float64Array, PURCHASE_RING, false),
     purchaseCount: take(arena, Int32Array, RINGS, false),
   };
-  // Nobody held a job at a year end that has not come yet, so no one is a stayer at the first.
-  scratch.yearEmployer.fill(NO_FIRM);
+  openYearEmployers(scratch);
   return scratch;
+}
+
+// Nobody held a job at a year end that has not come yet, so no one is a stayer at the first. A switch empties the scratch to
+// zeros, and a new town opens the same way (M2.2c).
+export function openYearEmployers(scratch: EconomyScratch): void {
+  scratch.yearEmployer.fill(NO_FIRM);
 }
 
 function purchaseSlot(ring: number, purchase: number): number {

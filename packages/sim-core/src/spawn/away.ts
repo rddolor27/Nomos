@@ -1,5 +1,4 @@
 import { CITY_RECORD } from '../economy/city-record.ts';
-import { MAX_HOUSEHOLD } from '../households/store.ts';
 import { floorDiv } from '../maths/int.ts';
 import { PPM, mulPpm } from '../money/ppm.ts';
 import { drawBelow4 } from '../random/draw.ts';
@@ -9,12 +8,12 @@ import {
   LEDGER_EMPLOYED,
   LEDGER_FIELDS,
   LEDGER_FIRM_CASH,
-  LEDGER_HOUSEHOLDS,
   LEDGER_HOUSEHOLD_CASH,
   LEDGER_PRICE,
   LEDGER_STOCK,
   LEDGER_UNEMPLOYED,
   LEDGER_WAGE,
+  populationAt,
   scaleRecord,
 } from './record.ts';
 
@@ -39,7 +38,7 @@ const HALF_MILLI = 500;
 // call. A row with no people is unvisited, and stays as it is.
 export function stepAwayTown(rows: Float64Array, town: number, seed: number, month: number, anchor: Float64Array): void {
   const first = town * LEDGER_FIELDS;
-  const people = peopleAt(rows, first);
+  const people = populationAt(rows, first);
   if (people === 0) return;
   scaleRecord(CITY_RECORD, people, anchor);
   for (let drift = 0; drift < AWAY_FIELDS.length; drift++) {
@@ -57,12 +56,6 @@ export function stepAwayTowns(rows: Float64Array, live: number, seed: number, mo
   for (let town = 0; town < towns; town++) {
     if (town !== live) stepAwayTown(rows, town, seed, month, anchor);
   }
-}
-
-function peopleAt(rows: Float64Array, first: number): number {
-  let people = 0;
-  for (let size = 1; size <= MAX_HOUSEHOLD; size++) people += size * rows[first + LEDGER_HOUSEHOLDS + size - 1];
-  return people;
 }
 
 // AR(1) about a live town's mean: the part of the gap the fit keeps, plus the month's noise, rounded to a whole unit. The mean

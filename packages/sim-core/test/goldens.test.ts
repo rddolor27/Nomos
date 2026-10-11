@@ -7,6 +7,7 @@ import {
   checkKernels,
   economyHash,
   spawnHash,
+  switchHash,
   townHash,
   type Goldens,
   type KernelFixture,
@@ -19,7 +20,7 @@ const CLI = fileURLToPath(new URL('../../../tools/cli/src/main.ts', import.meta.
 describe('the engine checks', { timeout: 30_000 }, () => {
   it('matches the goldens in Node', () => {
     expect(goldens.spawn.hashes).toHaveLength(20);
-    expect(checkGoldens(goldens)).toEqual({ cases: 5 + 20, failures: [] });
+    expect(checkGoldens(goldens)).toEqual({ cases: 6 + 20, failures: [] });
   });
 
   it('reports a wrong economy hash, and a run that depends on its seed and its months', () => {
@@ -48,6 +49,22 @@ describe('the engine checks', { timeout: 30_000 }, () => {
     expect(failures).toHaveLength(1);
     expect(failures[0]).toContain('town');
     expect(new Set([goldens.town.hash, townHash(seed + 1, tier, people, ticks), townHash(seed, tier, people + 1, ticks)]).size).toBe(3);
+  });
+
+  it('reports a wrong switch hash, and a switch that depends on its seed and its requests', () => {
+    const { seed, tier, people, requests, ticks } = goldens.switch;
+    const wrong = {
+      ...goldens,
+      hashes: {},
+      spawn: { ...goldens.spawn, hashes: [] },
+      switch: { ...goldens.switch, hash: '00000000' },
+    };
+    const { failures } = checkGoldens(wrong);
+    expect(failures).toHaveLength(1);
+    expect(failures[0]).toContain('switch');
+    const unswitched = switchHash(seed, tier, people, [], ticks);
+    const switchedOnce = switchHash(seed, tier, people, requests.slice(0, 1), ticks);
+    expect(new Set([goldens.switch.hash, switchHash(seed + 1, tier, people, requests, ticks), unswitched, switchedOnce]).size).toBe(4);
   });
 
   it('reports a wrong spawn hash, and spawns that depend on their record', () => {

@@ -7,7 +7,7 @@ import { SPAWN_DRAW } from '../random/streams.ts';
 import type { Ground } from '../world/ground.ts';
 import { TOWN, WALK_START_MASK, currentTick, layoutWorld, type World } from '../world/world.ts';
 import { bedCount, createStandInTownHomes, fitHouseholds, largestHome, type Homes } from './homes.ts';
-import { LEDGER_FIELDS, townRecord } from './record.ts';
+import { townRecord } from './record.ts';
 import { spawnFromLedger } from './spawn.ts';
 
 const SETTLEMENT = 0;
@@ -30,24 +30,31 @@ export function createStandInTown(seed: number, tier: Tier, ground: Ground, peop
 
 // Fills an empty world with one blob to every bed of the homes, or to the layout's agent rows if the beds outnumber them. It
 // spawns CITY's settled record scaled to them, in HOUSEHOLD_MIX's households as far as the homes seat them, at settlement 0 on
-// day 0, and marks the world to run CITY. The world must be at tick 0: the spawn leaves the consumption plans empty, and only
-// a month's first day, as day 0 is, makes them.
+// day 0, and marks the world to run CITY, with settlement 0 the live town. The world must be at tick 0: the spawn leaves the
+// consumption plans empty, and only a month's first day, as day 0 is, makes them.
 export function spawnTown(world: World, homes: Homes): void {
   const tick = currentTick(world);
   if (tick !== 0) throw new RangeError(`a town spawns at tick 0, and this world is at tick ${tick}`);
-  const people = Math.min(bedCount(homes), world.agents.capacity);
-  const key = draw2(world.seed, SPAWN_DRAW, SETTLEMENT, DAY);
-  const record = createTownRecord(people, largestHome(homes));
-  fitHouseholds(record, homes, world.seed, key);
-  spawnFromLedger(world, record, homes, CITY, SETTLEMENT, DAY);
-  startWalking(world, key);
+  firstRecord(world, homes, world.recordRow);
+  seatTown(world, world.recordRow, homes, SETTLEMENT, DAY);
   world.globals[TOWN] = 1;
+  world.focus[0] = SETTLEMENT;
 }
 
-function createTownRecord(people: number, largest: number): Float64Array {
-  const record = new Float64Array(LEDGER_FIELDS);
-  townRecord(people, largest, record);
-  return record;
+// A town's first record: CITY's settled record scaled to the homes' beds, or to the layout's agent rows if the beds outnumber
+// them. out takes all 14 fields.
+export function firstRecord(world: World, homes: Homes, out: Float64Array): void {
+  townRecord(Math.min(bedCount(homes), world.agents.capacity), largestHome(homes), out);
+}
+
+// Spawns a record into an empty world at `place` on `day`, through CITY's days: the households it seats in the homes, as far
+// as they fit under this place's and day's key, and then a walking start for three in four blobs. The record's households
+// are trimmed to that fit, so a record folded under another key seats too.
+export function seatTown(world: World, record: Float64Array, homes: Homes, place: number, day: number): void {
+  const key = draw2(world.seed, SPAWN_DRAW, place, day);
+  fitHouseholds(record, homes, world.seed, key);
+  spawnFromLedger(world, record, homes, CITY, place, day);
+  startWalking(world, key);
 }
 
 // Three in four blobs set off on a keyed heading as populate's do, so the first frame already shows a crowd on the move. key
