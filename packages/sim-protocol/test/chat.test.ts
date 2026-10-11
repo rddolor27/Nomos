@@ -39,6 +39,7 @@ import {
   setHeading,
   stateHash,
   step,
+  tileOf,
   walkStreets,
   type Ground,
   type World,
@@ -167,6 +168,22 @@ function walkersToThePlaza(): World {
   return world;
 }
 
+// The same two, from tick `start`, on a run of 20 cells, 80 ticks, out to the plaza and home from it. Going out they are due home
+// after the rest of the run, a tick at the plaza and the walk back; coming home the run is all they have left.
+function walkersOut(start: number): World {
+  const world = scene(start);
+  walkEast(world, 0, 10, 10, 20, ACTIVITY_PLAZA, PLAZA);
+  walkEast(world, 1, 11, 11, 20, ACTIVITY_PLAZA, PLAZA);
+  return world;
+}
+
+function walkersHome(start: number): World {
+  const world = scene(start);
+  walkHome(world, 0, 30, 10, 20, ACTIVITY_PLAZA, PLAZA);
+  walkHome(world, 1, 31, 11, 20, ACTIVITY_PLAZA, PLAZA);
+  return world;
+}
+
 function snapshotter(world: World): () => number[] {
   const view = takeView(createSnapshotPool(world.agents.capacity));
   if (view === null) throw new Error('a new snapshot pool has no free view');
@@ -264,6 +281,21 @@ describe('two free walkers who meet', () => {
     expect(agents.vx[0]).toBeGreaterThan(0);
   });
 
+  it('walk on home after a chat, the length of the chat late, to the tiles they were walking to', () => {
+    const chatting = walkersHome(NOON);
+    const quiet = walkersHome(NOON);
+    quiet.life.needs.fill(0);
+
+    const talked = walkToThePlaza(chatting, [0, 1]);
+    const free = walkToThePlaza(quiet, [0, 1]);
+
+    expect(talked.chatTick).toBeGreaterThan(NOON);
+    expect(talked.arrivals).toEqual(free.arrivals.map((arrived) => arrived + talked.length));
+    for (const world of [chatting, quiet]) {
+      expect([0, 1].map((blob) => [tileOf(world.agents.x[blob]), tileOf(world.agents.y[blob])])).toEqual([[10, 10], [11, 11]]);
+    }
+  });
+
   it('are never joined by a blob going to work, which walks on and arrives on time', () => {
     // A worker on the same road, in the same cell as a free walker and a tile from it: the walker looks, finds no one waiting, and
     // waits; the worker neither waits nor looks.
@@ -347,28 +379,15 @@ describe('the evening', () => {
   it('counts the walk a walker has still to make, out to a site or home from it, against the night', () => {
     // Two walkers a tile apart on a run of 20 cells, 80 ticks. Going out, they are due home after the rest of the run, a tick at
     // the plaza and the walk back: 161 ticks from the start. Coming home, the run is all that is left: 80.
-    const outAt = (start: number): World => {
-      const world = scene(start);
-      walkEast(world, 0, 10, 10, 20, ACTIVITY_PLAZA, PLAZA);
-      walkEast(world, 1, 11, 11, 20, ACTIVITY_PLAZA, PLAZA);
-      return world;
-    };
-    const homeAt = (start: number): World => {
-      const world = scene(start);
-      walkHome(world, 0, 30, 10, 20, ACTIVITY_PLAZA, PLAZA);
-      walkHome(world, 1, 31, 11, 20, ACTIVITY_PLAZA, PLAZA);
-      return world;
-    };
-
     // Due home at 21:40, leaving 20 ticks to 22:00: exactly the least chat.
-    expect(chatLengthOf(outAt(1_139), 30)).toBe(CHAT_MIN_TICKS);
-    expect(chatLengthOf(homeAt(1_220), 30)).toBe(CHAT_MIN_TICKS);
+    expect(chatLengthOf(walkersOut(1_139), 30)).toBe(CHAT_MIN_TICKS);
+    expect(chatLengthOf(walkersHome(1_220), 30)).toBe(CHAT_MIN_TICKS);
     // Five ticks later they would be home too late for the least chat, so they walk on.
-    expect(chatLengthOf(outAt(1_144), 30)).toBe(0);
-    expect(chatLengthOf(homeAt(1_225), 30)).toBe(0);
+    expect(chatLengthOf(walkersOut(1_144), 30)).toBe(0);
+    expect(chatLengthOf(walkersHome(1_225), 30)).toBe(0);
 
     // With the evening before them, a chat moves their run's end tick on by its length.
-    const world = homeAt(1_000);
+    const world = walkersHome(1_000);
     const end = world.errands.endTick[0];
     const length = chatLengthOf(world, 30);
     expect(length).toBeGreaterThanOrEqual(CHAT_MIN_TICKS);
