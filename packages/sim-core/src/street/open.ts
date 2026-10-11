@@ -13,7 +13,8 @@ export function createDoorCells(shops: Shops, width: number): Int32Array {
   return cells;
 }
 
-// Throws what createStreets would for the sites, before it writes anything: the stall counters have room for 22 premises.
+// Throws what createStreets would for the sites, before it writes anything: the store keeps a keeper and a stall flag for at most
+// MAX_PREMISES premises.
 function requireSites(shops: Shops): void {
   if (shops.premises > MAX_PREMISES) {
     throw new RangeError(`${shops.premises} premises are past the ${MAX_PREMISES} a layout reserves`);

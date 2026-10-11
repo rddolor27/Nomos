@@ -55,7 +55,7 @@ export interface Errands {
   readonly activity: Uint8Array;
   // The good fetched or carried, or 0.
   readonly good: Uint8Array;
-  // The trip's premises: its index in the town's shops.
+  // The trip's site: its index in the town's sites, a premises so far.
   readonly shop: Uint8Array;
   // The run being walked.
   readonly run: Uint8Array;
@@ -68,10 +68,10 @@ export interface Errands {
   // The hash's region, dayFood to keeper, which counts only while a town has streets.
   readonly byteOffset: number;
   readonly byteLength: number;
-  // What the town's sites make of the firm rows, written when the streets open and outside the hash. Site s is a premises, for
-  // the first town.premises of them, then a leisure site: its kind (SITE_*, 0 for an empty slot), the tile its field floods from,
-  // which is a premises' door, and whether it is a stall. These are the hubs that legs run to (street/legs.ts). For each firm row
-  // the premises + 1 it trades from, or 0.
+  // The town's sites, written when the streets open and outside the hash: the premises first, then the leisure sites, each with its
+  // kind (SITE_*, 0 for an empty slot) and the tile its field floods from, which is a premises' door. These are the hubs that legs
+  // run to (street/legs.ts). shopStall says which premises are stalls, and firmShop gives each firm row the premises + 1 it trades
+  // from, or 0.
   readonly siteKind: Uint8Array;
   readonly siteX: Int32Array;
   readonly siteY: Int32Array;
