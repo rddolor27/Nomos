@@ -2,6 +2,8 @@
 
 Part of [M2 Economy](../milestone.md).
 
+> **Status (12 October 2026):** Part 1 is implemented (5aa6991..c6ee30a), and every Part 1 item below is built and pushed. Its one Opus determinism review is next, before Part 1 is marked done. Part 2 hasn't started.
+
 - **Builds, Part 1, life on the street** (owner request, 11 October 2026):
   - premises by trade in every town's layout: market stalls for vegetables, fish and milk, and a Bakery, Draper, Smithy and Fuel Store, with a village's stall or shop selling all seven goods;
   - errands that blobs walk on one flow field per premises: home to work and back, and home to the shop of the day's purchase and back, carrying the good, then eating on the doorstep, while money still moves at the economy tick;
