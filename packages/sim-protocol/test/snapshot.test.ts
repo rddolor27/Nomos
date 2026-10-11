@@ -7,8 +7,6 @@ import {
   PHASE_EATING,
   PHASE_GOING,
   PHASE_WORKING,
-  PURPOSE_FOOD,
-  PURPOSE_GOODS,
   SUBPIXELS,
   createShops,
   createStandInTownHomes,
@@ -112,12 +110,12 @@ describe('the street in the snapshot', () => {
     // Blob 0 walks home with bread, 1 eats it on the doorstep, 2 is at work, 3 walks out for bread with none yet, 4 buys at a
     // counter and 5 carries fuel home.
     const errands = [
-      [PHASE_COMING + PURPOSE_FOOD, BREAD],
+      [PHASE_COMING, BREAD],
       [PHASE_EATING, BREAD],
       [PHASE_WORKING, 0],
-      [PHASE_GOING + PURPOSE_FOOD, BREAD],
+      [PHASE_GOING, BREAD],
       [PHASE_BUYING, BREAD],
-      [PHASE_COMING + PURPOSE_GOODS, FUEL],
+      [PHASE_COMING, FUEL],
     ];
     errands.forEach(([phaseOf, goodOf], blob) => {
       phase[blob] = phaseOf;

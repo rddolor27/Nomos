@@ -3,23 +3,31 @@ import { MAX_PREMISES, MAX_SITES } from './fields.ts';
 import { RUN_BYTES } from './runs.ts';
 import { NO_SITE } from './shops.ts';
 
-// What a trip is for. A phase of a trip is its base plus the purpose.
+// What a trip is for when the timetable plans it. A row keeps it as the blob's activity, and the good it fetches tells a food trip
+// from a goods trip.
 export const PURPOSE_WORK = 0;
 export const PURPOSE_FOOD = 1;
 export const PURPOSE_GOODS = 2;
 
-// Where a blob is in its day. A blob is indoors at home in ASLEEP, and in LEAVING until the tick it sets out, with its trip's
-// runs already in its row. It stands still until endTick at a post (WORKING indoors at the premises, KEEPING behind a stall's
-// counter, BUYING at a door, EATING on its own doorstep), and walks from GOING on: out along the runs, or home along them
-// backwards.
+// Why a blob does what it does (M3.2 Ruling 3), where the phase says where and how it is. SLEEP is any time at home with nothing
+// to do, asleep or waiting for the day to plan. A fetch is the trip to a premises for what the blob bought, there and home.
+export const ACTIVITY_SLEEP = 0;
+export const ACTIVITY_WORK = 1;
+export const ACTIVITY_FETCH = 2;
+export const ACTIVITY_EAT = 3;
+
+// Where and how a blob is in its day. A blob is indoors at home in ASLEEP, and in LEAVING until the tick it sets out, with its
+// trip's runs already in its row. It stands still until endTick at a post (WORKING indoors at the premises, KEEPING behind a
+// stall's counter, BUYING at a door, EATING on its own doorstep), and walks from GOING on: out along the runs, or home along
+// them backwards.
 export const PHASE_ASLEEP = 0;
 export const PHASE_LEAVING = 1;
-export const PHASE_WORKING = 4;
-export const PHASE_KEEPING = 5;
-export const PHASE_BUYING = 6;
-export const PHASE_EATING = 7;
-export const PHASE_GOING = 8;
-export const PHASE_COMING = 11;
+export const PHASE_WORKING = 2;
+export const PHASE_KEEPING = 3;
+export const PHASE_BUYING = 4;
+export const PHASE_EATING = 5;
+export const PHASE_GOING = 6;
+export const PHASE_COMING = 7;
 export const FIRST_WALKING = PHASE_GOING;
 
 // Indoors at home or at work, so not on the street to draw or to pick.
@@ -27,14 +35,14 @@ export function indoorsIn(phase: number): boolean {
   return phase <= PHASE_WORKING;
 }
 
-// The good a blob holds up: on its way home with it, and while it eats. The same icon whoever carries it.
+// The good a blob holds up: on its way home with it, and while it eats. The same icon whoever carries it. A worker walking home
+// holds none.
 export function carriedIn(phase: number, good: number): number {
-  const homeward = phase === PHASE_COMING + PURPOSE_FOOD || phase === PHASE_COMING + PURPOSE_GOODS;
-  return homeward || phase === PHASE_EATING ? good : 0;
+  return phase === PHASE_COMING || phase === PHASE_EATING ? good : 0;
 }
 
-// One row a blob, in columns: the errand row is 72 bytes (its phase, good, premises, run, end tick and 64 bytes of runs), with
-// the two columns the economy day fills beside it. They sit at the arena's end, so no offset moved (M2.7 Ruling 5).
+// One row a blob, in columns: the errand row is 73 bytes (its phase, activity, good, premises, run, end tick and 64 bytes of runs),
+// with the two columns the economy day fills beside it. They sit at the arena's end, so no offset moved (M2.7 Ruling 5).
 export interface Errands {
   readonly capacity: number;
   // The firm row + 1 of the first food firm, and of the first goods firm, a blob bought from today, or 0. buyFood and shopDay
@@ -43,6 +51,8 @@ export interface Errands {
   readonly dayFood: Int32Array;
   readonly dayGoods: Int32Array;
   readonly phase: Uint8Array;
+  // ACTIVITY_*: why the blob is where and as the phase has it.
+  readonly activity: Uint8Array;
   // The good fetched or carried, or 0.
   readonly good: Uint8Array;
   // The trip's premises: its index in the town's shops.
@@ -85,6 +95,7 @@ export function createErrands(arena: Arena, agents: number, firms: number): Erra
   const dayFood = take(arena, Int32Array, agents, false);
   const dayGoods = take(arena, Int32Array, agents, false);
   const phase = take(arena, Uint8Array, agents, false);
+  const activity = take(arena, Uint8Array, agents, false);
   const good = take(arena, Uint8Array, agents, false);
   const shop = take(arena, Uint8Array, agents, false);
   const run = take(arena, Uint8Array, agents, false);
@@ -103,6 +114,7 @@ export function createErrands(arena: Arena, agents: number, firms: number): Erra
     dayFood,
     dayGoods,
     phase,
+    activity,
     good,
     shop,
     run,

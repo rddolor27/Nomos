@@ -1,5 +1,9 @@
 import { readFileSync } from 'node:fs';
 import {
+  ACTIVITY_EAT,
+  ACTIVITY_FETCH,
+  ACTIVITY_SLEEP,
+  ACTIVITY_WORK,
   FIRST_WALKING,
   PHASE_ASLEEP,
   PHASE_BUYING,
@@ -9,8 +13,6 @@ import {
   PHASE_KEEPING,
   PHASE_LEAVING,
   PHASE_WORKING,
-  PURPOSE_FOOD,
-  PURPOSE_WORK,
   carriedIn,
   checkpoint,
   createHomes,
@@ -19,6 +21,7 @@ import {
   currentTick,
   firstMemberOf,
   indoorsIn,
+  isFood,
   restoreWorld,
   stateHash,
   step,
@@ -53,15 +56,20 @@ function runTo(world: World, tick: number): void {
   while (currentTick(world) < tick) step(world);
 }
 
-function firstIn(world: World, phase: number): number {
-  const phases = world.errands.phase;
-  for (let blob = 0; blob < world.agents.count[0]; blob++) if (phases[blob] === phase) return blob;
-  throw new Error(`no blob is in phase ${phase} at tick ${currentTick(world)}`);
+// The first blob that has planned a trip and not yet set out, on the activity, and for a fetch whose good is food or is not.
+function firstLeaving(world: World, activity: number, food: boolean): number {
+  const { phase, activity: why, good } = world.errands;
+  for (let blob = 0; blob < world.agents.count[0]; blob++) {
+    if (phase[blob] !== PHASE_LEAVING || why[blob] !== activity) continue;
+    if (activity !== ACTIVITY_FETCH || isFood(good[blob]) === food) return blob;
+  }
+  throw new Error(`no blob is leaving on activity ${activity} at tick ${currentTick(world)}`);
 }
 
 interface Stop {
   tick: number;
   phase: number;
+  activity: number;
   tile: [number, number];
   item: number;
   indoors: boolean;
@@ -73,6 +81,7 @@ function stopOf(world: World, blob: number): Stop {
   return {
     tick: currentTick(world),
     phase,
+    activity: errands.activity[blob],
     tile: [tileOf(agents.x[blob]), tileOf(agents.y[blob])],
     item: carriedIn(phase, errands.good[blob]),
     indoors: indoorsIn(phase),
@@ -105,6 +114,35 @@ function peopleOf(world: World, home: number): number[] {
     for (let member = first; member < first + households.size[household]; member++) people.push(member);
   }
   return people;
+}
+
+// The activities each phase can have: the phase says where and how a blob is, and the activity why.
+const WHY: Readonly<Record<number, readonly number[]>> = {
+  [PHASE_ASLEEP]: [ACTIVITY_SLEEP],
+  [PHASE_LEAVING]: [ACTIVITY_WORK, ACTIVITY_FETCH],
+  [PHASE_WORKING]: [ACTIVITY_WORK],
+  [PHASE_KEEPING]: [ACTIVITY_WORK],
+  [PHASE_BUYING]: [ACTIVITY_FETCH],
+  [PHASE_EATING]: [ACTIVITY_EAT],
+  [PHASE_GOING]: [ACTIVITY_WORK, ACTIVITY_FETCH],
+  [PHASE_COMING]: [ACTIVITY_WORK, ACTIVITY_FETCH],
+};
+
+// A blob eats food, fetches something, and works or sleeps with its hands empty.
+function holdsRightGood(activity: number, good: number): boolean {
+  if (activity === ACTIVITY_EAT) return isFood(good);
+  return activity === ACTIVITY_FETCH ? good !== 0 : good === 0;
+}
+
+// How many blobs have an activity or a good their phase cannot have, noting each activity seen.
+function strayBlobs(world: World, seen: Set<number>): number {
+  const { phase, activity, good } = world.errands;
+  let stray = 0;
+  for (let blob = 0; blob < world.agents.count[0]; blob++) {
+    seen.add(activity[blob]);
+    if (!WHY[phase[blob]].includes(activity[blob]) || !holdsRightGood(activity[blob], good[blob])) stray++;
+  }
+  return stray;
 }
 
 function walkersIn(world: World): number {
@@ -142,7 +180,7 @@ describe('Highcourt on its streets', { timeout: 60_000 }, () => {
   it('sends a buyer to its shop for its good, home with it, and out on its doorstep to eat it', () => {
     const world = highcourt();
     runTo(world, MORNING);
-    const buyer = firstIn(world, PHASE_LEAVING + PURPOSE_FOOD);
+    const buyer = firstLeaving(world, ACTIVITY_FETCH, true);
     const { errands, goods } = world;
     const { shop, good } = { shop: errands.shop[buyer], good: errands.good[buyer] };
     const home = stopOf(world, buyer).tile;
@@ -150,12 +188,21 @@ describe('Highcourt on its streets', { timeout: 60_000 }, () => {
     const stops = follow(world, buyer, NIGHT);
 
     expect(stops.map((stop) => stop.phase)).toEqual([
-      PHASE_LEAVING + PURPOSE_FOOD,
-      PHASE_GOING + PURPOSE_FOOD,
+      PHASE_LEAVING,
+      PHASE_GOING,
       PHASE_BUYING,
-      PHASE_COMING + PURPOSE_FOOD,
+      PHASE_COMING,
       PHASE_EATING,
       PHASE_ASLEEP,
+    ]);
+    // It fetches the whole way there and home, eats, and is back to sleeping once it is in.
+    expect(stops.map((stop) => stop.activity)).toEqual([
+      ACTIVITY_FETCH,
+      ACTIVITY_FETCH,
+      ACTIVITY_FETCH,
+      ACTIVITY_FETCH,
+      ACTIVITY_EAT,
+      ACTIVITY_SLEEP,
     ]);
     // The good is the one the economy sold it today, and the shop it walks to sells it, by its door.
     expect(good).toBe(goods.good[errands.dayFood[buyer] - 1]);
@@ -175,7 +222,7 @@ describe('Highcourt on its streets', { timeout: 60_000 }, () => {
   it('sends a worker to its employer, keeps it there through the workday and walks it home', () => {
     const world = highcourt();
     runTo(world, MORNING);
-    const worker = firstIn(world, PHASE_LEAVING + PURPOSE_WORK);
+    const worker = firstLeaving(world, ACTIVITY_WORK, false);
     const { errands, agents } = world;
     const shop = errands.firmShop[agents.employer[worker]] - 1;
     const home = stopOf(world, worker).tile;
@@ -186,11 +233,12 @@ describe('Highcourt on its streets', { timeout: 60_000 }, () => {
     const keeping = stops[2].phase === PHASE_KEEPING;
     expect(keeping && !premises[shop].stall).toBe(false);
     expect(stops.slice(0, 4).map((stop) => stop.phase)).toEqual([
-      PHASE_LEAVING + PURPOSE_WORK,
-      PHASE_GOING + PURPOSE_WORK,
+      PHASE_LEAVING,
+      PHASE_GOING,
       keeping ? PHASE_KEEPING : PHASE_WORKING,
-      PHASE_COMING + PURPOSE_WORK,
+      PHASE_COMING,
     ]);
+    expect(stops.slice(0, 4).map((stop) => stop.activity)).toEqual(new Array<number>(4).fill(ACTIVITY_WORK));
     expect(stops[2].tile).toEqual([premises[shop].doorX, premises[shop].doorY - (keeping ? 1 : 0)]);
     expect(stops[2].indoors).toBe(!keeping);
     // It arrives in the morning, leaves between 15:00 and 15:59, and reaches the door of its home.
@@ -199,6 +247,20 @@ describe('Highcourt on its streets', { timeout: 60_000 }, () => {
     expect(stops[3].tick).toBeLessThanOrEqual(960);
     expect(stops[4].tile).toEqual(home);
     expect(stops[4].indoors).toBe(true);
+  });
+
+  it("keeps every blob's activity and good in step with its phase through a day, and shows all four activities", () => {
+    const world = highcourt();
+    const seen = new Set<number>();
+    let stray = 0;
+
+    for (let tick = 0; tick < 1_440; tick += 15) {
+      runTo(world, tick);
+      stray += strayBlobs(world, seen);
+    }
+
+    expect(stray).toBe(0);
+    expect(Array.from(seen).sort()).toEqual([ACTIVITY_SLEEP, ACTIVITY_WORK, ACTIVITY_FETCH, ACTIVITY_EAT]);
   });
 
   it('replays to the same hash from a checkpoint taken while blobs are mid-trip', () => {
@@ -221,7 +283,7 @@ describe('Highcourt on its streets', { timeout: 60_000 }, () => {
   it("keeps a walled-off home's blobs asleep all day, while the same home's blobs walk in the open town", () => {
     const open = highcourt();
     runTo(open, MORNING);
-    const home = homeOf(open, firstIn(open, PHASE_LEAVING + PURPOSE_FOOD));
+    const home = homeOf(open, firstLeaving(open, ACTIVITY_FETCH, true));
     const people = peopleOf(open, home);
     const [x, y] = positionsOf(open, people)[0];
     const awakeOpen = ticksAwake(open, people, NIGHT);

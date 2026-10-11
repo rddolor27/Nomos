@@ -5,7 +5,6 @@ import {
   PHASE_ASLEEP,
   PHASE_GOING,
   PURCHASE_RING,
-  PURPOSE_FOOD,
   STAT_WAGE_MEAN,
   TICKS_PER_DAY,
   createShops,
@@ -642,7 +641,7 @@ describe('the sim loop', () => {
     page.handle({ type: 'inspect', ...at });
     expect(page.ofType('inspected').map((reply) => reply.agent)).toEqual([-1]);
 
-    errands.phase[agent] = PHASE_GOING + PURPOSE_FOOD;
+    errands.phase[agent] = PHASE_GOING;
     page.handle({ type: 'inspect', ...at });
     expect(page.ofType('inspected').map((reply) => reply.agent)).toEqual([-1, agent]);
   });

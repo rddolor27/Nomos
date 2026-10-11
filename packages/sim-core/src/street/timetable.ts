@@ -6,6 +6,10 @@ import { TICKS_PER_DAY, dayOf, isRestDay } from '../time/calendar.ts';
 import { tileOf } from '../world/ground.ts';
 import type { World } from '../world/world.ts';
 import {
+  ACTIVITY_EAT,
+  ACTIVITY_FETCH,
+  ACTIVITY_SLEEP,
+  ACTIVITY_WORK,
   PHASE_ASLEEP,
   PHASE_BUYING,
   PHASE_COMING,
@@ -16,7 +20,6 @@ import {
   PHASE_WORKING,
   PURPOSE_FOOD,
   PURPOSE_GOODS,
-  PURPOSE_WORK,
   type Errands,
 } from './errands.ts';
 import { clearRuns, halt, pathTicks, placeAtCentre, placeAtSpot, runCount, snapToTile, startRun } from './motion.ts';
@@ -76,6 +79,7 @@ function spotDrawn(world: World, i: number, day: number, purpose: number): numbe
 export function sleepUntil(world: World, i: number, day: number): void {
   const errands = world.errands;
   errands.phase[i] = PHASE_ASLEEP;
+  errands.activity[i] = ACTIVITY_SLEEP;
   errands.good[i] = 0;
   errands.endTick[i] = day * TICKS_PER_DAY + WAKE_MINUTE + minuteDrawn(world, i, day, DRAW_WAKE, WAKE_SPREAD);
   clearRuns(errands.runs, i);
@@ -91,9 +95,10 @@ function pathTo(world: World, i: number, shop: number): number {
   return count > 0 ? pathTicks(errands.runs, base, count) : -1;
 }
 
-function setOffAt(world: World, i: number, phase: number, shop: number, tick: number): void {
+function setOffAt(world: World, i: number, activity: number, shop: number, tick: number): void {
   const errands = world.errands;
-  errands.phase[i] = phase;
+  errands.phase[i] = PHASE_LEAVING;
+  errands.activity[i] = activity;
   errands.shop[i] = shop;
   errands.endTick[i] = tick;
 }
@@ -112,7 +117,7 @@ function planWork(world: World, i: number, day: number): boolean {
   }
   const out = day * TICKS_PER_DAY + OPENING_MINUTE + minuteDrawn(world, i, day, DRAW_WORK_OUT, WORK_OUT_SPREAD);
   errands.good[i] = 0;
-  setOffAt(world, i, PHASE_LEAVING + PURPOSE_WORK, shop, out);
+  setOffAt(world, i, ACTIVITY_WORK, shop, out);
   return true;
 }
 
@@ -141,7 +146,7 @@ function planShopping(world: World, i: number, tick: number, purpose: number): b
     return false;
   }
   errands.good[i] = world.goods.good[bought - 1];
-  setOffAt(world, i, PHASE_LEAVING + purpose, shop, start);
+  setOffAt(world, i, ACTIVITY_FETCH, shop, start);
   return true;
 }
 
@@ -167,7 +172,7 @@ function afterFood(world: World, i: number, tick: number): void {
 function depart(world: World, i: number, tick: number): void {
   snapToTile(world, i);
   startRun(world, i, tick, 0, false);
-  world.errands.phase[i] += PHASE_GOING - PHASE_LEAVING;
+  world.errands.phase[i] = PHASE_GOING;
 }
 
 // Whether no one stands behind the stall's counter: the name the stall holds is stale once its keeper has left.
@@ -192,9 +197,10 @@ function startWork(world: World, i: number, tick: number): void {
 }
 
 // Arrived at the shop's door: the blob buys there at a keyed point of the door's tile, for BUY_TICKS.
-function startBuying(world: World, i: number, tick: number, purpose: number): void {
+function startBuying(world: World, i: number, tick: number): void {
   const errands = world.errands;
   const shop = errands.shop[i];
+  const purpose = isFood(errands.good[i]) ? PURPOSE_FOOD : PURPOSE_GOODS;
   placeAtSpot(world, i, errands.siteX[shop], errands.siteY[shop], spotDrawn(world, i, dayOf(tick), DRAW_SHOP_SPOT + purpose));
   halt(world, i, FACING_UP);
   errands.phase[i] = PHASE_BUYING;
@@ -202,12 +208,12 @@ function startBuying(world: World, i: number, tick: number, purpose: number): vo
 }
 
 // Sets off home along the row's runs, last first, from the premises' door.
-function startHome(world: World, i: number, tick: number, purpose: number): void {
+function startHome(world: World, i: number, tick: number): void {
   const errands = world.errands;
   const shop = errands.shop[i];
   placeAtCentre(world, i, errands.siteX[shop], errands.siteY[shop]);
   startRun(world, i, tick, runCount(errands.runs, i * RUN_BYTES) - 1, true);
-  errands.phase[i] = PHASE_COMING + purpose;
+  errands.phase[i] = PHASE_COMING;
 }
 
 // Home with food: it is eaten on the doorstep, at a keyed point of the home door's tile, for EAT_TICKS.
@@ -216,26 +222,25 @@ function startEating(world: World, i: number, tick: number): void {
   placeAtSpot(world, i, tileOf(agents.x[i]), tileOf(agents.y[i]), spotDrawn(world, i, dayOf(tick), DRAW_HOME_SPOT));
   halt(world, i, FACING_DOWN);
   errands.phase[i] = PHASE_EATING;
+  errands.activity[i] = ACTIVITY_EAT;
   errands.endTick[i] = tick + EAT_TICKS;
 }
 
-function arriveHome(world: World, i: number, tick: number, purpose: number): void {
+// Home from work, which shops once; or from a shop, with food to eat at the door, or with goods, which end the day's trips.
+function arriveHome(world: World, i: number, tick: number): void {
+  const errands = world.errands;
   halt(world, i, FACING_DOWN);
-  if (purpose === PURPOSE_FOOD) startEating(world, i, tick);
-  else if (purpose === PURPOSE_WORK) afterWork(world, i, tick);
+  if (errands.activity[i] === ACTIVITY_WORK) afterWork(world, i, tick);
+  else if (isFood(errands.good[i])) startEating(world, i, tick);
   else sleepUntil(world, i, dayOf(tick) + 1);
 }
 
 // The last run is done: the blob is at the door it walked to, or at home.
 export function arrive(world: World, i: number, tick: number): void {
-  const phase = world.errands.phase[i];
-  if (phase >= PHASE_COMING) {
-    arriveHome(world, i, tick, phase - PHASE_COMING);
-    return;
-  }
-  const purpose = phase - PHASE_GOING;
-  if (purpose === PURPOSE_WORK) startWork(world, i, tick);
-  else startBuying(world, i, tick, purpose);
+  const errands = world.errands;
+  if (errands.phase[i] === PHASE_COMING) arriveHome(world, i, tick);
+  else if (errands.activity[i] === ACTIVITY_WORK) startWork(world, i, tick);
+  else startBuying(world, i, tick);
 }
 
 // A blob whose phase has run out, at `tick`.
@@ -243,9 +248,8 @@ export function wake(world: World, i: number, tick: number): void {
   const errands = world.errands;
   const phase = errands.phase[i];
   if (phase === PHASE_ASLEEP) planDay(world, i, tick);
-  else if (phase < PHASE_WORKING) depart(world, i, tick);
-  else if (phase <= PHASE_KEEPING) startHome(world, i, tick, PURPOSE_WORK);
-  else if (phase === PHASE_BUYING) startHome(world, i, tick, isFood(errands.good[i]) ? PURPOSE_FOOD : PURPOSE_GOODS);
+  else if (phase === PHASE_LEAVING) depart(world, i, tick);
+  else if (phase <= PHASE_BUYING) startHome(world, i, tick);
   else {
     errands.good[i] = 0;
     afterFood(world, i, tick);
