@@ -137,6 +137,24 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 12 Oct, 06:15: **M3.2 Task 3: the life store and free time** (4bc3acc..6adae58).
+  - **Built:**
+    - `life/`, guarded, with a rule that bars `money/`;
+    - four needs, settled on a state change, with every rate in `life/table.ts`;
+    - three keyed traits;
+    - a `life` system after `economy`, which picks among the top three by `LIFE_DRAW`;
+    - free time spent staying in, on the doorstep, on the plaza or on a green, at keyed spots;
+    - the worker passes the leisure sites.
+  - **Highcourt, day 0:** 1,304 blobs sit out on a doorstep, 84 visit a green and 81 the plaza, up to 18 at once at 19:00. Nobody is out after 22:01.
+  - **Pins:**
+    - the `streets` golden is `a1f32ea6`, and its town gained a plaza and a green;
+    - Highcourt's pins are `28396a06` and `4682f885`;
+    - `42/phone` and the economy held.
+  - **Cost:** `life` takes 0.010 ms a tick at 10k and 0.025 at 25k (measured here, Node).
+  - **The allocation gate** now checks the street world on day 4 (e1e1ada). Days 1–3 reach 18 KB while V8 compiles the new code, since `warmUp` has no street town.
+  - **Bytes over the limits** (measured at 06:24):
+    - initial JS is 36.12 of 35 kB, over the first-frame budget, and the owner is asked;
+    - the sim worker chunk is 24.13 of 22 kB.
 - 12 Oct, 05:05: **M3.2 Task 2: sites and legs** (6e4f2dd..b7a5321).
   - **Sites:** every town lists its leisure sites. Highcourt has 29 fields in all: 22 premises, the plaza, 3 greens and 3 riverbanks.
   - **The map:** the generator now declares the plaza and greens (`ENTITY_PLAZA`, `ENTITY_GREEN`), since frames and terrain couldn't tell a green from a field. `town.nmap` grew by 72 bytes.
