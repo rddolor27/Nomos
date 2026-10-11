@@ -7,8 +7,16 @@ module.exports = {
       comment:
         'R8, content rule 8: guarded folders may not reach sim-culture by any chain of imports. Import the module you need, never a barrel that re-exports consumption, and write `import type` for types.',
       severity: 'error',
-      from: { path: '^packages/sim-[^/]+/src/(crime|police|labour|wages|wealth|money|ability|housing|migration|spawn|street)/' },
+      from: { path: '^packages/sim-[^/]+/src/(crime|police|labour|wages|wealth|money|ability|housing|migration|spawn|street|life)/' },
       to: { path: '^packages/sim-culture/', reachable: true },
+    },
+    {
+      name: 'life-stays-off-money',
+      comment:
+        "M3.2: life/ chooses by needs, traits and places and never imports money/, which holds every wallet, since no rule reads wealth (content rule 5) and M4's crime will read where blobs are.",
+      severity: 'error',
+      from: { path: '^packages/sim-[^/]+/src/life/' },
+      to: { path: '^packages/sim-[^/]+/src/money/' },
     },
     {
       name: 'culture-stays-in-consumption',

@@ -55,6 +55,12 @@ describe('the culture wall in dependency-cruiser', { timeout: 30_000 }, () => {
     expect(cycles[0].cycle?.map((step) => step.name)).toContain('packages/sim-core/src/b.ts');
   });
 
+  it('keeps life/ off money/, which holds every wallet, and lets it import the rest', async () => {
+    const result = await cruiseFrom(WALL);
+    expect(sourcesOf(violationsOf(result, 'life-stays-off-money'))).toEqual(['packages/sim-core/src/life/wallet.ts']);
+    expect(sourcesOf(violationsOf(result, 'culture-wall'))).not.toContain('packages/sim-core/src/life/wallet.ts');
+  });
+
   it('keeps culture in consumption and names in the inspector', async () => {
     const result = await cruiseFrom(WALL);
     expect(sourcesOf(violationsOf(result, 'culture-stays-in-consumption'))).toEqual([
