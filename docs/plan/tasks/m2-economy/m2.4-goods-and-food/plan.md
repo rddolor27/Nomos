@@ -1,6 +1,6 @@
 # M2.4 Goods and food: brief
 
-> **Status:** two parts. Part 1, the visible cut, is a brief to build from once the owner says go (owner, 11 October 2026: ask before each step). Part 2 becomes a step plan after Part 1 lands.
+> **Status:** two parts. **Part 1 is done** (11 October 2026, 24981a8..6a06128), including its Opus review and fixes. Its burn-in is 31,883 days, and all six tier-1 targets hold on seeds 3001–3050 (`task.md`). Part 2 becomes a step plan when the owner says go.
 
 **Task:** [task.md](task.md). Each task writes its code, then its tests (the main case and one edge), runs only those and a typecheck at `nice -n 19`, then commits. CI runs the rest after the push.
 
@@ -37,7 +37,7 @@ The architect's, 11 October 2026, after the owner found M2.2b's panel lifeless. 
    - So `6a652730`, `746a06a3`, the other tick goldens and the 20 spawn hashes hold, while `town` and Highcourt's pins move. `{ ...CITY, goods: 0 }` replays M2.3's `CITY` byte for byte.
    - `buyFood` draws on `SHOP_DRAW` purposes 8 (its order of blobs) and 9 (its visit order). Goods need no draw, `goods/` reaches no culture, and every array is in the arena, so no tick allocates.
    - **The record** keeps its 14 fields. In a goods world its price and stock are the goods firms', so fold stays exact, and each spawn starts food fresh: a day's output, made the day before.
-   - **M2.3's targets** still apply, since schema 2's unit columns count goods only: stock months, the price ratio and Okun read goods firms. Task 4 re-measures the burn-in and reruns the 50-seed confirmation once. A tier-1 miss is recorded as a gap, untuned until Part 2 changes demand again.
+   - **M2.3's targets** still apply, since schema 2's unit columns count goods only: stock months and the price ratio read goods firms, and Okun reads all output, food counted at 6 portions a unit (coordinator, 11 October 2026, c439bba). Task 4 re-measures the burn-in and reruns the 50-seed confirmation once. A tier-1 miss is recorded as a gap, untuned until Part 2 changes demand again.
 
 5. **The schedule.** `ECONOMY_TICKS` becomes 20: 0 opens the day and now empties the trade rings, 1 `spoilFood`, 2–6 the month's first-day systems, 7 `buyFood`, 8 `shopDay`, 9 `produce`, 10–16 the month's last-day systems and 17–19 the records. Both new systems do nothing in `LENGNICK`, and the hash's month-end skip moves with the numbers, so compare from tick 20. **Cost at 10k** ([M2.2b's table](../../m0-pipeline/interfaces.md#the-economy-on-screen-owner-m22b), desktop, measured): the worst tick stays a month's first-day `searchShops`, 1.78 ms. `buyFood` adds a daily tick near `shopDay`'s 1.17 ms, and `spoilFood` reads a slot per food firm (inference).
 

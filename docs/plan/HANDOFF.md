@@ -40,7 +40,7 @@ The owner can overturn any of these.
 - **Spawn:** the bench row for 100,000 agents is 35 ms, since M9 spawns only the districts in view.
 - **The economy (M2.3):**
   - the pay-cut target is a tier-2 gap until M5's treasury brings inflation;
-  - `burnInDays` is 18,428, from a 40,000-day run with exits off (Ruling 18);
+  - `burnInDays` is 31,883 since M2.4 Part 1's goods: MSER-5 over 80,000 days, because a 40,000-day run's cut hit MSER-5's limit. It was 18,428 with exits off (Ruling 18);
   - no credit line, since Ruling 14's trigger didn't trip (s.d. 0.0110 on seeds 2001–2050); recheck at M2.2b and M5;
   - exits off in `CITY` (`shortPayExitPpm` 0) until entry is designed (Ruling 19), so the exit target is a tier-2 gap meanwhile.
 - **The economy on screen (M2.2b):**
@@ -85,6 +85,11 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 11 Oct: **M2.4 Part 1 done**, with the review's fixes (71efe64..6a06128).
+  - **The fixes:** small towns spawn the food workers they eat, and `buyFood` gates on goods being 1. A test pins goods 0 to M2.3's record, and Okun counts food output, now −0.81 and holding.
+  - **The burn-in:** re-measured over 80,000 days at 31,883.
+  - **Current values:** `CITY_RECORD` is `[1000,0,0,0,0,0,924,76,100,297173974,12826026,3360,141863,43635]`. `town` is `8f1f75bb`, and Highcourt's pins are `ff861cb3` and `da92906e`; `746a06a3` and `6a652730` held. These supersede the older log lines below.
+  - **Re-confirmed on seeds 3001–3050:** all six tier-1 targets hold. Food is 17.4% of spending, spoilage 2.2% and unmet 3.1%.
 - 11 Oct: **M2.2c, Task 2b, the summary month** (2e3b3c9).
   - **Built:** `stepAwayTown` and `stepAwayTowns` in `spawn/away.ts`, `AWAY_DRAW` 0x201, and the generated `away-rates.ts`, fitted from 240 months of a live 1,000-person `CITY` town.
   - **Checks:** people, households, firms and cash stay exact. It costs 0.4 µs a town, and every hash held.
