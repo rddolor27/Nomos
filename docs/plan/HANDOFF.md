@@ -85,6 +85,11 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 11 Oct: **M2.7 Part 1, Task 3: fields and runs** (699a361, 68b72ad, dcddefa).
+  - **Built:** `street/` sits behind the culture wall, with one field per premises (433,664 B at Highcourt, outside the hash, at the arena's end of a tier's layout). Building all 22 takes about 9.7 ms warm.
+  - **Routes:** `pathRuns` turns a field into at most 16 straight runs. At Highcourt the worst way takes 15 and the mean is 4.9. A diagonal costs two, since unit cost needed up to 28 runs, so ways walk about 11% further.
+  - **Walk length:** a way takes 259 ticks on average, 632 at most, so Task 4 fits the timetable to it.
+  - **Backlog:** in 2 of 6 sampled towns, 44–45 homes are cut off from every premises behind a river with no walk-grid crossing. That's a layout bug.
 - 11 Oct: **M2.7 Part 1, Task 2: premises in the layout, with Task 7's sprite swap** (5aa6991..4066620).
   - **Built:** `placeTrades` gives each market good 2 stalls on the plaza, and each shop trade 4 shops in a capital or city and 3 in a town, spread round the plaza in rounds. Doors use the sprite's own `door`, and a village's one shop sells all seven goods. Highcourt has 22 premises.
   - **The coordinator's ruling:** the premises take street frontage, so Highcourt holds 375 homes and 2,600 blobs, down from 387 and 2,688. Placing them after the houses kept 2,688 but scattered shops to the map's edge.
