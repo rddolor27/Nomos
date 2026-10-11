@@ -98,8 +98,8 @@ describe('entering a place', () => {
     expect(placeInFocus(map, { x: -10, y: -10, cellPx: 64 }, 640, 480, 1)).toBe(-1);
   });
 
-  it('tells a settlement by name, tier, population and country, and a wonder by its kind', () => {
-    expect(placeInfo(map, NAMES, 2)).toEqual({ place: 2, name: 'town-2', kind: 'town', population: 900, country: 'country-2' });
-    expect(placeInfo(map, NAMES, 5)).toEqual({ place: 5, name: 'Giant tree', kind: 'wonder', population: 0, country: 'country-2' });
+  it('tells a settlement by name, tier and country, and a wonder by its kind', () => {
+    expect(placeInfo(map, NAMES, 2)).toEqual({ place: 2, name: 'town-2', kind: 'town', country: 'country-2' });
+    expect(placeInfo(map, NAMES, 5)).toEqual({ place: 5, name: 'Giant tree', kind: 'wonder', country: 'country-2' });
   });
 });

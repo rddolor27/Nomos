@@ -8,8 +8,6 @@ export interface PlaceInfo {
   name: string;
   // A tier name, or 'wonder'.
   kind: string;
-  // 0 for a wonder.
-  population: number;
   // The country's name, or '' where no country holds the cell.
   country: string;
 }
@@ -123,12 +121,11 @@ export function placeInfo(map: WorldMap, names: readonly string[], place: number
       place,
       name: names[map.countries.capital.length + place],
       kind: TIER_NAMES[settlements.tier[place]],
-      population: settlements.population[place],
       country: countryName(names, settlements.country[place]),
     };
   }
   const k = place - settlements.cell.length;
   const wonder = WONDER_NAMES[wonders.kind[k]].replaceAll('-', ' ');
   const name = wonder[0].toUpperCase() + wonder.slice(1);
-  return { place, name, kind: 'wonder', population: 0, country: countryName(names, map.country[wonders.cell[k]]) };
+  return { place, name, kind: 'wonder', country: countryName(names, map.country[wonders.cell[k]]) };
 }
