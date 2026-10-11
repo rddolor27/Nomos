@@ -124,6 +124,7 @@ export function createSimLoop(host: LoopHost, cpuSlowdown = 1): { handle(msg: Ap
     else if (msg.type === 'speed') speed = msg.speed;
     else if (msg.type === 'checkpoint') postCheckpoint(session.world);
     else if (msg.type === 'inspect') postInspected(session.world, msg.x, msg.y);
+    else if (msg.type === 'inspectAgent') postAgentInspected(session.world, msg.agent);
     else if (msg.type === 'open') openTown(session, msg.place, msg.map);
     else giveBack(session.pool, msg.buffer);
   }
@@ -236,6 +237,15 @@ export function createSimLoop(host: LoopHost, cpuSlowdown = 1): { handle(msg: Ap
     const tick = currentTick(world);
     const agent = nearestAgent(world.agents, Math.round(x * SUBPIXELS), Math.round(y * SUBPIXELS), INSPECT_RADIUS_Q8);
     post(agent < 0 ? noBlobReply(tick) : blobReply(world, tick, agent), noTransfer);
+  }
+
+  // The blob a live card shows, asked for again by its row. A row the town has no blob at answers -1, as an old town's rows
+  // do after a switch to a smaller one; a row below the count may be another blob by then, so the page drops its card when a
+  // town opens.
+  function postAgentInspected(world: World, agent: number): void {
+    const tick = currentTick(world);
+    const found = Number.isInteger(agent) && agent >= 0 && agent < world.agents.count[0];
+    post(found ? blobReply(world, tick, agent) : noBlobReply(tick), noTransfer);
   }
 
   // A switch lands at a day boundary (M2.2c Ruling 2), so the rest of the day runs here at once, with no snapshots and

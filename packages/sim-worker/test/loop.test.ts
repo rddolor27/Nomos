@@ -597,6 +597,56 @@ describe('the sim loop', () => {
     expect(page.tick()).toBe(10);
   });
 
+  it('answers inspectAgent with the fields inspect gives for that blob, while the run plays', () => {
+    const page = fakePage({ town: true });
+    page.handle({ type: 'resume' });
+    page.advance(500);
+    const { agents, cash } = page.world();
+    // A row past the first, with its own name and its own wallet, so an answer from the wrong row shows.
+    const agent = 7;
+    const wallet = walletAccount(cash, agent);
+    issue(cash, wallet, 1_234);
+    expect(nearestAgent(agents, agents.x[agent], agents.y[agent], 4_096)).toBe(agent);
+
+    page.handle({ type: 'inspect', x: agents.x[agent] / 256, y: agents.y[agent] / 256 });
+    page.handle({ type: 'inspectAgent', agent });
+    const [byPoint, byRow] = page.ofType('inspected');
+    expect(byRow).toEqual(byPoint);
+    expect(byRow).toMatchObject({ tick: 5, agent, nameKey: agents.nameKey[agent], cents: cash.balance[wallet] });
+    // A read-only query: the run goes on as it was.
+    page.advance(500);
+    expect(page.tick()).toBe(10);
+  });
+
+  it("answers inspectAgent -1 for a row past the town's count, as an old town's rows are after a switch", () => {
+    const page = fakePage({ town: true });
+    const world = page.world();
+    const oldRow = TOWN_PEOPLE - 1;
+    page.handle({ type: 'inspectAgent', agent: oldRow });
+    expect(page.ofType('inspected')[0].agent).toBe(oldRow);
+
+    while (currentTick(world) < 700) step(world);
+    page.handle({ type: 'open', place: 1, map: new ArrayBuffer(OPENED_PEOPLE) });
+    for (const agent of [oldRow, OPENED_PEOPLE, OPENED_PEOPLE - 1]) page.handle({ type: 'inspectAgent', agent });
+    const [, pastCount, atCount, lastRow] = page.ofType('inspected');
+    const nobody = {
+      type: 'inspected',
+      tick: TICKS_PER_DAY + 1,
+      agent: -1,
+      nameKey: 0,
+      cents: 0,
+      employer: -1,
+      employerGood: 0,
+      wage: 0,
+      look: 0,
+      action: 0,
+      home: -1,
+      members: [],
+    };
+    expect([pastCount, atCount]).toEqual([nobody, nobody]);
+    expect(lastRow.agent).toBe(OPENED_PEOPLE - 1);
+  });
+
   it('treats a repeated pause or resume as one', () => {
     const page = fakePage();
     const doc = fakeDoc();
