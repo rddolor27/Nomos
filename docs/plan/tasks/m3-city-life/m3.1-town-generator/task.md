@@ -26,7 +26,7 @@ The port needs M0.1's keyed draw and noise, M0.4's binary map format and M0.5's 
   - the town view's frame time stays under 2 ms for the biggest capital, in both backends;
   - every crowd stays within its tier's range;
   - walls never cross a road except at a gate.
-- **Part 3, added by the owner on 10 October 2026,** builds walled towns, roads by role and farms, in place of part 2's walls and houses. Tasks 9–11, 17 and 18 have landed: the sizes, roads by role with stone bridges and avenue trees, and the country map's road classes and walled icons. The rest stays a plan until the owner says to build it (plan.md, Part 3):
+- **Part 3, added by the owner on 10 October 2026,** builds walled towns, roads by role and farms, in place of part 2's walls and houses. Tasks 9–11, 17 and 18 have landed: the sizes, roads by role with stone bridges and avenue trees, and the country map's road classes and walled icons. Part 4 builds the rest, fitted to varied layouts (plan.md, Part 4):
   - **sizes:** a capital or city is 176×112 tiles and a town 152×96, while villages, hamlets and vistas keep theirs;
   - **walls:** stone walls with towers round capitals and cities, a palisade round towns, and none round villages and hamlets, with a gate wherever a road enters;
   - **roads by role:**
@@ -40,7 +40,7 @@ The port needs M0.1's keyed draw and noise, M0.4's binary map format and M0.5's 
     - greens and gardens; an inn, bakery, smithy and stable; and a large civic set in capitals and cities;
   - **a farm belt by climate:** strips of grain and vegetables, pastures with herds, orchards, vineyards on warm, dry land and rice paddies on hot, wet land, with farm tracks, barns, granaries and a watermill;
   - **the country map:** major roads drawn as stone highways and minor ones as dirt tracks, and walled icons for capitals, cities and towns.
-- **Exit checks for part 3,** over every place of the first 20 standard worlds unless one is named:
+- **Exit checks for part 3,** over every place of the first 2 standard worlds unless one is named (Part 4, Ruling 9; Tasks 9–11, 17 and 18 proved theirs over 20):
   - places measure 176×112 for a capital or city, 152×96 for a town, 80×48 for a village and 56×32 for a hamlet, and vistas 30×18;
   - every capital and city has a stone wall, every town a palisade, and no village or hamlet a wall;
   - no wall piece stands on a road, water or a bank, and every road crossing the wall's line is a 2-tile gate;
@@ -48,15 +48,29 @@ The port needs M0.1's keyed draw and noise, M0.4's binary map format and M0.5's 
   - cut stone and cobbles lie only inside the wall's line, and gravel only on or past it;
   - every water tile under a road carries a footbridge or a stone bridge;
   - every main road with 12 or more cells inside the wall has at least 2 trees beside it;
-  - the median capital or city holds 380–520 houses inside its wall, and the median town 240–340;
+  - in each layout style, the median capital or city holds 380–520 houses inside its wall, and the median town 240–340;
   - houses cover more land by the plaza than by the wall, and more inside the wall than past it, by the medians;
   - 5–20% of a walled place's houses stand past its wall, in the median, each within 3 tiles of a road;
   - each house material and roof appears in every zone at half to twice its overall share;
   - vineyards grow only where temperature ≥ 150 and moisture < 120, rice only where temperature ≥ 170 and moisture ≥ 160, and neither in a desert place;
-  - a place's crowd loops hold at most 131,072 cells, and its people's loops at most 16,384;
-  - a warm capital or city builds, crowd included, within 2× the median before the round, and its worst within 2.5× the worst before it;
+  - a warm capital builds in a median under 250 ms and at worst under 350 ms (Part 4, Ruling 9). The loop budgets went with the loops in M2.2c's Task 7;
   - every country road has a class, and on each landmass the major roads join every town, city and capital;
   - each capital, city and town shows its walled icon in both map views;
   - the town atlas page holds no snow or night frame, and stays under 1,920 px tall;
-  - the place goldens, the place fixtures and `town.nmap` are regenerated, and the port and `town.test.ts` match them;
-  - the town view of a capital stays under 2 ms a frame, in WebGL2 and in Canvas2D.
+  - the place goldens are regenerated once, at Part 4's close, and `town.nmap` with each change to Highcourt, which `town.test.ts` matches. The place fixtures stay `place.py`'s;
+  - the town view of a wonder stays under 2 ms a frame, in WebGL2 and in Canvas2D. Capitals draw in the Town skin since M2.2c, and its frame check is M3.3's.
+- **Part 4, added by the owner on 12 October 2026,** varies town layouts and builds the rest of part 3 to fit them. It stays a plan until the owner says go (plan.md, Part 4):
+  - **three street plans,** dealt to each capital, city and town by a keyed draw weighted by tier: rings round the plaza with radial streets, winding lanes, or a looser grid, each with knobs of its own. Villages and hamlets keep their greens;
+  - **walls that fit them:** every ring line is an octagon, or a rectangle in some grids, with towers or posts on its vertices, diagonal runs on its cuts and gates on its straight lines;
+  - **every door reaches the plaza,** by footbridge or ford where a river cuts a town in two;
+  - **ways of up to 32 straight runs,** so curved and walled towns keep their errands;
+  - **Highcourt as a ring town,** with its beds, crowd and pins following.
+- **Owner decision first:** the preview of the diagonal wall pieces and the optional road-corner tiles, before they are final.
+- **Exit checks for part 4,** over the first 2 standard worlds:
+  - each style takes at least a tenth of the capitals, cities and towns, no two capitals share a style and its knobs, and Highcourt is a ring town;
+  - each style's ring line holds part 3's ring area within 10%;
+  - a 4-way flood of the walk grid from the plaza reaches every door, in every settlement and in Highcourt;
+  - no way from a home to a premises is cut off, and at most 0.1% need more than 32 runs;
+  - a tower or post stands on every vertex where it fits, diagonal pieces lie only on cut lines, and gates only on straight lines;
+  - the place builder chunk stays under 24 kB brotli;
+  - the regenerated place goldens match in Node and Chromium.

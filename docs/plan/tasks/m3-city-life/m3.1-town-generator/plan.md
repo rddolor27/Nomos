@@ -3,7 +3,8 @@
 > **Status:**
 > - **Done:** the place port and the owner's town view, Tasks 0–8 (9–10 October 2026).
 > - **Built:** Part 2, but for its 2 ms bar, which moved into Part 3's Task 19 (10 October 2026).
-> - **Part 3** is a step plan for walled towns, roads by role and farms. Tasks 9–11, 17 and 18 have landed. Tasks 12–16 and 19–21 stay plans until the owner says to build them (checkpoint 0033).
+> - **Part 3** is a step plan for walled towns, roads by role and farms. Tasks 9–11, 17 and 18 have landed. Part 4 replaces its Tasks 12–16 and 19–21.
+> - **Part 4** is a brief for varied town layouts, with Part 3's walls, towns and farms fitted to them (owner, 12 October 2026). It waits for the owner's go.
 > - **The rest of M3.1** is still the brief further down: the export to the binary map, the saddle keys and the LDtk fallback. Expand it with the writing-plans skill before building it.
 
 **Task:** [task.md](task.md)
@@ -247,7 +248,7 @@ The steps, in order:
 
 > **Status:** step plan, written on 10 October 2026 by `sim-architect`. It replaces Part 2's steps 5 and 6. Run it with the executing-plans skill; steps use checkboxes. All the art it needs landed on 10 October 2026 (The art contract).
 >
-> Tasks 9–11, 17 and 18 landed on 10 October 2026, each marked done below. The owner then kept the round to plans: Tasks 12–16 and 19–21 wait until the owner says to build them (checkpoint 0033).
+> Tasks 9–11, 17 and 18 landed on 10 October 2026, each marked done below. The owner then kept the round to plans (checkpoint 0033). On 12 October 2026 Part 4 replaced Tasks 12–16 and 19–21: Tasks 12–15 become its Tasks 26–29, 19–21 fold into its Task 30, and 16 is dropped. Their rules below stand where Part 4 doesn't change them.
 
 **Goal:** capitals, cities and towns become walled towns, packed round the plaza and thinning past the wall into suburbs along the roads, then a farm belt by climate. Villages and hamlets stay open among their fields. Every road takes a surface and width by its role, and the country map draws highways in stone and tracks in dirt, with walled icons.
 
@@ -542,7 +543,7 @@ Done on 10 October 2026: d68ff59, at the planned sizes with no fallback, and c4b
 
 **Commit:** `feat(worldgen): lay towns out on wide roads by role, with stone bridges`, with `Task: M3.1 Town generator, task 11: Roads by role, sizes and the town plan`.
 
-### Task 12: Walls, towers and gates (sim-engineer, Opus)
+### Task 12: Walls, towers and gates (sim-engineer, Opus; built as Part 4's Task 26)
 
 **Interfaces:** produces `Wall.erect(site)`, `Wall.gates`, a list of `Gate(side, x, y)` at each gate's first tile, and `settle_walls(site)` / `settleWalls`.
 
@@ -575,7 +576,7 @@ Done on 10 October 2026: d68ff59, at the planned sizes with no fallback, and c4b
 
 **Commit:** `feat(worldgen): ring towns with stone walls and palisades, with gates`, with `Task: M3.1 Town generator, task 12: Walls, towers and gates`.
 
-### Task 13: The bell-curve town (sim-engineer, Opus)
+### Task 13: The bell-curve town (sim-engineer, Opus; built as Part 4's Task 27)
 
 **Interfaces:** produces `zone(site, x, y)`, one of `'centre'`, `'rim'`, `'outside'` and `'open'`; `site.town_greens` / `townGreens`, the greens' rectangles; and the trades.
 
@@ -634,7 +635,7 @@ Done on 10 October 2026: d68ff59, at the planned sizes with no fallback, and c4b
 
 **Commit:** `feat(worldgen): pack towns round the plaza and thin them past the wall`, with `Task: M3.1 Town generator, task 13: The bell-curve town`.
 
-### Task 14: The farm belt (sim-engineer, Opus)
+### Task 14: The farm belt (sim-engineer, Opus; built as Part 4's Task 28)
 
 **Interfaces:** produces `Plot(x, y, use)` with `sow(site)`; `site.plots`; `climate_of(site)` / `climateOf`; and `settle_farms(site)` / `settleFarms`. `site.fields` and `site.pastures` keep their meaning for the farmers, the herds and the windmill.
 
@@ -687,7 +688,7 @@ Done on 10 October 2026: d68ff59, at the planned sizes with no fallback, and c4b
 
 **Commit:** `feat(worldgen): lay a farm belt by climate round every settlement`, with `Task: M3.1 Town generator, task 14: The farm belt`.
 
-### Task 15: Lamps, greens and gardens (sim-engineer, Sonnet)
+### Task 15: Lamps, greens and gardens (sim-engineer, Sonnet; built as Part 4's Task 29)
 
 **Rules:**
 1. **Lamps:** today's rule, beside road tiles of kind `stone` or `cobble` in a walled place. In an open place it runs beside `path` or `gravel` and puts flower patches, as today.
@@ -709,7 +710,7 @@ Done on 10 October 2026: d68ff59, at the planned sizes with no fallback, and c4b
 
 **Commit:** `feat(worldgen): light the streets and plant greens and gardens`, with `Task: M3.1 Town generator, task 15: Lamps, greens and gardens`.
 
-### Task 16: The street crowd on wide roads (sim-engineer, Sonnet)
+### Task 16: The street crowd on wide roads (sim-engineer, Sonnet; dropped by Part 4)
 
 TypeScript only, so no golden moves.
 
@@ -786,7 +787,7 @@ Done on 10 October 2026: 19ef31a. All 60 map browser specs pass in Chromium, Fir
 - [ ] **Step 4: Look:** `python tools/worldgen/generate.py` draws a world's previews. Check the highways and the walled icons in its Region view.
 - [ ] **Step 5: Commit** `feat: draw highways in stone and tracks in dirt on the country map`, then `test(web): pin the countries view with walled icons`, each with `Task: M3.1 Town generator, task 18: Highways, tracks and walled icons on the map`.
 
-### Task 19: The 2 ms bar and the pixel check (render-engineer, Opus)
+### Task 19: The 2 ms bar and the pixel check (render-engineer, Opus; folded into Part 4's Task 30)
 
 **Waits for:** `nomos-bd`'s Town skin, and Tasks 11–16. Part 2's step 3 lands here.
 
@@ -796,7 +797,7 @@ Done on 10 October 2026: 19ef31a. All 60 map browser specs pass in Chromium, Fir
 - [ ] **Step 4: If the bar fails,** profile it. Fix the pass, in `nomos-bd`'s files, only with its agreement. The likely costs are the 56% more tiles and the walkers.
 - [ ] **Step 5: Commit** only a spec that changed, as `test(web): …` with `Task: M3.1 Town generator, task 19: The 2 ms bar and the pixel check`. Report the numbers either way.
 
-### Task 20: Highcourt and the first screen (sim-engineer and senior-game-engineer, Sonnet)
+### Task 20: Highcourt and the first screen (sim-engineer and senior-game-engineer, Sonnet; folded into Part 4's Task 30)
 
 **Waits for:** Tasks 11–16 and 19.
 
@@ -809,7 +810,7 @@ Done on 10 October 2026: 19ef31a. All 60 map browser specs pass in Chromium, Fir
   - the map's Region view on a capital, with its highways and walled icon.
 - [ ] **Step 5:** commit nothing unless a pinned number moved, and report the paths.
 
-### Task 21: Close part 3 (coordinator)
+### Task 21: Close part 3 (coordinator; folded into Part 4's Task 30)
 
 - `interfaces.md`: the sim-architect's changes below. The coordinator applied them on 10 October 2026, after `nomos-bd`'s Town skin edit landed, and reconciled them with its `TownRequest`. At close, check them against the code, and if Task 11 took Ruling 1's fallback, change item 8's sizes.
   1. **The world map, The package:** add `classes.ts` to the `routes/` row's files, and "and its road classes" to its concern.
@@ -877,6 +878,70 @@ Done on 10 October 2026: 19ef31a. All 60 map browser specs pass in Chromium, Fir
 Settled on 10 October 2026, and open to the owner's overturning:
 - **The farm belt's depth:** the coordinator chose 176×112 and 152×96 (Ruling 1).
 - **The walls' look:** the owner said to draw the assets and then add them to the plans, so the drawn walls and palisade stand. Their previews went to the owner.
+
+## Part 4: varied layouts and walls (owner, 12 October 2026)
+
+> **Status:** brief, written on 12 October 2026 by `sim-architect`. Plan only: nothing is built until the owner says go. It replaces Part 3's unbuilt Tasks 12–16 and 19–21, whose rules stand except where a task below names a change.
+
+**Goal:** no two towns alike. Each capital, city and town is dealt a street plan with keyed knobs, and its wall, gates and farms fit the plan. Every home reaches the streets.
+
+### Rulings (sim-architect, 12 October 2026; the owner can overturn them)
+
+1. **One keyed draw deals the style.** `styleOf(site)` takes `below(4, PLAN, 0)` on a new first key, `PLAN` (26), unless the context pins one. Capitals and cities weigh `rings` 2, `winding` 1 and `grid` 1; towns weigh `winding` 2 and the others 1. Every knob is a `PLAN` draw, and the geometry uses integer tests and steps, with no trigonometry. A layout decides housing, so the draw reads only seed and tier (content rule 8).
+2. **What stays.** Villages and hamlets keep their green and spur lanes. Every style keeps the plaza and Part 3's straight main roads, so the civic set, premises, avenues, stone bridges and gates keep their rules. Rings and winding towns add a plain street along each axis that has no main road.
+3. **The styles,** with 2-tile cobbled streets kept 2 tiles inside the ring line:
+
+| Style | Streets | Knobs | Ring line |
+| --- | --- | --- | --- |
+| `rings` | Ellipse bands round the plaza: inside half-sizes (a, b) but not (a − 2, b − 2). The first clears the plaza, the last lies 4 tiles inside the ring line. Radials follow `line` out along the diagonals. | rings 6–8 rows apart (about 4–5 in a capital, computed), each ±1 tile; 0–4 more radials in (2, 1) directions | octagon of half-sizes 60 × 44 (town 50 × 34), corners cut by half the shorter |
+| `winding` | Every 8–14 cells along a main road or axis street, a street sets off each side. It walks 4–10 cells, turns 45° or not, stays within 45° of its first heading, and stops at a road, water or the margin. | gap, segment, turn chance, length 30–80 | Part 3's half-sizes, up to 4 tiles off-centre, corners cut by 6–16 |
+| `grid` | Part 3's rows and cross streets; today's towns are knobs 6, 24, 0 and 0% | rows 6–8 apart, cross streets 16–32, rows shifted 0–1, 0–20% of row segments left out | Part 3's rectangle, corners cut by 0 or 4–8 |
+
+4. **Houses follow curves by stepping.** Sprites stay upright and face south. Each house still takes the nearest lot whose door touches a street, so houses step along an arc, and terraces, which need a straight front, come out short there.
+5. **Every ring line is an octagon:** `Wall(x0, y0, x1, y1, cuts, material)`, a rectangle when it cuts nothing. `inset`, `contains`, `onLine` and `reserve` keep their meaning for trades, zones and farms. Each holds Part 3's ring area (129 × 81, or 113 × 61) within 10%, so the house counts fit.
+   - Towers or palisade posts stand on every vertex, and stone towers every 12th tile on the straight lines.
+   - Cuts take `<material>_diagonal-up` (NW, SE) or `_diagonal-down` (NE, SW). The 8-connected line still bars walking, since no blob cuts a corner.
+   - Gates stand only on the straight lines, where the spokes cross. A stepped round wall would need a corner piece at every step (inference).
+6. **Every door reaches the plaza.** `connect(site)` floods the walkable land 4 ways from the plaza or green, with the reserved ring line shut. Each road tile it misses, in reading order, gets the cheapest `route` to a reached road, paved as a lane with footbridges or a ford. A road no route reaches reverts to grass. It runs last in the plan stage and again in the farm stage. It ends M2.7 Task 3's backlog: 44 and 45 homes cut off in 2 of 6 towns, one behind a river.
+7. **Ways take up to 32 runs.** `MAX_RUNS` goes from 16 to 32, and `pathRuns` keeps its encoding. The grid already reaches 16, with 0.11% of capital and city ways over it (M2.7 Task 3, measured), and curves and gates add turns (inference).
+   - **Memory:** the errand row grows from 48 to 80 bytes: 0.32, 0.8 and 3.2 MB more at 10k, 25k and 100k blobs, so the desktop arena goes from about 29% to 34% full (computed). At M9's million, runs could move to a pool for walkers (inference).
+   - **Ticks:** none, since a walker reads one run at each run's end. Only street towns hash the store, so only Highcourt's pins move. A denser encoding would rewrite `pathRuns` and the walk.
+8. **Highcourt is a ring town,** through an optional `PlaceContext.style` that only `TOWN` sets. The first screen shows circles, and retuned weights never move it.
+   - Its crowd follows its beds (owner, 11 October 2026), 2,600 in 375 homes today, and its fields and 22 premises still fit their caps.
+   - Each task that moves it reruns `scripts/town-map.ts` and re-pins the unit tests that read `town.nmap` (`grep -rl town.nmap packages/*/test apps/web/test`). The browser specs' counts move once, in Task 30.
+9. **Checks and budgets:**
+   - `place-goldens-v1.json` regenerates once, in Task 30, and Part 4 pushes only then. Until then its test fails on purpose; a feature that pushes sooner regenerates it first (47 s).
+   - Part 3's remaining tests run over the first 2 standard worlds and the pinned places, not 20 (`models.md`): about 31 walled places, 14 on a river (computed).
+   - A capital builds in a median under 250 ms and at worst under 350 ms in `time-places.ts`, against `main` on the same machine (153.6 ms today). With the switch, entering a town stays under half a second (inference).
+   - The place builder chunk, 19.78 of 20.94 kB, may reach 24 kB brotli (inference). It loads with the Town skin, after the first frame.
+10. **Art.** Curved streets are staircases of today's fill tiles, so curves need no new tile. New: the 4 diagonal wall runs, 1 × 1 and summer only. Optional, if the owner picks them from the preview: 16 tiles rounding a staircase's outer corners in cut stone, cobbles, gravel and dirt, chosen as `shoreTile` chooses a shore's. Part 3's art contract covers the rest, and the designers' 10 October calls stand.
+
+### Tasks
+
+Part 3's Tasks 12–15 are built as Tasks 26–29, and 19–21 fold into Task 30. Task 16 is dropped: M2.2c's Task 7 deleted the street crowd (67ae00e). Two engineers at most: 22 beside 24, then 23 beside 25, then 26–30 in order. Each runs only its tests and a typecheck, at `nice -n 19`, re-pins Highcourt if it moved, and commits by path.
+
+- **Task 22: The style draw and the ring town** (sim-engineer, Sonnet), the owner's first look. New `place/plan.ts` (`styleOf`, weights, knobs) and `place/rings.ts`; the grid's streets move to `place/grid.ts`; `walls.ts`, `keys.ts`, `context.ts` and `town.ts` follow Rulings 1, 5 and 8. `winding` lays the grid until Task 25.
+  - **Tests:** new `place-styles.test.ts`: over 2 worlds each style takes a tenth or more of the walled places, no two capitals share a style and knobs, and Highcourt is rings; edge case, no street on water by a river. `place-roads.test.ts` drops to 2 worlds, for every style. **Check:** also `time-places.ts`.
+  - If ring capitals hold under 90% of grid capitals' houses, space the rings 6 apart, then add east–west lanes in their east and west quarters.
+  - Then `senior-game-engineer` saves 1,280 × 800 screenshots of Highcourt and two ring capitals to `dist/qa/ring-towns/` for the owner.
+- **Task 23: Every door reaches the plaza, and 32 runs** (sim-engineer, Sonnet). New `place/connect.ts`, last in `settleCentre`, and `MAX_RUNS` in `sim-core`'s `street/runs.ts`.
+  - **Tests:** new `place-connect.test.ts`: a 4-way flood of `map.walk` from the plaza reaches every door, over 2 worlds' settlements and Highcourt; edge case, a street cut off by a river on a bare site gets a crossing. New `apps/web/test/town-ways.test.ts`: over 2 worlds' capitals, cities and towns, no home-to-premises way is `NO_PATH` and at most 0.1% are `TOO_FAR`. `street-fields.test.ts` moves its cap to 32.
+- **Task 24: The new art** (asset-designer). First a preview sheet for the owner in `docs/mockups/`, from `tools/sprites/showcase_walls.py`: an octagon corner in stone and palisade, and a ring street with and without corner tiles. Then the pieces in `walls.py`, and `nature.py` if chosen, with `assets/LICENSES.md` rows. **Check:** `pnpm test:py`.
+- **Task 25: Winding lanes and the looser grid** (sim-engineer, Sonnet). New `place/winding.ts` and the grid's knobs; Highcourt doesn't move.
+  - **Tests,** in `place-styles.test.ts`: every style's median capital holds 90% of the grid's houses; edge case, a place with one road side holds 80%, or winding streets branch once more. **Check:** also `time-places.ts`.
+- **Task 26: Walls, towers and gates** (sim-engineer, Sonnet; Part 3's Task 12). Changes: Ruling 5; `ground.ts` maps `wall` and `palisade` to a built kind `wall`, coloured by `kind_colours.py`; the pieces join `USED`, and `frames.ts` is regenerated.
+  - **Tests:** Part 3's `place-walls.test.ts` over 2 worlds, plus a tower or post on every vertex where it fits and diagonal pieces only on cuts. `place-connect` and `town-ways` still pass.
+- **Task 27: The bell-curve town** (sim-engineer, Sonnet; Part 3's Task 13). Changes: `centre` where the wall contains the point twice as far out, `rim` where it contains the tile, else `outside`. Rule 8 keeps only the inn and the stable, look-only, on `WORK` from salt 300, since M2.7 places the bakeries and smithies. Rule 11's tables go into `ground.ts`.
+  - **Tests:** Part 3's `place-density.test.ts`, its house counts held in each style.
+- **Task 28: The farm belt** (sim-engineer, Sonnet; Part 3's Task 14). Changes: `connect` runs after the tracks and before the farmyards; `ground.ts` maps `farm_` to workplaces.
+  - **Tests:** Part 3's `place-farms.test.ts` over 2 worlds and its pinned climates; `place-connect` and `town-ways` still pass.
+- **Task 29: Lamps, greens and gardens** (sim-engineer, Sonnet; Part 3's Task 15 as written), with the corner tiles in `tiles.ts` if chosen.
+- **Task 30: Close** (coordinator; Part 3's Tasks 19–21).
+  - Regenerate the place goldens once (`nice -n 19 node packages/worldgen/scripts/place-goldens.ts`) and re-pin the browser specs' Highcourt counts. Set the chunk's limit to its measure plus 1 kB, and put the measured numbers in `interfaces.md`.
+  - Push, then run one Opus `determinism-review` over Part 4's `packages/worldgen` and `street/runs.ts` commits.
+  - `senior-game-engineer` saves a capital of each style, a palisaded town and Highcourt to `dist/qa/varied-towns/`.
+  - The wonder view's 2 ms bar holds, since vistas don't change. Capitals draw in the Town skin, whose frame check is M3.3's.
+  - Then `milestone.md` and the checkpoint.
 
 ## The rest of M3.1: brief
 
