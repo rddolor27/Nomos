@@ -56,6 +56,7 @@ function cellOf(world: World, blob: number): number {
   return (tileOf(agents.y[blob]) >> 1) * ((ground.width + 1) >> 1) + (tileOf(agents.x[blob]) >> 1);
 }
 
+// The bounds come first so that the squares stay inside int32.
 function isNear(world: World, a: number, b: number): boolean {
   const { x, y } = world.agents;
   const dx = x[a] - x[b];
