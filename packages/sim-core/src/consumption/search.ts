@@ -1,11 +1,13 @@
 import { SUPPLIERS } from '../agents/store.ts';
 import type { EconomyParams } from '../economy/params.ts';
+import { goodOfLink } from '../goods/goods.ts';
 import { PPM, mulPpm } from '../money/ppm.ts';
 import { drawBelow3 } from '../random/draw.ts';
 import { SHOP_DRAW } from '../random/streams.ts';
-import type { World } from '../world/world.ts';
+import { GOODS, type World } from '../world/world.ts';
 
-// Purposes of the draws on SHOP_DRAW, which shop.ts shares: 0 to 5 here, 6 and 7 there, so no two draws share a key.
+// Purposes of the draws on SHOP_DRAW, which shop.ts and food.ts share: 0 to 5 here, 6 and 7 there, 8 and 9 in food.ts, so
+// no two draws share a key.
 export const PRICE_CHANCE = 0;
 export const PRICE_LINK = 1;
 export const PRICE_FIRM = 2;
@@ -17,30 +19,44 @@ function chance(seed: number, month: number, household: number, purpose: number,
   return drawBelow3(seed, SHOP_DRAW, month, household, purpose, PPM) < ppm;
 }
 
-function fillWorkerPrefix(employees: Int32Array, prefix: Int32Array, firms: number): number {
+function fillWorkerPrefix(employees: Int32Array, prefix: Int32Array, firms: number): void {
   let workers = 0;
   for (let f = 0; f < firms; f++) {
     workers += employees[f];
     prefix[f] = workers;
   }
-  return workers;
 }
 
-// A firm in proportion to its workers: the first row whose running sum passes the ticket, which is the household's draw for
-// this purpose below the worker count. Uniform while nobody works.
-function firmByWorkers(world: World, workers: number, month: number, household: number, purpose: number): number {
-  const firms = world.firms.count[0];
-  if (workers === 0) return drawBelow3(world.seed, SHOP_DRAW, month, household, purpose, firms);
+// The rows a link may be replaced from: a goods world's link k only takes a firm of good k + 1, whose rows run together;
+// with goods off every row is open.
+function firstRowOfLink(world: World, link: number): number {
+  return world.globals[GOODS] === 1 ? world.goods.firstRow[goodOfLink(link)] : 0;
+}
+
+function endRowOfLink(world: World, link: number): number {
+  if (world.globals[GOODS] === 0) return world.firms.count[0];
+  const good = goodOfLink(link);
+  return world.goods.firstRow[good] + world.goods.rowCount[good];
+}
+
+// A firm of the link's rows in proportion to its workers: the first row whose running sum passes the ticket, which is the
+// household's draw for this purpose below the rows' workers. Uniform over the rows while nobody works.
+function firmByWorkers(world: World, link: number, month: number, household: number, purpose: number): number {
+  const low = firstRowOfLink(world, link);
+  const end = endRowOfLink(world, link);
   const prefix = world.economyScratch.firmPrefix;
-  const ticket = drawBelow3(world.seed, SHOP_DRAW, month, household, purpose, workers);
-  let low = 0;
-  let high = firms - 1;
-  while (low < high) {
-    const middle = (low + high) >> 1;
-    if (prefix[middle] > ticket) high = middle;
-    else low = middle + 1;
+  const before = low > 0 ? prefix[low - 1] : 0;
+  const workers = prefix[end - 1] - before;
+  if (workers === 0) return low + drawBelow3(world.seed, SHOP_DRAW, month, household, purpose, end - low);
+  const ticket = before + drawBelow3(world.seed, SHOP_DRAW, month, household, purpose, workers);
+  let first = low;
+  let last = end - 1;
+  while (first < last) {
+    const middle = (first + last) >> 1;
+    if (prefix[middle] > ticket) last = middle;
+    else first = middle + 1;
   }
-  return low;
+  return first;
 }
 
 function isLinked(suppliers: Int32Array, first: number, firm: number): boolean {
@@ -69,11 +85,11 @@ function nthSet(bits: number, n: number): number {
 // A11: compare one random link with a firm drawn by workers, and switch when the newcomer is cheaper by xi of the link's
 // price, rounded down. A newcomer that is already a link is a miss, so a household never holds a firm twice. A switch
 // clears the link's stock-out bit, which was the old firm's, so A12 cannot replace the firm just found.
-function searchCheaper(world: World, params: EconomyParams, month: number, household: number, workers: number): void {
+function searchCheaper(world: World, params: EconomyParams, month: number, household: number): void {
   const { seed, agents, firms } = world;
   const first = household * SUPPLIERS;
   const link = drawBelow3(seed, SHOP_DRAW, month, household, PRICE_LINK, SUPPLIERS);
-  const newcomer = firmByWorkers(world, workers, month, household, PRICE_FIRM);
+  const newcomer = firmByWorkers(world, link, month, household, PRICE_FIRM);
   if (isLinked(agents.suppliers, first, newcomer)) return;
   const linkedPrice = firms.price[agents.suppliers[first + link]];
   if (firms.price[newcomer] + mulPpm(linkedPrice, params.cheaperPpm) <= linkedPrice) {
@@ -83,26 +99,27 @@ function searchCheaper(world: World, params: EconomyParams, month: number, house
 }
 
 // A12: replace one random stocked-out link with a firm drawn by workers, on the same no-duplicate rule as A11.
-function searchStockedOut(world: World, month: number, household: number, workers: number): void {
+function searchStockedOut(world: World, month: number, household: number): void {
   const { seed, agents } = world;
   const stockedOut = agents.stockedOut[household];
   if (stockedOut === 0) return;
   const first = household * SUPPLIERS;
   const pick = drawBelow3(seed, SHOP_DRAW, month, household, STOCKOUT_LINK, countSet(stockedOut));
-  const newcomer = firmByWorkers(world, workers, month, household, STOCKOUT_FIRM);
-  if (!isLinked(agents.suppliers, first, newcomer)) agents.suppliers[first + nthSet(stockedOut, pick)] = newcomer;
+  const link = nthSet(stockedOut, pick);
+  const newcomer = firmByWorkers(world, link, month, household, STOCKOUT_FIRM);
+  if (!isLinked(agents.suppliers, first, newcomer)) agents.suppliers[first + link] = newcomer;
 }
 
 export function searchShops(world: World, params: EconomyParams, month: number): void {
   const { seed, agents, firms, economyScratch } = world;
-  const workers = fillWorkerPrefix(firms.employees, economyScratch.firmPrefix, firms.count[0]);
+  fillWorkerPrefix(firms.employees, economyScratch.firmPrefix, firms.count[0]);
   const households = agents.count[0];
   for (let i = 0; i < households; i++) {
     if (chance(seed, month, i, PRICE_CHANCE, params.priceSearchPpm)) {
-      searchCheaper(world, params, month, i, workers);
+      searchCheaper(world, params, month, i);
     }
     if (chance(seed, month, i, STOCKOUT_CHANCE, params.stockoutSearchPpm)) {
-      searchStockedOut(world, month, i, workers);
+      searchStockedOut(world, month, i);
     }
     agents.stockedOut[i] = 0;
   }

@@ -3,6 +3,7 @@ import {
   ECONOMY_TICKS,
   STAT_PRICE_MEAN,
   TICKS_PER_DAY,
+  TRADE_RING,
   createTown,
   createWorld,
   currentTick,
@@ -381,7 +382,7 @@ describe('the sim loop', () => {
     expect(page.tick()).toBe(ECONOMY_TICKS);
     const [first, ...others] = page.ofType('economy');
     expect(others).toEqual([]);
-    expect([first.day, first.days, first.trades]).toEqual([0, 1, 16]);
+    expect([first.day, first.days, first.trades]).toEqual([0, 1, TRADE_RING]);
     expect(first.meanPriceCents[0]).toBe(page.world().economyScratch.stats[STAT_PRICE_MEAN]);
 
     page.advance(TICKS_PER_DAY * TICK_MS);

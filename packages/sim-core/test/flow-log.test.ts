@@ -40,7 +40,10 @@ function rowOf(world: World): Row {
   return row;
 }
 
-// What one day moves, against the levels the day before left (the flow log's reason for being).
+const FOOD_COLUMNS = ['bread', 'vegetables', 'fish', 'milk'];
+
+// What one day moves, against the levels the day before left (the flow log's reason for being). Each food's portions balance
+// too (M2.4), and trivially in a world with goods off, where they are all 0.
 function expectBalanced(was: Row, now: Row, label: string): void {
   expect(was.unemployed - now.unemployed, `${label}: jobs`).toBe(now.hires - now.firings);
   expect(now.household_cash - was.household_cash, `${label}: household cash`).toBe(
@@ -49,6 +52,13 @@ function expectBalanced(was: Row, now: Row, label: string): void {
   expect(now.firm_cash - was.firm_cash, `${label}: firm cash`).toBe(now.sales_cents - now.wage_bill - now.profits_paid);
   expect(now.stock - was.stock, `${label}: stock`).toBe(now.produced - now.sales_units - now.write_off);
   expect(now.taxes, `${label}: taxes`).toBe(0);
+  let sold = 0;
+  for (const food of FOOD_COLUMNS) {
+    const flows = now[`sold_${food}`] + now[`spoiled_${food}`] + now[`stock_${food}`] - was[`stock_${food}`];
+    expect(now[`made_${food}`], `${label}: ${food}`).toBe(flows);
+    sold += now[`sold_${food}`];
+  }
+  expect(now.eaten, `${label}: eaten`).toBe(sold);
 }
 
 // Every firm's headcount against the people who name it as their employer.
@@ -102,6 +112,17 @@ describe('the flow log', () => {
       const rows = runBalanced(params, seed, DAYS, SHOCKS);
       expect([rows[1_000].firings, rows[1_050].firings], `seed ${seed}`).toEqual([50, 30]);
       for (const name of ['hires', 'job_visits', 'exits', 'write_off', 'spell_months']) {
+        expect(totalOf(rows, name), `seed ${seed}: ${name}`).toBeGreaterThan(0);
+      }
+    }
+  });
+
+  it('balances the goods city, food and all, through the shocks and short-pay exits', { timeout: 120_000 }, () => {
+    const params = { ...CITY, goods: 1, shortPayExitPpm: 1_000_000 };
+    for (const seed of SEEDS.slice(0, 2)) {
+      const rows = runBalanced(params, seed, DAYS, SHOCKS);
+      expect([rows[1_000].firings, rows[1_050].firings], `seed ${seed}`).toEqual([50, 30]);
+      for (const name of ['eaten', 'spoiled_bread', 'sold_cents_fish', 'made_milk', 'exits', 'sales_units']) {
         expect(totalOf(rows, name), `seed ${seed}: ${name}`).toBeGreaterThan(0);
       }
     }

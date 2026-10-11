@@ -34,6 +34,10 @@ export function isFood(good: number): boolean {
   return good >= BREAD && good <= MILK;
 }
 
+// A blob eats 3 portions a day, one a meal (M2.4 Ruling 2), and its first FOOD_LINKS links sell the foods.
+export const PORTIONS_PER_DAY = 3;
+export const FOOD_LINKS = MILK - BREAD + 1;
+
 export function goodOfLink(link: number): number {
   return link + BREAD;
 }

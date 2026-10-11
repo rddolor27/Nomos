@@ -48,13 +48,13 @@ describe('the economy in the step', () => {
     expect(booksOf(twin)).not.toEqual(booksOf(town()));
   });
 
-  it('runs one system a tick, shopping on the 7th, and nothing after the 18th', () => {
+  it('runs one system a tick, shopping on the 9th, and nothing after the 20th', () => {
     const world = town();
-    expect(ECONOMY_TICKS).toBe(18);
+    expect(ECONOMY_TICKS).toBe(20);
 
-    run(world, 6);
+    run(world, 8);
     expect(world.economyScratch.stats[STAT_SALES_UNITS]).toBe(0);
-    run(world, 7);
+    run(world, 9);
     expect(world.economyScratch.stats[STAT_SALES_UNITS]).toBeGreaterThan(0);
 
     run(world, ECONOMY_TICKS);
@@ -63,7 +63,7 @@ describe('the economy in the step', () => {
     expect(booksOf(world)).toEqual(afterWindow);
   });
 
-  it("runs the year record as the 18th system on a year's last day only, and no system past it", () => {
+  it("runs the year record as the 20th system on a year's last day only, and no system past it", () => {
     const world = town();
     const { yearEmployer } = world.economyScratch;
     const people = world.agents.count[0];

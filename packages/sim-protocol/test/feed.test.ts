@@ -6,8 +6,11 @@ import {
   STAT_SALES_CENTS,
   STAT_UNEMPLOYED,
   STAT_WAGE_MEAN,
+  FOOD_TRADES,
+  GOODS_TRADES,
   TICK,
   TICKS_PER_DAY,
+  TRADE_RING,
   clearPurchases,
   createTown,
   createWorld,
@@ -23,8 +26,8 @@ import { FEED_DAYS, FEED_TRADES, createEconomyFeed, economyDayEnded, writeEconom
 
 const SEED = 42;
 const PEOPLE = 300;
-// Economy system 6 is shopDay (interfaces.md, The economy on screen).
-const SHOP_DAY = 6;
+// Economy system 0 opens the day with both rings of purchases empty (interfaces.md, The economy on screen).
+const OPEN_DAY = 0;
 
 function town(): World {
   return createTown(SEED, 'phone', standInGround(), PEOPLE);
@@ -61,8 +64,9 @@ describe('the economy feed', () => {
     expect(unemploymentPpm(world)).toBeGreaterThan(0);
     expect(feed.unemploymentPpm[0]).toBe(unemploymentPpm(world));
 
-    // Day 0 opens a month and ends no month, so no price moves between the shopping and the feed.
-    expect(feed.trades).toBe(FEED_TRADES);
+    // Day 0 opens a month and ends no month, so no price moves between the shopping and the feed. A town with goods off
+    // shops for one ring only.
+    expect(feed.trades).toBe(TRADE_RING);
     let tradedCents = 0;
     for (let i = 0; i < feed.trades; i++) {
       expect(feed.tradeShop[i]).toBeLessThan(firms.count[0]);
@@ -100,32 +104,36 @@ describe('the economy feed', () => {
     expect(new Set(wage).size).toBeGreaterThan(1);
   });
 
-  it("holds a busy day's last 16 purchases oldest first, and nothing of it on a quiet day", () => {
+  it("holds a busy day's last 8 food and last 8 goods purchases oldest first, and nothing of it on a quiet day", () => {
     const world = town();
     const scratch = world.economyScratch;
     const feed = createEconomyFeed();
 
     world.globals[TICK] = dayEndTick(0);
     clearPurchases(scratch);
-    for (let n = 0; n < 20; n++) logPurchase(scratch, n, n + 1, 250 * (n + 1));
+    for (let n = 0; n < 20; n++) {
+      logPurchase(scratch, FOOD_TRADES, n, n + 1, 250 * (n + 1));
+      logPurchase(scratch, GOODS_TRADES, 100 + n, n + 1, 250 * (n + 1));
+    }
     writeEconomyFeed(world, feed);
     expect(feed.trades).toBe(FEED_TRADES);
-    expect(Array.from(feed.tradeShop)).toEqual(counting(FEED_TRADES, 4));
-    expect(Array.from(feed.tradeUnits)).toEqual(counting(FEED_TRADES, 5));
-    expect(Array.from(feed.tradeCents)).toEqual(counting(FEED_TRADES, 5).map((units) => 250 * units));
+    expect(Array.from(feed.tradeShop)).toEqual([...counting(TRADE_RING, 12), ...counting(TRADE_RING, 112)]);
+    expect(Array.from(feed.tradeUnits)).toEqual([...counting(TRADE_RING, 13), ...counting(TRADE_RING, 13)]);
+    expect(Array.from(feed.tradeCents)).toEqual(
+      [...counting(TRADE_RING, 13), ...counting(TRADE_RING, 13)].map((units) => 250 * units),
+    );
 
     world.globals[TICK] = dayEndTick(1);
     clearPurchases(scratch);
-    for (let n = 0; n < 3; n++) logPurchase(scratch, 30 + n, 1, 2_500);
+    for (let n = 0; n < 3; n++) logPurchase(scratch, GOODS_TRADES, 30 + n, 1, 2_500);
     writeEconomyFeed(world, feed);
     expect(feed.trades).toBe(3);
     expect(Array.from(feed.tradeShop)).toEqual([30, 31, 32, ...Array(FEED_TRADES - 3).fill(0)]);
     expect(Array.from(feed.tradeUnits)).toEqual([1, 1, 1, ...Array(FEED_TRADES - 3).fill(0)]);
     expect(Array.from(feed.tradeCents)).toEqual([2_500, 2_500, 2_500, ...Array(FEED_TRADES - 3).fill(0)]);
 
-    // shopDay opens its own day with the ring empty, so a day nobody shops leaves none of the quiet day's trades behind.
-    world.agents.plannedUnits.fill(0);
-    runEconomySystem(world, CITY, 2, SHOP_DAY, 0);
+    // The day opens with both rings empty, so a day nobody shops leaves none of the quiet day's trades behind.
+    runEconomySystem(world, CITY, 2, OPEN_DAY, 0);
     world.globals[TICK] = dayEndTick(2);
     writeEconomyFeed(world, feed);
     expect(feed.trades).toBe(0);

@@ -335,7 +335,7 @@ describe('the economy scratch', () => {
       purchaseShop: [Int32Array, PURCHASE_RING],
       purchaseUnits: [Int32Array, PURCHASE_RING],
       purchaseCents: [Float64Array, PURCHASE_RING],
-      purchaseCount: [Int32Array, 1],
+      purchaseCount: [Int32Array, 2],
     } as const;
     for (const name of Object.keys(shapes) as (keyof typeof shapes)[]) {
       const [kind, length] = shapes[name];
