@@ -85,6 +85,11 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 11 Oct: **M2.2c, Task 2b, the summary month** (2e3b3c9).
+  - **Built:** `stepAwayTown` and `stepAwayTowns` in `spawn/away.ts`, `AWAY_DRAW` 0x201, and the generated `away-rates.ts`, fitted from 240 months of a live 1,000-person `CITY` town.
+  - **Checks:** people, households, firms and cash stay exact. It costs 0.4 µs a town, and every hash held.
+  - **The coordinator's ruling:** the drift target moves from the first record to the live town's long-run mean, a mean-over-record ratio in `away-rates.ts`. That way an away town returns looking like a live one, not 3.3% lower-paid and 1.4% cheaper. Task 3 makes the change first.
+- 11 Oct: **M2.2c, Task 5, the Town skin's swap** (787cfe9): `setLayout` swaps the town drawn, and back is pixel-identical. Highcourt's first frame is unchanged.
 - 11 Oct: **M2.4 Part 1's review** (Opus, pinned to c520ca7). Nothing is critical: money, the food identity, goods-0 replay, the hash rule, the draws and the hot paths hold.
   - **Being fixed:**
     - the burn-in, re-measured at 80,000 days, since the 40,000-day cut sat 18 batches inside MSER-5's limit;
