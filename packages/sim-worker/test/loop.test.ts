@@ -2,6 +2,7 @@ import {
   ACTION_WALK,
   ECONOMY_TICKS,
   MAX_TOWNS,
+  PHASE_ASLEEP,
   PHASE_GOING,
   PURCHASE_RING,
   PURPOSE_FOOD,
@@ -26,7 +27,7 @@ import {
   type Tier,
   type World,
 } from '@nomos/sim-core';
-import { TICK_MS, bindPageLifecycle, type AppMessage, type WorkerMessage } from '@nomos/sim-protocol';
+import { TICK_MS, bindPageLifecycle, indoorsOf, type AppMessage, type WorkerMessage } from '@nomos/sim-protocol';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { SLEEP_MIN_MS, STATS_MS, createSimLoop, type LoopHost, type TownSite } from '../src/index.ts';
 
@@ -50,8 +51,9 @@ const TOWN_PEOPLE = 300;
 // The town an open message names has as many beds as its map has bytes, on a ground smaller than the first town's.
 const OPENED_PEOPLE = 120;
 const SMALL_GROUND: Ground = { width: 64, height: 64, walk: new Uint8Array(64 * 64).fill(1) };
-// 06:00, when a town with streets opens.
-const OPENING_TICK = 360;
+// 07:00, when a town with streets is first shown, and 06:00, when a night slot ends.
+const OPENING_TICK = 420;
+const DAWN_TICK = 360;
 // One general shop selling every good, which gives a town on the small ground streets.
 const STREET_SHOPS = createShops([{ doorX: 32, doorY: 32, goods: 0xfe, stall: false }]);
 
@@ -330,20 +332,20 @@ describe('the sim loop', () => {
     page.handle({ type: 'resume' });
     const twin = streetTown(42, 'phone', TOWN_PEOPLE);
 
-    // The town opens at 06:00 and the day's 960 ticks to 22:00 take a slot of 100 ms each. Then a slot holds 8 ticks, so the
-    // night's 480 take 6 s, and the day goes on at 1×.
-    page.advance(96_000);
+    // The town is first shown at 07:00 and the day's 900 ticks to 22:00 take a slot of 100 ms each. Then a slot holds 8 ticks, so
+    // the night's 480 take 6 s, and the day goes on at 1×.
+    page.advance(90_000);
     expect(page.tick()).toBe(1_320);
     page.advance(1_000);
     expect(page.tick()).toBe(1_320 + 80);
     page.advance(5_000);
-    expect(page.tick()).toBe(TICKS_PER_DAY + OPENING_TICK);
+    expect(page.tick()).toBe(TICKS_PER_DAY + DAWN_TICK);
     page.advance(1_000);
-    expect(page.tick()).toBe(TICKS_PER_DAY + OPENING_TICK + 10);
+    expect(page.tick()).toBe(TICKS_PER_DAY + DAWN_TICK + 10);
 
     // Two days in all, at 1×: the second day's 950 ticks and night, 101 s, end at the second 06:00.
     page.advance(101_000);
-    const second = 2 * TICKS_PER_DAY + OPENING_TICK;
+    const second = 2 * TICKS_PER_DAY + DAWN_TICK;
     expect(page.tick()).toBe(second);
     while (currentTick(twin) < second) step(twin);
     expect(stateHash(page.world())).toBe(stateHash(twin));
@@ -354,15 +356,16 @@ describe('the sim loop', () => {
     page.handle({ type: 'speed', speed: 16 });
     page.handle({ type: 'resume' });
 
-    // 60 slots of 16 ticks reach 22:00. Night slots hold 128, so three end at 1,704 and the fourth stops at 06:00, not 1,832.
-    page.advance(60 * TICK_MS);
-    expect(page.tick()).toBe(1_320);
+    // From 07:00, 57 slots of 16 ticks reach 1,332, the last one starting by day at 1,316. Night slots hold 128, so three end at
+    // 1,716 and the fourth stops at 06:00, not 1,844.
+    page.advance(57 * TICK_MS);
+    expect(page.tick()).toBe(1_332);
     page.advance(3 * TICK_MS);
-    expect(page.tick()).toBe(1_704);
+    expect(page.tick()).toBe(1_716);
     page.advance(TICK_MS);
-    expect(page.tick()).toBe(TICKS_PER_DAY + OPENING_TICK);
+    expect(page.tick()).toBe(TICKS_PER_DAY + DAWN_TICK);
     page.advance(TICK_MS);
-    expect(page.tick()).toBe(TICKS_PER_DAY + OPENING_TICK + 16);
+    expect(page.tick()).toBe(TICKS_PER_DAY + DAWN_TICK + 16);
 
     // A town that wanders is at tick 0, in the night, and still runs a tick a slot at 1×.
     const wandering = fakePage({ town: true });
@@ -546,12 +549,16 @@ describe('the sim loop', () => {
     expect([page.tick(), world.inputs.cursor[0]]).toEqual([700, 0]);
   });
 
-  it('opens a town with streets at 06:00, running its night at once and posting the economy day that fell in it on Play', () => {
+  it('opens a town with streets at 07:00, running its night at once and posting the economy day that fell in it on Play', () => {
     const page = fakePage({ streets: true });
 
     expect(page.tick()).toBe(OPENING_TICK);
     expect(page.posted.map(({ type }) => type)).toEqual(['ready', 'snapshot']);
     expect(page.posted[1]).toMatchObject({ type: 'snapshot', tick: OPENING_TICK, count: TOWN_PEOPLE });
+    // By 07:00 most blobs are out on their trips, where at 06:00 every one was still indoors.
+    const words = new Uint32Array(page.ofType('snapshot')[0].buffer);
+    const outdoors = Array.from({ length: TOWN_PEOPLE }, (_, blob) => indoorsOf(words[3 * blob + 2])).filter((indoors) => indoors === 0);
+    expect(outdoors.length).toBeGreaterThan(TOWN_PEOPLE / 2);
     const twin = streetTown(42, 'phone', TOWN_PEOPLE);
     while (currentTick(twin) < OPENING_TICK) step(twin);
     expect(stateHash(page.world())).toBe(stateHash(twin));
@@ -564,7 +571,7 @@ describe('the sim loop', () => {
     expect(page.ofType('economy')).toHaveLength(1);
   });
 
-  it('runs a switched town with streets up to its 06:00, but a request for the live town stays where it is', () => {
+  it('runs a switched town with streets up to its 07:00, but a request for the live town stays where it is', () => {
     const page = fakePage({ streets: true });
     const world = page.world();
     const twin = streetTown(42, 'phone', TOWN_PEOPLE);
@@ -575,7 +582,7 @@ describe('the sim loop', () => {
     page.handle({ type: 'open', place: 0, map: new ArrayBuffer(OPENED_PEOPLE) });
     expect(page.ofType('opened')).toEqual([{ type: 'opened', place: 0, agents: TOWN_PEOPLE, width: 64, height: 64, tick: restingAt }]);
 
-    // The switch lands at day 2's boundary, and the new town's night runs on from the step after it to 06:00.
+    // The switch lands at day 2's boundary, and the new town's night runs on from the step after it to 07:00.
     page.handle({ type: 'open', place: 1, map: new ArrayBuffer(OPENED_PEOPLE) });
     const landedAt = 2 * TICKS_PER_DAY + OPENING_TICK;
     const opened = page.ofType('opened')[1];
@@ -629,7 +636,8 @@ describe('the sim loop', () => {
     const agent = 7;
     const at = { x: agents.x[agent] / 256, y: agents.y[agent] / 256 };
 
-    // The town opens at 06:00 with everyone indoors, so a click right on a blob finds no one.
+    // Everyone indoors, so a click right on a blob finds no one.
+    errands.phase.fill(PHASE_ASLEEP);
     page.handle({ type: 'inspect', ...at });
     expect(page.ofType('inspected').map((reply) => reply.agent)).toEqual([-1]);
 

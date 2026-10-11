@@ -1,15 +1,8 @@
-import { minuteOf } from '../time/calendar.ts';
-import { STREETS, TICK, type World } from '../world/world.ts';
+import { TICK, type World } from '../world/world.ts';
 import { FIRST_WALKING, PHASE_COMING } from './errands.ts';
 import { snapToTile, startRun } from './motion.ts';
 import { MAX_RUNS, RUN_BYTES } from './runs.ts';
-import { OPENING_MINUTE, arrive, wake } from './timetable.ts';
-
-// Whether the day has not yet reached the hour a town with streets opens. Its blobs are all indoors until then, so a worker
-// may run the night at once, with no snapshots, when a town is spawned or switched (M2.7 Ruling 3).
-export function streetsAsleep(world: World): boolean {
-  return world.globals[STREETS] === 1 && minuteOf(world.globals[TICK]) < OPENING_MINUTE;
-}
+import { arrive, wake } from './timetable.ts';
 
 // A run is done. The blob steps to the centre of its cell, which a diagonal run overshoots by up to a sub-pixel step, and takes
 // the next run of its way, or stops at the end of it.

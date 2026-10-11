@@ -17,7 +17,6 @@ import {
   nearestAgent,
   requestTown,
   step,
-  streetsAsleep,
   warmUp,
   type Ground,
   type Homes,
@@ -54,6 +53,10 @@ export const SLEEP_MIN_MS = 4;
 export const NIGHT_SPEEDUP = 8;
 const NIGHT_FROM_MINUTE = 1_320;
 const NIGHT_TO_MINUTE = 360;
+// A town with streets is first shown at 07:00 (coordinator, 11 October 2026; M2.7 Ruling 3). At 06:00 every blob is indoors, so
+// the first screen would be an empty town, where 1,793 of Highcourt's 2,600 are out by 07:00. The run up to it is pacing only:
+// it moves no tick's state.
+const FIRST_VIEW_MINUTE = 420;
 // One tile.
 const INSPECT_RADIUS_Q8 = TILE_PX * SUBPIXELS;
 const NO_EMPLOYER = -1;
@@ -93,8 +96,8 @@ export function createSimLoop(host: LoopHost, cpuSlowdown = 1): { handle(msg: Ap
   let running = false;
   let speed: Speed = 1;
   let turnPending = false;
-  // A town's day has ended since its economy feed was last posted, in a turn or in the night an opening ran, so the next turn
-  // posts it.
+  // A town's day has ended since its economy feed was last posted, in a turn or in the run up to the first view, so the next
+  // turn posts it.
   let feedDue = false;
   let lastMs = 0;
   let accMs = 0;
@@ -148,7 +151,7 @@ export function createSimLoop(host: LoopHost, cpuSlowdown = 1): { handle(msg: Ap
     const world = host.makeWorld(seed, tier, map, agents);
     world.checks = checks;
     const feed = createEconomyFeed();
-    feedDue = runNight(world, feed);
+    feedDue = runToFirstView(world, feed);
     const pool = createSnapshotPool(world.agents.capacity);
     session = { world, pool, feed };
     post({ type: 'ready', agents: world.agents.count[0] }, []);
@@ -275,7 +278,7 @@ export function createSimLoop(host: LoopHost, cpuSlowdown = 1): { handle(msg: Ap
   // whether or not the run is paused. The handler is one turn, so no checkpoint or inspect falls between the request and the
   // switch. The map is read first, so a bad one changes nothing. A request for the live town, or one the sim refuses, switches
   // nothing, and opened names the town still live. The snapshot lets a paused page draw the new town, as init's does. A town
-  // with streets then opens at 06:00, which only a real switch runs up to.
+  // with streets then opens at 07:00, which only a real switch runs up to.
   function openTown(session: Session, place: number, map: ArrayBuffer): void {
     const world = session.world;
     if (place !== world.focus[0]) {
@@ -283,7 +286,7 @@ export function createSimLoop(host: LoopHost, cpuSlowdown = 1): { handle(msg: Ap
       if (requestTown(world, place, ground, homes, shops)) {
         while (world.focus[FOCUS_PENDING] !== NO_PLACE) step(world);
         session.feed = createEconomyFeed();
-        feedDue = runNight(world, session.feed);
+        feedDue = runToFirstView(world, session.feed);
       }
     }
     const { width, height } = world.ground;
@@ -320,12 +323,17 @@ function isStreetNight(world: World): boolean {
   return minute >= NIGHT_FROM_MINUTE || minute < NIGHT_TO_MINUTE;
 }
 
-// A town with streets opens at 06:00 (M2.7 Ruling 3), so its night runs at once, with no snapshots, as a switch runs out a day.
-// The day's economy ends inside it, so its row goes into the feed as a turn would write it. Whether it did tells the caller that
-// the feed is due, so the next turn posts it, where the panel would otherwise wait a day for its first row.
-function runNight(world: World, feed: EconomyMessage): boolean {
+// Whether a town with streets has yet to reach the hour it is first shown.
+function beforeFirstView(world: World): boolean {
+  return world.globals[STREETS] === 1 && minuteOf(currentTick(world)) < FIRST_VIEW_MINUTE;
+}
+
+// A town with streets opens at 07:00, so its night and the hour after run at once, with no snapshots, as a switch runs out a
+// day. The day's economy ends inside it, so its row goes into the feed as a turn would write it. Whether it did tells the caller
+// that the feed is due, so the next turn posts it, where the panel would otherwise wait a day for its first row.
+function runToFirstView(world: World, feed: EconomyMessage): boolean {
   let fed = false;
-  while (streetsAsleep(world)) {
+  while (beforeFirstView(world)) {
     step(world);
     if (economyDayEnded(world)) {
       writeEconomyFeed(world, feed);
