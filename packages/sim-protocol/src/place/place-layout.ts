@@ -69,7 +69,9 @@ export interface PlaceCrowd {
 
 // Place p is settlement p, or wonder p minus the settlement count: the order of tools/worldgen/world.py's place_contexts.
 export type PlaceRequest = { type: 'place'; place: number };
-export type PlaceReply = { type: 'place'; place: number; layout: PlaceLayout; walks: PlaceWalks; crowd: PlaceCrowd; ms: number };
+// map is a settlement's ground as .nmap bytes, which the page hands the sim worker in an open message to run the town live
+// (M2.2c), or null for a wonder's vista, which has none.
+export type PlaceReply = { type: 'place'; place: number; layout: PlaceLayout; map: ArrayBuffer | null; ms: number };
 // The map worker's answer instead when it cannot build place p: an unknown index, no world yet, or a failed build.
 export type PlaceError = { type: 'place-error'; place: number; message: string };
 
@@ -103,10 +105,6 @@ export function layoutBuffers(layout: PlaceLayout): ArrayBuffer[] {
   ]);
 }
 
-export function placeBuffers(layout: PlaceLayout, walks: PlaceWalks, crowd: PlaceCrowd): ArrayBuffer[] {
-  return [
-    ...layoutBuffers(layout),
-    ...buffersOf([walks.person, walks.offsets, walks.cells]),
-    ...buffersOf([crowd.look, crowd.expression, crowd.loop, crowd.phase, crowd.offsets, crowd.cells]),
-  ];
+export function placeBuffers(layout: PlaceLayout, map: ArrayBuffer | null): ArrayBuffer[] {
+  return map ? [...layoutBuffers(layout), map] : layoutBuffers(layout);
 }

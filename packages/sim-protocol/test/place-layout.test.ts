@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { NO_CODE, placeBuffers, type PlaceCrowd, type PlaceLayout, type PlaceWalks } from '../src/place/place-layout.ts';
+import { NO_CODE, layoutBuffers, placeBuffers, type PlaceLayout } from '../src/place/place-layout.ts';
 
-function tinyPlace(): { layout: PlaceLayout; walks: PlaceWalks; crowd: PlaceCrowd } {
+function tinyPlace(): { layout: PlaceLayout; map: ArrayBuffer } {
   const layout: PlaceLayout = {
     width: 2,
     height: 1,
@@ -22,16 +22,7 @@ function tinyPlace(): { layout: PlaceLayout; walks: PlaceWalks; crowd: PlaceCrow
       lift: new Uint8Array([0]),
     },
   };
-  const walks: PlaceWalks = { person: new Uint16Array([0]), offsets: new Int32Array([0, 2]), cells: new Int32Array([1, 0]) };
-  const crowd: PlaceCrowd = {
-    look: new Uint8Array([7]),
-    expression: new Uint8Array([1]),
-    loop: new Uint16Array([0]),
-    phase: new Uint16Array([5]),
-    offsets: new Int32Array([0, 2]),
-    cells: new Int32Array([0, 1]),
-  };
-  return { layout, walks, crowd };
+  return { layout, map: new Uint8Array([78, 77, 65, 80]).buffer };
 }
 
 function views(value: unknown): ArrayBufferView[] {
@@ -41,14 +32,20 @@ function views(value: unknown): ArrayBufferView[] {
 }
 
 describe('the place layout', () => {
-  it('lists every column buffer once, so one transfer moves them all', () => {
+  it('lists every column buffer and the ground once, so one transfer moves them all', () => {
     const place = tinyPlace();
-    const buffers = placeBuffers(place.layout, place.walks, place.crowd);
+    const buffers = placeBuffers(place.layout, place.map);
     expect(new Set(buffers).size).toBe(buffers.length);
-    expect(new Set(buffers)).toEqual(new Set(views(place).map((view) => view.buffer)));
+    expect(new Set(buffers)).toEqual(new Set([...views(place.layout).map((view) => view.buffer), place.map]));
     const moved = structuredClone(place, { transfer: buffers });
     expect(moved.layout.people.look[0]).toBe(95);
-    expect(moved.walks.cells[0]).toBe(1);
+    expect(new Uint8Array(moved.map)[0]).toBe(78);
     expect(place.layout.tiles.byteLength).toBe(0);
+    expect(place.map.byteLength).toBe(0);
+  });
+
+  it("lists the layout alone for a wonder's vista, which has no ground", () => {
+    const { layout } = tinyPlace();
+    expect(placeBuffers(layout, null)).toEqual(layoutBuffers(layout));
   });
 });

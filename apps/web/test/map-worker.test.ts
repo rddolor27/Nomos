@@ -1,7 +1,15 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it, vi } from 'vitest';
+import { writeMap } from '@nomos/sim-protocol/map';
 import { layoutBuffers, placeBuffers, type PlaceError, type PlaceReply } from '@nomos/sim-protocol/place';
 import { buildPlace, TOWN, worldFingerprint } from '@nomos/worldgen';
 import { answerGenerate, answerPlace, answerTown } from '../src/map/generate.ts';
+
+const TOWN_MAP = new URL('../../../assets/maps/town.nmap', import.meta.url);
+
+function bytes(map: ArrayBuffer | null): Uint8Array | null {
+  return map ? new Uint8Array(map) : null;
+}
 
 describe('the map worker', { timeout: 60_000 }, () => {
   it('answers generate with the world, its names and its timings, every buffer listed', () => {
@@ -52,10 +60,11 @@ describe('the map worker', { timeout: 60_000 }, () => {
       expect(reply).toMatchObject({ type: 'place', place, ms: 7 });
       expect(reply.layout.width).toBe(width);
       expect(reply.layout).toEqual(fresh.layout);
-      expect(reply.walks).toEqual(fresh.walks);
-      expect(reply.walks.person.length).toBeGreaterThan(0);
-      expect(transfer).toEqual(placeBuffers(reply.layout, reply.walks, reply.crowd));
+      expect(bytes(reply.map)).toEqual(bytes(fresh.map && writeMap(fresh.map)));
+      expect(transfer).toEqual(placeBuffers(reply.layout, reply.map));
       expect(new Set(transfer).size).toBe(transfer.length);
+      // A settlement's ground is the sim's: place 0 is Highcourt's town.nmap, byte for byte. A wonder has none.
+      expect(bytes(reply.map)).toEqual(place === 0 ? new Uint8Array(readFileSync(TOWN_MAP)) : null);
       const moved = structuredClone(reply, { transfer });
       expect(reply.layout.tiles.byteLength).toBe(0);
       expect(moved.layout.frames).toEqual(fresh.layout.frames);
