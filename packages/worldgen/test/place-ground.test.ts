@@ -1,5 +1,16 @@
 import { readFileSync } from 'node:fs';
-import { parseMap, WALK_DOOR, WALK_OPEN, WALK_ROAD, writeMap, type MapV1 } from '@nomos/sim-protocol/map';
+import {
+  ENTITY_CIVIC,
+  ENTITY_GREEN,
+  ENTITY_PLAZA,
+  parseMap,
+  WALK_DOOR,
+  WALK_OPEN,
+  WALK_ROAD,
+  writeMap,
+  type MapEntity,
+  type MapV1,
+} from '@nomos/sim-protocol/map';
 import { premisesOf, sellersOf, TRADES } from '@nomos/sim-protocol/premises';
 import { describe, expect, it } from 'vitest';
 import { buildPlace, generateWorld, placeContexts, TOWN } from '../src/index.ts';
@@ -29,6 +40,8 @@ const DOOR_COLUMN: Readonly<Record<string, number>> = {
   'buildings/shop_fuel-store_shed': 1,
   'buildings/shop_fuel-store_stack': 3,
 };
+// Greens to a walled tier (M3.1 Part 3, Rule 9), which a crowded town may lay fewer of.
+const GREENS_OF_TIER: Readonly<Record<string, number>> = { capital: 3, city: 3, town: 2 };
 const STEPS: readonly (readonly [number, number])[] = [
   [0, -1],
   [1, 0],
@@ -60,11 +73,45 @@ function touchesStreet(map: MapV1, x: number, y: number): boolean {
 function doorProblems(label: string, map: MapV1): string[] {
   const problems: string[] = [];
   map.entities.forEach((entity, i) => {
+    if (entity.kind > ENTITY_CIVIC) return;
     if (map.walk[entity.doorY * map.width + entity.doorX] !== WALK_DOOR) problems.push(`${label} entity ${i}: its door tile is no door`);
     if (map.frames[entity.frame] !== DOCK && !touchesStreet(map, entity.doorX, entity.doorY)) {
       problems.push(`${label} entity ${i}: its door touches no open or road tile`);
     }
   });
+  return problems;
+}
+
+function leisureOf(map: MapV1, kind: MapEntity['kind']): MapEntity[] {
+  return map.entities.filter((entity) => entity.kind === kind);
+}
+
+// A leisure place's door lies inside it, or for a village's green on the ring path round it, on ground to stand on.
+function standsOn(map: MapV1, entity: MapEntity, margin: number): boolean {
+  const { doorX, doorY } = entity;
+  const inside =
+    entity.x - margin <= doorX && doorX < entity.x + entity.w + margin && entity.y - margin <= doorY && doorY < entity.y + entity.h + margin;
+  const walk = map.walk[doorY * map.width + doorX];
+  return inside && (walk === WALK_OPEN || walk === WALK_ROAD);
+}
+
+// Each place has one plaza and, if it is walled, up to its tier's greens, all with doors on open ground, and it lists them after
+// every building, so a premises keeps its index.
+function leisureProblems(label: string, tier: string | null, map: MapV1): string[] {
+  const problems: string[] = [];
+  const plazas = leisureOf(map, ENTITY_PLAZA);
+  const greens = leisureOf(map, ENTITY_GREEN);
+  if (plazas.length !== 1) problems.push(`${label}: ${plazas.length} plazas`);
+  if (greens.length > (GREENS_OF_TIER[tier ?? ''] ?? 0)) problems.push(`${label}: ${greens.length} greens`);
+  // A village's or hamlet's plaza is its green, whose door may lie on the path that rings it.
+  const margin = (tier ?? '') in GREENS_OF_TIER ? 0 : 1;
+  for (const entity of [...plazas, ...greens]) {
+    if (!standsOn(map, entity, entity.kind === ENTITY_PLAZA ? margin : 0)) {
+      problems.push(`${label}: the door of its ${entity.kind === ENTITY_PLAZA ? 'plaza' : 'green'} is not on open ground in it`);
+    }
+  }
+  const firstLeisure = map.entities.findIndex((entity) => entity.kind > ENTITY_CIVIC);
+  if (map.entities.slice(firstLeisure).some((entity) => entity.kind <= ENTITY_CIVIC)) problems.push(`${label}: a building follows a leisure place`);
   return problems;
 }
 
@@ -107,7 +154,23 @@ describe('the ground of a place', { timeout: 300_000 }, () => {
     expect(wrongDoors).toEqual([]);
   });
 
-  it(`opens every door but a dock's onto a street, gives each trade its premises, and gives a wonder no ground, in every place of the first ${WORLDS} standard worlds`, () => {
+  it("has Highcourt's plaza in front of its fountain and its three greens at the middle of theirs", () => {
+    const { map } = buildPlace(TOWN);
+    if (map === null) throw new Error('Highcourt has no ground');
+
+    const where = (entity: MapEntity): number[] => [entity.x, entity.y, entity.w, entity.h, entity.doorX, entity.doorY];
+    // The plaza is 28 by 8 from (74, 52), and its fountain stands at (87, 57), 3 wide and 2 high: the door is the tile below its
+    // middle. The greens are 6 by 4, the door at (x + 3, y + 2).
+    expect(leisureOf(map, ENTITY_PLAZA).map(where)).toEqual([[74, 52, 28, 8, 88, 59]]);
+    expect(leisureOf(map, ENTITY_GREEN).map(where)).toEqual([
+      [128, 22, 6, 4, 131, 24],
+      [38, 22, 6, 4, 41, 24],
+      [129, 17, 6, 4, 132, 19],
+    ]);
+    expect(map.entities.slice(-4).map((entity) => entity.kind)).toEqual([ENTITY_PLAZA, ENTITY_GREEN, ENTITY_GREEN, ENTITY_GREEN]);
+  });
+
+  it(`opens every door but a dock's onto a street, gives each trade its premises and each place its plaza and greens, and gives a wonder no ground, in every place of the first ${WORLDS} standard worlds`, () => {
     const problems: string[] = [];
     let places = 0;
     let most = { beds: 0, label: '' };
@@ -125,7 +188,7 @@ describe('the ground of a place', { timeout: 300_000 }, () => {
           return;
         }
         places++;
-        problems.push(...doorProblems(label, map), ...premisesProblems(label, ctx.tier, map));
+        problems.push(...doorProblems(label, map), ...premisesProblems(label, ctx.tier, map), ...leisureProblems(label, ctx.tier, map));
         expect(parseMap(writeMap(map)), `${label}: its bytes parse to another map`).toEqual(map);
         if (bedsIn(map) > most.beds) most = { beds: bedsIn(map), label };
       });

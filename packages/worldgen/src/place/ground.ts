@@ -1,7 +1,9 @@
 import { floorDiv } from '@nomos/sim-core/kernels';
 import {
   ENTITY_CIVIC,
+  ENTITY_GREEN,
   ENTITY_HOME,
+  ENTITY_PLAZA,
   ENTITY_SHOP,
   ENTITY_WORKPLACE,
   WALK_BLOCKED,
@@ -12,7 +14,8 @@ import {
   type MapV1,
 } from '@nomos/sim-protocol/map';
 import { KIND_RGB } from './kind-colours.ts';
-import { CLIFFS, type Cell, type Site } from './site.ts';
+import { landmarkFrame } from './landmarks.ts';
+import { CLIFFS, type Cell, type Rect, type Site } from './site.ts';
 import { tileFor } from './tiles.ts';
 
 interface Footprint {
@@ -235,13 +238,93 @@ function frameOfSprite(standing: ReadonlyMap<string, string>, name: string): str
   return frame;
 }
 
-// export_map.py's town_map: a settlement's walk grid and its buildings with their doors, as map v1 holds them.
+// The open ground or road tile of `area` nearest `target`, the first in reading order at a tie, or null where it has none. A
+// door tile is no place to stand, since blobs buy there, and a wall or a prop blocks.
+function openNear(cells: Cells, width: number, target: Cell, area: Rect): Cell | null {
+  const [x0, y0, w, h] = area;
+  let best: Cell | null = null;
+  let bestCost = Number.MAX_SAFE_INTEGER;
+  for (let y = y0; y < y0 + h; y++) {
+    for (let x = x0; x < x0 + w; x++) {
+      const walk = cells.walk[y * width + x];
+      const cost = Math.abs(x - target[0]) + Math.abs(y - target[1]);
+      if ((walk === WALK_OPEN || walk === WALK_ROAD) && cost < bestCost) {
+        best = [x, y];
+        bestCost = cost;
+      }
+    }
+  }
+  return best;
+}
+
+// The rect grown by `margin` tiles each way, kept on the map.
+function grown(site: Site, [x, y, w, h]: Rect, margin: number): Rect {
+  const x0 = Math.max(0, x - margin);
+  const y0 = Math.max(0, y - margin);
+  return [x0, y0, Math.min(site.w, x + w + margin) - x0, Math.min(site.h, y + h + margin) - y0];
+}
+
+// A leisure place of M3.2 as an entity: it stands on no footprint, so its door is a tile of the place itself, and its frame
+// is the ground tile there. It has no door tile in the walk grid, since nobody enters it.
+function leisureEntity(
+  kind: typeof ENTITY_PLAZA | typeof ENTITY_GREEN,
+  [x, y, w, h]: Rect,
+  [doorX, doorY]: Cell,
+  cells: Cells,
+  width: number,
+): MapEntity {
+  return { kind, x, y, w, h, doorX, doorY, frame: cells.tiles[doorY * width + doorX], capacity: 0, opens: 0, closes: 0 };
+}
+
+// The tile below the fountain's footprint, where its front faces, or the middle of the plaza where it has no fountain.
+function fountainFront(site: Site): Cell {
+  const fountain = site.places.get(landmarkFrame('fountain'))?.[0];
+  return fountain === undefined ? [site.cx, site.cy] : [fountain[0] + floorDiv(fountain[2], 2), fountain[1] + fountain[3]];
+}
+
+// A town's plaza is its paved square, with its door in front of the fountain. A village's is its green, and its door the tile
+// just below the well, which stands in the middle.
+function plazaOf(site: Site, cells: Cells): MapEntity | null {
+  if (site.plaza !== null) {
+    const door = openNear(cells, site.w, fountainFront(site), site.plaza);
+    return door === null ? null : leisureEntity(ENTITY_PLAZA, site.plaza, door, cells, site.w);
+  }
+  if (site.green.length === 0) return null;
+  const xs = site.green.map(([x]) => x);
+  const ys = site.green.map(([, y]) => y);
+  const x0 = Math.min(...xs);
+  const y0 = Math.min(...ys);
+  const green: Rect = [x0, y0, Math.max(...xs) - x0 + 1, Math.max(...ys) - y0 + 1];
+  const door = openNear(cells, site.w, [site.cx, site.cy + 1], grown(site, green, 1));
+  return door === null ? null : leisureEntity(ENTITY_PLAZA, green, door, cells, site.w);
+}
+
+// A walled town's greens, each with its door at the middle, which is open ground kept clear.
+function greensOf(site: Site, cells: Cells): MapEntity[] {
+  const greens: MapEntity[] = [];
+  for (const green of site.townGreens) {
+    const middle: Cell = [green[0] + floorDiv(green[2], 2), green[1] + floorDiv(green[3], 2)];
+    const door = openNear(cells, site.w, middle, green);
+    if (door !== null) greens.push(leisureEntity(ENTITY_GREEN, green, door, cells, site.w));
+  }
+  return greens;
+}
+
+// The places blobs go to for their own sake (M3.2): the plaza, then the greens. Water is not listed, since the terrain has it.
+function leisureEntities(site: Site, cells: Cells): MapEntity[] {
+  const plaza = plazaOf(site, cells);
+  return [...(plaza === null ? [] : [plaza]), ...greensOf(site, cells)];
+}
+
+// export_map.py's town_map: a settlement's walk grid and its buildings with their doors, as map v1 holds them, then the
+// leisure places of M3.2 after every building, so the premises keep their indexes.
 export function groundOf(site: Site): MapV1 {
   const found = footprints(site);
   const placed = placedOf(site, found);
   const cells = cellsOf(site, builtKinds(site, found), placed);
   const standing = standingFrames(site);
   const entities = placed.map((p) => entityOf(p, cells.frames.code(frameOfSprite(standing, p.footprint.name))));
+  entities.push(...leisureEntities(site, cells));
   const kinds = cells.kinds.names.map((name) => ({
     name,
     rgb: lookup(KIND_RGB, name, `terrain kind ${name} has no colour: add it to tools/sprites/kind_colours.py and rerun it`),

@@ -17,7 +17,7 @@ import {
 
 const townFile = new URL('../../../assets/maps/town.nmap', import.meta.url);
 
-const BUILT_KIND: Record<MapEntity['kind'], string> = {
+const BUILT_KIND: Readonly<Record<number, string>> = {
   [ENTITY_HOME]: 'home',
   [ENTITY_WORKPLACE]: 'workplace',
   [ENTITY_SHOP]: 'shop',
@@ -65,13 +65,14 @@ describe('the town map', () => {
   it('blocks every footprint and opens every door', () => {
     const town = loadTown();
 
-    const problems = town.entities.flatMap((entity, index) => [
-      ...footprintProblems(town, entity, index),
-      ...doorProblems(town, entity, index),
-    ]);
+    // The plaza and the greens that follow the buildings stand on open ground, with no footprint and no door tile.
+    const problems = town.entities.flatMap((entity, index) =>
+      entity.kind > ENTITY_CIVIC ? [] : [...footprintProblems(town, entity, index), ...doorProblems(town, entity, index)],
+    );
     expect(problems).toEqual([]);
 
-    const doorCells = new Set(town.entities.map((entity) => entity.doorY * town.width + entity.doorX));
+    const buildings = town.entities.filter((entity) => entity.kind <= ENTITY_CIVIC);
+    const doorCells = new Set(buildings.map((entity) => entity.doorY * town.width + entity.doorX));
     const strayDoors = Array.from(town.walk.keys()).filter((cell) => town.walk[cell] === WALK_DOOR && !doorCells.has(cell));
     expect(strayDoors).toEqual([]);
   });
