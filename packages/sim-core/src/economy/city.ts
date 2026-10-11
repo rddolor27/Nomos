@@ -42,14 +42,14 @@ export const CITY = Object.freeze<EconomyParams>({
   // to it, and it pays under the exit line and exits again every month.
   shortPayExitPpm: 0,
   fiatIssuePpm: 0,
-  // Off until M2.4's task 4 re-measures the city with goods on; { ...CITY, goods: 0 } is M2.3's city.
-  goods: 0,
+  // M2.4: the seven goods and food. { ...CITY, goods: 0 } is M2.3's city.
+  goods: 1,
   openingCash: 310_000,
   openingWage: 142_800,
   // 3,200 x 63 is 1.41 x the 142,800 wage, inside the band.
   openingPrice: 3_200,
   // Measured here (`economy --preset city --burn-in --seeds 5 --seed 1 --days 40000`: seeds 1-5, 40,000 days, Node 24.18.0,
-  // 10 October 2026, exits off): MSER-5 cut 12,285 days of the mean price and 10,900 of the unemployment share, and
-  // 1.5 x 12,285 rounds up to 18,428 (M2.3 Ruling 18).
-  burnInDays: 18_428,
+  // 11 October 2026, exits off, goods on): MSER-5 cut 19,910 days of the mean price and 11,445 of the unemployment share,
+  // and 1.5 x 19,910 is 29,865 (M2.3 Ruling 18). M2.3's city, without goods, cut 12,285 and 10,900.
+  burnInDays: 29_865,
 });

@@ -189,8 +189,8 @@ describe('the goods flag and the state hash', () => {
 describe('EconomyParams.goods', () => {
   const withGoods = (goods: number): EconomyParams => ({ ...CITY, goods });
 
-  it('is 0 in both presets, so they run as before', () => {
-    expect([LENGNICK.goods, CITY.goods]).toEqual([0, 0]);
+  it('is 0 in LENGNICK, so it runs as before, and 1 in CITY', () => {
+    expect([LENGNICK.goods, CITY.goods]).toEqual([0, 1]);
   });
 
   it('is a switch of 0 or 1, and passes in every tier', () => {

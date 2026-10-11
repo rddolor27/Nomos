@@ -101,7 +101,7 @@ describe('eating', () => {
     expect(hashAfter(GOODS_CITY)).toBe(hashAfter(GOODS_CITY));
     expect(hashAfter(GOODS_CITY)).not.toBe(hashAfter({ ...CITY, goods: 0 }));
 
-    const off = started(7, CITY);
+    const off = started(7, { ...CITY, goods: 0 });
     buyFood(off, 0);
     expect([off.economyScratch.stats[STAT_EATEN], off.economyScratch.stats[STAT_UNMET]]).toEqual([0, 0]);
   });

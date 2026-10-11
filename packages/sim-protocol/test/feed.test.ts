@@ -64,9 +64,9 @@ describe('the economy feed', () => {
     expect(unemploymentPpm(world)).toBeGreaterThan(0);
     expect(feed.unemploymentPpm[0]).toBe(unemploymentPpm(world));
 
-    // Day 0 opens a month and ends no month, so no price moves between the shopping and the feed. A town with goods off
-    // shops for one ring only.
-    expect(feed.trades).toBe(TRADE_RING);
+    // Day 0 opens a month and ends no month, so no price moves between the shopping and the feed. The town buys food and
+    // goods, and each ring is full.
+    expect(feed.trades).toBe(FEED_TRADES);
     let tradedCents = 0;
     for (let i = 0; i < feed.trades; i++) {
       expect(feed.tradeShop[i]).toBeLessThan(firms.count[0]);
