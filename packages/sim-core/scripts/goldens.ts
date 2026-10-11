@@ -6,6 +6,7 @@ import {
   economyHash,
   replayHash,
   spawnHash,
+  streetsHash,
   switchHash,
   townHash,
   visitHash,
@@ -30,6 +31,9 @@ const AWAY_LARGEST_HOME = 24;
 const AWAY_MONTHS = 12;
 // The switch's two towns, with place 1 first entered on day 50, after months 1 and 2 began.
 const VISIT_DAY = 50;
+// The street town's checkpoint falls at 07:30, with most of its blobs on their way to work.
+const STREETS_PEOPLE = 1_000;
+const STREETS_SAVED = 450;
 const SPAWN_SEED = 2026;
 const SPAWN_RECORDS = 20;
 
@@ -60,6 +64,14 @@ const goldens: Goldens = {
     day: VISIT_DAY,
     hash: visitHash(SEED, ECONOMY_TIER, SWITCH_PEOPLE, VISIT_DAY),
   },
+  streets: {
+    seed: SEED,
+    tier: ECONOMY_TIER,
+    people: STREETS_PEOPLE,
+    saved: STREETS_SAVED,
+    ticks: TICKS,
+    hash: streetsHash(SEED, ECONOMY_TIER, STREETS_PEOPLE, TICKS),
+  },
   spawn: { seed: SPAWN_SEED, hashes: [] },
 };
 for (const tier of Object.keys(TIER_AGENTS) as Tier[]) {
@@ -74,4 +86,5 @@ console.log(`${SEED}/${ECONOMY_TIER} town people=${TOWN_PEOPLE} ticks=${TICKS} h
 console.log(`${SEED}/${ECONOMY_TIER} switch people=${SWITCH_PEOPLE.join('+')} ticks=${SWITCH_TICKS} hash=${goldens.switch.hash}`);
 console.log(`${SEED} away people=${AWAY_PEOPLE} months=${AWAY_MONTHS} row=${goldens.away.row.join(',')}`);
 console.log(`${SEED}/${ECONOMY_TIER} visit people=${SWITCH_PEOPLE.join('+')} day=${VISIT_DAY} hash=${goldens.visit.hash}`);
+console.log(`${SEED}/${ECONOMY_TIER} streets people=${STREETS_PEOPLE} saved=${STREETS_SAVED} ticks=${TICKS} hash=${goldens.streets.hash}`);
 for (const [index, hash] of goldens.spawn.hashes.entries()) console.log(`${SPAWN_SEED}/${index} spawn hash=${hash}`);

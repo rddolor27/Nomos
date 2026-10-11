@@ -15,10 +15,11 @@ import { LEDGER_FIELDS, townRecord } from '../../src/spawn/record.ts';
 import { spawnFromLedger } from '../../src/spawn/spawn.ts';
 import { createStandInTown, createTown } from '../../src/spawn/town.ts';
 import { DAYS_PER_MONTH, TICKS_PER_DAY } from '../../src/time/calendar.ts';
-import { stateHash } from '../../src/world/checkpoint.ts';
+import { checkpoint, restoreWorld, stateHash } from '../../src/world/checkpoint.ts';
 import { standInGround } from '../../src/world/ground.ts';
 import { TICK, createWorld, layoutWorld } from '../../src/world/world.ts';
 import { randomRecord } from './records.ts';
+import { streetTown } from './street-town.ts';
 
 interface DrawCase {
   seed: number;
@@ -78,6 +79,10 @@ export interface Goldens {
   away: { seed: number; people: number; largestHome: number; months: number; row: number[] };
   // The switch's place 1 entered for the first time by one step on day, and hashed after it.
   visit: { seed: number; tier: Tier; people: number[]; day: number; hash: string };
+  // A town of people on a synthetic street ground with three shops, one of them a stall, stepped for ticks from its first
+  // morning. A twin restored from a checkpoint taken at saved, while blobs are mid-trip, and stepped on to ticks ends at the
+  // same hash.
+  streets: { seed: number; tier: Tier; people: number; saved: number; ticks: number; hash: string };
   // seed is randomRecord's, and hashes[index] is spawnHash(seed, index).
   spawn: { seed: number; hashes: string[] };
 }
@@ -183,6 +188,24 @@ export function visitHash(seed: number, tier: Tier, people: readonly number[], d
   return stateHash(world).toString(16).padStart(8, '0');
 }
 
+// A town whose blobs walk to work and to three shops, on a ground made in street-town.ts and not a map, so the pinned hash never
+// moves with the generator. Day 0 is a workday, and 1,000 ticks reach the walk home from work.
+export function streetsHash(seed: number, tier: Tier, people: number, ticks: number): string {
+  const world = streetTown(seed, tier, people);
+  for (let tick = 0; tick < ticks; tick++) step(world);
+  return stateHash(world).toString(16).padStart(8, '0');
+}
+
+// The same town checkpointed at `saved`, with blobs mid-trip, then restored into a twin that is stepped on to `ticks`. The fields
+// and the shops' columns lie outside the hash but inside a checkpoint, so only stepping the twin on shows a restore that lost them.
+export function restoredStreetsHash(seed: number, tier: Tier, people: number, saved: number, ticks: number): string {
+  const world = streetTown(seed, tier, people);
+  for (let tick = 0; tick < saved; tick++) step(world);
+  const twin = restoreWorld(seed, tier, checkpoint(world), world.ground);
+  for (let tick = saved; tick < ticks; tick++) step(twin);
+  return stateHash(twin).toString(16).padStart(8, '0');
+}
+
 // A random record fits a phone world laid out for 1,500 agents in 1 MiB, and 500 stand-in homes hold over twice its
 // people, so any record seats. Each index spawns into its own world seed, settlement and day.
 const SPAWN_AGENTS = 1_500;
@@ -217,6 +240,10 @@ export function checkGoldens(goldens: Goldens): EngineReport {
   checkCase(report, 'away', away, awayRow(away.seed, away.people, away.largestHome, away.months).join(), awayWant.join());
   const { hash: visitWant, ...visit } = goldens.visit;
   checkCase(report, 'visit', visit, visitHash(visit.seed, visit.tier, visit.people, visit.day), visitWant);
+  const { hash: streetsWant, ...streets } = goldens.streets;
+  checkCase(report, 'streets', streets, streetsHash(streets.seed, streets.tier, streets.people, streets.ticks), streetsWant);
+  const restored = restoredStreetsHash(streets.seed, streets.tier, streets.people, streets.saved, streets.ticks);
+  checkCase(report, 'streets restored', streets, restored, streetsWant);
   const { seed, hashes } = goldens.spawn;
   for (let index = 0; index < hashes.length; index++) {
     checkCase(report, 'spawn', { seed, index }, spawnHash(seed, index), hashes[index]);

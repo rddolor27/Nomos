@@ -2,18 +2,22 @@ import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
+import { FIRST_WALKING, PHASE_KEEPING } from '../src/street/errands.ts';
 import {
   awayRow,
   checkGoldens,
   checkKernels,
   economyHash,
   spawnHash,
+  streetsHash,
   switchHash,
   townHash,
   visitHash,
   type Goldens,
   type KernelFixture,
 } from './engines/checks.ts';
+import { streetTown } from './engines/street-town.ts';
+import { run } from './run.ts';
 
 const kernels: KernelFixture = JSON.parse(readFileSync(new URL('./fixtures/kernels.json', import.meta.url), 'utf8'));
 const goldens: Goldens = JSON.parse(readFileSync(new URL('./fixtures/goldens.json', import.meta.url), 'utf8'));
@@ -22,7 +26,7 @@ const CLI = fileURLToPath(new URL('../../../tools/cli/src/main.ts', import.meta.
 describe('the engine checks', { timeout: 30_000 }, () => {
   it('matches the goldens in Node', () => {
     expect(goldens.spawn.hashes).toHaveLength(20);
-    expect(checkGoldens(goldens)).toEqual({ cases: 8 + 20, failures: [] });
+    expect(checkGoldens(goldens)).toEqual({ cases: 10 + 20, failures: [] });
   });
 
   it('reports a wrong economy hash, and a run that depends on its seed and its months', () => {
@@ -97,6 +101,32 @@ describe('the engine checks', { timeout: 30_000 }, () => {
     expect(failures[0]).toContain('visit');
     const hashes = [goldens.visit.hash, visitHash(seed + 1, tier, people, day), visitHash(seed, tier, people, day + 21)];
     expect(new Set(hashes).size).toBe(3);
+  });
+
+  it('reports a wrong streets hash, and a street day that depends on its seed and its crowd', () => {
+    const { seed, tier, people, ticks } = goldens.streets;
+    const wrong = {
+      ...goldens,
+      hashes: {},
+      spawn: { ...goldens.spawn, hashes: [] },
+      streets: { ...goldens.streets, hash: '00000000' },
+    };
+    const { failures } = checkGoldens(wrong);
+    expect(failures).toHaveLength(2);
+    expect(failures[0]).toContain('streets');
+    expect(failures[1]).toContain('streets restored');
+    const hashes = [goldens.streets.hash, streetsHash(seed + 1, tier, people, ticks), streetsHash(seed, tier, people + 1, ticks)];
+    expect(new Set(hashes).size).toBe(3);
+  });
+
+  it('checkpoints the street town while most blobs walk to work and a stall has its keeper', () => {
+    const { seed, tier, people, saved } = goldens.streets;
+    const { agents, errands } = run(streetTown(seed, tier, people), saved);
+    let walking = 0;
+    for (let blob = 0; blob < agents.count[0]; blob++) walking += errands.phase[blob] >= FIRST_WALKING ? 1 : 0;
+    expect(walking).toBeGreaterThan(people / 2);
+    const stall = errands.shopStall.indexOf(1);
+    expect(errands.phase[errands.keeper[stall] - 1]).toBe(PHASE_KEEPING);
   });
 
   it('reports a wrong spawn hash, and spawns that depend on their record', () => {

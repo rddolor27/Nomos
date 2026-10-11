@@ -70,6 +70,14 @@
     "day": 50,
     "hash": "a7bd4005"
   },
+  "streets": {
+    "seed": 42,
+    "tier": "phone",
+    "people": 1000,
+    "saved": 450,
+    "ticks": 1000,
+    "hash": "8e96a7c7"
+  },
   "spawn": {
     "seed": 2026,
     "hashes": [
