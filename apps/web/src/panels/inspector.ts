@@ -3,7 +3,20 @@ import {
   ACTION_IDLE,
   ACTION_NAMES,
   ACTION_WALK,
+  ACTIVITY_DOORSTEP,
+  ACTIVITY_EAT,
+  ACTIVITY_FETCH,
+  ACTIVITY_GREEN,
+  ACTIVITY_PLAZA,
+  ACTIVITY_SLEEP,
+  ACTIVITY_STAY,
+  ACTIVITY_WORK,
   GOOD_NAMES,
+  MAX_LEVEL,
+  NO_ACTIVITY,
+  PHASE_COMING,
+  PHASE_GOING,
+  PHASE_LEAVING,
   type AppMessage,
   type Purchase,
   type WorkerMessage,
@@ -23,12 +36,51 @@ const CENTS_PER_UNIT = 100;
 // 2026).
 const REFRESH_MS = 1000;
 const NO_ROW = -1;
-// What a blob is doing, by its action code. Trips to work and to the shops add their codes to the sim, and their words here;
-// until then a code with no words shows the sim's name for it.
+// What a blob is doing in a town that wanders, by its action code; a code with no words shows the sim's name for it.
 const DOING = new Map<number, string>([
   [ACTION_IDLE, 'Idle'],
   [ACTION_WALK, 'Walking'],
 ]);
+// What a blob of a town with streets is doing (M3.2 Task 6), by its activity: where its trip goes, and where it stands when it is
+// not on the way. An activity with no words yet reads as out and about.
+const TRIP_TO = new Map<number, string>([
+  [ACTIVITY_WORK, 'work'],
+  [ACTIVITY_FETCH, 'the shops'],
+  [ACTIVITY_PLAZA, 'the plaza'],
+  [ACTIVITY_GREEN, 'the green'],
+]);
+const TRIP_VERB = new Map<number, string>([
+  [PHASE_LEAVING, 'About to go to'],
+  [PHASE_GOING, 'Walking to'],
+  [PHASE_COMING, 'Walking home from'],
+]);
+const STANDING_AT = new Map<number, string>([
+  [ACTIVITY_SLEEP, 'Asleep'],
+  [ACTIVITY_WORK, 'At work'],
+  [ACTIVITY_FETCH, 'Buying at the shops'],
+  [ACTIVITY_EAT, 'Eating on the doorstep'],
+  [ACTIVITY_STAY, 'Staying in'],
+  [ACTIVITY_DOORSTEP, 'On the doorstep'],
+  [ACTIVITY_PLAZA, 'At the plaza'],
+  [ACTIVITY_GREEN, 'On the green'],
+]);
+// By need, in the sim's order: how the card names it, how a blob feels when it is high, and what it wants.
+const NEED_WORDS = [
+  ['hunger', 'Hungry', 'food'],
+  ['rest', 'Tired', 'rest'],
+  ['fun', 'Bored', 'fun'],
+  ['company', 'Lonely', 'company'],
+] as const;
+// A need is felt past three fifths of its range.
+const FELT_LEVEL = (MAX_LEVEL * 3) / 5;
+// A trait byte's words for its low third and its high third; the middle third is average and says nothing.
+const TRAIT_WORDS = [
+  ['reserved', 'sociable'],
+  ['out and about', 'a homebody'],
+  ['settled', 'restless'],
+] as const;
+const LOW_TRAIT = 86;
+const HIGH_TRAIT = 171;
 
 // Whole cents split by integer maths, so every balance below 2^53 prints exactly; digits are grouped as the HUD groups
 // them, since a first Intl formatter costs about 100 ms on a phone.
@@ -64,6 +116,51 @@ function boughtToday(bought: readonly Purchase[]): string {
   return sentence(bought.map(({ good, firm }) => `${GOOD_NAMES[good].toLowerCase()} at ${shopName(good, firm)}`).join(', '));
 }
 
+// What a blob of a town with streets is doing and why. A chat names its partner; a trip says where it goes or where it comes home
+// from; a free-time stay says which need sent the blob there, as the life system recorded it (the need + 1).
+function streetDoing(reply: Inspected): string {
+  const { activity, phase, reason } = reply;
+  if (reply.partner >= 0) return `Chatting with ${personName(reply.partnerKey)}`;
+  const verb = TRIP_VERB.get(phase);
+  if (verb !== undefined) return `${verb} ${TRIP_TO.get(activity) ?? 'somewhere'}`;
+  const standing = STANDING_AT.get(activity) ?? 'Out and about';
+  return activity >= ACTIVITY_STAY && reason > 0 ? `${standing}: wants ${NEED_WORDS[reason - 1][2]}` : standing;
+}
+
+function doing(reply: Inspected): string {
+  if (reply.activity !== NO_ACTIVITY) return streetDoing(reply);
+  return DOING.get(reply.action) ?? sentence(ACTION_NAMES[reply.action]);
+}
+
+// The strongest need, the first at a tie, if it is felt.
+function feeling(needs: readonly number[]): string {
+  const strongest = needs.reduce((best, level, need) => (level > needs[best] ? need : best), 0);
+  return needs[strongest] > FELT_LEVEL ? NEED_WORDS[strongest][1] : 'Content';
+}
+
+function needsText(needs: readonly number[]): string {
+  return sentence(needs.map((level, need) => `${NEED_WORDS[need][0]} ${Math.round((level * 100) / MAX_LEVEL)}%`).join(', '));
+}
+
+function personality(traits: readonly number[]): string {
+  const words: string[] = [];
+  traits.forEach((level, trait) => {
+    if (level < LOW_TRAIT) words.push(TRAIT_WORDS[trait][0]);
+    else if (level >= HIGH_TRAIT) words.push(TRAIT_WORDS[trait][1]);
+  });
+  return sentence(words.length === 0 ? 'easygoing' : words.join(', '));
+}
+
+// The rows of a blob's life, for a town with streets only: a town that wanders has no needs or personality to show.
+function lifeRows(reply: Inspected): (readonly [string, string])[] {
+  if (reply.activity === NO_ACTIVITY) return [];
+  return [
+    ['Feeling', feeling(reply.needs)],
+    ['Needs', needsText(reply.needs)],
+    ['Personality', personality(reply.traits)],
+  ];
+}
+
 export function blobCard(reply: Inspected): BlobCard {
   const { employer } = reply;
   return {
@@ -75,7 +172,8 @@ export function blobCard(reply: Inspected): BlobCard {
       ['Wallet', formatCents(reply.cents)],
       ['Home', reply.home < 0 ? 'No home' : `House ${reply.home + 1}`],
       ['Lives with', livesWith(reply.members)],
-      ['Doing', DOING.get(reply.action) ?? sentence(ACTION_NAMES[reply.action])],
+      ['Doing', doing(reply)],
+      ...lifeRows(reply),
       ['Bought today', boughtToday(reply.bought)],
       ['Look', lookName(reply.look)],
     ],
