@@ -1,92 +1,119 @@
-# M3.2 Daily routines: implementation brief
+# M3.2 Daily routines: brief
 
-> **Status:** brief. Before building, expand it into a step-by-step plan with the writing-plans skill, in this file, against the code as it then stands.
+> **Status:** a brief for blobs with lives of their own (owner, 12 October 2026). Nothing is built until the owner says go. Task 8, the riskiest, gets a step plan on Opus first.
 
-**Task:** [task.md](task.md)
+**Task:** [task.md](task.md). Each task writes its code, then its tests (the main case and one edge), runs only those and a typecheck at `nice -n 19`, then commits. Bare sim paths are in `packages/sim-core/src/`.
 
-## Approach
+## Rulings
 
-- **Agents live on M3.1's map:** homes, jobs and shops on a 128²–256² grid, spawned by M2's `spawnFromLedger`.
-- **Movement by flow fields.** Each destination class (home districts, workplaces, shops and the market) has a precomputed flow field over the walkable grid. It is rebuilt only when the map changes, never per agent.
-- **Brains: needs, utility scoring and a state machine (R1):**
-  - Each action's score is the product of considerations, inputs normalised to [0, 1] and passed through response curves. A zero rules the action out.
-  - The action that won last time gets a flat 25% momentum bonus.
-  - The agent picks by keyed draw among the top few. All maths is integer (Q16), with curves from build-time tables.
-  - The state machine runs the chosen action: walk, work, shop, eat or sleep.
-- **Needs as deadlines (R6, Calendar).**
-  - Each need is stored as the Int32 tick at which it reaches zero, never decayed every tick.
-  - Meals are scheduled on the timing wheel, and fractional rates are Q8 per tick on the 1,440-tick day.
-- **Decisions on a timing wheel,** with at least a 1/8 stagger (R5).
-- **Perception defaults to per-cell aggregates.**
-  - Exact radius queries run only for agents that need them (collision, conversation and pursuit).
-  - They are staggered to at least 1/4 per tick and capped at 16 neighbours (R5).
-- **Sleeping and off-screen agents sit in dense index lists,** kept by swap-remove and never filtered by a flag in every system (R5).
-- **Shops by Huff's model:** the chance of choosing a shop is proportional to its attractiveness ÷ d², Huff with β = 2. Squared distances keep it integer, with no square root (R1).
-- **Inspector and click-to-explain.** Clicking an agent shows its top three scored actions with each consideration's value. M2.7's follow-the-money overlay mounts here.
-- **The soldier job (Military):**
-  - a public-sector job with shifts like any other, going home after work, where the helmet and baldric come off;
-  - pay comes from taxes, but the treasury arrives in M5, so a stopgap pays soldiers from M0.2's local-government account until then (owner decision first);
-  - the art exists; wire it in.
-- **Optional (R2):** idle back-off, shop hours shifted by travel time, day plans made at dawn and one global witness pass. Build these only if the budget gate or the rush-hour check needs them.
+These are the architect's rulings of 12 October 2026. The owner can overturn any of them.
 
-## Packages and files
+1. **Needs and personality.**
+   - **Needs:** `hunger`, `rest`, `fun` and `company`, each a `Uint16` from 0 (met) to 65,535. Each changes at a whole-unit rate a tick for the blob's state.
+   - **Settling:** a need settles only when the state changes, as level + rate × ticks since an `Int32` settle tick, clamped. That is a per-tick update with no decay pass (R6's rule, without its deadlines). Chats and meals relieve in one lump.
+   - **Hunger** (M2.4): `buyPortions` writes `dayPortions` beside `dayFood`. Once the day's food is home, each doorstep meal eats a portion and relieves a third of a day's rise. So meals never exceed what the economy sold.
+   - **Rest** falls in the night indoors (22:00–06:00, as built) and in naps at home.
+   - **Money is the work duty,** not a level: workers keep M2.7's keyed shift. No need reads a wallet (content rule 5).
+   - **Personality:** three bytes, `sociable`, `homebody` and `restless`. `spawn/spawn.ts` draws them at birth as `draw1(seed, TRAIT_DRAW, id)`, from the id that look and name key on. They never come from a look or a culture.
+2. **Choosing (R1's utility scoring).**
+   - **When:** a blob decides only when its `endTick` comes; R1's dot also "thinks only when its activity ends". M2.7's `endTick` scan is the schedule, at 0.077 ms a tick for 10,000 blobs, walking included (measured, `interfaces.md`, Street link Task 4). A bucketed wheel waits for a failing gate.
+   - **Score:** a Q16 product of integer ramps and squares. The inputs are a need, a trait, the time left, a site's crowd and the Manhattan way in ticks, a lower bound of the fields' metric. A zero vetoes, and a choice must end, with its way home, by 21:30.
+   - **Pick:** a keyed draw on `LIFE_DRAW` among the top three, weighted by score. `pathRuns` gives the real ways; a missing way passes the turn on.
+   - **Systems:** `move` walks and lists who is due, then `life` decides and `chat` pairs. `life` and `chat` join `SYSTEM_NAMES` after `economy`, so each meets its own budget row.
+   - **Cost** (inference): 6 decisions a blob a day at about 2 µs, 0.84 µs of it a measured `pathRuns`. That is 0.13 ms a tick at 10,000 blobs and 1.25 ms at 100,000, against 1.2 and 1.4 ms for the decisions and pathfinding rows. If 100,000 fails, decisions past a per-tick cap wait a tick.
+3. **Activities.** `phase` says where and how a blob is. A new `activity` byte says why, so M2.7's purposes leave the phase.
 
-- `packages/sim-core`:
-  - `src/movement/flow-field.ts`;
-  - `src/perception/aggregates.ts` and `src/perception/exact.ts`;
-  - `src/schedule/timing-wheel.ts` and `src/schedule/dense-list.ts`;
-  - `src/agents/needs.ts`, `src/agents/utility.ts`, `src/agents/state-machine.ts` and `src/agents/curves.ts`, the last generated by `scripts/curves.ts`;
-  - `src/consumption/huff.ts`;
-  - `src/labour/soldier.ts`, a public-sector job, guarded with the rest of `labour/`.
-- `apps/web/src/inspector/`: the inspector and click-to-explain, in Solid, or Preact with signals, whichever earlier UI already uses; M0.5 adds neither.
-- `tools/sprites/test_sprites.py`: the soldier frame check.
+   | Activity | Where | Ticks | Eases | Shows |
+   | --- | --- | --- | --- | --- |
+   | Work | the employer's premises | the shift | company, a little | the commute |
+   | Fetch | the purchase's premises: after work, on the way or when near | 10 | starts meals | the coin, then the good carried |
+   | Eat | its doorstep | 24 a portion | hunger | eating frames |
+   | Sleep, stay in | home | night; 30–120 | rest; company with family | indoors |
+   | Doorstep | its door tile | 30–120 | fun; company by chats | sitting |
+   | Plaza | a plaza spot | 30–120 | fun, company; more with a crowd, capped at 40 | the ball |
+   | Green, water | a spot or bench | 30–120 | fun, rest | music; a heart by water |
+   | Browse | a premises' front | 10–30 | fun | facing the front |
+   | Wander | a keyed site nearby | 0: it decides there | fun | walking |
+   | Visit | a friend's home | 60–120 | company, friendship | a question if nobody is home |
+   | Chat | where two free blobs meet | 20–60 | company, friendship | speech bubbles |
 
-## Interfaces and data
+   - **The mailbox:** chats use R5's per-cell aggregate, one waiting blob per 2 × 2-tile cell, stamped with the tick.
+   - **Lookers:** each tick a quarter of blobs (`(i + tick) & 3` of 0) may look. A looker must be out and free, and lonelier than a threshold that sociability lowers.
+   - **Pairing:** a looker pairs with a free blob within 1.5 tiles in its cell, or waits there: one exact check, under the cap of 16.
+   - **The chat:** the pair stops face to face. `endTick` moves on by the chat's length, and walkers pause until `chatUntil`. No chat starts after 21:00.
+   - **Signs:** an outing's sign shows a quarter of the time, staggered by blob.
+4. **Friendships.** Six slots a blob, each a friend + 1 (`Int32`) and a strength (`Uint8`), 30 bytes in all.
+   - **Strength:** a chat adds 32 to both sides, capped at 255. A newcomer takes a free slot, or one under 32. Each day's first decision fades every slot by 4, so an unmet friend is gone in about 64 days.
+   - **Visits:** a keyed draw weighted by strength picks the friend. A host at home eases both blobs' company; a host away turns the visitor back. The household is the family, easing company at home.
+   - **Only the card shows friendship.** Every chat shows the same bubble, and the heart is one blob's own pleasure.
+5. **Determinism and M2.7's street code.**
+   - **The timetable:** Tasks 3–7 hand the chooser any free time before 21:30. Task 8 cuts the timetable to the night, the wake and the shift.
+   - **Sites** are premises plus leisure places: the plaza (its fountain, or a village's well), meadow greens and up to 3 water edges.
+     - `sim-protocol`'s `map/leisure.ts` finds them from frames and terrain alone, so M3.1 Part 4's layouts suit it.
+     - `MAX_SITES` is 32, a field each: 631 KB at 176 × 112 (computed), about 14 ms to build (inference).
+   - **Legs:** a leg runs forward on a site's field to the site, or backward along a cell's own runs to a home or spot. So no home needs a field.
+     - Between two cells, both ways run to the hub with the least Manhattan sum, and the walk switches where they meet.
+     - Stamping cells in a scratch grid finds the meeting point.
+     - An unfetched purchase makes its premises the hub.
+   - **The store,** `life/store.ts`, sits at the arena's end, so no offset moves.
+     - It holds 65 hashed bytes a blob: needs 8, settle tick 4, traits 3, activity and reason 2, purchases and portions 2, `chatUntil`, `chatWith`, `host` and the leg's end cell 4 each, and friends 30. It also hashes each site's crowd.
+     - The home cell, household size and hub sit outside the hash.
+     - In all it is about 72 bytes a blob, 7.2 MB at 100,000 (computed). A blob then totals about 172 of the plan's 256 bytes (inference).
+   - **The hash:** the store mixes in after the errand store while `STREETS` is 1. Only Highcourt's pins move, so `42/phone` `746a06a3`, the economy `6a652730` and the other goldens hold.
+   - **Checkpoints:** every end is an absolute tick, so a checkpoint mid-chat replays.
+   - **Money** moves only at the economy tick. The street reads `dayFood`, `dayGoods` and `dayPortions` and never writes them.
+   - **Rows:** pairs and hosts write a second row in index order, deterministic on one worker. R7's chunked workers would plan pairs per chunk.
+   - **The wall:** `life/` joins the guarded folders and may not import `money/`, since M4's crime will read where blobs are.
+6. **What the owner sees:** the table's last column on the street. The card shows what the blob is doing and why ("Chatting with Wenda", "At the plaza: wants company"). It also shows its feeling (its strongest need past 60%), its needs and traits, its three strongest friends, and its top three options with scores (R1).
+7. **Art:** three new 12 × 12 bubbles on `icons.py`'s base: `emote_speech`, `emote_music` and `emote_ball`. The heart, question and coin bubbles, `sit_*`, `prop_bench`, `prop_well` and the fountain already exist. Mockups go to the owner first.
+8. **Dropped:**
+   - Huff's shop choice (R1), since the economy picks the firm;
+   - the bucketed wheel and dense lists (R5);
+   - need deadlines (R6);
+   - `scripts/curves.ts`;
+   - R2's options.
 
-- **Need columns:** `needZeroTick` (`Int32Array`, one per need: hunger, rest and social), plus a Q8 rate per need per agent where rates differ.
-- **Timing wheel:** `schedule(agent, tick, kind)` and `drain(tick, visit)`. The wheel has fixed buckets and preallocated slots, and no closures in the tick: `visit` is a switch on `kind`.
-- **Win counters:** per action, how often it was chosen and how often it was a candidate, kept for the exit check and the inspector.
-- **Inspector query:** a read-only worker query, `{ type: 'query', what: 'explain', agent }`, which M1.2's watch-only protocol allows while running.
+## Tasks
 
-## Method and sources
+**The order:** Task 1 beside Task 2, then Tasks 3 and 4, then Task 5 beside Task 6. That finishes the first visible slice: blobs chatting on the plaza, greens and doorsteps. Tasks 7 and 8 follow. Task 9 follows the owner's pick, Task 10 the payer call, and Task 11 closes.
 
-- **Utility scoring, considerations, momentum and Sims-style ads:** [R1 full report](../../../../research/round-1-baseline/full-report.md), "Brains: utility scoring over place advertisements". Huff with β = 2 appears in the same report's determinism section.
-- **Aggregates, staggered exact queries, timing wheel and dense lists, with measured costs:** [R5 compute notes](../../../../research/round-5-performance/notes/compute.md), and the Performance budget's sub-budgets in the [implementation plan](../../../implementation-plan.md#performance-budget).
-- **Needs as deadlines and Q8 rates:** [R6 integration-cost notes](../../../../research/round-6-goods-and-wellbeing/notes/integration-cost.md) and [calendar.md](../../../calendar.md).
-- **Optional items (idle back-off, travel-time shop hours, dawn day plans and the witness pass):** [R2 prior-art notes](../../../../research/round-2-follow-up/notes/prior-art.md), the commercial games section on Citybound and Shadows of Doubt.
-- **Soldiers:** [military.md](../../../military.md), the rules and the art.
-
-## Tests for the exit checks
-
-- `rush hours emerge`:
-  - with shifts and shop hours as the only time inputs, hourly trips counted over 20 seeds peak within ±1 hour of shift starts and ends;
-  - no code mentions a rush hour or a clock time apart from shift and shop hours.
-- `no action never or always wins`: over 20 seeds × 28 days, every action in the catalogue wins at least once and loses at least once when it is a candidate.
-- `systems fit their sub-budgets`: M0.6's budget gate at 10k and 25k agents, with every M3.2 system's row inside its budget from the Performance budget table.
-- `no drawn weapon`: the sprite test asserts every soldier frame shows the weapon sheathed or shouldered at rest, and that no fight or combat frame exists.
-- `exact queries are capped`: no exact query returns more than 16 neighbours, and at most a quarter of eligible agents query in any tick.
-
-## Risks and unknowns
-
-- **Owner decision first:** the soldiers' stopgap payer until M5's treasury.
-- **Flow fields at 256²** take memory: one `Uint8Array` direction grid per destination class. Measure against the 256 bytes per agent budget at 10k agents.
-- **Determinism of the top-few pick:** ties and the keyed draw must not depend on visiting order. M0.3's stride and plan-then-apply rules apply.
+1. **Mockups** (`asset-designer`, Sonnet), in `docs/mockups/m3.2-lives/`: the bubbles, a chatting pair, a doorstep evening, the plaza at 17:00, a bench by water and a visit turned back. Check: the owner picks.
+2. **Sites and legs** (`sim-engineer`, Sonnet). Files: `map/leisure.ts`; site kinds in `street/shops.ts`; a new `street/legs.ts`; home cells and hubs in `street/open.ts`; the `activity` split in `errands.ts` and `timetable.ts`.
+   - **Check:** `legs.test.ts`. Every Highcourt home reaches the plaza and back, and two homes' legs meet and end at the other's door. Edge: a cut-off home gets none.
+   - **Print:** each detour over its Manhattan length, mean and 90th percentile.
+3. **The life store and free time** (`sim-engineer`, Sonnet). Files: `life/store.ts`, `traits.ts`, `needs.ts`, `choose.ts` and `activities.ts`; traits in `spawn/spawn.ts`; `TRAIT_DRAW` (0x10F) and `LIFE_DRAW` (0x110); the `life` system and due list in `step/step.ts` and `street/walk.ts`; the hash; the guard lists. Free time goes to staying in, the doorstep, the plaza or a green.
+   - **Check:** `life.test.ts` on Highcourt's day 0, where blobs who made the morning's food trip are free:
+     - by 14:00 blobs stand at plaza spots;
+     - all are home by 22:00;
+     - a twin replays from a 13:30 checkpoint.
+   - **Edge:** no time left means bed, as before.
+4. **Chats** (`sim-engineer`, Sonnet). Files: `street/chat.ts`, `chatUntil` and `chatWith`, the walk's pause, and the emote ids in `sim-protocol`'s `visual.ts` and `snapshot/street.ts`. Check: `chat.test.ts`, where two free walkers in a cell stop face to face under bubbles, then arrive exactly the chat's length late. Edge: a blob going to work never stops.
+5. **Drawing** (`render-engineer`, Sonnet). `town/people.ts` maps the emotes and draws sitting at spots, with stand-in bubbles until Task 9. Check: `town-people.test.ts`, where a chatting pair draws two bubbles. Edge: a blob indoors draws none.
+6. **The card** (`senior-game-engineer`, Sonnet). `inspected` gains activity, reason, partner, needs and traits, read through `blobReply` and `panels/inspector.ts`. Check: `inspector.test.ts` covers each activity's words, and in `street.spec.ts` a pair chats on the plaza at 16× by 14:00 on day 0, with axe passing.
+7. **Friendships and visits** (`sim-engineer`, Sonnet). Files: `life/friends.ts`, visits in `choose.ts` and `legs.ts`, the household at home, and the card's Friends row.
+   - **Check:** `friends.test.ts`:
+     - blobs who chat daily become friends within 5 days, and drift apart once they stop;
+     - a visit ends indoors at the friend's.
+   - **Edge:** a friend away turns the visitor back.
+8. **The whole day by needs** (`sim-engineer`, Sonnet; Opus for the step plan or a failure of unknown cause). It adds hunger through `dayPortions`, naps, water and browsing outings, wandering, fetching by deadline, nearness and hub, and the win counters.
+   - **Check:** `life-day.test.ts`, over 2 worlds × 28 days:
+     - every activity wins and loses;
+     - each purchase with a way is fetched by 22:00, and meals stay within portions;
+     - departures peak within ±1 hour of shift starts and ends;
+     - nobody is out at 23:00;
+     - the non-street goldens hold.
+   - **Timing:** time `life` and `chat` at 10,000 and 25,000 blobs.
+9. **Sprites** (`asset-designer`, Sonnet), after the pick: the bubbles in `icons.py`, `assets/LICENSES.md` rows and the atlas. Check: `test_sprites.py`. Edge: each glyph stays inside its bubble.
+10. **Soldiers** (`sim-engineer`, Sonnet), after the payer call: `labour/soldier.ts`, shifts like any job, the helmet off at home (Military). Check: the sprite test's sheathed-weapon case, and a soldier's day.
+11. **Close** (the coordinator):
+    - push;
+    - the owner starts `perf.yml` once;
+    - run one Opus `determinism-review`.
 
 ## Open questions
 
-- **Owner:** Who pays soldiers until M5's treasury exists? Their pay comes from taxes, which arrive only with M5. Suggested: M0.2's local-government account, funded at spawn from the record's local-government balance. Needed before: the step plan.
-- **Owner:** What shifts do jobs run, and does any sector work evenings or rest days? Shifts and shop hours are the only clock inputs, so they decide when rush hours fall. Suggested: one daytime shift on the 5 workdays, except shops and the market, which also open on the rest days the [calendar](../../../calendar.md) gives to markets. Needed before: the step plan.
-- **Measure:** How does an agent reach its own home or workplace? A field per destination class leads to the nearest member, and round 1 pairs class fields with cached A\* at 10k agents ([R1 findings](../../../../research/round-1-baseline/findings-and-plan.md), the scaling table). Suggested: class fields for shops and the market and cached A\* for homes and jobs, timed against the 1.0 ms pathfinding-and-events sub-budget at 10k. Needed before: the step plan.
-
-## Implementation notes
-
-Suggestions for the step plan, which makes the final call.
-
-- **Build order:** dense lists, the timing wheel and needs as deadlines first, with agents walking between home and work. Then utility scoring with its win counters, Huff shop choice, perception, the inspector, and the soldier job last.
-- **Reuse:** M2.2's spawn and M2's firms, wages and shops; M3.1's map; M0.3's stride and plan-then-apply rules; M0.6's budget and allocation gates; M1.2's read-only query.
-- **Keep it simple:** pick among the top three actions, the three the inspector shows. Build none of round 2's optional items unless a gate fails.
-- **Pitfalls:**
-  - Shift starts and mealtimes can put thousands of entries in one wheel bucket. Size buckets for every agent, or spill to the next tick in agent order.
-  - Huff's attractiveness ÷ d² divides by zero at the shop door, so use d² + 1.
-  - Clear the job bits of the visual word off shift, or the helmet stays on at home. Soldiers' posts sit on roads, never on town patrols (content rule 6).
-- **Hard and easy parts:** routing within the pathfinding and memory budgets, and tuning considerations so no action always or never wins, are the hard parts. Dense lists, the wheel and Huff are mechanical.
+- **The owner, before Task 8: what pace should blobs walk at?** At 4 ticks a tile, Highcourt's ways average 259 ticks, about 4.3 game hours (measured), so a worker's evening is mostly its walk home. Suggested: keep the pace, and judge Task 6's evenings on screen.
+- **The owner, before Task 7: should blobs have family in other homes?** That needs M5's births. Suggested: household members are the family, and visits go to friends.
+- **The owner, before Task 10: who pays soldiers until M5's treasury?** Suggested: M0.2's local-government account.
+- **Measure:** Task 2's detours, where long ones add waypoint sites, and the `life` and `chat` rows at 100,000 blobs in `perf.yml`.
+- **Risk:** `warmUp` has no street town (M2.7 backlog), so `life` starts cold.
