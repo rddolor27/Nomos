@@ -53,7 +53,7 @@ describe('the allocation window', { timeout: 120_000 }, () => {
   });
 });
 
-// A plain day runs 4 of the economy's 18 systems. A month's last day adds the 7 month-end systems and the month record, and
+// A plain day runs 6 of the economy's 20 systems. A month's last day adds the 7 month-end systems and the month record, and
 // its next day the 5 month-start systems, so the gate needs both.
 describe('the allocation days', () => {
   it('are a plain day, a month end and the next month start', () => {

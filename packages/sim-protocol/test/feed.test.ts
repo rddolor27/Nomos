@@ -140,7 +140,7 @@ describe('the economy feed', () => {
     expect(feed.tradeShop.every((shop) => shop === 0)).toBe(true);
   });
 
-  it("is due right after a town day's 18th tick, and never in a world that is not a town", () => {
+  it("is due right after a town day's 20th tick, and never in a world that is not a town", () => {
     const grown = town();
     const plain = createWorld(SEED, 'phone', undefined, 10);
     const dueAt = (world: World, tick: number): boolean => {
