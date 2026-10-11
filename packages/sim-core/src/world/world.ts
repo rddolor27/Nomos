@@ -17,6 +17,7 @@ import { TIER_AGENTS, TIER_FIRMS, TIER_MEMORY_BYTES, type Tier } from '../memory
 import { setHeading } from '../movement/walk.ts';
 import { createHomes, type Homes } from '../spawn/homes.ts';
 import { LEDGER_FIELDS } from '../spawn/record.ts';
+import { FIELD_BYTES } from '../street/fields.ts';
 
 export const TICK = 0;
 export const RECORD_FRONT = 1;
@@ -90,10 +91,15 @@ export interface World {
   // sits in the arena so that a checkpoint carries a switch that waits, and the hash leaves it out, as it does the input log.
   readonly focus: Int32Array;
   // Each settlement's ledger row, LEDGER_FIELDS to a row, and a row of scratch beside them (M2.2c Ruling 3). A row with no
-  // people is unvisited. They sit last in the arena, so no offset moved. The hash mixes a town's visited rows, and a
+  // people is unvisited. They sit at the end of the arena, so no offset moved. The hash mixes a town's visited rows, and a
   // checkpoint copies them with the rest.
   readonly townRecords: Float64Array;
   readonly recordRow: Float64Array;
+  // The flow fields of the live town's premises, a byte a cell and ground.width x ground.height cells to a premises, which
+  // buildFields writes at a spawn or a switch (M2.7). They derive from the ground and the premises' doors, so the hash skips
+  // them, and a checkpoint copies them with the rest. Only a tier's own layout holds them: a smaller one, such as a test's or
+  // the warm-up's, has none, and buildFields throws for it.
+  readonly fields: Uint8Array;
   // The arena runs a town fills, so that switchTown empties it in two fills: the agent columns, then the firms, the
   // economy's scratch, the households and the goods, which layoutWorld takes back to back.
   readonly agentBytes: Uint8Array;
@@ -146,6 +152,7 @@ export function layoutWorld(
   const economyBytes = layoutBytes(arena, economyFrom);
   const townRecords = take(arena, Float64Array, MAX_TOWNS * LEDGER_FIELDS, false);
   const recordRow = take(arena, Float64Array, LEDGER_FIELDS, false);
+  const fields = take(arena, Uint8Array, agents === TIER_AGENTS[tier] ? FIELD_BYTES : 0, false);
   const world: World = {
     seed,
     tier,
@@ -166,6 +173,7 @@ export function layoutWorld(
     focus,
     townRecords,
     recordRow,
+    fields,
     agentBytes,
     economyBytes,
     request: { place: NO_PLACE, ground, homes: createHomes([]) },

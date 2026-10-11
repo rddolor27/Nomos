@@ -54,3 +54,5 @@ export * from './spawn/fold.ts';
 export * from './spawn/spawn.ts';
 export * from './spawn/town.ts';
 export * from './spawn/switch.ts';
+export * from './street/fields.ts';
+export * from './street/runs.ts';
