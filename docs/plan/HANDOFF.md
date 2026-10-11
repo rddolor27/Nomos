@@ -139,6 +139,17 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 12 Oct, 08:40: **M3.2 Task 5: drawing** (cc7d654, 98b454b).
+  - **Built:** in the Town skin:
+    - `ACTION_SIT` blobs draw `sit_*` on the ground;
+    - `ACTION_TALK` blobs stand and face their partner;
+    - speech, music, ball, heart, question and coin map through one table, `BUBBLES`;
+    - `PLACE_EMOTES` gains speech, music and ball.
+  - **Checks:** a composited render of Highcourt's day 0 missed no frame. `TownPeople.write` takes about 0.34 ms at 10,000 blobs, up from 0.32. The Town skin grows by about 107 B brotli.
+  - **Polish for the owner to judge:**
+    - there is no `sit_up` frame, so a quarter of sitters show standing from behind;
+    - a chatting sitter stands up;
+    - the plaza crowd overlaps round the fountain at 18:00.
 - 12 Oct, 08:00: **M3.2 Task 9: the bubble sprites** (deaadb2).
   - **The frames:** `icons/emote_speech` (three grey dots), `icons/emote_music` (two plum notes under one beam) and `icons/emote_ball` (a blue toy ball), each 12 × 12 with anchor [6, 11]. They are the mockups' A designs.
   - **The checks:** a new `emote_problems` check keeps every glyph on the bubble's white body, and the atlas grows by 674 bytes of WebP.
