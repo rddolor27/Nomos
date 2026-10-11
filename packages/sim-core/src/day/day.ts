@@ -48,8 +48,9 @@ export function requestTown(world: World, place: number, ground: Ground, homes: 
 // Keeps the ground, homes and shops the next boundary spawns `place` on, and marks the place pending in the arena. requestTown
 // does both with its log entry. A world restored from a checkpoint holds the pending place (focus[FOCUS_PENDING]) and the log
 // entry but not the ground, homes and shops, so whoever restores it attaches them before the boundary, which throws without
-// them. It trusts its caller's place, which requestTown has checked.
-export function attachTown(world: World, place: number, ground: Ground, homes: Homes, shops: Shops = NO_SHOPS): void {
+// them. The shops have no default: a restore that left them out would spawn a town with no streets and no error. It trusts its
+// caller's place, which requestTown has checked.
+export function attachTown(world: World, place: number, ground: Ground, homes: Homes, shops: Shops): void {
   const request = world.request;
   request.place = place;
   request.ground = ground;

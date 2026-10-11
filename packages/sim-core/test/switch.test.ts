@@ -27,6 +27,7 @@ import {
 } from '../src/spawn/record.ts';
 import { createStandInTown, seatTown } from '../src/spawn/town.ts';
 import { step } from '../src/step/step.ts';
+import { NO_SHOPS } from '../src/street/shops.ts';
 import { TICKS_PER_DAY } from '../src/time/calendar.ts';
 import { checkpoint, restoreWorld, stateHash } from '../src/world/checkpoint.ts';
 import { standInGround, type Ground } from '../src/world/ground.ts';
@@ -443,7 +444,7 @@ describe('the pending switch in the arena', () => {
   it('is carried by a checkpoint, and a restored world with its ground and homes attached reaches the same hash at the boundary', () => {
     const { original, restored } = restoredWithRequest();
     expect([original.focus[1], restored.focus[1]]).toEqual([1, 1]);
-    attachTown(restored, 1, SMALL_GROUND, homesFor(1));
+    attachTown(restored, 1, SMALL_GROUND, homesFor(1), NO_SHOPS);
 
     run(original, TICKS_PER_DAY + 1);
     run(restored, TICKS_PER_DAY + 1);
