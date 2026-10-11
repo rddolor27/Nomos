@@ -47,6 +47,7 @@ What each file type holds:
 - `cc0_asset_previews.png`;
 - `sprites_showcase.png`, `wonders_showcase.png` and `landmarks_showcase.png`, built from the original sprites by `tools/sprites/`;
 - `random_world_*.png` and `blob_looks.png`, one generated world drawn by `tools/worldgen/`;
+- `m2.7-street/`, the M2.7 Part 1 mockups for the owner's pick: carried goods, chewing faces, stalls, shop fronts and stock pips;
 - `generator/`, the Python (Pillow) scripts that drew the concept images;
 - `previews/`, unmodified CC0 images with their licences;
 - [`SOURCES.md`](mockups/SOURCES.md), the provenance of every tile and sprite.
