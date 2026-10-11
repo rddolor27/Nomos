@@ -53,7 +53,7 @@ The tables give the layout M0.7 builds, including the files it adds. A renamed f
 | `money/` | `ledger.ts`, `ppm.ts` (was `money.ts`), `claims.ts`, `registry.ts`, `invariants.ts`, `flows.ts`, `histogram.ts` | Cents, accounts, wallets, loans, holdings and the money invariants |
 | `world/` | `world.ts`, `checkpoint.ts` (split from `world.ts`), `ground.ts`, `inputs.ts`, `space.ts` | The `World`, its creation and population; the hash, checkpoints and restore; the ground, the input log and the Q8 space |
 | `day/` | `day.ts`, `slices.ts`, `stride.ts` | The day boundary, day slices and the stride scheduler |
-| `movement/` | `wander.ts`, `walk.ts`, `steer.ts` | `move`, the walking step on each heading, and the pure wander rule the town view's walkers share |
+| `movement/` | `wander.ts`, `walk.ts`, `steer.ts` | `move`, the walking step on each heading, and the pure wander rule |
 | `step/` | `step.ts`, `warm.ts` | The world step and its warm-up |
 | `consumption/` | `stand-in.ts` | Consumption's stand-in, the one `sim-core` folder that reads culture |
 | `goods/` | `goods.ts`, `store.ts`, `food.ts` (M2.4) | The seven goods and their table, the goods store a firm row holds beside `FirmStore`, and the dated food ring ([Goods and food](#goods-and-food-owner-m24)) |
@@ -71,7 +71,7 @@ The tables give the layout M0.7 builds, including the files it adds. A renamed f
 | `sprites/` | `sprite-manifest.ts` (generated) | The sprite-manifest types |
 | `shared/` | `calendar.ts`, `columns.ts`, `steering.ts` | Constants re-exported from `sim-core`, and the wander rule with its keyed draw and steps, so `render-gl` and the app never import it |
 | `world-map/` | `world-map.ts` | The world map, the body hues and the map worker's messages, behind the `./world-map` export (M8.1) |
-| `place/` | `place-layout.ts` | A place's layout, its walk loops and the map worker's place messages, behind the `./place` export (M3.1) |
+| `place/` | `place-layout.ts` | A place's layout and the map worker's place messages, behind the `./place` export (M3.1) |
 | `economy/` | `feed.ts` | The economy feed: a town's last 112 days of its mean wage, unemployment, food eaten, spoiled and unmet, and each of 7 goods' sales, stock and price, and the day's last 16 trades, which the worker posts as the `economy` message (M2.2b; goods and food in M2.4 Part 1) |
 
 **`packages/sim-worker/src`:** `index.ts` and `worker.ts` (the `./worker` export) at `src/`, and `loop/loop.ts`.
@@ -97,9 +97,9 @@ Skin B and Skin C arrive as `blobs/` and `town/` beside `dots/` (M1.3, M3.3). M8
 | --- | --- | --- |
 | `src/` | `main.ts` | The entry `index.html` loads |
 | `app/` | `app.ts`, `boot.ts`, `lifecycle.ts`, `query.ts`, `tiers.ts` | The app shell: boot hand-off, worker link, query, tiers and the page lifecycle |
-| `view/` | `camera-input.ts`; `atlas.ts` (`townAtlas()`, one atlas fetch that the Town skin and the blob card share); `pinch.ts` (`Pinch`, two-pointer zoom in whole steps); `zoom-bar.ts` (`ZoomBar`, the town's −, + and Fit); `town-skin.ts` (the Town skin) | Pointer and keyboard input on the view: the click that inspects, wheel, keys, pinch, Home to fit through `App.fit()` (M0.8, b44ed12), and keys 1–3 for speed (M2.2b). It loads after the first frame, as the charts do (M0.7). `camera-input.ts` also imports the Town skin's loader, `town-skin.ts`, once the page is interactive |
-| `panels/` | `hud.ts` (the row, its Map button and `SystemRows`), `charts.ts` (also `DayChart`, which takes several series, `DaySpec`, whose `labels` and `colours` name and colour them, `dataTable`, `setRows`, `el` and `levelRange`), `controls.ts` (the `?dev=1` Zoom slider), `inspector.ts` (`blobCard(reply)` and `mountInspector(hud, view, worker)`; `#inspector` only says "No blob here"), `blob-modal.ts` and `blob-modal.css` (`BlobModal`, the blob card, a non-modal dialog), `toolbar.ts` (the compact bar the map and the town view share, M0.8); `shop-name.ts` (`shopName(good, firm)`: the good's `SHOP_NAMES` entry and N, so firm row N − 1 is "Bakery N" when it sells bread), `economy.ts` and `economy.css` (`EconomyPanel`, `mountEconomy`, `MEASURES`, `fillSeries`, `goodsRows` and `tradeLines`) and `speed-bar.ts` (`SpeedBar`, `speedForKey`), all M2.2b, and M2.4 Part 1 reworked `shop-name.ts`, `economy.ts` and `DayChart` for goods (9a10e94..dba1b48) | The HUD, the lazy charts, the economy panel, the developer controls, the on-demand inspector, and the map's toolbar |
-| `map/` | `generate.ts` and `map-worker.ts` (M8.1); `map-view.ts`, `map-input.ts`, `labels.ts`, `legend.ts` and `goto.ts` (M8.3); `place-builder.ts`, `place-view.ts` and `walkers.ts` (M3.1) | The map: its worker and the worker's lazy place builder, the lazy view the Map control opens, and the town view a place opens into. Highcourt's place context, `TOWN`, lives in worldgen's `place/town.ts` (M2.2c) |
+| `view/` | `camera-input.ts`; `atlas.ts` (`townAtlas()`, one atlas fetch that the Town skin and the blob card share); `pinch.ts` (`Pinch`, two-pointer zoom in whole steps); `zoom-bar.ts` (`ZoomBar`, the town's −, + and Fit); `town-skin.ts` (`mountTownSkin` and `TownSkinMount`, which lends the Town skin and swaps its town, M2.2c) | Pointer and keyboard input on the view: the click that inspects, wheel, keys, pinch, Home to fit through `App.fit()` (M0.8, b44ed12), and keys 1–3 for speed (M2.2b). It loads after the first frame, as the charts do (M0.7). `camera-input.ts` also imports the Town skin's loader, `town-skin.ts`, once the page is interactive |
+| `panels/` | `hud.ts` (the row, its Map button and `SystemRows`), `charts.ts` (also `DayChart`, which takes several series, `DaySpec`, whose `labels` and `colours` name and colour them, `dataTable`, `setRows`, `el` and `levelRange`), `controls.ts` (the `?dev=1` Zoom slider), `inspector.ts` (`blobCard(reply)`, `Inspector` and `mountInspector(hud, view, app)`; `#inspector` only says "No blob here" or "That blob is gone"), `blob-modal.ts` and `blob-modal.css` (`BlobModal`, the blob card, a non-modal dialog), `toolbar.ts` (the compact bar the map and the town view share, M0.8); `shop-name.ts` (`shopName(good, firm)`: the good's `SHOP_NAMES` entry and N, so firm row N − 1 is "Bakery N" when it sells bread), `economy.ts` and `economy.css` (`EconomyPanel`, `mountEconomy`, `MEASURES`, `fillSeries`, `goodsRows` and `tradeLines`) and `speed-bar.ts` (`SpeedBar`, `speedForKey`), all M2.2b, and M2.4 Part 1 reworked `shop-name.ts`, `economy.ts` and `DayChart` for goods (9a10e94..dba1b48) | The HUD, the lazy charts, the economy panel, the developer controls, the on-demand inspector, and the map's toolbar |
+| `map/` | `generate.ts` and `map-worker.ts` (M8.1); `map-view.ts`, `map-input.ts`, `labels.ts`, `legend.ts` and `goto.ts` (M8.3); `place-builder.ts` and `place-view.ts` (M3.1); `live-town.ts` (`LiveTown`, `HOME_PLACE`, `TownEntry` and `TownParts`, M2.2c) | The map: its worker and the worker's lazy place builder, the lazy view the Map control opens, the town view a wonder opens into, and the live town that a settlement opens as. Highcourt's place context, `TOWN`, lives in worldgen's `place/town.ts` (M2.2c) |
 
 `apps/web/vite/` keeps the build plugins. Vite names a lazy chunk after its file, so the size-limit globs `charts-*.js` and `controls-*.js` hold after the move, and the view input's and the inspector's chunks need entries of their own. So do the economy panel's chunk and the shop-name chunk that the inspector and the panel share (M2.2b).
 
@@ -163,7 +163,7 @@ Grids live in `tools/cli/grids/`, outside `src/`.
     - A blob so leaves a wall at half the angle it met it and never zigzags down a narrow lane. No extra ground lookup is needed.
   - **The shared rule** (owner request, 10 October 2026): `steer.ts` holds the turns and walls above as pure functions on plain numbers.
     - They are `firstRedraw(tick)` with `REDRAW_TICKS`, `wanderTo(heading, walking, w)`, which gives the next heading or `STAND` (−1), and `offWall(heading, wallAlongX)`.
-    - `move` calls them, and `sim-protocol`'s `shared/steering.ts` re-exports them with `draw2`, `WANDER` and the steps, so the town view's walkers walk the same way.
+    - `move` calls them, and `sim-protocol`'s `shared/steering.ts` re-exports them with `draw2`, `WANDER` and the steps (Steering, below).
     - `move` keeps its redraw loop inline. A redraw function of its own spent TurboFan's inlining budget for `move`, so the keyed draw's inner call went uninlined and boxed a heap number per redraw.
   - **Facing:** `facingFor(heading)` is ((heading + 32) >> 6) & 3, the facing nearest the heading and so its step's dominant axis. At the four exact diagonals it takes the facing clockwise.
     - `populate` and `move` write `facing` with every heading change, through `setHeading`, so snapshot v1 and its 2 facing bits are unchanged.
@@ -332,7 +332,7 @@ M8.1 ports `tools/worldgen` to TypeScript, and M8.3 draws what it makes. The own
 | `features/` | `survey.ts`, `wonders.ts`, `landmarks.ts` | `features.py` |
 | `names/` | `place-names.ts`, `words.ts` (generated), `LICENSE-fmg.txt` | Place and country names |
 | `world/` | `draft.ts`, `generate.ts`, `fingerprint.ts` | The world being built, the pipeline, and `world.fingerprint` |
-| `place/` | `site.ts`, `build.ts`, the stage files (among them `walls.ts` and `farms.ts`, from M3.1's Part 3), `looks.ts`, `contexts.ts`, `layout.ts`, `walks.ts`, `street-crowd.ts`, `ground.ts`, `town.ts`, `frames.ts` (generated) and `kind-colours.ts` (generated) | `place.py`, `looks.py`'s `look_for` and `world.py`'s place contexts, plus the walk loops and the street crowd Python lacks (M3.1, Places below). From M2.2c, `export_map.py`'s `town_map` is `ground.ts`, its map colours are `kind-colours.ts`, and Highcourt's context is `town.ts` |
+| `place/` | `site.ts`, `build.ts`, the stage files (among them `walls.ts` and `farms.ts`, from M3.1's Part 3), `looks.ts`, `contexts.ts`, `layout.ts`, `ground.ts`, `town.ts`, `frames.ts` (generated) and `kind-colours.ts` (generated) | `place.py`, `looks.py`'s `look_for` and `world.py`'s place contexts (M3.1, Places below). From M2.2c, `export_map.py`'s `town_map` is `ground.ts`, its map colours are `kind-colours.ts`, and Highcourt's context is `town.ts` |
 
 - **Imports:** values only from `@nomos/sim-core/kernels`, `@nomos/sim-protocol/world-map`, `@nomos/sim-protocol/place` and, from M2.2c, `@nomos/sim-protocol/map`, for the map format's codes.
   - `kernels` gives the keyed draw, value noise and integer maths. M8.1 adds `mix`, `draw`, `below`, `value`, `fbm`, `floorDiv`, `floorMod` and a new `isqrt` to its exports.
@@ -525,11 +525,9 @@ The owner asked on 9 October 2026 to zoom into a settlement on the map and see t
   - `pose`, `facing`, `expression`, `job` and `emote`, as indices into `PLACE_POSES`, `PLACE_FACINGS`, `PLACE_EXPRESSIONS`, `PLACE_JOBS` and `PLACE_EMOTES`, with `NO_CODE` (255) for no job or emote;
   - `step`, a walker's frame, 0 or 1;
   - `x` and `y`, the anchor in art px, and `lift`, which raises a sitter onto a bench.
-- **`PlaceWalks`:** the loops look-only walkers follow, which `place.py` lacks. Loop r belongs to `person[r]` and steps through `cells[offsets[r]]` to `cells[offsets[r + 1] − 1]`, as y × width + x, then back to its first cell, the person's own tile.
-- **`PlaceCrowd`:** the street crowd (M3.1's Part 2), look-only walkers, one per 150 residents and at most 3,000. Crowd loop r steps through `cells[offsets[r]]` to `cells[offsets[r + 1] − 1]` and back. Walker k has `look[k]` and `expression[k]`, follows loop `loop[k]`, and starts `phase[k]` art px along it.
 - **Messages:**
   - `PlaceRequest` is `{ type: 'place', place }`. Place p is settlement p, or wonder p minus the settlement count, in `world.py`'s `place_contexts` order.
-  - `PlaceReply` is `{ type: 'place', place, layout, walks, crowd, ms }`, with every buffer transferred, as `placeBuffers(layout, walks, crowd)` lists them.
+  - `PlaceReply` is `{ type: 'place', place, layout, map, ms }`, with every buffer transferred, as `placeBuffers(layout, map)` lists them. `map` is a settlement's ground as the `.nmap` bytes from `writeMap`, which the page hands the sim worker in an `open` message, or null for a wonder, whose vista has none.
   - `PlaceError` is `{ type: 'place-error', place, message }`, sent instead for an unknown place, a request before any world, or a failed build.
   - **The starting town (owner request, 10 October 2026):** `TownRequest` is `{ type: 'town' }`, which needs no world. The answer is `TownReply`, `{ type: 'town', layout, ms }`, with the layout's buffers transferred as `layoutBuffers(layout)` lists them, or `TownError`, `{ type: 'town-error', message }`, when the build fails. `placeBuffers` lists `layoutBuffers` first.
 
@@ -538,20 +536,13 @@ The owner asked on 9 October 2026 to zoom into a settlement on the map and see t
 - **`placeContexts(map: WorldMap): PlaceContext[]`** ports `world.py`'s `_context` and `place_contexts`.
   - Settlements come first in id order, seeded `draw(world seed, PLACE, 0, cell)`; then wonders in placement order, seeded `draw(world seed, PLACE, 1, kind)`.
   - `PlaceContext` holds `model.py`'s fields, in its order.
-- **`buildPlace(ctx): { layout: PlaceLayout, walks: PlaceWalks, map: MapV1 | null }`** ports `place.py` one function to one function, in `worldgen`'s `place/`. `map` is the place's ground (below), or null for a wonder, whose vista has none. `walks` goes in M2.2c's Task 7.
+- **`buildPlace(ctx): { layout: PlaceLayout, map: MapV1 | null }`** ports `place.py` one function to one function, in `worldgen`'s `place/`. `map` is the place's ground (below), or null for a wonder, whose vista has none.
   - Its frame table, `place/frames.ts`, is generated by `scripts/place-frames.ts`. It holds only the fields `place.py` reads: w, the anchor, the footprint and the door.
   - Looks are `look_for(place seed, person index)` on the `LOOK` stream. `worldgen`'s `streams.ts` holds `PLACE` 10, `LOOK` 11 and `CROWD` 12, as `rng.py` does.
 - **The ground** (M2.2c Task 1, 62103c0..2e6471a): `place/ground.ts`'s `groundOf(site)` ports `export_map.py`'s `town_map`, a settlement's walk grid and its buildings with their doors as `MapV1` holds them, and `buildPlace` returns it as `map`. `writeMap` of Highcourt's ground equals `town.nmap` byte for byte.
   - A dock's door lies in the water it stands at, as `export_map.py` leaves it.
   - Kind colours come from the generated `place/kind-colours.ts`, which `tools/sprites/kind_colours.py` writes from the sheets, since TypeScript can't read their pixels.
   - Beds by house form: hut 2, detached and row 4, farmhouse 6, apartment 24. An unknown form throws.
-- **Walk loops,** in TypeScript only:
-  - A tile is walkable if it is a road, or a standable tile with nothing standing on it.
-  - `place.py`'s walkers, and 350 per mille of the standers with no job, each get a loop: 3–6 waypoints within 10 steps of their tile, joined by shortest paths inside that reach.
-  - Sitters and people with a job stay put.
-  - A place's loops hold at most 16,384 cells.
-  - Every draw is `draw(place seed, CROWD, …)`, with first keys 0x110–0x112, clear of `place.py`'s 1–6.
-- **The street crowd** keeps to at most 300 loops of at most 4,000 cells, 131,072 cells in all. From M3.1's Part 3, its hubs lie on roads that aren't farm tracks, and each hub's search order is keyed by `LANE` (0x125) on `CROWD`, so loops spread across wide roads.
 - **Stages:** `place.py`'s `SETTLEMENT_STAGES`, mirrored by `build.ts`, list `build_settlement`'s stage groups in order: water, centre, walls, buildings, farms, decor, nature and people. Walls and farms join in M3.1's Part 3.
 - **The walled town** (M3.1's Part 3):
   - **New tile kinds:** `stone` (main road, 3 wide), `cobble` (street, 2), `gravel` (country road, 2), `track` (farm track, 1), `flower-bed`, and `crop_vine_<stage>` and `crop_rice_<stage>`. `path` stays the lane and `paving` the plaza. A road tile keeps the highest-ranked kind laid on it, in the order paving, stone, cobble, gravel, track, path.
@@ -573,7 +564,8 @@ The owner asked on 9 October 2026 to zoom into a settlement on the map and see t
 ### In the map worker
 
 - After a world, `generate.ts` keeps its place contexts, made before the world's buffers are transferred away, and times them as the `contexts` stage.
-- The first `PlaceRequest` imports `place-builder.ts`, which builds as its own chunk, `place-builder-*.js`, so opening the map pays nothing for places. `ms` times the build alone.
+  - **Highcourt is place 0** (M2.2c Task 6): `generate.ts` sets `contexts[0] = TOWN` and `names[countries] = 'Highcourt'`, with `countries` the world's country count. Settlement 0 is each world's capital, so every map holds the town the sim starts in.
+- The first `PlaceRequest` imports `place-builder.ts`, which builds as its own chunk, `place-builder-*.js`, so opening the map pays nothing for places. A settlement's `PlaceReply` carries its ground, written by `writeMap`, and `ms` times the build and that write.
 - A `TownRequest` goes through the same lazy builder: `buildTownAnswer` answers with `buildPlace(TOWN).layout`, where `TOWN` is Highcourt's context as `tools/worldgen/export_map.py` pinned it. Since M2.2c Task 1 (6f3996b) it lives in worldgen's `place/town.ts`, because `apps/web/src/map/town.ts` is gone. `apps/web/test/town.test.ts` holds the layout to `assets/maps/town.nmap` tile for tile, so the art the Town skin draws is the ground the sim walks. `worldgen/scripts/town-map.ts` writes `town.nmap` from `buildPlace(TOWN).map`, and `test:headless` runs its `--check`.
 - `map-worker.ts` installs its message handler only once. WebKit runs a module worker's script a second time when a dynamically imported module imports it back.
 
@@ -615,16 +607,12 @@ The owner asked on 9 October 2026 to zoom into a settlement on the map and see t
 - **Entering,** from the map's Region view:
   - a place is in focus when it is the nearest to the view's centre within a tap's reach. "Enter <name>" shows while one is;
   - at the map's closest step, zooming in again near a place opens it. The zoom point is the cursor, the pinch centre or the view's centre;
-  - a tap on the place in focus opens it, and a tap on any other place jumps there.
+  - a tap on the place in focus opens it, and a tap on any other place jumps there;
+  - since M2.2c Task 6, a settlement opens live in the main view (Every town runs the sim, below), and this view opens for wonders only.
 - **The view:** `map/place-view.ts` mounts a `#place` section over the map, which goes inert beneath it and draws nothing while covered.
   - It opens at `openPlaceCamera`'s scale.
-  - Its bar holds Back to map, Fit, + and −, and Pause people, which stays set from one place to the next, with the place's name, tier, population and country. A wonder is named by its kind, such as "Sea arch".
-- **Walkers:** `map/walkers.ts`'s `Walkers` wander a place's street network, the tiles of all its loops, by the sim's own wander rule, which `sim-protocol`'s `shared/steering.ts` hands them with the keyed draw (owner request, 10 October 2026).
-  - They step as the sim's blobs do, 4 art px a tick, at about 20 art px a second, so a tick lasts 200 ms. A frame draws each walker eased between its last two ticks, with no allocation per frame.
-  - An owner keeps to its own loop's box, near home. The street crowd starts at its phases along its loops and roams the whole network.
-  - The walk frame changes every 8 px along the way they face, and facing follows the way they go.
-  - A walker takes the walk pose while it walks and the stand pose while it stands, as the sim's idlers do.
-  - Pause people stops them, and reduced motion keeps everyone where `place.py` put them; switched off, they walk again from there.
+  - Its bar holds Back to map, Fit, + and −, with the wonder's name, which is its kind such as "Sea arch", and "A wonder in <country>" beside it.
+  - Its people stand where `place.py` put them: the walkers, the walk loops and Pause people are gone (M2.2c Tasks 6 and 7).
 - **Leaving:** Back to map, Escape, or zooming out past the smallest scale returns to the map as it was, with focus back where it was.
 - **Loading:**
   - `place-view-*.js`, `place-builder-*.js` and the atlas load on the first entry only, and each chunk has a size-limit entry.
@@ -633,12 +621,12 @@ The owner asked on 9 October 2026 to zoom into a settlement on the map and see t
 - **Accessibility:**
   - the picture's `img` role and name sit on a wrapper that the canvas swaps keep;
   - focus moves to Back to map on entry, and returns on exit;
-  - the status line reads the place: "<name>, a <tier> of N people in <country>: X people are out, Y of them walking."
-- **Test hooks:** `window.__map` gains `camera` and `map`, and `window.__place` is the town view's.
+  - the status line reads the wonder: "<name>, a wonder in <country>: N people are out."
+- **Test hooks:** `window.__map` gains `camera` and `map`, and `window.__place` is the town view's: `open`, `place`, `ready`, `backend`, `scale` and `frameMs`. Its `walkers`, `walkerX` and `walkerY` are gone (M2.2c Task 6).
 
 ## The Town skin (owner request, 10 October 2026)
 
-The owner asked on 10 October 2026 for the town view's art on the first screen. The Town skin draws Highcourt, the town `town.nmap` is exported from, with the place pass, and the sim's agents as its people. It is an early first cut of Skin C (M3.3).
+The owner asked on 10 October 2026 for the town view's art on the first screen. The Town skin draws Highcourt, the town `town.nmap` is exported from, with the place pass, and the sim's agents as its people. Since M2.2c it draws whichever town the sim runs. It is an early first cut of Skin C (M3.3).
 
 ### `@nomos/render-gl/town`
 
@@ -671,6 +659,7 @@ The owner asked on 10 October 2026 for the town view's art on the first screen. 
   - loads `atlas/atlas.json` and `atlas/atlas.webp` at the same time, as the town view does;
   - once both are in, makes a `TownSkin` on the app renderer's backend, so `?canvas` draws it in Canvas2D, lends it with `app.renderer.setTown` and redraws.
   - A failed load keeps the dots and logs why.
+  - **`TownSkinMount`** (M2.2c Task 6) holds the canvas and the skin, and subscribes with `app.onTown`. A town opened before the skin was lent is drawn from its own layout, not Highcourt's. Each later town goes to `TownSkin.setLayout`, and the canvas's label reads "<name>, with every agent as a blob".
 - **Skins:** the HUD's toggle is unchanged.
   - Auto shows the town at `autoSkin`'s town level: from 6.9 CSS px a tile with at most 9,000 agents in view, kept down to 5.1 px and 10,350 agents, since the 176 × 112 town starts 2,688 on every tier.
   - Dots and Town fix the skin, and Blobs still shows dots.
@@ -735,9 +724,7 @@ M2.1 builds Lengnick's households and firms in `sim-core`, as its [step plan](..
 One wander rule moves every blob.
 - `movement/steer.ts` holds `wanderTo`, `offWall`, `firstRedraw`, `REDRAW_TICKS` and `STAND`. `sim-core`'s `move` calls them, with the keyed draw inlined so ticks stay allocation-free.
 - `sim-protocol`'s `shared/steering.ts` re-exports them, with `draw2`, `WANDER` and the step tables, so the app never imports `sim-core`.
-- The town view's walkers (`apps/web/src/map/walkers.ts`) wander by the same rule over the street network that their place's loops cover. An owner stays within its own loop's box.
-  - So `PlaceWalks` and `PlaceCrowd` now give each walker its network and start, not a path it follows.
-  - A test matches walkers to `move` tick for tick.
+- The town view's walkers (`apps/web/src/map/walkers.ts`) wandered by the same rule over their place's loops, until M2.2c Task 6 removed them and Task 7 their loops. Only that module's own test imports the re-exports now.
 
 ## Spawn and fold (owner: M2.2)
 
@@ -1015,7 +1002,7 @@ M2.2c gives every settlement a ledger row, advances the rows of the towns off sc
     5. The loop posts `opened`, then a snapshot of the new town, which lets a paused page draw it as `init`'s spawn snapshot does.
   - **A request for the live town, or one the sim refuses,** switches nothing and logs nothing: it runs no tick, keeps the feed, and `opened` names the town still live, with the tick unchanged. So every `open` gets one `opened`, and a `place` other than the one asked for means the page stays where it was.
   - **`inspectAgent`** reads a row of the live town through the same `blobReply` as `inspect`, and a row that is not an integer below `world.agents.count[0]` answers `noBlobReply`. After a switch a row below the count is another blob, and one at or past it is nobody.
-  - **What the page does** (Task 6): it shows "Opening <name>…" from `open` to `opened`. On `opened` it swaps the town and restarts the panel, and it closes the blob card, since the card's row means something else now. It stops sending `inspectAgent` from the moment it sends `open`, because a refresh queued behind the `open` is answered for the new town's row. It drops an `inspected` whose `agent` is not the open card's.
+  - **What the page does** is Task 6's, below.
   - **The warm-up** (`step/warm.ts`): `warmUp()` shares one set of stand-in homes between its spawn and a `requestTown` for `WARM_SWITCH_PLACE` (1) at `WARM_SWITCH_TICK` (100) of its last 2,000 ticks. The request lands at tick 1,440, the way a player's does, and the new town runs 540 ticks. The warm-up still runs after the first snapshot, and `warm.test.ts` checks that it switches once, to place 1 with place 0 left as a row, and that the `switch` golden holds after it.
   - **Cost** (measured here, Node 24.18.0 on Windows, the phone tier with `checks` off, Highcourt's ground live and three villages of the standard world 5EED0001 as the other towns, 3 to 5 runs, load not recorded):
     - An `open` that comes on a boundary takes 4.1 to 4.9 ms for a 3,176-bed village, of which `parseMap` and the homes take 1.6 to 2.2 ms. Before the warm-up switch it took 5.5 to 5.8 ms.
@@ -1030,3 +1017,29 @@ M2.2c gives every settlement a ledger row, advances the rows of the towns off sc
   - **Goldens** (365a10e): `goldens.json` gains `away`, `{ seed: 42, people: 2688, largestHome: 24, months: 12, row }`, the 14 fields of Highcourt's beds left away through 12 summary months, and `visit`, `{ seed: 42, tier: 'phone', people: [1000, 600], day: 50, hash }`, place 1 entered for the first time by one step at day 50. `awayRow` and `visitHash` in `test/engines/checks.ts` run them, so Chromium reaches `stepAwayTown` for the first time. They moved with the refit below, to `229, 272, 194, 165, 77, 48, 2472, 216, 268, 798803642, 34476357, 3360, 142931, 117290` and `a7bd4005`.
   - **The refit** (48e1f0f): the away fit's lag-1 is corrected for its bias, as the script's line above says. `away.test.ts`'s Highcourt pin moved to the row above.
   - **The hashes:** `42/phone` `746a06a3`, the economy `6a652730`, `town` `8f1f75bb`, Highcourt's `ff861cb3` and `da92906e` and the 20 spawn hashes held.
+- **Task 6, live towns in the app** (5d9ca58..d9625f0). Its other names sit in Layout, Places, The town view in `web` and The Town skin, above.
+  - **`App`** (`app/app.ts`) gains `opening`, `showTown(map, layout, name)` and `onTown(listener)`.
+    - `opening` is true from the page's `open` message to the town's arrival, while a query sent to the worker is answered for the new town.
+    - `showTown` swaps the map that the view fits and the renderer draws, fits the camera to it with a camera of its own, and tells the town listeners. The new town's blobs come in its first snapshot.
+    - `onTown`'s `TownListener` is `(layout, name) => void`. A new listener gets the last town shown at once, as `onEconomy` does, so a Town skin lent late draws it.
+  - **`LiveTown`** (`map/live-town.ts`), which the map view makes once, runs the switch. `HOME_PLACE` is 0, a `TownEntry` is `{ place, name, layout, ground }` with the ground as `.nmap` bytes, and `TownParts` are the HUD's Map button and alert line and the town's view.
+    - **Entering:** Enter asks the map worker for the place, and a reply with a ground makes `open(entry)`. It sets `app.opening`, says "Opening <name>…" in the HUD's alert line, and sends the sim worker `open` with the bytes. The map closes. Entering the town already live only closes the map, and Enter does nothing while a switch is under way.
+    - **The swap** happens on the first snapshot at or past `opened.tick`, so no frame draws one town's blobs on another's ground. `app.agents` takes `opened.agents`, the alert clears, `showTown` hands over the map and layout, the Town skin calls `setLayout`, and its canvas is labelled "<name>, with every agent as a blob".
+    - **A refusal** is an `opened` that names another place than the one asked for: the town stays and the alert says "<name> could not be opened." A place the map worker cannot build, or one with no ground, says "<name> could not be opened: <why>" on the map and in the alert.
+    - **Away from Highcourt,** `#hud-town`, the town's name in a polite live region, and a "Back to Highcourt" button sit after Map, and hide in Highcourt. The button asks the map for place 0 and enters it as any other.
+  - **The blob card:** `mountInspector(hud, view, app)` returns an `Inspector`, whose `at(x, y)` sends `inspect`. `BlobModal` gains `isOpen` and `close()`.
+    - An open card sends `inspectAgent` for its row every 1,000 ms, but none while `app.opening` or while an answer is awaited. A refresh queued behind an `open` would be answered for the new town's row, and the worker answers in order. The card updates only from an answer for its own row.
+    - It closes on `opened`, because its row means another blob now, and on an answer of −1, when `#inspector` says "That blob is gone".
+  - **The economy panel:** `EconomyPanel.restart()` runs when an `opened` names a different place than the last. The figures of the town left give way to the note until the new town's first day ends.
+  - **The town view** opens for wonders only, and `walkers.ts` is gone (The town view in `web`, above).
+  - **Tests:** `towns.spec.ts` runs six cases in Chromium.
+    - A village opens live in the Town skin, one blob to a bed, the panel restarts and reads "Goods on day 1" after its first day, and Back to Highcourt returns its crowd.
+    - A town entered before the Town skin arrived is drawn once the skin does.
+    - Entering the live town sends no `open`, and a refused `open` keeps the town.
+    - A place the map worker cannot build says so, and axe passes in a village opened live.
+- **Task 7, the clean-up** (67ae00e): the decorative crowd's last code is gone.
+  - **Deleted:** worldgen's `place/walks.ts` (`placeWalks`) and `place/street-crowd.ts` (`crowdedPlace` and `streetCrowd`), `sim-protocol`'s `PlaceWalks` and `PlaceCrowd`, `BuiltPlace.walks`, and the tests that only covered them: `street-crowd.test.ts`, `place-walks.test.ts` and `place-walks-drawn.test.ts`. `placeBuffers` lost their buffers in Task 6.
+  - **`buildPlace(ctx)`** returns `{ layout, map }`, and `crowdedPlace` leaves the barrel. The layout is unchanged, so the place goldens, `town.nmap` and Highcourt's pins `ff861cb3` and `da92906e` held.
+  - `CROWD` stays for `place.py`'s people. The keys 0x110 to 0x112 and 0x120 to 0x124 that the loops and the crowd drew on are free again.
+  - `scripts/time-places.ts` times `buildPlace`, the layout and the ground, so its lines no longer compare with M3.1's baseline, which also timed the loops and the crowd.
+  - **Bytes:** the place builder chunk measures 19.06 kB brotli, down from 19.49 kB, against its 20.94 kB limit (measured here, Vite 8.3.3 and size-limit).
