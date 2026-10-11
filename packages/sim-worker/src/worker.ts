@@ -1,5 +1,5 @@
 import { createHomes, createShops, createStandInTown, createTown, type Homes, type Shops, type Tier, type World } from '@nomos/sim-core';
-import { ENTITY_HOME, parseMap, premisesOf, type AppMessage, type MapV1 } from '@nomos/sim-protocol';
+import { ENTITY_HOME, leisureOf, parseMap, premisesOf, type AppMessage, type MapV1 } from '@nomos/sim-protocol';
 import { createSimLoop, type TownSite } from './loop/loop.ts';
 
 // One channel serves every yield: a posted message wakes the next turn without setTimeout's nested 4 ms clamp (R2 §2).
@@ -15,9 +15,10 @@ function homesOf(map: MapV1): Homes {
   return createHomes(map.entities.filter((entity) => entity.kind === ENTITY_HOME));
 }
 
-// The map's shops and stalls give its town streets: blobs walk to work and to the shops they bought from (M2.7).
+// The map's shops and stalls give its town streets: blobs walk to work and to the shops they bought from (M2.7). Its plaza, greens
+// and water edges follow the premises as sites of their own, where blobs spend their free time (M3.2).
 function shopsOf(map: MapV1): Shops {
-  return createShops(premisesOf(map));
+  return createShops([...premisesOf(map), ...leisureOf(map)]);
 }
 
 // Nothing catches a bad map's MapError, so it leaves the handler and the page sees the Worker's error event. A page that
