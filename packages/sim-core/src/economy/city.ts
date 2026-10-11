@@ -48,8 +48,9 @@ export const CITY = Object.freeze<EconomyParams>({
   openingWage: 142_800,
   // 3,200 x 63 is 1.41 x the 142,800 wage, inside the band.
   openingPrice: 3_200,
-  // Measured here (`economy --preset city --burn-in --seeds 5 --seed 1 --days 40000`: seeds 1-5, 40,000 days, Node 24.18.0,
-  // 11 October 2026, exits off, goods on): MSER-5 cut 19,910 days of the mean price and 11,445 of the unemployment share,
-  // and 1.5 x 19,910 is 29,865 (M2.3 Ruling 18). M2.3's city, without goods, cut 12,285 and 10,900.
-  burnInDays: 29_865,
+  // Measured here (`economy --preset city --burn-in --seeds 5 --seed 1 --days 80000`: seeds 1-5, 80,000 days, Node 24.18.0,
+  // 11 October 2026, exits off, goods on): MSER-5 cut 21,255 days of the mean price and 11,470 of the unemployment share,
+  // and 1.5 x 21,255 rounds up to 31,883 (M2.3 Ruling 18). The 40,000-day run cut 19,910 days, 90 under its half-run limit
+  // of 20,000, so that limit had bound it. M2.3's city, without goods, cut 12,285 and 10,900.
+  burnInDays: 31_883,
 });

@@ -96,7 +96,7 @@ describe('the town map', () => {
       hashes[tier] = stateHash(world).toString(16).padStart(8, '0');
     }
 
-    expect(hashes).toEqual({ phone: '9ca2ad77', desktop: '4cd678eb' });
+    expect(hashes).toEqual({ phone: 'ff861cb3', desktop: 'da92906e' });
   });
 
   it('fits the map budget', () => {

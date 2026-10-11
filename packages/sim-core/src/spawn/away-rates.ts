@@ -3,5 +3,5 @@
 // One entry each for employed, price, wage, in that order. A share is the part of its gap to the first record that a field
 // closes in a month, and a noise the deviation of a month's step, as a share of the record's level at that size.
 export const AWAY_FIT_PEOPLE = 1000;
-export const AWAY_SHARE_PPM = /* @__PURE__ */ new Int32Array([64054, 16575, 36980]);
-export const AWAY_NOISE_PPM = /* @__PURE__ */ new Int32Array([7567, 1080, 2297]);
+export const AWAY_SHARE_PPM = /* @__PURE__ */ new Int32Array([65149, 21161, 35701]);
+export const AWAY_NOISE_PPM = /* @__PURE__ */ new Int32Array([6308, 602, 1335]);
