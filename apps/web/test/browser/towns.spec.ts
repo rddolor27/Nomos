@@ -145,6 +145,31 @@ test('opens a village live in the Town skin, restarts the economy panel, and goe
   await expect(page.locator('#view')).toBeFocused();
 });
 
+test('draws the town entered before the Town skin arrived, once it does', async ({ page }) => {
+  const village = firstVillage();
+  let release = (): void => undefined;
+  const held = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  // The skin waits for the town atlas, so the village opens under the dots first.
+  await page.route('**/atlas/atlas.json', async (route) => {
+    await held;
+    await route.continue();
+  });
+  await page.goto(HOME);
+  await page.waitForFunction(() => performance.getEntriesByName('app:interactive').length > 0);
+  await openMap(page);
+  await enterFromMap(page, village.place, village.name);
+  await expect(page.locator('#hud-agents')).toHaveText(agents(village.beds));
+  expect(await drawn(page)).toEqual({ skin: 'dots', agents: village.beds });
+  release();
+  await expect.poll(() => drawn(page), { message: "the village, in the Town skin lent late with the village's layout" }).toEqual({
+    skin: 'town',
+    agents: village.beds,
+  });
+  await expect(page.locator('#town')).toHaveAttribute('aria-label', `${village.name}, with every agent as a blob`);
+});
+
 test('closes the map and sends no open for the town already live', async ({ page }) => {
   const highcourt = bedsOf(TOWN);
   await openHighcourt(page);
