@@ -64,7 +64,8 @@ The owner can overturn any of these.
     - Task 27's greens give M3.2 leisure sites.
     - Until Task 26's gates exist, the inn and the stable aim at the plaza's centre.
   - **Beside them:** the wall-art preview (Task 24), M3.2's mockups (Task 1) and M2.7 Part 1's Opus review.
-  - **Pushes:** the next push follows Task 27. The place goldens and the browser specs' Highcourt counts are re-pinned then, not only at Task 30.
+  - **Task 23 joins the build** (coordinator, 02:05), after Task 27. Ring towns need ways of up to 32 runs, since 42 of Highcourt's 6,160 ways now need more than 16, and M3.2's legs need every door to reach the plaza.
+  - **Pushes:** the next push follows Task 23. The place goldens and the browser specs' Highcourt counts are re-pinned then, not only at Task 30.
 - **M2.2c's go** (09:31): build it right after M2.4 Part 1. Highcourt is each world's capital. Away towns keep living in summary form, not frozen, so an Opus pass settles how before Task 3.
 
 **The designers' calls, 10 October 2026:**
@@ -136,6 +137,13 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 12 Oct, 02:05: **M3.1 Part 4, Task 22: ring towns** (9b2c156, 85ff235).
+  - **Built:** each capital, city and town is dealt rings, winding lanes or a grid, and Highcourt is rings. Winding lays the tight grid until Task 25. The grid's knobs came forward from Task 25, since no two capitals may share a style and its knobs.
+  - **Highcourt:** 280 homes and 1,960 blobs, down from 375 and 2,600, until Task 27 packs the centre. Its pins are `26c91a01` on phone and `636e4015` on desktop. `42/phone` `746a06a3` and the economy `6a652730` held.
+  - **Red until Task 23:** `street-fields.test.ts`, since 42 of Highcourt's 6,160 ways need more than 16 runs.
+  - **Timing:** a capital builds in a median of 147.5–155.8 ms and at worst 188–216 ms, against 250 and 350 (measured here, Node, with 4 agents running).
+  - **Also fixed:** `place-fixtures.test.ts` had failed worldgen's typecheck since ed4542f (cc34bd8).
+- 12 Oct: **the art previews** went to the owner: M3.2's bubbles and scenes (cb21a68, cf0a97b), and Part 4's diagonal walls and street corners (f4f0fd3, 815b263).
 - 12 Oct: **M2.7 Part 1's Opus review** (read-only, `4918377..6df48bb`) found nothing critical. Replay, the `STREETS` hash rule, checkpoints, money and fairness hold.
   - **Fixed** (8d03710..6d01d09):
     - **Finding 1,** the one Important finding, was a test gap: no CI gate ran the street path in Chromium or the allocation gate.
