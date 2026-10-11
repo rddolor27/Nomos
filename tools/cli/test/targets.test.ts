@@ -1,6 +1,7 @@
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { PORTIONS_PER_UNIT } from '@nomos/sim-core';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { bandMiss, inBand, judge, judgeEverySeed, median, tQuantile95 } from '../src/targets/judge.ts';
 import { runTargets } from '../src/targets/run.ts';
@@ -40,9 +41,11 @@ const META: SummaryMeta = {
 type FoodColumn = Extract<SummaryColumn, `${'sold_cents' | 'made' | 'spoiled'}_${string}` | 'eaten' | 'unmet'>;
 type Plan = Record<Exclude<SummaryColumn, 'stayers' | 'stayer_cuts' | FoodColumn>, number[]>;
 
-// M2.4's food columns, which build() fills with the same figures on every day of the window. Bread alone sells, the other
-// foods stay at 0.
+// M2.4's food columns, which build() fills with the same figures on every day of the window and of month 5, which Okun
+// compares month 6's output with. Bread alone sells, the other foods stay at 0.
 const FOOD_DAILY = { sold_cents_bread: 1_000, made_bread: 200, spoiled_bread: 10, eaten: 597, unmet: 3 } as const;
+// A month of that bread is 700 units of output, at PORTIONS_PER_UNIT portions to the unit.
+const FOOD_UNITS_A_MONTH = (FOOD_DAILY.made_bread * MONTH) / PORTIONS_PER_UNIT;
 
 const ON_FIRST_DAY = ['price_changes', 'price_change_ppm', 'hires', 'switches', 'job_visits', 'above_markup'] as const;
 const ON_LAST_DAY = ['firings', 'wage_bill', 'exits', 'spell_months', 'long_spells'] as const;
@@ -51,9 +54,11 @@ const LEVELS = ['unemployed', 'vacancies', 'price_mean', 'wage_mean', 'stock', '
 const UNEMPLOYED = [50, 60, 70, 80, 60, 50, 40];
 // Wages fall by 0.05 minus the unemployment rate, vacancy rates are 0.10 minus it, and output grows by ten times the fall
 // in it, so each correlation is exactly -1 when it pairs the right months. Sales stay flat, so Okun is -1 only if it
-// reads the units produced.
+// reads the output: the goods produced and the food made, which makes up the 700 units a month of OUTPUT that PRODUCED
+// leaves out.
 const WAGE_MEAN = chain(100_000, (previous, i) => previous * (1.05 - UNEMPLOYED[i] / PEOPLE));
-const PRODUCED = chain(210_000, (previous, i) => previous * (1 - (10 * (UNEMPLOYED[i] - UNEMPLOYED[i - 1])) / PEOPLE));
+const OUTPUT = chain(210_000, (previous, i) => previous * (1 - (10 * (UNEMPLOYED[i] - UNEMPLOYED[i - 1])) / PEOPLE));
+const PRODUCED = OUTPUT.map((units) => units - FOOD_UNITS_A_MONTH);
 const SALES_UNITS = UNEMPLOYED.map(() => 210_000);
 const STOCK_PER_SALES = [1, 1, 1.2, 0.8, 1, 1, 1];
 // One firm in a hundred is big in some months and two in others; the rest hold 5. Skew then depends only on that share.
@@ -122,15 +127,15 @@ function build(plan: Plan): SummaryColumns {
     }
   }
   for (const name of Object.keys(FOOD_DAILY) as (keyof typeof FOOD_DAILY)[]) {
-    columns[name].fill(FOOD_DAILY[name], WARM_UP_DAYS, 12 * MONTH);
+    columns[name].fill(FOOD_DAILY[name], 5 * MONTH, 12 * MONTH);
   }
   columns.stayers[YEAR_END] = 500;
   columns.stayer_cuts[YEAR_END] = 10;
   return columns;
 }
 
-// Junk in everything the window must not read: months 0 to 4, month 5 but for the last-day levels and its sales, which
-// month 6 compares with, and the partial month after the window.
+// Junk in everything the window must not read: months 0 to 4, month 5 but for the last-day levels, its sales, its output
+// and its food, which month 6 compares with, and the partial month after the window.
 function polluted(columns: SummaryColumns): SummaryColumns {
   const copy = Object.fromEntries(SUMMARY_COLUMNS.map((name) => [name, Float64Array.from(columns[name])])) as Record<
     SummaryColumn,
@@ -219,11 +224,22 @@ describe('summarize', () => {
     expectValues(values, EXPECTED);
   });
 
-  it('measures Okun on the units produced, whatever the units sold do', () => {
+  it('measures Okun on all output, whatever the units sold do', () => {
     const jaggedSales = { ...BASE, sales_units: [210_000, 90_000, 400_000, 100_000, 300_000, 50_000, 250_000] };
     expect(summarize(build(jaggedSales), META).okun).toBeCloseTo(-1, 10);
     // With output flat there is nothing to correlate, and NaN is in no band.
-    expect(summarize(build({ ...BASE, produced: SALES_UNITS }), META).okun).toBeNaN();
+    const flatGoods = UNEMPLOYED.map(() => SALES_UNITS[0] - FOOD_UNITS_A_MONTH);
+    expect(summarize(build({ ...BASE, produced: flatGoods }), META).okun).toBeNaN();
+  });
+
+  it('counts the food made with the goods, six portions to the unit', () => {
+    // The goods make a flat 100,000 units a month and the food carries the cycle, so goods alone would give NaN.
+    const columns = build({ ...BASE, produced: UNEMPLOYED.map(() => 100_000) });
+    for (let i = 0; i < OUTPUT.length; i++) {
+      const first = (5 + i) * MONTH;
+      columns.made_bread.fill(((OUTPUT[i] - 100_000) * PORTIONS_PER_UNIT) / MONTH, first, first + MONTH);
+    }
+    expect(summarize(columns, META).okun).toBeCloseTo(-1, 10);
   });
 
   it('reads nothing from the warm-up, the partial month after the window, or a year end outside it', () => {

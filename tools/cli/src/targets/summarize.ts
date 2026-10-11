@@ -1,4 +1,4 @@
-import { DAYS_PER_MONTH } from '@nomos/sim-core';
+import { DAYS_PER_MONTH, PORTIONS_PER_UNIT } from '@nomos/sim-core';
 import { mean, sampleSd } from './judge.ts';
 import type { TargetId } from './targets.ts';
 
@@ -56,10 +56,6 @@ function sumOfMonth(column: Float64Array, month: number): number {
 
 function sums(column: Float64Array, w: Window): number[] {
   return perMonth(w, (month) => sumOfMonth(column, month));
-}
-
-function priorSums(column: Float64Array, w: Window): number[] {
-  return perMonth(w, (month) => sumOfMonth(column, month - 1));
 }
 
 // A level at a month's end is its last day's, and at its start the day before its day 0 (the previous month's last).
@@ -134,6 +130,23 @@ function foodFlow(c: SummaryColumns, w: Window, flow: 'sold_cents' | 'made' | 's
   return sum;
 }
 
+// A month's output in units of goods: what the goods firms made, plus the food made at PORTIONS_PER_UNIT portions to the
+// unit, since a worker-day makes 18 portions or 3 units. `produced` counts goods alone (M2.4 review), and a world without
+// goods makes no food, so its output is `produced` as before.
+function outputOfMonth(c: SummaryColumns, month: number): number {
+  let portions = 0;
+  for (const food of FOODS) portions += sumOfMonth(c[`made_${food}`], month);
+  return sumOfMonth(c.produced, month) + portions / PORTIONS_PER_UNIT;
+}
+
+function outputs(c: SummaryColumns, w: Window): number[] {
+  return perMonth(w, (month) => outputOfMonth(c, month));
+}
+
+function priorOutputs(c: SummaryColumns, w: Window): number[] {
+  return perMonth(w, (month) => outputOfMonth(c, month - 1));
+}
+
 // M2.4's reported shares: food's part of all spending in cents, the part of the food made that spoiled, and the part of the
 // portions wanted that went short. A world with goods off has no food, so the last two are undefined.
 function foodShares(c: SummaryColumns, w: Window) {
@@ -164,8 +177,9 @@ function cycleMeasures(c: SummaryColumns, w: Window, people: number) {
     unemployment_mean: mean(u),
     unemployment_sd: sampleSd(u),
     phillips: correlation(growth(endLevels(c.wage_mean, w), startLevels(c.wage_mean, w)), u),
-    // Output is the units made. Sales follow demand and stock, and measured on them Okun's sign came out positive (M2.3 review).
-    okun: correlation(growth(sums(c.produced, w), priorSums(c.produced, w)), u.map((value, i) => value - priorU[i])),
+    // Output is everything made, goods and food. Sales follow demand and stock, and measured on them Okun's sign came out
+    // positive (M2.3 review).
+    okun: correlation(growth(outputs(c, w), priorOutputs(c, w)), u.map((value, i) => value - priorU[i])),
     beveridge: correlation(vacancyRate, u),
   };
 }
