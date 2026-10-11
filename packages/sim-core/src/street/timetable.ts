@@ -1,6 +1,6 @@
 import { FACING_DOWN, FACING_UP } from '../agents/actions.ts';
 import { isFood } from '../goods/goods.ts';
-import { draw3, drawBelow3 } from '../random/draw.ts';
+import { drawBelow3 } from '../random/draw.ts';
 import { STREET_DRAW } from '../random/streams.ts';
 import { TICKS_PER_DAY, dayOf, isRestDay } from '../time/calendar.ts';
 import { tileOf } from '../world/ground.ts';
@@ -62,6 +62,14 @@ const NO_START = -1;
 
 function minuteDrawn(world: World, i: number, day: number, purpose: number, spread: number): number {
   return drawBelow3(world.seed, STREET_DRAW, i, day, purpose, spread);
+}
+
+// placeAtSpot reads only the low 24 bits of a draw, 12 for each axis, so the draw is reduced to them here: a whole draw of 2^31
+// or more is a heap number in a tick (random/draw.ts). Reducing by 2^24 keeps those same low bits, so no hash moves.
+const SPOT_VALUES = 1 << 24;
+
+function spotDrawn(world: World, i: number, day: number, purpose: number): number {
+  return drawBelow3(world.seed, STREET_DRAW, i, day, purpose, SPOT_VALUES);
 }
 
 // Asleep until a keyed minute of the planning window of `day`, with no trip in the row.
@@ -186,7 +194,7 @@ function startWork(world: World, i: number, tick: number): void {
 function startBuying(world: World, i: number, tick: number, purpose: number): void {
   const errands = world.errands;
   const shop = errands.shop[i];
-  placeAtSpot(world, i, errands.shopDoorX[shop], errands.shopDoorY[shop], draw3(world.seed, STREET_DRAW, i, dayOf(tick), DRAW_SHOP_SPOT + purpose));
+  placeAtSpot(world, i, errands.shopDoorX[shop], errands.shopDoorY[shop], spotDrawn(world, i, dayOf(tick), DRAW_SHOP_SPOT + purpose));
   halt(world, i, FACING_UP);
   errands.phase[i] = PHASE_BUYING;
   errands.endTick[i] = tick + BUY_TICKS;
@@ -204,7 +212,7 @@ function startHome(world: World, i: number, tick: number, purpose: number): void
 // Home with food: it is eaten on the doorstep, at a keyed point of the home door's tile, for EAT_TICKS.
 function startEating(world: World, i: number, tick: number): void {
   const { agents, errands } = world;
-  placeAtSpot(world, i, tileOf(agents.x[i]), tileOf(agents.y[i]), draw3(world.seed, STREET_DRAW, i, dayOf(tick), DRAW_HOME_SPOT));
+  placeAtSpot(world, i, tileOf(agents.x[i]), tileOf(agents.y[i]), spotDrawn(world, i, dayOf(tick), DRAW_HOME_SPOT));
   halt(world, i, FACING_DOWN);
   errands.phase[i] = PHASE_EATING;
   errands.endTick[i] = tick + EAT_TICKS;
