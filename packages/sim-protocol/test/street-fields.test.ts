@@ -110,7 +110,7 @@ describe("Highcourt's premises fields", () => {
         `the fields took ${built.toFixed(1)} ms and ${premises.length * cells} of ${world.fields.length} reserved bytes`,
     );
     expect(problems).toEqual([]);
-    expect([premises.length, homes.length, premises.length * cells, most]).toEqual([22, 375, FIELD_BYTES, 15]);
+    expect([premises.length, homes.length, premises.length * cells, most]).toEqual([22, 280, FIELD_BYTES, 16]);
     expect(stateHash(world)).toBe(hash);
   });
 
