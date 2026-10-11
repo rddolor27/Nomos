@@ -9,6 +9,7 @@ import {
   ENTITY_WORKPLACE,
   WALK_BLOCKED,
   WALK_DOOR,
+  leisureOf,
   parseMap,
   premisesOf,
   type MapEntity,
@@ -92,14 +93,15 @@ describe('the town map', () => {
   it('replays seed 42 on the first screen to a fixed hash', () => {
     const town = loadTown();
     const hashes: Record<string, string> = {};
-    // Built as the worker builds it, with the map's shops, so blobs walk their errands; with none they wandered to 498f12cb and 4bf399fa.
+    // Built as the worker builds it, with the map's shops and then its plaza, greens and water edges, so blobs walk their errands and
+    // spend their free time; with no shops they wandered to 498f12cb and 4bf399fa.
     for (const tier of ['phone', 'desktop'] as const) {
-      const world = createTown(42, tier, town, homesOf(town), createShops(premisesOf(town)));
+      const world = createTown(42, tier, town, homesOf(town), createShops([...premisesOf(town), ...leisureOf(town)]));
       while (currentTick(world) < 1_000) step(world);
       hashes[tier] = stateHash(world).toString(16).padStart(8, '0');
     }
 
-    expect(hashes).toEqual({ phone: '624cfb6e', desktop: '87e11b4e' });
+    expect(hashes).toEqual({ phone: '28396a06', desktop: '4682f885' });
   });
 
   it('fits the map budget', () => {
