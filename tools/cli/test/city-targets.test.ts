@@ -60,6 +60,14 @@ describe('the calibration grids', () => {
   it.each(['sweep', 'refine', 'design'])('%s parses', (name) => {
     expect(() => readGrid(name)).not.toThrow();
   });
+
+  it("warms design up for the city's burn-in, shocks it where the confirmation ends and runs 100 months on", () => {
+    const grid = readGrid('design');
+    const confirmDays = readGrid('confirm-city').days;
+    expect(grid.warmUpDays).toBe(CITY.burnInDays);
+    expect(grid.shocks.map((shock) => shock.day)).toEqual([0, confirmDays]);
+    expect(grid.days).toBe(confirmDays + CONFIRM_MONTHS * DAYS_PER_MONTH);
+  });
 });
 
 describe.runIf(LONG)('the city preset on fresh seeds (ECONOMY_LONG=1)', () => {

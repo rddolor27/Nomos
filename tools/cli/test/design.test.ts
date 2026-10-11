@@ -70,7 +70,7 @@ describe('a grid', () => {
   });
 
   it('overrides the preset with its own params, and warms up for the preset burn-in unless told otherwise', () => {
-    const grid = { ...BASE, preset: 'city', days: 20_000, warmUpDays: undefined, params: { jobSearches: 6 } };
+    const grid = { ...BASE, preset: 'city', days: PRESETS.city.burnInDays + DAYS_PER_MONTH, warmUpDays: undefined, params: { jobSearches: 6 } };
     const [cell] = listCells(parseGrid(grid));
     expect(cell.warmUpDays).toBe(PRESETS.city.burnInDays);
     expect(cell.params).toEqual({ ...PRESETS.city, jobSearches: 6, households: 1000, firms: 100 });
