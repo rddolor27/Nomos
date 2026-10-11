@@ -33,14 +33,15 @@ The architect's, 11 October 2026. The owner can overturn any of them.
    - `buyFood` and `shopDay` write each blob's first food and first goods firm of the day into two scratch columns, `dayFood` and `dayGoods`, which the trips read. `economyDay` stays the town's economy, so `6a652730`, `CITY_RECORD` and M2.3's calibration hold. The determinism cost is nil.
    - **Option b** (pay on arrival) would tie each sale's tick and each shop's stock to paths. `economyDay` could then no longer stand in for a town, and the design runner and every economy golden would need a street model, at a cost of weeks.
    - **The price of a:** the ledger leads the street by hours, so the card shows the debit before the blob walks out. The card adds "Bought 3 bread at Bakery 12".
-3. **The day's timetable.** Ticks are minutes. Every time is a keyed draw on the new stream `STREET_DRAW` (0x10E), keyed (blob, day, purpose), and no rule reads a look.
-   - **Night:** from 22:00 to 06:00 everyone is indoors at home.
-   - **Work:** on the 5 workdays, the employed leave home at 06:00 + 0–59 minutes, go indoors at the employer's premises, and leave at 15:00 + 0–59.
-   - **The food trip:** a blob with a food purchase today walks to that firm's premises. The employed go when home from work, and the rest at 08:00 + 0–479.
+3. **The day's timetable.** Ticks are minutes. Every time is a keyed draw on the new stream `STREET_DRAW` (0x10E), keyed (blob, day, purpose), and no rule reads a look. Amended on 11 October 2026 to the timetable as built: the first draft guessed ways of 120–240 ticks, and they average 259 and run to 632 (`interfaces.md`, Street link, Task 4).
+   - **Night:** from 22:00 to 06:00 everyone is indoors at home, and the worker passes the night at 8× the chosen speed (owner, 11 October 2026).
+   - **Planning:** each blob wakes at 04:00 + 0–119 minutes and plans its day: work if it has a way to it, else a food trip, else a goods trip.
+   - **Work:** on the 5 workdays, the employed whose way is 300 ticks or less leave home at 06:00 + 0–59 minutes, go indoors at the employer's premises, and leave at 15:00 + 0–59. A longer way stays home and shops instead: 1,538 of Highcourt's 2,402 employed commute.
+   - **The food trip:** a blob with a food purchase today walks to that firm's premises. A commuter goes when home from work, and the rest from a keyed tick from 06:00 over 240 ticks, or over what the day leaves when the way leaves less.
      - At the door it buys for 10 ticks under the coin bubble, then walks home carrying the good.
      - At home it eats one portion on its doorstep for 24 ticks, then goes in.
-     - No trip starts after 19:00, since the ledger already holds the sale.
-   - **The goods trip:** on a rest day, or out of work, a blob that bought goods makes a second trip in the afternoon, to the goods premises.
+     - Every trip must be home by 22:00, so it starts only if it fits, which a commuter's long way rarely does. This replaces the 19:00 cut-off.
+   - **The goods trip:** on a rest day a blob that bought goods makes a second trip after its meal, if it fits, and a blob with no food purchase makes it as its one trip.
    - **Stall keepers:** each stall's first working employee stands at its counter through the workday, one tile behind the door. Other workers stay indoors.
    - **Opening hour:** a spawned or switched town opens at 06:00, as the worker runs ticks 0–359 at once with no snapshots, as M2.2c's switch runs out a day.
    - **Pure in the tick:** each phase ends at an absolute tick fixed when it begins, from a keyed time or the path's length. Nothing reads clocks, frames or speed.
@@ -57,7 +58,7 @@ The architect's, 11 October 2026. The owner can overturn any of them.
    - **The tick:** per walker the cost is a few adds, and a departure walks at most about 300 cells. That is well under 1 ms at 10,000 blobs (inference), and Task 4 measures it.
 5. **State and determinism.**
    - **The errand store:** one row a blob at the arena's end, so no offset moves. A row holds the phase, premises, good, run index and step, the absolute end tick and the runs, 40 bytes, or 4 MB at the desktop tier's 100,000 rows (computed).
-   - **The hash:** `stateHash` mixes the store in after the goods store while `TOWN` is 1. So `42/phone` `746a06a3` and the other non-town goldens hold, and `town` and Highcourt's pins move, as M2.2c moves them anyway.
+   - **The hash:** `stateHash` mixes the store in after the goods store while `STREETS` is 1, which a town with premises sets. So `42/phone` `746a06a3` and every other golden hold, since none runs with shops, and only Highcourt's pins move.
    - **Writes:** the street step is movement. Like `move`, it writes positions and its own rows each tick, and never money, stock or economy rows.
    - **Allocation:** fields build only at spawn or in the `open` handler, so ticks allocate nothing.
    - **The culture wall:** `street/` joins the culture lint's guarded folders, since it reads jobs and homes.
