@@ -125,6 +125,12 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 12 Oct: **M2.7 Part 1's Opus review** (read-only, `4918377..6df48bb`) found nothing critical. Replay, the `STREETS` hash rule, checkpoints, money and fairness hold.
+  - **Building now:**
+    - Finding 1, the one Important finding, is a test gap: no CI gate runs the street path in Chromium or the allocation gate. The fix adds a `streets` golden and a street world for the allocation gate.
+    - Findings 3 and 4: `draw3`'s unreduced uint32 in the tick, and `attachTown`'s silent default for the shops.
+  - **Waiting:** finding 2, a trip that can end at 22:01, moves Highcourt's pins. It waits for the re-pin round before the push after Task 27.
+  - **Backlog:** finding 5. Keeper election reads another blob's same-tick state, which races once the step is chunked across workers.
 - 12 Oct, 01:10: **building starts** on the owner's go: M3.1 Part 4's Task 22, with Task 24's preview, M3.2's Task 1 mockups and M2.7 Part 1's Opus review beside it.
 - 12 Oct: **M3.2 briefed** (8aafff7): blobs with lives of their own, in 11 tasks, at 15–23.5 full-time days (unsourced estimate). Its first visible slice, Tasks 1–6, shows blobs on the plaza and greens, on doorsteps, and chatting under speech bubbles. The mockups come first, and the build waits for the owner's go.
 - 12 Oct: **M3.1 Part 4 briefed** (67a794b): varied town layouts and walls, in 9 tasks, 22–30, at 13–20 full-time days, 7–11 of them Part 3's folded tasks (unsourced estimate). Its first visible slice, Task 22, is the style draw with ring towns, Highcourt among them. It waits for the owner's go, and its art preview comes first.
