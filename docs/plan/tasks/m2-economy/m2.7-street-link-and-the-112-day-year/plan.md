@@ -1,6 +1,12 @@
 # M2.7 Street link and the 112-day year: brief
 
 > **Status:** two parts (owner request, 11 October 2026: "We should be able to see blobs eating and buying"). Part 1, life on the street, is a brief to build from after M2.2c's homes land; ask the owner for a go first. Part 2 becomes a step plan after Part 1.
+>
+> **The owner's answers (11 October 2026, about 10:15):**
+> - **Nights pass faster,** so the empty streets last only a few seconds. This amends Ruling 3. It needs no state change, since speed changes no hash.
+> - **Several buildings per trade:** `placeTrades` spreads each trade's firm rows over several workshops across the town, not one building each. This amends Ruling 1.
+> - **Household stalls:** households run their own market stalls in M3.5, once homes have pantries. This settles Ruling 7's open half.
+> - **Task 1's mockups** started at once, at the owner's word. The owner picks from them before Task 7.
 
 **Task:** [task.md](task.md). Each task writes its code, then its tests (the main case and one edge), runs only those and a typecheck at `nice -n 19`, then commits. Bare sim paths are in `packages/sim-core/src/`.
 

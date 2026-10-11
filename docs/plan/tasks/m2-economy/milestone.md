@@ -14,8 +14,8 @@ Estimates are full-time days for one person coding by hand (unsourced estimates)
 | [M2.4 Goods and food](m2.4-goods-and-food/task.md) | Part 1 (owner, 11 October 2026): seven goods, and food that blobs buy, eat and waste, on the panel daily. Part 2: sectors, call auctions, and dated food lots that balance in portions | 4–6.5 days | 11 Oct 2026, 06:22 (Part 1 brief committed) | | |
 | [M2.5 Household wealth](m2.5-household-wealth/task.md) | Balance sheets, dividends, saving by income quintile, and wealth spawned from the record | 4–6.5 days | | | |
 | [M2.6 Culture in the basket](m2.6-culture-in-the-basket/task.md) | Culture that moves food tastes only, at equal cost and independent of wealth | 3–5 days | | | |
-| [M2.7 Street link and the 112-day year](m2.7-street-link-and-the-112-day-year/task.md) | Money glyphs, the follow-the-money view, and a final calibration on the 112-day year | 2.5–4.5 days | | | |
-| **Total** | | **38–60.5 days** | | | |
+| [M2.7 Street link and the 112-day year](m2.7-street-link-and-the-112-day-year/task.md) | Part 1 (owner, 11 October 2026): blobs walk to shops, market stalls and work, carry what they bought, and eat at home. Part 2: money glyphs, the follow-the-money view, and a final calibration on the 112-day year | 6.5–10.5 days | 11 Oct 2026, 10:11 (Part 1 brief committed) | | |
+| **Total** | | **42–66.5 days** | | | |
 
 Three points apply throughout:
 - **Lengnick's clock.** Rounds 1 and 2 counted one tick as one Lengnick day and a month as 21 days. This file therefore reads "20k ticks" as 20,000 sim days, about 179 years of 112 days (computed). At 1,440 ticks a day, 20k ticks would be under 14 days.

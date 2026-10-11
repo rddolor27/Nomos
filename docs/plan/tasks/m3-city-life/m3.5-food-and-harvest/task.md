@@ -5,6 +5,7 @@ Part of [M3 City life](../milestone.md).
 Needs M2's dated shop lots, food prices and grades, and M3.1's farms. Pantry expiry follows M0.3's ruling on how late spoilage may land in day slices.
 
 - **Builds:**
+  - households' own market stalls, which sell from their pantries beside the businesses' stalls (owner, 11 October 2026; [M2.7 Part 1](../../m2-economy/m2.7-street-link-and-the-112-day-year/plan.md), Ruling 7);
   - the grain season: crops accrue daily and are harvested over 9–14 days of autumn once a year (round 6's 30–45 days on the 112-day year) as dated lots, scaled by Q16 soil fertility and a keyed weather draw (SD 0.13–0.22, regional plus local) (R6, Calendar);
   - production shown through places only (stock pips; fields, forests and docks that empty and regrow), with at most four or five removable job items, none black; art exists; wire it in (R6);
   - each pantry as at most 8 Uint32 lots (`exp:16 | cat:3 | grade:2 | storage:2 | qty:9`) sorted by expiry, merging only equal keys, or into the same-category lot with the earlier expiry when full (R6);

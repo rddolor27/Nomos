@@ -85,6 +85,14 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 11 Oct: **M2.7 Part 1 briefed** (ce0f198): life on the street.
+  - **Money:** it moves at the economy tick, as now, and blobs act out the day's purchases afterwards on one flow field per shop. So `economyDay`, `6a652730` and `CITY_RECORD` hold.
+  - **Shops:** the market's stalls sell vegetables, fish and milk. The Bakery, Draper, Smithy and Fuel Store sell bread, cloth, tools and fuel.
+  - **The day:** nights are spent indoors, and they pass faster (owner).
+  - **Drawing:** snapshot bits carry `indoors`, the good carried and `eating`.
+  - **Workplaces:** several buildings per trade (owner).
+  - **Household stalls:** they wait for M3.5 (owner).
+  - **Next:** the mockups (Task 1) started now. The code follows M2.2c's homes.
 - 11 Oct: **M2.4 Part 1, Tasks 5–6** (9a10e94..dba1b48, 181ac5f).
   - **The feed:** it carries 112 days of sold, stock and price paid for the seven goods, food eaten, spoiled and unmet, and each trade's good.
   - **The panel:** a goods table, a food chart, sales by good, the wage and unemployment charts, and trades such as "2 cloth at Draper 217, 66.70". The card reads "Works at Bakery 12".

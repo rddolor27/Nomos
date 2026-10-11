@@ -8,17 +8,17 @@ Estimates are full-time days for one person coding by hand (unsourced estimates)
 | --- | --- | --- |
 | [M0 Pipeline](m0-pipeline/milestone.md) | 8 | 26–40 days |
 | [M1 Lab mode](m1-lab-mode/milestone.md) | 6 | 23.5–38 days |
-| [M2 Economy](m2-economy/milestone.md) | 9 | 38–60.5 days |
+| [M2 Economy](m2-economy/milestone.md) | 9 | 42–66.5 days |
 | [M3 City life](m3-city-life/milestone.md) | 8 | 65.5–101 days |
 | [M4 Crime and police](m4-crime-and-police/milestone.md) | 7 | 28–40 days |
 | [M5 Society and policy](m5-society-and-policy/milestone.md) | 7 | 36–56 days |
 | [M6 Scale and sharing](m6-scale-and-sharing/milestone.md) | 7 | 49–81 days |
 | [M7 Country of ledgers](m7-country-of-ledgers/milestone.md) | 7 | 37–59 days |
 | [M8 Country map](m8-country-map/milestone.md) | 8 | 52.5–82 days |
-| **Before launch, M0–M8** | | **355.5–557.5 days** |
+| **Before launch, M0–M8** | | **359.5–563.5 days** |
 | [M9 Zoom across scales](m9-zoom-across-scales/milestone.md) | 6 | 25–40 days |
 | [M10 Weather](m10-weather/milestone.md) | 4 | 16–27 days |
-| **Everything** | | **396.5–624.5 days** |
+| **Everything** | | **400.5–630.5 days** |
 
 The plan's own effort lines sum to about 221.5–340.5 days before launch, but many tasks that rounds 2, 6, 8 and 9 added carry no estimate there. These breakdowns estimate every task, which is why their sum is larger.
 
@@ -67,7 +67,7 @@ The plan's own effort lines sum to about 221.5–340.5 days before launch, but m
 | [M2.4 Goods and food](m2-economy/m2.4-goods-and-food/task.md) | Part 1 (owner, 11 October 2026): seven goods, and food that blobs buy, eat and waste, on the panel daily. Part 2: sectors, call auctions, and dated food lots that balance in portions | 4–6.5 days | [brief](m2-economy/m2.4-goods-and-food/plan.md) |
 | [M2.5 Household wealth](m2-economy/m2.5-household-wealth/task.md) | Balance sheets, dividends, saving by income quintile, and wealth spawned from the record | 4–6.5 days | [brief](m2-economy/m2.5-household-wealth/plan.md) |
 | [M2.6 Culture in the basket](m2-economy/m2.6-culture-in-the-basket/task.md) | Culture that moves food tastes only, at equal cost and independent of wealth | 3–5 days | [brief](m2-economy/m2.6-culture-in-the-basket/plan.md) |
-| [M2.7 Street link and the 112-day year](m2-economy/m2.7-street-link-and-the-112-day-year/task.md) | Money glyphs, the follow-the-money view, and a final calibration on the 112-day year | 2.5–4.5 days | [brief](m2-economy/m2.7-street-link-and-the-112-day-year/plan.md) |
+| [M2.7 Street link and the 112-day year](m2-economy/m2.7-street-link-and-the-112-day-year/task.md) | Part 1 (owner, 11 October 2026): blobs walk to shops, market stalls and work, carry what they bought, and eat at home. Part 2: money glyphs, the follow-the-money view, and a final calibration on the 112-day year | 6.5–10.5 days | [brief](m2-economy/m2.7-street-link-and-the-112-day-year/plan.md) |
 
 ### [M3 City life](m3-city-life/milestone.md)
 
