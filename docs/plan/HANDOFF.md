@@ -137,6 +137,25 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 12 Oct, 03:20: **M3.1 Part 4, Task 27: the bell-curve town** (436c2d3, cded844, 92a3edd).
+  - **Built:**
+    - zones, bell targets and forms by zone;
+    - handed terraces, with corner houses only at streets;
+    - the large civic set, inns and stables;
+    - greens (`townGreens`, kept meadow for M3.2);
+    - works past the ring line;
+    - `ground.ts`'s tables.
+  - **Density,** first 2 worlds:
+    - The median capital or city holds 393–403 houses inside the wall, by style, and the median town 246–284.
+    - Land under houses is 47.6% in the centre, 47.0% in the rim and 2.4% past the wall. So towns are dense inside the wall and sparse past it, but the centre is barely denser than the rim, since the streets' fronts fill in both.
+  - **Beyond the plan's tuning:**
+    - As written, the plan reached 260 and 189 houses.
+    - The engineer added touching lots, cabins as the last lots inside the wall, larger ring lines, terrace fallbacks and a wider spread.
+    - The grid's left-out segments fell to 0–10%.
+  - **Highcourt:** 387 homes, but 1,720 blobs, down from 1,960, since the 24-bed apartments fell from 42 to 8. Its pins are `3795465f` and `8b3b7ca0`.
+  - **Ways:** 149 of 8,514 need more than 16 runs, which Task 23 fixes.
+  - **Timing:** a capital builds in a median of 187 ms and at worst 248–250, and a city in 202–204 and 263–270, against 250 and 350.
+  - **Bytes:** `town.nmap` grew from 10,013 to 12,322 B brotli, which counts toward the 100 KB before the first frame.
 - 12 Oct, 02:05: **M3.1 Part 4, Task 22: ring towns** (9b2c156, 85ff235).
   - **Built:** each capital, city and town is dealt rings, winding lanes or a grid, and Highcourt is rings. Winding lays the tight grid until Task 25. The grid's knobs came forward from Task 25, since no two capitals may share a style and its knobs.
   - **Highcourt:** 280 homes and 1,960 blobs, down from 375 and 2,600, until Task 27 packs the centre. Its pins are `26c91a01` on phone and `636e4015` on desktop. `42/phone` `746a06a3` and the economy `6a652730` held.
