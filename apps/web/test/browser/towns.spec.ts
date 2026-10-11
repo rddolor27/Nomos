@@ -37,12 +37,23 @@ function bedsOf(context: PlaceContext): number {
   return bedCount(createHomes(ground.entities.filter((entity) => entity.kind === ENTITY_HOME)));
 }
 
+interface Village {
+  place: number;
+  name: string;
+  beds: number;
+}
+
+let cachedVillage: Village | undefined;
+
 // The seed's first village, as the Go to list numbers it, with its name and how many blobs the sim seats in its homes.
-function firstVillage(): { place: number; name: string; beds: number } {
+// The large world takes seconds to make, so the file makes it once.
+function firstVillage(): Village {
+  if (cachedVillage) return cachedVillage;
   const map = generateWorld(SEED, 'large');
   const place = map.settlements.tier.findIndex((tier) => TIER_NAMES[tier] === 'village');
   const name = placeNames(map)[map.countries.capital.length + place];
-  return { place, name, beds: bedsOf(placeContexts(map)[place]) };
+  cachedVillage = { place, name, beds: bedsOf(placeContexts(map)[place]) };
+  return cachedVillage;
 }
 
 function agents(count: number): string {
