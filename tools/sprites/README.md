@@ -7,6 +7,7 @@ Original pixel art for Nomos, drawn as code. Each module draws one category with
 - Check everything: `python tools/sprites/test_sprites.py`
 - Draw a town scene from every category: `python tools/sprites/showcase.py` writes `docs/mockups/sprites_showcase.png`
 - Draw the wonders: `python tools/sprites/showcase_wonders.py` writes `docs/mockups/wonders_showcase.png` (natural wonders) and `docs/mockups/landmarks_showcase.png` (built landmarks)
+- Cut the terrain kinds' map colours: `python tools/sprites/kind_colours.py` writes `packages/worldgen/src/place/kind-colours.ts`, which the TypeScript ground port reads, and `--check` compares it with the sheets. Rerun it when a ground tile is redrawn or a kind is added
 ## Style
 
 - GBA-era top-down pixel art in three-quarter view: you see the top and the front of buildings, as in `docs/mockups/town_closeup_blobs.png`.
