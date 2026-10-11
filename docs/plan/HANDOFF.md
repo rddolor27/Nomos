@@ -85,6 +85,36 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 11 Oct: **M2.7 Part 1, Task 4: errands, paused partway** for the owner's GPU change (093cd98, 1ae12d6).
+  - **Committed:**
+    - the errand store, hashed only while `globals[STREETS]` is 1, with `STREET_DRAW`;
+    - `dayFood` and `dayGoods` recorded in `buyFood` and `shopDay`;
+    - the `street/` motion, timetable, walk and open;
+    - the `step`, spawn, switch and `requestTown` wiring. A town without shops still wanders.
+    - Every hash held, Highcourt's pins included, since no test hands shops yet.
+  - **Measured** (Highcourt, 2,600 blobs, 3 days): 8,220 trips, none off open ground, every arrival at the right door and every return home. Movement costs 0.018 ms a tick on average and 0.16 ms at worst. At 10:00, blobs are carrying food, buying and eating, and all six stalls have a keeper.
+  - **The timetable as built:**
+    - plans are made at 04:00–05:59;
+    - a worker commutes on a workday if the way is 300 ticks or less (1,538 of 2,402), leaving 06:00–06:59 and working until 15:00–15:59;
+    - everyone else makes one food trip from 06:00, and a rest day adds goods if they fit;
+    - every trip must be home by 22:00, buying takes 10 ticks and eating 24;
+    - a stall's first worker stands at (doorX, doorY − 1);
+    - cut-off homes stay indoors.
+  - **Left, in order:**
+    1. `map/premises.ts` gains `stall: boolean`, and the village `toEqual` in `premises.test.ts` is fixed.
+    2. The worker wiring: `createShops(premisesOf(map))` into `createTown` and `requestTown`, `TownSite.shops?`, and `while (streetsAsleep(world)) step(world)` after `init` and after a real switch in `loop.ts`.
+    3. `errands.test.ts` on Highcourt, then a re-pin of `town-map.test.ts` on the shops path.
+    4. Timing at 10,000 blobs.
+    5. The docs and plan.md's Ruling 3 amendment.
+    6. Task 5's wiring: `indoorsIn(phase)`, `carriedIn(phase, good)`, `phase === PHASE_EATING`, and the coin bubble at `PHASE_BUYING`.
+- 11 Oct: **M2.7 Part 1, Tasks 5–6, paused at their start** (483176d).
+  - **Committed:** the visual word gains `indoors` (bit 7), `item` (bits 27–29, BREAD 1 to FUEL 7) and `eating` (bit 30), with `indoorsOf`, `itemOf` and `eatingOf`. `packVisual`'s new arguments default to 0.
+  - **The seam:** `sim-protocol`'s `snapshot/street.ts` holds `indoorsAt()`, `itemAt()` and `eatingAt()`, each returning 0. They gain `(world, blob)` and read the errand store.
+  - **Left:**
+    1. Add the `hold` and `eat` sprite fields (HANDOFF's Task 7 recipe), and drop `characters.build`'s `holds` flag.
+    2. Drawing: `tick` in `Retained`; wider `RECORD_SHORTS` and `AtlasFrame`; optional `item`, `eat` and `indoors` columns in `PlacePeople`; an `ITEM_GOODS` list; the item drawn at `hold` after the job layer; eating at `eat` 0, 1, 2, 1 under `face_chew_` 0, 1, 0, 1; `indoors` skipped in both painters.
+    3. A harness hook for the spec.
+- 11 Oct: **paused** for the owner's GPU change (checkpoint 0042). Fast nights and stock pips weren't started; their agent was stopped before any edit.
 - 11 Oct: **M2.7 Part 1, Task 3: fields and runs** (699a361, 68b72ad, dcddefa).
   - **Built:** `street/` sits behind the culture wall, with one field per premises (433,664 B at Highcourt, outside the hash, at the arena's end of a tier's layout). Building all 22 takes about 9.7 ms warm.
   - **Routes:** `pathRuns` turns a field into at most 16 straight runs. At Highcourt the worst way takes 15 and the mean is 4.9. A diagonal costs two, since unit cost needed up to 28 runs, so ways walk about 11% further.
