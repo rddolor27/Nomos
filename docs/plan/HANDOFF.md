@@ -139,6 +139,11 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 12 Oct, 08:00: **M3.2 Task 9: the bubble sprites** (deaadb2).
+  - **The frames:** `icons/emote_speech` (three grey dots), `icons/emote_music` (two plum notes under one beam) and `icons/emote_ball` (a blue toy ball), each 12 × 12 with anchor [6, 11]. They are the mockups' A designs.
+  - **The checks:** a new `emote_problems` check keeps every glyph on the bubble's white body, and the atlas grows by 674 bytes of WebP.
+  - **For the owner's pick:** at 1× the blue ball sits nearest the blue sweat drop, and B's green ball would avoid that. Shipping B means pasting its grid into `icons.EMOTES`.
+  - **No sounds** exist for the new bubbles. Any sound would need the owner to hear it first.
 - 12 Oct, 07:20: **M3.2 Task 4: chats** (989e823..fa18f21).
   - **Built:** `street/chat.ts`'s `pairChats`, run as the `chat` system after `life`. It uses a per-cell mailbox, a quarter of blobs looking each tick, and one exact check. A pair stops face to face, and both arrive the chat's length late.
   - **Spots:** plaza and green spots now cluster within 6 × 5 tiles of the site's door, so outings meet.
