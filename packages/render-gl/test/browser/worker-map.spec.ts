@@ -12,11 +12,12 @@ test.beforeEach(async ({ page }) => {
   await page.waitForFunction(() => window.workerHarness !== undefined);
 });
 
-test('opens the town at 07:00 with every agent on a walkable tile but a stall keeper behind its counter', async ({ page }) => {
+test('opens the town at 07:00 with every agent on a walkable tile', async ({ page }) => {
   const spawn = await page.evaluate(() => window.workerHarness.spawn(42));
-  // The first snapshot is the morning, 07:00 (tick 420), where the worker's opening run stops. By then one stall's first worker
-  // has reached its counter, which stands on the stall's own footprint, one tile behind the door (M2.7 Ruling 7).
-  expect(spawn).toEqual({ agents: 2_600, tick: 420, count: 2_600, offWalk: 1 });
+  // The first snapshot is the morning, 07:00 (tick 420), where the worker's opening run stops. A stall's keeper stands at its
+  // counter, on the stall's own footprint one tile behind the door (M2.7 Ruling 7), the one place a blob is off the walk grid,
+  // and Highcourt's first keeper gets there at 07:30, so none is off it yet.
+  expect(spawn).toEqual({ agents: 1_720, tick: 420, count: 1_720, offWalk: 0 });
   expect(errors).toEqual([]);
 });
 
