@@ -5,6 +5,7 @@ import {
   NO_HOME,
   NO_HOUSEHOLD,
   NO_PLACE,
+  STREETS,
   SUBPIXELS,
   SYSTEM_NAMES,
   TILE_PX,
@@ -12,6 +13,7 @@ import {
   currentTick,
   firstMemberOf,
   householdOf,
+  minuteOf,
   nearestAgent,
   requestTown,
   step,
@@ -47,6 +49,11 @@ export const MAX_GAP_MS = 250;
 export const STATS_MS = 250;
 // A shorter wait yields through the MessageChannel instead, since setTimeout clamps nested waits to 4 ms (R2 §2).
 export const SLEEP_MIN_MS = 4;
+// A town's streets stand empty from 22:00 to 06:00, so the night passes at this many times the chosen speed (owner, 11 October
+// 2026; M2.7 Ruling 3). The speed is pacing only: it moves no tick's state.
+export const NIGHT_SPEEDUP = 8;
+const NIGHT_FROM_MINUTE = 1_320;
+const NIGHT_TO_MINUTE = 360;
 // One tile.
 const INSPECT_RADIUS_Q8 = TILE_PX * SUBPIXELS;
 const NO_EMPLOYER = -1;
@@ -185,11 +192,14 @@ export function createSimLoop(host: LoopHost, cpuSlowdown = 1): { handle(msg: Ap
     scheduleTurn(TICK_MS - accMs);
   }
 
-  // A slot is the 100 ms of wall time that one tick takes at 1×, and it holds `speed` ticks. A slot the turn's time
-  // cuts short is spent all the same, so a slow device plays slower and never makes the lost ticks up.
+  // A slot is the 100 ms of wall time that one tick takes at 1×, and it holds `speed` ticks, or NIGHT_SPEEDUP times as many when
+  // it starts in an empty night, which ends the slot at 06:00. A slot the turn's time cuts short is spent all the same, so a
+  // slow device plays slower and never makes the lost ticks up.
   function runSlot(world: World, feed: EconomyMessage, untilMs: number): number {
+    const night = isStreetNight(world);
+    const slotTicks = night ? speed * NIGHT_SPEEDUP : speed;
     let ran = 0;
-    while (ran < speed && host.now() < untilMs) {
+    while (ran < slotTicks && host.now() < untilMs) {
       lapMs = host.now();
       step(world, timer);
       ran++;
@@ -197,6 +207,7 @@ export function createSimLoop(host: LoopHost, cpuSlowdown = 1): { handle(msg: Ap
         writeEconomyFeed(world, feed);
         feedDue = true;
       }
+      if (night && minuteOf(currentTick(world)) === NIGHT_TO_MINUTE) break;
     }
     return ran;
   }
@@ -298,6 +309,13 @@ export function createSimLoop(host: LoopHost, cpuSlowdown = 1): { handle(msg: Ap
 
 function meanMs(totalMs: number, count: number): number {
   return count > 0 ? totalMs / count : 0;
+}
+
+// Only a town with streets has an empty night: any other world has its blobs about at every hour.
+function isStreetNight(world: World): boolean {
+  if (world.globals[STREETS] !== 1) return false;
+  const minute = minuteOf(currentTick(world));
+  return minute >= NIGHT_FROM_MINUTE || minute < NIGHT_TO_MINUTE;
 }
 
 // A town with streets opens at 06:00 (M2.7 Ruling 3), so its night runs at once, with no snapshots, as a switch runs out a day.

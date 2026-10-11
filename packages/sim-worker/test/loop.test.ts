@@ -323,6 +323,52 @@ describe('the sim loop', () => {
     expect(stateHash(page.world())).toBe(stateHash(twin));
   });
 
+  it("passes a town's empty night at 8 times the speed and reaches the state plain stepping does", () => {
+    const page = fakePage({ streets: true });
+    page.handle({ type: 'resume' });
+    const twin = streetTown(42, 'phone', TOWN_PEOPLE);
+
+    // The town opens at 06:00 and the day's 960 ticks to 22:00 take a slot of 100 ms each. Then a slot holds 8 ticks, so the
+    // night's 480 take 6 s, and the day goes on at 1×.
+    page.advance(96_000);
+    expect(page.tick()).toBe(1_320);
+    page.advance(1_000);
+    expect(page.tick()).toBe(1_320 + 80);
+    page.advance(5_000);
+    expect(page.tick()).toBe(TICKS_PER_DAY + OPENING_TICK);
+    page.advance(1_000);
+    expect(page.tick()).toBe(TICKS_PER_DAY + OPENING_TICK + 10);
+
+    // Two days in all, at 1×: the second day's 950 ticks and night, 101 s, end at the second 06:00.
+    page.advance(101_000);
+    const second = 2 * TICKS_PER_DAY + OPENING_TICK;
+    expect(page.tick()).toBe(second);
+    while (currentTick(twin) < second) step(twin);
+    expect(stateHash(page.world())).toBe(stateHash(twin));
+  });
+
+  it('ends a night slot at 06:00, where 16x would run on past it, and a town without streets has no fast night', () => {
+    const page = fakePage({ streets: true });
+    page.handle({ type: 'speed', speed: 16 });
+    page.handle({ type: 'resume' });
+
+    // 60 slots of 16 ticks reach 22:00. Night slots hold 128, so three end at 1,704 and the fourth stops at 06:00, not 1,832.
+    page.advance(60 * TICK_MS);
+    expect(page.tick()).toBe(1_320);
+    page.advance(3 * TICK_MS);
+    expect(page.tick()).toBe(1_704);
+    page.advance(TICK_MS);
+    expect(page.tick()).toBe(TICKS_PER_DAY + OPENING_TICK);
+    page.advance(TICK_MS);
+    expect(page.tick()).toBe(TICKS_PER_DAY + OPENING_TICK + 16);
+
+    // A town that wanders is at tick 0, in the night, and still runs a tick a slot at 1×.
+    const wandering = fakePage({ town: true });
+    wandering.handle({ type: 'resume' });
+    wandering.advance(1_000);
+    expect(wandering.tick()).toBe(10);
+  });
+
   it('keeps a speed sent while paused for Play', () => {
     const page = fakePage({ town: true });
     page.handle({ type: 'speed', speed: 4 });
