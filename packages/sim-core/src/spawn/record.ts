@@ -1,5 +1,7 @@
 import { SUPPLIERS } from '../agents/store.ts';
+import { CITY_RECORD } from '../economy/city-record.ts';
 import { MAX_HOUSEHOLD } from '../households/store.ts';
+import { floorDiv } from '../maths/int.ts';
 import { TIER_AGENTS, TIER_FIRMS, type Tier } from '../memory/tiers.ts';
 import { MAX_SAFE_CENTS } from '../money/invariants.ts';
 import type { World } from '../world/world.ts';
@@ -63,6 +65,32 @@ function scaledDown(value: number, people: number, base: number): number {
   const whole = Math.floor(value / base);
   const rest = value - whole * base;
   return whole * people + Math.floor((rest * people) / base);
+}
+
+// Per mille of households with 1 to 6 people (M2.2c Ruling 3), a mean of 2.76 people. An unsourced estimate, to check against
+// UN DESA's household size database before M2.5.
+export const HOUSEHOLD_MIX = /* @__PURE__ */ Uint16Array.of(220, 280, 200, 170, 80, 50);
+const MIX_PEOPLE = peopleInMix();
+
+function peopleInMix(): number {
+  let people = 0;
+  for (let size = 1; size <= MAX_HOUSEHOLD; size++) people += size * HOUSEHOLD_MIX[size - 1];
+  return people;
+}
+
+// A town's first record: CITY's settled record scaled to its beds, with households in HOUSEHOLD_MIX's proportions so that
+// people equal beds. Households of s people number floor(beds x mix(s) / 2,760) up to the largest home, since a bigger one
+// has nowhere to sleep, and one-person households take the rest exactly. This is the mix the town wants, which fitHouseholds
+// trims to what its homes seat. It reads no look or culture. out takes all 14 fields.
+export function townRecord(beds: number, largestHome: number, out: Float64Array): void {
+  scaleRecord(CITY_RECORD, beds, out);
+  let seated = 0;
+  for (let size = 2; size <= MAX_HOUSEHOLD; size++) {
+    const households = size <= largestHome ? floorDiv(beds * HOUSEHOLD_MIX[size - 1], MIX_PEOPLE) : 0;
+    out[LEDGER_HOUSEHOLDS + size - 1] = households;
+    seated += size * households;
+  }
+  out[LEDGER_HOUSEHOLDS] = beds - seated;
 }
 
 // Whether the record's firms to a person stay within the tier's firm rows to an agent slot, so a town of the tier's whole

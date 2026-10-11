@@ -11,7 +11,7 @@ import type { Tier } from '../../src/memory/tiers.ts';
 import { createStandInHomes } from '../../src/spawn/homes.ts';
 import { LEDGER_FIELDS } from '../../src/spawn/record.ts';
 import { spawnFromLedger } from '../../src/spawn/spawn.ts';
-import { createTown } from '../../src/spawn/town.ts';
+import { createStandInTown } from '../../src/spawn/town.ts';
 import { DAYS_PER_MONTH } from '../../src/time/calendar.ts';
 import { stateHash } from '../../src/world/checkpoint.ts';
 import { standInGround } from '../../src/world/ground.ts';
@@ -123,7 +123,7 @@ export function economyHash(seed: number, tier: Tier, months: number): string {
 // A spawned town runs CITY inside the step, so this replays its walking start, its movement and as much of the economy as
 // the ticks reach.
 export function townHash(seed: number, tier: Tier, people: number, ticks: number): string {
-  const world = createTown(seed, tier, standInGround(), people);
+  const world = createStandInTown(seed, tier, standInGround(), people);
   for (let tick = 0; tick < ticks; tick++) step(world);
   return stateHash(world).toString(16).padStart(8, '0');
 }

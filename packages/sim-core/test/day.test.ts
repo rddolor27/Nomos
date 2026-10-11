@@ -3,7 +3,7 @@ import { logFocus, logInput, logLayoffs } from '../src/day/day.ts';
 import { CITY } from '../src/economy/city.ts';
 import { ECONOMY_TICKS, economyDay } from '../src/economy/economy.ts';
 import { STAT_FIRINGS } from '../src/economy/stats.ts';
-import { createTown } from '../src/spawn/town.ts';
+import { createStandInTown } from '../src/spawn/town.ts';
 import { TICKS_PER_DAY } from '../src/time/calendar.ts';
 import { INPUT_CAPACITY, INPUT_FOCUS } from '../src/world/inputs.ts';
 import { step } from '../src/step/step.ts';
@@ -89,7 +89,7 @@ const END_TICK = 3_000;
 const MAX_INT32 = 2_147_483_647;
 
 function town(): World {
-  return createTown(SEED, 'phone', standInGround(), PEOPLE);
+  return createStandInTown(SEED, 'phone', standInGround(), PEOPLE);
 }
 
 function employersOf(world: World): number[] {

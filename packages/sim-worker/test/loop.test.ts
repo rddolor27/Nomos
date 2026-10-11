@@ -4,7 +4,7 @@ import {
   PURCHASE_RING,
   STAT_WAGE_MEAN,
   TICKS_PER_DAY,
-  createTown,
+  createStandInTown,
   createWorld,
   currentTick,
   issue,
@@ -69,7 +69,7 @@ function fakePage({ init = true, town = false } = {}) {
     post: (msg, transfer) => posted.push(structuredClone(msg, { transfer })),
     makeWorld: (seed, tier, _map, agents) =>
       (world = town
-        ? createTown(seed, tier, standInGround(), agents ?? TOWN_PEOPLE)
+        ? createStandInTown(seed, tier, standInGround(), agents ?? TOWN_PEOPLE)
         : createWorld(seed, tier, undefined, agents)),
   };
   const loop = createSimLoop(host);
@@ -275,7 +275,7 @@ describe('the sim loop', () => {
   });
 
   it('reaches the same state at 16x as at 1x', () => {
-    const twin = createTown(42, 'phone', standInGround(), TOWN_PEOPLE);
+    const twin = createStandInTown(42, 'phone', standInGround(), TOWN_PEOPLE);
     while (currentTick(twin) < 1_000) step(twin);
 
     const page = fakePage({ town: true });

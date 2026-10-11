@@ -6,12 +6,17 @@ import * as streams from '../src/random/streams.ts';
 import { SPAWN_DRAW, layerOf } from '../src/random/streams.ts';
 import {
   HOME_ORDER,
+  bedCount,
   createHomes,
   createStandInHomes,
+  createStandInTownHomes,
+  fitHouseholds,
+  largestHome,
   seatHouseholds,
   type HomeSite,
   type Homes,
 } from '../src/spawn/homes.ts';
+import { LEDGER_FIELDS, LEDGER_HOUSEHOLDS, populationOf } from '../src/spawn/record.ts';
 import { standInGround, type Ground } from '../src/world/ground.ts';
 
 const SEED = 42;
@@ -143,6 +148,19 @@ describe('createStandInHomes', () => {
   });
 });
 
+describe('createStandInTownHomes', () => {
+  it('holds exactly the people, in homes of 6 beds with the last taking what is left', () => {
+    const homes = createStandInTownHomes(standInGround(), 20);
+
+    expect(Array.from(homes.capacity)).toEqual([6, 6, 6, 2]);
+    expect([bedCount(homes), largestHome(homes)]).toEqual([20, 6]);
+  });
+
+  it('trims no home when the people fill whole homes', () => {
+    expect(Array.from(createStandInTownHomes(standInGround(), 18).capacity)).toEqual([6, 6, 6]);
+  });
+});
+
 describe('seatHouseholds', () => {
   it('seats keyed random mixes in full, none over capacity, in homes holding twice their people', () => {
     for (let trial = 0; trial < TRIALS; trial++) {
@@ -213,5 +231,49 @@ describe('seatHouseholds', () => {
     expect(() => seat(Uint8Array.of(1, 6), createHomes([site(4), site(4)]), 1)).toThrow(/household of 6/);
     expect(() => seat(Uint8Array.of(1), createHomes([]), 1)).toThrow(/household of 1/);
     expect(() => seat(new Uint8Array(0), createHomes([]), 1)).not.toThrow();
+  });
+});
+
+// A record with only its households of 1 to 6 set: counts[i] households of i + 1 people.
+function recordOf(counts: number[]): Float64Array {
+  const record = new Float64Array(LEDGER_FIELDS);
+  record.set(counts, LEDGER_HOUSEHOLDS);
+  return record;
+}
+
+function householdsOf(record: Float64Array): number[] {
+  return Array.from(record.subarray(LEDGER_HOUSEHOLDS, LEDGER_HOUSEHOLDS + MAX_HOUSEHOLD));
+}
+
+// The household rows a record lists, smallest first.
+function sizesOf(record: Float64Array): Uint8Array {
+  const sizes: number[] = [];
+  householdsOf(record).forEach((n, i) => sizes.push(...new Array<number>(n).fill(i + 1)));
+  return Uint8Array.from(sizes);
+}
+
+describe('fitHouseholds', () => {
+  it('trims the households no home can seat, largest first, and makes them one-person households', () => {
+    // 16 beds: a household of 5 needs one of the two homes of 6, so the third has none.
+    const homes = createHomes([site(6), site(6), site(4)]);
+    const record = recordOf([1, 0, 0, 0, 3, 0]);
+
+    fitHouseholds(record, homes, SEED, 5);
+
+    expect(householdsOf(record)).toEqual([6, 0, 0, 0, 2, 0]);
+    expect(populationOf(record)).toBe(16);
+    const size = sizesOf(record);
+    const people = new Int32Array(homes.count);
+    seat(size, homes, 5).forEach((home, h) => (people[home] += size[h]));
+    expect(Array.from(people)).toEqual([6, 6, 4]);
+  });
+
+  it('leaves a record the homes seat as it was', () => {
+    const homes = createHomes([site(4), site(4), site(4)]);
+    const record = recordOf([4, 2, 0, 1, 0, 0]);
+
+    fitHouseholds(record, homes, SEED, 5);
+
+    expect(householdsOf(record)).toEqual([4, 2, 0, 1, 0, 0]);
   });
 });

@@ -2,7 +2,7 @@ import {
   SYSTEM_NAMES,
   TICKS_PER_DAY,
   TIER_AGENTS,
-  createTown,
+  createStandInTown,
   standInGround,
   step,
   warmUp,
@@ -31,7 +31,7 @@ export interface BenchWorld {
 // one snapshot view to write. A town runs CITY's economy in the step (M2.2b).
 export function createBenchWorld(tier: Tier): BenchWorld {
   warmUp();
-  const world = createTown(BENCH_SEED, tier, standInGround(), TIER_AGENTS[tier]);
+  const world = createStandInTown(BENCH_SEED, tier, standInGround(), TIER_AGENTS[tier]);
   world.checks = false;
   const view = takeView(createSnapshotPool(world.agents.capacity));
   if (view === null) throw new Error('a new snapshot pool has no free view');

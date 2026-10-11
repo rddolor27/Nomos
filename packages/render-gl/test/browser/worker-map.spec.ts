@@ -14,7 +14,7 @@ test.beforeEach(async ({ page }) => {
 
 test('spawns every agent on a walkable tile', async ({ page }) => {
   const spawn = await page.evaluate(() => window.workerHarness.spawn(42));
-  expect(spawn).toEqual({ agents: 10_000, tick: 0, count: 10_000, offWalk: 0 });
+  expect(spawn).toEqual({ agents: 2_688, tick: 0, count: 2_688, offWalk: 0 });
   expect(errors).toEqual([]);
 });
 

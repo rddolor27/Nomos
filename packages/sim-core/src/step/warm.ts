@@ -2,6 +2,7 @@ import { dayBoundary } from '../day/day.ts';
 import { SPOILAGE_RULE, daySliceCount, runDaySlice } from '../day/slices.ts';
 import { CITY } from '../economy/city.ts';
 import { economyDay } from '../economy/economy.ts';
+import { createStandInTownHomes } from '../spawn/homes.ts';
 import { spawnTown } from '../spawn/town.ts';
 import { step } from './step.ts';
 import { DAY_AGENTS, DAY_HOUSEHOLDS, layoutWorld } from '../world/world.ts';
@@ -19,7 +20,7 @@ export const WARM_SEED = 1;
 // is a town, so the economy's days compile too: 40 of them cover a month's start and end.
 export function warmUp(): void {
   const world = layoutWorld(WARM_SEED, 'phone', WARM_AGENTS, WARM_MEMORY_BYTES);
-  spawnTown(world, WARM_AGENTS);
+  spawnTown(world, createStandInTownHomes(world.ground, WARM_AGENTS));
   // Production workers skip the ledger check, so the warm-up compiles the step without it, and its cost stays flat as
   // wallets grow.
   world.checks = false;

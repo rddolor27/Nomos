@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { CITY } from '../src/economy/city.ts';
 import { ECONOMY_TICKS, economyDay, runEconomySystem } from '../src/economy/economy.ts';
 import { STAT_SALES_UNITS } from '../src/economy/stats.ts';
-import { createTown } from '../src/spawn/town.ts';
+import { createStandInTown } from '../src/spawn/town.ts';
 import { DAYS_PER_MONTH, DAYS_PER_YEAR, TICKS_PER_DAY } from '../src/time/calendar.ts';
 import { checkpoint, restoreWorld, stateHash } from '../src/world/checkpoint.ts';
 import { standInGround } from '../src/world/ground.ts';
@@ -16,7 +16,7 @@ const FIFTH_TICK = 5;
 const CHECKPOINT_END_TICK = 3_000;
 
 function town(): World {
-  return createTown(SEED, 'phone', standInGround(), PEOPLE);
+  return createStandInTown(SEED, 'phone', standInGround(), PEOPLE);
 }
 
 function columnsOf(store: object, count: number, skip: readonly string[]): Record<string, number[]> {

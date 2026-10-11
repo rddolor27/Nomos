@@ -23,7 +23,7 @@ import {
   TICKS_PER_DAY,
   TRADE_RING,
   clearPurchases,
-  createTown,
+  createStandInTown,
   createWorld,
   economyDay,
   isFood,
@@ -49,7 +49,7 @@ const PEOPLE = 300;
 const OPEN_DAY = 0;
 
 function town(): World {
-  return createTown(SEED, 'phone', standInGround(), PEOPLE);
+  return createStandInTown(SEED, 'phone', standInGround(), PEOPLE);
 }
 
 // The tick right after the step that runs a day's last economy tick.

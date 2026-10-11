@@ -1,17 +1,35 @@
 import { readFileSync } from 'node:fs';
-import { createHomes, seatHouseholds, type Homes } from '@nomos/sim-core';
+import {
+  LEDGER_FIELDS,
+  LEDGER_FIRM_CASH,
+  LEDGER_HOUSEHOLDS,
+  LEDGER_HOUSEHOLD_CASH,
+  MINT,
+  OK,
+  checkInvariants,
+  createHomes,
+  createTown,
+  foldToLedger,
+  seatHouseholds,
+  townRecord,
+  type Homes,
+  type World,
+} from '@nomos/sim-core';
 import { describe, expect, it } from 'vitest';
-import { ENTITY_HOME, parseMap } from '../src/index.ts';
+import { ENTITY_HOME, parseMap, type MapV1 } from '../src/index.ts';
 
 const townFile = new URL('../../../assets/maps/town.nmap', import.meta.url);
 const SEED = 42;
 const KEY = 7;
 const UNSEATED = -1;
 
+function loadTown(): MapV1 {
+  return parseMap(new Uint8Array(readFileSync(townFile)).buffer);
+}
+
 // The caller's filter, from the map's entities to its homes, is the lookup the 10 ms spawn row leaves out.
 function highcourtHomes(): Homes {
-  const town = parseMap(new Uint8Array(readFileSync(townFile)).buffer);
-  return createHomes(town.entities.filter((entity) => entity.kind === ENTITY_HOME));
+  return createHomes(loadTown().entities.filter((entity) => entity.kind === ENTITY_HOME));
 }
 
 // counts[i] households of i + 1 people, smallest first.
@@ -64,5 +82,31 @@ describe("Highcourt's homes", () => {
     expect(new Set(home).size).toBe(57);
     expect(() => seat(householdsOf([0, 0, 0, 0, 229]), homes)).toThrow(RangeError);
     expect(() => seat(householdsOf([0, 0, 0, 0, 229]), homes)).toThrow(/household of 5/);
+  });
+});
+
+// The people sleeping in each home, from the household rows.
+function bedsTaken(world: World, homes: Homes): number[] {
+  const { count, size, home } = world.households;
+  const taken = new Array<number>(homes.count).fill(0);
+  for (let h = 0; h < count[0]; h++) taken[home[h]] += size[h];
+  return taken;
+}
+
+describe('Highcourt spawned', () => {
+  it('has a blob in every one of its 2,688 beds, in 985 households of 1 to 6, and folds back exactly', () => {
+    const homes = highcourtHomes();
+    const world = createTown(SEED, 'phone', loadTown(), homes);
+    const got = new Float64Array(LEDGER_FIELDS);
+    foldToLedger(world, got);
+    const want = new Float64Array(LEDGER_FIELDS);
+    townRecord(2_688, 24, want);
+
+    expect(world.agents.count[0]).toBe(2_688);
+    expect(Array.from(got.subarray(LEDGER_HOUSEHOLDS, LEDGER_HOUSEHOLDS + 6))).toEqual([229, 272, 194, 165, 77, 48]);
+    expect(bedsTaken(world, homes)).toEqual(Array.from(homes.capacity));
+    expect(Array.from(got)).toEqual(Array.from(want));
+    expect(world.cash.balance[MINT]).toBe(-(want[LEDGER_HOUSEHOLD_CASH] + want[LEDGER_FIRM_CASH]));
+    expect(checkInvariants(world.cash, world.claims)).toBe(OK);
   });
 });

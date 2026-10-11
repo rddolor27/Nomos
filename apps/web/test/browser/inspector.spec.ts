@@ -5,7 +5,7 @@ import {
   SUBPIXELS,
   TIER_AGENTS,
   TILE_PX,
-  createTown,
+  createStandInTown,
   firstMemberOf,
   householdOf,
   nearestAgent,
@@ -35,7 +35,7 @@ const CHORDS: [string, Button, Button][] = [
 
 // The world the page builds for this URL: a town of the phone tier's whole crowd, held at tick 0 by reduced motion.
 const town = new Uint8Array(readFileSync(new URL('../../../../assets/maps/town.nmap', import.meta.url)));
-const world = createTown(42, 'phone', parseMap(town.buffer), TIER_AGENTS.phone);
+const world = createStandInTown(42, 'phone', parseMap(town.buffer), TIER_AGENTS.phone);
 
 // The look's parts as looks.py names them, written out here so the page's own table is checked against another.
 const HUES = ['sun', 'lilac', 'rose', 'ice', 'mint', 'silver'];

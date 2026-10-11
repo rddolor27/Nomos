@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import AxeBuilder from '@axe-core/playwright';
-import { TIER_AGENTS, createTown, step } from '@nomos/sim-core';
+import { TIER_AGENTS, createStandInTown, step } from '@nomos/sim-core';
 import { createEconomyFeed, economyDayEnded, parseMap, writeEconomyFeed } from '@nomos/sim-protocol';
 import { expect, test, type Page } from 'playwright/test';
 import { WEB } from './web.ts';
@@ -19,7 +19,7 @@ const SIZES = [
 
 // Day 0 of the world the page builds for this URL, run here in Node: a town of the phone tier's whole crowd.
 const map = new Uint8Array(readFileSync(new URL('../../../../assets/maps/town.nmap', import.meta.url)));
-const twin = createTown(42, 'phone', parseMap(map.buffer), TIER_AGENTS.phone);
+const twin = createStandInTown(42, 'phone', parseMap(map.buffer), TIER_AGENTS.phone);
 const day0 = createEconomyFeed();
 while (!economyDayEnded(twin)) step(twin);
 writeEconomyFeed(twin, day0);

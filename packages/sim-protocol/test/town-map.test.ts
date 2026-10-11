@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { brotliCompressSync, constants } from 'node:zlib';
-import { createTown, currentTick, stateHash, step, townAgents } from '@nomos/sim-core';
+import { createHomes, createTown, currentTick, stateHash, step, type Homes } from '@nomos/sim-core';
 import { describe, expect, it } from 'vitest';
 import {
   ENTITY_CIVIC,
@@ -25,6 +25,10 @@ const BUILT_KIND: Record<MapEntity['kind'], string> = {
 
 function loadTown(): MapV1 {
   return parseMap(new Uint8Array(readFileSync(townFile)).buffer);
+}
+
+function homesOf(town: MapV1): Homes {
+  return createHomes(town.entities.filter((entity) => entity.kind === ENTITY_HOME));
 }
 
 function footprintProblems(town: MapV1, entity: MapEntity, index: number): string[] {
@@ -87,12 +91,12 @@ describe('the town map', () => {
     const town = loadTown();
     const hashes: Record<string, string> = {};
     for (const tier of ['phone', 'desktop'] as const) {
-      const world = createTown(42, tier, town, townAgents(tier, town));
+      const world = createTown(42, tier, town, homesOf(town));
       while (currentTick(world) < 1_000) step(world);
       hashes[tier] = stateHash(world).toString(16).padStart(8, '0');
     }
 
-    expect(hashes).toEqual({ phone: '4b1a37d3', desktop: '49f7323c' });
+    expect(hashes).toEqual({ phone: '9ca2ad77', desktop: '4cd678eb' });
   });
 
   it('fits the map budget', () => {
