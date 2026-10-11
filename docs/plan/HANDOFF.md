@@ -31,6 +31,10 @@ The owner can overturn any of these.
   - **The house card**, then the interior view, in M3.6. The card can be built early.
   - **Trading of both kinds** in M3.5: households' own market stalls, and street trades between blobs.
   - Neither is built yet.
+- **12 October 2026, varied town layouts** (owner): cities are randomized, not uniform.
+  - Each town is dealt a style by a keyed draw: rings round the plaza with radial streets, organic lanes, or a looser grid. Houses follow the curves.
+  - M3.1 Part 3's walls, towers, gates and farms are designed with them.
+  - Plan only: build when the owner says go.
 - **M2.2c's go** (09:31): build it right after M2.4 Part 1. Highcourt is each world's capital. Away towns keep living in summary form, not frozen, so an Opus pass settles how before Task 3.
 
 **The designers' calls, 10 October 2026:**
