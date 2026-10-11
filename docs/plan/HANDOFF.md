@@ -18,7 +18,7 @@ The owner can overturn any of these.
 - **Git only.** There is no `gh` CLI: Claude uses git alone, never asks the owner for `gh` or CI results, and skips any plan step that needs `gh`.
 - **No dots on the world map.** The map's walking crowd is gone; the people and walkers in places stay, and Pause people keeps its own state.
 - **Decisions.** Claude settles open owner decisions itself, and records each here as a ruling.
-- **Walled towns,** the final answers for M3.1 Part 3: density peaks at the plaza; stone walls with towers for capitals and cities, a palisade for towns, and none for villages and hamlets; roads by role; farms on the outskirts; the new buildings; suburbs, bridges, avenues and greens. Tasks 12–16 and 19–21 wait for the owner's go.
+- **Walled towns,** the final answers for M3.1 Part 3: density peaks at the plaza; stone walls with towers for capitals and cities, a palisade for towns, and none for villages and hamlets; roads by role; farms on the outskirts; the new buildings; suburbs, bridges, avenues and greens. M3.1's Part 4 now builds the unbuilt Tasks 12–15 and 19–21, fitted to the varied layouts, as its Tasks 26–30, and drops Task 16.
 
 **Owner, 11 October 2026,** after seeing M2.2b's flat monthly charts:
 - **Ask first:** Claude asks the owner before starting each new step or feature, with a short plan, and waits for a go.
@@ -35,6 +35,12 @@ The owner can overturn any of these.
   - Each town is dealt a style by a keyed draw: rings round the plaza with radial streets, organic lanes, or a looser grid. Houses follow the curves.
   - M3.1 Part 3's walls, towers, gates and farms are designed with them.
   - Plan only: build when the owner says go.
+  - **The brief,** M3.1's Part 4 (67a794b). The sim-architect's rulings, which the owner can overturn:
+    - **The style:** a keyed draw deals each capital, city and town rings, winding lanes or a looser grid. Capitals and cities lean to rings and towns to winding lanes, 2:1:1. Villages and hamlets keep today's layout.
+    - **Walls:** every wall line is an octagon, so the walls need only 4 new diagonal pieces, and gates stand on its straight sides.
+    - **Highcourt** is pinned as a ring town, so the first screen shows rings.
+    - **Every door reaches the plaza:** a new `connect` step adds a crossing or removes the road, which ends the cut-off homes.
+    - **Routes:** a way may take 32 straight runs, not 16, for 32 more bytes a blob.
 - **12 October 2026, blobs with lives of their own** (owner), in M3.2.
   - **Needs and wants:** hunger, rest, fun, company and money rise through the day, and each blob picks the activity that suits it best. A keyed random personality makes blobs differ.
   - **Activities:** talking and visiting (friends over time), play and leisure, wandering and browsing, and work and errands as part of the day.
@@ -83,7 +89,7 @@ Beyond the checkpoint's Open list:
   - move `SystemRows` into the controls chunk;
   - the charts chunk has only 0.08 kB spare.
 - **Names:** re-running `build-real-world.ts` would overwrite the 42 hand-added religion words. A test catches that, and a merge file would make them last.
-- **The owner's go:** M3.1 Part 3's Tasks 12–16 and 19–21 (walls, towers, gates and farms). M0.5 waits only on the owner's device timings.
+- **The owner's go:** M3.1 Part 4, first its Task 22, the style draw and the ring town. It holds Part 3's walls, towers, gates and farms as Tasks 26–30. M0.5 waits only on the owner's device timings.
 - **Backlog from before the restructure** (checkpoint 0034 and the nomos-bd hand-off):
   - **Unbuilt tasks:** M0.8's leftovers (lil-gui behind `?dev=1`, the town's Fit, Home and pinch, and `toolbar.ts` in the Layout table), and M8.1's Tasks 31 and 33–35.
   - **Checks:** the `names-only-in-the-inspector` dependency rule isn't `reachable`, and `fallback.spec` centres on the old 48×28 map.
@@ -98,6 +104,7 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 12 Oct: **M3.1 Part 4 briefed** (67a794b): varied town layouts and walls, in 9 tasks, 22–30, at 13–20 full-time days, 7–11 of them Part 3's folded tasks (unsourced estimate). Its first visible slice, Task 22, is the style draw with ring towns, Highcourt among them. It waits for the owner's go, and its art preview comes first.
 - 11–12 Oct: **M2.7 Part 1 implemented; it pauses before its Opus review**, as the owner asked.
   - **Built:**
     - the 07:00 opening, so a town first shows its morning rush with 1,793 of 2,600 out (9f4e1a5);
@@ -176,7 +183,7 @@ Beyond the checkpoint's Open list:
   - **Built:** `street/` sits behind the culture wall, with one field per premises (433,664 B at Highcourt, outside the hash, at the arena's end of a tier's layout). Building all 22 takes about 9.7 ms warm.
   - **Routes:** `pathRuns` turns a field into at most 16 straight runs. At Highcourt the worst way takes 15 and the mean is 4.9. A diagonal costs two, since unit cost needed up to 28 runs, so ways walk about 11% further.
   - **Walk length:** a way takes 259 ticks on average, 632 at most, so Task 4 fits the timetable to it.
-  - **Backlog:** in 2 of 6 sampled towns, 44–45 homes are cut off from every premises behind a river with no walk-grid crossing. That's a layout bug.
+  - **Backlog:** in 2 of 6 sampled towns, 44–45 homes are cut off from every premises behind a river with no walk-grid crossing. That's a layout bug, which M3.1 Part 4's Task 23 fixes.
 - 11 Oct: **M2.7 Part 1, Task 2: premises in the layout, with Task 7's sprite swap** (5aa6991..4066620).
   - **Built:** `placeTrades` gives each market good 2 stalls on the plaza, and each shop trade 4 shops in a capital or city and 3 in a town, spread round the plaza in rounds. Doors use the sprite's own `door`, and a village's one shop sells all seven goods. Highcourt has 22 premises.
   - **The coordinator's ruling:** the premises take street frontage, so Highcourt holds 375 homes and 2,600 blobs, down from 387 and 2,688. Placing them after the houses kept 2,688 but scattered shops to the map's edge.

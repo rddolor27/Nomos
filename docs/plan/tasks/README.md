@@ -192,7 +192,10 @@ Each must be settled before its sub-milestone starts. The task files give the co
 | M1.6 | whether lab mode still goes public when M1 closes, as round 1 planned, now that launch waits for M8 (R9), which decides whether `v0.1.0` is announced |
 | M3.1 | the town walls' look, from the asset-designer's mockups, before the full sprite set is drawn. Settled on 10 October 2026: the owner asked for the assets to be drawn and then added to the plans, and their previews went to the owner |
 | M3.1 | how many blobs the grown starting town holds on each device tier, within the tick budgets |
-| M3.2 | soldiers are paid from taxes, which arrive only with M5's treasury (R1); choose a stopgap, such as M0.2's local-government account |
+| M3.1 | the preview of the diagonal wall pieces and the optional road-corner tiles, before they are final |
+| M3.2 | the street's pace, before Task 8: keep 4 ticks a tile, where Highcourt's ways average 259 ticks (measured), or walk twice as fast |
+| M3.2 | family in other homes, before Task 7: until M5's births, household members are the only family, and visits go to friends |
+| M3.2 | who pays soldiers before Task 10: pay comes from taxes, which arrive only with M5's treasury (R1), so choose a stopgap, such as M0.2's local-government account |
 | M3.3 | whether the optional human sheet survives content rule 1's one shared blob body; round 3 tied it to M1's playtest of the blob cast |
 | M3.7 | customs pass on at birth, but births, partner choice and ageing arrive only in M5. Pull minimal births forward, or test transmission on a harness until then |
 | M3.7 | eight culture emblems share four music styles. Either each culture draws one at world generation, or more styles are written; this also sets M3.8's festival music ([Sound](../sound.md)) |
