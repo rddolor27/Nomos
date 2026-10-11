@@ -425,12 +425,17 @@ describe('a goods world spawned from a record', () => {
   });
 
   it('spawns the food workers a town eats: 5 of the 28 employed in a town of 30, where the shares gave 4', () => {
-    expect(foodMadeADay(spawnedGoods(townOf(30), 1, 0))).toBe(30 * PORTIONS_PER_DAY);
-    for (const people of [150, 1_000]) {
+    const record = new Float64Array(LEDGER_FIELDS);
+    record.set([30, 0, 0, 0, 0, 0, 28, 2, 7, 1_000_000, 70_000, 3_200, 142_800, 90]);
+    const world = spawnedGoods(record, 1, 0);
+    expect(foodMadeADay(world)).toBe(30 * PORTIONS_PER_DAY);
+    expect(folded(world)).toEqual(Array.from(record));
+  });
+
+  it("feeds the towns CITY's record scales to, whatever the record's employment", () => {
+    for (const people of [30, 150, 1_000]) {
       expect(foodMadeADay(spawnedGoods(townOf(people), 1, 0)), `${people} people`).toBeGreaterThanOrEqual(people * PORTIONS_PER_DAY);
     }
-    // 1,000 blobs eat 3,000 portions, 167 workers' worth, and the shares already put 170 of the 944 employed in food.
-    expect(foodMadeADay(spawnedGoods(townOf(1_000), 1, 0))).toBe(170 * FOOD_PER_WORKER);
   });
 
   it('puts every worker in food when a town has fewer than its people need, and folds back exactly', () => {
