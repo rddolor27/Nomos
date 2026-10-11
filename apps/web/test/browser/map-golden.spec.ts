@@ -126,6 +126,8 @@ async function openFlatMap(page: Page): Promise<void> {
 async function expectLegend(page: Page, map: WorldMap): Promise<void> {
   const names = placeNames(map);
   const count = map.countries.capital.length;
+  // Settlement 0 is every world's capital, Highcourt, which map/generate.ts names so (M2.2c Ruling 1).
+  names[count] = 'Highcourt';
   const items = page.locator('#map .map-legend li');
   await expect(items).toHaveCount(count);
   for (let k = 0; k < count; k++) {
