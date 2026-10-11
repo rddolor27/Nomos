@@ -28,7 +28,7 @@ function townOf(sites: readonly ShopSite[]) {
 }
 
 describe('the sites of a town', () => {
-  it('give the premises their indexes, the leisure sites the fields after them, and the hash nothing to see', () => {
+  it('give the premises their indexes, the leisure sites the fields after them, and the blobs somewhere to spend their free time', () => {
     const premisesOnly = townOf([BAKERY, STALL]);
     const world = townOf([BAKERY, STALL, PLAZA, GREEN, WATER]);
     const { errands, ground } = world;
@@ -41,14 +41,16 @@ describe('the sites of a town', () => {
     for (let s = 0; s < 5; s++) {
       expect(world.fields[s * cells + errands.siteY[s] * ground.width + errands.siteX[s]], `site ${s}`).toBe(AT_DOOR);
     }
-    // The first two fields are the premises-only town's, and no blob reads a site yet, so both towns hash and step alike.
+    // The first two fields are the premises-only town's, and the sites cover only their door's tile when they say nothing more.
     expect(world.fields.subarray(0, 2 * cells)).toEqual(premisesOnly.fields.subarray(0, 2 * cells));
+    expect(Array.from(world.life.areaW.subarray(0, 5))).toEqual([1, 1, 1, 1, 1]);
+    // They spawn alike, since a site is only a place to go. A day on, blobs have gone to the plaza and the green, so they differ.
     expect(stateHash(world)).toBe(stateHash(premisesOnly));
-    while (currentTick(world) < 600) {
+    while (currentTick(world) < 1_300) {
       step(world);
       step(premisesOnly);
     }
-    expect(stateHash(world)).toBe(stateHash(premisesOnly));
+    expect(stateHash(world)).not.toBe(stateHash(premisesOnly));
   });
 
   it('refuse a premises behind a leisure site, a town of 33 sites, and open no streets for leisure sites alone', () => {
@@ -68,16 +70,18 @@ describe('the sites of a town', () => {
     expect(alone.errands.siteKind.every((kind) => kind === NO_SITE)).toBe(true);
   });
 
-  it('go with the town: closing its streets clears every site and home tile', () => {
+  it('go with the town: closing its streets clears every site, home tile and blob life', () => {
     const world = townOf([BAKERY, STALL, PLAZA]);
-    const { errands } = world;
+    const { errands, life } = world;
     expect(errands.homeCell.some((cell) => cell !== 0)).toBe(true);
     expect(errands.siteKind.some((kind) => kind !== NO_SITE)).toBe(true);
+    expect(life.bytes.some((byte) => byte !== 0)).toBe(true);
 
     closeStreets(world);
 
     expect(errands.homeCell.every((cell) => cell === 0)).toBe(true);
     expect(errands.siteKind.every((kind) => kind === NO_SITE)).toBe(true);
+    expect(life.bytes.every((byte) => byte === 0)).toBe(true);
     expect(world.globals[STREETS]).toBe(0);
   });
 });
