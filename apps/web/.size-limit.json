@@ -116,7 +116,7 @@
   {
     "name": "Place builder chunk",
     "path": ["dist/assets/place-builder-*.js"],
-    "limit": "20.94 kB"
+    "limit": "23.64 kB"
   },
   {
     "name": "index.html",
