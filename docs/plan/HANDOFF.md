@@ -85,6 +85,20 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 11 Oct: **M2.7 Part 1, Task 6: drawing** (43b39bc, 52850e2, ed4542f, 5c6fdde).
+  - **The sprite fields:** `hold` and `eat` are in the manifest schema, the atlas and `characters.build()`, and the `holds` flag is gone.
+  - **What blobs show:** the carried good unmirrored at `hold`, after the job layer. Eating swaps in `face_chew_` and moves the item through `eat` 0, 1, 2, 1. Blobs facing up, sitting or sneaking carry nothing. An indoors blob is drawn by no skin.
+  - **Checks:** `town-street.spec.ts` gives equal hashes on WebGL2 and Canvas2D, and `dots`, `place` and `town-skin` specs pass. It costs 0.30 ms a frame at 2,600, up from 0.24.
+  - **Bytes:** initial JS is 32.97 of 35 kB.
+  - **Found:** render-gl's `golden.spec.ts` has failed since `town.nmap` was regenerated (9d9d673, 17:26), because `skin-a.json` predates it. It needs `pnpm --filter @nomos/render-gl golden` after the errands land. CI's browser job has likely been red since 4066620.
+  - **Also open:** `nearestAgent` must skip indoors blobs (sent to the errands agent), and the buyer's coin bubble at `PHASE_BUYING` is in no task yet, so it joins the card's "Bought" line.
+  - **`interfaces.md` lines still to write:**
+    - the sprite manifests' `hold?` and `eat?`;
+    - `AtlasFrame`'s `hold?` and `eat?`, and the layer order;
+    - `PlacePeople`'s optional `item`, `eat` and `indoors`, with `ITEM_GOODS`;
+    - `Retained.tick`;
+    - the Town skin people's item, indoors and eat;
+    - the visual-word table's bits 7 and 27–30.
 - 11 Oct, 22:15: **M2.7 Part 1 resumed** after the owner's GPU change. Three Sonnet agents run on separate files:
   - **Errands:** Task 4's last steps, then Task 5's wiring and fast nights. Its files: `sim-core`, `sim-worker`, `sim-protocol`'s `map/premises.ts` and `snapshot/street.ts`.
   - **Drawing:** Task 6, the `hold` and `eat` sprite fields, then the carried item, eating and the indoors skip. Its files: `render-gl`'s `place/`, `town/people.ts`, the painters and the harness, plus the sprite schema, `tools/sprites` and `tools/atlas`. It's the only Playwright runner.
