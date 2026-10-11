@@ -78,6 +78,11 @@
     "limit": "200 B"
   },
   {
+    "name": "Goods names chunk the economy panel and the shop names share",
+    "path": ["dist/assets/goods-*.js"],
+    "limit": "1.14 kB"
+  },
+  {
     "name": "Map view chunk",
     "path": ["dist/assets/map-view-*.js"],
     "limit": "14.5 kB"
