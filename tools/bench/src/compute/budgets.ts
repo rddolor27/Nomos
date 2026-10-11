@@ -40,8 +40,11 @@ export const TOLERANCE = 0.1;
 export const ALLOCATION_DAYS: readonly number[] = [1, DAYS_PER_MONTH - 1, DAYS_PER_MONTH];
 
 // The day the allocation gate measures in the street world: a plain workday, with every blob out on its errands. The street path
-// runs no once-a-month system, so the economy's two month days stay with the stand-in town.
-export const STREET_ALLOCATION_DAYS: readonly number[] = [1];
+// runs no once-a-month system, so the economy's two month days stay with the stand-in town. It is day 4 since M3.2's life system:
+// its code tiers up over the first days, as it runs a few hundred times a day, and days 1 to 3 took 3 to 18 KB of the young
+// generation while V8 compiled it, where day 4 on take 3 to 6 KB, the stats call's 3 KB included (measured here, Node 24.18.0 on
+// Windows, 5 runs, load not recorded).
+export const STREET_ALLOCATION_DAYS: readonly number[] = [4];
 
 // The allocation gate's limit beside its zero scavenges (R5).
 export const MAX_HEAP_GROWTH_BYTES_PER_TICK = 65_536;

@@ -17,13 +17,13 @@ import { BENCH_WARM_DAYS, createBenchWorld, createStreetBenchWorld, type BenchWo
 setFlagsFromString('--expose-gc');
 globalThis.gc ??= runInNewContext('gc');
 
-function warmedPhoneWorld(create: typeof createBenchWorld = createBenchWorld): BenchWorld {
+function warmedPhoneWorld(create: typeof createBenchWorld = createBenchWorld, warmDays = BENCH_WARM_DAYS): BenchWorld {
   const bench = create('phone');
-  runTicks(bench.world, BENCH_WARM_DAYS * TICKS_PER_DAY, bench.view);
+  runTicks(bench.world, warmDays * TICKS_PER_DAY, bench.view);
   return bench;
 }
 
-// Each test steps two 10,000-agent days and waits a second for late GC reports.
+// Each test steps two 10,000-agent days, the street one five, and waits a second for late GC reports.
 describe('the allocation window', { timeout: 120_000 }, () => {
   it('sees no scavenge in a day of phone ticks', async () => {
     const { world, view } = warmedPhoneWorld();
@@ -33,9 +33,9 @@ describe('the allocation window', { timeout: 120_000 }, () => {
     expect(heapGrowthPerTick).toBeLessThan(MAX_HEAP_GROWTH_BYTES_PER_TICK);
   });
 
-  // The stand-in town has no shops, so it never runs the street path: this world is the one that does.
+  // The stand-in town has no shops, so it never runs the street path: this world is the one that does, warmed up to its gate day.
   it('sees no scavenge in a day of phone ticks with the crowd on its errands', async () => {
-    const { world, view } = warmedPhoneWorld(createStreetBenchWorld);
+    const { world, view } = warmedPhoneWorld(createStreetBenchWorld, STREET_ALLOCATION_DAYS[0]);
     const { scavenges, youngBytes, heapGrowthPerTick } = await allocationWindow(world, TICKS_PER_DAY, view);
     expect(scavenges).toBe(0);
     expect(youngBytes).toBeLessThanOrEqual(MAX_YOUNG_BYTES_PER_DAY);
@@ -84,8 +84,8 @@ describe('the allocation days', () => {
     expect(ALLOCATION_DAYS.every((day, i) => i === 0 || day > ALLOCATION_DAYS[i - 1])).toBe(true);
   });
 
-  it('give the street world one plain workday after the warm days', () => {
-    expect(STREET_ALLOCATION_DAYS).toEqual([1]);
+  it('give the street world one plain workday after its warm days', () => {
+    expect(STREET_ALLOCATION_DAYS).toEqual([4]);
     expect(STREET_ALLOCATION_DAYS[0]).toBeGreaterThanOrEqual(BENCH_WARM_DAYS);
     expect(allocationLimit(STREET_ALLOCATION_DAYS[0])).toEqual({ scavenges: 0, youngBytes: MAX_YOUNG_BYTES_PER_DAY });
   });
