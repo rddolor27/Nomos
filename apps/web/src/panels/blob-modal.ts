@@ -22,6 +22,11 @@ function create<K extends keyof HTMLElementTagNameMap>(doc: Document, tag: K, te
   return node;
 }
 
+// Rewriting the same text would only make the page lay it out again.
+function write(node: Element, text: string): void {
+  if (node.textContent !== text) node.textContent = text;
+}
+
 // The blob's card, as a dialog in the town view: it leaves the town drawn, and a click on another blob fills it again. It
 // is not a true modal, so the camera, the speed keys, Tab and the other controls stay live; the focus moves into it when it
 // opens, and Escape closes it from any focus and gives the view the focus back. Made once per page, at the first inspect.
@@ -35,12 +40,15 @@ export class BlobModal {
   // Null until the atlas arrives, and the look shown, for the portrait that waited for it.
   private portrait: BlobPortrait | null;
   private look: number;
+  // The look the picture was last drawn for, so a card filled again for the same blob leaves it alone.
+  private drawn: number;
 
   constructor(view: HTMLElement) {
     const doc = view.ownerDocument;
     this.view = view;
     this.portrait = null;
     this.look = NO_LOOK;
+    this.drawn = NO_LOOK;
     this.title = create(doc, 'h2', '');
     this.title.id = 'blob-name';
     this.closeButton = create(doc, 'button', 'Close');
@@ -60,11 +68,14 @@ export class BlobModal {
     this.loadPortrait();
   }
 
-  // Opens the dialog and moves the focus into it, or, when it is open already, only fills it again.
+  get isOpen(): boolean {
+    return this.dialog.open;
+  }
+
+  // Opens the dialog and moves the focus into it, or, when it is open already, only fills it again, changing what differs.
   show(card: BlobCard): void {
-    const doc = this.view.ownerDocument;
-    this.title.textContent = card.name;
-    this.list.replaceChildren(...card.rows.flatMap(([label, value]) => [create(doc, 'dt', label), create(doc, 'dd', value)]));
+    write(this.title, card.name);
+    this.fill(card.rows);
     this.look = card.look;
     this.paint();
     if (this.dialog.open) return;
@@ -72,10 +83,30 @@ export class BlobModal {
     this.closeButton.focus();
   }
 
+  // Closes the dialog where it stands, as when the town changes under it, and leaves the focus alone.
+  close(): void {
+    if (this.dialog.open) this.dialog.close();
+  }
+
+  // Closes it for the user, who gives the view the focus back.
   hide(): void {
     if (!this.dialog.open) return;
-    this.dialog.close();
+    this.close();
     this.view.focus();
+  }
+
+  // A label and its value each take a node, kept from one fill to the next, so a refreshed card writes only what changed.
+  private fill(rows: BlobCard['rows']): void {
+    const nodes = this.list.children;
+    if (nodes.length !== 2 * rows.length) {
+      const doc = this.view.ownerDocument;
+      this.list.replaceChildren(...rows.flatMap(([label, value]) => [create(doc, 'dt', label), create(doc, 'dd', value)]));
+      return;
+    }
+    rows.forEach(([label, value], row) => {
+      write(nodes[2 * row], label);
+      write(nodes[2 * row + 1], value);
+    });
   }
 
   private bind(): void {
@@ -103,8 +134,9 @@ export class BlobModal {
   }
 
   private paint(): void {
-    if (!this.portrait || this.look === NO_LOOK) return;
+    if (!this.portrait || this.look === NO_LOOK || this.look === this.drawn) return;
     this.portrait.draw(this.look, PORTRAIT_CSS_SCALE, devicePixelRatio);
+    this.drawn = this.look;
     this.picture.hidden = false;
   }
 }

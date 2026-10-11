@@ -1,6 +1,6 @@
 import { panBy, worldAt, zoomAt } from '@nomos/render-gl';
-import type { AppMessage } from '@nomos/sim-protocol';
 import { element, type App } from '../app/app.ts';
+import type { Inspector } from '../panels/inspector.ts';
 import { speedForKey } from '../panels/speed-bar.ts';
 import { Pinch } from './pinch.ts';
 import { ZoomBar } from './zoom-bar.ts';
@@ -38,7 +38,7 @@ interface Drag {
 
 // The panel and its word table load at the first inspect, never with the page (web rules: the inspector loads on
 // demand). One per page, as bindCameraInput runs once.
-let inspectorReady: Promise<void> | null = null;
+let inspectorReady: Promise<Inspector> | null = null;
 
 // The Town skin's chunk, imported from this chunk rather than the entry, whose bytes the first frame waits on. main.ts
 // calls it once the page is interactive.
@@ -67,12 +67,11 @@ function zoomAtCentre(app: App, steps: number): void {
 }
 
 function inspectAt(app: App, deviceX: number, deviceY: number): void {
-  inspectorReady ??= import('../panels/inspector.ts').then(({ mountInspector }) => {
-    mountInspector(element(document, '#hud'), element(document, '#view'), app.worker);
-  });
+  inspectorReady ??= import('../panels/inspector.ts').then(({ mountInspector }) =>
+    mountInspector(element(document, '#hud'), element(document, '#view'), app),
+  );
   const [x, y] = worldAt(app.camera, deviceX, deviceY);
-  const message: AppMessage = { type: 'inspect', x, y };
-  inspectorReady.then(() => app.worker.postMessage(message)).catch((error: unknown) => console.error(error));
+  inspectorReady.then((inspector) => inspector.at(x, y)).catch((error: unknown) => console.error(error));
 }
 
 function onKey(app: App, event: KeyboardEvent): void {

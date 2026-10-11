@@ -1,6 +1,7 @@
 import { personName } from '@nomos/sim-culture';
-import { ACTION_IDLE, ACTION_NAMES, ACTION_WALK, type WorkerMessage } from '@nomos/sim-protocol';
+import { ACTION_IDLE, ACTION_NAMES, ACTION_WALK, type AppMessage, type WorkerMessage } from '@nomos/sim-protocol';
 import { LOOK_EYES, LOOK_HUES, LOOK_PATTERNS } from '@nomos/sim-protocol/place';
+import type { App } from '../app/app.ts';
 import { BlobModal, type BlobCard } from './blob-modal.ts';
 import { formatCount } from './hud.ts';
 import { shopName } from './shop-name.ts';
@@ -8,7 +9,12 @@ import { shopName } from './shop-name.ts';
 type Inspected = Extract<WorkerMessage, { type: 'inspected' }>;
 
 const NO_BLOB = 'No blob here';
+const BLOB_GONE = 'That blob is gone';
 const CENTS_PER_UNIT = 100;
+// An open card asks for its blob again about once a second, so what it is doing changes as the town runs (owner, 11 October
+// 2026).
+const REFRESH_MS = 1000;
+const NO_ROW = -1;
 // What a blob is doing, by its action code. Trips to work and to the shops add their codes to the sim, and their words here;
 // until then a code with no words shows the sim's name for it.
 const DOING = new Map<number, string>([
@@ -63,16 +69,77 @@ export function blobCard(reply: Inspected): BlobCard {
 // The only module that imports sim-culture, and it loads on demand, so names and their word table never reach the
 // first load; a blob's name, work, pay and wallet show nowhere else (R8, content rule 5, M2.2b ruling 4). Made once, at
 // the first inspect. A blob found opens its card; a click that finds none says so in a short line, and leaves the card.
-export function mountInspector(hud: HTMLElement, view: HTMLElement, worker: Worker): void {
-  const line = hud.ownerDocument.createElement('p');
-  line.id = 'inspector';
-  line.setAttribute('aria-live', 'polite');
-  hud.append(line);
-  const modal = new BlobModal(view);
-  worker.addEventListener('message', ({ data }: MessageEvent<WorkerMessage>) => {
-    if (data.type !== 'inspected') return;
-    const found = data.agent >= 0;
-    line.textContent = found ? '' : NO_BLOB;
-    if (found) modal.show(blobCard(data));
-  });
+// An open card asks the worker for its blob again by its row, and updates only from an answer for that row.
+export class Inspector {
+  private readonly app: App;
+  private readonly line: HTMLElement;
+  private readonly modal: BlobModal;
+  // Whether each request not yet answered is a refresh, oldest first, since the worker answers in the order it was asked.
+  private readonly asked: boolean[];
+  // The row of the blob the card shows.
+  private shown: number;
+
+  constructor(hud: HTMLElement, view: HTMLElement, app: App) {
+    this.app = app;
+    this.line = hud.ownerDocument.createElement('p');
+    this.line.id = 'inspector';
+    this.line.setAttribute('aria-live', 'polite');
+    hud.append(this.line);
+    this.modal = new BlobModal(view);
+    this.asked = [];
+    this.shown = NO_ROW;
+    app.worker.addEventListener('message', this.onMessage.bind(this));
+    setInterval(this.refresh.bind(this), REFRESH_MS);
+  }
+
+  // The blob nearest a world point.
+  at(x: number, y: number): void {
+    this.send({ type: 'inspect', x, y }, false);
+  }
+
+  private send(message: AppMessage, refresh: boolean): void {
+    this.asked.push(refresh);
+    this.app.worker.postMessage(message);
+  }
+
+  // From the moment open is sent a query would be answered for the new town's rows, so none goes until it has landed, and
+  // none queues behind another that is waiting.
+  private refresh(): void {
+    if (!this.modal.isOpen || this.app.opening || this.asked.length > 0) return;
+    this.send({ type: 'inspectAgent', agent: this.shown }, true);
+  }
+
+  private onMessage({ data }: MessageEvent<WorkerMessage>): void {
+    // Whatever town opened, the card's row means another blob now, so the card goes.
+    if (data.type === 'opened') this.modal.close();
+    else if (data.type === 'inspected') this.answered(data, this.asked.shift() === true);
+  }
+
+  private answered(reply: Inspected, refresh: boolean): void {
+    if (refresh) this.refreshed(reply);
+    else this.clicked(reply);
+  }
+
+  private clicked(reply: Inspected): void {
+    const found = reply.agent >= 0;
+    this.line.textContent = found ? '' : NO_BLOB;
+    if (!found) return;
+    this.shown = reply.agent;
+    this.modal.show(blobCard(reply));
+  }
+
+  // Only the card's own row updates it, and a row the town no longer holds closes it.
+  private refreshed(reply: Inspected): void {
+    if (!this.modal.isOpen) return;
+    if (reply.agent === this.shown) {
+      this.modal.show(blobCard(reply));
+    } else if (reply.agent < 0) {
+      this.modal.close();
+      this.line.textContent = BLOB_GONE;
+    }
+  }
+}
+
+export function mountInspector(hud: HTMLElement, view: HTMLElement, app: App): Inspector {
+  return new Inspector(hud, view, app);
 }

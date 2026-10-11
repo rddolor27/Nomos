@@ -9,6 +9,7 @@ import {
   firstMemberOf,
   householdOf,
   nearestAgent,
+  step,
 } from '@nomos/sim-core';
 import { personName } from '@nomos/sim-culture';
 import { parseMap } from '@nomos/sim-protocol';
@@ -129,11 +130,16 @@ function cardOf(agent: number): Card {
   };
 }
 
-// What the worker answers for a device pixel: the page's worldAt, rounded to Q8 as the worker rounds it. null is no blob.
-function answerAt(view: View, deviceX: number, deviceY: number): Card | null {
+// The row the worker finds for a device pixel: the page's worldAt, rounded to Q8 as the worker rounds it. -1 is no blob.
+function agentAt(view: View, deviceX: number, deviceY: number): number {
   const x = view.camera.x + deviceX / view.camera.zoom;
   const y = view.camera.y + deviceY / view.camera.zoom;
-  const agent = nearestAgent(world.agents, Math.round(x * SUBPIXELS), Math.round(y * SUBPIXELS), TILE_Q8);
+  return nearestAgent(world.agents, Math.round(x * SUBPIXELS), Math.round(y * SUBPIXELS), TILE_Q8);
+}
+
+// What the worker answers for a device pixel. null is no blob.
+function answerAt(view: View, deviceX: number, deviceY: number): Card | null {
+  const agent = agentAt(view, deviceX, deviceY);
   return agent < 0 ? null : cardOf(agent);
 }
 
@@ -434,6 +440,107 @@ test('shows the blob at the centre on Enter', async ({ page }) => {
   const view = await viewOf(page);
   await page.locator('#view').press('Enter');
   await expectAnswer(page, answerAt(view, view.canvas[0] / 2, view.canvas[1] / 2));
+});
+
+// How often each blob changes what it is doing in a run of the page's own world, in Node: a blob that does so often shows a
+// moving card within seconds at 16x, which runs 160 ticks a second.
+const RUN_TICKS = 400;
+const BUSY_CHANGES = 3;
+
+function actionChanges(): Int32Array {
+  const run = createStandInTown(42, 'phone', parseMap(town.buffer), TIER_AGENTS.phone);
+  const { action, count } = run.agents;
+  const changes = new Int32Array(count[0]);
+  const last = action.slice(0, changes.length);
+  for (let tick = 0; tick < RUN_TICKS; tick++) {
+    step(run);
+    for (let agent = 0; agent < changes.length; agent++) {
+      if (action[agent] === last[agent]) continue;
+      changes[agent]++;
+      last[agent] = action[agent];
+    }
+  }
+  return changes;
+}
+
+// The first blob in the view's top-left quarter that changes what it is doing often, with the point that finds it.
+function busyBlob(view: View, changes: Int32Array): [number, number, Card] {
+  for (let skip = 0; ; skip++) {
+    const [clientX, clientY] = blobPoint(view, skip, true);
+    const agent = agentAt(view, clientX * view.dpr, clientY * view.dpr);
+    if (agent >= 0 && changes[agent] >= BUSY_CHANGES) return [clientX, clientY, cardOf(agent)];
+  }
+}
+
+const DOING_ROW = 5;
+
+test('refreshes the open card about once a second, so what the blob is doing changes as the town runs', async ({ page }) => {
+  const changes = actionChanges();
+  await openPaused(page);
+  const [clientX, clientY, card] = busyBlob(await viewOf(page), changes);
+  await page.mouse.click(clientX, clientY);
+  const dialog = await expectCard(page, card);
+  const doing = dialog.locator('dd').nth(DOING_ROW);
+  await expect(doing).toHaveText(card.rows[DOING_ROW][1]);
+
+  await page.getByRole('group', { name: 'Speed' }).getByRole('button', { name: '16×', exact: true }).click();
+  await page.locator('#play').click();
+  await expect(doing).not.toHaveText(card.rows[DOING_ROW][1], { timeout: 20_000 });
+  // The same card of the same blob, filled again in the one dialog.
+  await expect(dialogOf(page, card.name)).toBeVisible();
+  await expect(page.getByRole('dialog')).toHaveCount(1);
+});
+
+test('keeps the card on a refresh answered for another blob, and closes it on one for a blob that is gone', async ({ page }) => {
+  await openPaused(page);
+  const view = await viewOf(page);
+  const [clientX, clientY] = blobPoint(view);
+  const agent = agentAt(view, clientX * view.dpr, clientY * view.dpr);
+  await page.mouse.click(clientX, clientY);
+  const card = cardOf(agent);
+  await expectCard(page, card);
+  // Answers each refresh itself, with a blob's row that is not the card's and then with none, as the worker does for a row
+  // past its count, and counts the answers.
+  await page.evaluate((shown) => {
+    const worker = window.__app?.worker;
+    if (!worker) throw new Error('the page has no worker');
+    const post = worker.postMessage.bind(worker) as (message: unknown) => void;
+    const rows = [shown + 1, -1];
+    let answered = 0;
+    Object.defineProperty(worker, 'postMessage', {
+      value: (message: { type: string }) => {
+        if (message.type !== 'inspectAgent') return post(message);
+        const agent = rows[Math.min(answered++, rows.length - 1)];
+        const data = {
+          type: 'inspected', tick: 0, agent, nameKey: 1, cents: 0, employer: -1, employerGood: 0, wage: 0, look: 0, action: 0,
+          home: -1, members: [],
+        };
+        setTimeout(() => worker.dispatchEvent(new MessageEvent('message', { data })));
+        Object.assign(window, { answered });
+      },
+    });
+  }, agent);
+  await page.waitForFunction(() => (window as unknown as { answered?: number }).answered === 1);
+  await page.waitForTimeout(500);
+  await expectCard(page, card);
+  await page.waitForFunction(() => (window as unknown as { answered?: number }).answered === 2);
+  await expect(dialogOf(page, card.name)).toBeHidden();
+  await expect(page.locator('#inspector')).toHaveText('That blob is gone');
+});
+
+test('closes the card when another town opens under it', async ({ page }) => {
+  await openPaused(page);
+  const card = await openCard(page);
+  await page.getByRole('button', { name: 'Map', exact: true }).click();
+  const list = page.getByRole('combobox', { name: 'Go to a settlement' });
+  await expect(list).toBeEnabled({ timeout: 60_000 });
+  // The first country's next settlement, the capital being Highcourt, the town the sim runs.
+  const next = (await list.locator('optgroup').first().locator('option').nth(1).textContent()) ?? '';
+  await list.selectOption({ label: next });
+  await page.getByRole('button', { name: `Enter ${next}` }).click();
+  await expect(page.locator('#hud-town')).toHaveText(next, { timeout: 60_000 });
+  await expect(dialogOf(page, card.name)).toBeHidden();
+  await expect(page.getByRole('dialog')).toHaveCount(0);
 });
 
 // openAtScale launches the browser at 2x: a context's deviceScaleFactor alone is no real 2x in Chromium or Firefox.
