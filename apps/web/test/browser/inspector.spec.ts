@@ -41,6 +41,8 @@ const world = createTown(42, 'phone', parseMap(town.buffer), TIER_AGENTS.phone);
 const HUES = ['sun', 'lilac', 'rose', 'ice', 'mint', 'silver'];
 const EYES = ['round', 'dot', 'tall', 'wide'];
 const PATTERNS = ['plain', 'speckle', 'spots', 'patch'];
+// A shop takes its good's name, which is the firm row's good: 0 is the generic good.
+const SHOPS = ['Shop', 'Bakery', 'Greengrocer', 'Fishmonger', 'Dairy', 'Draper', 'Smithy', 'Fuel Store'];
 
 interface View {
   width: number;
@@ -108,7 +110,7 @@ function housemates(agent: number): string[] {
 
 // The card the page shows for a blob, read from the twin.
 function cardOf(agent: number): Card {
-  const { agents, blob, firms, households } = world;
+  const { agents, blob, firms, goods, households } = world;
   blob.at(agent);
   const employer = blob.employer;
   const others = housemates(agent);
@@ -116,7 +118,7 @@ function cardOf(agent: number): Card {
     name: personName(blob.nameKey),
     look: agents.look[agent],
     rows: [
-      ['Job', employer < 0 ? 'Out of work' : `Works at Shop ${employer + 1}`],
+      ['Job', employer < 0 ? 'Out of work' : `Works at ${SHOPS[goods.good[employer]]} ${employer + 1}`],
       ['Pay', employer < 0 ? 'None' : `${money(firms.wage[employer])} a month`],
       ['Wallet', money(blob.cash)],
       ['Home', `House ${households.home[householdOf(households, agent)] + 1}`],

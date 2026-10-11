@@ -31,9 +31,10 @@ const MISSING = '–';
 const SYSTEMS_CAPTION = 'Tick time by system (ms)';
 const FRAME_CAPTION = 'Frame time (ms)';
 
-// Okabe-Ito sky blue, orange and yellow and Tol Bright grey (round 3's colour-blind-safe palettes), each at least 3:1
-// against the page's --ui-bg, which the role colours' navy is not. A fifth series repeats the first.
-const SERIES_COLOURS = ['#56B4E9', '#E69F00', '#BBBBBB', '#F0E442'];
+// Okabe-Ito sky blue, orange, yellow, bluish green, vermillion and reddish purple and Tol Bright grey (round 3's
+// colour-blind-safe palettes), each at least 3:1 against the page's --ui-bg, which the role colours' navy is not. An
+// eighth series repeats the first.
+const SERIES_COLOURS = ['#56B4E9', '#E69F00', '#BBBBBB', '#F0E442', '#009E73', '#D55E00', '#CC79A7'];
 // Whole ticks only, so the x axis never labels a tick 7.5.
 const TICK_INCREMENTS = [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10_000, 20_000, 50_000, 100_000];
 // Whole days, and the economy's 21-day month, which is when its series step, so a step lands on a tick.
@@ -190,54 +191,64 @@ export interface DaySpec {
   title: string;
   // The y axis' label, which carries the unit.
   axis: string;
-  // An index into the series colours.
-  colour: number;
+  // A name for each series, which head the data table's columns and, for a chart of several, its legend.
+  labels: readonly string[];
+  // For each series, an index into the series colours.
+  colours: readonly number[];
   range: keyof typeof DAY_RANGES;
 }
 
-// One measure by day (M2.2b): its title and latest value, a line, labelled axes and a data table. Its single series
-// needs no legend, as the title names it, and no cursor, since the table holds every value. The caller owns the arrays
-// and refills them in place; the uPlot views are made once here, one for each count of days.
+// One or more measures by day (M2.2b): the title, a line for each, labelled axes and a data table. A single series needs
+// no legend, as the title names it, and shows its latest value beside the title; several keep a legend of their names.
+// No chart has a cursor, since the table holds every value. The caller owns the arrays, one for each label, and refills
+// them in place; the uPlot views are made once here, one for each count of days.
 export class DayChart {
   private readonly chart: uPlot;
   private readonly tbody: HTMLTableSectionElement;
   private readonly latest: HTMLElement;
   private readonly views: uPlot.AlignedData[];
+  private readonly several: boolean;
 
-  constructor(root: HTMLElement, spec: DaySpec, days: Float64Array, values: Float64Array) {
+  constructor(root: HTMLElement, spec: DaySpec, days: Float64Array, values: readonly Float64Array[]) {
     const host = el('div');
     this.latest = el('span');
     this.tbody = el('tbody');
-    const table = dataTable(spec.title, ['Day', spec.title], this.tbody);
+    this.several = spec.labels.length > 1;
+    const table = dataTable(spec.title, ['Day', ...spec.labels], this.tbody);
     const details = el('details', '', el('summary', 'Data table'), table);
     root.append(el('figure', '', el('figcaption', spec.title, this.latest), host, details));
 
     this.views = Array.from({ length: days.length + 1 }, (_, count) => [
       days.subarray(0, count),
-      values.subarray(0, count),
+      ...values.map((series) => series.subarray(0, count)),
     ]);
+    const lines = spec.labels.map(
+      (label, index): uPlot.Series => ({ label, stroke: SERIES_COLOURS[spec.colours[index]], width: 2 }),
+    );
     this.chart = new uPlot(
       {
         width: host.clientWidth,
         height: CHART_HEIGHT,
-        legend: { show: false },
+        legend: { show: this.several, live: false },
         cursor: { show: false },
         scales: { x: { time: false }, y: { range: DAY_RANGES[spec.range] } },
         axes: dayAxes(root, spec.axis),
-        series: [{}, { stroke: SERIES_COLOURS[spec.colour], width: 2 }],
+        series: [{}, ...lines],
       },
       this.views[0],
       host,
     );
+    // The data table carries the same names, so assistive tech skips the legend, a second table in the figure.
+    this.chart.root.querySelector('.u-legend')?.setAttribute('aria-hidden', 'true');
     fitWidth(this.chart, host);
   }
 
   // Draws the first `count` days of the arrays. The rows are the data table, newest first, and the second cell of the
-  // first is the latest value.
+  // first is the latest value of the first series.
   show(count: number, rows: readonly (readonly string[])[]): void {
     this.chart.setData(this.views[count]);
     setRows(this.tbody, rows);
-    this.latest.textContent = rows[0][1];
+    if (!this.several) this.latest.textContent = rows[0][1];
   }
 }
 

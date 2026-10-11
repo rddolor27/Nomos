@@ -62,11 +62,11 @@ test('puts the tick first and the systems after it, in order', () => {
   expect(labels).toEqual(['Tick', 'day', 'move', 'snapshot']);
 });
 
-test('gives each of the first four series its own colour and repeats them after that', () => {
-  const strokes = strokesOf(8);
+test('gives each of the first seven series its own colour and repeats them after that', () => {
+  const strokes = strokesOf(9);
 
-  expect(new Set(strokes.slice(0, 4)).size).toBe(4);
-  expect(strokes.slice(4)).toEqual(strokes.slice(0, 4));
+  expect(new Set(strokes.slice(0, 7)).size).toBe(7);
+  expect(strokes.slice(7)).toEqual(strokes.slice(0, 2));
 });
 
 test('keeps a level half a percent from its edges, and pads a larger move by a tenth of it', () => {

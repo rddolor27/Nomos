@@ -49,7 +49,7 @@ export function blobCard(reply: Inspected): BlobCard {
     name: personName(reply.nameKey),
     look: reply.look,
     rows: [
-      ['Job', employer < 0 ? 'Out of work' : `Works at ${shopName(employer)}`],
+      ['Job', employer < 0 ? 'Out of work' : `Works at ${shopName(reply.employerGood, employer)}`],
       ['Pay', employer < 0 ? 'None' : `${formatCents(reply.wage)} a month`],
       ['Wallet', formatCents(reply.cents)],
       ['Home', reply.home < 0 ? 'No home' : `House ${reply.home + 1}`],

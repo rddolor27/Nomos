@@ -9,8 +9,8 @@ type Inspected = Extract<WorkerMessage, { type: 'inspected' }>;
 const NAME_KEY = 7;
 const NAME = personName(NAME_KEY);
 const HOUSEMATES = [21, 22];
-// Firm row 11 pays 1,428.00 a month and the blob holds 3,100.00. It walks, lives in home row 6 with two others, and wears
-// look 77: hue 77 % 6 = 5, eyes floor(77 / 6) % 4 = 0 and pattern floor(77 / 24) = 3.
+// Firm row 11, a bakery, pays 1,428.00 a month and the blob holds 3,100.00. It walks, lives in home row 6 with two
+// others, and wears look 77: hue 77 % 6 = 5, eyes floor(77 / 6) % 4 = 0 and pattern floor(77 / 24) = 3.
 const IN_WORK: Inspected = {
   type: 'inspected',
   tick: 0,
@@ -18,7 +18,7 @@ const IN_WORK: Inspected = {
   nameKey: NAME_KEY,
   cents: 310_000,
   employer: 11,
-  employerGood: 0,
+  employerGood: 1,
   wage: 142_800,
   look: 77,
   action: ACTION_WALK,
@@ -36,7 +36,7 @@ describe('the blob card', () => {
       name: NAME,
       look: 77,
       rows: [
-        ['Job', 'Works at Shop 12'],
+        ['Job', 'Works at Bakery 12'],
         ['Pay', '1,428.00 a month'],
         ['Wallet', '3,100.00'],
         ['Home', 'House 7'],
@@ -45,7 +45,7 @@ describe('the blob card', () => {
         ['Look', 'Silver body, round eyes, patch pattern'],
       ],
     });
-    expect(rowsOf({ ...IN_WORK, employer: 0 }).Job).toBe('Works at Shop 1');
+    expect(rowsOf({ ...IN_WORK, employer: 0, employerGood: 3 }).Job).toBe('Works at Fishmonger 1');
   });
 
   it('says a blob with no employer is out of work, with no pay', () => {
