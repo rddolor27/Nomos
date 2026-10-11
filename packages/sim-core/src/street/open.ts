@@ -1,3 +1,4 @@
+import { openLife } from '../life/store.ts';
 import type { Homes } from '../spawn/homes.ts';
 import { dayOf } from '../time/calendar.ts';
 import type { Ground } from '../world/ground.ts';
@@ -75,8 +76,9 @@ function fillHomeCells(world: World, homes: Homes): void {
 }
 
 // Gives the live town its streets: the flow field to each site, the sites and the firm rows the premises trade, each blob's home
-// tile, and a night for every blob to wake from, in a keyed minute of the planning window of today. The world must be a freshly
-// spawned town, whose errand store is empty. A ground or layout the fields do not fit throws before anything is written.
+// tile, the ground its leisure sites cover, and a night for every blob to wake from, in a keyed minute of the planning window of
+// today. The world must be a freshly spawned town, whose errand and life stores are empty but for the traits spawn drew. A ground
+// or layout the fields do not fit throws before anything is written.
 export function createStreets(world: World, shops: Shops, homes: Homes): void {
   const { ground, errands, fields, globals } = world;
   requireSites(shops);
@@ -89,13 +91,15 @@ export function createStreets(world: World, shops: Shops, homes: Homes): void {
   for (let p = 0; p < shops.premises; p++) errands.shopStall[p] = shops.stall[p];
   assignFirmShops(world, shops);
   fillHomeCells(world, homes);
+  openLife(world.life, shops, world.agents.count[0], globals[TICK], world.seed);
   globals[STREETS] = 1;
   const day = dayOf(globals[TICK]);
   for (let i = 0; i < world.agents.count[0]; i++) sleepUntil(world, i, day);
 }
 
-// Empties the errand store and marks the town as one that wanders, when the live town is folded away.
+// Empties the errand and life stores and marks the town as one that wanders, when the live town is folded away.
 export function closeStreets(world: World): void {
   world.errands.bytes.fill(0);
+  world.life.bytes.fill(0);
   world.globals[STREETS] = 0;
 }

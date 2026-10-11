@@ -17,6 +17,7 @@ import { TIER_AGENTS, TIER_FIRMS, TIER_MEMORY_BYTES, type Tier } from '../memory
 import { setHeading } from '../movement/walk.ts';
 import { createHomes, type Homes } from '../spawn/homes.ts';
 import { LEDGER_FIELDS } from '../spawn/record.ts';
+import { createLife, type Life } from '../life/store.ts';
 import { createErrands, type Errands } from '../street/errands.ts';
 import { FIELD_BYTES } from '../street/fields.ts';
 import { NO_SHOPS, type Shops } from '../street/shops.ts';
@@ -106,9 +107,12 @@ export interface World {
   // them, and a checkpoint copies them with the rest. Only a tier's own layout holds them: a smaller one, such as a test's or
   // the warm-up's, has none, and buildFields throws for it.
   readonly fields: Uint8Array;
-  // Each blob's errand row, and what the shops make of the firm rows (M2.7). It is the last thing in the arena, and the hash
-  // mixes its rows in only while globals[STREETS] is 1.
+  // Each blob's errand row, and what the shops make of the firm rows (M2.7). The hash mixes its rows in only while globals[STREETS]
+  // is 1.
   readonly errands: Errands;
+  // Each blob's needs, personality and reason, and the sites' crowds (M3.2). It is the last thing in the arena, and the hash mixes
+  // it in after the errand store, only while globals[STREETS] is 1.
+  readonly life: Life;
   // The arena runs a town fills, so that switchTown empties it in two fills: the agent columns, then the firms, the
   // economy's scratch, the households and the goods, which layoutWorld takes back to back.
   readonly agentBytes: Uint8Array;
@@ -163,6 +167,7 @@ export function layoutWorld(
   const recordRow = take(arena, Float64Array, LEDGER_FIELDS, false);
   const fields = take(arena, Uint8Array, agents === TIER_AGENTS[tier] ? FIELD_BYTES : 0, false);
   const errands = createErrands(arena, agents, TIER_FIRMS[tier]);
+  const life = createLife(arena, agents);
   const world: World = {
     seed,
     tier,
@@ -185,6 +190,7 @@ export function layoutWorld(
     recordRow,
     fields,
     errands,
+    life,
     agentBytes,
     economyBytes,
     request: { place: NO_PLACE, ground, homes: createHomes([]), shops: NO_SHOPS },

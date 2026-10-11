@@ -17,6 +17,11 @@ export interface ShopSite {
   readonly stall: boolean;
   // SITE_SHOP when left out.
   readonly kind?: number;
+  // The ground a leisure site covers, in tiles, for the spots blobs stand on. A site that leaves them out covers its door's tile.
+  readonly x?: number;
+  readonly y?: number;
+  readonly w?: number;
+  readonly h?: number;
 }
 
 // Like the ground and the homes, the shops are an input: they stay out of the arena and the hash, and a town that makes streets
@@ -29,6 +34,11 @@ export interface Shops {
   readonly goods: Uint8Array;
   readonly stall: Uint8Array;
   readonly kind: Uint8Array;
+  // The ground each site covers: its corner and size in tiles, one tile at the door for a site that gave none.
+  readonly areaX: Int32Array;
+  readonly areaY: Int32Array;
+  readonly areaW: Int32Array;
+  readonly areaH: Int32Array;
 }
 
 // The premises of `sites`, which must come first: a premises keeps its index whatever leisure sites follow, and a firm row's
@@ -52,6 +62,10 @@ export function createShops(sites: readonly ShopSite[]): Shops {
     goods: new Uint8Array(sites.length),
     stall: new Uint8Array(sites.length),
     kind: new Uint8Array(sites.length),
+    areaX: new Int32Array(sites.length),
+    areaY: new Int32Array(sites.length),
+    areaW: new Int32Array(sites.length),
+    areaH: new Int32Array(sites.length),
   };
   for (let p = 0; p < sites.length; p++) {
     shops.doorX[p] = sites[p].doorX;
@@ -59,6 +73,10 @@ export function createShops(sites: readonly ShopSite[]): Shops {
     shops.goods[p] = sites[p].goods;
     shops.stall[p] = sites[p].stall ? 1 : 0;
     shops.kind[p] = sites[p].kind ?? SITE_SHOP;
+    shops.areaX[p] = sites[p].x ?? sites[p].doorX;
+    shops.areaY[p] = sites[p].y ?? sites[p].doorY;
+    shops.areaW[p] = Math.max(1, sites[p].w ?? 1);
+    shops.areaH[p] = Math.max(1, sites[p].h ?? 1);
   }
   return shops;
 }

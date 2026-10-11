@@ -14,7 +14,7 @@ export function stateHash(world: World): number {
 // Skips each canonical region that starts where a given view does; the relabel test skips the culture regions (R8).
 // The goods store comes next and counts only while globals[GOODS] is 1, so a world without goods hashes as it did before
 // the store existed (M2.4). Then the errand store, only while globals[STREETS] is 1, so a town that wanders hashes as it did
-// before the streets (M2.7). A town's ledger table is last (M2.2c).
+// before the streets (M2.7), and the life store after it on the same condition (M3.2). A town's ledger table is last (M2.2c).
 // The one view this makes is fine here: the hash runs between ticks, never inside step.
 export function stateHashExcept(world: World, skip: readonly ArrayBufferView[]): number {
   const words = new Uint32Array(world.arena.memory.buffer);
@@ -28,11 +28,18 @@ export function stateHashExcept(world: World, skip: readonly ArrayBufferView[]):
   if (world.globals[GOODS] === 1 && !startsAView(goods.byteOffset, skip)) {
     h = mixRegion(words, h, goods.byteOffset, goods.byteLength);
   }
-  const errands = world.errands;
-  if (world.globals[STREETS] === 1 && !startsAView(errands.byteOffset, skip)) {
-    h = mixRegion(words, h, errands.byteOffset, errands.byteLength);
-  }
+  h = mixStreets(world, words, h, skip);
   if (world.globals[TOWN] === 1 && !startsAView(world.townRecords.byteOffset, skip)) h = mixTowns(world, words, h);
+  return h;
+}
+
+// The errand store and the life store after it, only while the town has streets.
+function mixStreets(world: World, words: Uint32Array, from: number, skip: readonly ArrayBufferView[]): number {
+  if (world.globals[STREETS] !== 1) return from;
+  const { errands, life } = world;
+  let h = from;
+  if (!startsAView(errands.byteOffset, skip)) h = mixRegion(words, h, errands.byteOffset, errands.byteLength);
+  if (!startsAView(life.byteOffset, skip)) h = mixRegion(words, h, life.byteOffset, life.byteLength);
   return h;
 }
 

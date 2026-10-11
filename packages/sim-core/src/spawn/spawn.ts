@@ -1,5 +1,6 @@
 import { SUPPLIERS, addAgent } from '../agents/store.ts';
 import type { EconomyParams } from '../economy/params.ts';
+import { drawTraits } from '../life/traits.ts';
 import {
   BREAD,
   CLOTH,
@@ -120,7 +121,7 @@ function listedSize(record: Float64Array, listed: number): number {
 }
 
 // Household by household, so members sit at adjacent indices, each idle in its home's door tile, which hides the
-// pop-in (R4 3.3).
+// pop-in (R4 3.3). Each is born with a personality of three traits, keyed on the id that its look and name key on (M3.2).
 function spawnPeople(world: World, homes: Homes, key: number): void {
   const { agents, households, seed } = world;
   let p = 0;
@@ -129,6 +130,7 @@ function spawnPeople(world: World, homes: Homes, key: number): void {
     for (let m = 0; m < households.size[h]; m++, p++) {
       const id = draw3(seed, SPAWN_DRAW, key, p, PERSON);
       addAgent(agents, seed, id, STAND_IN_CULTURES, 0);
+      drawTraits(world.life, p, seed, id);
       agents.x[p] = pointInTileQ8(homes.doorX[home], id);
       agents.y[p] = pointInTileQ8(homes.doorY[home], id >>> 12);
     }

@@ -21,6 +21,10 @@ export const SPAWN_DRAW = AGENT_SALT + 13;
 // The street's own (M2.7): when a blob wakes, leaves for work or a shop and stands where, keyed (blob, day, purpose), so a
 // change to the timetable never shifts a draw of the economy or the spawn.
 export const STREET_DRAW = AGENT_SALT + 14;
+// A blob's personality, drawn once at birth from its id (M3.2): never from a look, a culture or a wallet.
+export const TRAIT_DRAW = AGENT_SALT + 15;
+// The life system's keyed picks, keyed (blob, tick, purpose): which free-time activity, how long, and where it stands (M3.2).
+export const LIFE_DRAW = AGENT_SALT + 16;
 // The first ledger stream: an away town's summary month keys on (town, month, field), so a draw of the live town's agents
 // can never shift it (M2.2c Ruling 8).
 export const AWAY_DRAW = LEDGER_SALT + 1;
