@@ -118,6 +118,11 @@ export function rise(f: Frame): number {
   return -floorDiv(f.footprintH * TILE - 1 - f.anchorY, TILE);
 }
 
+// Where people enter a building, in px from its footprint's left: the sprite's door, or the middle of its front.
+export function doorOffset(f: Frame): number {
+  return f.doorX > 0 ? f.doorX : floorDiv(f.footprintW * TILE, 2);
+}
+
 export function threshold(values: Int32Array, perMille: number): number {
   const ordered = Int32Array.from(values).sort((a, b) => a - b);
   return ordered[Math.min(ordered.length - 1, floorDiv(ordered.length * (1000 - perMille), 1000))];
@@ -399,12 +404,12 @@ export class Site {
     return best;
   }
 
-  // Builds on a lot from findLot, lays its spur paths and notes its door, bottom centre.
+  // Builds on a lot from findLot, lays its spur paths and notes its door, on the row below its front.
   settle(category: string, name: string, lot: Lot): void {
     this.build(category, name, lot.tx, lot.ty);
     for (const path of lot.spurs) this.layPath(path);
     const f = frame(category, name);
-    this.doors.push({ name, x: lot.tx + floorDiv(f.footprintW, 2), y: lot.ty + f.footprintH });
+    this.doors.push({ name, x: lot.tx + floorDiv(doorOffset(f), TILE), y: lot.ty + f.footprintH });
   }
 
   private clear(c: number): boolean {

@@ -60,9 +60,21 @@ const CAPACITY: Readonly<Record<string, number>> = {
   farmhouse: 6,
   apartment: 24,
 };
+const STALL_HOURS: readonly [number, number] = [360, 840];
+const SHOP_HOURS: readonly [number, number] = [480, 1200];
+// The premises' hours (M2.7) are placeholders too: a stall keeps the generic stall's, the Bakery opens at 06:00 and closes at
+// 18:00, and every other shop keeps the general shop's.
 const HOURS: Readonly<Record<string, readonly [opens: number, closes: number]>> = {
-  shop_general: [480, 1200],
-  'shop_market-stall': [360, 840],
+  shop_general: SHOP_HOURS,
+  'shop_market-stall': STALL_HOURS,
+  'shop_market-stall_fish': STALL_HOURS,
+  'shop_market-stall_milk': STALL_HOURS,
+  'shop_market-stall_vegetables': STALL_HOURS,
+  shop_bakery: [360, 1080],
+  shop_draper_bolts: SHOP_HOURS,
+  shop_draper_rail: SHOP_HOURS,
+  'shop_fuel-store_shed': SHOP_HOURS,
+  'shop_fuel-store_stack': SHOP_HOURS,
 };
 const NO_HOURS: readonly [number, number] = [0, 0];
 // Map v1 holds no ground sprites, so a footbridge's water cells draw as the paved causeway that roads.ts's cross lays on

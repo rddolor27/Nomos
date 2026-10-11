@@ -30,7 +30,6 @@ export const CIVIC: Readonly<Record<string, readonly string[]>> = {
   city: CAPITAL_CIVIC,
   town: ['civic_town-hall', 'civic_police-station', 'civic_clinic', 'civic_school', 'shop_general'],
 };
-const STALLS: Readonly<Record<string, number>> = { capital: 3, city: 3, town: 2 };
 const OUTSKIRTS: readonly Pair[] = [
   [-1, 0],
   [1, 0],
@@ -40,7 +39,7 @@ const OUTSKIRTS: readonly Pair[] = [
   [1, 1],
 ];
 
-function plazaOf(site: Site): readonly [px: number, py: number, pw: number, ph: number] {
+export function plazaOf(site: Site): readonly [px: number, py: number, pw: number, ph: number] {
   if (site.plaza === null) throw new Error('a town stage ran before lay_town');
   return site.plaza;
 }
@@ -191,23 +190,20 @@ export function plazaPiece(site: Site, category: string, name: string, target: C
   return lot;
 }
 
-// The fountain in the middle of the plaza, the clock tower at one end, stalls between.
+// The fountain in the middle of the plaza and the clock tower at one end. placeTrades sets the stalls between.
 export function placePlaza(site: Site): void {
   const [px, py, pw, ph] = plazaOf(site);
   const marks = site.ctx.landmarks;
-  const left = site.chance(500, MARK, 1);
+  const left = towerLeft(site);
   if (marks.includes('clock-tower')) {
     plazaPiece(site, 'landmarks', 'landmark_clock-tower', [left ? px + 1 : px + pw - 1, py + ph - 1], 1);
   }
   if (marks.includes('fountain')) plazaPiece(site, 'landmarks', landmarkFrame('fountain'), [site.cx, py + ph - 1], 2);
-  const f = frame('buildings', 'shop_market-stall');
-  const stalls = STALLS[site.ctx.tier ?? ''];
-  for (let i = 0; i < stalls; i++) {
-    const target: Cell = [((i & 1) === 0) === left ? px + pw - 3 : px + 2, py + ph - 1];
-    if (plazaPiece(site, 'buildings', 'shop_market-stall', target, 10 + i)) continue;
-    const lot = site.findLot(3, 2, rise(f), [24], [site.cx, py], { spur: 0, salt: 20 + i });
-    if (lot) site.settle('buildings', 'shop_market-stall', lot);
-  }
+}
+
+// Whether the clock tower stands at the plaza's left end, which puts the first stall at the right.
+export function towerLeft(site: Site): boolean {
+  return site.chance(500, MARK, 1);
 }
 
 export function placeVillageShop(site: Site): void {

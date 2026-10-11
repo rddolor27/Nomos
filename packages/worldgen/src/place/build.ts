@@ -24,6 +24,7 @@ import {
 } from './settlement.ts';
 import { Site } from './site.ts';
 import { layGround, layRidges, layWater, riverPoints } from './terrain.ts';
+import { placeTrades } from './trades.ts';
 import { buildVista, VISTA_SIZE } from './vista.ts';
 
 const SIZES: Readonly<Record<string, readonly [number, number]>> = {
@@ -92,7 +93,7 @@ export function settleWater(site: Site): void {
   if (ROCKY.includes(ctx.biome)) layRidges(site, ctx.biome === 'hills' ? 1 : 2, spare);
 }
 
-// A town's plaza, ring, roads, avenues, town hall, stalls and civic buildings, or a village's green, roads and shop.
+// A town's plaza, ring, roads, avenues, town hall and civic buildings, or a village's green, roads and shop.
 export function settleCentre(site: Site): void {
   const tier = site.ctx.tier ?? '';
   if (!(tier in PLAZAS)) {
@@ -108,12 +109,14 @@ export function settleCentre(site: Site): void {
   placeCivic(site, CIVIC[tier].slice(1));
 }
 
-// The dock, landmarks, works, houses, fields and the windmill.
+// The dock, landmarks, works, a town's premises, houses, fields and the windmill. The premises follow the landmarks and
+// works, whose images rise over the tiles in front of a door and would hide whoever stood there.
 export function settleBuildings(site: Site): void {
   const ctx = site.ctx;
   if (ctx.sea && ctx.coast !== 'cliffs') placeDock(site);
   placeLandmarks(site);
   placeWorks(site);
+  placeTrades(site);
   placeHouses(site);
   if (ctx.tier === 'village' || ctx.tier === 'hamlet' || ctx.biome === 'farmland' || ctx.farmland) settleFields(site);
   if (ctx.landmarks.includes('windmill')) placeWindmill(site);

@@ -15,9 +15,14 @@ interface FixturePlace {
   people: Record<keyof PlacePeople, number[]>;
 }
 
-// tools/worldgen/place_fixtures.py writes these for render-gl's pixel check; the port must lay them out the same.
+// tools/worldgen/place_fixtures.py writes these for render-gl's pixel check; the port must lay them out the same. A town,
+// city or capital has laid out premises for each trade since M2.7, which place.py never did, so only a place without
+// them still matches; render-gl keeps all three as the pictures it draws.
 const FIXTURE = new URL('../../render-gl/test/fixtures/places-v1.json', import.meta.url);
-const places: FixturePlace[] = JSON.parse(readFileSync(FIXTURE, 'utf8')).places;
+const WITH_PREMISES = ['town', 'city', 'capital'];
+const places: FixturePlace[] = (JSON.parse(readFileSync(FIXTURE, 'utf8')).places as FixturePlace[]).filter(
+  (place) => !WITH_PREMISES.includes(place.context.tier ?? ''),
+);
 
 function plain(layout: PlaceLayout): Omit<FixturePlace, 'name' | 'context'> {
   const people = {} as Record<keyof PlacePeople, number[]>;
