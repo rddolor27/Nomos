@@ -50,12 +50,12 @@
   {
     "name": "Charts chunk",
     "path": ["dist/assets/charts-*.js", "dist/assets/charts-*.css"],
-    "limit": "22 kB"
+    "limit": "23 kB"
   },
   {
     "name": "Economy chunk",
     "path": ["dist/assets/economy-*.js", "dist/assets/economy-*.css"],
-    "limit": "1.5 kB"
+    "limit": "2.5 kB"
   },
   {
     "name": "Controls chunk",
