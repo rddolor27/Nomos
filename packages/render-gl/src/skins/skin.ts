@@ -21,7 +21,7 @@ export function builtSkin(skin: Skin): Skin {
 // the town. A switch needs 15% more than that, so a camera resting on a limit does not flicker.
 const TOWN_LIMITS = {
   // The town draws a whole first screen's crowd, up to about 9,000 blobs in view, so the first screen opens in the town's
-  // art (owner, 10 October 2026); 176x112 Highcourt starts 2,688 on every tier. The perf tiers' 10k and more stay dots.
+  // art (owner, 10 October 2026); 176x112 Highcourt starts 2,600 on every tier. The perf tiers' 10k and more stay dots.
   enter: { minPxPerTile: 6.9, maxAgents: 9000 },
   stay: { minPxPerTile: 5.1, maxAgents: 10350 },
 };

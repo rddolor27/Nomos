@@ -56,12 +56,12 @@ function peopleAt(size: Uint8Array, home: Int32Array, homes: Homes): Int32Array 
 }
 
 describe("Highcourt's homes", () => {
-  it('hold 2,688 beds, 330 homes of 4 and 57 of 24', () => {
+  it('hold 2,600 beds, 320 homes of 4 and 55 of 24', () => {
     const { count, capacity } = highcourtHomes();
     const homesOf = (beds: number) => capacity.filter((bedCount) => bedCount === beds).length;
 
-    expect([count, homesOf(4), homesOf(24)]).toEqual([387, 330, 57]);
-    expect(capacity.reduce((beds, bedCount) => beds + bedCount, 0)).toBe(2_688);
+    expect([count, homesOf(4), homesOf(24)]).toEqual([375, 320, 55]);
+    expect(capacity.reduce((beds, bedCount) => beds + bedCount, 0)).toBe(2_600);
   });
 
   it('seat 2,310 people in households of 1 to 6, none over capacity', () => {
@@ -75,13 +75,13 @@ describe("Highcourt's homes", () => {
     expect(Array.from(people.keys()).filter((index) => people[index] > homes.capacity[index])).toEqual([]);
   });
 
-  it('seat 228 households of 5, since only the 57 homes of 24 take them, 4 each, and throw for a 229th', () => {
+  it('seat 220 households of 5, since only the 55 homes of 24 take them, 4 each, and throw for a 221st', () => {
     const homes = highcourtHomes();
 
-    const home = seat(householdsOf([0, 0, 0, 0, 228]), homes);
-    expect(new Set(home).size).toBe(57);
-    expect(() => seat(householdsOf([0, 0, 0, 0, 229]), homes)).toThrow(RangeError);
-    expect(() => seat(householdsOf([0, 0, 0, 0, 229]), homes)).toThrow(/household of 5/);
+    const home = seat(householdsOf([0, 0, 0, 0, 220]), homes);
+    expect(new Set(home).size).toBe(55);
+    expect(() => seat(householdsOf([0, 0, 0, 0, 221]), homes)).toThrow(RangeError);
+    expect(() => seat(householdsOf([0, 0, 0, 0, 221]), homes)).toThrow(/household of 5/);
   });
 });
 
@@ -94,16 +94,16 @@ function bedsTaken(world: World, homes: Homes): number[] {
 }
 
 describe('Highcourt spawned', () => {
-  it('has a blob in every one of its 2,688 beds, in 985 households of 1 to 6, and folds back exactly', () => {
+  it('has a blob in every one of its 2,600 beds, in 946 households of 1 to 6, and folds back exactly', () => {
     const homes = highcourtHomes();
     const world = createTown(SEED, 'phone', loadTown(), homes);
     const got = new Float64Array(LEDGER_FIELDS);
     foldToLedger(world, got);
     const want = new Float64Array(LEDGER_FIELDS);
-    townRecord(2_688, 24, want);
+    townRecord(2_600, 24, want);
 
-    expect(world.agents.count[0]).toBe(2_688);
-    expect(Array.from(got.subarray(LEDGER_HOUSEHOLDS, LEDGER_HOUSEHOLDS + 6))).toEqual([229, 272, 194, 165, 77, 48]);
+    expect(world.agents.count[0]).toBe(2_600);
+    expect(Array.from(got.subarray(LEDGER_HOUSEHOLDS, LEDGER_HOUSEHOLDS + 6))).toEqual([213, 263, 188, 160, 75, 47]);
     expect(bedsTaken(world, homes)).toEqual(Array.from(homes.capacity));
     expect(Array.from(got)).toEqual(Array.from(want));
     expect(world.cash.balance[MINT]).toBe(-(want[LEDGER_HOUSEHOLD_CASH] + want[LEDGER_FIRM_CASH]));

@@ -127,7 +127,7 @@ test('shows the tier the device gets', async ({ page }) => {
   // Without ?tier=, every tier seats Highcourt's drawn homes, one blob to a bed, under Canvas2D's cap.
   await open(page, '/?canvas');
   await expect(page.locator('#hud-tier')).toHaveText('Desktop tier');
-  await expect(page.locator('#hud-agents')).toHaveText('2,688 of 2,688 agents shown (no WebGL2)');
+  await expect(page.locator('#hud-agents')).toHaveText('2,600 of 2,600 agents shown (no WebGL2)');
 });
 
 test.describe('on a phone whose storage throws', () => {
@@ -156,7 +156,7 @@ test.describe('on a phone whose storage throws', () => {
     expect(read).toBe('threw');
     await expect(page.locator('#hud-tier')).toHaveText('Phone tier');
     // Highcourt's drawn homes, one blob to a bed, as on every tier.
-    await expect(page.locator('#hud-agents')).toContainText('2,688 agents');
+    await expect(page.locator('#hud-agents')).toContainText('2,600 agents');
   });
 });
 
