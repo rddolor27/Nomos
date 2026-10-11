@@ -85,6 +85,17 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 11 Oct: **M2.2c Ruling 8, away towns** (9baec40).
+  - **The summary month:** a town not in view takes one a month (`spawn/away.ts`, `AWAY_DRAW` 0x201). Its unemployment, prices and wages drift back toward its first record, with keyed noise fitted to a live town, while people, households, firms and cash stay exact.
+  - **First visits** catch up on the months already passed.
+  - **Replays:** nothing new is logged, since a replay recomputes the step from the `INPUT_FOCUS` log.
+  - **Cost:** about 0.1 ms a month for 200 towns.
+  - **The task:** 2b builds it after Tasks 1–2, and Task 3 wires it in. Owner question 6, whether the map shows an away town's figures as "estimated", is open.
+- 11 Oct: **the owner's integration answers:**
+  - every town live (all of M2.2c) comes before the street code;
+  - nights pass at 8×;
+  - the blob card updates live;
+  - the fish stall's navy fold becomes a darker stall blue.
 - 11 Oct: **M2.7 Part 1, Task 7's sprites** (bc8659b, 2c8e79e, 819295c).
   - **Drawn:** the chewing faces and hold code, the seven carried goods (`icons/carry_*`), the stock pips (`icons/pip_stock_0..3`), the three stalls (`buildings/shop_market-stall_{vegetables,fish,milk}`), and the Draper and Fuel Store fronts in both looks, with snow.
   - **Checks:** `test_sprites.py` and `pnpm test:py` pass. The atlas is a build product (184,354 B of 300 kB), and the place goldens and `town.nmap` hold.
