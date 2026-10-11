@@ -7,6 +7,10 @@ export const SUMMARY_COLUMNS = [
   'unemployed', 'vacancies', 'price_mean', 'wage_mean', 'stock', 'size_squares', 'size_cubes', 'sales_units',
   'sales_cents', 'price_changes', 'price_change_ppm', 'hires', 'switches', 'firings', 'wage_bill', 'exits', 'produced',
   'job_visits', 'above_markup', 'spell_months', 'long_spells', 'stayers', 'stayer_cuts',
+  'sold_cents_bread', 'sold_cents_vegetables', 'sold_cents_fish', 'sold_cents_milk',
+  'made_bread', 'made_vegetables', 'made_fish', 'made_milk',
+  'spoiled_bread', 'spoiled_vegetables', 'spoiled_fish', 'spoiled_milk',
+  'eaten', 'unmet',
 ] as const;
 
 export type SummaryColumn = (typeof SUMMARY_COLUMNS)[number];
@@ -121,6 +125,27 @@ function flowRates(c: SummaryColumns, w: Window, meta: SummaryMeta) {
   };
 }
 
+const FOODS = ['bread', 'vegetables', 'fish', 'milk'] as const;
+
+// A window's total of one flow over the four foods.
+function foodFlow(c: SummaryColumns, w: Window, flow: 'sold_cents' | 'made' | 'spoiled'): number {
+  let sum = 0;
+  for (const food of FOODS) sum += total(sums(c[`${flow}_${food}`], w));
+  return sum;
+}
+
+// M2.4's reported shares: food's part of all spending in cents, the part of the food made that spoiled, and the part of the
+// portions wanted that went short. A world with goods off has no food, so the last two are undefined.
+function foodShares(c: SummaryColumns, w: Window) {
+  const eaten = total(sums(c.eaten, w));
+  const unmet = total(sums(c.unmet, w));
+  return {
+    food_share: ratio(foodFlow(c, w, 'sold_cents'), total(sums(c.sales_cents, w))),
+    spoil_share: ratio(foodFlow(c, w, 'spoiled'), foodFlow(c, w, 'made')),
+    unmet_share: ratio(unmet, eaten + unmet),
+  };
+}
+
 function stockAndPrice(c: SummaryColumns, w: Window, meta: SummaryMeta) {
   const stock = endLevels(c.stock, w);
   const monthlySales = sums(c.sales_units, w);
@@ -167,6 +192,7 @@ export function summarize(columns: SummaryColumns, meta: SummaryMeta): TargetVal
   const cycle = cycleMeasures(columns, w, meta.size);
   return {
     ...flowRates(columns, w, meta),
+    ...foodShares(columns, w),
     ...stockAndPrice(columns, w, meta),
     ...cycle,
     size_skew: sizeSkew(columns, w, meta),

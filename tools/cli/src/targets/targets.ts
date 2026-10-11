@@ -37,6 +37,9 @@ export const TARGETS = [
   { id: 'price_change_size', tier: 'reported', rule: 'reported', source: 'Rulings 13 and 15: mean ppm per change' },
   { id: 'above_markup_share', tier: 'reported', rule: 'reported', source: 'Ruling 15' },
   { id: 'visit_success', tier: 'reported', rule: 'reported', source: 'Ruling 13: the share of an unemployed searcher\'s visits that end in a hire' },
+  { id: 'food_share', tier: 'reported', rule: 'reported', source: "M2.4: food's share of spending, against ICP 2021's upper-middle 18.6% (opened)" },
+  { id: 'spoil_share', tier: 'reported', rule: 'reported', source: 'M2.4: the share of the portions made that spoiled' },
+  { id: 'unmet_share', tier: 'reported', rule: 'reported', source: 'M2.4: the share of the portions wanted that went short' },
 ] as const satisfies readonly Target[];
 
 export type TargetId = (typeof TARGETS)[number]['id'];

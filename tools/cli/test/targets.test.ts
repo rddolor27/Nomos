@@ -37,7 +37,12 @@ const META: SummaryMeta = {
 // flow log writes them, and sales and output are spread over its days. Levels, sales_units and produced have seven
 // entries, the first being month 5, which month 6 starts from and compares its output with; levels are read only on a
 // month's last day.
-type Plan = Record<Exclude<SummaryColumn, 'stayers' | 'stayer_cuts'>, number[]>;
+type FoodColumn = Extract<SummaryColumn, `${'sold_cents' | 'made' | 'spoiled'}_${string}` | 'eaten' | 'unmet'>;
+type Plan = Record<Exclude<SummaryColumn, 'stayers' | 'stayer_cuts' | FoodColumn>, number[]>;
+
+// M2.4's food columns, which build() fills with the same figures on every day of the window. Bread alone sells, the other
+// foods stay at 0.
+const FOOD_DAILY = { sold_cents_bread: 1_000, made_bread: 200, spoiled_bread: 10, eaten: 597, unmet: 3 } as const;
 
 const ON_FIRST_DAY = ['price_changes', 'price_change_ppm', 'hires', 'switches', 'job_visits', 'above_markup'] as const;
 const ON_LAST_DAY = ['firings', 'wage_bill', 'exits', 'spell_months', 'long_spells'] as const;
@@ -116,6 +121,9 @@ function build(plan: Plan): SummaryColumns {
       columns[name][first + MONTH - 1] = plan[name][i];
     }
   }
+  for (const name of Object.keys(FOOD_DAILY) as (keyof typeof FOOD_DAILY)[]) {
+    columns[name].fill(FOOD_DAILY[name], WARM_UP_DAYS, 12 * MONTH);
+  }
   columns.stayers[YEAR_END] = 500;
   columns.stayer_cuts[YEAR_END] = 10;
   return columns;
@@ -168,6 +176,10 @@ const EXPECTED: TargetValues = {
   price_change_size: 20_000,
   above_markup_share: 54 / 600,
   visit_success: 92.5 / 740,
+  // 126 days of 1,000 cents of food against the 8,316,000 cents sold; 10 of 200 portions spoiled; 3 of 600 wanted went short.
+  food_share: 126_000 / 8_316_000,
+  spoil_share: 10 / 200,
+  unmet_share: 3 / 600,
 };
 
 function expectValues(actual: TargetValues, expected: TargetValues): void {
@@ -177,9 +189,9 @@ function expectValues(actual: TargetValues, expected: TargetValues): void {
 }
 
 describe('the target table', () => {
-  it('holds six tier-1, seven tier-2 and six tier-3 targets, and three reported measures', () => {
+  it('holds six tier-1, seven tier-2 and six tier-3 targets, and six reported measures', () => {
     const inTier = (tier: number | string): number => TARGETS.filter((target) => target.tier === tier).length;
-    expect([1, 2, 3, 'reported'].map(inTier)).toEqual([6, 7, 6, 3]);
+    expect([1, 2, 3, 'reported'].map(inTier)).toEqual([6, 7, 6, 6]);
   });
 
   it('keeps the pay-cut target out of the tier-1 filter, since closed money makes cuts balance raises', () => {
@@ -194,9 +206,9 @@ describe('the target table', () => {
     }
   });
 
-  it('reads 23 columns, each named once', () => {
-    expect(SUMMARY_COLUMNS).toHaveLength(23);
-    expect(new Set(SUMMARY_COLUMNS).size).toBe(23);
+  it('reads 37 columns, each named once', () => {
+    expect(SUMMARY_COLUMNS).toHaveLength(37);
+    expect(new Set(SUMMARY_COLUMNS).size).toBe(37);
   });
 });
 
@@ -397,11 +409,8 @@ describe('the targets command', () => {
     expect(verdict('phillips')).toBe('fails');
     expect(verdict('size_skew')).toBe('holds');
     expect(verdict('no_crisis')).toBe('holds');
-    expect(['price_change_size', 'above_markup_share', 'visit_success'].map((id) => verdict(id as TargetId))).toEqual([
-      'reported',
-      'reported',
-      'reported',
-    ]);
+    const reported = ['price_change_size', 'above_markup_share', 'visit_success', 'food_share', 'spoil_share', 'unmet_share'];
+    expect(reported.map((id) => verdict(id as TargetId))).toEqual(reported.map(() => 'reported'));
     expect(rowOf(text, 'job_finding')).toEqual(['job_finding', '1', '0.208 to 0.312', '0.2', '0.2 to 0.2', '0.2', '0.2 to 0.2', 'fails']);
   });
 
