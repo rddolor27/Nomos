@@ -30,8 +30,7 @@ export interface LeisureSite {
   stall: false;
 }
 
-function siteOf(kind: number, entity: MapEntity): LeisureSite {
-  const { doorX, doorY, x, y, w, h } = entity;
+function siteOf(kind: number, { doorX, doorY, x, y, w, h }: Pick<MapEntity, 'doorX' | 'doorY' | 'x' | 'y' | 'w' | 'h'>): LeisureSite {
   return { kind, doorX, doorY, x, y, w, h, goods: 0, stall: false };
 }
 
@@ -106,9 +105,9 @@ function waterEdges(map: MapV1, reach: Uint8Array, plazaDoor: number): LeisureSi
     chosen.push(best);
   }
   return chosen.map((cell) => {
-    const doorX = cell % map.width;
-    const doorY = (cell - doorX) / map.width;
-    return { kind: SITE_WATER, doorX, doorY, x: doorX, y: doorY, w: 1, h: 1, goods: 0, stall: false };
+    const x = cell % map.width;
+    const y = (cell - x) / map.width;
+    return siteOf(SITE_WATER, { doorX: x, doorY: y, x, y, w: 1, h: 1 });
   });
 }
 
