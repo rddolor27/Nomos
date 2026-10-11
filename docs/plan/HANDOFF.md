@@ -84,6 +84,17 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 11 Oct: **M2.4 Part 1, Tasks 5–6** (9a10e94..dba1b48, 181ac5f).
+  - **The feed:** it carries 112 days of sold, stock and price paid for the seven goods, food eaten, spoiled and unmet, and each trade's good.
+  - **The panel:** a goods table, a food chart, sales by good, the wage and unemployment charts, and trades such as "2 cloth at Draper 217, 66.70". The card reads "Works at Bakery 12".
+  - **Checks:** economy and inspector specs pass.
+  - **Bytes:** initial JS is 28.1 of 35 kB. The worker's limit went to 17 kB and the stand-in's to 29.2 kB, and the charts and economy chunks got about 1 kB of room each.
+  - **Not yet in `interfaces.md`:**
+    - `shopName(good, firm)`, and `economy.ts`'s `tradeLines` and `goodsRows`;
+    - `DayChart`'s several series, with `DaySpec`'s `labels` and `colours`;
+    - `inspected.employerGood`;
+    - the message's `soldUnits`, `stockUnits` and `paidCents` (7 series each), `eaten`, `spoiled`, `unmet` and `tradeGood`, with no `meanPriceCents`. Food trades come first, then goods;
+    - `FEED_GOODS` (7), with `BREAD`, `FUEL`, `GOOD_NAMES` and `SHOP_NAMES` re-exported from `feed.ts`.
 - 11 Oct: **M2.4 Part 1, Tasks 3–4** (603c1a0..63027e9).
   - **Built:** blobs buy food before goods, in a 20-system economy day, and `CITY` runs the seven goods and food.
   - **Hashes:** `746a06a3`, `6a652730` and the spawn hashes held. `town` is now `1621b72b`, and Highcourt's pins are `4b1a37d3` and `49f7323c`.
