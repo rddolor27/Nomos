@@ -72,7 +72,7 @@ The tables give the layout M0.7 builds, including the files it adds. A renamed f
 | `sprites/` | `sprite-manifest.ts` (generated) | The sprite-manifest types |
 | `shared/` | `calendar.ts`, `columns.ts`, `steering.ts` | Constants re-exported from `sim-core`, and the wander rule with its keyed draw and steps, so `render-gl` and the app never import it |
 | `world-map/` | `world-map.ts` | The world map, the body hues and the map worker's messages, behind the `./world-map` export (M8.1) |
-| `place/` | `place-layout.ts` | A place's layout and the map worker's place messages, behind the `./place` export (M3.1) |
+| `place/` | `place-layout.ts`, `item-goods.ts` (M2.7) | A place's layout and the map worker's place messages, behind the `./place` export (M3.1), and the goods a blob can carry |
 | `economy/` | `feed.ts` | The economy feed: a town's last 112 days of its mean wage, unemployment, food eaten, spoiled and unmet, and each of 7 goods' sales, stock and price, and the day's last 16 trades, which the worker posts as the `economy` message (M2.2b; goods and food in M2.4 Part 1) |
 
 **`packages/sim-worker/src`:** `index.ts` and `worker.ts` (the `./worker` export) at `src/`, and `loop/loop.ts`.
@@ -90,7 +90,7 @@ The tables give the layout M0.7 builds, including the files it adds. A renamed f
 | `skins/` | `skin.ts`, `skin-toggle.ts` | Skin choice, the automatic policy and the toggle |
 | `dots/` | `dots.ts`, `colour.ts`, `minimap.ts`, `skin-a.json` | Skin A: dot shapes, its palette and contrast, and the minimap |
 
-Skin B and Skin C arrive as `blobs/` and `town/` beside `dots/` (M1.3, M3.3). M8.3 adds `map/`, the map scene, behind the `./map` export whose entry file is `src/map.ts`. M3.1 adds `place/`, the place pass, behind the `./place` export whose entry file is `src/place.ts`, and `map/lifecycle.ts`, the context-loss lifecycle the map and place renderers share. The Town skin brings `town/` early, with `people.ts` and `town-skin.ts`, behind the `./town` export whose entry file is `src/town.ts` (The Town skin, below). The blob card's `place/portrait.ts` (`BlobPortrait`, behind `./place`) draws a blob with the place pass's own `putPerson`, which `sprites.ts` exports (the blob modal).
+Skin B and Skin C arrive as `blobs/` and `town/` beside `dots/` (M1.3, M3.3). M8.3 adds `map/`, the map scene, behind the `./map` export whose entry file is `src/map.ts`. M3.1 adds `place/`, the place pass, behind the `./place` export whose entry file is `src/place.ts`, and `map/lifecycle.ts`, the context-loss lifecycle the map and place renderers share. The Town skin brings `town/` early, with `people.ts` and `town-skin.ts`, and M2.7 adds `pips.ts`, behind the `./town` export whose entry file is `src/town.ts` (The Town skin, below). The blob card's `place/portrait.ts` (`BlobPortrait`, behind `./place`) draws a blob with the place pass's own `putPerson`, which `sprites.ts` exports (the blob modal).
 
 **`apps/web/src`**
 
@@ -98,11 +98,11 @@ Skin B and Skin C arrive as `blobs/` and `town/` beside `dots/` (M1.3, M3.3). M8
 | --- | --- | --- |
 | `src/` | `main.ts` | The entry `index.html` loads |
 | `app/` | `app.ts`, `boot.ts`, `lifecycle.ts`, `query.ts`, `tiers.ts` | The app shell: boot hand-off, worker link, query, tiers and the page lifecycle |
-| `view/` | `camera-input.ts`; `atlas.ts` (`townAtlas()`, one atlas fetch that the Town skin and the blob card share); `pinch.ts` (`Pinch`, two-pointer zoom in whole steps); `zoom-bar.ts` (`ZoomBar`, the town's −, + and Fit); `town-skin.ts` (`mountTownSkin` and `TownSkinMount`, which lends the Town skin and swaps its town, M2.2c) | Pointer and keyboard input on the view: the click that inspects, wheel, keys, pinch, Home to fit through `App.fit()` (M0.8, b44ed12), and keys 1–3 for speed (M2.2b). It loads after the first frame, as the charts do (M0.7). `camera-input.ts` also imports the Town skin's loader, `town-skin.ts`, once the page is interactive |
+| `view/` | `camera-input.ts`; `atlas.ts` (`townAtlas()`, one atlas fetch that the Town skin and the blob card share); `pinch.ts` (`Pinch`, two-pointer zoom in whole steps); `zoom-bar.ts` (`ZoomBar`, the town's −, + and Fit); `town-skin.ts` (`mountTownSkin` and `TownSkinMount`, which lends the Town skin and swaps its town, M2.2c); `stock-pips.ts` (`stockLevel` and `StockPips`, the beads over the town's shops, M2.7) | Pointer and keyboard input on the view: the click that inspects, wheel, keys, pinch, Home to fit through `App.fit()` (M0.8, b44ed12), and keys 1–3 for speed (M2.2b). It loads after the first frame, as the charts do (M0.7). `camera-input.ts` also imports the Town skin's loader, `town-skin.ts`, once the page is interactive |
 | `panels/` | `hud.ts` (the row, its Map button and `SystemRows`), `charts.ts` (also `DayChart`, which takes several series, `DaySpec`, whose `labels` and `colours` name and colour them, `dataTable`, `setRows`, `el` and `levelRange`), `controls.ts` (the `?dev=1` Zoom slider), `inspector.ts` (`blobCard(reply)`, `Inspector` and `mountInspector(hud, view, app)`; `#inspector` only says "No blob here" or "That blob is gone"), `blob-modal.ts` and `blob-modal.css` (`BlobModal`, the blob card, a non-modal dialog), `toolbar.ts` (the compact bar the map and the town view share, M0.8); `shop-name.ts` (`shopName(good, firm)`: the good's `SHOP_NAMES` entry and N, so firm row N − 1 is "Bakery N" when it sells bread), `economy.ts` and `economy.css` (`EconomyPanel`, `mountEconomy`, `MEASURES`, `fillSeries`, `goodsRows` and `tradeLines`) and `speed-bar.ts` (`SpeedBar`, `speedForKey`), all M2.2b, and M2.4 Part 1 reworked `shop-name.ts`, `economy.ts` and `DayChart` for goods (9a10e94..dba1b48) | The HUD, the lazy charts, the economy panel, the developer controls, the on-demand inspector, and the map's toolbar |
 | `map/` | `generate.ts` and `map-worker.ts` (M8.1); `map-view.ts`, `map-input.ts`, `labels.ts`, `legend.ts` and `goto.ts` (M8.3); `place-builder.ts` and `place-view.ts` (M3.1); `live-town.ts` (`LiveTown`, `HOME_PLACE`, `TownEntry` and `TownParts`, M2.2c) | The map: its worker and the worker's lazy place builder, the lazy view the Map control opens, the town view a wonder opens into, and the live town that a settlement opens as. Highcourt's place context, `TOWN`, lives in worldgen's `place/town.ts` (M2.2c) |
 
-`apps/web/vite/` keeps the build plugins. Vite names a lazy chunk after its file, so the size-limit globs `charts-*.js` and `controls-*.js` hold after the move, and the view input's and the inspector's chunks need entries of their own. So do the economy panel's chunk and the shop-name chunk that the inspector and the panel share (M2.2b).
+`apps/web/vite/` keeps the build plugins. Vite names a lazy chunk after its file, so the size-limit globs `charts-*.js` and `controls-*.js` hold after the move, and the view input's and the inspector's chunks need entries of their own. So do the economy panel's chunk and the shop-name chunk that the inspector and the panel share (M2.2b), and the goods names chunk, `goods-*.js`, that the panel and the shop names share (M2.7, The Town skin, below).
 
 **`tools/cli/src`**
 
@@ -274,6 +274,10 @@ Grids live in `tools/cli/grids/`, outside `src/`.
 
 - `sim-protocol` publishes `schema/sprite-manifest.schema.json` (JSON Schema 2020-12, `$id` `urn:nomos:sprite-manifest:1`) and the types generated from it, `SpriteManifest` and `SpriteFrame`. `pnpm --filter @nomos/sim-protocol types` regenerates them.
 - A manifest names its frames and never holds an atlas index; the atlas build places them (R9).
+- **Carried goods** (M2.7 Task 6, 43b39bc): `SpriteFrame` gains `hold?: [x, y]` and `eat?`.
+  - `hold` is the carried item's top-left pixel on a body frame, in the frame's own pixels from its top-left. A body frame that shows no item has none: facing up, sitting and sneaking.
+  - `eat` is three `[x, y]`, the item's top-left on each step of eating, and only a standing frame has it. A walking frame has `hold` alone.
+  - `characters.build()` writes them on every hue's body frames, and its `holds` flag is gone. `tools/atlas` copies them into `atlas.json` beside `face`.
 
 ## WorldRenderer (owner: M0.4)
 
@@ -479,7 +483,7 @@ The Country and Region views draw a `WorldMap` with a renderer of their own, whi
   - A test keeps them, in D65 Lab and CIEDE2000, ≥ 15 from every palette colour, and ≥ 11.95 apart for normal, protan, deutan and tritan vision (M8.3, Task 14).
 - **Atlas page:** `tools/atlas` writes `map.webp`, `map.png` and `map.json` beside the town atlas. The page holds the 93 map-scale frames: terrain tiles, wonders and landmarks at both scales, and the settlement icons, walled ones and their highlight rings included (M3.1's Part 3).
   - `AtlasPage` is `{ image: ImageBitmap, frames: Record<string, AtlasFrame> }`, keyed `"<sheet>/<frame>"`.
-  - `AtlasFrame` is `{ x, y, w, h, anchor: [x, y], face?: [x, y] }`. From M3.1, body frames carry `face`, the offset their face overlays draw at, from `characters.json`.
+  - `AtlasFrame` is `{ x, y, w, h, anchor: [x, y], face?: [x, y], hold?: [x, y], eat?: [[x, y], [x, y], [x, y]] }`. From M3.1, body frames carry `face`, the offset their face overlays draw at, from `characters.json`. From M2.7 a body frame that can carry an item also has `hold`, and `eat` if it stands (Sprite manifests, above).
   - `loadAtlasPage(jsonUrl, imageUrl): Promise<AtlasPage>` fetches the page.
   - Frames are found by name, never by atlas index (R9).
 - **`createMapRenderer(canvas: HTMLCanvasElement, options?: MapRendererOptions): MapRenderer`.**
@@ -533,7 +537,11 @@ The owner asked on 9 October 2026 to zoom into a settlement on the map and see t
   - `look`, one of `looks.py`'s 96: hue `look % 6` in `LOOK_HUES` (`CROWD_HUES`), eyes `⌊look / 6⌋ % 4` in `LOOK_EYES` and pattern `⌊look / 24⌋` in `LOOK_PATTERNS`;
   - `pose`, `facing`, `expression`, `job` and `emote`, as indices into `PLACE_POSES`, `PLACE_FACINGS`, `PLACE_EXPRESSIONS`, `PLACE_JOBS` and `PLACE_EMOTES`, with `NO_CODE` (255) for no job or emote;
   - `step`, a walker's frame, 0 or 1;
-  - `x` and `y`, the anchor in art px, and `lift`, which raises a sitter onto a bench.
+  - `x` and `y`, the anchor in art px, and `lift`, which raises a sitter onto a bench;
+  - **the street's three** (M2.7 Task 6, ed4542f), `item`, `eat` and `indoors`: optional `Uint8Array`s that only the Town skin's people fill. A missing column reads as 0, and `layoutBuffers` leaves them out, since a layout the map worker builds has no street life.
+    - `item` is the good carried: 0 for none, else code c is `ITEM_GOODS[c − 1]`, which names the `icons/carry_<good>` frame. `ITEM_GOODS`, `['bread', 'vegetables', 'fish', 'milk', 'cloth', 'tools', 'fuel']`, is in `place/item-goods.ts` and exported from `./place`, in the order of the visual word's `item` field.
+    - `eat` is 0, or 1 plus the step of the eating loop, 0 to 3.
+    - `indoors` is 1 for a person inside a building, whom no pass draws.
 - **Messages:**
   - `PlaceRequest` is `{ type: 'place', place }`. Place p is settlement p, or wonder p minus the settlement count, in `world.py`'s `place_contexts` order.
   - `PlaceReply` is `{ type: 'place', place, layout, map, ms }`, with every buffer transferred, as `placeBuffers(layout, map)` lists them. `map` is a settlement's ground as the `.nmap` bytes from `writeMap`, which the page hands the sim worker in an `open` message, or null for a wonder, whose vista has none.
@@ -600,14 +608,14 @@ The owner asked on 9 October 2026 to zoom into a settlement on the map and see t
   - `PlaceRendererOptions` is `LifecycleOptions`, as the map's are.
   - `PlaceRenderer` reads `backend` and `canvas`. Its methods are `init()`, `resize(deviceWidth, deviceHeight, dpr)`, `setAtlas(page: AtlasPage)`, `setPlace(layout: PlaceLayout)`, `draw(camera: PlaceCamera)` and `dispose()`.
   - Callers move people by rewriting the layout's `x`, `y`, `pose`, `facing` and `step` before each draw. A camera is re-read only when a new camera object is passed.
-  - `draw` throws for a scale that isn't a whole number of 1 or more, and packing throws for a sitter facing up, which has no sprite, as `placedraw.py` would.
+  - `draw` throws for a scale that isn't a whole number of 1 or more, and packing throws for a sitter facing up, which has no sprite, as `placedraw.py` would, and for a carried good whose `icons/carry_<good>` frame the atlas lacks.
 - **What draws,** in `placedraw.py`'s order:
   1. the `OUTLINE` background;
   2. the tiles;
   3. the ground sprites, sorted by y;
   4. standing sprites and people together, sorted by y and then by order, standing sprites first.
 
-  A person's layers are the body, the pattern, the face at the body frame's `face` offset, the job item, and the emote at (7, face y − 15). People move every frame, so the pass re-sorts them in place, stably, with no allocation.
+  A person's layers are the body, the pattern, the face at the body frame's `face` offset, the job item, the carried good at the frame's `hold` point, and the emote at (7, face y − 15). A person whose `indoors` is 1 draws no layer. People move every frame, so the pass re-sorts them in place, stably, with no allocation.
 - **Backends:** WebGL2 draws the whole place in one instanced draw, reading texels with `texelFetch`. Canvas2D caches the tiles and ground on an offscreen canvas.
 - **The pixel check:** at 1×, both backends match the SHA-256 of `placedraw.py`'s picture of each fixture, in Chromium. At 2×, a frame equals the 1× picture scaled up by nearest neighbour.
 - **Imports:** only `src/map`'s `frames.ts`, `gl.ts`, `colours.ts` and `lifecycle.ts`, and `sim-protocol`.
@@ -641,9 +649,10 @@ The owner asked on 10 October 2026 for the town view's art on the first screen. 
 ### `@nomos/render-gl/town`
 
 - **`TownPainter`,** in `renderer/types.ts`: `draw(camera: Camera, alpha: number, view: TownView): number | undefined`. `TownView` is what the renderer lends each draw: `drawnSkin`, `retained` (the two latest snapshots), `canvas` and `dpr`.
+  - **`Retained`** gains `tick: number` (M2.7 Task 6), the current snapshot's tick, which the eating loop steps with. `pushSnapshot` sets it from its frame's `tick`.
   - When `drawnSkin` is the town, it draws and returns the agents drawn. Otherwise it hides its canvas and returns undefined, and the renderer draws the dots.
-  - The first-load renderer chunk gains only this hook, `setTown`, `BUILT_SKINS`, the town check in the skin choice, and the word readers the people use, `lookOf`, `actionOf` and `facingOf`, since `sim-protocol`'s `visual.ts` sits in that chunk.
-- **`TownSkin`,** the `./town` export, is a `TownPainter`: `new TownSkin(canvas: HTMLCanvasElement, layout: PlaceLayout, page: AtlasPage, options?: LifecycleOptions)`.
+  - The first-load renderer chunk gains only this hook, `setTown`, `BUILT_SKINS`, the town check in the skin choice, `Retained`'s `tick`, the dots' indoors skip (below) and the word readers the people use, `lookOf`, `actionOf`, `facingOf`, `itemOf`, `eatingOf` and `indoorsOf`, since `sim-protocol`'s `visual.ts` sits in that chunk.
+- **`TownSkin`,** the `./town` export, is a `TownPainter`: `new TownSkin(canvas: HTMLCanvasElement, layout: PlaceLayout, page: AtlasPage, options?: LifecycleOptions, sites?: readonly PipSite[])`. The export gives the `PipSite` type too.
   - It draws through a `createPlaceRenderer` of its own, on its own canvas over the dots' canvas, at `{ x: camera.x, y: camera.y, scale: camera.zoom }`, since a world px is an art px. Its canvas takes the dots' canvas's device size and dpr whenever they change.
   - While it shows, the dots' canvas is hidden, so assistive tech meets one picture.
   - It reads `canvas`, which its Canvas2D fallback replaces, and `dispose()` disposes its place renderer.
@@ -653,12 +662,23 @@ The owner asked on 10 October 2026 for the town view's art on the first screen. 
   - **pose:** walk when `actionOf(word)` is walk, else stand. Expression is neutral, with no job or emote yet.
   - **facing:** from the move between the two snapshots, along its larger axis, or `facingOf(word)` for a blob that stood still or jumped.
   - **step:** `(along >> 3) & 1`, where `along` is the drawn x of a blob facing left or right and the drawn y of any other, so the walk frame changes every 8 art px walked; 0 for a stander.
+  - **item, eat and indoors** (M2.7 Task 6, ed4542f): `item` is `itemOf(word)` and `indoors` is `indoorsOf(word)`. `eat` is 1 + (⌊tick ÷ 3⌋ & 3) while `eatingOf(word)` is set, else 0, where `tick` is `Retained`'s, so every eater is on the same step.
+    - The place pass draws the good unmirrored at the body frame's `hold`.
+    - While `eat` is set, the face is `face_chew_<step & 1>` in place of the resting face, and a standing eater moves the item through the frame's `eat` points 0, 1, 2, 1, one step every 3 ticks. A walking eater keeps the item at `hold`.
+    - Facing up shows no item, and neither does a frame with no `hold`, such as a sitter or a sneaker.
+    - A blob indoors is drawn by no skin. The place pass draws no layer of a person whose `indoors` is 1, and the dots skip the blob too: `webgl.ts`'s vertex shader moves a word with bit 7 set outside the clip volume, and `canvas2d.ts` skips it.
   - The columns regrow to the agent count when it changes, and `setLayout` sets the place again; a frame allocates nothing.
-- **`setLayout(layout: PlaceLayout)`** (M2.2c Task 5, 787cfe9) swaps the town drawn, on the same canvas, context and atlas: its ground, buildings and size, from the next draw.
+- **`setLayout(layout: PlaceLayout, sites?: readonly PipSite[])`** (M2.2c Task 5, 787cfe9; `sites` in M2.7 Task 8) swaps the town drawn, on the same canvas, context and atlas: its ground, buildings and size, from the next draw.
   - It draws nothing itself, so the caller redraws.
   - The sim's agents stay its people, and the layout's own `people` are never drawn.
   - It makes the sprite list at once, so a frame the atlas lacks throws there and the skin keeps its old town.
   - `setPeople` became `setPlace(layout)`.
+- **Stock pips** (M2.7 Task 8, a962ced and 77622fd): three beads over each shop and stall, lit by how much of its good the premises holds, and a market stall that holds none draws closed.
+  - **`PipSite`** is `{ frame, x, y, stall }`: the premises' sprite frame, its anchor in art px, which is the bottom middle of its footprint, and whether it is a market stall. `new TownSkin` and `setLayout` take `sites: readonly PipSite[]`, one per premises in `premisesOf`'s order, and none by default, for a town with no premises.
+  - **`setPips(levels: ArrayLike<number>)`** lights the pip over site i to `levels[i]`, 0 to 3 beads, and closes site i's stall at 0. It rewrites sprite frames in place from the next draw and makes nothing, so the page may call it every economy day.
+  - **Hidden:** every pip starts hidden, and is hidden again after each `setLayout`, until `setPips`. A level past 3, such as `NO_LEVEL` (255), hides it: the town's first day has not ended, so there is no stock to show.
+  - **`town/pips.ts`'s `TownPips`** appends a standing sprite per site to a copy of the layout, or returns the layout itself when there are no sites. It uses `icons/pip_stock_0` to `icons/pip_stock_3`, and `buildings/shop_market-stall_closed` for a stall at 0. A frame the atlas lacks throws when the skin is made or `setLayout` runs, never in a draw.
+  - **Sorting:** a pip sorts at its premises' anchor row, so a building standing behind the premises draws first and cannot cover it. The pass draws a sprite at its sort row less the frame's anchor, so `withPipFrames(frames)` adds each bead as `<name>@<anchor y>` for every anchor height of a `buildings/` frame, anchored to stand one clear row above that building's top. `TownSkin` draws with those frames.
 - **Imports:** `src/place`, `src/map`'s `frames.ts` for its types, the renderer's types, and `sim-protocol`.
 
 ### In `web`
@@ -667,16 +687,25 @@ The owner asked on 10 October 2026 for the town view's art on the first screen. 
   - adds `<canvas id="town">` to `#view` after `#world`, hidden, as an image named for the town;
   - in idle time, through `requestIdleCallback` or a timeout where Safari lacks it, starts a map worker, sends a `TownRequest`, and terminates the worker once it answers;
   - loads `atlas/atlas.json` and `atlas/atlas.webp` at the same time, as the town view does;
-  - once both are in, makes a `TownSkin` on the app renderer's backend, so `?canvas` draws it in Canvas2D, lends it with `app.renderer.setTown` and redraws.
+  - once both are in, makes a `TownSkin` on the app renderer's backend, with the town's pip sites, so `?canvas` draws it in Canvas2D, lends it with `app.renderer.setTown` and redraws.
   - A failed load keeps the dots and logs why.
-  - **`TownSkinMount`** (M2.2c Task 6) holds the canvas and the skin, and subscribes with `app.onTown`. A town opened before the skin was lent is drawn from its own layout, not Highcourt's. Each later town goes to `TownSkin.setLayout`, and the canvas's label reads "<name>, with every agent as a blob".
+  - **`TownSkinMount`** (M2.2c Task 6) holds the canvas and the skin, and subscribes with `app.onTown`. A town opened before the skin was lent is drawn from its own layout, not Highcourt's. Each later town goes to `TownSkin.setLayout` with its pips' sites, and the canvas's label reads "<name>, with every agent as a blob". From M2.7 it also subscribes with `app.onEconomy` (Stock pips, below).
+- **Stock pips** (M2.7 Task 8, 7346a16 and 64a2552): the mount lights the pips over the town's shops from each day's economy feed.
+  - **`App`** gains `readonly map: MapV1`, the ground the view fits and the renderer draws: the page's own map first, then each town shown.
+  - **`stockLevel(stock, sold): number`,** in `view/stock-pips.ts`, is a pip's level from a good's units in stock and units sold on the feed's newest day: 0 with no stock, 1 under a day's sales (`stock < sold`), 2 under 3 days' (`stock < 3 × sold`), else 3. The two are compared as products, so stock that nobody bought reads as full.
+  - **`StockPips(map: MapV1)`** reads `premisesOf(map)` once. It holds `sites`, the `PipSite`s in that order, and `levels`, a `Uint8Array` with one level per site. `read(feed: EconomyMessage): Uint8Array` fills `levels` from the feed's newest day, which the feed must hold, and returns them. It makes nothing.
+  - **Levels are per good,** since the feed has no per-shop stock: every premises of a good shows the same pips. A premises that sells several goods, such as a village's general shop, adds their stock and sales up before it takes its level.
+  - **`TownSkinMount`** keeps the town's `StockPips` and the latest feed. An `economy` message with at least one day replaces the feed and calls `skin.setPips(stock.read(feed))`, then redraws. The feed the app already holds is shown when the skin is lent.
+  - **A new town** (`onTown`) gets a new `StockPips` from `app.map`, goes to `setLayout(layout, stock.sites)` and drops the feed, so its pips stay hidden until its first day.
 - **Skins:** the HUD's toggle is unchanged.
   - Auto shows the town at `autoSkin`'s town level: from 6.9 CSS px a tile with at most 9,000 agents in view, kept down to 5.1 px and 10,350 agents, since the 176 × 112 town starts 2,600 on every tier (2,688 before M2.7's premises).
   - Dots and Town fix the skin, and Blobs still shows dots.
   - Until the town is lent, Town and Auto draw dots.
 - **Chunks:** `vite.config.ts`'s `render-gl` chunk group leaves out `src/town` too, so the town never joins the renderer chunk.
   - The town view, the map view and the Town skin share the place renderer and the scenes' common modules, which so build as shared chunks, `renderer-*.js` and `lifecycle-*.js`.
-  - size-limit gates `town-skin-*.js` and those two shared chunks, each with an entry.
+  - size-limit gates `town-skin-*.js` and the scene chunks it shares with the views and the blob portrait (`renderer-*.js`, `lifecycle-*.js`, `frames-*.js`, `sprites-*.js` and `atlas-*.js`), each with an entry.
+  - **M2.7:** `town-skin-*.js` also holds `premises.ts`, which `StockPips` reads. That module reaches the goods module, so the build splits the goods names out of the shop-name chunk into `goods-*.js`, which the economy panel and the shop names share. It has an entry of its own, since `tools/bench/src/chunks.ts` refuses a chunk with none (70d3965).
+    - The limits are each a build's measure plus 1 kB (Vite 8.3.3 and size-limit, brotli, measured here; a3de4e1, 70d3965): the Town skin chunk 4.09 kB (3.09 measured, up from under 2), the shared scene chunks 7.2 kB (6.2 with the place pass's street layers, up from a 6 kB limit) and `goods-*.js` 1.14 kB (142 B).
 - **Test hooks:** none new. `window.__app.renderer.drawnSkin` reads `town` once the town draws.
 
 ## The economy (owner: M2.1)
@@ -1131,3 +1160,7 @@ M2.7 Part 1 gives blobs somewhere to buy and eat, as its [brief](../m2-economy/m
   - **Highcourt's pins** are `cca95710` and `a9f09068` (The world step, above), `town-map.test.ts` having moved to the shops path. `errands.test.ts` runs 4 cases on Highcourt: a food buyer's whole trip (leaves, reaches its premises' door, buys for 10 ticks, carries the good home and eats it for 24); a worker's day (arrives at its employer's door, or behind a stall's counter, within 300 ticks of setting out by 06:59, leaves from 15:00 to 15:59 and reaches its door); a replay from a checkpoint taken at 07:30, with over 1,000 blobs walking, which reaches the same hash; and a walled-off home, whose blobs stay asleep all day while the same home's blobs walk in the open town.
   - **A click** finds only a blob on the street: `postInspected` passes `world.errands.phase` to `nearestAgent` while `STREETS` is 1 (Ruling 6), so a blob indoors is skipped. The card's refresh by row, `inspectAgent`, is not affected, so an open card follows its blob indoors.
   - **Not done:** the coin bubble has no id in the snapshot's `emote` yet.
+- **Task 6, the drawing** (43b39bc, ed4542f, 5c6fdde): blobs carry the good they bought and eat it on screen, and a blob indoors is drawn by no skin. The names sit with their owners: `hold` and `eat` in Sprite manifests, `AtlasFrame` in The map scene, `PlacePeople`, `ITEM_GOODS` and the draw order in Places, and `Retained`'s `tick`, the Town skin's street columns and the dots' indoors skip in The Town skin.
+  - The art is `icons/carry_<good>` for the seven goods and `characters/face_chew_<0 or 1>_<down, left or right>`. The place pass's street layers took the shared scene chunks to 6.2 kB, so their limit rose to 7.2 kB (The Town skin, Chunks).
+  - Unit tests hold the sprite list to the hold point, the eating loop and the indoors skip. The browser spec `town-street.spec.ts` checks a carrier, an eater and a blob indoors by pixels and hashes in WebGL2 and Canvas2D, and `dots.spec.ts` checks that neither backend draws a blob indoors.
+- **Task 8, stock pips** (a962ced..70d3965): each shop and stall wears three beads for its good's stock, and a market stall that holds none draws closed. The names are in The Town skin: `PipSite`, `setPips`, `TownPips` and `withPipFrames` in `@nomos/render-gl/town`, and `App.map`, `stockLevel`, `StockPips` and the mount's feed in `web`. A level is per good, since the feed has no per-shop stock.
