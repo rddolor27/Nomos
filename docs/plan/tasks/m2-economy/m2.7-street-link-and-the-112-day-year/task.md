@@ -2,7 +2,7 @@
 
 Part of [M2 Economy](../milestone.md).
 
-> **Status (12 October 2026):** Part 1 is implemented (5aa6991..c6ee30a), and every Part 1 item below is built and pushed. Its one Opus determinism review is next, before Part 1 is marked done. Part 2 hasn't started.
+> **Status (12 October 2026):** Part 1 is implemented (5aa6991..c6ee30a), and every Part 1 item below is built and pushed. Its one Opus determinism review ran on 12 October 2026, and its fixes landed (8d03710..a1479ab, 2ff6ad2), so Part 1 is done. Finding 5, keeper election under a chunked step, waits for that step. Part 2 hasn't started.
 
 - **Builds, Part 1, life on the street** (owner request, 11 October 2026):
   - premises by trade in every town's layout: market stalls for vegetables, fish and milk, and a Bakery, Draper, Smithy and Fuel Store, with a village's stall or shop selling all seven goods;

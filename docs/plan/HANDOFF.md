@@ -137,6 +137,15 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 12 Oct, 03:55: **M3.1 Part 4, Task 23: every door reaches the plaza, and 32 runs,** with the M2.7 review's finding 2 (2ff6ad2..81b552e).
+  - **`connect`** joins every road to the plaza with the existing footbridge and ford pieces.
+    - In the first 2 worlds, 4 river-cut places each got one crossing, which reaches 168 doors a walk had missed.
+    - Jukithorch now reaches all 385 of its homes, and Tucarvi all 426.
+  - **Runs:** `MAX_RUNS` is 32 and `RUN_BYTES` 64. Of the 228,692 ways in the first 2 worlds' capitals, cities and towns, 2,534 need more than 16 runs, 1 needs more than 32, and none is cut off. Highcourt's longest needs 24.
+  - **Finding 2:** a trip starts on the tick after it is planned at the earliest, so no blob gets home at 22:01.
+  - **Pins:** Highcourt's are `051f68bc` and `bcced27a`, and the `streets` golden is `2ac77dfd`. `42/phone` and the economy held.
+  - **Arena:** desktop is 33.9% full and phone 8.6%. The street `move` row on desktop rose 2.5%, to 0.748 of 0.88 ms.
+  - **Then** the place goldens were regenerated once, for 1,040 places (b457088).
 - 12 Oct, 03:20: **M3.1 Part 4, Task 27: the bell-curve town** (436c2d3, cded844, 92a3edd).
   - **Built:**
     - zones, bell targets and forms by zone;
@@ -174,7 +183,7 @@ Beyond the checkpoint's Open list:
       - The allocation gate gained a street world.
     - **Finding 3 was real:** a street day allocated 134–137 KB before the fix and 4–9 KB after, against the 16 KiB limit (measured here, Node 24.18 on Windows).
     - **Finding 4:** `attachTown` now requires the shops on a restore.
-  - **Waiting:** finding 2, a trip that can end at 22:01, moves Highcourt's pins. It waits for the re-pin round before the push after Task 27.
+  - **Finding 2,** a trip that could end at 22:01, was fixed with M3.1's Task 23 (2ff6ad2), so M2.7 Part 1 is done.
   - **Backlog:** finding 5. Keeper election reads another blob's same-tick state, which races once the step is chunked across workers.
 - 12 Oct, 01:10: **building starts** on the owner's go: M3.1 Part 4's Task 22, with Task 24's preview, M3.2's Task 1 mockups and M2.7 Part 1's Opus review beside it.
 - 12 Oct: **M3.2 briefed** (8aafff7): blobs with lives of their own, in 11 tasks, at 15–23.5 full-time days (unsourced estimate). Its first visible slice, Tasks 1–6, shows blobs on the plaza and greens, on doorsteps, and chatting under speech bubbles. The mockups come first, and the build waits for the owner's go.
