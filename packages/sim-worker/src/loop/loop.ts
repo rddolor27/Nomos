@@ -36,6 +36,7 @@ import {
   writeSnapshot,
   type AppMessage,
   type EconomyMessage,
+  type Purchase,
   type SnapshotPool,
   type Speed,
   type WorkerMessage,
@@ -357,6 +358,7 @@ function noBlobReply(tick: number): InspectedMessage {
     action: ACTION_IDLE,
     home: NO_HOME,
     members: [],
+    bought: [],
   };
 }
 
@@ -379,7 +381,22 @@ function blobReply(world: World, tick: number, agent: number): InspectedMessage 
     action: blob.action,
     home: household === NO_HOUSEHOLD ? NO_HOME : households.home[household],
     members: housemateKeys(world, household, agent),
+    bought: purchasesOf(world, agent),
   };
+}
+
+// What the economy day sold the blob today: the first food firm and the first goods firm it bought from, which the errand store
+// holds as the firm row + 1, or 0 for none.
+function purchasesOf(world: World, agent: number): Purchase[] {
+  const { dayFood, dayGoods } = world.errands;
+  const bought: Purchase[] = [];
+  if (dayFood[agent] > 0) bought.push(purchaseFrom(world, dayFood[agent] - 1));
+  if (dayGoods[agent] > 0) bought.push(purchaseFrom(world, dayGoods[agent] - 1));
+  return bought;
+}
+
+function purchaseFrom(world: World, firm: number): Purchase {
+  return { good: world.goods.good[firm], firm };
 }
 
 // The name keys of the others in agent's household, in household order: none for someone who lives alone, or in no household.

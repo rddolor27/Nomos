@@ -125,6 +125,8 @@ function cardOf(agent: number): Card {
       ['Home', `House ${households.home[householdOf(households, agent)] + 1}`],
       ['Lives with', others.length === 0 ? 'No one' : others.join(', ')],
       ['Doing', agents.action[agent] === ACTION_WALK ? 'Walking' : 'Idle'],
+      // The page is held at tick 0, before the first economy day has sold anything.
+      ['Bought today', 'Nothing yet'],
       ['Look', lookText(agents.look[agent])],
     ],
   };
@@ -513,7 +515,7 @@ test('keeps the card on a refresh answered for another blob, and closes it on on
         const agent = rows[Math.min(answered++, rows.length - 1)];
         const data = {
           type: 'inspected', tick: 0, agent, nameKey: 1, cents: 0, employer: -1, employerGood: 0, wage: 0, look: 0, action: 0,
-          home: -1, members: [],
+          home: -1, members: [], bought: [],
         };
         setTimeout(() => worker.dispatchEvent(new MessageEvent('message', { data })));
         Object.assign(window, { answered });

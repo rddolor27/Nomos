@@ -10,7 +10,8 @@ const NAME_KEY = 7;
 const NAME = personName(NAME_KEY);
 const HOUSEMATES = [21, 22];
 // Firm row 11, a bakery, pays 1,428.00 a month and the blob holds 3,100.00. It walks, lives in home row 6 with two
-// others, and wears look 77: hue 77 % 6 = 5, eyes floor(77 / 6) % 4 = 0 and pattern floor(77 / 24) = 3.
+// others, and wears look 77: hue 77 % 6 = 5, eyes floor(77 / 6) % 4 = 0 and pattern floor(77 / 24) = 3. Today it bought
+// bread (good 1) from firm row 3 and cloth (good 5) from firm row 40.
 const IN_WORK: Inspected = {
   type: 'inspected',
   tick: 0,
@@ -24,6 +25,10 @@ const IN_WORK: Inspected = {
   action: ACTION_WALK,
   home: 6,
   members: HOUSEMATES,
+  bought: [
+    { good: 1, firm: 3 },
+    { good: 5, firm: 40 },
+  ],
 };
 
 function rowsOf(reply: Inspected): Record<string, string> {
@@ -31,7 +36,7 @@ function rowsOf(reply: Inspected): Record<string, string> {
 }
 
 describe('the blob card', () => {
-  it('words a blob in work: its shop, pay, wallet, home, housemates, doing and look', () => {
+  it('words a blob in work: its shop, pay, wallet, home, housemates, doing, purchases and look', () => {
     expect(blobCard(IN_WORK)).toEqual({
       name: NAME,
       look: 77,
@@ -42,10 +47,16 @@ describe('the blob card', () => {
         ['Home', 'House 7'],
         ['Lives with', `${personName(21)}, ${personName(22)}`],
         ['Doing', 'Walking'],
+        ['Bought today', 'Bread at Bakery 4, cloth at Draper 41'],
         ['Look', 'Silver body, round eyes, patch pattern'],
       ],
     });
     expect(rowsOf({ ...IN_WORK, employer: 0, employerGood: 3 }).Job).toBe('Works at Fishmonger 1');
+  });
+
+  it('words one purchase by its good and shop, and says so when nothing is bought yet today', () => {
+    expect(rowsOf({ ...IN_WORK, bought: [{ good: 3, firm: 0 }] })['Bought today']).toBe('Fish at Fishmonger 1');
+    expect(rowsOf({ ...IN_WORK, bought: [] })['Bought today']).toBe('Nothing yet');
   });
 
   it('says a blob with no employer is out of work, with no pay', () => {

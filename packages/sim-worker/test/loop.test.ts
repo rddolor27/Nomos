@@ -626,6 +626,7 @@ describe('the sim loop', () => {
         action: ACTION_WALK,
         home: -1,
         members: [],
+        bought: [],
       },
     ]);
   });
@@ -694,6 +695,30 @@ describe('the sim loop', () => {
     ]);
   });
 
+  it("answers the good and firm row of a blob's food and goods bought today, food first, and none for a blob that bought nothing", () => {
+    const page = fakePage();
+    const { errands, goods } = page.world();
+    // Bread from firm row 4 and cloth from firm row 9, which the columns hold as the row + 1. The rows either side sell other
+    // goods, so an answer from the wrong row shows.
+    goods.good.set([2, 3, 4, 6, 1, 6, 6, 7, 3, 5]);
+    const buyer = 7;
+    errands.dayFood[buyer] = 4 + 1;
+    errands.dayGoods[buyer] = 9 + 1;
+    const boughtBy = (agent: number) => {
+      page.handle({ type: 'inspectAgent', agent });
+      const replies = page.ofType('inspected');
+      return replies[replies.length - 1].bought;
+    };
+
+    expect(boughtBy(buyer)).toEqual([
+      { good: 1, firm: 4 },
+      { good: 5, firm: 9 },
+    ]);
+    errands.dayGoods[buyer] = 0;
+    expect(boughtBy(buyer)).toEqual([{ good: 1, firm: 4 }]);
+    expect(boughtBy(buyer + 1)).toEqual([]);
+  });
+
   it('answers -1 off the map, with every other field empty', () => {
     const page = fakePage();
     page.handle({ type: 'inspect', x: -1_000, y: -1_000 });
@@ -711,6 +736,7 @@ describe('the sim loop', () => {
         action: 0,
         home: -1,
         members: [],
+        bought: [],
       },
     ]);
   });
@@ -779,6 +805,7 @@ describe('the sim loop', () => {
       action: 0,
       home: -1,
       members: [],
+      bought: [],
     };
     expect([pastCount, atCount]).toEqual([nobody, nobody]);
     expect(lastRow.agent).toBe(OPENED_PEOPLE - 1);

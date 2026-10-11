@@ -53,6 +53,12 @@ export interface EconomyMessage {
   tradeCents: Float64Array;
 }
 
+// One purchase of the day: the good (an index into GOOD_NAMES) and the firm row it was bought from.
+export interface Purchase {
+  good: number;
+  firm: number;
+}
+
 export type WorkerMessage =
   | { type: 'ready'; agents: number }
   | { type: 'snapshot'; tick: number; count: number; buffer: ArrayBuffer }
@@ -67,7 +73,9 @@ export type WorkerMessage =
   // its good (0 for none) and wage its pay in cents a month, or -1, 0 and 0 for someone out of work. look is one of the 96
   // (hue look % 6, eyes floor(look / 6) % 4, pattern floor(look / 24)) and action an ACTION_* code, both as the snapshot's
   // visual word holds them. home is the row of the household's home, or -1, and members the name keys of the other people
-  // in its household, in household order: none for someone who lives alone, and at most five.
+  // in its household, in household order: none for someone who lives alone, and at most five. bought is what the economy day
+  // sold the blob today, from the errand store: the first food it bought and the first other good, in that order, and none
+  // before it has bought any.
   | {
       type: 'inspected';
       tick: number;
@@ -81,5 +89,6 @@ export type WorkerMessage =
       action: number;
       home: number;
       members: number[];
+      bought: Purchase[];
     }
   | EconomyMessage;

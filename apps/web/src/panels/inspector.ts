@@ -1,5 +1,13 @@
 import { personName } from '@nomos/sim-culture';
-import { ACTION_IDLE, ACTION_NAMES, ACTION_WALK, type AppMessage, type WorkerMessage } from '@nomos/sim-protocol';
+import {
+  ACTION_IDLE,
+  ACTION_NAMES,
+  ACTION_WALK,
+  GOOD_NAMES,
+  type AppMessage,
+  type Purchase,
+  type WorkerMessage,
+} from '@nomos/sim-protocol';
 import { LOOK_EYES, LOOK_HUES, LOOK_PATTERNS } from '@nomos/sim-protocol/place';
 import type { App } from '../app/app.ts';
 import { BlobModal, type BlobCard } from './blob-modal.ts';
@@ -49,6 +57,13 @@ function livesWith(members: readonly number[]): string {
   return members.length === 0 ? 'No one' : members.map((nameKey) => personName(nameKey)).join(', ');
 }
 
+// What the economy day sold the blob today, food first, each as the good and the shop it came from. The day sells in its first
+// 20 ticks, so a card opened in them may hold only some of it.
+function boughtToday(bought: readonly Purchase[]): string {
+  if (bought.length === 0) return 'Nothing yet';
+  return sentence(bought.map(({ good, firm }) => `${GOOD_NAMES[good].toLowerCase()} at ${shopName(good, firm)}`).join(', '));
+}
+
 export function blobCard(reply: Inspected): BlobCard {
   const { employer } = reply;
   return {
@@ -61,6 +76,7 @@ export function blobCard(reply: Inspected): BlobCard {
       ['Home', reply.home < 0 ? 'No home' : `House ${reply.home + 1}`],
       ['Lives with', livesWith(reply.members)],
       ['Doing', DOING.get(reply.action) ?? sentence(ACTION_NAMES[reply.action])],
+      ['Bought today', boughtToday(reply.bought)],
       ['Look', lookName(reply.look)],
     ],
   };
