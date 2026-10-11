@@ -213,7 +213,7 @@ describe('stepAwayTown', () => {
 
   it('replays: Highcourt after 12 months on seed 42 is these 14 fields', () => {
     expect(rowAt(stepped(highcourt(), 12), 0)).toEqual([
-      229, 272, 194, 165, 77, 48, 2_462, 226, 268, 798_803_642, 34_476_357, 3_375, 142_508, 117_290,
+      229, 272, 194, 165, 77, 48, 2_472, 216, 268, 798_803_642, 34_476_357, 3_360, 142_931, 117_290,
     ]);
   });
 
