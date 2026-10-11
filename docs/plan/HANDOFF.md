@@ -84,6 +84,13 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 11 Oct: **M2.4 Part 1, Tasks 3–4** (603c1a0..63027e9).
+  - **Built:** blobs buy food before goods, in a 20-system economy day, and `CITY` runs the seven goods and food.
+  - **Hashes:** `746a06a3`, `6a652730` and the spawn hashes held. `town` is now `1621b72b`, and Highcourt's pins are `4b1a37d3` and `49f7323c`.
+  - **The burn-in:** 29,865 days, from MSER-5 on seeds 1–5.
+  - **A 10-seed probe** (2001–2010, not the confirmation): all six tier-1 medians are in band. Food is 17.4% of spending against ICP's 18.6%, 2.3% of food spoils (inside R6's 0.5–3%), and 2.8% of meals go unmet. Okun (−0.61) and size skew (0.97) miss their bands.
+  - **Cost at 10k** (desktop, measured): `buyFood` takes 1.04 ms, and the worst tick is `searchShops` at 2.43 ms. At 100k, `buyFood` takes 11.3 ms, so perf.yml decides.
+  - **Left:** the 50-seed confirmation (`ECONOMY_LONG=1`, about 4 min), and `design.json`'s stale warm-up.
 - 11 Oct: **M2.2c briefed** (1f9c645): every town runs the sim. It waits for the owner's go.
   - **One kind of town:** a place's layout plus a TypeScript port of its ground, with Highcourt as place 0, each world's capital.
   - **Switching:** entering a town logs `INPUT_FOCUS`. The worker runs out the day, then folds the old town and spawns the new at the boundary. Away towns stay frozen, as the owner's fold-and-spawn ruling means ("consequential focus" in R4's terms).
