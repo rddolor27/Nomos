@@ -79,18 +79,23 @@ export function sitOnDoorstep(world: World, blob: number, tick: number, left: nu
 }
 
 // A keyed tile of the site's covered ground that its field reaches, the first from a keyed start that does, else its door: the
-// plaza has a fountain in it and the greens may have trees, so not every tile is ground to stand on.
+// plaza has a fountain in it and the greens may have trees, so not every tile is ground to stand on. The walk over the tiles
+// steps a column and a row and divides once, exactly, since a division that leaves a remainder is a heap number in cold code.
 function spotCell(world: World, site: number, blob: number, tick: number): number {
   const { fields, ground, life, errands } = world;
   const { width, height } = ground;
-  const tiles = life.areaW[site] * life.areaH[site];
+  const across = life.areaW[site];
+  const rows = life.areaH[site];
+  const tiles = across * rows;
   const first = drawBelow3(world.seed, LIFE_DRAW, blob, tick, DRAW_SPOT, tiles);
   const field = site * width * height;
+  let column = first % across;
+  let row = (first - column) / across;
   for (let n = 0; n < tiles; n++) {
-    const tile = (first + n) % tiles;
-    const x = life.areaX[site] + (tile % life.areaW[site]);
-    const y = life.areaY[site] + Math.floor(tile / life.areaW[site]);
-    if (fields[field + y * width + x] !== UNREACHED) return y * width + x;
+    const cell = (life.areaY[site] + row) * width + life.areaX[site] + column;
+    if (fields[field + cell] !== UNREACHED) return cell;
+    column = (column + 1) % across;
+    if (column === 0) row = (row + 1) % rows;
   }
   return errands.siteY[site] * width + errands.siteX[site];
 }

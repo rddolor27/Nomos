@@ -92,11 +92,12 @@ function driveOf(option: number, row: number): number {
   return Math.min(MAX_Q16, OPTION_WEIGHTS[row + COL_FLOOR] + (relief >> DRIVE_SHIFT));
 }
 
+// imul, since 0 × a trait below the mean is -0 for *, which is not an int32 and costs a heap number in code not yet optimized.
 function attitudeOf(life: Life, blob: number, row: number): number {
   const lean =
-    OPTION_WEIGHTS[row + COL_SOCIABLE] * (life.sociable[blob] - TRAIT_MEAN) +
-    OPTION_WEIGHTS[row + COL_HOMEBODY] * (life.homebody[blob] - TRAIT_MEAN) +
-    OPTION_WEIGHTS[row + COL_RESTLESS] * (life.restless[blob] - TRAIT_MEAN);
+    Math.imul(OPTION_WEIGHTS[row + COL_SOCIABLE], life.sociable[blob] - TRAIT_MEAN) +
+    Math.imul(OPTION_WEIGHTS[row + COL_HOMEBODY], life.homebody[blob] - TRAIT_MEAN) +
+    Math.imul(OPTION_WEIGHTS[row + COL_RESTLESS], life.restless[blob] - TRAIT_MEAN);
   return Math.min(MAX_Q16, Math.max(MIN_ATTITUDE, OPTION_WEIGHTS[row + COL_BASE] + (lean >> 7)));
 }
 
