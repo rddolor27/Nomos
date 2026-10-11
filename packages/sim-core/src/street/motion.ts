@@ -45,16 +45,29 @@ export function clearRuns(runs: Uint8Array, i: number): void {
   runs.fill(0, i * RUN_BYTES, (i + 1) * RUN_BYTES);
 }
 
-// Sets the blob off on run `index` of its row, from the tick `tick`, forward or backward. Walked backward a run turns half a
-// turn, and the caller counts the index down.
-export function startRun(world: World, i: number, tick: number, index: number, backward: boolean): void {
+// Points the blob along run `index` of its row and sets it walking, and returns the heading. Walked backward a run turns half a turn.
+function aim(world: World, i: number, index: number, backward: boolean): number {
   const { agents, errands } = world;
-  const at = i * RUN_BYTES + 2 * index;
-  const heading = backward ? (errands.runs[at] + HALF_TURN) & HEADING_MASK : errands.runs[at];
+  const forward = errands.runs[i * RUN_BYTES + 2 * index];
+  const heading = backward ? (forward + HALF_TURN) & HEADING_MASK : forward;
   setHeading(agents, i, heading);
   agents.action[i] = ACTION_WALK;
+  return heading;
+}
+
+// Sets the blob off on run `index` of its row, from the tick `tick`, forward or backward. The caller counts the index down when
+// it walks backward.
+export function startRun(world: World, i: number, tick: number, index: number, backward: boolean): void {
+  const errands = world.errands;
+  const heading = aim(world, i, index, backward);
   errands.run[i] = index;
-  errands.endTick[i] = tick + runTicks(heading >> HEADING_SHIFT, errands.runs[at + 1]);
+  errands.endTick[i] = tick + runTicks(heading >> HEADING_SHIFT, errands.runs[i * RUN_BYTES + 2 * index + 1]);
+}
+
+// Sets a blob that stopped part way along its run walking on again, as it was: a chat paused it (street/chat.ts) and moved the run's
+// end tick on by the pause, so the end tick stays.
+export function resumeRun(world: World, i: number, backward: boolean): void {
+  aim(world, i, world.errands.run[i], backward);
 }
 
 // Stands the blob where it is, facing `facing`.

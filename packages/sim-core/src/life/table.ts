@@ -57,3 +57,11 @@ export const OPTION_WEIGHTS = Int32Array.of(
 export const DRIVE_SHIFT = 9;
 export const MIN_ATTITUDE = 4_096;
 export const CROWD_CAP = 40;
+
+// Chats (street/chat.ts, M3.2 Ruling 3). A free blob out of doors looks for company when its company need is over LOOK_BASE less
+// LOOK_STEP for each point of its sociable trait, so a blob of 255 looks from 12,030 and one of 0 only from 36,000. The mean free blob
+// is lonelier than that from midday on (measured on Highcourt, day 0). A chat eases both blobs' company in one lump, so many
+// chats in a row end when the need falls under the threshold.
+export const LOOK_BASE = 36_000;
+export const LOOK_STEP = 94;
+export const CHAT_RELIEF_PER_TICK = 250;

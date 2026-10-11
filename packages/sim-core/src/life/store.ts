@@ -1,7 +1,7 @@
 import { take, type Arena } from '../memory/arena.ts';
 import { drawBelow3 } from '../random/draw.ts';
 import { LIFE_DRAW } from '../random/streams.ts';
-import { MAX_SITES } from '../street/fields.ts';
+import { MAX_FIELD_CELLS, MAX_SITES } from '../street/fields.ts';
 import type { Shops } from '../street/shops.ts';
 
 // What a blob wants (M3.2 Ruling 1), each a level from 0, met, to 65,535, laid out a blob at a time in `Life.needs`.
@@ -13,6 +13,17 @@ export const NEED_COMPANY = 3;
 
 // The reason a blob does what its life system chose: the need that most drove it, plus one, or 0 when none did.
 export const REASON_NONE = 0;
+
+// A cell of the chat mailbox is 2 x 2 tiles. buildFields refuses a ground of over 256 tiles a side or MAX_FIELD_CELLS, so no town
+// with streets has more cells than this: the most is 5,002, on 81 x 243 tiles (computed over every allowed size).
+export const MAIL_CELLS = (MAX_FIELD_CELLS >> 2) + 129;
+
+// What the chat system did in the last tick it ran, for the card and the tests: the blobs that looked, the most candidates any one
+// look checked, and the pairs made.
+export const TALLY_LOOKED = 0;
+export const TALLY_CHECKED = 1;
+export const TALLY_PAIRED = 2;
+const TALLIES = 3;
 
 // One row a blob of what the life system keeps (M3.2 Ruling 5), in columns at the arena's end, so no offset moved. The hash
 // mixes the first group in beside the errand store, only while a town has streets. Personality is drawn once at birth from the
@@ -30,7 +41,15 @@ export interface Life {
   readonly reason: Uint8Array;
   // The blobs standing at each site now, plaza and greens only.
   readonly crowd: Int32Array;
-  // The hash's region, needs to crowd.
+  // The chat a blob is in or was last in (M3.2 Ruling 3): the absolute tick it ends, and its partner + 1. A blob is in a chat while the
+  // tick is under chatUntil; both keep the last chat after it ends, so nothing has to clear them.
+  readonly chatUntil: Int32Array;
+  readonly chatWith: Int32Array;
+  // The chat mailbox (street/chat.ts): for each 2 x 2 tile cell of the ground the blob + 1 that last looked there and found no one,
+  // or 0, and the tick it looked.
+  readonly mailBlob: Int32Array;
+  readonly mailTick: Int32Array;
+  // The hash's region, needs to the mailbox.
   readonly byteOffset: number;
   readonly byteLength: number;
   // The ground each site covers in tiles, written when the streets open and outside the hash: the spots blobs stand on.
@@ -42,6 +61,8 @@ export interface Life {
   // hash: a blob's own row says it is due, so a checkpoint needs no list.
   readonly due: Int32Array;
   readonly dueCount: Int32Array;
+  // TALLY_*, rewritten by every pass of the chat system and outside the hash.
+  readonly tally: Int32Array;
   // Every byte of the store, to empty at a switch in one fill.
   readonly bytes: Uint8Array;
 }
@@ -54,6 +75,10 @@ export function createLife(arena: Arena, agents: number): Life {
   const restless = take(arena, Uint8Array, agents, false);
   const reason = take(arena, Uint8Array, agents, false);
   const crowd = take(arena, Int32Array, MAX_SITES, false);
+  const chatUntil = take(arena, Int32Array, agents, false);
+  const chatWith = take(arena, Int32Array, agents, false);
+  const mailBlob = take(arena, Int32Array, MAIL_CELLS, false);
+  const mailTick = take(arena, Int32Array, MAIL_CELLS, false);
   const hashed = arena.top - needs.byteOffset;
   const areaX = take(arena, Int32Array, MAX_SITES, false);
   const areaY = take(arena, Int32Array, MAX_SITES, false);
@@ -61,6 +86,7 @@ export function createLife(arena: Arena, agents: number): Life {
   const areaH = take(arena, Int32Array, MAX_SITES, false);
   const due = take(arena, Int32Array, agents, false);
   const dueCount = take(arena, Int32Array, 1, false);
+  const tally = take(arena, Int32Array, TALLIES, false);
   return {
     capacity: agents,
     needs,
@@ -70,6 +96,10 @@ export function createLife(arena: Arena, agents: number): Life {
     restless,
     reason,
     crowd,
+    chatUntil,
+    chatWith,
+    mailBlob,
+    mailTick,
     byteOffset: needs.byteOffset,
     byteLength: hashed,
     areaX,
@@ -78,6 +108,7 @@ export function createLife(arena: Arena, agents: number): Life {
     areaH,
     due,
     dueCount,
+    tally,
     bytes: new Uint8Array(arena.memory.buffer, needs.byteOffset, arena.top - needs.byteOffset),
   };
 }

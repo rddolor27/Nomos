@@ -6,6 +6,7 @@ import { decideLives } from '../life/choose.ts';
 import { OK, checkInvariants, failInvariant } from '../money/invariants.ts';
 import { SPOILAGE_RULE, daySliceCount, runDaySlice } from '../day/slices.ts';
 import { move } from '../movement/wander.ts';
+import { pairChats } from '../street/chat.ts';
 import { walkStreets } from '../street/walk.ts';
 import { DAY_AGENTS, DAY_HOUSEHOLDS, DAY_LAYOFFS, STREETS, TICK, TOWN, type World } from '../world/world.ts';
 
@@ -14,12 +15,14 @@ export interface SystemTimer {
 }
 
 // A system's index here is the number step passes to SystemTimer.lap. `life` chooses for the blobs `move` found free (M3.2), so
-// it runs after the economy, and a world without streets laps it too, having nobody to choose for.
-export const SYSTEM_NAMES: readonly string[] = ['day', 'move', 'economy', 'life'];
+// it runs after the economy, and `chat` pairs the blobs who are out after that. A world without streets laps both too, having
+// nobody for them.
+export const SYSTEM_NAMES: readonly string[] = ['day', 'move', 'economy', 'life', 'chat'];
 const DAY_SYSTEM = 0;
 const MOVE_SYSTEM = 1;
 const ECONOMY_SYSTEM = 2;
 const LIFE_SYSTEM = 3;
+const CHAT_SYSTEM = 4;
 
 export function step(world: World, timer?: SystemTimer): void {
   runDayWork(world);
@@ -29,12 +32,20 @@ export function step(world: World, timer?: SystemTimer): void {
   timer?.lap(MOVE_SYSTEM);
   runEconomyTick(world);
   timer?.lap(ECONOMY_SYSTEM);
-  if (world.globals[STREETS] === 1) decideLives(world);
-  timer?.lap(LIFE_SYSTEM);
+  runLifeSystems(world, timer);
   world.globals[TICK] += 1;
   if (!world.checks) return;
   const code = checkInvariants(world.cash, world.claims);
   if (code !== OK) failInvariant(code);
+}
+
+// The blobs that came free choose, then the blobs out of doors pair up for chats. Only a town with streets has either.
+function runLifeSystems(world: World, timer?: SystemTimer): void {
+  const streets = world.globals[STREETS] === 1;
+  if (streets) decideLives(world);
+  timer?.lap(LIFE_SYSTEM);
+  if (streets) pairChats(world);
+  timer?.lap(CHAT_SYSTEM);
 }
 
 // The boundary when a day starts, then slice k on the day's tick k while the window is open.

@@ -60,6 +60,7 @@ export * from './street/legs.ts';
 export * from './street/shops.ts';
 export * from './street/errands.ts';
 export * from './street/walk.ts';
+export * from './street/chat.ts';
 export * from './life/store.ts';
 export * from './life/traits.ts';
 export * from './life/table.ts';

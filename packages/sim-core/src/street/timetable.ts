@@ -42,7 +42,7 @@ import { pathRuns, RUN_BYTES } from './runs.ts';
 // free, and the life system chooses how it spends the time until half past nine (life/choose.ts). A blob with no time left goes to
 // bed, as before.
 export const OPENING_MINUTE = 360;
-const NIGHT_MINUTE = 1_320;
+export const NIGHT_MINUTE = 1_320;
 const WAKE_MINUTE = 240;
 const WAKE_SPREAD = 120;
 const WORK_OUT_SPREAD = 60;
