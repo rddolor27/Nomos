@@ -158,7 +158,7 @@ const CULTURE_NAMES = [
   'culture', 'birthCulture', 'customs', 'homeRegion', 'culture2', 'cultureMix', 'festivalToday', 'nameKey', 'cultureUid',
 ];
 const CULTURE_NAME = `/^(${CULTURE_NAMES.join('|')})$/`;
-const GUARDED = 'packages/sim-*/src/{crime,police,labour,wages,wealth,money,ability,housing,migration,spawn}/**/*.ts';
+const GUARDED = 'packages/sim-*/src/{crime,police,labour,wages,wealth,money,ability,housing,migration,spawn,street}/**/*.ts';
 // Property reads, including destructuring, are the no-restricted-properties copy's; these are the spellings it cannot see.
 const CULTURE_SYNTAX = [
   { selector: `Literal[value=${CULTURE_NAME}]`, message: NO_CULTURE_READ },
