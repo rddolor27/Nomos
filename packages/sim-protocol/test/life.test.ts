@@ -5,6 +5,8 @@ import {
   ACTIVITY_PLAZA,
   ACTIVITY_SLEEP,
   ACTIVITY_STAY,
+  CLUSTER_X,
+  CLUSTER_Y,
   LIFE_END_MINUTE,
   NEEDS,
   NEED_COMPANY,
@@ -113,16 +115,22 @@ describe("Highcourt's free time", { timeout: 60_000 }, () => {
     console.info(`Highcourt by 14:00 on day 0: ${atPlaza.size} blobs stood at the plaza on ${plazaTiles.size} tiles, ${atGreen.size} at a green`);
     expect(atPlaza.size).toBeGreaterThanOrEqual(5);
     expect(Array.from(plazaTiles).every((cell) => covers(plaza, cell))).toBe(true);
-    // Keyed spots all over the plaza's ground, not its door tile alone.
+    // Keyed spots on the plaza's ground near its door, in front of the fountain, and not its door tile alone.
+    const nearDoor = (cell: number): boolean =>
+      Math.abs((cell % town.width) - plaza.doorX) <= CLUSTER_X && Math.abs(Math.floor(cell / town.width) - plaza.doorY) <= CLUSTER_Y;
+    expect(Array.from(plazaTiles).every(nearDoor)).toBe(true);
     expect(plazaTiles.size).toBeGreaterThanOrEqual(4);
     expect(atGreen.size).toBeGreaterThanOrEqual(1);
     expect(Array.from(atGreen.values()).every((cell) => greens.some((green) => covers(green, cell)))).toBe(true);
   });
 
-  it('has no free-time choice running past half past nine, and everyone home in bed by 22:00', () => {
+  it('has no free-time choice running past half past nine but for a chat, and everyone home in bed by 22:00', () => {
     const world = highcourt();
     runTo(world, LIFE_END_MINUTE + 1);
-    expect(blobsOf(world).filter((blob) => FREE_TIME.includes(world.errands.activity[blob]))).toEqual([]);
+    // A choice ends by 21:30, and a chat that moves its end on takes up the half hour to 22:00, no more.
+    const late = blobsOf(world).filter((blob) => FREE_TIME.includes(world.errands.activity[blob]));
+    expect(late.length).toBeGreaterThan(0);
+    expect(late.filter((blob) => world.life.chatWith[blob] === 0 || world.life.chatUntil[blob] > TEN_PM)).toEqual([]);
 
     runTo(world, TEN_PM);
     expect(blobsOf(world).filter((blob) => cellOf(world, blob) !== world.errands.homeCell[blob])).toEqual([]);
