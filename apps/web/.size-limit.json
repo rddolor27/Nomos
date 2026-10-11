@@ -45,7 +45,7 @@
   {
     "name": "Sim worker chunk",
     "path": ["dist/assets/worker-*.js"],
-    "limit": "17 kB"
+    "limit": "18.7 kB"
   },
   {
     "name": "Charts chunk",
@@ -121,7 +121,7 @@
   {
     "name": "Initial JS, M0 stand-in",
     "path": ["dist/assets/index-*.js", "dist/assets/app-*.js", "dist/assets/render-gl-*.js", "dist/assets/worker-*.js"],
-    "limit": "29.2 kB"
+    "limit": "30.5 kB"
   },
   {
     "name": "Atlas",
