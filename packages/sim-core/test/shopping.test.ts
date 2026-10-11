@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { SUPPLIERS } from '../src/agents/store.ts';
+import { FOOD_ORDER, FOOD_VISIT } from '../src/consumption/food.ts';
 import { planConsumption } from '../src/consumption/plan.ts';
 import {
   PRICE_CHANCE,
@@ -111,6 +112,8 @@ describe('the draw purposes on the shop stream', () => {
       STOCKOUT_FIRM,
       SHOP_ORDER,
       SHOP_VISIT,
+      FOOD_ORDER,
+      FOOD_VISIT,
     ];
     expect(new Set(purposes).size).toBe(purposes.length);
   });

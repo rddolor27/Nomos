@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
+import { SUPPLIERS } from '../src/agents/store.ts';
 import { buyFood } from '../src/consumption/food.ts';
+import { planConsumption } from '../src/consumption/plan.ts';
+import { searchShops } from '../src/consumption/search.ts';
 import { CITY } from '../src/economy/city.ts';
 import { economyDay } from '../src/economy/economy.ts';
 import type { EconomyParams } from '../src/economy/params.ts';
@@ -15,7 +18,7 @@ import {
 } from '../src/economy/stats.ts';
 import { BREAD, MILK, PORTIONS_PER_DAY } from '../src/goods/goods.ts';
 import { OK, checkCash } from '../src/money/invariants.ts';
-import { retire, walletAccount } from '../src/money/ledger.ts';
+import { issue, retire, walletAccount } from '../src/money/ledger.ts';
 import { DAYS_PER_MONTH } from '../src/time/calendar.ts';
 import { stateHash } from '../src/world/checkpoint.ts';
 import { createWorld, type World } from '../src/world/world.ts';
@@ -46,7 +49,9 @@ function foodStock(world: World): number[] {
 
 function setWallet(world: World, household: number, cents: number): void {
   const wallet = walletAccount(world.cash, household);
-  retire(world.cash, wallet, world.cash.balance[wallet] - cents);
+  const change = cents - world.cash.balance[wallet];
+  if (change > 0) issue(world.cash, wallet, change);
+  else retire(world.cash, wallet, -change);
 }
 
 describe('eating', () => {
@@ -104,5 +109,45 @@ describe('eating', () => {
     const off = started(7, { ...CITY, goods: 0 });
     buyFood(off, 0);
     expect([off.economyScratch.stats[STAT_EATEN], off.economyScratch.stats[STAT_UNMET]]).toEqual([0, 0]);
+  });
+});
+
+describe('planning and searching with goods', () => {
+  const SET_ASIDE_CENTS = PORTIONS_PER_DAY * DAYS_PER_MONTH * OPENING_PORTION_CENTS;
+  const GOODS_PRICE_CENTS = 3_200;
+
+  it('sets aside a month of food at the food links before it plans a unit, to the cent', () => {
+    const world = started(42, SEVEN);
+    function planned(cents: number): number {
+      setWallet(world, 0, cents);
+      planConsumption(world, SEVEN);
+      return world.agents.plannedUnits[0];
+    }
+    expect(SET_ASIDE_CENTS).toBe(33_579);
+    expect([planned(SET_ASIDE_CENTS), planned(SET_ASIDE_CENTS + GOODS_PRICE_CENTS - 1)]).toEqual([0, 0]);
+    expect(planned(SET_ASIDE_CENTS + GOODS_PRICE_CENTS)).toBe(1);
+    // 310,000 cents leave 276,421 for goods at 3,200: (86.4)^0.9 is 55.3.
+    expect(planned(SEVEN.openingCash)).toBe(55);
+    expect(planned(0)).toBe(0);
+  });
+
+  it('replaces a link only with a firm of its own good, and moves links all the same', () => {
+    const world = started(42, GOODS_CITY);
+    const { agents, goods } = world;
+    const links = GOODS_CITY.households * SUPPLIERS;
+    const before = agents.suppliers.slice(0, links);
+    const params = { ...GOODS_CITY, priceSearchPpm: 1_000_000, stockoutSearchPpm: 1_000_000 };
+    for (let month = 0; month < 3; month++) {
+      agents.stockedOut.fill((1 << SUPPLIERS) - 1, 0, GOODS_CITY.households);
+      searchShops(world, params, month);
+    }
+    let moved = 0;
+    let wrongGood = 0;
+    for (let link = 0; link < links; link++) {
+      if (goods.good[agents.suppliers[link]] !== (link % SUPPLIERS) + BREAD) wrongGood++;
+      if (agents.suppliers[link] !== before[link]) moved++;
+    }
+    expect(wrongGood).toBe(0);
+    expect(moved).toBeGreaterThan(links / 20);
   });
 });
