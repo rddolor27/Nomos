@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { WALK_X_Q8, WALK_Y_Q8 } from '../src/movement/walk.ts';
-import { CELL_DX, CELL_DY, DIRECTIONS, FIELD_BYTES, buildFields, cellStepOf } from '../src/street/fields.ts';
+import { CELL_DX, CELL_DY, DIRECTIONS, FIELD_BYTES, MAX_SITES, buildFields, cellStepOf } from '../src/street/fields.ts';
 import { MAX_RUNS, NO_PATH, RUN_BYTES, TOO_FAR, pathRuns } from '../src/street/runs.ts';
 import { stateHash } from '../src/world/checkpoint.ts';
 import type { Ground } from '../src/world/ground.ts';
@@ -121,12 +121,14 @@ describe('the fields in a world', () => {
     expect(other.fields.subarray(0, bytes)).toEqual(world.fields.subarray(0, bytes));
   });
 
-  it("are reserved by a tier's layout for a capital's 22 premises, and refuse what they cannot hold", () => {
+  it("are reserved by a tier's layout for a capital's 22 premises and its leisure sites, and refuse what they cannot hold", () => {
     const ground = open(12, 4);
     const world = createWorld(1, 'phone', ground, 10);
 
     expect(world.fields).toHaveLength(FIELD_BYTES);
-    expect(FIELD_BYTES).toBe(22 * 176 * 112);
+    expect(FIELD_BYTES).toBe(32 * 176 * 112);
+    expect(() => buildFields(ground, new Int32Array(MAX_SITES + 1), world.fields)).toThrow(/33 sites are past the 32/);
+    expect(() => buildFields(ground, new Int32Array(MAX_SITES), world.fields)).not.toThrow();
     expect(() => buildFields(ground, Int32Array.of(48), world.fields)).toThrow(/outside 48 cells/);
     expect(() => buildFields(open(257, 1), Int32Array.of(0), world.fields)).toThrow(/past the 256 per side/);
     expect(() => buildFields(ground, new Int32Array(Math.floor(FIELD_BYTES / 48) + 1), world.fields)).toThrow(/need \d+ bytes/);

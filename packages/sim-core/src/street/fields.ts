@@ -12,8 +12,11 @@ const BACK = new Uint8Array([16, 32, 64, 128, 1, 2, 4, 8]);
 // shop trades of 4 shops (worldgen's place/build.ts and trades.ts). A town has 18 on 152 x 96.
 export const MAX_FIELD_CELLS = 176 * 112;
 export const MAX_PREMISES = 22;
-// What a tier's layout reserves: a field takes a byte a cell, so 433,664 bytes.
-export const FIELD_BYTES = MAX_FIELD_CELLS * MAX_PREMISES;
+// Premises and leisure sites share the fields (M3.2 Ruling 5): at most a plaza, 3 greens and 3 water edges beside the 22
+// premises, so 29, with room for waypoints.
+export const MAX_SITES = 32;
+// What a tier's layout reserves: a field takes a byte a cell, so 630,784 bytes.
+export const FIELD_BYTES = MAX_FIELD_CELLS * MAX_SITES;
 // A straight run's length fits the byte runs.ts gives it, so neither side is longer than 256 cells.
 const MAX_SIDE = 256;
 
@@ -36,9 +39,9 @@ export function cellStepOf(k: number, width: number): number {
   return CELL_DY[k] * width + CELL_DX[k];
 }
 
-// One field for each door cell (y * width + x), field p in out from byte p * width * height, built at a spawn or a switch and
-// never in a tick. Blobs move 8 ways over the walk grid, a diagonal only where both cells it passes between are open, so none
-// squeezes through a corner.
+// One field for each site's door cell (y * width + x), field p in out from byte p * width * height, built at a spawn or a
+// switch and never in a tick. Blobs move 8 ways over the walk grid, a diagonal only where both cells it passes between are
+// open, so none squeezes through a corner.
 //
 // A diagonal step costs what the two steps it replaces do, so a way across a street grid ties with every staircase of the same
 // corners, and the runs can take the straight one. Costed as one step, every shortest way cut each corner it could, and 520 of
@@ -59,8 +62,8 @@ export function buildFields(ground: Ground, doors: Int32Array, out: Uint8Array):
 export function requireFields(ground: Ground, doors: Int32Array, room: number): void {
   const { width, height } = ground;
   requireRoom(width, height, doors.length, room);
-  if (doors.length > MAX_PREMISES) {
-    throw new RangeError(`${doors.length} premises are past the ${MAX_PREMISES} a layout reserves`);
+  if (doors.length > MAX_SITES) {
+    throw new RangeError(`${doors.length} sites are past the ${MAX_SITES} a layout reserves`);
   }
   for (let p = 0; p < doors.length; p++) requireDoor(doors[p], width * height, p);
 }

@@ -16,3 +16,5 @@ export {
 export { CULTURE, FESTIVAL } from './random/streams.ts';
 // The seven goods' ids, which sim-protocol's premises table names a trade by (M2.7).
 export { BREAD, CLOTH, FISH, FUEL, MILK, TOOLS, VEGETABLES } from './goods/goods.ts';
+// The kinds of a leisure site, which sim-protocol's leisure table names a site by (M3.2).
+export { SITE_GREEN, SITE_PLAZA, SITE_SHOP, SITE_WATER } from './street/shops.ts';

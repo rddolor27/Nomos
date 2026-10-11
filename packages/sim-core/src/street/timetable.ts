@@ -188,14 +188,14 @@ function startWork(world: World, i: number, tick: number): void {
   if (errands.shopStall[shop] === 0 || !counterFree(errands, shop)) return;
   errands.keeper[shop] = i + 1;
   errands.phase[i] = PHASE_KEEPING;
-  placeAtCentre(world, i, errands.shopDoorX[shop], errands.shopDoorY[shop] - 1);
+  placeAtCentre(world, i, errands.siteX[shop], errands.siteY[shop] - 1);
 }
 
 // Arrived at the shop's door: the blob buys there at a keyed point of the door's tile, for BUY_TICKS.
 function startBuying(world: World, i: number, tick: number, purpose: number): void {
   const errands = world.errands;
   const shop = errands.shop[i];
-  placeAtSpot(world, i, errands.shopDoorX[shop], errands.shopDoorY[shop], spotDrawn(world, i, dayOf(tick), DRAW_SHOP_SPOT + purpose));
+  placeAtSpot(world, i, errands.siteX[shop], errands.siteY[shop], spotDrawn(world, i, dayOf(tick), DRAW_SHOP_SPOT + purpose));
   halt(world, i, FACING_UP);
   errands.phase[i] = PHASE_BUYING;
   errands.endTick[i] = tick + BUY_TICKS;
@@ -205,7 +205,7 @@ function startBuying(world: World, i: number, tick: number, purpose: number): vo
 function startHome(world: World, i: number, tick: number, purpose: number): void {
   const errands = world.errands;
   const shop = errands.shop[i];
-  placeAtCentre(world, i, errands.shopDoorX[shop], errands.shopDoorY[shop]);
+  placeAtCentre(world, i, errands.siteX[shop], errands.siteY[shop]);
   startRun(world, i, tick, runCount(errands.runs, i * RUN_BYTES) - 1, true);
   errands.phase[i] = PHASE_COMING + purpose;
 }

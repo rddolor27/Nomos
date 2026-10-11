@@ -1,22 +1,30 @@
 import { dayOf } from '../time/calendar.ts';
 import type { Ground } from '../world/ground.ts';
 import { STREETS, TICK, type World } from '../world/world.ts';
-import { buildFields, requireFields } from './fields.ts';
+import { MAX_PREMISES, buildFields, requireFields } from './fields.ts';
 import type { Shops } from './shops.ts';
 import { sleepUntil } from './timetable.ts';
 
-// The shops' doors as the cells (y * width + x) that buildFields takes.
+// The sites' doors, premises and leisure sites in turn, as the cells (y * width + x) that buildFields takes.
 export function createDoorCells(shops: Shops, width: number): Int32Array {
   const cells = new Int32Array(shops.count);
   for (let p = 0; p < shops.count; p++) cells[p] = shops.doorY[p] * width + shops.doorX[p];
   return cells;
 }
 
+// Throws what createStreets would for the sites, before it writes anything: the stall counters have room for 22 premises.
+function requireSites(shops: Shops): void {
+  if (shops.premises > MAX_PREMISES) {
+    throw new RangeError(`${shops.premises} premises are past the ${MAX_PREMISES} a layout reserves`);
+  }
+}
+
 // Whether the flow fields of `shops` on `ground` fit the layout, which switchTown and requestTown ask before they fold the live
-// town. A town with no shops makes no streets and always fits.
+// town. A town with no premises makes no streets and always fits.
 export function streetsFit(world: World, ground: Ground, shops: Shops): boolean {
-  if (shops.count === 0) return true;
+  if (shops.premises === 0) return true;
   try {
+    requireSites(shops);
     requireFields(ground, createDoorCells(shops, ground.width), world.fields.length);
   } catch (error) {
     if (error instanceof RangeError) return false;
@@ -53,17 +61,19 @@ function assignFirmShops(world: World, shops: Shops): void {
   }
 }
 
-// Gives the live town its streets: the flow field to each shop's door, the doors and the firm rows they trade, and a night for
+// Gives the live town its streets: the flow field to each site, the sites and the firm rows the premises trade, and a night for
 // every blob to wake from, in a keyed minute of the planning window of today. The world must be a freshly spawned town, whose
 // errand store is empty. A ground or layout the fields do not fit throws before anything is written.
 export function createStreets(world: World, shops: Shops): void {
   const { ground, errands, fields, globals } = world;
+  requireSites(shops);
   buildFields(ground, createDoorCells(shops, ground.width), fields);
   for (let p = 0; p < shops.count; p++) {
-    errands.shopDoorX[p] = shops.doorX[p];
-    errands.shopDoorY[p] = shops.doorY[p];
-    errands.shopStall[p] = shops.stall[p];
+    errands.siteKind[p] = shops.kind[p];
+    errands.siteX[p] = shops.doorX[p];
+    errands.siteY[p] = shops.doorY[p];
   }
+  for (let p = 0; p < shops.premises; p++) errands.shopStall[p] = shops.stall[p];
   assignFirmShops(world, shops);
   globals[STREETS] = 1;
   const day = dayOf(globals[TICK]);

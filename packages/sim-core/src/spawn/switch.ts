@@ -60,7 +60,7 @@ function requireSeats(world: World, place: number, homes: Homes): void {
 function requireStreets(world: World, place: number, ground: Ground, shops: Shops): void {
   if (streetsFit(world, ground, shops)) return;
   throw new RangeError(
-    `place ${place} has ${shops.count} premises on a ${ground.width} x ${ground.height} ground, and the layout's fields cannot hold them`,
+    `place ${place} has ${shops.premises} premises and ${shops.count} sites on a ${ground.width} x ${ground.height} ground, and the layout's fields cannot hold them`,
   );
 }
 

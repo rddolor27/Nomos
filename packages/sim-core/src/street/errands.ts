@@ -1,5 +1,5 @@
 import { take, type Arena } from '../memory/arena.ts';
-import { MAX_PREMISES } from './fields.ts';
+import { MAX_PREMISES, MAX_SITES } from './fields.ts';
 import { RUN_BYTES } from './runs.ts';
 
 // What a trip is for. A phase of a trip is its base plus the purpose.
@@ -57,10 +57,13 @@ export interface Errands {
   // The hash's region, dayFood to keeper, which counts only while a town has streets.
   readonly byteOffset: number;
   readonly byteLength: number;
-  // What the town's shops make of the firm rows, written when the streets open and outside the hash: each stall's door tile and
-  // whether it is a stall, and for each firm row the premises + 1 it trades from, or 0.
-  readonly shopDoorX: Int32Array;
-  readonly shopDoorY: Int32Array;
+  // What the town's sites make of the firm rows, written when the streets open and outside the hash. Site s is a premises, for
+  // the first town.premises of them, then a leisure site: its kind (SITE_*, 0 for an empty slot), the tile its field floods from,
+  // which is a premises' door, and whether it is a stall. These are the hubs that legs run to (street/legs.ts). For each firm row
+  // the premises + 1 it trades from, or 0.
+  readonly siteKind: Uint8Array;
+  readonly siteX: Int32Array;
+  readonly siteY: Int32Array;
   readonly shopStall: Uint8Array;
   readonly firmShop: Uint8Array;
   // Every byte of the store, to empty at a switch in one fill.
@@ -78,8 +81,9 @@ export function createErrands(arena: Arena, agents: number, firms: number): Erra
   const runs = take(arena, Uint8Array, agents * RUN_BYTES, false);
   const keeper = take(arena, Int32Array, MAX_PREMISES, false);
   const hashed = arena.top - dayFood.byteOffset;
-  const shopDoorX = take(arena, Int32Array, MAX_PREMISES, false);
-  const shopDoorY = take(arena, Int32Array, MAX_PREMISES, false);
+  const siteKind = take(arena, Uint8Array, MAX_SITES, false);
+  const siteX = take(arena, Int32Array, MAX_SITES, false);
+  const siteY = take(arena, Int32Array, MAX_SITES, false);
   const shopStall = take(arena, Uint8Array, MAX_PREMISES, false);
   const firmShop = take(arena, Uint8Array, firms, false);
   return {
@@ -95,8 +99,9 @@ export function createErrands(arena: Arena, agents: number, firms: number): Erra
     keeper,
     byteOffset: dayFood.byteOffset,
     byteLength: hashed,
-    shopDoorX,
-    shopDoorY,
+    siteKind,
+    siteX,
+    siteY,
     shopStall,
     firmShop,
     bytes: new Uint8Array(arena.memory.buffer, dayFood.byteOffset, arena.top - dayFood.byteOffset),
