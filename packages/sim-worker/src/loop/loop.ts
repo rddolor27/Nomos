@@ -254,9 +254,11 @@ export function createSimLoop(host: LoopHost, cpuSlowdown = 1): { handle(msg: Ap
     post({ type: 'checkpoint', tick: currentTick(world), state }, [state]);
   }
 
+  // A click finds the blobs drawn on the street: in a town with streets, one indoors is skipped.
   function postInspected(world: World, x: number, y: number): void {
     const tick = currentTick(world);
-    const agent = nearestAgent(world.agents, Math.round(x * SUBPIXELS), Math.round(y * SUBPIXELS), INSPECT_RADIUS_Q8);
+    const phase = world.globals[STREETS] === 1 ? world.errands.phase : undefined;
+    const agent = nearestAgent(world.agents, Math.round(x * SUBPIXELS), Math.round(y * SUBPIXELS), INSPECT_RADIUS_Q8, phase);
     post(agent < 0 ? noBlobReply(tick) : blobReply(world, tick, agent), noTransfer);
   }
 

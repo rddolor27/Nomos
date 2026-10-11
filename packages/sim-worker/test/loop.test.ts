@@ -2,7 +2,9 @@ import {
   ACTION_WALK,
   ECONOMY_TICKS,
   MAX_TOWNS,
+  PHASE_GOING,
   PURCHASE_RING,
+  PURPOSE_FOOD,
   STAT_WAGE_MEAN,
   TICKS_PER_DAY,
   createShops,
@@ -619,6 +621,21 @@ describe('the sim loop', () => {
         members: [],
       },
     ]);
+  });
+
+  it('finds no blob that is indoors in a town with streets, and finds it once it is out on a trip', () => {
+    const page = fakePage({ streets: true });
+    const { agents, errands } = page.world();
+    const agent = 7;
+    const at = { x: agents.x[agent] / 256, y: agents.y[agent] / 256 };
+
+    // The town opens at 06:00 with everyone indoors, so a click right on a blob finds no one.
+    page.handle({ type: 'inspect', ...at });
+    expect(page.ofType('inspected').map((reply) => reply.agent)).toEqual([-1]);
+
+    errands.phase[agent] = PHASE_GOING + PURPOSE_FOOD;
+    page.handle({ type: 'inspect', ...at });
+    expect(page.ofType('inspected').map((reply) => reply.agent)).toEqual([-1, agent]);
   });
 
   it("answers a household's home and the name keys of its others, in order, and none for someone who lives alone", () => {
