@@ -83,7 +83,7 @@ export function createLife(arena: Arena, agents: number): Life {
 }
 
 // A town opens with its blobs part way through their moods, so its first day is a day like any other: fun and company start at a keyed
-// level between a eighth and five eighths of the range, hunger and rest at 0. The purposes follow activities.ts's 0 to 3 on LIFE_DRAW.
+// level between an eighth and five eighths of the range, hunger and rest at 0. The purposes follow activities.ts's 0 to 3 on LIFE_DRAW.
 const START_FUN = 4;
 const START_COMPANY = 5;
 const START_FLOOR = 8_192;
