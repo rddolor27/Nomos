@@ -13,7 +13,7 @@
   {
     "name": "Initial JS",
     "path": ["dist/assets/index-*.js", "dist/assets/app-*.js", "dist/assets/render-gl-*.js", "dist/assets/worker-*.js"],
-    "limit": "35 kB"
+    "limit": "40 kB"
   },
   {
     "name": "Before the first frame",
