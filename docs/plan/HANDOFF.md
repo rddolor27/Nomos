@@ -85,6 +85,12 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 11 Oct: **M2.2c done:** every town runs the sim (1f9c645..ffb41e8).
+  - **Task 7:** it removed 555 lines of walk loops and street crowd, so `buildPlace(ctx)` returns `{ layout, map }`.
+  - **Hashes:** Highcourt's pins `ff861cb3` and `da92906e` and `town.nmap` held. The goldens are `switch` `cc4584e8`, `visit` `a7bd4005` and the away row.
+  - **Flake:** `towns.spec.ts` failed twice under CPU load and passed alone.
+  - **Backlog:** `sim-protocol/src/shared/steering.ts` is orphaned. No test checks that a generated place's `map.walk` keeps off drawn water, cliffs and sprites; only Highcourt is checked tile for tile.
+  - **The owner's phone:** it reaches the app through a Cloudflare quick tunnel to a frozen copy of the build (`dist/phone-preview` on port 4175, `dist/cloudflared/`), at the owner's request. Stop both when the owner is done.
 - 11 Oct: **M2.2c Task 6, live towns in the app** (5d9ca58..d9625f0, 80901c1).
   - **Opening a town:** Enter on any map town shows "Opening <name>…", then swaps the Town skin to that town, which runs live with one blob per bed. The camera fits it, and the HUD and the economy panel restart.
   - **Getting back:** "Back to Highcourt" returns the folded 2,688. Place 0 is Highcourt in every world.
