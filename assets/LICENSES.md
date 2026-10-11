@@ -26,7 +26,7 @@ Each SHA-256 is of the bytes git stores. Git stores `.json`, `.md` and `.txt` fi
 
 | File | Author | Source | Licence | SHA-256 | Edits |
 |---|---|---|---|---|---|
-| `maps/town.nmap` | Nomos contributors | `tools/worldgen/export_map.py` | Original; repository licence | `6f4e8a1e41d8b1d86e4a63833c4a315ea4c33f53a7a4cab5d6112b40fb447c46` | None |
+| `maps/town.nmap` | Nomos contributors | `tools/worldgen/export_map.py` | Original; repository licence | `6b00c0318c5578f1496c23cabb11d81ad9a6b8ff30b3299bb67e3224f6b805b5` | None |
 | `sounds/ambience.json` | Nomos contributors | `tools/sounds/ambience.py`, built by `tools/sounds/build_all.py` | Original; repository licence | `770042da91802b6d199e1a54d6217ac576e9d3efd631fc9ade68a9362d2541a8` | None |
 | `sounds/events.json` | Nomos contributors | `tools/sounds/events.py`, built by `tools/sounds/build_all.py` | Original; repository licence | `614fe2fc1bd7442c4f126c676f05a45660094e54b8f0df00e432e59d50aaa12f` | None |
 | `sounds/justice.json` | Nomos contributors | `tools/sounds/justice.py`, built by `tools/sounds/build_all.py` | Original; repository licence | `0bbd0ac878d350f02ff9becad449c16f641a4ae222a6ac1080765b4625d0a4d5` | None |
@@ -44,8 +44,8 @@ Each SHA-256 is of the bytes git stores. Git stores `.json`, `.md` and `.txt` fi
 | `sprites/culture.png` | Nomos contributors | `tools/sprites/culture.py`, built by `tools/sprites/build_all.py` | Original; repository licence | `ea123eefd85439ef90964d5653347672c684a5fef16dfe66b0a80e5ed34dcf29` | None |
 | `sprites/houses.json` | Nomos contributors | `tools/sprites/houses.py`, built by `tools/sprites/build_all.py` | Original; repository licence | `c13300c41662e5f150b42ae0d2f378c2de98a9255435b55950c1f97f9820ca66` | None |
 | `sprites/houses.png` | Nomos contributors | `tools/sprites/houses.py`, built by `tools/sprites/build_all.py` | Original; repository licence | `593594d5947aa2f8398e92880a242decbe15a239f20ec6aa5fc37e44ec3e64b7` | None |
-| `sprites/icons.json` | Nomos contributors | `tools/sprites/icons.py`, built by `tools/sprites/build_all.py` | Original; repository licence | `765bfc36a4b6c908595d3539ed2c2786cb49f004b73c6536289eebccaea3fc5e` | None |
-| `sprites/icons.png` | Nomos contributors | `tools/sprites/icons.py`, built by `tools/sprites/build_all.py` | Original; repository licence | `6db822a5014eb7bcd1fce7e6e93d132adade09c05ccf6e1dda444a9da313e1e5` | None |
+| `sprites/icons.json` | Nomos contributors | `tools/sprites/icons.py`, built by `tools/sprites/build_all.py` | Original; repository licence | `10c197791e50f34e9324b81d13f7f26b46b1b595ef49c0ebc39da01e2a7aea69` | None |
+| `sprites/icons.png` | Nomos contributors | `tools/sprites/icons.py`, built by `tools/sprites/build_all.py` | Original; repository licence | `6017c611e665573fe81bcd92b9cc033b36890fd2bd4eeecd7687aad160c5d816` | None |
 | `sprites/landmarks.json` | Nomos contributors | `tools/sprites/landmarks.py`, built by `tools/sprites/build_all.py` | Original; repository licence | `71b415a26fc14702b03057d8a5028b9705598ccd671ca8691edc6acbe5d57cf5` | None |
 | `sprites/landmarks.png` | Nomos contributors | `tools/sprites/landmarks.py`, built by `tools/sprites/build_all.py` | Original; repository licence | `0a19a9554c7bcb789650edd2cf6b727752fca44e46ede63b9b062af5b21e2bb0` | None |
 | `sprites/map.json` | Nomos contributors | `tools/sprites/map.py`, built by `tools/sprites/build_all.py` | Original; repository licence | `2b8e8b9fb6db20f481b8c045070d308ca7ac050a81038ed56e839cc08b071c1d` | None |

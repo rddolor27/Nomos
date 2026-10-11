@@ -606,7 +606,8 @@ BUBBLE = [
     "......O.....",
 ]
 BUBBLE_TIP = (6, 11)
-# Glyphs are drawn on the bubble's own 12x12 grid; '.' keeps the bubble underneath.
+# Glyphs are drawn on the bubble's own 12x12 grid; '.' keeps the bubble underneath. Every glyph pixel sits on the white
+# of the body, rows 1 to 8, so the ring and the tail stay clear (test_sprites.py checks it).
 EMOTES = {
     'heart': [
         "............",
@@ -702,6 +703,48 @@ EMOTES = {
         "..tttttttu..",
         "...uuuuuu...",
         "............",
+        "............",
+        "............",
+        "............",
+    ],
+    'speech': [  # three grey dots, the same for every chat, so no bubble says who likes whom
+        "............",
+        "............",
+        "............",
+        "............",
+        "..23.23.23..",
+        "..33.33.33..",
+        "............",
+        "............",
+        "............",
+        "............",
+        "............",
+        "............",
+    ],
+    'music': [  # two notes under one beam
+        "............",
+        "............",
+        ".....MMMMM..",
+        "....QMMMMM..",
+        "....M....M..",
+        "....M....M..",
+        "..QMM..QMM..",
+        "..MM...MM...",
+        "............",
+        "............",
+        "............",
+        "............",
+    ],
+    'ball': [  # a plain blue toy with a shine, never a split red and white one
+        "............",
+        "............",
+        ".....333....",
+        "....3AWa3...",
+        "...3AAaaa3..",
+        "...3Aaaaa3..",
+        "...3aaaaj3..",
+        "....3aaj3...",
+        ".....333....",
         "............",
         "............",
         "............",

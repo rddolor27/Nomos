@@ -1,4 +1,5 @@
-"""Checks every sprite module against the conventions in README.md, then M2.7's street sprites against their plan.
+"""Checks every sprite module against the conventions in README.md, then M2.7's street sprites and M3.2's emote bubbles
+against their plans.
 Run: python tools/sprites/test_sprites.py"""
 import collections
 import functools
@@ -15,7 +16,7 @@ import buildings as bd  # noqa: E402
 import characters as ch  # noqa: E402
 import icons  # noqa: E402
 from build_all import CATEGORIES  # noqa: E402
-from spritekit import BODY_HUES, PALETTE, body_hue  # noqa: E402
+from spritekit import BODY_HUES, PALETTE, body_hue, from_ascii  # noqa: E402
 
 NAME = re.compile(r'^[a-z0-9]+(?:-[a-z0-9]+)*(?:_[a-z0-9]+(?:-[a-z0-9]+)*)*$')
 UNOUTLINED = ('terrain_', 'crop_')
@@ -26,6 +27,11 @@ PAD = 4        # room round the 18x22 body canvas for an item held out past its 
 ITEM_PX = 8    # the plan's carried items are 8x8
 CARRIED = ('bread', 'vegetables', 'fish', 'milk', 'cloth', 'tools', 'fuel')
 POLICE = ('NAVY', 'NAVY_D')     # the police's colours, which no market stall wears
+BUBBLE_PX = 12  # an emote bubble is 12x12
+BODY_ROWS = 9   # its tail starts on row 9, so the body that holds a glyph is rows 1 to 8
+NEW_BUBBLES = ('speech', 'music', 'ball')
+# The police navy, the merchants' teal, and the reds and oranges that crime keeps
+RESERVED = POLICE + ('TEAL', 'TEAL_D', 'VERMILLION', 'ROOF', 'ROOF_D')
 
 
 def outline_is_only_edges(im):
@@ -182,8 +188,37 @@ def premises_problems():
     return problems
 
 
+# ---------------------------------------------------------------------------- M3.2: emote bubbles
+def emote_problems():
+    """Every emote bubble is 12x12 and anchored at its tail tip, with each glyph pixel on the white of the bubble's
+    body, so the ring and the tail stay the shared base's own. The speech, music and ball bubbles exist and wear no
+    police, merchant or crime colour."""
+    problems = []
+    frames = {name: (im, anchor) for name, im, anchor, _ in icons.build().frames if name.startswith('emote_')}
+    base = np.array(from_ascii(icons.BUBBLE, icons.KEY))
+    body = (base[:, :, :3] == PALETTE['WHITE']).all(axis=2)
+    body[BODY_ROWS:] = False
+    for name, (im, anchor) in frames.items():
+        if im.size != (BUBBLE_PX, BUBBLE_PX) or tuple(anchor) != icons.BUBBLE_TIP:
+            problems.append(f'{name}: {im.size[0]}x{im.size[1]} anchored at {tuple(anchor)}, '
+                            f'not {BUBBLE_PX}x{BUBBLE_PX} at the tail tip {icons.BUBBLE_TIP}')
+            continue
+        stray = [(int(x), int(y)) for y, x in np.argwhere((np.array(im) != base).any(axis=2) & ~body)]
+        if stray:
+            problems.append(f'{name}: glyph pixels off the bubble body at {stray}')
+    for kind in NEW_BUBBLES:
+        name = f'emote_{kind}'
+        if name not in frames:
+            problems.append(f'{name}: missing')
+            continue
+        problems += [f'{name}: uses {colour}, a police, merchant or crime colour'
+                     for colour in RESERVED if uses(frames[name][0], colour)]
+    return problems
+
+
 STREET_CHECKS = [('street holds', hold_problems), ('street chewing faces', chew_problems),
-                 ('street carried goods', carry_problems), ('street premises', premises_problems)]
+                 ('street carried goods', carry_problems), ('street premises', premises_problems),
+                 ('emote bubbles', emote_problems)]
 
 
 def main():

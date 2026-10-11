@@ -1,8 +1,9 @@
 """Draw M3.2 Task 1's mockups for the owner's pick: blobs with lives of their own.
 
 Three new 12x12 emote bubbles, speech, music and ball, each in two variants on icons.py's bubble base and set beside
-today's heart, question and coin; then five town scenes that show them in place. The bubbles live here as grids until
-the owner picks: icons.py, the atlas and assets/LICENSES.md stay as they are (M3.2 Task 9).
+today's heart, question and coin; then five town scenes that show them in place. The A variants ship from icons.py
+(M3.2 Task 9) until the owner picks. The drafts stay here as the owner saw them: PICKS sets the variant each scene
+shows, and shipping a B means copying its grid over the one in icons.EMOTES.
 
 Everything is drawn from the sprites in assets/sprites/ and the blob in characters.py. The town's own placing rules
 carry over: a person anchors 14 px down its tile, a prop 12 px, a sitter on a bench is lifted 5 px onto the seat, and
