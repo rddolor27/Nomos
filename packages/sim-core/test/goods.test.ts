@@ -3,6 +3,7 @@ import { SUPPLIERS } from '../src/agents/store.ts';
 import { CITY } from '../src/economy/city.ts';
 import { CITY_RECORD } from '../src/economy/city-record.ts';
 import { LENGNICK, checkParams, type EconomyParams } from '../src/economy/params.ts';
+import { settledRecord } from '../src/economy/settled.ts';
 import { startEconomy } from '../src/economy/start.ts';
 import {
   BREAD,
@@ -233,6 +234,13 @@ describe('EconomyParams.goods', () => {
       expect(() => checkParams(withGoods(bad), 'phone'), String(bad)).toThrow(RangeError);
     }
     expect(() => checkParams(withGoods(2), 'phone')).toThrow(/^goods must be 0 to 1, not 2/);
+  });
+
+  // M2.3's CITY_RECORD, as commit 1d8e5f0 wrote it from 18,428 days of the city without goods. With goods 0 the 20-system
+  // day, the hash rule and every firm column must replay that city, so a cent moved anywhere moves this record.
+  it('replays M2.3 byte for byte: goods 0 settles to its record over its 18,428 days', { timeout: 30_000 }, () => {
+    const m23 = [1000, 0, 0, 0, 0, 0, 917, 83, 100, 298274833, 11725167, 3159, 133887, 53562];
+    expect(Array.from(settledRecord({ ...CITY, goods: 0, burnInDays: 18_428 }))).toEqual(m23);
   });
 });
 
