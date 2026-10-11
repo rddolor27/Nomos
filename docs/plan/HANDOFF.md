@@ -85,6 +85,13 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 11 Oct: **M2.2c Task 3, the ledger table and the switch** (32b6dac, 5da0886, 9495705, da09a8c).
+  - **Away towns:** they aim at a live town's mean (`AWAY_LEVEL_PPM`: employed 1,003,359, price 1,006,192, wage 1,019,599). The gap they fix was smaller than first thought: 0.3%, 0.6% and 2.0%.
+  - **The table:** a 512-town ledger (`MAX_TOWNS`, 56 KiB) at the arena's end.
+  - **The switch:** `requestTown` sits in `day/day.ts` beside `logFocus`, to avoid an import cycle. `switchTown` folds, empties and spawns at the boundary, and a first visit lives the months already passed.
+  - **Checks:** the `switch` golden is `ce41f094`, and no other hash moved. All 91 settlements of 2 worlds spawn and fold back exactly.
+  - **Fixed alongside:** a stale `economy-layout.test.ts` pin of `CITY`, which had failed since M2.4's goods (da09a8c).
+  - **Risk:** a pending request isn't in the arena, so a restore drops it until M6's saves carry it.
 - 11 Oct: **M2.4 Part 1 done**, with the review's fixes (71efe64..6a06128).
   - **The fixes:** small towns spawn the food workers they eat, and `buyFood` gates on goods being 1. A test pins goods 0 to M2.3's record, and Okun counts food output, now −0.81 and holding.
   - **The burn-in:** re-measured over 80,000 days at 31,883.
