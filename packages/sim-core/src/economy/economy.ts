@@ -57,10 +57,14 @@ const RECORD_YEAR = 19;
 export const ECONOMY_TICKS = RECORD_YEAR + 1;
 
 // layoffs is a scenario's unemployment shock: that many people lose their jobs at the day's start, before a month's first
-// search. Both rings of purchases open empty, since buyFood and shopDay each fill one.
+// search. Both rings of purchases open empty, since buyFood and shopDay each fill one, and so does each blob's record of the
+// first firm it bought food and goods from (M2.7), which the day's trips read.
 function openDay(world: World, day: number, layoffs: number): void {
   clearFlows(world.economyScratch.stats);
   clearPurchases(world.economyScratch);
+  const { errands, agents } = world;
+  errands.dayFood.fill(0, 0, agents.count[0]);
+  errands.dayGoods.fill(0, 0, agents.count[0]);
   if (layoffs > 0) layOff(world, layoffs, day);
 }
 

@@ -18,9 +18,10 @@ const FOOD_STEPS = 2;
 const FOOD_VISIT_ORDERS = FOOD_LINKS * FOOD_STEPS;
 
 // A7 and A10 for a portion: the shop is asked for what the eater can pay, and sells what its shelf holds, oldest first. A
-// bit marks a shop that supplied less. Returns the portions bought.
+// bit marks a shop that supplied less. Returns the portions bought. The first shop to sell the blob food today is the one its
+// trip walks to (M2.7); money has moved here, at the economy tick, and the trip only shows it.
 function buyPortions(world: World, household: number, link: number, wanted: number, day: number): number {
-  const { agents, firms, goods, cash, economyScratch } = world;
+  const { agents, firms, goods, cash, economyScratch, errands } = world;
   const firm = agents.suppliers[household * SUPPLIERS + link];
   const price = firms.price[firm];
   const wallet = walletAccount(cash, household);
@@ -37,6 +38,7 @@ function buyPortions(world: World, household: number, link: number, wanted: numb
     stats[STAT_SOLD + goods.good[firm]] += portions;
     stats[STAT_SOLD_CENTS + goods.good[firm]] += cents;
     logPurchase(economyScratch, FOOD_TRADES, firm, portions, cents);
+    if (errands.dayFood[household] === 0) errands.dayFood[household] = firm + 1;
   }
   return portions;
 }

@@ -28,9 +28,10 @@ function unitsOnDay(plan: number, dayInMonth: number): number {
   return floorDiv((dayInMonth + 1) * plan, DAYS_PER_MONTH) - floorDiv(dayInMonth * plan, DAYS_PER_MONTH);
 }
 
-// A7 and A10: the firm is asked for what the buyer can pay, whatever its stock, and a bit marks a firm that supplied less.
+// A7 and A10: the firm is asked for what the buyer can pay, whatever its stock, and a bit marks a firm that supplied less. The
+// first firm to sell the blob goods today is the one its second trip walks to (M2.7).
 function buyFrom(world: World, household: number, link: number, unmet: number): number {
-  const { agents, firms, goods, cash, economyScratch } = world;
+  const { agents, firms, goods, cash, economyScratch, errands } = world;
   const firm = agents.suppliers[household * SUPPLIERS + link];
   const price = firms.price[firm];
   const wallet = walletAccount(cash, household);
@@ -49,6 +50,7 @@ function buyFrom(world: World, household: number, link: number, unmet: number): 
     stats[STAT_SOLD + goods.good[firm]] += units;
     stats[STAT_SOLD_CENTS + goods.good[firm]] += cents;
     logPurchase(economyScratch, GOODS_TRADES, firm, units, cents);
+    if (errands.dayGoods[household] === 0) errands.dayGoods[household] = firm + 1;
   }
   return units;
 }

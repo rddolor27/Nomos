@@ -17,7 +17,9 @@ import { TIER_AGENTS, TIER_FIRMS, TIER_MEMORY_BYTES, type Tier } from '../memory
 import { setHeading } from '../movement/walk.ts';
 import { createHomes, type Homes } from '../spawn/homes.ts';
 import { LEDGER_FIELDS } from '../spawn/record.ts';
+import { createErrands, type Errands } from '../street/errands.ts';
 import { FIELD_BYTES } from '../street/fields.ts';
+import { NO_SHOPS, type Shops } from '../street/shops.ts';
 
 export const TICK = 0;
 export const RECORD_FRONT = 1;
@@ -31,6 +33,9 @@ export const DAY_LAYOFFS = 5;
 // 1 for a world that runs the seven goods and food (EconomyParams.goods, which startEconomy and spawnFromLedger copy here),
 // and 0 for one with the generic good. The state hash mixes the goods store in only while it is 1 (M2.4).
 export const GOODS = 6;
+// 1 for a town with premises, whose blobs walk errands in move's place and whose errand store the state hash mixes in (M2.7),
+// and 0 for one that wanders.
+export const STREETS = 7;
 const GLOBAL_SLOTS = 8;
 
 // The settlement record is double-buffered: day slices fold into the back half, and the last slice flips
@@ -57,14 +62,15 @@ export const WALK_START_MASK = 3;
 // The slot of World.focus that holds the place the next day boundary switches to, or NO_PLACE.
 export const FOCUS_PENDING = 1;
 
-// The ground and homes of the town the next day boundary spawns, which attachTown fills and switchTown spends (M2.2c). place
-// is the town they were attached for, or NO_PLACE while none are. They are inputs, like the world's own ground: the hash skips
-// them, a checkpoint does not carry them, and a replay rebuilds them from the world seed. The pending place itself is in the
-// arena, at focus[FOCUS_PENDING].
+// The ground, homes and shops of the town the next day boundary spawns, which attachTown fills and switchTown spends (M2.2c).
+// place is the town they were attached for, or NO_PLACE while none are. They are inputs, like the world's own ground: the hash
+// skips them, a checkpoint does not carry them, and a replay rebuilds them from the world seed. The pending place itself is in
+// the arena, at focus[FOCUS_PENDING].
 export interface TownRequest {
   place: number;
   ground: Ground;
   homes: Homes;
+  shops: Shops;
 }
 
 export interface World {
@@ -100,6 +106,9 @@ export interface World {
   // them, and a checkpoint copies them with the rest. Only a tier's own layout holds them: a smaller one, such as a test's or
   // the warm-up's, has none, and buildFields throws for it.
   readonly fields: Uint8Array;
+  // Each blob's errand row, and what the shops make of the firm rows (M2.7). It is the last thing in the arena, and the hash
+  // mixes its rows in only while globals[STREETS] is 1.
+  readonly errands: Errands;
   // The arena runs a town fills, so that switchTown empties it in two fills: the agent columns, then the firms, the
   // economy's scratch, the households and the goods, which layoutWorld takes back to back.
   readonly agentBytes: Uint8Array;
@@ -153,6 +162,7 @@ export function layoutWorld(
   const townRecords = take(arena, Float64Array, MAX_TOWNS * LEDGER_FIELDS, false);
   const recordRow = take(arena, Float64Array, LEDGER_FIELDS, false);
   const fields = take(arena, Uint8Array, agents === TIER_AGENTS[tier] ? FIELD_BYTES : 0, false);
+  const errands = createErrands(arena, agents, TIER_FIRMS[tier]);
   const world: World = {
     seed,
     tier,
@@ -174,9 +184,10 @@ export function layoutWorld(
     townRecords,
     recordRow,
     fields,
+    errands,
     agentBytes,
     economyBytes,
-    request: { place: NO_PLACE, ground, homes: createHomes([]) },
+    request: { place: NO_PLACE, ground, homes: createHomes([]), shops: NO_SHOPS },
     ground,
     checks: true,
   };
