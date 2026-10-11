@@ -32,6 +32,7 @@ export interface PlacedAgent {
   x: number;
   y: number;
   job: number;
+  indoors?: boolean;
 }
 
 export interface BootOptions extends Pick<RendererOptions, 'backend' | 'restoreTimeoutMs'> {
@@ -245,10 +246,10 @@ window.harness = {
   place(placed) {
     const buffer = new ArrayBuffer(placed.length * SNAPSHOT_BYTES);
     const view = new DataView(buffer);
-    placed.forEach(({ x, y, job }, i) => {
+    placed.forEach(({ x, y, job, indoors = false }, i) => {
       view.setFloat32(i * SNAPSHOT_BYTES, x, true);
       view.setFloat32(i * SNAPSHOT_BYTES + 4, y, true);
-      view.setUint32(i * SNAPSHOT_BYTES + 8, packVisual(0, 0, 0, job, 0, 0), true);
+      view.setUint32(i * SNAPSHOT_BYTES + 8, packVisual(0, 0, 0, job, 0, 0, indoors ? 1 : 0), true);
     });
     booted().renderer.pushSnapshot({ tick: 0, count: placed.length, buffer });
     return buffer;

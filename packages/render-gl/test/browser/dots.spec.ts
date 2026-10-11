@@ -176,6 +176,35 @@ test('ignores agents off the canvas', async ({ page }) => {
   expect(after).toEqual(mapAlone);
 });
 
+test('draws no dot for a blob that is indoors, through each backend', async ({ page }) => {
+  const runs = await page.evaluate(async () => {
+    const harness = window.harness;
+    const out: { backend: string; alone: Record<string, number>; both: Record<string, number>; home: Record<string, number> }[] = [];
+    for (const choice of ['auto', 'canvas2d'] as const) {
+      const backend = await harness.boot({ backend: choice });
+      harness.view({ x: 0, y: 0, zoom: 1 });
+      const citizen = { x: 100, y: 100, job: 0 };
+      const neighbour = { x: 140, y: 100, job: 0 };
+      const seen = (agents: { x: number; y: number; job: number; indoors?: boolean }[]): Record<string, number> => {
+        harness.place(agents);
+        return harness.draw().counts;
+      };
+      out.push({
+        backend,
+        alone: seen([citizen]),
+        both: seen([citizen, neighbour]),
+        home: seen([citizen, { ...neighbour, indoors: true }]),
+      });
+    }
+    return out;
+  });
+  expect(runs.map((run) => run.backend)).toContain('canvas2d');
+  for (const run of runs) {
+    expect(run.home, run.backend).toEqual(run.alone);
+    expect(run.both[CITIZEN], run.backend).toBeGreaterThan(run.alone[CITIZEN]);
+  }
+});
+
 test('draws no true-only cue', async ({ page }) => {
   const [plain, marked] = await page.evaluate(async () => {
     const harness = window.harness;
