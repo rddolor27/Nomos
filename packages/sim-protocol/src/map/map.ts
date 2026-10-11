@@ -21,6 +21,11 @@ const MAP_VERSION = 1;
 const MAX_SIDE = 1024;
 const MAX_KINDS = 255;
 const MINUTES_PER_DAY = 1440;
+// The file's fixed sizes: the header; a kind's colour and name length; a cell's terrain, walk and tile; an entity.
+const HEADER_BYTES = 16;
+const KIND_BYTES = 4;
+const CELL_BYTES = 4;
+const ENTITY_BYTES = 18;
 
 export interface TerrainKind {
   name: string;
@@ -260,4 +265,77 @@ export function parseMap(buffer: ArrayBuffer): MapV1 {
   const trailing = cursor.view.byteLength - cursor.at;
   if (trailing > 0) throw new MapError(`the map has trailing bytes: ${trailing} after its last entity`);
   return { version: MAP_VERSION, width: header.width, height: header.height, kinds, frames, terrain, walk, tiles, entities };
+}
+
+function writeU8(cursor: Cursor, value: number): void {
+  cursor.view.setUint8(cursor.at, value);
+  cursor.at += 1;
+}
+
+function writeU16(cursor: Cursor, value: number): void {
+  cursor.view.setUint16(cursor.at, value, true);
+  cursor.at += 2;
+}
+
+function writeName(cursor: Cursor, name: string): void {
+  writeU8(cursor, name.length);
+  for (let i = 0; i < name.length; i++) writeU8(cursor, name.charCodeAt(i));
+}
+
+function writeBytes(cursor: Cursor, bytes: Uint8Array): void {
+  new Uint8Array(cursor.view.buffer, cursor.view.byteOffset + cursor.at, bytes.length).set(bytes);
+  cursor.at += bytes.length;
+}
+
+function writeHeader(cursor: Cursor, map: MapV1): void {
+  cursor.view.setUint32(cursor.at, MAP_MAGIC, true);
+  cursor.at += 4;
+  writeU16(cursor, MAP_VERSION);
+  writeU16(cursor, map.width);
+  writeU16(cursor, map.height);
+  writeU16(cursor, map.kinds.length);
+  writeU16(cursor, map.frames.length);
+  writeU16(cursor, map.entities.length);
+}
+
+// The layout's a is a home's capacity or a shop's opening minute, and its b a shop's closing minute.
+function writeEntity(cursor: Cursor, entity: MapEntity): void {
+  writeU8(cursor, entity.kind);
+  writeU8(cursor, entity.w);
+  writeU8(cursor, entity.h);
+  writeU8(cursor, 0);
+  writeU16(cursor, entity.x);
+  writeU16(cursor, entity.y);
+  writeU16(cursor, entity.doorX);
+  writeU16(cursor, entity.doorY);
+  writeU16(cursor, entity.frame);
+  writeU16(cursor, entity.kind === ENTITY_SHOP ? entity.opens : entity.capacity);
+  writeU16(cursor, entity.closes);
+}
+
+function mapBytes(map: MapV1): number {
+  let bytes = HEADER_BYTES + map.width * map.height * CELL_BYTES + map.entities.length * ENTITY_BYTES;
+  for (const kind of map.kinds) bytes += KIND_BYTES + kind.name.length;
+  for (const frame of map.frames) bytes += 1 + frame.length;
+  return bytes;
+}
+
+// The bytes parseMap reads. It trusts its map, whose one maker, worldgen's ground, keeps every field in range; a script
+// or test that writes a file parses it back.
+export function writeMap(map: MapV1): ArrayBuffer {
+  const buffer = new ArrayBuffer(mapBytes(map));
+  const cursor: Cursor = { view: new DataView(buffer), at: 0 };
+  writeHeader(cursor, map);
+  for (const kind of map.kinds) {
+    writeU8(cursor, kind.rgb >>> 16);
+    writeU8(cursor, (kind.rgb >>> 8) & 0xff);
+    writeU8(cursor, kind.rgb & 0xff);
+    writeName(cursor, kind.name);
+  }
+  for (const frame of map.frames) writeName(cursor, frame);
+  writeBytes(cursor, map.terrain);
+  writeBytes(cursor, map.walk);
+  for (const tile of map.tiles) writeU16(cursor, tile);
+  for (const entity of map.entities) writeEntity(cursor, entity);
+  return buffer;
 }

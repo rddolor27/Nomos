@@ -15,6 +15,7 @@ import {
   WALK_OPEN,
   WALK_ROAD,
   parseMap,
+  writeMap,
   type MapV1,
 } from '../src/index.ts';
 
@@ -334,5 +335,29 @@ describe('parseMap', () => {
     });
 
     expect(refused).toEqual([]);
+  });
+});
+
+describe('writeMap', () => {
+  it('writes the Python fixture byte for byte', () => {
+    expect(new Uint8Array(writeMap(tiny))).toEqual(fileBytes('tiny.nmap'));
+  });
+
+  it('writes back the bytes it parses, for each entity kind and at the limits of a name and a side', () => {
+    const row = { terrain: cells(1024, 0), walk: cells(1024, 1), tiles: cells(1024, 0xffff), entities: [] };
+    const specs: MapSpec[] = [
+      base,
+      withEntity(withEntity(base, SHOP, { a: 0, b: 1440 }), HOME, { a: 65535 }),
+      { ...base, kinds: [{ name: 'x'.repeat(255), rgb: 0xffffff }, ...base.kinds.slice(1)] },
+      { ...base, ...row, width: 1024, height: 1 },
+    ];
+
+    const changed = specs.flatMap((spec, i) => {
+      const bytes = encode(spec);
+      const written = new Uint8Array(writeMap(parseMap(bytes.buffer)));
+      return written.length === bytes.length && written.every((byte, at) => byte === bytes[at]) ? [] : [`spec ${i}`];
+    });
+
+    expect(changed).toEqual([]);
   });
 });
