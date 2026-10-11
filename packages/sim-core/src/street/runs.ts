@@ -1,8 +1,8 @@
 import { AT_DOOR, DIRECTIONS, UNREACHED, cellStepOf } from './fields.ts';
 
-// A path is at most 16 straight runs, each a heading (a multiple of 32) and a length in cells, which is 32 bytes. The ones a
+// A path is at most 32 straight runs, each a heading (a multiple of 32) and a length in cells, which is 64 bytes. The ones a
 // path does not use stay 0, and a run is never 0 long, so a 0 length ends the list.
-export const MAX_RUNS = 16;
+export const MAX_RUNS = 32;
 export const RUN_BYTES = 2 * MAX_RUNS;
 // pathRuns' answers when there is no path to take: the cell is cut off from the door, or the way needs more than MAX_RUNS runs.
 export const NO_PATH = -1;

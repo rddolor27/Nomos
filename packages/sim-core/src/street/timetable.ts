@@ -82,7 +82,7 @@ export function sleepUntil(world: World, i: number, day: number): void {
 }
 
 // Writes the way from the blob's home door to the premises into its row, and returns the ticks it takes one way, or -1 when
-// there is none to walk: the home is cut off, the way needs over 16 runs, or the premises is at the door.
+// there is none to walk: the home is cut off, the way needs over MAX_RUNS runs, or the premises is at the door.
 function pathTo(world: World, i: number, shop: number): number {
   const { ground, errands, fields, agents } = world;
   const from = tileOf(agents.y[i]) * ground.width + tileOf(agents.x[i]);

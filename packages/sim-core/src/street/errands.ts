@@ -32,7 +32,7 @@ export function carriedIn(phase: number, good: number): number {
   return homeward || phase === PHASE_EATING ? good : 0;
 }
 
-// One row a blob, in columns: the errand row is 40 bytes (its phase, good, premises, run, end tick and 32 bytes of runs), with
+// One row a blob, in columns: the errand row is 72 bytes (its phase, good, premises, run, end tick and 64 bytes of runs), with
 // the two columns the economy day fills beside it. They sit at the arena's end, so no offset moved (M2.7 Ruling 5).
 export interface Errands {
   readonly capacity: number;

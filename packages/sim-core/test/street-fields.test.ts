@@ -76,20 +76,23 @@ describe('a premises field and its runs', () => {
     expect(runsFrom(corner, fieldsOf(corner, [3]), 0, 0)).toEqual({ count: NO_PATH, bytes: NONE });
   });
 
-  it('give up on a way of more than 16 runs, and take one of exactly 16', () => {
-    // A corridor one cell wide that steps right and down 8 times, with no corner a blob may cut. Its door at (8, 8) is 16 steps
-    // from (0, 0), each a run of its own, and one cell on, at (9, 8), a 17th.
-    const rows = new Array<string>(10).fill('#'.repeat(10)).map((row) => row.split(''));
-    for (let i = 0; i < 8; i++) {
+  it('give up on a way of more than 32 runs, and take one of exactly 32', () => {
+    // A corridor one cell wide that steps right and down 16 times, with no corner a blob may cut. Its door at (16, 16) is 32
+    // steps from (0, 0), each a run of its own, and one cell on, at (17, 16), a 33rd.
+    const half = MAX_RUNS / 2;
+    const size = half + 2;
+    const rows = new Array<string>(size).fill('#'.repeat(size)).map((row) => row.split(''));
+    for (let i = 0; i < half; i++) {
       rows[i][i + 1] = '.';
       rows[i + 1][i + 1] = '.';
     }
     rows[0][0] = '.';
-    rows[8][9] = '.';
+    rows[half][half + 1] = '.';
     const ground = groundOf(rows.map((row) => row.join('')));
-    const fields = fieldsOf(ground, [8 * 10 + 8, 8 * 10 + 9]);
+    const fields = fieldsOf(ground, [half * size + half, half * size + half + 1]);
 
     const steps = Array.from({ length: MAX_RUNS }, (_, i) => [i % 2 === 0 ? 192 : 0, 1]).flat();
+    expect(MAX_RUNS).toBe(32);
     expect(runsFrom(ground, fields, 0, 0)).toEqual({ count: MAX_RUNS, bytes: steps });
     expect(runsFrom(ground, fields, 1, 0)).toEqual({ count: TOO_FAR, bytes: NONE });
   });
