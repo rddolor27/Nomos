@@ -14,3 +14,5 @@ export {
   withCustom,
 } from './agents/store.ts';
 export { CULTURE, FESTIVAL } from './random/streams.ts';
+// The seven goods' ids, which sim-protocol's premises table names a trade by (M2.7).
+export { BREAD, CLOTH, FISH, FUEL, MILK, TOOLS, VEGETABLES } from './goods/goods.ts';

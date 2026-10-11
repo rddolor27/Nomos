@@ -6,6 +6,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./map": "./src/map/map.ts",
+    "./premises": "./src/map/premises.ts",
     "./world-map": "./src/world-map/world-map.ts",
     "./place": "./src/place/place-layout.ts"
   },

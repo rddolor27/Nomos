@@ -2,6 +2,7 @@ export * from './shared/calendar.ts';
 export * from './snapshot/visual.ts';
 export * from './snapshot/jobs.ts';
 export * from './map/map.ts';
+export * from './map/premises.ts';
 export * from './shared/columns.ts';
 export * from './shared/steering.ts';
 export * from './messages/messages.ts';
