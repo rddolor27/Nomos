@@ -7,6 +7,14 @@
 > - **Several buildings per trade:** `placeTrades` spreads each trade's firm rows over several workshops across the town, not one building each. This amends Ruling 1.
 > - **Household stalls:** households run their own market stalls in M3.5, once homes have pantries. This settles Ruling 7's open half.
 > - **Task 1's mockups** started at once, at the owner's word. The owner picks from them before Task 7.
+>
+> **The owner's picks** (`docs/mockups/m2.7-street/`, 3ec6b1e and d1d8be4):
+> - the front-hip hold;
+> - the open-and-shut eating face;
+> - stall canopies coloured by good;
+> - bead stock pips.
+>
+> **The coordinator's call:** both looks of the Draper's and the Fuel Store's fronts ship, one per building, since each trade has several buildings. **Task 7** draws the final sprites now. Its stand-in swap and the place goldens wait for Task 2, so they regenerate once.
 
 **Task:** [task.md](task.md). Each task writes its code, then its tests (the main case and one edge), runs only those and a typecheck at `nice -n 19`, then commits. Bare sim paths are in `packages/sim-core/src/`.
 

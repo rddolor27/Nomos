@@ -85,6 +85,11 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 11 Oct: **M2.7 Part 1's mockups and picks** (3ec6b1e, d1d8be4).
+  - **The mockups:** six sheets and a street scene in `docs/mockups/m2.7-street/`.
+  - **The owner's picks:** the front-hip hold, the open-and-shut eating face, stall canopies coloured by good, and bead stock pips.
+  - **The coordinator's call:** both looks of each new shop front ship.
+  - **Task 7:** its final sprites are being drawn.
 - 11 Oct: **M2.7 Part 1 briefed** (ce0f198): life on the street.
   - **Money:** it moves at the economy tick, as now, and blobs act out the day's purchases afterwards on one flow field per shop. So `economyDay`, `6a652730` and `CITY_RECORD` hold.
   - **Shops:** the market's stalls sell vegetables, fish and milk. The Bakery, Draper, Smithy and Fuel Store sell bread, cloth, tools and fuel.
