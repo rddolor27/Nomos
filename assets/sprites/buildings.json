@@ -2,7 +2,7 @@
   "image": "buildings.png",
   "size": [
     256,
-    1301
+    1485
   ],
   "tile": 16,
   "frames": {
@@ -455,8 +455,8 @@
       ]
     },
     "farm_shed": {
-      "x": 130,
-      "y": 1257,
+      "x": 195,
+      "y": 1406,
       "w": 32,
       "h": 32,
       "anchor": [
@@ -474,8 +474,8 @@
       ]
     },
     "farm_shed_snow": {
-      "x": 163,
-      "y": 1257,
+      "x": 0,
+      "y": 1453,
       "w": 32,
       "h": 32,
       "anchor": [
@@ -522,9 +522,145 @@
         2
       ]
     },
-    "shop_general": {
+    "shop_draper_bolts": {
       "x": 0,
       "y": 1112,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "snow": "shop_draper_bolts_snow",
+      "footprint": [
+        4,
+        2
+      ],
+      "door": [
+        48,
+        46
+      ]
+    },
+    "shop_draper_bolts_snow": {
+      "x": 65,
+      "y": 1112,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "layer": "snow",
+      "footprint": [
+        4,
+        2
+      ]
+    },
+    "shop_draper_rail": {
+      "x": 130,
+      "y": 1112,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "snow": "shop_draper_rail_snow",
+      "footprint": [
+        4,
+        2
+      ],
+      "door": [
+        48,
+        46
+      ]
+    },
+    "shop_draper_rail_snow": {
+      "x": 0,
+      "y": 1161,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "layer": "snow",
+      "footprint": [
+        4,
+        2
+      ]
+    },
+    "shop_fuel-store_shed": {
+      "x": 65,
+      "y": 1161,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "snow": "shop_fuel-store_shed_snow",
+      "footprint": [
+        4,
+        2
+      ],
+      "door": [
+        20,
+        46
+      ]
+    },
+    "shop_fuel-store_shed_snow": {
+      "x": 130,
+      "y": 1161,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "layer": "snow",
+      "footprint": [
+        4,
+        2
+      ]
+    },
+    "shop_fuel-store_stack": {
+      "x": 0,
+      "y": 1210,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "snow": "shop_fuel-store_stack_snow",
+      "footprint": [
+        4,
+        2
+      ],
+      "door": [
+        48,
+        46
+      ]
+    },
+    "shop_fuel-store_stack_snow": {
+      "x": 65,
+      "y": 1210,
+      "w": 64,
+      "h": 48,
+      "anchor": [
+        32,
+        47
+      ],
+      "layer": "snow",
+      "footprint": [
+        4,
+        2
+      ]
+    },
+    "shop_general": {
+      "x": 130,
+      "y": 1210,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -538,8 +674,8 @@
       ]
     },
     "shop_general_snow": {
-      "x": 65,
-      "y": 1112,
+      "x": 0,
+      "y": 1259,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -587,8 +723,8 @@
       ]
     },
     "shop_market-stall": {
-      "x": 130,
-      "y": 1112,
+      "x": 65,
+      "y": 1259,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -601,8 +737,8 @@
       ]
     },
     "shop_market-stall_closed": {
-      "x": 179,
-      "y": 1112,
+      "x": 114,
+      "y": 1259,
       "w": 48,
       "h": 48,
       "anchor": [
@@ -614,9 +750,63 @@
         2
       ]
     },
-    "shop_warehouse": {
+    "shop_market-stall_fish": {
+      "x": 163,
+      "y": 1259,
+      "w": 48,
+      "h": 48,
+      "anchor": [
+        24,
+        47
+      ],
+      "footprint": [
+        3,
+        2
+      ],
+      "door": [
+        24,
+        46
+      ]
+    },
+    "shop_market-stall_milk": {
       "x": 0,
-      "y": 1161,
+      "y": 1308,
+      "w": 48,
+      "h": 48,
+      "anchor": [
+        24,
+        47
+      ],
+      "footprint": [
+        3,
+        2
+      ],
+      "door": [
+        24,
+        46
+      ]
+    },
+    "shop_market-stall_vegetables": {
+      "x": 49,
+      "y": 1308,
+      "w": 48,
+      "h": 48,
+      "anchor": [
+        24,
+        47
+      ],
+      "footprint": [
+        3,
+        2
+      ],
+      "door": [
+        24,
+        46
+      ]
+    },
+    "shop_warehouse": {
+      "x": 98,
+      "y": 1308,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -630,8 +820,8 @@
       ]
     },
     "shop_warehouse_snow": {
-      "x": 65,
-      "y": 1161,
+      "x": 163,
+      "y": 1308,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -705,8 +895,8 @@
       ]
     },
     "work_fuel-works": {
-      "x": 130,
-      "y": 1161,
+      "x": 0,
+      "y": 1357,
       "w": 64,
       "h": 48,
       "anchor": [
@@ -719,8 +909,8 @@
       ]
     },
     "work_lumber-camp": {
-      "x": 0,
-      "y": 1210,
+      "x": 65,
+      "y": 1357,
       "w": 80,
       "h": 46,
       "anchor": [
@@ -734,8 +924,8 @@
       ]
     },
     "work_lumber-camp_snow": {
-      "x": 81,
-      "y": 1210,
+      "x": 146,
+      "y": 1357,
       "w": 80,
       "h": 46,
       "anchor": [
@@ -763,8 +953,8 @@
       ]
     },
     "work_pasture": {
-      "x": 0,
-      "y": 1257,
+      "x": 65,
+      "y": 1406,
       "w": 64,
       "h": 44,
       "anchor": [
@@ -778,8 +968,8 @@
       ]
     },
     "work_pasture_snow": {
-      "x": 65,
-      "y": 1257,
+      "x": 130,
+      "y": 1406,
       "w": 64,
       "h": 44,
       "anchor": [
@@ -793,8 +983,8 @@
       ]
     },
     "work_quarry": {
-      "x": 162,
-      "y": 1210,
+      "x": 0,
+      "y": 1406,
       "w": 64,
       "h": 46,
       "anchor": [

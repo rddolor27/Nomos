@@ -12,8 +12,10 @@ Every building also gets a snow overlay: it is drawn a second time under snowfal
 roof helpers lay snow on every roof, and the pixels that change become `<name>_snow`.
 """
 import math
+from abc import ABC, abstractmethod
 from contextlib import contextmanager
 
+import icons
 from spritekit import TILE, Sheet, add_outline, cmap, from_ascii, overlay
 
 SYM = cmap(
@@ -982,9 +984,9 @@ CRATE_BREAD = [
 ]
 
 
-def market_stall(open_=True):
-    W, H = 48, 48
-    c = Canvas(W, H)
+def stall_frame(c):
+    """A market stall's counter, front posts and striped canopy on its canvas; returns the counter's top row."""
+    W, H = c.w, c.h
     g = H - 2
     ct = g - 12                                                # counter top row
     c.rect(2, ct, W - 3, ct + 2, 'L')
@@ -1000,6 +1002,13 @@ def market_stall(open_=True):
     c.swap(2, 1, W - 3, 1, {'g': 'T', 'W': 'C'})
     c.prop(1, 7, awning(W - 2, h=7))
     c.tile(2, 7, W - 3, 7, ['TTTTCCCC'], ox=2)
+    return ct
+
+
+def market_stall(open_=True):
+    W, H = 48, 48
+    c = Canvas(W, H)
+    ct = stall_frame(c)
     if open_:
         for x, crate in ((5, CRATE_APPLES), (17, CRATE_GREENS), (29, CRATE_BREAD)):
             c.prop(x, ct - 5, crate)
@@ -2266,6 +2275,270 @@ def clinic_large():
     return b
 
 
+# ------------------------------------------------------------------ the street's premises
+# M2.7 Part 1, where blobs buy: the market's three stalls, which sell vegetables, fish and milk, and the Draper's and the
+# Fuel Store's fronts, which sell cloth and fuel. Each front comes in two looks so that a town with several draws one a
+# building. They are made like the Bakery and the Smithy: signs are pictograms, nothing shows wealth, and none gets less care.
+TRADE_SYM = {**SYM, **cmap(Q='LILAC_L', Z='LILAC', z='LILAC_S', q='LILAC_D', e='ICE_S', E='ICE_D',
+                           F='ROSE', f='ROSE_S', H='ROSE_L')}
+
+
+class TradeCanvas(Canvas):
+    """A canvas that also draws the lilac, ice and rose tones of cloth and canopies, and lays 8x8 icons over its art."""
+
+    def __init__(self, w, h):
+        super().__init__(w, h)
+        self.over = []
+
+    def image(self):
+        im = add_outline(from_ascii(self.rows(), TRADE_SYM))
+        for x, y, icon in self.over:
+            im.alpha_composite(icon, (x, y))
+        return im
+
+
+class TradeBuilding(Building):
+    """A standard building drawn on a TradeCanvas."""
+
+    def __init__(self, w_tiles, **kw):
+        super().__init__(w_tiles, **kw)
+        self.c = TradeCanvas(self.W, self.H)
+
+
+CRATE_CARROTS = [
+    '.OgOGOgO.',
+    'OGRRGRRGO',
+    'ORRrRRrrO',
+    'OOOOOOOOO',
+    'OLwwwwwdO',
+    'OOOOOOOOO',
+]
+
+CRATE_BEETS = [
+    '.OgOgOgO.',
+    'OUPUUPUUO',
+    'OUUpUUpUO',
+    'OOOOOOOOO',
+    'OLwwwwwdO',
+    'OOOOOOOOO',
+]
+
+ONIONS = ['.OO.', 'OSCO', 'OSsO', '.OO.', 'OSCO', 'OSsO', '.OO.']
+
+FISH_TRAY = [           # fish laid on ice in a shallow tray
+    '.OOOOOOOOOOOOOOOOO.',
+    'OIWIKKkIWIKKkIWIKIO',
+    'OIKKWkAIKKWkAIKKWIO',
+    'OKKKKkaKKKKkaKKKKkO',
+    'OOOOOOOOOOOOOOOOOOO',
+    'OLwwwwwwwwwwwwwwwdO',
+    'OOOOOOOOOOOOOOOOOOO',
+]
+
+JUG = [
+    '.OaaO.',
+    '.OWcO.',
+    'OWWWcO',
+    'OWaWcO',
+    'OWWWcO',
+    'OcccCO',
+    '.OOOO.',
+]
+
+CHURN = [               # a steel milk can with a lid and a handle at each shoulder
+    '..OOOO..',
+    '.OKKKkO.',
+    'OOkkkkOO',
+    'OKOWkxOx',
+    'OKOWkxOx',
+    'OKKWkkxO',
+    'OKWWkkxO',
+    'OKKWkkxO',
+    'OxxxxxxO',
+    'OkkkkkxO',
+    'OOOOOOOO',
+]
+
+
+class MarketStall:
+    """A 48x48 (3x2 tiles) open stall built like market_stall(): posts, a striped canopy over its valance, a brick counter
+    and a coin sign on a chain. Only the canopy's colour and what lies on the counter change with the good. The canopies
+    are green, blue and lilac, never teal (the merchants'), red or orange (crime's)."""
+    W, H = 48, 48
+    GOODS = ('vegetables', 'fish', 'milk')
+    CANOPY = {              # the teal canopy's letters swapped: stripe, valance fold and the lit top rows
+        'vegetables': {'T': 'G', 't': 'l'},
+        'fish': {'T': 'a', 't': 'N', 'g': 'A'},
+        'milk': {'T': 'Z', 't': 'q', 'g': 'Q'},
+    }
+    HANG = ((6, 17), (13, 19))      # where the fish stall hangs two fish from its rail
+
+    def __init__(self, good):
+        counters = {'vegetables': self._vegetables, 'fish': self._fish, 'milk': self._milk}
+        if good not in counters:
+            raise ValueError(f'a stall sells one of {self.GOODS}, not {good!r}')
+        self.good, self.counter = good, counters[good]
+
+    def sprite(self):
+        c = TradeCanvas(self.W, self.H)
+        ct = stall_frame(c)
+        c.swap(0, 0, self.W - 1, 13, self.CANOPY[self.good])
+        c.vline(self.W // 2, 14, 15, 'x')                      # the coin sign on a short chain
+        c.prop(self.W // 2 - 2, 16, COIN_SMALL)
+        self.counter(c, ct)
+        return Sprite(c, [3, 2], door=[self.W // 2, self.H - 2])
+
+    def _vegetables(self, c, ct):
+        for x, crate in ((5, CRATE_CARROTS), (16, CRATE_GREENS), (27, CRATE_BEETS)):
+            c.prop(x, ct - 5, crate)
+        c.vline(38, 14, 15, 'w')
+        c.prop(36, 16, ONIONS)
+
+    def _fish(self, c, ct):
+        c.prop(5, ct - 6, FISH_TRAY)
+        c.prop(25, ct - 5, CRATE_FISH)
+        c.prop(36, ct - 5, BUCKET)
+        fish = icons.icon(icons.CARRY_8['fish'], 8, 'fish')
+        for x, y in self.HANG:
+            c.vline(x + 3, 14, y - 1, 'w')
+            c.over.append((x, y, fish))
+
+    def _milk(self, c, ct):
+        for x in (7, 15, 23):
+            c.prop(x, ct - 6, JUG)
+        c.prop(32, ct - 10, CHURN)
+
+
+CLOTH = [               # a bolt folded over twice: lilac on ice
+    '..QQQQQQQ..',
+    '.QZZZZZZZz.',
+    '.qqqqqqqqq.',
+    '.IiiiiiiiE.',
+    '.eeeeeeeeE.',
+]
+
+LOGS = [                # a pile of log ends: three below, two above
+    '..wSw.wSw..',
+    '..SsS.SsS..',
+    '..wSw.wSw..',
+    'wSw.wSw.wSw',
+    'SsS.SsS.SsS',
+    'wSw.wSw.wSw',
+]
+
+FOLD_TONES = {          # a fold's top, front and shade symbols
+    'lilac': 'QZz', 'ice': 'Iie', 'rose': 'HFf', 'cream': 'WCc', 'plum': 'ZUq',
+}
+
+
+def fold_stack(c, x, y, tone, w=4):
+    """A stack of folded cloth, 3 rows high: lit top, front, shaded foot."""
+    for dy, ch in enumerate(FOLD_TONES[tone]):
+        c.hline(x, x + w - 1, y + dy, ch)
+
+
+def banner(tone):
+    """A length of cloth hung from a rail: 6 wide with its outline, a lit left edge, a shaded right edge, a notched hem."""
+    top, mid, low = FOLD_TONES[tone]
+    return ['OOOOOO', *[f'O{top}{mid}{mid}{low}O'] * 14, f'O{low * 4}O', f'O{top}O{mid}O{low}', '.O.O.O']
+
+
+class ShopFront(ABC):
+    """A 64x48 (4x2 tiles) shop on the standard building shell. `NAME` is its sprite; each building of a trade draws one
+    of the trade's looks."""
+    NAME = ''
+
+    def sprite(self):
+        b = TradeBuilding(4)
+        b.door = [self.draw(b), b.g]
+        return b
+
+    @abstractmethod
+    def draw(self, b):
+        """Draw this front on the building b and return the column where people enter."""
+
+
+def draper_shell(b):
+    """What both Draper looks share under their window or rail: a clay roof over a cream wall and a doorway."""
+    b.roof('terracotta', 'tile')
+    b.wall('cream')
+    b.doorway(b.wx1 - 21)
+
+
+def draper_trim(b):
+    """The lilac and cream awning, its shadow on the wall and the folded-bolt sign, drawn over the window or rail."""
+    c, E = b.c, b.E
+    c.prop(b.wx0 - 2, E, awning(b.wx1 - b.wx0 + 5, 'Z', 'q', 'C', 'c'))
+    c.swap(b.wx0, E + 7, b.wx1, E + 7, SHADE)
+    c.prop(b.W // 2 - 7, E - 11, sign_board(CLOTH))
+
+
+class DraperBolts(ShopFront):
+    """Cloth shown in the window: folded bolts on two shelves."""
+    NAME = 'shop_draper_bolts'
+
+    def draw(self, b):
+        c, wx, wy = b.c, b.wx0 + 3, b.E + 8
+        draper_shell(b)
+        c.stamp(wx, wy, window('w', w=22, h=11))
+        for row, tones in ((wy + 2, ('lilac', 'ice', 'rose', 'cream')), (wy + 6, ('rose', 'lilac', 'cream', 'ice'))):
+            for i, tone in enumerate(tones):                     # a stack to a pane half
+                fold_stack(c, wx + 2 + i * 4 + (i >= 2), row, tone)
+        c.prop(wx + 23, b.E + 9, LANTERN)
+        draper_trim(b)
+        return b.wx1 - 12
+
+
+class DraperRail(ShopFront):
+    """Cloth hung out on a rail beside the door."""
+    NAME = 'shop_draper_rail'
+
+    def draw(self, b):
+        c, E, x0 = b.c, b.E, b.wx0 + 3
+        draper_shell(b)
+        for row, ch in enumerate('OLwO'):
+            c.hline(x0, x0 + 22, E + 8 + row, ch)
+        for i, tone in enumerate(('lilac', 'ice', 'rose', 'plum')):
+            c.prop(x0 + 1 + i * 5, E + 11, banner(tone))
+        c.prop(x0 + 24, E + 9, LANTERN)
+        draper_trim(b)
+        return b.wx1 - 12
+
+
+class FuelStoreShed(ShopFront):
+    """Firewood in an open log shed, with a woodpile out front."""
+    NAME = 'shop_fuel-store_shed'
+
+    def draw(self, b):
+        c, g = b.c, b.g
+        b.roof('shingle', 'shingle')
+        b.wall('wood', 'log', plinth=None)
+        ox0, ox1 = b.wx0 + 3, b.wx0 + 30
+        c.rect(ox0, g - DOOR_H + 1, ox1, g, 'O')                 # an open front on the logs inside
+        c.rect(ox0 + 1, g - DOOR_H + 2, ox1 - 1, g, 'd')
+        c.hline(ox0 + 1, ox1 - 1, g - DOOR_H + 2, 'n')
+        c.ground(ox0 + 1, log_pile([6, 5, 4]))
+        c.ground(b.wx1 - 22, log_pile([5, 4, 3]))
+        c.prop(b.W // 2 - 7, b.E - 11, sign_board(LOGS))
+        return (ox0 + ox1 + 1) // 2
+
+
+class FuelStoreStack(ShopFront):
+    """Firewood in a long stack along the front, under a lean-to awning."""
+    NAME = 'shop_fuel-store_stack'
+
+    def draw(self, b):
+        c, E = b.c, b.E
+        b.roof('thatch', 'thatch')
+        b.wall('wood', 'vboard', plinth=None)
+        b.doorway(b.wx1 - 21)
+        c.prop(b.wx0 - 2, E, awning(b.wx1 - b.wx0 + 5, 'L', 'w', 'S', 's'))
+        c.swap(b.wx0, E + 7, b.wx1, E + 7, SHADE)
+        c.ground(b.wx0 + 1, log_pile([8, 7, 6]))
+        c.prop(b.W // 2 - 7, E - 11, sign_board(LOGS))
+        return b.wx1 - 12
+
+
 SPRITES = [
     ('civic_clinic', clinic),
     ('civic_police-station', police),
@@ -2299,6 +2572,8 @@ SPRITES = [
     ('civic_library_large', library_large),
     ('civic_school_large', school_large),
     ('civic_clinic_large', clinic_large),
+    *[(f'shop_market-stall_{good}', MarketStall(good).sprite) for good in MarketStall.GOODS],
+    *[(front.NAME, front().sprite) for front in (DraperBolts, DraperRail, FuelStoreShed, FuelStoreStack)],
 ]
 
 

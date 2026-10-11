@@ -1,5 +1,6 @@
 """Checks every sprite module against the conventions in README.md, then M2.7's street sprites against their plan.
 Run: python tools/sprites/test_sprites.py"""
+import collections
 import functools
 import importlib
 import re
@@ -10,7 +11,9 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+import buildings as bd  # noqa: E402
 import characters as ch  # noqa: E402
+import icons  # noqa: E402
 from build_all import CATEGORIES  # noqa: E402
 from spritekit import BODY_HUES, PALETTE, body_hue  # noqa: E402
 
@@ -116,7 +119,7 @@ def carry_problems():
     """Each carried good is one 8x8 frame for all six hues, which no hue recolours, and the stock pips show 0 to 3 lit
     beads."""
     problems = []
-    frames = {name: im for name, im, _, _ in importlib.import_module('icons').build().frames}
+    frames = {name: im for name, im, _, _ in icons.build().frames}
     carried = sorted(name for name in frames if name.startswith('carry_'))
     if carried != sorted(f'carry_{good}' for good in CARRIED):
         problems.append(f'carried goods are {carried}, not one frame for each of {CARRIED}')
@@ -135,8 +138,41 @@ def carry_problems():
     return problems
 
 
+def premises_problems():
+    """The three stalls, 48x48 on 3x2 tiles with a canopy coloured by good and no snow twin, and the four shop fronts,
+    64x48 on 4x2 tiles, each with a snow twin that covers its roof only. Each has its door on the ground row."""
+    problems = []
+    frames = {name: (im, meta) for name, im, _, meta in bd.build().frames}
+    stalls = (('vegetables', 'GRASS'), ('fish', 'WATER'), ('milk', 'LILAC'))
+    fronts = ('shop_draper_bolts', 'shop_draper_rail', 'shop_fuel-store_shed', 'shop_fuel-store_stack')
+    sizes = {f'shop_market-stall_{good}': ((48, 48), [3, 2]) for good, _ in stalls}
+    sizes |= {front: ((64, 48), [4, 2]) for front in fronts}
+    for name, (size, footprint) in sizes.items():
+        im, meta = frames[name]
+        door = meta.get('door')
+        if im.size != size or meta.get('footprint') != footprint:
+            problems.append(f'{name}: {im.size} on {meta.get("footprint")}, want {size} on {footprint}')
+        if not door or door[1] != im.height - 2 or not 0 < door[0] < im.width:
+            problems.append(f'{name}: its door {door} is not on the ground row')
+    for good, canopy in stalls:
+        im, meta = frames[f'shop_market-stall_{good}']
+        roof = np.array(im)[1:11].reshape(-1, 4)
+        shades = collections.Counter(tuple(int(v) for v in px[:3]) for px in roof if px[3])
+        for neutral in ('OUTLINE', 'WHITE', 'CREAM', 'CREAM_D'):
+            shades.pop(PALETTE[neutral], None)
+        if shades.most_common(1)[0][0] != PALETTE[canopy] or 'snow' in meta:
+            problems.append(f'shop_market-stall_{good}: its canopy is not {canopy}, or it has a snow twin')
+    for front in fronts:
+        twin, meta = frames.get(f'{front}_snow', (None, {}))
+        if twin is None or frames[front][1].get('snow') != f'{front}_snow' or meta.get('layer') != 'snow':
+            problems.append(f'{front}: no snow twin')
+        elif np.nonzero(np.array(twin)[:, :, 3])[0].max() > bd.ROOF:
+            problems.append(f'{front}: the snow reaches below the roof')
+    return problems
+
+
 STREET_CHECKS = [('street holds', hold_problems), ('street chewing faces', chew_problems),
-                 ('street carried goods', carry_problems)]
+                 ('street carried goods', carry_problems), ('street premises', premises_problems)]
 
 
 def main():
