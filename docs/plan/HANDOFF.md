@@ -85,6 +85,21 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 11 Oct: **M2.7 Part 1, Tasks 4–5 and fast nights** (ce26e1e..78d6adc). Blobs walk to work and shops, carry goods and eat in the running app.
+  - **Premises:** they gain `stall`.
+  - **The worker wiring:** `createShops(premisesOf(map))` runs at init and in `readTown`. The night run happens only after init and after a real switch.
+  - **Tests:** `errands.test.ts` has 4 Highcourt cases.
+  - **The snapshot:** its street bits are a second pass, gated on `STREETS`, so the 100k snapshot is 0.39 ms.
+  - **Fast nights** run only in a town with streets.
+  - **The feed:** day 0's feed is posted by the first turn after Play.
+  - **`nearestAgent`** skips indoors blobs while `STREETS` is 1.
+  - **Pins:** Highcourt on the shops path is `cca95710` and `a9f09068`; the other goldens held.
+  - **Timings** (Node): the step at 10k averages 0.078 ms, the economy window peaks at 1.73 ms, and a night takes 19–20 ms at Highcourt and 48–54 ms at 10k. Worker `init` grew from 71 to 100 ms, because `createTown` went from 12 to 33 ms, so watch perf.yml's startup gate.
+- 11 Oct: **M2.7 Part 1, Task 8: stock pips** (a962ced..70d3965).
+  - **The rule:** `stockLevel` is 0 with no stock, 1 under a day's sales, 2 under 3 days', and 3 otherwise, per good, from the feed's newest day.
+  - **What it draws:** a stall at 0 shows the closed stall. Pips stay hidden until a town's first feed.
+  - **Bytes:** initial JS is 32.87 of 35 kB, and the worker chunk 21 of 22 kB.
+- 11 Oct: **the coordinator's ruling:** a town opens at 07:00, not 06:00. At 06:00 everyone is indoors, while 1,793 of Highcourt's 2,600 are out by 07:00. That change is being built, with the coin bubble at `PHASE_BUYING`, the card's "Bought" line and the pins the opening moves. An Opus determinism review of the M2.7 sim runs alongside.
 - 11 Oct: **M2.7 Part 1, Task 6: drawing** (43b39bc, 52850e2, ed4542f, 5c6fdde).
   - **The sprite fields:** `hold` and `eat` are in the manifest schema, the atlas and `characters.build()`, and the `holds` flag is gone.
   - **What blobs show:** the carried good unmirrored at `hold`, after the job layer. Eating swaps in `face_chew_` and moves the item through `eat` 0, 1, 2, 1. Blobs facing up, sitting or sneaking carry nothing. An indoors blob is drawn by no skin.
