@@ -232,6 +232,11 @@ describe('a leg', () => {
     const beside = planOn(ground, sites, open, 5 * 10 + 5);
     expect([beside.count, Array.from(beside.runs.subarray(0, 6))]).toEqual([2, [160, 1, 64, 1, 0, 0]]);
     expect(planOn(ground, sites, open, open).count).toBe(0);
+    // Forced through the door of the site at (8, 4), as a purchase not yet fetched would force it, the same leg goes all the way
+    // there and back down to (5, 5): the ways of the two cells, the second backward. A site that does not exist serves nobody.
+    const fetching = planOn(ground, sites, open, 5 * 10 + 5, 0);
+    expect([fetching.count, Array.from(fetching.runs.subarray(0, 10))]).toEqual([4, [160, 2, 192, 1, 0, 1, 64, 3, 0, 0]]);
+    expect(planOn(ground, sites, open, 5 * 10 + 5, 2).count).toBe(NO_PATH);
 
     // A corridor one cell wide that steps right and down 20 times: 40 runs from end to end, with its one site half way. Each half
     // is 20 runs, and the two joined are too many.

@@ -187,9 +187,10 @@ export function planLeg(
 ): number {
   out.fill(0, at, at + RUN_BYTES);
   if (from === to) return 0;
+  if (via >= sites) return NO_PATH;
   const fromX = from % width;
   const toX = to % width;
-  const forced = via !== NO_HUB;
+  const forced = via >= 0;
   let excluded = 0;
   let failure = NO_PATH;
   for (let tries = forced ? 1 : sites; tries > 0; tries--) {
