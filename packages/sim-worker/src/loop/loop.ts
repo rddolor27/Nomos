@@ -15,9 +15,11 @@ import {
   nearestAgent,
   requestTown,
   step,
+  streetsAsleep,
   warmUp,
   type Ground,
   type Homes,
+  type Shops,
   type SystemTimer,
   type Tier,
   type World,
@@ -49,10 +51,12 @@ export const SLEEP_MIN_MS = 4;
 const INSPECT_RADIUS_Q8 = TILE_PX * SUBPIXELS;
 const NO_EMPLOYER = -1;
 
-// The town an open message's map holds: its ground, and the homes on it.
+// The town an open message's map holds: its ground, the homes on it and the shops that give it streets. A site with no shops
+// wanders, as a stand-in town does.
 export interface TownSite {
   readonly ground: Ground;
   readonly homes: Homes;
+  readonly shops?: Shops;
 }
 
 export interface LoopHost {
@@ -135,11 +139,14 @@ export function createSimLoop(host: LoopHost, cpuSlowdown = 1): { handle(msg: Ap
     speed = 1;
     const world = host.makeWorld(seed, tier, map, agents);
     world.checks = checks;
+    const feed = createEconomyFeed();
+    const fed = runNight(world, feed);
     const pool = createSnapshotPool(world.agents.capacity);
-    session = { world, pool, feed: createEconomyFeed() };
+    session = { world, pool, feed };
     post({ type: 'ready', agents: world.agents.count[0] }, []);
     // The spawn, so a page that starts paused, as under reduced motion, still draws its agents (M0.5).
     postSnapshot(world, pool);
+    if (fed) post(feed, noTransfer);
     // After the replies, so the first frame never waits for it; whatever the page sends meanwhile queues behind it. A
     // slower CPU would warm up for longer, so a slowed worker holds the queue for that long too.
     warmUp();
@@ -252,19 +259,23 @@ export function createSimLoop(host: LoopHost, cpuSlowdown = 1): { handle(msg: Ap
   // A switch lands at a day boundary (M2.2c Ruling 2), so the rest of the day runs here at once, with no snapshots and
   // whether or not the run is paused. The handler is one turn, so no checkpoint or inspect falls between the request and the
   // switch. The map is read first, so a bad one changes nothing. A request for the live town, or one the sim refuses, switches
-  // nothing, and opened names the town still live. The snapshot lets a paused page draw the new town, as init's does.
+  // nothing, and opened names the town still live. The snapshot lets a paused page draw the new town, as init's does. A town
+  // with streets then opens at 06:00, which only a real switch runs up to.
   function openTown(session: Session, place: number, map: ArrayBuffer): void {
     const world = session.world;
+    let fed = false;
     if (place !== world.focus[0]) {
-      const { ground, homes } = host.readTown(map);
-      if (requestTown(world, place, ground, homes)) {
+      const { ground, homes, shops } = host.readTown(map);
+      if (requestTown(world, place, ground, homes, shops)) {
         while (world.focus[FOCUS_PENDING] !== NO_PLACE) step(world);
         session.feed = createEconomyFeed();
+        fed = runNight(world, session.feed);
       }
     }
     const { width, height } = world.ground;
     post({ type: 'opened', place: world.focus[0], agents: world.agents.count[0], width, height, tick: currentTick(world) }, noTransfer);
     postSnapshot(world, session.pool);
+    if (fed) post(session.feed, noTransfer);
   }
 
   // Waits before the post rather than after the handler, which would come too late: init posts ready and the spawn
@@ -287,6 +298,21 @@ export function createSimLoop(host: LoopHost, cpuSlowdown = 1): { handle(msg: Ap
 
 function meanMs(totalMs: number, count: number): number {
   return count > 0 ? totalMs / count : 0;
+}
+
+// A town with streets opens at 06:00 (M2.7 Ruling 3), so its night runs at once, with no snapshots, as a switch runs out a day.
+// The day's economy ends inside it, so its row goes into the feed as a turn would write it. Whether it did tells the caller to
+// post the row, which the panel would otherwise wait a day for.
+function runNight(world: World, feed: EconomyMessage): boolean {
+  let fed = false;
+  while (streetsAsleep(world)) {
+    step(world);
+    if (economyDayEnded(world)) {
+      writeEconomyFeed(world, feed);
+      fed = true;
+    }
+  }
+  return fed;
 }
 
 function noBlobReply(tick: number): InspectedMessage {

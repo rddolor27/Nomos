@@ -5,8 +5,10 @@ import {
   PURCHASE_RING,
   STAT_WAGE_MEAN,
   TICKS_PER_DAY,
+  createShops,
   createStandInTown,
   createStandInTownHomes,
+  createTown,
   createWorld,
   currentTick,
   issue,
@@ -19,6 +21,7 @@ import {
   walletAccount,
   warmUp,
   type Ground,
+  type Tier,
   type World,
 } from '@nomos/sim-core';
 import { TICK_MS, bindPageLifecycle, type AppMessage, type WorkerMessage } from '@nomos/sim-protocol';
@@ -45,15 +48,27 @@ const TOWN_PEOPLE = 300;
 // The town an open message names has as many beds as its map has bytes, on a ground smaller than the first town's.
 const OPENED_PEOPLE = 120;
 const SMALL_GROUND: Ground = { width: 64, height: 64, walk: new Uint8Array(64 * 64).fill(1) };
+// 06:00, when a town with streets opens.
+const OPENING_TICK = 360;
+// One general shop selling every good, which gives a town on the small ground streets.
+const STREET_SHOPS = createShops([{ doorX: 32, doorY: 32, goods: 0xfe, stall: false }]);
 
 function standInSite(map: ArrayBuffer): TownSite {
   return { ground: SMALL_GROUND, homes: createStandInTownHomes(SMALL_GROUND, map.byteLength) };
 }
 
+function streetSite(map: ArrayBuffer): TownSite {
+  return { ...standInSite(map), shops: STREET_SHOPS };
+}
+
+function streetTown(seed: number, tier: Tier, people: number): World {
+  return createTown(seed, tier, SMALL_GROUND, createStandInTownHomes(SMALL_GROUND, people), STREET_SHOPS);
+}
+
 // A manual clock and the loop's one pending callback. Scheduling a second turn while one is pending throws, so every
-// test also checks that only one loop ever runs. The world is a town of TOWN_PEOPLE when town is set, and the plain
-// world of createWorld otherwise.
-function fakePage({ init = true, town = false } = {}) {
+// test also checks that only one loop ever runs. The world is a town of TOWN_PEOPLE when town is set, the same town with
+// streets when streets is set, and the plain world of createWorld otherwise.
+function fakePage({ init = true, town = false, streets = false } = {}) {
   let clock = 0;
   let pending: { at: number; fn: () => void } | null = null;
   let world: World | null = null;
@@ -78,13 +93,16 @@ function fakePage({ init = true, town = false } = {}) {
     },
     // Cloned and transferred as postMessage would, so reused message objects and returned buffers behave as in a browser.
     post: (msg, transfer) => posted.push(structuredClone(msg, { transfer })),
-    makeWorld: (seed, tier, _map, agents) =>
-      (world = town
-        ? createStandInTown(seed, tier, standInGround(), agents ?? TOWN_PEOPLE)
-        : createWorld(seed, tier, undefined, agents)),
-    readTown: standInSite,
+    makeWorld: (seed, tier, _map, agents) => (world = newWorld(seed, tier, agents)),
+    readTown: streets ? streetSite : standInSite,
   };
   const loop = createSimLoop(host);
+
+  function newWorld(seed: number, tier: Tier, agents?: number): World {
+    if (streets) return streetTown(seed, tier, agents ?? TOWN_PEOPLE);
+    if (town) return createStandInTown(seed, tier, standInGround(), agents ?? TOWN_PEOPLE);
+    return createWorld(seed, tier, undefined, agents);
+  }
 
   // Runs the pending callback whenever it falls due within ms. A late callback runs at the current time, and a loop that
   // keeps waking without the clock moving would spin a core, so it fails here instead of hanging the test.
@@ -478,6 +496,48 @@ describe('the sim loop', () => {
     expect(page.ofType('opened')).toEqual([live, live]);
     // Nothing was logged either, so no request waits for a day boundary.
     expect([page.tick(), world.inputs.cursor[0]]).toEqual([700, 0]);
+  });
+
+  it('opens a town with streets at 06:00, running its night at once and posting the economy day that fell in it', () => {
+    const page = fakePage({ streets: true });
+
+    expect(page.tick()).toBe(OPENING_TICK);
+    expect(page.posted.map(({ type }) => type)).toEqual(['ready', 'snapshot', 'economy']);
+    const [, spawn, economy] = page.posted;
+    expect(spawn).toMatchObject({ type: 'snapshot', tick: OPENING_TICK, count: TOWN_PEOPLE });
+    expect(economy).toMatchObject({ type: 'economy', day: 0, days: 1 });
+
+    const twin = streetTown(42, 'phone', TOWN_PEOPLE);
+    while (currentTick(twin) < OPENING_TICK) step(twin);
+    expect(stateHash(page.world())).toBe(stateHash(twin));
+  });
+
+  it('runs a switched town with streets up to its 06:00, but a request for the live town stays where it is', () => {
+    const page = fakePage({ streets: true });
+    const world = page.world();
+    const twin = streetTown(42, 'phone', TOWN_PEOPLE);
+    // 00:10 of day 1, when the live town's streets are asleep again.
+    const restingAt = TICKS_PER_DAY + 10;
+    for (const each of [world, twin]) while (currentTick(each) < restingAt) step(each);
+
+    page.handle({ type: 'open', place: 0, map: new ArrayBuffer(OPENED_PEOPLE) });
+    expect(page.ofType('opened')).toEqual([{ type: 'opened', place: 0, agents: TOWN_PEOPLE, width: 64, height: 64, tick: restingAt }]);
+
+    // The switch lands at day 2's boundary, and the new town's night runs on from the step after it to 06:00.
+    page.handle({ type: 'open', place: 1, map: new ArrayBuffer(OPENED_PEOPLE) });
+    const landedAt = 2 * TICKS_PER_DAY + OPENING_TICK;
+    const opened = page.ofType('opened')[1];
+    expect(opened).toEqual({ type: 'opened', place: 1, agents: OPENED_PEOPLE, width: 64, height: 64, tick: landedAt });
+    const [live, switched] = page.ofType('snapshot').slice(1);
+    expect([live.tick, switched.tick, switched.count]).toEqual([restingAt, landedAt, OPENED_PEOPLE]);
+    expect(page.ofType('economy').map(({ day, days }) => [day, days])).toEqual([
+      [0, 1],
+      [2, 1],
+    ]);
+
+    requestTown(twin, 1, SMALL_GROUND, streetSite(new ArrayBuffer(OPENED_PEOPLE)).homes, STREET_SHOPS);
+    while (currentTick(twin) < landedAt) step(twin);
+    expect(stateHash(world)).toBe(stateHash(twin));
   });
 
   it('answers inspect with the nearest blob within a tile', () => {
