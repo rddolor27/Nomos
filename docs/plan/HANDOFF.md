@@ -85,6 +85,15 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 11 Oct: **M2.7 Part 1, Task 7's sprites** (bc8659b, 2c8e79e, 819295c).
+  - **Drawn:** the chewing faces and hold code, the seven carried goods (`icons/carry_*`), the stock pips (`icons/pip_stock_0..3`), the three stalls (`buildings/shop_market-stall_{vegetables,fish,milk}`), and the Draper and Fuel Store fronts in both looks, with snow.
+  - **Checks:** `test_sprites.py` and `pnpm test:py` pass. The atlas is a build product (184,354 B of 300 kB), and the place goldens and `town.nmap` hold.
+  - **Held back for Task 6:** the `hold` and `eat` frame fields, which the sprite manifest's schema forbids. To enable them:
+    1. add both to `sprite-manifest.schema.json` and regenerate `src/sprites/sprite-manifest.ts`;
+    2. copy them in `build_atlas.py` and `test_atlas.py`, as `face` is copied;
+    3. add a slot in render-gl's frame record;
+    4. flip `characters.build(holds=…)` to true.
+  - **Doors:** the new premises' `door` points sit off `settle()`'s centre column, so Task 2 must read `door`.
 - 11 Oct: **M2.7 Part 1's mockups and picks** (3ec6b1e, d1d8be4).
   - **The mockups:** six sheets and a street scene in `docs/mockups/m2.7-street/`.
   - **The owner's picks:** the front-hip hold, the open-and-shut eating face, stall canopies coloured by good, and bead stock pips.
