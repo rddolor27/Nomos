@@ -20,6 +20,18 @@ describe('the map worker', { timeout: 60_000 }, () => {
     expect(worldFingerprint(moved.map)).toBe(0x4a765ce2);
   });
 
+  // The first screen's town is every world's capital (M2.2c Ruling 1), so entering it from the map returns to the live town.
+  it("gives place 0 Highcourt's context and name in every world, and leaves place 1 its own", () => {
+    for (const seed of [0x5eed0001, 0x5eed0002]) {
+      const { reply, contexts } = answerGenerate({ type: 'generate', seed, size: 'standard' }, () => 0);
+      const countries = reply.map.countries.capital.length;
+      expect(contexts[0]).toBe(TOWN);
+      expect(reply.names[countries]).toBe('Highcourt');
+      expect(contexts[1]).not.toBe(TOWN);
+      expect(reply.names[countries + 1]).not.toBe('Highcourt');
+    }
+  });
+
   // Place p is settlement p, or wonder p minus the settlement count, as world.py's place_contexts orders them. The
   // builder loads on the first request, through the same dynamic import the worker makes.
   it("answers place with a settlement's and a wonder's place after the world's columns are gone", async () => {

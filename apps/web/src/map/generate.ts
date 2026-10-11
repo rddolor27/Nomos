@@ -1,6 +1,6 @@
 import type { PlaceError, PlaceReply, PlaceRequest, TownError, TownReply } from '@nomos/sim-protocol/place';
 import { worldMapBuffers, type MapAppMessage, type MapWorkerMessage } from '@nomos/sim-protocol/world-map';
-import { generateWorld, placeContexts, placeNames, type PlaceContext } from '@nomos/worldgen';
+import { generateWorld, placeContexts, placeNames, TOWN, type PlaceContext } from '@nomos/worldgen';
 
 export interface MapAnswer {
   reply: MapWorkerMessage;
@@ -19,6 +19,10 @@ export interface TownAnswer {
   transfer: ArrayBuffer[];
 }
 
+// Settlement 0 is each world's capital, and the first screen's town stands in its place (M2.2c Ruling 1): Highcourt's pinned
+// context and name, so every map holds the town the sim starts in.
+const HOME = 0;
+
 // The map worker's first job: a world and its names, every buffer listed, so the page never copies a column.
 export function answerGenerate(msg: MapAppMessage, now: () => number): MapAnswer {
   const stageMs: Record<string, number> = {};
@@ -30,8 +34,10 @@ export function answerGenerate(msg: MapAppMessage, now: () => number): MapAnswer
   };
   const map = generateWorld(msg.seed, msg.size, { lap });
   const names = placeNames(map);
+  names[map.countries.capital.length + HOME] = TOWN.name;
   lap('names');
   const contexts = placeContexts(map);
+  contexts[HOME] = TOWN;
   lap('contexts');
   const transfer = [...worldMapBuffers(map)];
   return { reply: { type: 'world', map, names, stageMs }, transfer, contexts };
