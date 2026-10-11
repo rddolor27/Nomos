@@ -68,6 +68,7 @@ describe('the premises of a map', () => {
       [6, bit(TOOLS), 6, 2],
       [8, bit(FUEL), 8, 2],
     ]);
+    expect(premises.map((p) => p.stall)).toEqual([false, true, true, true, false, false, false]);
     expect(sellersOf(premises, FUEL)).toEqual([6]);
     expect(sellersOf(premises, BREAD)).toEqual([0]);
   });
@@ -75,7 +76,7 @@ describe('the premises of a map', () => {
   it("make a village's one stall sell all seven goods, and a hamlet with no shop has none", () => {
     const village = premisesOf(mapOf([entity(ENTITY_HOME, 'house_brick_detached_roof-green', 0), entity(ENTITY_SHOP, 'shop_market-stall', 1)]));
 
-    expect(village).toEqual([{ entity: 1, goods: EVERY_GOOD, doorX: 1, doorY: 2 }]);
+    expect(village).toEqual([{ entity: 1, goods: EVERY_GOOD, doorX: 1, doorY: 2, stall: true }]);
     for (let good = BREAD; good <= FUEL; good++) expect(sellersOf(village, good)).toEqual([0]);
     expect(premisesOf(mapOf([entity(ENTITY_HOME, 'house_brick_detached_roof-green', 0), entity(ENTITY_WORKPLACE, 'work_workshop', 1)]))).toEqual([]);
   });

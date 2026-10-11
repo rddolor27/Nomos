@@ -4,6 +4,8 @@ import { ENTITY_SHOP, ENTITY_WORKPLACE, type MapV1 } from './map.ts';
 // Where blobs buy (M2.7 Part 1, Ruling 1). A premises is a shop or stall in a place's map, and its frame names what it
 // sells, so the map format itself holds nothing more.
 const SHEET = 'buildings';
+// Every market stall frame, the generic one and the three that show their good, starts with this.
+const STALL_FRAME = `${SHEET}/shop_market-stall`;
 
 // One good and the frames of the buildings that sell it. A front with two looks lists both, and a town draws one for
 // each building.
@@ -36,6 +38,8 @@ export interface Premises {
   goods: number;
   doorX: number;
   doorY: number;
+  // A market stall, whose first worker keeps its counter in the open instead of going indoors.
+  stall: boolean;
 }
 
 const GOOD_OF_FRAME = new Map<string, number>();
@@ -63,10 +67,11 @@ export function premisesOf(map: MapV1): Premises[] {
   let ownTrade = 0;
   map.entities.forEach((entity, index) => {
     if (entity.kind !== ENTITY_SHOP && entity.kind !== ENTITY_WORKPLACE) return;
-    const goods = goodsOfFrame(map.frames[entity.frame]);
+    const frame = map.frames[entity.frame];
+    const goods = goodsOfFrame(frame);
     if (goods === 0) return;
     if (goods !== EVERY_GOOD) ownTrade |= goods;
-    found.push({ entity: index, goods, doorX: entity.doorX, doorY: entity.doorY });
+    found.push({ entity: index, goods, doorX: entity.doorX, doorY: entity.doorY, stall: frame.startsWith(STALL_FRAME) });
   });
   const premises: Premises[] = [];
   for (const p of found) {
