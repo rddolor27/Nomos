@@ -1,6 +1,6 @@
-import { createHomes, createStandInTown, createTown, type Tier, type World } from '@nomos/sim-core';
-import { ENTITY_HOME, parseMap, type AppMessage } from '@nomos/sim-protocol';
-import { createSimLoop } from './loop/loop.ts';
+import { createHomes, createStandInTown, createTown, type Homes, type Tier, type World } from '@nomos/sim-core';
+import { ENTITY_HOME, parseMap, type AppMessage, type MapV1 } from '@nomos/sim-protocol';
+import { createSimLoop, type TownSite } from './loop/loop.ts';
 
 // One channel serves every yield: a posted message wakes the next turn without setTimeout's nested 4 ms clamp (R2 §2).
 const channel = new MessageChannel();
@@ -11,13 +11,23 @@ channel.port1.onmessage = () => afterYield();
 const slowdown = Number((globalThis as { __nomosCpuSlowdown?: unknown }).__nomosCpuSlowdown);
 const cpuSlowdown = Number.isFinite(slowdown) && slowdown >= 1 ? slowdown : 1;
 
+function homesOf(map: MapV1): Homes {
+  return createHomes(map.entities.filter((entity) => entity.kind === ENTITY_HOME));
+}
+
 // Nothing catches a bad map's MapError, so it leaves the handler and the page sees the Worker's error event. A page that
 // names its tier with ?tier= sends agents, the tier's whole count in stand-in homes, which the perf specs measure. Any other
 // start fills the map's own homes, one blob to a bed.
 function makeWorld(seed: number, tier: Tier, map: ArrayBuffer, agents?: number): World {
   const ground = parseMap(map);
   if (agents !== undefined) return createStandInTown(seed, tier, ground, agents);
-  return createTown(seed, tier, ground, createHomes(ground.entities.filter((entity) => entity.kind === ENTITY_HOME)));
+  return createTown(seed, tier, ground, homesOf(ground));
+}
+
+// An open message's map, read the same way, and just as uncaught.
+function readTown(map: ArrayBuffer): TownSite {
+  const ground = parseMap(map);
+  return { ground, homes: homesOf(ground) };
 }
 
 const loop = createSimLoop(
@@ -32,6 +42,7 @@ const loop = createSimLoop(
     },
     post: (msg, transfer) => self.postMessage(msg, transfer),
     makeWorld,
+    readTown,
   },
   cpuSlowdown,
 );

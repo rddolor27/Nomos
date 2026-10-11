@@ -1,25 +1,29 @@
 import {
   ACTION_WALK,
   ECONOMY_TICKS,
+  MAX_TOWNS,
   PURCHASE_RING,
   STAT_WAGE_MEAN,
   TICKS_PER_DAY,
   createStandInTown,
+  createStandInTownHomes,
   createWorld,
   currentTick,
   issue,
   nearestAgent,
+  requestTown,
   restoreWorld,
   standInGround,
   stateHash,
   step,
   walletAccount,
   warmUp,
+  type Ground,
   type World,
 } from '@nomos/sim-core';
 import { TICK_MS, bindPageLifecycle, type AppMessage, type WorkerMessage } from '@nomos/sim-protocol';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { SLEEP_MIN_MS, STATS_MS, createSimLoop, type LoopHost } from '../src/index.ts';
+import { SLEEP_MIN_MS, STATS_MS, createSimLoop, type LoopHost, type TownSite } from '../src/index.ts';
 
 // The real warm-up and step, wrapped so a test can see when the loop runs the first or stand in for its time, and give the
 // second a cost on the fake clock.
@@ -38,6 +42,13 @@ type FakeDoc = EventTarget & { visibilityState: string };
 type Page = ReturnType<typeof fakePage>;
 
 const TOWN_PEOPLE = 300;
+// The town an open message names has as many beds as its map has bytes, on a ground smaller than the first town's.
+const OPENED_PEOPLE = 120;
+const SMALL_GROUND: Ground = { width: 64, height: 64, walk: new Uint8Array(64 * 64).fill(1) };
+
+function standInSite(map: ArrayBuffer): TownSite {
+  return { ground: SMALL_GROUND, homes: createStandInTownHomes(SMALL_GROUND, map.byteLength) };
+}
 
 // A manual clock and the loop's one pending callback. Scheduling a second turn while one is pending throws, so every
 // test also checks that only one loop ever runs. The world is a town of TOWN_PEOPLE when town is set, and the plain
@@ -71,6 +82,7 @@ function fakePage({ init = true, town = false } = {}) {
       (world = town
         ? createStandInTown(seed, tier, standInGround(), agents ?? TOWN_PEOPLE)
         : createWorld(seed, tier, undefined, agents)),
+    readTown: standInSite,
   };
   const loop = createSimLoop(host);
 
@@ -399,6 +411,75 @@ describe('the sim loop', () => {
     expect(page.ofType('economy')).toEqual([]);
   });
 
+  it('runs the rest of the day on open, then posts opened with the new town, its blobs and a fresh economy', () => {
+    const page = fakePage({ town: true });
+    page.handle({ type: 'resume' });
+    page.advance(700 * TICK_MS);
+    expect(page.tick()).toBe(700);
+    expect(page.ofType('economy').map(({ day, days }) => [day, days])).toEqual([[0, 1]]);
+    // The app has drawn the three snapshots so far and sent their buffers back.
+    for (const { buffer } of page.ofType('snapshot')) page.handle({ type: 'return', buffer });
+    const before = page.posted.length;
+    const twin = createStandInTown(42, 'phone', standInGround(), TOWN_PEOPLE);
+    while (currentTick(twin) < 700) step(twin);
+
+    page.handle({ type: 'open', place: 1, map: new ArrayBuffer(OPENED_PEOPLE) });
+    // The boundary is the step at tick 1,440, which leaves the world at 1,441, and no snapshot came while the day ran.
+    const landedAt = TICKS_PER_DAY + 1;
+    expect(page.tick()).toBe(landedAt);
+    const [opened, spawn, ...others] = page.posted.slice(before);
+    expect(opened).toEqual({ type: 'opened', place: 1, agents: OPENED_PEOPLE, width: 64, height: 64, tick: landedAt });
+    expect(spawn).toMatchObject({ type: 'snapshot', tick: landedAt, count: OPENED_PEOPLE });
+    expect(others).toEqual([]);
+
+    requestTown(twin, 1, SMALL_GROUND, standInSite(new ArrayBuffer(OPENED_PEOPLE)).homes);
+    while (currentTick(twin) < landedAt) step(twin);
+    expect(stateHash(page.world())).toBe(stateHash(twin));
+
+    // The panel starts over with the new town, so its first day comes alone, where the old feed would hold two.
+    page.advance((ECONOMY_TICKS - 1) * TICK_MS);
+    expect(page.ofType('economy').map(({ day, days }) => [day, days])).toEqual([
+      [0, 1],
+      [1, 1],
+    ]);
+  });
+
+  it('switches on open while paused, and stays paused', () => {
+    const page = fakePage({ town: true });
+    const world = page.world();
+    while (currentTick(world) < 700) step(world);
+
+    page.handle({ type: 'open', place: 1, map: new ArrayBuffer(OPENED_PEOPLE) });
+    const landedAt = TICKS_PER_DAY + 1;
+    expect(page.ofType('opened')).toEqual([
+      { type: 'opened', place: 1, agents: OPENED_PEOPLE, width: 64, height: 64, tick: landedAt },
+    ]);
+    // A paused page still gets the new town to draw, as init gives it the spawn.
+    expect(page.ofType('snapshot').map(({ tick, count }) => [tick, count])).toEqual([
+      [0, TOWN_PEOPLE],
+      [landedAt, OPENED_PEOPLE],
+    ]);
+    page.advance(10_000);
+    expect(page.tick()).toBe(landedAt);
+
+    page.handle({ type: 'resume' });
+    page.advance(TICK_MS);
+    expect(page.tick()).toBe(landedAt + 1);
+  });
+
+  it('answers an open for the live town, or one the sim refuses, with the live town, and switches nothing', () => {
+    const page = fakePage({ town: true });
+    const world = page.world();
+    while (currentTick(world) < 700) step(world);
+    const live = { type: 'opened', place: 0, agents: TOWN_PEOPLE, width: 256, height: 256, tick: 700 };
+
+    page.handle({ type: 'open', place: 0, map: new ArrayBuffer(OPENED_PEOPLE) });
+    page.handle({ type: 'open', place: MAX_TOWNS, map: new ArrayBuffer(OPENED_PEOPLE) });
+    expect(page.ofType('opened')).toEqual([live, live]);
+    // Nothing was logged either, so no request waits for a day boundary.
+    expect([page.tick(), world.inputs.cursor[0]]).toEqual([700, 0]);
+  });
+
   it('answers inspect with the nearest blob within a tile', () => {
     const page = fakePage();
     const { agents, cash } = page.world();
@@ -557,6 +638,7 @@ describe('the sim loop', () => {
           clock += WORK_MS;
           return createWorld(seed, tier);
         },
+        readTown: standInSite,
       };
       vi.mocked(warmUp).mockImplementationOnce(() => {
         clock += WARM_MS;

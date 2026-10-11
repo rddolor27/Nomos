@@ -3,6 +3,7 @@ import {
   GENERIC,
   NO_HOME,
   NO_HOUSEHOLD,
+  NO_PLACE,
   SUBPIXELS,
   SYSTEM_NAMES,
   TILE_PX,
@@ -11,8 +12,11 @@ import {
   firstMemberOf,
   householdOf,
   nearestAgent,
+  requestTown,
   step,
   warmUp,
+  type Ground,
+  type Homes,
   type SystemTimer,
   type Tier,
   type World,
@@ -44,19 +48,27 @@ export const SLEEP_MIN_MS = 4;
 const INSPECT_RADIUS_Q8 = TILE_PX * SUBPIXELS;
 const NO_EMPLOYER = -1;
 
+// The town an open message's map holds: its ground, and the homes on it.
+export interface TownSite {
+  readonly ground: Ground;
+  readonly homes: Homes;
+}
+
 export interface LoopHost {
   now(): number;
   sleep(fn: () => void, ms: number): void;
   yieldNow(fn: () => void): void;
   post(msg: WorkerMessage, transfer: Transferable[]): void;
   makeWorld(seed: number, tier: Tier, map: ArrayBuffer, agents?: number): World;
+  readTown(map: ArrayBuffer): TownSite;
 }
 
 interface Session {
   readonly world: World;
   readonly pool: SnapshotPool;
-  // Made with the world, so a new run starts its days over; a world that is not a town never writes it.
-  readonly feed: EconomyMessage;
+  // Made with the world and again at each switch, so the panel's days start over with the town; a world that is not a town
+  // never writes it.
+  feed: EconomyMessage;
 }
 
 type SnapshotMessage = Extract<WorkerMessage, { type: 'snapshot' }>;
@@ -112,6 +124,7 @@ export function createSimLoop(host: LoopHost, cpuSlowdown = 1): { handle(msg: Ap
     else if (msg.type === 'speed') speed = msg.speed;
     else if (msg.type === 'checkpoint') postCheckpoint(session.world);
     else if (msg.type === 'inspect') postInspected(session.world, msg.x, msg.y);
+    else if (msg.type === 'open') openTown(session, msg.place, msg.map);
     else giveBack(session.pool, msg.buffer);
   }
 
@@ -223,6 +236,24 @@ export function createSimLoop(host: LoopHost, cpuSlowdown = 1): { handle(msg: Ap
     const tick = currentTick(world);
     const agent = nearestAgent(world.agents, Math.round(x * SUBPIXELS), Math.round(y * SUBPIXELS), INSPECT_RADIUS_Q8);
     post(agent < 0 ? noBlobReply(tick) : blobReply(world, tick, agent), noTransfer);
+  }
+
+  // A switch lands at a day boundary (M2.2c Ruling 2), so the rest of the day runs here at once, with no snapshots and
+  // whether or not the run is paused. The handler is one turn, so no checkpoint or inspect falls between the request and the
+  // switch. The map is read first, so a bad one changes nothing. A request for the live town, or one the sim refuses, switches
+  // nothing, and opened names the town still live. The snapshot lets a paused page draw the new town, as init's does.
+  function openTown(session: Session, place: number, map: ArrayBuffer): void {
+    const world = session.world;
+    if (place !== world.focus[0]) {
+      const { ground, homes } = host.readTown(map);
+      if (requestTown(world, place, ground, homes)) {
+        while (world.request.place !== NO_PLACE) step(world);
+        session.feed = createEconomyFeed();
+      }
+    }
+    const { width, height } = world.ground;
+    post({ type: 'opened', place: world.focus[0], agents: world.agents.count[0], width, height, tick: currentTick(world) }, noTransfer);
+    postSnapshot(world, session.pool);
   }
 
   // Waits before the post rather than after the handler, which would come too late: init posts ready and the spawn

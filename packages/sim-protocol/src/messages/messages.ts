@@ -18,6 +18,7 @@ export type AppMessage =
   | { type: 'speed'; speed: Speed } // changes no state, so a watch-only run accepts it; a paused run keeps it for Play
   | { type: 'checkpoint' } // a worker cannot see pagehide, so the app asks for the checkpoint
   | { type: 'inspect'; x: number; y: number } // world pixels; a read-only query, answered even while a run plays
+  | { type: 'open'; place: number; map: ArrayBuffer } // switch to settlement place, whose ground is the .nmap bytes in map; answered with opened, paused or not
   | { type: 'return'; buffer: ArrayBuffer };
 
 // A town's economy after each of its days (M2.2b): the last days of each figure, oldest first, and the day's last trades.
@@ -56,6 +57,11 @@ export type WorkerMessage =
   | { type: 'snapshot'; tick: number; count: number; buffer: ArrayBuffer }
   | { type: 'stats'; tick: number; systemMs: Record<string, number> } // keyed by SYSTEM_NAMES plus 'snapshot'
   | { type: 'checkpoint'; tick: number; state: ArrayBuffer }
+  // The answer to open, once the switch has landed at a day boundary (M2.2c): the town live now, which is the place asked
+  // for, or the one that stays live when the request names the live town or the sim refuses it. agents is its blobs and
+  // width and height its ground in tiles. The tick is the world's after the step that ran the boundary, and the town's
+  // first snapshot follows. Every snapshot posted before this message is of the old town.
+  | { type: 'opened'; place: number; agents: number; width: number; height: number; tick: number }
   // agent -1: no blob within a tile, and every field after it 0, -1 or empty. employer is the employing firm's row, employerGood
   // its good (0 for none) and wage its pay in cents a month, or -1, 0 and 0 for someone out of work. look is one of the 96
   // (hue look % 6, eyes floor(look / 6) % 4, pattern floor(look / 24)) and action an ACTION_* code, both as the snapshot's
