@@ -3,7 +3,7 @@ import { createStandInTownHomes } from '../src/spawn/homes.ts';
 import { createTown } from '../src/spawn/town.ts';
 import { step } from '../src/step/step.ts';
 import { AT_DOOR, MAX_PREMISES, MAX_SITES } from '../src/street/fields.ts';
-import { streetsFit } from '../src/street/open.ts';
+import { closeStreets, streetsFit } from '../src/street/open.ts';
 import { NO_SITE, SITE_GREEN, SITE_PLAZA, SITE_SHOP, SITE_WATER, createShops, type ShopSite } from '../src/street/shops.ts';
 import { stateHash } from '../src/world/checkpoint.ts';
 import { STREETS, createWorld, currentTick } from '../src/world/world.ts';
@@ -66,5 +66,18 @@ describe('the sites of a town', () => {
     const alone = townOf([PLAZA, GREEN, WATER]);
     expect(alone.globals[STREETS]).toBe(0);
     expect(alone.errands.siteKind.every((kind) => kind === NO_SITE)).toBe(true);
+  });
+
+  it('go with the town: closing its streets clears every site and home tile', () => {
+    const world = townOf([BAKERY, STALL, PLAZA]);
+    const { errands } = world;
+    expect(errands.homeCell.some((cell) => cell !== 0)).toBe(true);
+    expect(errands.siteKind.some((kind) => kind !== NO_SITE)).toBe(true);
+
+    closeStreets(world);
+
+    expect(errands.homeCell.every((cell) => cell === 0)).toBe(true);
+    expect(errands.siteKind.every((kind) => kind === NO_SITE)).toBe(true);
+    expect(world.globals[STREETS]).toBe(0);
   });
 });
