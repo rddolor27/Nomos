@@ -85,6 +85,16 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 11–12 Oct: **M2.7 Part 1 implemented; it pauses before its Opus review**, as the owner asked.
+  - **Built:**
+    - the 07:00 opening, so a town first shows its morning rush with 1,793 of 2,600 out (9f4e1a5);
+    - the coin bubble over a buyer at the counter (fc16716);
+    - the card's "Bought today" line (c2c4df5);
+    - the first snapshot re-pinned at tick 420 (d80a6b8).
+  - **Checks:** worker-map, towns, inspector, economy and HUD specs pass. No hash moved.
+  - **Two stale tests fixed:** render-gl's dots golden, `skin-a.json`, failed since `town.nmap`'s premises regeneration (adf18aa). `map-golden.spec.ts` expected the generator's capital name, not Highcourt, since M2.2c Task 6 (55e2aee). CI's browser job was likely red from about 16:30 to this push.
+  - **Bytes:** initial JS is 32.98 of 35 kB, and the worker chunk 21 of 22 kB.
+  - **Watch perf.yml:** the opening run is 9–10 ms warm and 33–39 ms cold.
 - 11 Oct: **M2.7 Part 1, Tasks 4–5 and fast nights** (ce26e1e..78d6adc). Blobs walk to work and shops, carry goods and eat in the running app.
   - **Premises:** they gain `stall`.
   - **The worker wiring:** `createShops(premisesOf(map))` runs at init and in `readTown`. The night run happens only after init and after a real switch.
