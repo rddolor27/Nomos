@@ -92,12 +92,16 @@ export function createShops(sites: readonly ShopSite[]): Shops {
     shops.areaY[p] = sites[p].y ?? sites[p].doorY;
     shops.areaW[p] = Math.max(1, sites[p].w ?? 1);
     shops.areaH[p] = Math.max(1, sites[p].h ?? 1);
-    shops.hiddenX[p] = sites[p].hiddenX ?? 0;
-    shops.hiddenY[p] = sites[p].hiddenY ?? 0;
-    shops.hiddenW[p] = Math.max(0, sites[p].hiddenW ?? 0);
-    shops.hiddenH[p] = Math.max(0, sites[p].hiddenH ?? 0);
+    setHidden(shops, p, sites[p]);
   }
   return shops;
+}
+
+function setHidden(shops: Shops, p: number, site: ShopSite): void {
+  shops.hiddenX[p] = site.hiddenX ?? 0;
+  shops.hiddenY[p] = site.hiddenY ?? 0;
+  shops.hiddenW[p] = Math.max(0, site.hiddenW ?? 0);
+  shops.hiddenH[p] = Math.max(0, site.hiddenH ?? 0);
 }
 
 // A town with no premises, such as a hamlet or a stand-in: it keeps wandering.

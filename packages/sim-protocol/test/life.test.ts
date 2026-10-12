@@ -48,6 +48,8 @@ const SEED = 42;
 const TICKS_PER_DAY = 1_440;
 const TWO_PM = 840;
 const HALF_PAST_ONE = 810;
+// 20:44, when the doorsteps are fullest.
+const EVENING_PEAK = 1_244;
 const TEN_PM = 1_320;
 const FREE_TIME = [ACTIVITY_STAY, ACTIVITY_DOORSTEP, ACTIVITY_PLAZA, ACTIVITY_GREEN];
 
@@ -74,6 +76,22 @@ function blobsOf(world: World): number[] {
 
 function cellOf(world: World, blob: number): number {
   return tileOf(world.agents.y[blob]) * world.ground.width + tileOf(world.agents.x[blob]);
+}
+
+function groupBy(blobs: number[], keyOf: (blob: number) => number): Map<number, number[]> {
+  const groups = new Map<number, number[]>();
+  for (const blob of blobs) groups.set(keyOf(blob), [...(groups.get(keyOf(blob)) ?? []), blob]);
+  return groups;
+}
+
+// Of the blobs grouped by tile: how many there are, how many stand on a tile with another, and the most on one tile.
+function sharingOf(groups: Map<number, number[]>): { sitters: number; sharing: number; most: number } {
+  const counts = Array.from(groups.values(), (blobs) => blobs.length);
+  return {
+    sitters: counts.reduce((sum, count) => sum + count, 0),
+    sharing: counts.filter((count) => count > 1).reduce((sum, count) => sum + count, 0),
+    most: Math.max(0, ...counts),
+  };
 }
 
 // The cells of the front of the blob's home that it can sit on: its door's tile and the walkable ones round it that no awning hides.
@@ -235,46 +253,32 @@ describe("Highcourt's free time", { timeout: 60_000 }, () => {
 
   it("sits a blob on a tile of its home's front that a housemate holds only when the whole front is held", () => {
     const world = highcourt();
-    const { errands, life } = world;
-    const sitting = (blob: number): boolean => errands.phase[blob] === PHASE_STAYING && errands.activity[blob] === ACTIVITY_DOORSTEP;
-    const before = new Uint8Array(world.agents.capacity);
+    let before = new Set<number>();
     let sits = 0;
     let stacked = 0;
-    let mostOnATile = 0;
-    const shares: number[] = [];
+    let evening = { sitters: 0, sharing: 0, most: 0 };
     while (currentTick(world) < TEN_PM) {
       step(world);
-      const byTile = new Map<number, number[]>();
-      const bySeat = new Map<number, number[]>();
-      for (const blob of blobsOf(world)) {
-        if (!sitting(blob)) continue;
-        byTile.set(cellOf(world, blob), [...(byTile.get(cellOf(world, blob)) ?? []), blob]);
-        bySeat.set(life.seat[blob] - 1, [...(bySeat.get(life.seat[blob] - 1) ?? []), blob]);
+      const sitting = blobsOf(world).filter((blob) => onDoorstep(world, blob));
+      const bySeat = groupBy(sitting, (blob) => world.life.seat[blob] - 1);
+      for (const blob of sitting.filter((each) => !before.has(each))) {
+        sits++;
+        // The later of two blobs that sit down on one tile in one tick, in blob order, found every tile of its front held.
+        const sharesSeat = (bySeat.get(world.life.seat[blob] - 1) ?? []).some((other) => other !== blob && (before.has(other) || other < blob));
+        if (!sharesSeat) continue;
+        stacked++;
+        expect(frontOf(world, blob).every((cell) => world.life.holds[cell] >= 1), `blob ${blob} at tick ${currentTick(world)}`).toBe(true);
       }
-      for (const blob of blobsOf(world)) {
-        if (sitting(blob) && before[blob] === 0) {
-          sits++;
-          // The later of two blobs that sit down on one tile in one tick, in blob order, found every tile of its front held.
-          const neighbours = (bySeat.get(life.seat[blob] - 1) ?? []).filter((other) => other !== blob && (before[other] === 1 || other < blob));
-          if (neighbours.length > 0) {
-            stacked++;
-            expect(frontOf(world, blob).every((cell) => life.holds[cell] >= 1), `blob ${blob} at tick ${currentTick(world)}`).toBe(true);
-          }
-        }
-        before[blob] = sitting(blob) ? 1 : 0;
-      }
-      for (const blobs of byTile.values()) mostOnATile = Math.max(mostOnATile, blobs.length);
-      if (currentTick(world) === 1_244) shares.push(...[...byTile.values()].map((blobs) => blobs.length));
+      before = new Set(sitting);
+      if (currentTick(world) === EVENING_PEAK) evening = sharingOf(groupBy(sitting, (blob) => cellOf(world, blob)));
     }
 
-    const sharing = shares.filter((count) => count > 1).reduce((sum, count) => sum + count, 0);
-    const sitters = shares.reduce((sum, count) => sum + count, 0);
     console.info(
-      `Highcourt on day 0: ${sits} doorstep sits, ${stacked} onto a tile another sitter held; at 20:44 ${sharing} of ${sitters} sitters share a tile, ` +
-        `${mostOnATile} on one tile at most`,
+      `Highcourt on day 0: ${sits} doorstep sits, ${stacked} onto a tile another sitter held; at 20:44 ${evening.sharing} of ${evening.sitters} ` +
+        `sitters share a tile, ${evening.most} on one tile at most`,
     );
     expect(sits).toBeGreaterThan(1_000);
-    expect(sharing / sitters).toBeLessThan(0.3);
+    expect(evening.sharing / evening.sitters).toBeLessThan(0.3);
   });
 
   it('has no free-time choice running past half past nine but for a chat, and everyone home in bed by 22:00', () => {
