@@ -15,7 +15,7 @@ import {
 } from '@nomos/sim-protocol/place';
 import { describe, expect, it } from 'vitest';
 import type { AtlasFrame } from '../src/map/frames.ts';
-import { NO_FRAME, NO_POINT, STEMS, frameRecords, personFrames, stemOf } from '../src/place/people.ts';
+import { NO_FRAME, NO_POINT, frameRecords, personFrames } from '../src/place/people.ts';
 import { INSTANCE_SHORTS, PlaceSprites } from '../src/place/sprites.ts';
 import { PLACE_NAMES, placeLayout } from './place-fixtures.ts';
 
@@ -176,12 +176,11 @@ const WALK = PLACE_POSES.indexOf('walk');
 const SIT = PLACE_POSES.indexOf('sit');
 const UP = PLACE_FACINGS.indexOf('up');
 
-// Every pose, facing and step the atlas draws: all but a sitter facing up.
+// Every pose, facing and step the atlas draws.
 function stems(): [pose: number, facing: number, step: number][] {
   const out: [number, number, number][] = [];
   PLACE_POSES.forEach((_, pose) => {
     PLACE_FACINGS.forEach((_, facing) => {
-      if (pose === SIT && facing === UP) return;
       for (let step = 0; step < (pose === WALK ? 2 : 1); step++) out.push([pose, facing, step]);
     });
   });
@@ -242,11 +241,10 @@ describe('the place sprite list', () => {
     expect(sprites.data.slice(0, INSTANCE_SHORTS * sprites.fixed)).toEqual(fixed);
   });
 
-  it('has no sprite for a sitter facing up, and says so when asked to draw one', () => {
-    const missing = Array.from(PEOPLE.body.keys()).filter((slot) => PEOPLE.body[slot] === NO_FRAME);
-    expect(missing).toEqual(LOOK_HUES.flatMap((_, hue) => [0, 1].map((step) => hue * STEMS + stemOf(SIT, UP, step))));
+  it('has a sprite for a sitter facing up as for every other pose, and draws it with no face', () => {
+    expect(Array.from(PEOPLE.body.keys()).filter((slot) => PEOPLE.body[slot] === NO_FRAME)).toEqual([]);
     const sitter = crowd([[0, SIT, UP, 0, 0, NO_CODE, NO_CODE, 8, 8]]);
-    expect(() => packed(sitter)).toThrow('no sprite for a person in this pose and facing');
+    expect(drawn(packed(sitter)).slice(1)).toEqual([at('characters/blob_sun_sit_up', 8, 8)]);
   });
 
   it('names a frame the atlas lacks', () => {

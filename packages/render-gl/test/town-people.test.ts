@@ -190,7 +190,7 @@ describe('the Town skin\'s people', () => {
     expect([...columns.emote].map((code) => PLACE_EMOTES[code])).toEqual(['speech', 'music', 'ball', 'heart', 'question']);
   });
 
-  it('face a chatter and a sitter as the word says, though they moved to stop, and stand a sitter that faces up', () => {
+  it('face a chatter and a sitter as the word says, though they moved to stop, and sit a sitter that faces up', () => {
     // Each moved up to the point it stops at: a walker halted to chat with a partner on its left, and three that took a seat.
     const stopped: Agent[] = [
       [100, 50, chatter(1, FACING_LEFT)],
@@ -202,7 +202,7 @@ describe('the Town skin\'s people', () => {
     const { columns } = written(moved, stopped);
 
     expect([...columns.facing].map((code) => PLACE_FACINGS[code])).toEqual(['left', 'down', 'right', 'up']);
-    expect([...columns.pose].map((code) => PLACE_POSES[code])).toEqual(['stand', 'sit', 'sit', 'stand']);
+    expect([...columns.pose].map((code) => PLACE_POSES[code])).toEqual(['stand', 'sit', 'sit', 'sit']);
     expect([...columns.step, ...columns.lift]).toEqual([0, 0, 0, 0, 0, 0, 0, 0]);
   });
 
@@ -219,6 +219,10 @@ describe('the Town skin\'s people', () => {
       'icons/emote_speech',
     ]);
     expect(seated).toEqual(['characters/blob_rose_sit_left', 'characters/face_neutral_left']);
+  });
+
+  it('draw a sitter that faces up in its sit_up frame, seen from behind with no face', () => {
+    expect(drawnNames([[40, 40, sitter(2, FACING_UP)]])).toEqual(['characters/blob_rose_sit_up']);
   });
 
   it('draw nothing for a blob indoors, whatever else its word says', () => {

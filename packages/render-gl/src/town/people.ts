@@ -115,11 +115,11 @@ function facingFor(dx: number, dy: number, jump: boolean, action: number, word: 
   return dy > 0 ? DOWN : UP;
 }
 
-// A sitter sits on the ground at its spot, where its feet stand as a stander's do, so it needs no lift. The atlas has no sitter seen
-// from behind, so one facing up stands, as the mockups drew backs. A chatter stands to talk.
-function poseFor(action: number, facing: number): number {
+// A sitter sits on the ground at its spot, whichever way it faces, a seat seen from behind included (sit_up), where its feet stand as
+// a stander's do, so it needs no lift. A chatter stands to talk.
+function poseFor(action: number): number {
   if (action === ACTION_WALK) return WALK;
-  return action === ACTION_SIT && facing !== UP ? SIT : STAND;
+  return action === ACTION_SIT ? SIT : STAND;
 }
 
 // What the word says of the street: the bubble over the blob, the good carried, how far into the eating loop the blob is (0
@@ -165,7 +165,7 @@ function writePerson(
   people.x[i] = x;
   people.y[i] = y;
   people.look[i] = lookOf(word);
-  people.pose[i] = poseFor(action, facing);
+  people.pose[i] = poseFor(action);
   people.facing[i] = facing;
   people.step[i] = 0;
   if (action === ACTION_WALK) writeWalk(people, i, facing === LEFT || facing === RIGHT);
