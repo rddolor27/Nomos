@@ -29,6 +29,7 @@ import {
   parkFree,
   pointInTileQ8,
   restoreWorld,
+  sitOnDoorstep,
   sitesOf,
   stateHash,
   startOuting,
@@ -71,6 +72,29 @@ function blobsOf(world: World): number[] {
 
 function cellOf(world: World, blob: number): number {
   return tileOf(world.agents.y[blob]) * world.ground.width + tileOf(world.agents.x[blob]);
+}
+
+// The cells of the front of the blob's home that it can sit on: its door's tile and the walkable ones round it that no awning hides.
+function frontOf(world: World, blob: number): number[] {
+  const { width, height, walk } = world.ground;
+  const door = world.errands.homeCell[blob];
+  const cells: number[] = [];
+  for (let y = Math.floor(door / width) - 1; y <= Math.floor(door / width) + 1; y++) {
+    for (let x = (door % width) - 1; x <= (door % width) + 1; x++) {
+      const cell = y * width + x;
+      if (x >= 0 && y >= 0 && x < width && y < height && walk[cell] !== 0 && world.life.holds[cell] !== CELL_HIDDEN) cells.push(cell);
+    }
+  }
+  return cells;
+}
+
+// Whether the blob stands on its home's door tile or one of the eight round it, where a blob sits out on its doorstep.
+function onFrontOf(world: World, blob: number): boolean {
+  const door = world.errands.homeCell[blob];
+  const cell = cellOf(world, blob);
+  const dx = Math.abs((cell % town.width) - (door % town.width));
+  const dy = Math.abs(Math.floor(cell / town.width) - Math.floor(door / town.width));
+  return dx <= 1 && dy <= 1;
 }
 
 function covers(site: LeisureSite, cell: number): boolean {
@@ -173,7 +197,7 @@ describe("Highcourt's free time", { timeout: 60_000 }, () => {
     expect(Array.from(tiles).filter((cell) => hidden.has(cell))).toEqual([]);
   });
 
-  it('holds a tile for each blob that stands out in a site or walks out to one, none sharing the plaza, and lets them all go by night', () => {
+  it('holds a tile for each blob that sits out or walks out to a site, none sharing the plaza, and lets them all go by night', () => {
     const world = highcourt();
     const { errands, life } = world;
     const holding = (): number => blobsOf(world).filter((blob) => life.seat[blob] !== 0).length;
@@ -181,7 +205,7 @@ describe("Highcourt's free time", { timeout: 60_000 }, () => {
     // A green has 24 tiles and holds every blob on its way too, so two blobs can share one when the green is full: 28 held at 18:20.
     const mostOnATile = { plaza: 0, green: 0 };
     let busiest = 0;
-    while (currentTick(world) < TEN_PM) {
+    while (currentTick(world) <= TEN_PM) {
       step(world);
       const onTile = new Map<number, number>();
       for (const blob of blobsOf(world)) {
@@ -206,6 +230,50 @@ describe("Highcourt's free time", { timeout: 60_000 }, () => {
     expect(life.holds.filter((count) => count === CELL_HIDDEN)).toHaveLength(hiddenCells().size);
   });
 
+  it("sits a blob on a tile of its home's front that a housemate holds only when the whole front is held", () => {
+    const world = highcourt();
+    const { errands, life } = world;
+    const sitting = (blob: number): boolean => errands.phase[blob] === PHASE_STAYING && errands.activity[blob] === ACTIVITY_DOORSTEP;
+    const before = new Uint8Array(world.agents.capacity);
+    let sits = 0;
+    let stacked = 0;
+    let mostOnATile = 0;
+    const shares: number[] = [];
+    while (currentTick(world) < TEN_PM) {
+      step(world);
+      const byTile = new Map<number, number[]>();
+      const bySeat = new Map<number, number[]>();
+      for (const blob of blobsOf(world)) {
+        if (!sitting(blob)) continue;
+        byTile.set(cellOf(world, blob), [...(byTile.get(cellOf(world, blob)) ?? []), blob]);
+        bySeat.set(life.seat[blob] - 1, [...(bySeat.get(life.seat[blob] - 1) ?? []), blob]);
+      }
+      for (const blob of blobsOf(world)) {
+        if (sitting(blob) && before[blob] === 0) {
+          sits++;
+          // The later of two blobs that sit down on one tile in one tick, in blob order, found every tile of its front held.
+          const neighbours = (bySeat.get(life.seat[blob] - 1) ?? []).filter((other) => other !== blob && (before[other] === 1 || other < blob));
+          if (neighbours.length > 0) {
+            stacked++;
+            expect(frontOf(world, blob).every((cell) => life.holds[cell] >= 1), `blob ${blob} at tick ${currentTick(world)}`).toBe(true);
+          }
+        }
+        before[blob] = sitting(blob) ? 1 : 0;
+      }
+      for (const blobs of byTile.values()) mostOnATile = Math.max(mostOnATile, blobs.length);
+      if (currentTick(world) === 1_244) shares.push(...[...byTile.values()].map((blobs) => blobs.length));
+    }
+
+    const sharing = shares.filter((count) => count > 1).reduce((sum, count) => sum + count, 0);
+    const sitters = shares.reduce((sum, count) => sum + count, 0);
+    console.info(
+      `Highcourt on day 0: ${sits} doorstep sits, ${stacked} onto a tile another sitter held; at 20:44 ${sharing} of ${sitters} sitters share a tile, ` +
+        `${mostOnATile} on one tile at most`,
+    );
+    expect(sits).toBeGreaterThan(1_000);
+    expect(sharing / sitters).toBeLessThan(0.3);
+  });
+
   it('has no free-time choice running past half past nine but for a chat, and everyone home in bed by 22:00', () => {
     const world = highcourt();
     runTo(world, LIFE_END_MINUTE + 1);
@@ -214,12 +282,14 @@ describe("Highcourt's free time", { timeout: 60_000 }, () => {
     expect(late.length).toBeGreaterThan(0);
     expect(late.filter((blob) => world.life.chatWith[blob] === 0 || world.life.chatUntil[blob] > TEN_PM)).toEqual([]);
 
+    // At 22:00 a blob is at home, or on its doorstep for the last tick of its stay, on a tile of its home's front.
     runTo(world, TEN_PM);
-    expect(blobsOf(world).filter((blob) => cellOf(world, blob) !== world.errands.homeCell[blob])).toEqual([]);
+    expect(blobsOf(world).filter((blob) => !onFrontOf(world, blob))).toEqual([]);
 
     runTo(world, TEN_PM + 1);
     const { phase, activity } = world.errands;
     expect(blobsOf(world).filter((blob) => phase[blob] !== PHASE_ASLEEP || activity[blob] !== ACTIVITY_SLEEP)).toEqual([]);
+    expect(blobsOf(world).filter((blob) => cellOf(world, blob) !== world.errands.homeCell[blob])).toEqual([]);
   });
 
   it('replays to the same hash from a checkpoint taken at 13:30, with blobs out on their outings', () => {
@@ -342,5 +412,50 @@ describe('a site with little ground', () => {
     expect(cells.every((cell) => cell === first || cell === first + 1)).toBe(true);
     // 5 blobs on 2 tiles: 3 and 2.
     expect([life.holds[first], life.holds[first + 1]].sort()).toEqual([2, 3]);
+  });
+});
+
+describe('a house front', () => {
+  const DOOR_AT = 20;
+  const DOOR = DOOR_AT * OPEN.width + DOOR_AT;
+  const AROUND = [-1, 0, 1].flatMap((dy) => [-1, 0, 1].map((dx) => DOOR + dy * OPEN.width + dx));
+
+  // The first `blobs` blobs, all of the house whose door is DOOR, sit out one after another, and the cells they hold are returned.
+  function sitAll(world: World, blobs: number): number[] {
+    for (let blob = 0; blob < blobs; blob++) {
+      world.errands.homeCell[blob] = DOOR;
+      sitOnDoorstep(world, blob, NOON + blob, 100);
+    }
+    return Array.from({ length: blobs }, (_, blob) => world.life.seat[blob] - 1);
+  }
+
+  it('seats a household on different tiles of its door and the ground round it, then stacks the rest on the tiles with the fewest', () => {
+    const world = plazaScene(1, 1);
+    const { agents, errands, life } = world;
+    const seats = sitAll(world, 12);
+
+    expect(new Set(seats.slice(0, 9)).size).toBe(9);
+    expect(seats.every((cell) => AROUND.includes(cell))).toBe(true);
+    // 12 blobs on 9 tiles: three tiles of two and six of one.
+    expect(AROUND.map((cell) => life.holds[cell]).sort()).toEqual([1, 1, 1, 1, 1, 1, 2, 2, 2]);
+    for (let blob = 0; blob < 12; blob++) {
+      expect([errands.phase[blob], errands.activity[blob]]).toEqual([PHASE_STAYING, ACTIVITY_DOORSTEP]);
+    }
+    // The first on a tile stands at its centre, a tile from the next, and no two blobs stand on one point.
+    for (let blob = 0; blob < 9; blob++) {
+      expect([agents.x[blob], agents.y[blob]]).toEqual([pointInTileQ8(seats[blob] % OPEN.width, 2_048), pointInTileQ8(Math.floor(seats[blob] / OPEN.width), 2_048)]);
+    }
+    expect(new Set(Array.from({ length: 12 }, (_, blob) => `${agents.x[blob]},${agents.y[blob]}`)).size).toBe(12);
+  });
+
+  it('seats a household stacked on its door when no tile round it can be walked on', () => {
+    const walk = OPEN.walk.slice();
+    for (const cell of AROUND) if (cell !== DOOR) walk[cell] = 0;
+    const closet: Ground = { width: OPEN.width, height: OPEN.height, walk };
+    const world = createTown(7, 'phone', closet, createStandInTownHomes(closet, 12), createShops([{ doorX: 8, doorY: 8, goods: 0xfe, stall: false }]));
+    world.checks = false;
+
+    expect(new Set(sitAll(world, 6))).toEqual(new Set([DOOR]));
+    expect(world.life.holds[DOOR]).toBe(6);
   });
 });

@@ -169,6 +169,11 @@ function ticksWalking(world: World, people: number[], until: number): number {
   return ticks;
 }
 
+// Whether a tile is a door's own or one of the eight round it, where a blob sits out on its doorstep.
+function withinOneTile(tile: number[], door: number[]): boolean {
+  return Math.abs(tile[0] - door[0]) <= 1 && Math.abs(tile[1] - door[1]) <= 1;
+}
+
 function tilesOf(world: World, people: number[]): number[][] {
   return people.map((person) => [tileOf(world.agents.x[person]), tileOf(world.agents.y[person])]);
 }
@@ -214,7 +219,9 @@ describe('Highcourt on its streets', { timeout: 60_000 }, () => {
     // It carries the good from the shop's door to its own, eats it there, and has nothing in its hands once it has.
     expect(stops.slice(0, 6).map((stop) => stop.item)).toEqual([0, 0, 0, good, good, 0]);
     expect(stops.slice(0, 5).map((stop) => stop.indoors)).toEqual([true, false, false, false, false]);
-    expect([stops[4].tile, stops[5].tile]).toEqual([home, home]);
+    // It eats on the door's own tile, and is next free at home or sitting out on the tiles round the door.
+    expect(stops[4].tile).toEqual(home);
+    expect(withinOneTile(stops[5].tile, home)).toBe(true);
     expect(stops[5].tick - stops[4].tick).toBe(EAT_TICKS);
     expect(stops[1].tick).toBeGreaterThan(MORNING);
     expect(stops[5].tick).toBeLessThanOrEqual(NIGHT);
@@ -246,7 +253,7 @@ describe('Highcourt on its streets', { timeout: 60_000 }, () => {
     expect(stops[2].tick).toBeLessThanOrEqual(MORNING + 60 + 300);
     expect(stops[3].tick).toBeGreaterThanOrEqual(900);
     expect(stops[3].tick).toBeLessThanOrEqual(960);
-    expect(stops[4].tile).toEqual(home);
+    expect(withinOneTile(stops[4].tile, home)).toBe(true);
     expect(stops[4].activity).not.toBe(ACTIVITY_WORK);
   });
 

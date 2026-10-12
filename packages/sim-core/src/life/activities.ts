@@ -32,6 +32,10 @@ export const DRAW_PICK = 0;
 const DRAW_STAY = 1;
 const DRAW_SPOT = 2;
 const DRAW_FACING = 3;
+// After the opening moods' 4 and 5 (life/store.ts) and the chat's length, 6 (street/chat.ts).
+const DRAW_SEAT = 7;
+// The walk grid's value for a tile that cannot be walked on.
+const WALK_BLOCKED = 0;
 // placeAtSpot reads only the low 24 bits of a draw, and a draw of 2^31 or more is a heap number in a tick (random/draw.ts).
 const SPOT_VALUES = 1 << 24;
 const FACINGS = 4;
@@ -65,12 +69,6 @@ export function stayIn(world: World, blob: number, tick: number, left: number): 
   world.errands.endTick[blob] = tick + stayTicks(world, blob, tick, left);
 }
 
-function standAt(world: World, blob: number, tick: number, tileX: number, tileY: number): void {
-  const spot = drawBelow3(world.seed, LIFE_DRAW, blob, tick, DRAW_SPOT, SPOT_VALUES);
-  placeAtSpot(world, blob, tileX, tileY, spot);
-  halt(world, blob, drawBelow3(world.seed, LIFE_DRAW, blob, tick, DRAW_FACING, FACINGS));
-}
-
 function centreInCell(world: World, blob: number, cell: number): void {
   const tileX = cell % world.ground.width;
   placeAtCentre(world, blob, tileX, (cell - tileX) / world.ground.width);
@@ -80,19 +78,41 @@ function centreInCell(world: World, blob: number, cell: number): void {
 // neighbouring tiles stand a tile apart, and at a keyed point of the tile when others hold it too, so that those who stack do not
 // stand on one point.
 function standInCell(world: World, blob: number, tick: number, cell: number): void {
-  if (world.life.holds[cell] <= 1) {
-    centreInCell(world, blob, cell);
-    halt(world, blob, drawBelow3(world.seed, LIFE_DRAW, blob, tick, DRAW_FACING, FACINGS));
-    return;
-  }
   const tileX = cell % world.ground.width;
-  standAt(world, blob, tick, tileX, (cell - tileX) / world.ground.width);
+  const tileY = (cell - tileX) / world.ground.width;
+  if (world.life.holds[cell] <= 1) placeAtCentre(world, blob, tileX, tileY);
+  else placeAtSpot(world, blob, tileX, tileY, drawBelow3(world.seed, LIFE_DRAW, blob, tick, DRAW_SPOT, SPOT_VALUES));
+  halt(world, blob, drawBelow3(world.seed, LIFE_DRAW, blob, tick, DRAW_FACING, FACINGS));
 }
 
-// Out on its own doorstep at a keyed point of the door's tile, for a keyed 30 to 120 ticks. Task 5 draws it sitting.
+// How far from its door, in tiles each way, a house's front reaches: the door's tile and the ground round it that a blob can walk on.
+// Blobs of one house sit on different tiles of it while there is one free, in a row along the wall.
+const FRONT_REACH = 1;
+
+// The tile of the front of the blob's home with the fewest blobs holding it, the first free one from a keyed start, else the door's
+// own: a house with one walkable tile seats all its household there, stacked.
+function frontSeat(world: World, blob: number, tick: number): number {
+  const { ground, errands, life } = world;
+  const { width, height } = ground;
+  const door = errands.homeCell[blob];
+  const doorX = door % width;
+  const doorY = (door - doorX) / width;
+  const left = Math.max(0, doorX - FRONT_REACH);
+  const top = Math.max(0, doorY - FRONT_REACH);
+  const across = Math.min(width, doorX + FRONT_REACH + 1) - left;
+  const rows = Math.min(height, doorY + FRONT_REACH + 1) - top;
+  const first = drawBelow3(world.seed, LIFE_DRAW, blob, tick, DRAW_SEAT, across * rows);
+  const seat = leastHeldCell(life.holds, ground.walk, 0, WALK_BLOCKED, width, left, top, across, rows, first);
+  return seat === NO_CELL ? door : seat;
+}
+
+// Out on its own doorstep, on a tile of its home's front, for a keyed 30 to 120 ticks. The blob holds the tile until the stay ends.
 export function sitOnDoorstep(world: World, blob: number, tick: number, left: number): void {
-  const { agents, errands } = world;
-  standAt(world, blob, tick, tileOf(agents.x[blob]), tileOf(agents.y[blob]));
+  const { errands, life } = world;
+  const seat = frontSeat(world, blob, tick);
+  holdCell(life, seat);
+  life.seat[blob] = seat + 1;
+  standInCell(world, blob, tick, seat);
   errands.phase[blob] = PHASE_STAYING;
   errands.activity[blob] = ACTIVITY_DOORSTEP;
   errands.endTick[blob] = tick + stayTicks(world, blob, tick, left);
@@ -170,13 +190,14 @@ function giveUpSeat(life: Life, blob: number): number {
   return cell;
 }
 
-// A stay has run out. A blob on its doorstep is free again, and one in a site sets off home along its leg, backward, from the spot
-// it held, which a chat may have moved it off.
+// A stay has run out. A blob on its doorstep goes back to its door, being free again there, and one in a site sets off home along
+// its leg, backward, from the spot it held. A chat may have moved either off its tile.
 export function endStay(world: World, blob: number, tick: number): void {
   const { errands, life } = world;
   settleNeeds(life, errands, blob, tick);
   const seat = giveUpSeat(life, blob);
   if (errands.activity[blob] === ACTIVITY_DOORSTEP) {
+    if (seat !== NO_CELL) centreInCell(world, blob, errands.homeCell[blob]);
     parkFree(world, blob, tick);
     return;
   }
