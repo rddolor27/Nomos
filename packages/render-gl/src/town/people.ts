@@ -39,6 +39,12 @@ const STRIDE_SHIFT = 3;
 // The eating loop moves on every 3 ticks, through 4 steps.
 const EAT_TICKS = 3;
 const EAT_STEP_MASK = 3;
+// A walker keeps to one of three lanes across the way it faces (owner request, 12 October 2026): the sim walks every blob of a run
+// down the centre line of its tiles, so a stream of them would stack in one column. A lane stays within the road's 16 px tile.
+const LANE_PX = 5;
+const LANES = Int8Array.of(-LANE_PX, 0, LANE_PX);
+const LANE_COUNT = 3;
+const LANE_HASH = 0x9e3779b1;
 
 // The place's facing for each of the visual word's facing codes, which run in another order.
 function wordFacings(): Uint8Array {
@@ -125,6 +131,20 @@ function writeStreet(people: Required<PlacePeople>, i: number, word: number, eat
   people.indoors[i] = indoorsOf(word);
 }
 
+// What only a walker has: its walk frame, which changes with the distance it has walked along the way it faces, and its lane, a
+// fixed shift across that way by a hash of its row. The lane moves the axis the walker is not walking along, so it never alters the
+// stride. Anyone else stands where the sim puts them. The multiply and shift pick a lane from the hash's top 16 bits without a divide.
+function writeWalk(people: Required<PlacePeople>, i: number, horizontal: boolean): void {
+  const lane = LANES[((Math.imul(i, LANE_HASH) >>> 16) * LANE_COUNT) >>> 16];
+  if (horizontal) {
+    people.step[i] = (people.x[i] >> STRIDE_SHIFT) & 1;
+    people.y[i] += lane;
+  } else {
+    people.step[i] = (people.y[i] >> STRIDE_SHIFT) & 1;
+    people.x[i] += lane;
+  }
+}
+
 function writePerson(
   people: Required<PlacePeople>,
   i: number,
@@ -142,14 +162,13 @@ function writePerson(
   const y = Math.round(eased(prev[at + 1], cur[at + 1], alpha, jump));
   const action = actionOf(word);
   const facing = facingFor(dx, dy, jump, action, word);
-  // A walker steps with the distance along the way it faces.
-  const along = facing === LEFT || facing === RIGHT ? x : y;
   people.x[i] = x;
   people.y[i] = y;
   people.look[i] = lookOf(word);
   people.pose[i] = poseFor(action, facing);
   people.facing[i] = facing;
-  people.step[i] = action === ACTION_WALK ? (along >> STRIDE_SHIFT) & 1 : 0;
+  people.step[i] = 0;
+  if (action === ACTION_WALK) writeWalk(people, i, facing === LEFT || facing === RIGHT);
   writeStreet(people, i, word, eatStep);
 }
 
@@ -157,7 +176,8 @@ function writePerson(
 // (owner request, 10 October 2026). A snapshot's world px are art px, and an agent's point is its person's anchor, the
 // ground under its feet. Expression is neutral, with no job yet, and the street's bits of the word, the bubble over a blob (a
 // buyer's coin, a chat's speech, an outing's sign), the good carried, eating and indoors, go to the emote and street columns
-// (M2.7). A sitter sits and a chatter stands, each facing as the word says (M3.2).
+// (M2.7). A sitter sits and a chatter stands, each facing as the word says (M3.2). A walker is drawn in its lane, up to 5 px
+// across its heading from where the sim has it, and no one else is moved.
 export class TownPeople {
   // Made again only when the agent count changes, so a draw allocates nothing.
   columns: Required<PlacePeople>;

@@ -3,6 +3,7 @@ import {
   ACTION_SIT,
   ACTION_TALK,
   ACTION_WALK,
+  ACTION_WORK,
   EMOTE_BALL,
   EMOTE_COIN,
   EMOTE_HEART,
@@ -115,9 +116,10 @@ const pose = (name: (typeof PLACE_POSES)[number]): number => PLACE_POSES.indexOf
 
 describe('the Town skin\'s people', () => {
   it('stand where the dots would, eased by alpha, rounded to whole art px, and at once after a jump', () => {
+    // Standers, who stay where the dots would put them: a walker is moved across its heading into its lane.
     const { columns } = written(
-      [[100, 200, walker(0)], [10, 10, walker(0)], [50, 50, idler(0)]],
-      [[104, 203, walker(0)], [40, 10, walker(0)], [50, 50, idler(0)]],
+      [[100, 200, idler(0)], [10, 10, idler(0)], [50, 50, idler(0)]],
+      [[104, 203, idler(0)], [40, 10, idler(0)], [50, 50, idler(0)]],
       0.5,
     );
 
@@ -231,6 +233,45 @@ describe('the Town skin\'s people', () => {
     const steps = [0, 2, 3, 5, 6, 9, 11, 12, 15].map((tick) => written(eater, eater, 1, tick).columns.eat[0]);
 
     expect(steps).toEqual([1, 1, 2, 2, 3, 4, 4, 1, 2]);
+  });
+
+  it('keep a walker in one of three lanes across its heading, the same lane on every road, and move it no other way', () => {
+    const rows = Array.from({ length: 48 }, (_, i) => i);
+    // 48 walkers on one run, 4 px apart as the sim spaces them, each just walked 4 px along it: down the road at x 200, or right
+    // along it at y 300.
+    const downBefore = rows.map((i): Agent => [200, 100 + 4 * i, walker(i)]);
+    const downNow = rows.map((i): Agent => [200, 104 + 4 * i, walker(i)]);
+    const rightBefore = rows.map((i): Agent => [100 + 4 * i, 300, walker(i)]);
+    const rightNow = rows.map((i): Agent => [104 + 4 * i, 300, walker(i)]);
+    const down = written(downBefore, downNow).columns;
+    const right = written(rightBefore, rightNow).columns;
+    const acrossDown = Array.from(down.x, (x) => x - 200);
+
+    expect([...new Set(acrossDown)].sort((a, b) => a - b)).toEqual([-5, 0, 5]);
+    expect(Array.from(right.y, (y) => y - 300)).toEqual(acrossDown);
+    expect([...down.y]).toEqual(rows.map((i) => 104 + 4 * i));
+    expect([...right.x]).toEqual(rows.map((i) => 104 + 4 * i));
+    // The row keys the lane, so a frame at another alpha leaves it alone.
+    expect(Array.from(written(downBefore, downNow, 0.5).columns.x, (x) => x - 200)).toEqual(acrossDown);
+  });
+
+  it('leave a sitter, a chatter, a stander and a worker where the sim puts them, in any row', () => {
+    const rows = Array.from({ length: 30 }, (_, i) => i);
+    // Each moved 6 px down to the point it stops at, so a walker of the row would take a lane.
+    const stopped = (word: (row: number) => number): number[][] => {
+      const now = rows.map((i): Agent => [200, 300 + 4 * i, word(i)]);
+      const { x, y } = written(now.map(([px, py, w]): Agent => [px, py - 6, w]), now).columns;
+      return [[...x], [...y]];
+    };
+    const words = [
+      (i: number) => sitter(i, FACING_LEFT),
+      (i: number) => chatter(i, FACING_RIGHT),
+      (i: number) => idler(i),
+      (i: number) => packVisual(i, ACTION_WORK, 0, 0, FACING_UP, 0),
+    ];
+
+    expect(stopped(walker)[0].some((x) => x !== 200)).toBe(true);
+    for (const word of words) expect(stopped(word)).toEqual([rows.map(() => 200), rows.map((i) => 300 + 4 * i)]);
   });
 
   it('make their columns again only when the agent count changes', () => {
