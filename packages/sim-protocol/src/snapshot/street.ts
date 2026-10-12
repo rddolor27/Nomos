@@ -28,9 +28,12 @@ const SNAPSHOT_WORDS = SNAPSHOT_BYTES / Uint32Array.BYTES_PER_ELEMENT;
 const INDOORS_WORD = packVisual(0, 0, 0, 0, 0, 0, 1);
 const COIN_WORD = packVisual(0, 0, EMOTE_COIN, 0, 0, 0);
 // A blob standing out at its doorstep or in a site sits, and one in a chat talks under a bubble of speech. The sim halts both, so its
-// own action is idle and these bits add to nothing.
+// own action is idle and these bits add to nothing. A sitter who chats keeps sitting under its bubble: the pose is the action's and
+// the bubble the emote's, as with an outing's sign, so the word needs no bit of its own for it, and ACTION_TALK is for a chatter on
+// its feet, a walker the chat stopped.
 const SIT_WORD = packVisual(0, ACTION_SIT, 0, 0, 0, 0);
 const TALK_WORD = packVisual(0, ACTION_TALK, EMOTE_SPEECH, 0, 0, 0);
+const SIT_TALK_WORD = packVisual(0, ACTION_SIT, EMOTE_SPEECH, 0, 0, 0);
 
 // An outing's sign over a blob sitting in its site, by the kind of site: the ball at the plaza, music on a green and a heart by water.
 const SIGN_WORDS = new Uint32Array(SITE_WATER + 1).fill(SIT_WORD);
@@ -60,7 +63,7 @@ function outdoorsWord(errands: Errands, life: Life, blob: number, phase: number,
   if (phase === PHASE_BUYING) return COIN_WORD;
   if (phase === PHASE_EATING) return packVisual(0, 0, 0, 0, 0, 0, 0, carriedIn(phase, errands.good[blob]), 1);
   if (phase < PHASE_STAYING) return 0;
-  if (chattingAt(life, blob, tick)) return TALK_WORD;
+  if (chattingAt(life, blob, tick)) return phase === PHASE_STAYING ? SIT_TALK_WORD : TALK_WORD;
   if (phase === PHASE_STAYING) return sittingWord(errands, blob, tick);
   return phase === PHASE_COMING ? packVisual(0, 0, 0, 0, 0, 0, 0, carriedIn(phase, errands.good[blob])) : 0;
 }

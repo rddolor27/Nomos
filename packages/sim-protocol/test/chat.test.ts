@@ -363,6 +363,22 @@ describe('the partners of a chat', () => {
     expect(neighbours.agents.x[1]).toBe(centreOf(20));
   });
 
+  it('keep a sitter sitting under its bubble while it chats, where a walker the chat stopped stands to talk', () => {
+    const world = sittersAt([20, 20], [21, 20]);
+    const wordsNow = snapshotter(world);
+    const during = wordsNow();
+    for (const blob of [1, 2]) {
+      expect(actionOf(during[blob])).toBe(ACTION_SIT);
+      expect(emoteOf(during[blob])).toBe(EMOTE_SPEECH);
+      expect(indoorsOf(during[blob])).toBe(0);
+    }
+
+    // Once the chat is over the bubble goes and the sitter sits on, with no sign on a doorstep.
+    world.globals[TICK] = world.life.chatUntil[1] + 1;
+    const after = wordsNow();
+    expect([actionOf(after[1]), emoteOf(after[1])]).toEqual([ACTION_SIT, 0]);
+  });
+
   it('step no farther than two tiles from the tiles they hold, so sitters far from their seats do not chat', () => {
     // Two sit a corner apart. Held, a seat is where the blob sits, or tiles away, and beside the other it would be over 2 tiles from it.
     const holding = (first: [number, number], second: [number, number]): World => {
