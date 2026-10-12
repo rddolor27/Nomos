@@ -148,6 +148,14 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 12 Oct: **the compact card** (47e3dd1, 985d049, 36f77fd).
+  - **Layout:** a 3× portrait with the name, Doing and Feeling beside it. Below are four labelled need bars in one row, Personality on one line, and a grid of Job, Pay, Wallet, Home and Lives with. Bought today, Look and the looks note sit behind a native More.
+  - **Size:** on desktop at 1,280 × 800 the card is 300 × 402 px, 50% of the height (it was 360 × 703). On a phone it is 390 × 384, with the picture, name, Doing and Feeling in view.
+  - **Checks:**
+    - `inspector.spec.ts` passed 23 of 23 and `street.spec.ts` 1 of 1;
+    - axe reports nothing serious;
+    - the inspector chunk is 8.24 kB, so its limit rose to 9.24.
+  - **Owner choices it raised:** a portrait at 3× or 4×, a one-line Job and Pay, and Lives with moved under More.
 - 12 Oct: **the drawing's polish** (a70345e, 0a2c4e0, 50d6839, b8a99ab).
   - **Lanes:** only walkers shift, by −5, 0 or +5 px across their heading, keyed on the row, so a stream reads as three lanes.
   - **Sitters facing up** now draw `sit_up`.
