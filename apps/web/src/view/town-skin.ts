@@ -70,6 +70,7 @@ class TownSkinMount {
     this.feed = null;
     app.onTown(this.show.bind(this));
     app.onEconomy(this.onEconomy.bind(this));
+    app.onSelect(this.select.bind(this));
   }
 
   async lend(): Promise<void> {
@@ -82,7 +83,15 @@ class TownSkinMount {
     if (shown) skin.canvas.setAttribute('aria-label', townLabel(shown.name));
     this.skin = skin;
     this.showStock();
+    // A card opened before the skin was lent is already open on its blob.
+    skin.setSelected(this.app.selected);
     this.app.renderer.setTown(skin);
+    this.app.redraw();
+  }
+
+  // Rings the blob whose card is open, or none: the skin draws the ring only while the town shows.
+  private select(row: number): void {
+    this.skin?.setSelected(row);
     this.app.redraw();
   }
 

@@ -31,10 +31,12 @@ export interface TownHarness {
   // Draws one frame from the place's top-left at 1x, then reads the frame back in the same task, since WebGL2 keeps no
   // drawing buffer, and hashes it.
   render(): Promise<ShownTown>;
-  // The same, of exactly these agents as the snapshot at this tick shows them, a blob's art px being its anchor's on the place.
-  renderAgents(agents: StreetAgent[], tick: number): Promise<ShownTown>;
-  // Draws each list of agents in turn at 1x, and gives where the two frames differ, or null where they match.
-  differ(before: StreetAgent[], after: StreetAgent[], tick: number): Differing | null;
+  // The same, of exactly these agents as the snapshot at this tick shows them, a blob's art px being its anchor's on the place, with
+  // the selection ring under the agent of that row, or none for -1 or a row the agents lack.
+  renderAgents(agents: StreetAgent[], tick: number, selected?: number): Promise<ShownTown>;
+  // Draws each list of agents in turn at 1x, the second with the ring under that row, and gives where the two frames differ, or null
+  // where they match.
+  differ(before: StreetAgent[], after: StreetAgent[], tick: number, selected?: number): Differing | null;
 }
 
 declare global {
@@ -48,6 +50,8 @@ interface Booted {
   agents: Retained;
 }
 
+// The row that selects no blob.
+const NO_ROW = -1;
 // The capital's size in device px, which holds every fixture place whole at 1x.
 const VIEW_PX = { width: 176 * PLACE_TILE_PX, height: 112 * PLACE_TILE_PX };
 const CAMERA: Camera = { x: 0, y: 0, zoom: 1 };
@@ -90,16 +94,20 @@ async function sha256(bytes: Uint8Array<ArrayBuffer>): Promise<string> {
   return Array.from(digest, (byte) => byte.toString(16).padStart(2, '0')).join('');
 }
 
-// One frame of these agents, drawn and read back before anything awaits.
-function drawFrame(agents: Retained): { backend: PlaceBackend; drawn: number | undefined; bytes: Uint8Array<ArrayBuffer>; width: number } {
+// One frame of these agents, drawn and read back before anything awaits, with the ring under the agent of row `selected`.
+function drawFrame(
+  agents: Retained,
+  selected: number,
+): { backend: PlaceBackend; drawn: number | undefined; bytes: Uint8Array<ArrayBuffer>; width: number } {
   const { skin } = current();
+  skin.setSelected(selected);
   const drawn = skin.draw(CAMERA, 1, { drawnSkin: 'town', retained: agents, canvas: dots, dpr: 1 });
   const { canvas } = skin;
   return { backend: backendOf(canvas), drawn, bytes: readFrame(canvas), width: canvas.width };
 }
 
-function shown(agents: Retained): Promise<ShownTown> {
-  const { backend, drawn, bytes } = drawFrame(agents);
+function shown(agents: Retained, selected = NO_ROW): Promise<ShownTown> {
+  const { backend, drawn, bytes } = drawFrame(agents, selected);
   return sha256(bytes).then((hash) => ({ backend, drawn, sha256: hash }));
 }
 
@@ -138,12 +146,12 @@ window.townHarness = {
   render() {
     return shown(current().agents);
   },
-  renderAgents(agents, tick) {
-    return shown(streetAgents(agents, tick));
+  renderAgents(agents, tick, selected) {
+    return shown(streetAgents(agents, tick), selected);
   },
-  differ(before, after, tick) {
-    const first = drawFrame(streetAgents(before, tick));
-    const second = drawFrame(streetAgents(after, tick));
+  differ(before, after, tick, selected = NO_ROW) {
+    const first = drawFrame(streetAgents(before, tick), NO_ROW);
+    const second = drawFrame(streetAgents(after, tick), selected);
     return differing(first.bytes, second.bytes, first.width);
   },
 };

@@ -75,6 +75,14 @@ export class TownSkin implements TownPainter {
     this.pips.set(levels);
   }
 
+  // Puts the selection ring under the blob of snapshot row `row`, from the next draw, or takes it away with -1. It is a mark of the
+  // page's, held while the blob's card is open, never one of the blob's (content rule 4). A blob indoors has none, and setLayout
+  // leaves the row as it is, so the page clears it when a town closes the card. Nothing is made, so the page may call it as the card
+  // opens and closes.
+  setSelected(row: number): void {
+    this.place.setMarked(row);
+  }
+
   draw(camera: Camera, alpha: number, view: TownView): number | undefined {
     if (view.drawnSkin !== 'town') {
       this.show(false, view.canvas);

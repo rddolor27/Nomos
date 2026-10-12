@@ -1,6 +1,7 @@
 import { OUTLINE } from '../map/colours.ts';
 import type { AtlasPage } from '../map/frames.ts';
 import { link, nearestTexture } from '../map/gl.ts';
+import { SOLID_COLOURS } from './solid.ts';
 import { INSTANCE_SHORTS, type PlaceSprites } from './sprites.ts';
 
 const DST = 0;
@@ -26,8 +27,11 @@ void main() {
   gl_Position = vec4(vec2(corner) / vec2(u_viewport) * vec2(2.0, -2.0) + vec2(-1.0, 1.0), 0.0, 1.0);
 }`;
 
+// The solid quads' colours (solid.ts), each channel over 255, so the 8-bit colour comes back exactly.
+const SOLIDS = SOLID_COLOURS.map((rgb) => `vec3(${rgb >> 16}.0, ${(rgb >> 8) & 255}.0, ${rgb & 255}.0) / 255.0`).join(', ');
+
 // Each device pixel fetches the texel of its own art pixel. The sheets' alpha is 0 or 255, so discarding clear texels
-// matches alpha_composite exactly.
+// matches alpha_composite exactly. A solid quad, whose atlas x is negative, is its colour and samples nothing.
 const FRAGMENT = `#version 300 es
 precision highp float;
 precision highp int;
@@ -39,11 +43,17 @@ flat in ivec2 v_dst;
 flat in ivec2 v_src;
 out vec4 colour;
 
+const vec3 SOLID[${SOLID_COLOURS.length}] = vec3[${SOLID_COLOURS.length}](${SOLIDS});
+
 int floorDiv(int a, int b) {
   return a >= 0 ? a / b : -((b - 1 - a) / b);
 }
 
 void main() {
+  if (v_src.x < 0) {
+    colour = vec4(SOLID[v_src.y], 1.0);
+    return;
+  }
   ivec2 pixel = ivec2(int(gl_FragCoord.x), u_viewport.y - 1 - int(gl_FragCoord.y));
   ivec2 art = ivec2(floorDiv(pixel.x + u_camDev.x, u_scale), floorDiv(pixel.y + u_camDev.y, u_scale));
   vec4 texel = texelFetch(u_atlas, v_src + art - v_dst, 0);

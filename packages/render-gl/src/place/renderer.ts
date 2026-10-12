@@ -3,6 +3,7 @@ import type { AtlasPage } from '../map/frames.ts';
 import { createLifecycle, type Backend, type LifecycleOptions } from '../map/lifecycle.ts';
 import { snapToDevice, type PlaceCamera } from './camera.ts';
 import { createCanvas2dPainter } from './canvas2d.ts';
+import { NO_MARK } from './marker.ts';
 import { createPlacePass } from './pass.ts';
 import { personFrames, type PersonFrames } from './people.ts';
 import { PlaceSprites } from './sprites.ts';
@@ -24,6 +25,9 @@ export interface PlaceRenderer {
   // Every draw reads the people's columns again, so the caller moves people by rewriting x, y, pose, facing and step
   // in place before it draws.
   setPlace(layout: PlaceLayout): void;
+  // Puts the selection ring under person j of the place's people from the next draw, or takes it away with NO_MARK (−1). A person
+  // indoors has none, and the ring outlives setPlace and setAtlas.
+  setMarked(person: number): void;
   // A camera is read only when it is not the last one drawn, so each move takes a new camera, as the helpers give.
   draw(camera: PlaceCamera): void;
   dispose(): void;
@@ -49,6 +53,8 @@ interface PlaceState {
   people: PersonFrames | null;
   layout: PlaceLayout | null;
   sprites: PlaceSprites | null;
+  // The person in the selection ring, kept for the sprites each new page or place makes.
+  marked: number;
 }
 
 const CONTEXT: WebGLContextAttributes = {
@@ -79,7 +85,10 @@ function createGlPainter(canvas: HTMLCanvasElement): PlacePainter | null {
 
 function spritesOf(state: PlaceState): PlaceSprites | null {
   const { page, people, layout } = state;
-  return page && people && layout ? new PlaceSprites(layout, page.frames, people) : null;
+  if (!page || !people || !layout) return null;
+  const sprites = new PlaceSprites(layout, page.frames, people);
+  sprites.mark(state.marked);
+  return sprites;
 }
 
 // Drawn and read at whole device pixels, so a fractional scale would part the backends' pictures.
@@ -89,7 +98,17 @@ function checkScale(camera: PlaceCamera): void {
 }
 
 export function createPlaceRenderer(canvas: HTMLCanvasElement, options: PlaceRendererOptions = {}): PlaceRenderer {
-  const state: PlaceState = { camera: null, scale: 1, left: 0, top: 0, page: null, people: null, layout: null, sprites: null };
+  const state: PlaceState = {
+    camera: null,
+    scale: 1,
+    left: 0,
+    top: 0,
+    page: null,
+    people: null,
+    layout: null,
+    sprites: null,
+    marked: NO_MARK,
+  };
   const life = createLifecycle<PlacePainter>(canvas, options, {
     openGl: createGlPainter,
     open2d: createCanvas2dPainter,
@@ -129,6 +148,10 @@ export function createPlaceRenderer(canvas: HTMLCanvasElement, options: PlaceRen
     setPlace(layout) {
       state.layout = layout;
       state.sprites = spritesOf(state);
+    },
+    setMarked(person) {
+      state.marked = person;
+      state.sprites?.mark(person);
     },
     draw(camera) {
       if (camera !== state.camera) {

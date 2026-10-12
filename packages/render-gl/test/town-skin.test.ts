@@ -38,6 +38,8 @@ const CAMERA: Camera = { x: 0, y: 0, zoom: 1 };
 // background in one call, is GROUND and its size.
 const GROUND = 'ground';
 type Drawn = [name: string, x: number, y: number];
+// A rectangle the painter filled: its colour, then its left, top, width and height in device px.
+type Fill = [style: string, x: number, y: number, w: number, h: number];
 
 interface FakeCanvas {
   width: number;
@@ -47,46 +49,51 @@ interface FakeCanvas {
   getContext(): object;
 }
 
-function recordingContext(canvas: object, log: Drawn[]): object {
+function recordingContext(canvas: object, log: Drawn[], fills: Fill[]): object {
   return {
     canvas,
     fillStyle: '',
     imageSmoothingEnabled: true,
-    fillRect: () => undefined,
+    fillRect(this: { fillStyle: string }, x: number, y: number, w: number, h: number): void {
+      fills.push([this.fillStyle, x, y, w, h]);
+    },
     drawImage(image: unknown, sx: number, _sy: number, w: number, h: number, dx: number, dy: number): void {
       log.push(image === IMAGE ? [NAME_AT.get(sx) ?? `atlas x ${sx}`, dx, dy] : [GROUND, w, h]);
     },
   };
 }
 
-function recordingCanvas(log: Drawn[]): HTMLCanvasElement {
-  const canvas: FakeCanvas = { width: 0, height: 0, hidden: false, style: {}, getContext: () => recordingContext(canvas, log) };
+function recordingCanvas(log: Drawn[], fills: Fill[] = []): HTMLCanvasElement {
+  const canvas: FakeCanvas = { width: 0, height: 0, hidden: false, style: {}, getContext: () => recordingContext(canvas, log, fills) };
   return canvas as unknown as HTMLCanvasElement;
 }
 
-// What one draw sent the Canvas2D painter: the ground's tiles and sprites it painted on the offscreen canvas, and what it
-// drew on the town's own.
+// What one draw sent the Canvas2D painter: the ground's tiles and sprites it painted on the offscreen canvas, what it drew on
+// the town's own, and the rectangles it filled there, the background first.
 interface Frame {
   drawn: number | undefined;
   ground: Drawn[];
   scene: Drawn[];
+  fills: Fill[];
 }
 
 // A skin on the Canvas2D backend with a recording canvas, and a way to draw one frame of agents with it.
 function rig(layout: PlaceLayout): { skin: TownSkin; frame(agents: Retained): Frame } {
   const scene: Drawn[] = [];
   const ground: Drawn[] = [];
+  const fills: Fill[] = [];
   vi.stubGlobal('document', { createElement: () => recordingCanvas(ground) });
   vi.stubGlobal('requestAnimationFrame', () => 0);
-  const skin = new TownSkin(recordingCanvas(scene), layout, PAGE, { backend: 'canvas2d' });
+  const skin = new TownSkin(recordingCanvas(scene, fills), layout, PAGE, { backend: 'canvas2d' });
   const dots = { ...VIEW_PX, style: {} } as unknown as HTMLCanvasElement;
   return {
     skin,
     frame(agents) {
       scene.length = 0;
       ground.length = 0;
+      fills.length = 0;
       const drawn = skin.draw(CAMERA, 1, { drawnSkin: 'town', retained: agents, canvas: dots, dpr: 1 });
-      return { drawn, ground: [...ground], scene: [...scene] };
+      return { drawn, ground: [...ground], scene: [...scene], fills: [...fills] };
     },
   };
 }
@@ -132,5 +139,37 @@ describe("the Town skin's swap", () => {
     expect(bodies(first.scene)).toBe(largeAgents.count);
     expect(between.scene[0]).not.toEqual(first.scene[0]);
     expect(back).toEqual(first);
+  });
+});
+
+describe("the Town skin's selection ring", () => {
+  const layout = placeLayout('coastal-town');
+  const agents = townAgents(layout);
+  // Row 2 is a stander of the fixture's agents, so it stands where its person does.
+  const ROW = 2;
+  const [anchorX, anchorY] = [layout.people.x[ROW], layout.people.y[ROW]];
+
+  it('goes under the blob of the selected row from the next draw, as solid fills round its anchor, and is gone once cleared', () => {
+    const { skin, frame } = rig(layout);
+    // The first frame paints the ground, which no later frame does.
+    frame(agents);
+    const bare = frame(agents);
+    skin.setSelected(ROW);
+    const ringed = frame(agents);
+    skin.setSelected(-1);
+    const cleared = frame(agents);
+    // The first fill of a frame is the background. The ring's are its dark edge, a pixel round each cream run, and then the cream.
+    const quads = ringed.fills.slice(1);
+    const edge = quads.slice(0, quads.length / 2);
+
+    expect(bare.fills).toHaveLength(1);
+    expect(quads).toHaveLength(24);
+    expect(edge.every(([style]) => style === '#020202')).toBe(true);
+    expect(quads.slice(12).every(([style]) => style === '#f6f0de')).toBe(true);
+    expect([Math.min(...edge.map(([, x]) => x)), Math.max(...edge.map(([, x, , w]) => x + w))]).toEqual([anchorX - 12, anchorX + 12]);
+    expect([Math.min(...edge.map(([, , y]) => y)), Math.max(...edge.map(([, , y, , h]) => y + h))]).toEqual([anchorY - 5, anchorY + 6]);
+    // The ring takes no sprite, so every sprite is drawn as before, and a cleared frame is the bare frame again.
+    expect(ringed.scene).toEqual(bare.scene);
+    expect(cleared).toEqual(bare);
   });
 });

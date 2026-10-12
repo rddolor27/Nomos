@@ -203,6 +203,9 @@ export class Inspector {
     this.asked = [];
     this.shown = NO_ROW;
     app.worker.addEventListener('message', this.onMessage.bind(this));
+    // The card shuts its dialog from its own Close button and from Escape without telling this panel, so the Town skin's ring comes
+    // off when the dialog says it closed. The event does not bubble, so it is caught on its way down.
+    view.addEventListener('close', () => app.select(NO_ROW), true);
     setInterval(this.refresh.bind(this), REFRESH_MS);
   }
 
@@ -240,6 +243,8 @@ export class Inspector {
     if (!found) return;
     this.shown = reply.agent;
     this.modal.show(blobCard(reply));
+    // The Town skin rings this blob for as long as its card is open.
+    this.app.select(reply.agent);
   }
 
   // Only the card's own row updates it, and a row the town no longer holds closes it.

@@ -19,6 +19,10 @@ const FRAME_SAMPLES = 60;
 export type StatsListener = (tick: number, systemMs: Record<string, number>) => void;
 export type EconomyListener = (message: EconomyMessage) => void;
 export type TownListener = (layout: PlaceLayout, name: string) => void;
+export type SelectListener = (row: number) => void;
+
+// The selected row while no blob's card is open.
+const NO_ROW = -1;
 
 export interface Start {
   seed: number;
@@ -67,6 +71,12 @@ export interface App {
   showTown(map: MapV1, layout: PlaceLayout, name: string): void;
   // The listener gets the town last shown at once, if one has been, so a Town skin that loads late draws it.
   onTown(listener: TownListener): void;
+  // The snapshot row of the blob whose card is open, or -1: the Town skin rings that blob while its card shows, and a skin that
+  // loads late reads it.
+  selected: number;
+  // Sets the row and tells the listeners, as the card opens, fills for another blob and closes.
+  select(row: number): void;
+  onSelect(listener: SelectListener): void;
 }
 
 declare global {
@@ -201,6 +211,7 @@ export async function startApp(boot: Boot, doc: Document, start: Start): Promise
   const economyListeners: EconomyListener[] = [];
   let economy: EconomyMessage | null = null;
   const townListeners: TownListener[] = [];
+  const selectListeners: SelectListener[] = [];
   let town: { layout: PlaceLayout; name: string } | null = null;
   const app: App = {
     renderer,
@@ -252,6 +263,14 @@ export async function startApp(boot: Boot, doc: Document, start: Start): Promise
     onTown(listener) {
       townListeners.push(listener);
       if (town) listener(town.layout, town.name);
+    },
+    selected: NO_ROW,
+    select(row) {
+      app.selected = row;
+      selectListeners.forEach((listener) => listener(row));
+    },
+    onSelect(listener) {
+      selectListeners.push(listener);
     },
   };
 

@@ -19,7 +19,9 @@ import {
 } from '@nomos/sim-protocol';
 import { NO_CODE, PLACE_EMOTES, PLACE_EXPRESSIONS, PLACE_FACINGS, PLACE_POSES, type PlaceLayout } from '@nomos/sim-protocol/place';
 import { describe, expect, it } from 'vitest';
+import { NO_MARK, RING } from '../src/place/marker.ts';
 import { personFrames } from '../src/place/people.ts';
+import { SOLID_DARK, SOLID_LIGHT, SOLID_X } from '../src/place/solid.ts';
 import { INSTANCE_SHORTS, PlaceSprites } from '../src/place/sprites.ts';
 import type { Retained } from '../src/renderer/types.ts';
 import { TownPeople } from '../src/town/people.ts';
@@ -92,9 +94,9 @@ const FRAMES = manifestFrames();
 const NAME_AT = new Map(Object.entries(FRAMES).map(([name, frame]) => [frame.x, name]));
 const PEOPLE = personFrames(FRAMES);
 
-// The sprites the place pass draws for these agents, standing still, over a one-tile place: each person's body, face and bubble, in
-// drawing order, by the name of its frame.
-function drawnNames(agents: Agent[]): string[] {
+// The sprites the place pass is sent for these agents, standing still, over a one-tile place, with the selection ring under the
+// marked row if there is one, in drawing order.
+function packed(agents: Agent[], marked: number): PlaceSprites {
   const place: PlaceLayout = {
     width: 1,
     height: 1,
@@ -105,11 +107,47 @@ function drawnNames(agents: Agent[]): string[] {
     people: written(agents, agents).columns,
   };
   const sprites = new PlaceSprites(place, FRAMES, PEOPLE);
+  sprites.mark(marked);
   sprites.pack();
+  return sprites;
+}
+
+// Each person's body, face and bubble in drawing order, by the name of its frame, and each solid quad of a ring as `solid` and the
+// number of its colour.
+function drawnNames(agents: Agent[], marked = NO_MARK): string[] {
+  const sprites = packed(agents, marked);
   const names: string[] = [];
-  for (let i = sprites.fixed; i < sprites.count; i++) names.push(NAME_AT.get(sprites.data[INSTANCE_SHORTS * i + 2]) ?? '?');
+  for (let i = sprites.fixed; i < sprites.count; i++) {
+    const at = INSTANCE_SHORTS * i;
+    names.push(sprites.data[at + 2] === SOLID_X ? `solid ${sprites.data[at + 3]}` : (NAME_AT.get(sprites.data[at + 2]) ?? '?'));
+  }
   return names;
 }
+
+// The solid quads of a ring, in order, each as its left, top, width and height in art px.
+function solidBoxes(agents: Agent[], marked: number): number[][] {
+  const sprites = packed(agents, marked);
+  const boxes: number[][] = [];
+  for (let i = sprites.fixed; i < sprites.count; i++) {
+    const at = INSTANCE_SHORTS * i;
+    if (sprites.data[at + 2] === SOLID_X) boxes.push([sprites.data[at], sprites.data[at + 1], sprites.data[at + 4], sprites.data[at + 5]]);
+  }
+  return boxes;
+}
+
+// The left, top, right and bottom, right and bottom exclusive, that boxes of left, top, width and height cover.
+function boundsOf(boxes: number[][]): number[] {
+  return [
+    Math.min(...boxes.map(([x]) => x)),
+    Math.min(...boxes.map(([, y]) => y)),
+    Math.max(...boxes.map(([x, , w]) => x + w)),
+    Math.max(...boxes.map(([, y, , h]) => y + h)),
+  ];
+}
+
+// A ring's solid quads as drawnNames lists them: every run's dark edge, then its cream.
+const RUNS = RING.length / 4;
+const RING_NAMES = [...Array<string>(RUNS).fill(`solid ${SOLID_DARK}`), ...Array<string>(RUNS).fill(`solid ${SOLID_LIGHT}`)];
 
 const facing = (name: (typeof PLACE_FACINGS)[number]): number => PLACE_FACINGS.indexOf(name);
 const pose = (name: (typeof PLACE_POSES)[number]): number => PLACE_POSES.indexOf(name);
@@ -276,6 +314,39 @@ describe('the Town skin\'s people', () => {
 
     expect(stopped(walker)[0].some((x) => x !== 200)).toBe(true);
     for (const word of words) expect(stopped(word)).toEqual([rows.map(() => 200), rows.map((i) => 300 + 4 * i)]);
+  });
+
+  it('draw the selection ring under the marked blob only, in its depth, and take it away at -1', () => {
+    // Row 1 stands behind row 0. A ring goes down before its own blob's body, so the blob in front draws over a ring behind it,
+    // and a blob behind never covers a ring in front.
+    const agents: Agent[] = [[100, 90, idler(0)], [104, 80, idler(1)]];
+    const front = ['characters/blob_sun_stand_down', 'characters/face_neutral_down'];
+    const behind = ['characters/blob_lilac_stand_down', 'characters/face_neutral_down'];
+
+    expect(drawnNames(agents, 1)).toEqual([...RING_NAMES, ...behind, ...front]);
+    expect(drawnNames(agents, 0)).toEqual([...behind, ...RING_NAMES, ...front]);
+    expect(drawnNames(agents, NO_MARK)).toEqual([...behind, ...front]);
+    expect(drawnNames(agents, 2)).toEqual([...behind, ...front]);
+  });
+
+  it("draw the ring 22 px wide and 9 tall round the marked blob's anchor, with a pixel of edge, where its lane puts it", () => {
+    // Twelve walkers facing down, some in a lane off their x, and the ring goes round the first of those, where it is drawn.
+    const agents = Array.from({ length: 12 }, (_, i): Agent => [100, 80 + i, walker(i)]);
+    const { x, y } = written(agents, agents).columns;
+    const row = x.findIndex((px) => px !== 100);
+    const boxes = solidBoxes(agents, row);
+
+    expect(row).toBeGreaterThanOrEqual(0);
+    expect(boundsOf(boxes.slice(RUNS))).toEqual([x[row] - 11, y[row] - 4, x[row] + 11, y[row] + 5]);
+    expect(boundsOf(boxes.slice(0, RUNS))).toEqual([x[row] - 12, y[row] - 5, x[row] + 12, y[row] + 6]);
+  });
+
+  it('draw no ring round a marked blob that is indoors, and nothing else of it', () => {
+    const indoors = packVisual(3, ACTION_SIT, EMOTE_SPEECH, 0, FACING_DOWN, 0, 1);
+    const crowd: Agent[] = [[40, 40, indoors], [60, 40, sitter(2, FACING_DOWN)]];
+
+    expect(drawnNames(crowd, 0)).toEqual(['characters/blob_rose_sit_down', 'characters/face_neutral_down']);
+    expect(drawnNames(crowd, 0)).toEqual(drawnNames(crowd));
   });
 
   it('make their columns again only when the agent count changes', () => {

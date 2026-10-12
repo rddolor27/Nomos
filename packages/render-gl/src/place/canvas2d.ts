@@ -1,5 +1,6 @@
 import { OUTLINE } from '../map/colours.ts';
 import type { AtlasPage } from '../map/frames.ts';
+import { SOLID_COLOURS } from './solid.ts';
 import { INSTANCE_SHORTS, type PlaceSprites } from './sprites.ts';
 
 // left and top are the view's top-left in whole device px.
@@ -11,9 +12,10 @@ export interface Canvas2dPainter {
 
 // placedraw.py fills a place with the palette's OUTLINE.
 const BACKGROUND = `#${OUTLINE.toString(16).padStart(6, '0')}`;
+const SOLIDS = SOLID_COLOURS.map((rgb) => `#${rgb.toString(16).padStart(6, '0')}`);
 
 // Sprites from..to of the list, in the WebGL2 pass's order, each one exact drawImage at whole device pixels, skipping
-// any that lies off the canvas. camX and camY are the view's snapped top-left.
+// any that lies off the canvas, and each solid quad (solid.ts) one fillRect. camX and camY are the view's snapped top-left.
 function drawSprites(
   context: CanvasRenderingContext2D,
   image: ImageBitmap,
@@ -32,7 +34,12 @@ function drawSprites(
     const w = data[at + 4];
     const h = data[at + 5];
     if (x >= width || y >= height || x + w * scale <= 0 || y + h * scale <= 0) continue;
-    context.drawImage(image, data[at + 2], data[at + 3], w, h, x, y, w * scale, h * scale);
+    if (data[at + 2] < 0) {
+      context.fillStyle = SOLIDS[data[at + 3]];
+      context.fillRect(x, y, w * scale, h * scale);
+    } else {
+      context.drawImage(image, data[at + 2], data[at + 3], w, h, x, y, w * scale, h * scale);
+    }
   }
 }
 

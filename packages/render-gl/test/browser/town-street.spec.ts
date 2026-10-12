@@ -91,6 +91,45 @@ test('chews and lifts the item through the eating loop, and both backends draw e
   expect(runs?.[1]).toEqual(runs?.[0]);
 });
 
+test('rings the selected blob under its feet, as both backends draw it, and takes the ring away at -1 or indoors', async ({ page }) => {
+  const runs = await page.evaluate(
+    async ({ backends, place, stand }) => {
+      const harness = window.townHarness;
+      const out: { bare: string; ringed: string; cleared: string; homeBare: string; homeRinged: string; box: Differing | null }[] = [];
+      for (const backend of backends) {
+        if ((await harness.boot(place, backend === 'canvas2d' ? { backend } : undefined)) !== backend) return null;
+        const crowd: StreetAgent[] = [{ ...stand, facing: 'down' }, { ...stand, x: 240, facing: 'left' }];
+        const home: StreetAgent[] = [crowd[0], { ...crowd[1], indoors: true }];
+        out.push({
+          bare: (await harness.renderAgents(crowd, 4)).sha256,
+          ringed: (await harness.renderAgents(crowd, 4, 0)).sha256,
+          cleared: (await harness.renderAgents(crowd, 4, -1)).sha256,
+          homeBare: (await harness.renderAgents(home, 4)).sha256,
+          homeRinged: (await harness.renderAgents(home, 4, 1)).sha256,
+          box: harness.differ(crowd, crowd, 4, 0),
+        });
+      }
+      return out;
+    },
+    { backends: BACKENDS, place: PLACE, stand: STAND },
+  );
+  test.skip(runs === null, 'no WebGL2 in this browser');
+
+  for (const run of runs ?? []) {
+    expect(run.ringed).not.toBe(run.bare);
+    expect(run.cleared).toBe(run.bare);
+    expect(run.homeRinged).toBe(run.homeBare);
+    // The ring is 22 px wide and 9 tall round the anchor, with a pixel of edge all round, and the body covers part of it.
+    expect(run.box).not.toBeNull();
+    expect(run.box?.left).toBeGreaterThanOrEqual(STAND.x - 12);
+    expect(run.box?.right).toBeLessThanOrEqual(STAND.x + 12);
+    expect(run.box?.top).toBeGreaterThanOrEqual(STAND.y - 5);
+    expect(run.box?.bottom).toBeLessThanOrEqual(STAND.y + 6);
+    expect(run.box?.pixels).toBeGreaterThan(30);
+  }
+  expect(runs?.[1]).toEqual(runs?.[0]);
+});
+
 test('draws no blob that is indoors, whatever it carries, through both backends', async ({ page }) => {
   const runs = await page.evaluate(
     async ({ backends, place, stand, bread }) => {

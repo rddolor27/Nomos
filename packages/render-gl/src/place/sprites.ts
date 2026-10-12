@@ -1,4 +1,5 @@
 import { NO_CODE, PLACE_FACINGS, PLACE_TILE_PX, type PlaceLayout, type PlacePeople } from '@nomos/sim-protocol/place';
+import { MARKER_QUADS, NO_MARK, RING, RUN_VALUES } from './marker.ts';
 import {
   EAT_AT,
   EYES,
@@ -15,6 +16,7 @@ import {
   type Frames,
   type PersonFrames,
 } from './people.ts';
+import { SOLID_DARK, SOLID_LIGHT, SOLID_X } from './solid.ts';
 
 // A sprite instance: its art-pixel corner, then its atlas x, y, w and h.
 export const INSTANCE_SHORTS = 6;
@@ -44,6 +46,28 @@ function putCorner(data: Int16Array, at: number, records: Int16Array, record: nu
 function put(data: Int16Array, at: number, records: Int16Array, record: number, x: number, y: number): number {
   const r = RECORD_SHORTS * record;
   return putCorner(data, at, records, record, x - records[r + 4], y - records[r + 5]);
+}
+
+// A solid quad of w by h art px with its top-left at (left, top), as solid.ts marks it.
+function putSolid(data: Int16Array, at: number, left: number, top: number, w: number, h: number, colour: number): number {
+  data[at] = left;
+  data[at + 1] = top;
+  data[at + 2] = SOLID_X;
+  data[at + 3] = colour;
+  data[at + 4] = w;
+  data[at + 5] = h;
+  return at + INSTANCE_SHORTS;
+}
+
+// The selection ring round the anchor (x, y): the dark edge, every run grown by a pixel, then the cream runs over it.
+function putMarker(data: Int16Array, at: number, x: number, y: number): number {
+  for (let r = 0; r < RING.length; r += RUN_VALUES) {
+    at = putSolid(data, at, x + RING[r] - 1, y + RING[r + 1] - 1, RING[r + 2] + 2, RING[r + 3] + 2, SOLID_DARK);
+  }
+  for (let r = 0; r < RING.length; r += RUN_VALUES) {
+    at = putSolid(data, at, x + RING[r], y + RING[r + 1], RING[r + 2], RING[r + 3], SOLID_LIGHT);
+  }
+  return at;
 }
 
 function worn(table: Int16Array, slot: number, what = 'a person in this pose and facing'): number {
@@ -145,9 +169,11 @@ function putOverlays(
 }
 
 // looks.py's layers from the person's look and pose, then placedraw.py's person_layers, with the carried item after the job
-// item. A look is hue look % 6, eyes floor(look / 6) % 4 and pattern floor(look / 24). A person indoors draws nothing.
-export function putPerson(data: Int16Array, at: number, frames: PersonFrames, people: PlacePeople, j: number): number {
+// item. A look is hue look % 6, eyes floor(look / 6) % 4 and pattern floor(look / 24). A person indoors draws nothing, not even
+// its ring. A marked person stands in the selection ring, which goes down first so the body covers its back.
+export function putPerson(data: Int16Array, at: number, frames: PersonFrames, people: PlacePeople, j: number, marked = false): number {
   if (streetOf(people.indoors, j) === 1) return at;
+  if (marked) at = putMarker(data, at, people.x[j], people.y[j]);
   const look = people.look[j];
   const hue = look % HUES;
   const pattern = Math.floor(look / (HUES * EYES));
@@ -181,11 +207,13 @@ export class PlaceSprites {
   // The place's size in art px.
   readonly width: number;
   readonly height: number;
-  // INSTANCE_SHORTS shorts a sprite, room for every person wearing all six layers.
+  // INSTANCE_SHORTS shorts a sprite, room for every person wearing all six layers and for one selection ring.
   readonly data: Int16Array;
   // The tiles and ground sprites at the front of data.
   readonly fixed: number;
   private drawn: number;
+  // The person in the selection ring, or NO_MARK.
+  private marked: number;
   private readonly records: Int16Array;
   private readonly standing: Int32Array;
   private readonly people: PlacePeople;
@@ -205,17 +233,24 @@ export class PlaceSprites {
     this.people = layout.people;
     this.frames = people;
     this.fixed = layout.tiles.length + layout.ground.length / 3;
-    this.data = new Int16Array(INSTANCE_SHORTS * (this.fixed + this.firstPerson + MOST_LAYERS * layout.people.y.length));
+    this.data = new Int16Array(INSTANCE_SHORTS * (this.fixed + this.firstPerson + MOST_LAYERS * layout.people.y.length + MARKER_QUADS));
     putGround(this.data, putTiles(this.data, layout, this.records), layout.ground, this.records);
     this.order = Int32Array.from({ length: items }, (_, i) => i);
     this.keys = new Int32Array(items);
     for (let i = 0; i < this.firstPerson; i++) this.keys[i] = layout.standing[3 * i + 2];
     this.drawn = this.fixed;
+    this.marked = NO_MARK;
   }
 
   // Sprites in data as of the last pack.
   get count(): number {
     return this.drawn;
+  }
+
+  // Puts the selection ring under person j from the next pack, or takes it away with NO_MARK. A person who is not in the place,
+  // or is indoors, has none.
+  mark(person: number): void {
+    this.marked = person;
   }
 
   // Reads every person's columns again, so the caller moves people by rewriting them before a draw.
@@ -229,7 +264,7 @@ export class PlaceSprites {
       if (item < firstPerson) {
         at = put(this.data, at, this.records, standing[3 * item], standing[3 * item + 1], standing[3 * item + 2]);
       } else {
-        at = putPerson(this.data, at, this.frames, this.people, item - firstPerson);
+        at = putPerson(this.data, at, this.frames, this.people, item - firstPerson, item - firstPerson === this.marked);
       }
     }
     this.drawn = at / INSTANCE_SHORTS;
