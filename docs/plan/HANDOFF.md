@@ -148,6 +148,12 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 13 Oct, 00:05: **resumed** (owner): continue the approved queue, committing and updating as we go, since this session won't finish it.
+  - **The order:**
+    - M3.2 Task 7, friends and visits, beside the drawing's follow-ups: the ring's draw order and lanes of ±8 px;
+    - then M3.1 Part 4's Task 26, walls and gates, with the corner tiles;
+    - then M3.2 Task 8, by its step plan.
+  - **Done first:** `street.spec.ts`'s plaza deadline moved from 14:00 to 15:00, for Task 8 (734e27d). It wasn't run locally, and it only relaxes the test.
 - 12 Oct, 09:43: **pushed the street-life polish and parked** (e53cfdf..1383563). The owner parked development after the push.
   - **The pre-push round:**
     - 153 of 153 browser specs passed with no pin moved, and both engines specs matched;
