@@ -5,8 +5,8 @@ Writes docs/mockups/town_walls_preview.png at 2x.
 
 `python tools/sprites/showcase_walls.py varied` draws M3.1 part 4's preview for the owner instead (12 October
 2026): an octagon corner in stone and in palisade, and a stepped ring street with and without the 16 optional
-corner tiles. The diagonal runs, the palisade's extra post and the corner tiles are drafts drawn here, so no
-sheet, atlas frame or licence row waits on them until the owner picks. Writes
+corner tiles. The owner picked the diagonal runs and the palisade's two-sided post, which are walls.py's pieces
+now; the corner tiles are still drafts drawn here. Writes
 docs/mockups/m3.1-varied-walls/01-octagon-corners-and-ring-streets.png at 3x.
 """
 import sys
@@ -17,11 +17,9 @@ from PIL import Image
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
-from buildings import Canvas  # noqa: E402
 from showcase import Sheets, tile_name  # noqa: E402
 from showcase_buildings import INK, PLATE, label, text  # noqa: E402
 from spritekit import ASSETS, TILE  # noqa: E402
-from walls import COURSE, POST_RISE, Palisade, Wall, WallPiece, beam, logs, post  # noqa: E402
 
 OUT = ASSETS.parents[1] / 'docs' / 'mockups' / 'town_walls_preview.png'
 COLS, ROWS, SCALE = 28, 19, 2
@@ -118,66 +116,6 @@ TREES = [('tree_deciduous_young', 2, 3), ('tree_deciduous_young', 0, 6), ('tree_
 PEOPLE = [('sun', 'down', 8, 4), ('ice', 'left', 12, 6), ('rose', 'right', 4, 6), ('mint', 'down', 9, 9)]
 
 
-class Diagonal(WallPiece):
-    """One tile of an octagon's cut: the front run sheared at 45 degrees, climbing to the right (`up`, for the
-    NW and SE cuts) or falling to the right (`down`, for NE and SW). Its wall line crosses the tile corner to
-    corner, `line` rows down the front run's canvas, and the sprite carries on past the tile at both ends, so a
-    chain of tiles is one unbroken wall. Stone repaints its face in level courses: sheared ones read as a net."""
-
-    MARGIN = 1
-
-    def __init__(self, front, rising, line, face=None):
-        side = 'up' if rising else 'down'
-        super().__init__(front.name.replace('horizontal', f'diagonal-{side}'), (1, 1), front.rise + TILE - 1, None)
-        self.front, self.rising, self.face = front, rising, face
-        self.anchor = (TILE // 2, line + TILE - 1)
-
-    def lift(self, x):
-        return TILE - 1 - x if self.rising else x
-
-    def image(self):
-        """Outlined with a spare column each side, which holds the neighbouring tiles' art, so the outline at
-        the tile's edges is the chain's; then cropped back to the tile."""
-        c = Canvas(TILE + 2 * self.MARGIN, TILE + self.rise)
-        self.draw(c)
-        return c.image().crop((self.MARGIN, 0, self.MARGIN + TILE, c.h))
-
-    def columns(self, c):
-        """The tile's columns, and any spare ones beside them on the canvas, as (tile x, canvas x)."""
-        margin = (c.w - TILE) // 2
-        return [(x, x + margin) for x in range(-margin, TILE + margin)]
-
-    def draw(self, c):
-        profile = Canvas(TILE, self.front.rise + TILE)
-        self.front.draw(profile)
-        rows = profile.rows()
-        for x, cx in self.columns(c):
-            for y, row in enumerate(rows):
-                c.put(cx, y + self.lift(x), row[x % TILE])
-        if self.face:
-            self.lay_courses(c)
-
-    def lay_courses(self, c):
-        first, last = self.face
-        for x, cx in self.columns(c):
-            top = first + self.lift(x)
-            c.tile(cx, top, cx, last + self.lift(x), COURSE, stagger=4, ox=x, oy=top)
-
-
-class PalisadeCornerBoth(WallPiece):
-    """A thick post with logs on both sides, for the vertex where a straight run meets a cut. The corner
-    pieces carry logs on one side only, which leaves a gap between the post and the cut's first log."""
-
-    def __init__(self):
-        super().__init__('palisade_corner_both', (1, 1), POST_RISE, None)
-
-    def draw(self, c):
-        ground = c.h - 2
-        logs(c, 0, TILE, ground - 23, ground)
-        beam(c, 0, TILE - 1, ground - 15)
-        post(c, ground - 27, ground)
-
-
 class RoundedCorner:
     """A fill tile with one outer corner cut off in a quarter circle, so the ground under it shows through."""
 
@@ -244,13 +182,6 @@ class Drafts(Sheets):
 
 def draft_sheets():
     sheets = Drafts()
-    stone, palisade = Wall('horizontal'), Palisade('horizontal')
-    for rising in (True, False):
-        for piece in (Diagonal(stone, rising, line=stone.rise + TILE // 2, face=(TILE, stone.rise + TILE - 2)),
-                      Diagonal(palisade, rising, line=palisade.rise + TILE - 2)):
-            sheets.add(piece.name, piece.image(), piece.anchor)
-    both = PalisadeCornerBoth()
-    sheets.add(both.name, both.image(), (TILE // 2, TILE + both.rise - 1))
     for surface in SURFACES:
         base = sheets.get('nature', surface.base())[0]
         for corner in CORNERS:

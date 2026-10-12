@@ -2,12 +2,43 @@
   "image": "walls.png",
   "size": [
     256,
-    120
+    122
   ],
   "tile": 16,
   "frames": {
+    "palisade_corner_both": {
+      "x": 117,
+      "y": 65,
+      "w": 16,
+      "h": 30,
+      "anchor": [
+        8,
+        29
+      ],
+      "snow": "palisade_corner_both_snow",
+      "footprint": [
+        1,
+        1
+      ],
+      "joins": "lr"
+    },
+    "palisade_corner_both_snow": {
+      "x": 134,
+      "y": 65,
+      "w": 16,
+      "h": 30,
+      "anchor": [
+        8,
+        29
+      ],
+      "layer": "snow",
+      "footprint": [
+        1,
+        1
+      ]
+    },
     "palisade_corner_left": {
-      "x": 67,
+      "x": 151,
       "y": 65,
       "w": 16,
       "h": 30,
@@ -23,7 +54,7 @@
       "joins": "ur"
     },
     "palisade_corner_left_snow": {
-      "x": 84,
+      "x": 168,
       "y": 65,
       "w": 16,
       "h": 30,
@@ -38,7 +69,7 @@
       ]
     },
     "palisade_corner_right": {
-      "x": 101,
+      "x": 185,
       "y": 65,
       "w": 16,
       "h": 30,
@@ -54,7 +85,7 @@
       "joins": "ul"
     },
     "palisade_corner_right_snow": {
-      "x": 118,
+      "x": 202,
       "y": 65,
       "w": 16,
       "h": 30,
@@ -68,9 +99,37 @@
         1
       ]
     },
-    "palisade_gate_front": {
+    "palisade_diagonal-down": {
       "x": 200,
       "y": 0,
+      "w": 16,
+      "h": 41,
+      "anchor": [
+        8,
+        39
+      ],
+      "footprint": [
+        1,
+        1
+      ]
+    },
+    "palisade_diagonal-up": {
+      "x": 217,
+      "y": 0,
+      "w": 16,
+      "h": 41,
+      "anchor": [
+        8,
+        39
+      ],
+      "footprint": [
+        1,
+        1
+      ]
+    },
+    "palisade_gate_front": {
+      "x": 17,
+      "y": 65,
       "w": 32,
       "h": 38,
       "anchor": [
@@ -85,7 +144,7 @@
       "joins": "lr"
     },
     "palisade_gate_front_snow": {
-      "x": 0,
+      "x": 50,
       "y": 65,
       "w": 32,
       "h": 38,
@@ -100,7 +159,7 @@
       ]
     },
     "palisade_gate_side-north": {
-      "x": 33,
+      "x": 83,
       "y": 65,
       "w": 16,
       "h": 38,
@@ -116,7 +175,7 @@
       "joins": "u"
     },
     "palisade_gate_side-north_snow": {
-      "x": 50,
+      "x": 100,
       "y": 65,
       "w": 16,
       "h": 38,
@@ -131,8 +190,8 @@
       ]
     },
     "palisade_gate_side-south": {
-      "x": 169,
-      "y": 65,
+      "x": 0,
+      "y": 106,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -147,8 +206,8 @@
       "joins": ""
     },
     "palisade_gate_side-south_snow": {
-      "x": 186,
-      "y": 65,
+      "x": 17,
+      "y": 106,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -162,7 +221,7 @@
       ]
     },
     "palisade_horizontal": {
-      "x": 135,
+      "x": 219,
       "y": 65,
       "w": 16,
       "h": 26,
@@ -178,7 +237,7 @@
       "joins": "lr"
     },
     "palisade_horizontal_snow": {
-      "x": 152,
+      "x": 236,
       "y": 65,
       "w": 16,
       "h": 26,
@@ -193,8 +252,8 @@
       ]
     },
     "palisade_vertical": {
-      "x": 203,
-      "y": 65,
+      "x": 34,
+      "y": 106,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -209,8 +268,8 @@
       "joins": "u"
     },
     "palisade_vertical_snow": {
-      "x": 220,
-      "y": 65,
+      "x": 51,
+      "y": 106,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -223,8 +282,36 @@
         1
       ]
     },
-    "wall_gate_front": {
+    "wall_diagonal-down": {
       "x": 66,
+      "y": 0,
+      "w": 16,
+      "h": 55,
+      "anchor": [
+        8,
+        47
+      ],
+      "footprint": [
+        1,
+        1
+      ]
+    },
+    "wall_diagonal-up": {
+      "x": 83,
+      "y": 0,
+      "w": 16,
+      "h": 55,
+      "anchor": [
+        8,
+        47
+      ],
+      "footprint": [
+        1,
+        1
+      ]
+    },
+    "wall_gate_front": {
+      "x": 100,
       "y": 0,
       "w": 32,
       "h": 48,
@@ -240,7 +327,7 @@
       "joins": "lr"
     },
     "wall_gate_front_snow": {
-      "x": 99,
+      "x": 133,
       "y": 0,
       "w": 32,
       "h": 48,
@@ -255,7 +342,7 @@
       ]
     },
     "wall_gate_side-north": {
-      "x": 132,
+      "x": 166,
       "y": 0,
       "w": 16,
       "h": 48,
@@ -271,7 +358,7 @@
       "joins": "u"
     },
     "wall_gate_side-north_snow": {
-      "x": 149,
+      "x": 183,
       "y": 0,
       "w": 16,
       "h": 48,
@@ -286,8 +373,8 @@
       ]
     },
     "wall_gate_side-south": {
-      "x": 237,
-      "y": 65,
+      "x": 68,
+      "y": 106,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -302,8 +389,8 @@
       "joins": ""
     },
     "wall_gate_side-south_snow": {
-      "x": 0,
-      "y": 104,
+      "x": 85,
+      "y": 106,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -317,7 +404,7 @@
       ]
     },
     "wall_horizontal": {
-      "x": 166,
+      "x": 234,
       "y": 0,
       "w": 16,
       "h": 40,
@@ -333,8 +420,8 @@
       "joins": "lr"
     },
     "wall_horizontal_snow": {
-      "x": 183,
-      "y": 0,
+      "x": 0,
+      "y": 65,
       "w": 16,
       "h": 40,
       "anchor": [
@@ -378,8 +465,8 @@
       ]
     },
     "wall_vertical": {
-      "x": 17,
-      "y": 104,
+      "x": 102,
+      "y": 106,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -394,8 +481,8 @@
       "joins": "u"
     },
     "wall_vertical_snow": {
-      "x": 34,
-      "y": 104,
+      "x": 119,
+      "y": 106,
       "w": 16,
       "h": 16,
       "anchor": [

@@ -14,6 +14,10 @@ any length tiles.
 - The front gate is a 2-tile gatehouse in a horizontal run: a stone arch with its doors open
   against the passage. A side gate is a 2-tile gap in a vertical run: a tall pier at its north
   end carries the open door on its face, and a flat end cap closes the walkway at its south end.
+- An octagon's cuts are diagonal runs, in stone and in palisade (owner, 12 October 2026): a horizontal run's
+  face sheared at 45 degrees, one tile a step. `_diagonal-up` climbs to the right, for the NW and SE cuts, and
+  `_diagonal-down` falls to the right, for NE and SW. They are summer only, and each carries an explicit anchor,
+  the tile's ground point, which is not the sprite's bottom centre.
 - No flags, banners or heraldry (content rule 6).
 
 Build: python tools/sprites/walls.py
@@ -309,15 +313,20 @@ class Palisade(WallPiece):
 
 
 class PalisadeCorner(WallPiece):
-    """A thick post on a vertical run's line, closing the end of a horizontal run beside it."""
+    """A thick post on a vertical run's line, closing the end of a horizontal run beside it. `both` has logs on
+    both sides, for a vertex where a straight run meets a cut: one-sided posts would leave a gap between the
+    post and the cut's first log."""
+
+    JOINS = {'left': 'ur', 'right': 'ul', 'both': 'lr'}
+    LOGS = {'left': (8, TILE), 'right': (0, 8), 'both': (0, TILE)}
 
     def __init__(self, side):
-        super().__init__(f'palisade_corner_{side}', (1, 1), POST_RISE, 'ur' if side == 'left' else 'ul')
+        super().__init__(f'palisade_corner_{side}', (1, 1), POST_RISE, self.JOINS[side])
         self.side = side
 
     def draw(self, c):
         ground = c.h - 2
-        x0, x1 = (8, TILE) if self.side == 'left' else (0, 8)
+        x0, x1 = self.LOGS[self.side]
         logs(c, x0, x1, ground - 23, ground)
         beam(c, x0, x1 - 1, ground - 15)
         post(c, ground - 27, ground)
@@ -362,9 +371,67 @@ class PalisadeGatePost(WallPiece):
         post(c, 1, 8)
 
 
-PIECES = (Wall('horizontal'), Wall('vertical'), Tower(), Gate(), GatePier('north'), GatePier('south'),
-          Palisade('horizontal'), Palisade('vertical'), PalisadeCorner('left'), PalisadeCorner('right'),
-          PalisadeGate(), PalisadeGatePost('north'), PalisadeGatePost('south'))
+# ------------------------------------------------------------------ the diagonal runs
+# The cuts of an octagonal ring (M3.1 part 4, owner, 12 October 2026), one tile a step: a horizontal run's
+# face sheared at 45 degrees, in stone and in palisade.
+
+class Diagonal(WallPiece):
+    """One tile of a cut: the front run sheared to climb to the right (`up`, for the NW and SE cuts) or to fall
+    to the right (`down`, for NE and SW). Its wall line crosses the tile corner to corner, `line` rows down the
+    front run's canvas, and the sprite carries on past the tile at both ends, so a chain of tiles is one
+    unbroken wall. Stone repaints its `face` rows in level courses, since sheared ones read as a net."""
+
+    MARGIN = 1
+
+    def __init__(self, front, rising, line, face=None):
+        side = 'up' if rising else 'down'
+        super().__init__(front.name.replace('horizontal', f'diagonal-{side}'), (1, 1), front.rise + TILE - 1, None)
+        self.front, self.rising, self.face = front, rising, face
+        self.anchor = (TILE // 2, line + TILE - 1)
+
+    def lift(self, x):
+        return TILE - 1 - x if self.rising else x
+
+    def image(self):
+        """Outlined with a spare column each side, which holds the neighbouring tiles' art, so the outline at
+        the tile's edges is the chain's; then cropped back to the tile."""
+        c = Canvas(TILE + 2 * self.MARGIN, TILE + self.rise)
+        self.draw(c)
+        return c.image().crop((self.MARGIN, 0, self.MARGIN + TILE, c.h))
+
+    def columns(self, c):
+        """The tile's columns, and any spare ones beside them on the canvas, as (tile x, canvas x)."""
+        margin = (c.w - TILE) // 2
+        return [(x, x + margin) for x in range(-margin, TILE + margin)]
+
+    def draw(self, c):
+        profile = Canvas(TILE, self.front.rise + TILE)
+        self.front.draw(profile)
+        rows = profile.rows()
+        for x, cx in self.columns(c):
+            for y, row in enumerate(rows):
+                c.put(cx, y + self.lift(x), row[x % TILE])
+        if self.face:
+            self.lay_courses(c)
+
+    def lay_courses(self, c):
+        first, last = self.face
+        for x, cx in self.columns(c):
+            top = first + self.lift(x)
+            c.tile(cx, top, cx, last + self.lift(x), COURSE, stagger=4, ox=x, oy=top)
+
+    def add_to(self, sheet):
+        """Summer only, with no snow twin to shear, and at its own anchor: the sprite stands far taller than its tile."""
+        sheet.add(self.name, self.image(), anchor=self.anchor, footprint=list(self.tiles))
+
+
+STONE_RUN, LOG_RUN = Wall('horizontal'), Palisade('horizontal')
+PIECES = (STONE_RUN, Wall('vertical'), Tower(), Gate(), GatePier('north'), GatePier('south'),
+          LOG_RUN, Palisade('vertical'), PalisadeCorner('left'), PalisadeCorner('right'), PalisadeCorner('both'),
+          PalisadeGate(), PalisadeGatePost('north'), PalisadeGatePost('south'),
+          *(Diagonal(STONE_RUN, rising, line=STONE_RUN.rise + TILE // 2, face=(TILE, STONE_RUN.rise + TILE - 2))
+            for rising in (True, False)),
+          *(Diagonal(LOG_RUN, rising, line=LOG_RUN.rise + TILE - 2) for rising in (True, False)))
 
 
 def build():

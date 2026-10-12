@@ -1,5 +1,5 @@
-"""Checks every sprite module against the conventions in README.md, then M2.7's street sprites and M3.2's emote bubbles
-against their plans.
+"""Checks every sprite module against the conventions in README.md, then M2.7's street sprites, M3.2's emote bubbles and
+M3.1 part 4's octagon pieces against their plans.
 Run: python tools/sprites/test_sprites.py"""
 import collections
 import functools
@@ -15,8 +15,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import buildings as bd  # noqa: E402
 import characters as ch  # noqa: E402
 import icons  # noqa: E402
+import walls as wl  # noqa: E402
 from build_all import CATEGORIES  # noqa: E402
-from spritekit import BODY_HUES, PALETTE, body_hue, from_ascii  # noqa: E402
+from spritekit import BODY_HUES, PALETTE, TILE, body_hue, from_ascii  # noqa: E402
 
 NAME = re.compile(r'^[a-z0-9]+(?:-[a-z0-9]+)*(?:_[a-z0-9]+(?:-[a-z0-9]+)*)*$')
 UNOUTLINED = ('terrain_', 'crop_')
@@ -216,9 +217,74 @@ def emote_problems():
     return problems
 
 
+# ---------------------------------------------------------------------------- M3.1 part 4: the octagon's pieces
+def chain(im, rising, tiles=3):
+    """`tiles` copies of a diagonal standing in a chain, each a tile along and a tile up (rising) or down: where
+    their anchors put them on neighbouring tiles."""
+    out = np.zeros((im.height + (tiles - 1) * TILE, tiles * TILE, 4), np.uint8)
+    for k in range(tiles):
+        top = (tiles - 1 - k) * TILE if rising else k * TILE
+        out[top:top + im.height, k * TILE:(k + 1) * TILE] = np.array(im)
+    return out
+
+
+def foot_steps(pixels):
+    """How the lowest opaque row changes from each column of a chain to the next."""
+    return np.diff([int(np.nonzero(column)[0].max()) for column in (pixels[:, :, 3] > 0).T])
+
+
+def bare_edges(pixels):
+    """Transparent pixels inside a chain's width that touch a fill pixel: the ring of OUTLINE has a gap there."""
+    opaque = pixels[:, :, 3] > 0
+    fill = opaque & ~(pixels[:, :, :3] == OUTLINE).all(axis=2)
+    touching = np.zeros_like(fill)
+    touching[1:] |= fill[:-1]
+    touching[:-1] |= fill[1:]
+    touching[:, 1:] |= fill[:, :-1]
+    touching[:, :-1] |= fill[:, 1:]
+    bare = ~opaque & touching
+    bare[:, [0, -1]] = False
+    return int(bare.sum())
+
+
+def octagon_problems():
+    """The cuts are one tile in four pieces, summer only, each at an explicit anchor, and a chain of three joins into
+    one wall: its foot steps one row a column and its outline has no gap across every seam. The palisade's post with
+    logs on both sides stands in a row of logs, its outer columns the run's, and has its snow twin."""
+    problems = []
+    frames = {name: (im, anchor, meta) for name, im, anchor, meta in wl.build().frames}
+    for material in ('wall', 'palisade'):
+        for side, rising in (('up', True), ('down', False)):
+            name = f'{material}_diagonal-{side}'
+            if name not in frames:
+                problems.append(f'{name}: missing')
+                continue
+            im, (ax, ay), meta = frames[name]
+            if im.width != TILE or ax != TILE // 2 or ay >= im.height - 1:
+                problems.append(f'{name}: {im.width} px wide and anchored at ({ax}, {ay}) of {im.height} rows, '
+                                f'not one tile at an anchor above its foot')
+            if 'snow' in meta or f'{name}_snow' in frames:
+                problems.append(f'{name}: has a snow twin, but a sheared run is summer only')
+            pixels = chain(im, rising)
+            if (foot_steps(pixels) != (-1 if rising else 1)).any():
+                problems.append(f'{name}: a chain of three has a foot that does not step one row a column')
+            if bare_edges(pixels):
+                problems.append(f'{name}: a chain of three has {bare_edges(pixels)} gaps in its outline')
+    both = 'palisade_corner_both'
+    if both not in frames:
+        return problems + [f'{both}: missing']
+    post, run = np.array(frames[both][0]), np.array(frames['palisade_horizontal'][0])
+    for x in (0, TILE - 1):
+        if not (post[-run.shape[0]:, x] == run[:, x]).all():
+            problems.append(f'{both}: its column {x} is not the run\'s, so its logs do not join one')
+    if frames[both][2].get('joins') != 'lr' or f'{both}_snow' not in frames:
+        problems.append(f'{both}: does not join on both sides, or has no snow twin')
+    return problems
+
+
 STREET_CHECKS = [('street holds', hold_problems), ('street chewing faces', chew_problems),
                  ('street carried goods', carry_problems), ('street premises', premises_problems),
-                 ('emote bubbles', emote_problems)]
+                 ('emote bubbles', emote_problems), ('octagon pieces', octagon_problems)]
 
 
 def main():

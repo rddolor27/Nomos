@@ -48,7 +48,7 @@ Nothing is redrawn per season. `seasons.py` writes `assets/sprites/season_map.js
 
 - Names are lowercase, with underscores between parts and hyphens inside a part: `cow_walk_down_0`, `house_cottage_roof-slate`, `crop_grain_ripe`.
 - Directions are `down`, `up`, `left` and `right`; `right` may mirror `left`.
-- Anchors default to the bottom centre, the ground point used for y-sorting. A building anchors at the bottom centre of its footprint.
+- Anchors default to the bottom centre, the ground point used for y-sorting. A building anchors at the bottom centre of its footprint. The diagonal wall runs (`wall_diagonal-up` and `-down`, `palisade_diagonal-up` and `-down`) are the exception: each is one tile and summer only, and its manifest `anchor` is the tile's ground point, not the sprite's bottom centre. `-up` climbs to the right, for an octagon's NW and SE cuts, and `-down` falls to the right, for NE and SW; a chain steps one tile along and one up or down.
 - Footprints are whole tiles. Small animals fit 16×16 and large animals 24×24.
 
 ## Manifest fields
