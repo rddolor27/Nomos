@@ -146,14 +146,22 @@ function stepApart(world: World, mover: number, anchor: number): boolean {
   return true;
 }
 
-// Whether the two can stand for a chat where they are or once one has stepped: both being near, the squares stay inside int32.
+// Whether an awning hides the tile the blob stands in, where a chat would show only its head.
+function isUnderAwning(world: World, blob: number): boolean {
+  const { agents, ground, life } = world;
+  return life.holds[tileOf(agents.y[blob]) * ground.width + tileOf(agents.x[blob])] === CELL_HIDDEN;
+}
+
+// Whether the two can stand for a chat where they are or once one has stepped: both being near, the squares stay inside int32. A
+// walker under an awning, which cannot step out from under it, does not chat there.
 function standApart(world: World, looker: number, waiter: number): boolean {
   const mover = moverOf(world.errands, looker, waiter);
-  if (mover !== NO_MOVER) return stepApart(world, mover, mover === looker ? waiter : looker);
+  const anchor = mover === looker ? waiter : looker;
+  if (mover !== NO_MOVER) return !isUnderAwning(world, anchor) && stepApart(world, mover, anchor);
   const { x, y } = world.agents;
   const dx = x[looker] - x[waiter];
   const dy = y[looker] - y[waiter];
-  return dx * dx + dy * dy >= WALKERS_APART_Q8 * WALKERS_APART_Q8;
+  return dx * dx + dy * dy >= WALKERS_APART_Q8 * WALKERS_APART_Q8 && !isUnderAwning(world, looker) && !isUnderAwning(world, waiter);
 }
 
 // The facing that points `from` at `to` along the longer of the two ways between them.

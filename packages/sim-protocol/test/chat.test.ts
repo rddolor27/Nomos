@@ -396,6 +396,30 @@ describe('the partners of a chat', () => {
     expect(holding([20, 20], [21, 21]).life.chatUntil[1]).toBeGreaterThan(0);
   });
 
+  it('are never a walker under a stall awning, which cannot step out from under it, where only its head would show', () => {
+    // Two walkers a tile apart, and still, since only the chat system ticks. One stands in the tile the awning hides, or the scene has none.
+    const walkers = (hidden: { hiddenX?: number; hiddenY?: number; hiddenW?: number; hiddenH?: number }): World => {
+      const shops = createShops([
+        { doorX: 8, doorY: 8, goods: 0xfe, stall: false, ...hidden },
+        { doorX: 50, doorY: 10, goods: 0, stall: false, kind: SITE_PLAZA, x: 44, y: 6, w: 12, h: 8 },
+      ]);
+      const world = createTown(7, 'phone', GROUND, createStandInTownHomes(GROUND, PEOPLE), shops);
+      world.checks = false;
+      world.globals[TICK] = NOON;
+      world.errands.endTick.fill(NEVER);
+      walkEast(world, 0, 20, 20, 40, ACTIVITY_PLAZA, 1);
+      walkEast(world, 1, 21, 20, 40, ACTIVITY_PLAZA, 1);
+      for (let n = 0; n < 8; n++) {
+        pairChats(world);
+        world.globals[TICK] += 1;
+      }
+      return world;
+    };
+
+    expect(walkers({ hiddenX: 20, hiddenY: 20, hiddenW: 1, hiddenH: 1 }).life.chatUntil[0]).toBe(0);
+    expect(walkers({}).life.chatUntil[0]).toBeGreaterThan(0);
+  });
+
   it('are a sitter stepping up to the walker it meets, who keeps to its way', () => {
     const world = scene();
     walkEast(world, 0, 10, 10, 40, ACTIVITY_PLAZA, PLAZA);
