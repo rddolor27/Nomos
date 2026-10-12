@@ -16,6 +16,7 @@ import {
   PHASE_ASLEEP,
   PHASE_COMING,
   PHASE_STAYING,
+  REASON_NONE,
   SITE_PLAZA,
   STRAY_TILES,
   TICK,
@@ -310,6 +311,32 @@ describe("Highcourt's free time", { timeout: 60_000 }, () => {
 
     expect(stateHash(twin)).toBe(stateHash(live));
     expect(stateHash(live)).not.toBe(hashAtCheckpoint);
+  });
+
+  it('clears the reason of a blob that wakes with nothing planned, until it chooses again at 06:00', () => {
+    const world = highcourt();
+    const { errands, life } = world;
+    runTo(world, LIFE_END_MINUTE);
+    const lastNight = Uint8Array.from(life.reason.subarray(0, world.agents.count[0]));
+
+    // From 04:00 to 06:00 on day 1, a blob awake with no trip waits indoors for the streets to open, and says nothing of last night.
+    const waiting = new Set<number>();
+    let stale = 0;
+    for (let tick = TICKS_PER_DAY + 240; tick < TICKS_PER_DAY + 360; tick++) {
+      runTo(world, tick + 1);
+      for (const blob of blobsOf(world)) {
+        if (errands.phase[blob] !== PHASE_ASLEEP || errands.activity[blob] !== ACTIVITY_STAY) continue;
+        waiting.add(blob);
+        if (life.reason[blob] !== REASON_NONE) stale++;
+      }
+    }
+    expect(waiting.size).toBeGreaterThan(5);
+    expect(stale).toBe(0);
+    // They had a reason last night, which only parking them freed has cleared.
+    expect(Array.from(waiting).filter((blob) => lastNight[blob] !== REASON_NONE).length).toBeGreaterThan(0);
+
+    runTo(world, TICKS_PER_DAY + 400);
+    expect(Array.from(waiting).filter((blob) => life.reason[blob] !== REASON_NONE).length).toBeGreaterThan(0);
   });
 
   it('puts a blob with no time left to bed, as before, and stays a blob with a little in until half past nine', () => {

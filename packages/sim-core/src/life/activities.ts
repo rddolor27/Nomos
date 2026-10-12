@@ -17,7 +17,7 @@ import { clearRuns, halt, pathTicks, placeAtCentre, placeAtSpot, runCount, snapT
 import { RUN_BYTES } from '../street/runs.ts';
 import { settleNeeds } from './needs.ts';
 import { NO_CELL, holdCell, leastHeldCell, releaseCell } from './seats.ts';
-import type { Life } from './store.ts';
+import { REASON_NONE, type Life } from './store.ts';
 
 // How a blob spends its free time (M3.2 Ruling 3): the moves between a blob's states that the life system and the timetable make,
 // each writing the blob's own row and the sites' crowd and nothing else. A choice always ends, with its way home, by LIFE_END_MINUTE,
@@ -46,10 +46,12 @@ export function lifeEndTick(tick: number): number {
 }
 
 // A blob with nothing planned, at its door or home: it waits indoors for the life system to choose, which comes in this same tick
-// after walkStreets. Its row says it is due, so a tick that skipped the system would list it again.
+// after walkStreets. Its row says it is due, so a tick that skipped the system would list it again. Its reason is cleared, since the
+// system leaves a blob that wakes before the streets open (decide) waiting with the evening's reason until it chooses at 06:00.
 export function parkFree(world: World, blob: number, tick: number): void {
   const { errands, life } = world;
   settleNeeds(life, errands, blob, tick);
+  life.reason[blob] = REASON_NONE;
   errands.phase[blob] = PHASE_ASLEEP;
   errands.activity[blob] = ACTIVITY_STAY;
   errands.good[blob] = 0;
@@ -86,7 +88,8 @@ function standInCell(world: World, blob: number, tick: number, cell: number): vo
 }
 
 // How far from its door, in tiles each way, a house's front reaches: the door's tile and the ground round it that a blob can walk on.
-// Blobs of one house sit on different tiles of it while there is one free, in a row along the wall.
+// Blobs of one house sit on different tiles of it while there is one free, in a row along the wall. A wider reach would put a walled
+// home's blobs on the far side of its walls, where nothing connects them to the door.
 const FRONT_REACH = 1;
 
 // The tile of the front of the blob's home with the fewest blobs holding it, the first free one from a keyed start, else the door's
