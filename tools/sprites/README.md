@@ -50,6 +50,7 @@ Nothing is redrawn per season. `seasons.py` writes `assets/sprites/season_map.js
 - Directions are `down`, `up`, `left` and `right`; `right` may mirror `left`.
 - Anchors default to the bottom centre, the ground point used for y-sorting. A building anchors at the bottom centre of its footprint. The diagonal wall runs (`wall_diagonal-up` and `-down`, `palisade_diagonal-up` and `-down`) are the exception: each is one tile and summer only, and its manifest `anchor` is the tile's ground point, not the sprite's bottom centre. `-up` climbs to the right, for an octagon's NW and SE cuts, and `-down` falls to the right, for NE and SW; a chain steps one tile along and one up or down.
 - Footprints are whole tiles. Small animals fit 16×16 and large animals 24×24.
+- A stepped street's outer corners have rounded tiles, `terrain_<surface>_<corner>-outer`, for `terrain_cut-stone`, `terrain_cobbles`, `terrain_gravel` and `terrain_dirt-path`, each with `nw`, `ne`, `se` and `sw`. Each is the surface's first fill tile with that corner cut away in a quarter circle of 8 px, so it is see-through there and the ground must be drawn under it. The season map counts them as roads, which only get light snow.
 
 ## Manifest fields
 

@@ -249,7 +249,7 @@ PASTURE = [
 # Roads by role (owner, 10 October 2026): cut stone for main roads, cobbles for streets, gravel for
 # country roads and a rutted track between fields; lanes keep terrain_dirt-path. Like the dirt path
 # and the paving they have no edge tiles: every tile ends cleanly against grass, so a road of any
-# width is a plain run of one surface.
+# width is a plain run of one surface. Only a stepped street's outer corners have tiles, further down.
 
 # Dressed grey slabs in two courses, each lit on its top-left corner, with 1-px joints.
 CUT_STONE = [
@@ -371,6 +371,40 @@ FARM_TRACK = [
     'ssssssssssssssss',
     'ssgsssssssgsssss',
 ]
+
+# Rounded street corners (owner, 12 October 2026): where a street steps round a bend, a fill tile with its outer
+# corner cut away in a quarter circle, so the ground under it shows through. Cut stone, cobbles, gravel and dirt each
+# have four, named for the corner they round and cut from the surface's first fill tile.
+CORNERS = ('nw', 'ne', 'se', 'sw')
+STREETS = (('terrain_cut-stone', CUT_STONE), ('terrain_cobbles', COBBLES[0]), ('terrain_gravel', GRAVEL[0]),
+           ('terrain_dirt-path', DIRT))
+
+
+class RoundedCorner:
+    """A fill tile with one outer corner cut off in a quarter circle of half a tile's radius."""
+
+    RADIUS = TILE // 2
+
+    def __init__(self, corner):
+        self.north, self.west = corner[0] == 'n', corner[1] == 'w'
+
+    def cuts(self, x, y):
+        r = self.RADIUS
+        in_x = x if self.west else TILE - 1 - x          # pixels in from the corner's two sides
+        in_y = y if self.north else TILE - 1 - y
+        if in_x >= r or in_y >= r:
+            return False
+        return (2 * (r - in_x) - 1) ** 2 + (2 * (r - in_y) - 1) ** 2 > 4 * r * r
+
+    def image(self, base):
+        out = base.copy()
+        pixels = out.load()
+        for y in range(TILE):
+            for x in range(TILE):
+                if self.cuts(x, y):
+                    pixels[x, y] = (0, 0, 0, 0)
+        return out
+
 
 # --------------------------------------------------------------------------- crops
 # Crop tiles are tilled soil with plants laid over it; both rows of plants sit on the ridges.
@@ -1433,6 +1467,9 @@ def build():
         sheet.add(f'terrain_cobbles_{i}', tile(rows))
     for i, rows in enumerate(GRAVEL):
         sheet.add(f'terrain_gravel_{i}', tile(rows))
+    for stem, rows in STREETS:
+        for corner in CORNERS:
+            sheet.add(f'{stem}_{corner}-outer', RoundedCorner(corner).image(tile(rows)))
     sheet.add('terrain_farm-track_horizontal', tile(FARM_TRACK))
     sheet.add('terrain_farm-track_vertical', tile(transposed(FARM_TRACK)))
     sheet.add('terrain_flower-bed', tile(FLOWER_BED))

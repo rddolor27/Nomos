@@ -137,8 +137,10 @@
     ],
     "on_road": [
       "nature/terrain_dirt-path",
+      "nature/terrain_dirt-path_*",
       "nature/terrain_paving",
       "nature/terrain_cut-stone",
+      "nature/terrain_cut-stone_*",
       "nature/terrain_cobbles_*",
       "nature/terrain_gravel_*",
       "nature/terrain_farm-track_*"

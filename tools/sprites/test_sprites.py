@@ -1,5 +1,5 @@
 """Checks every sprite module against the conventions in README.md, then M2.7's street sprites, M3.2's emote bubbles and
-M3.1 part 4's octagon pieces against their plans.
+M3.1 part 4's octagon pieces and street corners against their plans.
 Run: python tools/sprites/test_sprites.py"""
 import collections
 import functools
@@ -15,6 +15,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import buildings as bd  # noqa: E402
 import characters as ch  # noqa: E402
 import icons  # noqa: E402
+import nature  # noqa: E402
 import walls as wl  # noqa: E402
 from build_all import CATEGORIES  # noqa: E402
 from spritekit import BODY_HUES, PALETTE, TILE, body_hue, from_ascii  # noqa: E402
@@ -282,9 +283,44 @@ def octagon_problems():
     return problems
 
 
+CORNER_AT = {'nw': (0, 0), 'ne': (TILE - 1, 0), 'se': (TILE - 1, TILE - 1), 'sw': (0, TILE - 1)}
+# Each street surface's fill tile that its four corner tiles are cut from.
+STREET_FILLS = {'terrain_cut-stone': 'terrain_cut-stone', 'terrain_cobbles': 'terrain_cobbles_0',
+                'terrain_gravel': 'terrain_gravel_0', 'terrain_dirt-path': 'terrain_dirt-path'}
+
+
+def corner_problems():
+    """Cut stone, cobbles, gravel and dirt each have a tile for each outer corner of a stepped street: the fill tile
+    with that one corner cut away to the ground, within half a tile of the corner, and every other pixel the fill
+    tile's own."""
+    problems = []
+    frames = {name: im for name, im, _, _ in nature.build().frames}
+    for stem, fill in STREET_FILLS.items():
+        base = np.array(frames[fill])
+        for corner, (cx, cy) in CORNER_AT.items():
+            name = f'{stem}_{corner}-outer'
+            if name not in frames:
+                problems.append(f'{name}: missing')
+                continue
+            tile = np.array(frames[name])
+            cut = tile[:, :, 3] == 0
+            x0, y0 = (0 if cx == 0 else TILE // 2), (0 if cy == 0 else TILE // 2)
+            half = np.zeros_like(cut)
+            half[y0:y0 + TILE // 2, x0:x0 + TILE // 2] = True
+            corners = {other for other, (x, y) in CORNER_AT.items() if cut[y, x]}
+            if corners != {corner}:
+                problems.append(f'{name}: cuts the corners {sorted(corners)}, not just {corner}')
+            if (cut & ~half).any():
+                problems.append(f'{name}: cuts away pixels farther than half a tile from its corner')
+            if (tile[~cut] != base[~cut]).any():
+                problems.append(f'{name}: its pixels left standing are not those of {fill}')
+    return problems
+
+
 STREET_CHECKS = [('street holds', hold_problems), ('street chewing faces', chew_problems),
                  ('street carried goods', carry_problems), ('street premises', premises_problems),
-                 ('emote bubbles', emote_problems), ('octagon pieces', octagon_problems)]
+                 ('emote bubbles', emote_problems), ('octagon pieces', octagon_problems),
+                 ('street corners', corner_problems)]
 
 
 def main():

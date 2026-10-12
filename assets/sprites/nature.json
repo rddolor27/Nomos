@@ -2,7 +2,7 @@
   "image": "nature.png",
   "size": [
     256,
-    131
+    159
   ],
   "tile": 16,
   "frames": {
@@ -167,8 +167,8 @@
       ]
     },
     "prop_barrel": {
-      "x": 204,
-      "y": 100,
+      "x": 221,
+      "y": 117,
       "w": 12,
       "h": 14,
       "anchor": [
@@ -177,8 +177,8 @@
       ]
     },
     "prop_bench": {
-      "x": 125,
-      "y": 117,
+      "x": 140,
+      "y": 134,
       "w": 16,
       "h": 11,
       "anchor": [
@@ -187,8 +187,8 @@
       ]
     },
     "prop_bush": {
-      "x": 42,
-      "y": 117,
+      "x": 57,
+      "y": 134,
       "w": 16,
       "h": 13,
       "anchor": [
@@ -309,8 +309,8 @@
       ]
     },
     "prop_crate": {
-      "x": 217,
-      "y": 100,
+      "x": 234,
+      "y": 117,
       "w": 14,
       "h": 14,
       "anchor": [
@@ -396,8 +396,8 @@
       "joins": "u"
     },
     "prop_flower-patch": {
-      "x": 174,
-      "y": 117,
+      "x": 189,
+      "y": 134,
       "w": 16,
       "h": 10,
       "anchor": [
@@ -406,8 +406,8 @@
       ]
     },
     "prop_hay-bale": {
-      "x": 108,
-      "y": 117,
+      "x": 123,
+      "y": 134,
       "w": 16,
       "h": 12,
       "anchor": [
@@ -446,8 +446,8 @@
       ]
     },
     "prop_planter": {
-      "x": 142,
-      "y": 117,
+      "x": 157,
+      "y": 134,
       "w": 16,
       "h": 11,
       "anchor": [
@@ -456,8 +456,8 @@
       ]
     },
     "prop_pump": {
-      "x": 232,
-      "y": 100,
+      "x": 0,
+      "y": 134,
       "w": 14,
       "h": 14,
       "anchor": [
@@ -466,8 +466,8 @@
       ]
     },
     "prop_sacks": {
-      "x": 59,
-      "y": 117,
+      "x": 74,
+      "y": 134,
       "w": 14,
       "h": 13,
       "anchor": [
@@ -476,8 +476,8 @@
       ]
     },
     "prop_signpost": {
-      "x": 0,
-      "y": 117,
+      "x": 15,
+      "y": 134,
       "w": 14,
       "h": 14,
       "anchor": [
@@ -486,8 +486,8 @@
       ]
     },
     "prop_trough": {
-      "x": 191,
-      "y": 117,
+      "x": 206,
+      "y": 134,
       "w": 18,
       "h": 10,
       "anchor": [
@@ -506,8 +506,8 @@
       ]
     },
     "prop_woodpile": {
-      "x": 15,
-      "y": 117,
+      "x": 30,
+      "y": 134,
       "w": 16,
       "h": 14,
       "anchor": [
@@ -516,8 +516,8 @@
       ]
     },
     "rock_boulder": {
-      "x": 74,
-      "y": 117,
+      "x": 89,
+      "y": 134,
       "w": 16,
       "h": 13,
       "anchor": [
@@ -526,8 +526,8 @@
       ]
     },
     "rock_coal": {
-      "x": 210,
-      "y": 117,
+      "x": 225,
+      "y": 134,
       "w": 16,
       "h": 10,
       "anchor": [
@@ -536,8 +536,8 @@
       ]
     },
     "rock_ore": {
-      "x": 91,
-      "y": 117,
+      "x": 106,
+      "y": 134,
       "w": 16,
       "h": 13,
       "anchor": [
@@ -575,7 +575,7 @@
         15
       ]
     },
-    "terrain_cut-stone": {
+    "terrain_cobbles_ne-outer": {
       "x": 204,
       "y": 83,
       "w": 16,
@@ -585,7 +585,7 @@
         15
       ]
     },
-    "terrain_dirt-path": {
+    "terrain_cobbles_nw-outer": {
       "x": 221,
       "y": 83,
       "w": 16,
@@ -595,7 +595,7 @@
         15
       ]
     },
-    "terrain_farm-track_horizontal": {
+    "terrain_cobbles_se-outer": {
       "x": 238,
       "y": 83,
       "w": 16,
@@ -605,7 +605,7 @@
         15
       ]
     },
-    "terrain_farm-track_vertical": {
+    "terrain_cobbles_sw-outer": {
       "x": 0,
       "y": 100,
       "w": 16,
@@ -615,7 +615,7 @@
         15
       ]
     },
-    "terrain_flower-bed": {
+    "terrain_cut-stone": {
       "x": 17,
       "y": 100,
       "w": 16,
@@ -625,7 +625,7 @@
         15
       ]
     },
-    "terrain_grass_0": {
+    "terrain_cut-stone_ne-outer": {
       "x": 34,
       "y": 100,
       "w": 16,
@@ -635,7 +635,7 @@
         15
       ]
     },
-    "terrain_grass_1": {
+    "terrain_cut-stone_nw-outer": {
       "x": 51,
       "y": 100,
       "w": 16,
@@ -645,7 +645,7 @@
         15
       ]
     },
-    "terrain_grass_2": {
+    "terrain_cut-stone_se-outer": {
       "x": 68,
       "y": 100,
       "w": 16,
@@ -655,7 +655,7 @@
         15
       ]
     },
-    "terrain_gravel_0": {
+    "terrain_cut-stone_sw-outer": {
       "x": 85,
       "y": 100,
       "w": 16,
@@ -665,7 +665,7 @@
         15
       ]
     },
-    "terrain_gravel_1": {
+    "terrain_dirt-path": {
       "x": 102,
       "y": 100,
       "w": 16,
@@ -675,7 +675,7 @@
         15
       ]
     },
-    "terrain_paving": {
+    "terrain_dirt-path_ne-outer": {
       "x": 119,
       "y": 100,
       "w": 16,
@@ -685,7 +685,7 @@
         15
       ]
     },
-    "terrain_sand": {
+    "terrain_dirt-path_nw-outer": {
       "x": 136,
       "y": 100,
       "w": 16,
@@ -695,7 +695,7 @@
         15
       ]
     },
-    "terrain_soil-tilled": {
+    "terrain_dirt-path_se-outer": {
       "x": 153,
       "y": 100,
       "w": 16,
@@ -705,7 +705,7 @@
         15
       ]
     },
-    "terrain_water_0": {
+    "terrain_dirt-path_sw-outer": {
       "x": 170,
       "y": 100,
       "w": 16,
@@ -715,9 +715,169 @@
         15
       ]
     },
-    "terrain_water_1": {
+    "terrain_farm-track_horizontal": {
       "x": 187,
       "y": 100,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "terrain_farm-track_vertical": {
+      "x": 204,
+      "y": 100,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "terrain_flower-bed": {
+      "x": 221,
+      "y": 100,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "terrain_grass_0": {
+      "x": 238,
+      "y": 100,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "terrain_grass_1": {
+      "x": 0,
+      "y": 117,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "terrain_grass_2": {
+      "x": 17,
+      "y": 117,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "terrain_gravel_0": {
+      "x": 34,
+      "y": 117,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "terrain_gravel_1": {
+      "x": 51,
+      "y": 117,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "terrain_gravel_ne-outer": {
+      "x": 68,
+      "y": 117,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "terrain_gravel_nw-outer": {
+      "x": 85,
+      "y": 117,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "terrain_gravel_se-outer": {
+      "x": 102,
+      "y": 117,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "terrain_gravel_sw-outer": {
+      "x": 119,
+      "y": 117,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "terrain_paving": {
+      "x": 136,
+      "y": 117,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "terrain_sand": {
+      "x": 153,
+      "y": 117,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "terrain_soil-tilled": {
+      "x": 170,
+      "y": 117,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "terrain_water_0": {
+      "x": 187,
+      "y": 117,
+      "w": 16,
+      "h": 16,
+      "anchor": [
+        8,
+        15
+      ]
+    },
+    "terrain_water_1": {
+      "x": 204,
+      "y": 117,
       "w": 16,
       "h": 16,
       "anchor": [
@@ -746,8 +906,8 @@
       ]
     },
     "tree_deciduous_sapling": {
-      "x": 32,
-      "y": 117,
+      "x": 47,
+      "y": 134,
       "w": 9,
       "h": 14,
       "anchor": [
@@ -756,8 +916,8 @@
       ]
     },
     "tree_deciduous_stump": {
-      "x": 159,
-      "y": 117,
+      "x": 174,
+      "y": 134,
       "w": 14,
       "h": 11,
       "anchor": [
@@ -786,8 +946,8 @@
       ]
     },
     "tree_log": {
-      "x": 227,
-      "y": 117,
+      "x": 0,
+      "y": 149,
       "w": 28,
       "h": 10,
       "anchor": [

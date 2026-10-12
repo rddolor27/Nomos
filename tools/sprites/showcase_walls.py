@@ -5,8 +5,8 @@ Writes docs/mockups/town_walls_preview.png at 2x.
 
 `python tools/sprites/showcase_walls.py varied` draws M3.1 part 4's preview for the owner instead (12 October
 2026): an octagon corner in stone and in palisade, and a stepped ring street with and without the 16 optional
-corner tiles. The owner picked the diagonal runs and the palisade's two-sided post, which are walls.py's pieces
-now; the corner tiles are still drafts drawn here. Writes
+corner tiles. The owner picked them all: the diagonal runs and the palisade's two-sided post are walls.py's pieces
+now, and the 16 corner tiles are nature.py's. Writes
 docs/mockups/m3.1-varied-walls/01-octagon-corners-and-ring-streets.png at 3x.
 """
 import sys
@@ -93,12 +93,11 @@ def build_scene():
 
 
 # ------------------------------------------------------------------ the varied walls preview
-# M3.1 part 4: octagon corners and stepped ring streets, drawn as drafts for the owner's pick.
+# M3.1 part 4: octagon corners and stepped ring streets, drawn for the owner's pick.
 VARIED_OUT = ASSETS.parents[1] / 'docs' / 'mockups' / 'm3.1-varied-walls' / '01-octagon-corners-and-ring-streets.png'
 VARIED_SCALE = 3
 SHEET_WIDTH = 640
 PAPER, BAND = (226, 230, 214, 255), (52, 58, 70, 255)
-CORNER_RADIUS = 8              # a half tile: the corner tiles cut the corner in a quarter circle this big
 SWATCH = 2 * TILE              # the corner tiles are shown at twice their size
 SWATCH_GAP = 6
 CORNER_NAMES = ('nw', 'ne', 'se', 'sw')
@@ -116,30 +115,6 @@ TREES = [('tree_deciduous_young', 2, 3), ('tree_deciduous_young', 0, 6), ('tree_
 PEOPLE = [('sun', 'down', 8, 4), ('ice', 'left', 12, 6), ('rose', 'right', 4, 6), ('mint', 'down', 9, 9)]
 
 
-class RoundedCorner:
-    """A fill tile with one outer corner cut off in a quarter circle, so the ground under it shows through."""
-
-    def __init__(self, corner, radius):
-        self.north, self.west, self.radius = corner[0] == 'n', corner[1] == 'w', radius
-
-    def cuts(self, x, y):
-        r = self.radius
-        in_x = x if self.west else TILE - 1 - x          # pixels in from the corner's two sides
-        in_y = y if self.north else TILE - 1 - y
-        if in_x >= r or in_y >= r:
-            return False
-        return (2 * (r - in_x) - 1) ** 2 + (2 * (r - in_y) - 1) ** 2 > 4 * r * r
-
-    def image(self, base):
-        out = base.copy()
-        pixels = out.load()
-        for y in range(TILE):
-            for x in range(TILE):
-                if self.cuts(x, y):
-                    pixels[x, y] = (0, 0, 0, 0)
-        return out
-
-
 class Surface:
     """One road surface: how its plain fill tile is named at a cell, and the names of its corner tiles."""
 
@@ -152,41 +127,12 @@ class Surface:
     def corner(self, corner):
         return f'{self.frame}_{corner}-outer'
 
-    def base(self):
-        return self.fill(0, 0)
-
 
 CUT_STONE = Surface('CUT STONE', 'terrain_cut-stone', variants=0, width=3)
 COBBLES = Surface('COBBLES', 'terrain_cobbles', variants=2, width=2)
 GRAVEL = Surface('GRAVEL', 'terrain_gravel', variants=2, width=2)
 DIRT = Surface('DIRT', 'terrain_dirt-path', variants=0, width=1)
 SURFACES = [CUT_STONE, COBBLES, GRAVEL, DIRT]
-
-
-class Drafts(Sheets):
-    """The sprite sheets with draft frames added by name, whatever their category. Drafts are one tile."""
-
-    def __init__(self):
-        super().__init__()
-        self.drafts = {}
-
-    def add(self, name, image, anchor):
-        self.drafts[name] = (image, anchor)
-
-    def frame(self, category, name):
-        return {} if name in self.drafts else super().frame(category, name)
-
-    def get(self, category, name):
-        return self.drafts[name] if name in self.drafts else super().get(category, name)
-
-
-def draft_sheets():
-    sheets = Drafts()
-    for surface in SURFACES:
-        base = sheets.get('nature', surface.base())[0]
-        for corner in CORNERS:
-            sheets.add(surface.corner(corner), RoundedCorner(corner, CORNER_RADIUS).image(base), (TILE // 2, TILE - 1))
-    return sheets
 
 
 class Scene:
@@ -409,7 +355,7 @@ class Board:
 
 
 def varied_preview():
-    sheets = draft_sheets()
+    sheets = Sheets()
     board = Board(SHEET_WIDTH, 1000)
     board.heading('1 AN OCTAGON CORNER IN STONE AND IN PALISADE - '
                   'THE NEW DIAGONAL RUNS AND A TOWER OR POST ON EVERY VERTEX')
