@@ -148,6 +148,23 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 12 Oct: **the sim's polish** (56f35f7..f38fea8, 2642b6f, d3e8ce3).
+  - **Built:**
+    - spots keep off the rows a stall's image hides, and walkers never chat under an awning;
+    - a household's sitters take different tiles round its door, in the 3 × 3 round the door tile;
+    - plaza and green spots avoid tiles another blob holds;
+    - a standing chat partner steps one tile beside the other;
+    - a seated chatter stays `ACTION_SIT` with `EMOTE_SPEECH`, so bit 31 stays free;
+    - `reason` is cleared in `parkFree`.
+  - **Overlap, Highcourt's day 0:**
+    - At 20:44, blobs within 4 px of another fell from 32.7% to 13.4%, and within 8 px from 61.4% to 23.2%.
+    - Sitters sharing a tile fell from 91% to 14%, and partners now stand a median 16 px apart, up from 9.1.
+    - At 18:08 little changed, since walkers are most of the overlap, and the render lanes cover them.
+  - **Chats** fell from 767 to 586, since sitters on separate tiles are seldom within 1.5 tiles. `NEAR_Q8` is the lever.
+  - **Pins:**
+    - the `streets` golden is `0388c8a7`, and Highcourt's pins are `9467e0f2` and `6c94faa4`;
+    - `42/phone` and the economy held.
+  - **Cost:** `life` takes 0.0104 ms a tick at 10k, up from 0.0095, and the arena grows by 59,712 B on phone.
 - 12 Oct: **the compact card** (47e3dd1, 985d049, 36f77fd).
   - **Layout:** a 3× portrait with the name, Doing and Feeling beside it. Below are four labelled need bars in one row, Personality on one line, and a grid of Job, Pay, Wallet, Home and Lives with. Bought today, Look and the looks note sit behind a native More.
   - **Size:** on desktop at 1,280 × 800 the card is 300 × 402 px, 50% of the height (it was 360 × 703). On a phone it is 390 × 384, with the picture, name, Doing and Feeling in view.
