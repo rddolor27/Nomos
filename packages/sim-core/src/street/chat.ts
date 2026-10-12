@@ -1,11 +1,11 @@
 import { FACING_DOWN, FACING_LEFT, FACING_RIGHT, FACING_UP } from '../agents/actions.ts';
 import { levelAt, relieveNeed, settleNeeds } from '../life/needs.ts';
-import { NEED_COMPANY, TALLY_CHECKED, TALLY_LOOKED, TALLY_PAIRED } from '../life/store.ts';
+import { CELL_HIDDEN, NEED_COMPANY, TALLY_CHECKED, TALLY_LOOKED, TALLY_PAIRED } from '../life/store.ts';
 import { CHAT_RELIEF_PER_TICK, LOOK_BASE, LOOK_STEP } from '../life/table.ts';
 import { drawBelow3 } from '../random/draw.ts';
 import { LIFE_DRAW } from '../random/streams.ts';
 import { TICKS_PER_DAY, dayOf, minuteOf } from '../time/calendar.ts';
-import { tileOf } from '../world/ground.ts';
+import { tileOf, walkableAt } from '../world/ground.ts';
 import { TICK, type World } from '../world/world.ts';
 import { ACTIVITY_DOORSTEP, PHASE_COMING, PHASE_STAYING, type Errands } from './errands.ts';
 import { halt, pathTicks, runCount } from './motion.ts';
@@ -87,6 +87,75 @@ function chatLength(world: World, looker: number, waiter: number, tick: number):
   return Math.min(wanted, night - Math.max(dueHome(errands, looker), dueHome(errands, waiter)));
 }
 
+// Chat partners stand a tile apart, face to face (M3.2 polish), where two bodies on a closer point hid one another's faces. A blob
+// that stands at a seat or a spot steps to the tile beside the other, the one nearest it that it can stand on and within STRAY_TILES
+// of its seat, and so is never on the other's point. A walker keeps to its way, which a step off it would leave for good, so it never
+// moves; two walkers who stand closer than WALKERS_APART_Q8 do not chat, and farther chat where they are. The stander goes back to
+// its seat when its stay ends (life/activities.ts).
+const TILE_Q8 = 4_096;
+const NEIGHBOURS = 4;
+const APART_X = Int32Array.of(-TILE_Q8, TILE_Q8, 0, 0);
+const APART_Y = Int32Array.of(0, 0, -TILE_Q8, TILE_Q8);
+const WALKERS_APART_Q8 = 2_048;
+export const STRAY_TILES = 2;
+const NO_MOVER = -1;
+
+// Whether the point is farther than STRAY_TILES, in either direction, from the cell the blob holds. A blob that holds none is free.
+function straysFrom(world: World, blob: number, xQ8: number, yQ8: number): boolean {
+  const seat = world.life.seat[blob] - 1;
+  if (seat < 0) return false;
+  const seatX = seat % world.ground.width;
+  const seatY = (seat - seatX) / world.ground.width;
+  return Math.abs(tileOf(xQ8) - seatX) > STRAY_TILES || Math.abs(tileOf(yQ8) - seatY) > STRAY_TILES;
+}
+
+// The blob that steps: the looker if it stands, else the waiter if that does, else none.
+function moverOf(errands: Errands, looker: number, waiter: number): number {
+  if (errands.phase[looker] === PHASE_STAYING) return looker;
+  return errands.phase[waiter] === PHASE_STAYING ? waiter : NO_MOVER;
+}
+
+// Steps the mover to the point a tile from the anchor, on its four sides, that is ground to stand on (a tile to walk on that no awning
+// hides), that the fewest other blobs hold and then is nearest the mover, and returns whether there is one. A mover already a tile off
+// on a side, with no one else holding that tile, stays where it is.
+function stepApart(world: World, mover: number, anchor: number): boolean {
+  const { x, y } = world.agents;
+  const { ground, life } = world;
+  const own = life.seat[mover] - 1;
+  let best = -1;
+  let bestHeld = CELL_HIDDEN;
+  let bestSquared = 0x7fffffff;
+  for (let k = 0; k < NEIGHBOURS; k++) {
+    const toX = x[anchor] + APART_X[k];
+    const toY = y[anchor] + APART_Y[k];
+    if (!walkableAt(ground, toX, toY) || straysFrom(world, mover, toX, toY)) continue;
+    const cell = tileOf(toY) * ground.width + tileOf(toX);
+    if (life.holds[cell] === CELL_HIDDEN) continue;
+    const held = life.holds[cell] - (cell === own ? 1 : 0);
+    if (held > bestHeld) continue;
+    const squared = (toX - x[mover]) * (toX - x[mover]) + (toY - y[mover]) * (toY - y[mover]);
+    if (held < bestHeld || squared < bestSquared) {
+      best = k;
+      bestHeld = held;
+      bestSquared = squared;
+    }
+  }
+  if (best < 0) return false;
+  x[mover] = x[anchor] + APART_X[best];
+  y[mover] = y[anchor] + APART_Y[best];
+  return true;
+}
+
+// Whether the two can stand for a chat where they are or once one has stepped: both being near, the squares stay inside int32.
+function standApart(world: World, looker: number, waiter: number): boolean {
+  const mover = moverOf(world.errands, looker, waiter);
+  if (mover !== NO_MOVER) return stepApart(world, mover, mover === looker ? waiter : looker);
+  const { x, y } = world.agents;
+  const dx = x[looker] - x[waiter];
+  const dy = y[looker] - y[waiter];
+  return dx * dx + dy * dy >= WALKERS_APART_Q8 * WALKERS_APART_Q8;
+}
+
 // The facing that points `from` at `to` along the longer of the two ways between them.
 function facingTowards(world: World, from: number, to: number): number {
   const { x, y } = world.agents;
@@ -108,13 +177,14 @@ function pause(world: World, blob: number, other: number, tick: number, length: 
   halt(world, blob, facingTowards(world, blob, other));
 }
 
-// Whether the looker and the waiter now chat: the waiter must be free, out, not already in a chat and near, and the evening must
-// leave room for the least chat.
+// Whether the looker and the waiter now chat: the waiter must be free, out, not already in a chat and near, the evening must leave
+// room for the least chat, and they must be able to stand a fitting way apart. A blob that stands steps up to the other before the
+// pair stops to face each other.
 function tryChat(world: World, looker: number, waiter: number, tick: number): boolean {
   const { errands, life } = world;
   if (!isFreeOut(errands, waiter) || tick < life.chatUntil[waiter] || !isNear(world, looker, waiter)) return false;
   const length = chatLength(world, looker, waiter, tick);
-  if (length < CHAT_MIN_TICKS) return false;
+  if (length < CHAT_MIN_TICKS || !standApart(world, looker, waiter)) return false;
   pause(world, looker, waiter, tick, length);
   pause(world, waiter, looker, tick, length);
   life.tally[TALLY_PAIRED]++;

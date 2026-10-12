@@ -17,6 +17,7 @@ import {
   PHASE_COMING,
   PHASE_STAYING,
   SITE_PLAZA,
+  STRAY_TILES,
   TICK,
   checkpoint,
   createHomes,
@@ -88,13 +89,13 @@ function frontOf(world: World, blob: number): number[] {
   return cells;
 }
 
-// Whether the blob stands on its home's door tile or one of the eight round it, where a blob sits out on its doorstep.
-function onFrontOf(world: World, blob: number): boolean {
+// Whether the blob stands at its home's door, or on its doorstep: on a tile of its front, or a chat's step from one.
+function nearHome(world: World, blob: number): boolean {
   const door = world.errands.homeCell[blob];
   const cell = cellOf(world, blob);
   const dx = Math.abs((cell % town.width) - (door % town.width));
   const dy = Math.abs(Math.floor(cell / town.width) - Math.floor(door / town.width));
-  return dx <= 1 && dy <= 1;
+  return dx <= 1 + STRAY_TILES && dy <= 1 + STRAY_TILES;
 }
 
 function covers(site: LeisureSite, cell: number): boolean {
@@ -210,7 +211,8 @@ describe("Highcourt's free time", { timeout: 60_000 }, () => {
       const onTile = new Map<number, number>();
       for (const blob of blobsOf(world)) {
         if (errands.phase[blob] !== PHASE_STAYING || errands.activity[blob] === ACTIVITY_DOORSTEP) continue;
-        const key = errands.activity[blob] === ACTIVITY_PLAZA ? cellOf(world, blob) : -1 - cellOf(world, blob);
+        // By the tile it holds, which a chat's step takes it off for a while.
+        const key = errands.activity[blob] === ACTIVITY_PLAZA ? life.seat[blob] - 1 : -life.seat[blob];
         onTile.set(key, (onTile.get(key) ?? 0) + 1);
       }
       for (const [key, blobs] of onTile) {
@@ -282,9 +284,9 @@ describe("Highcourt's free time", { timeout: 60_000 }, () => {
     expect(late.length).toBeGreaterThan(0);
     expect(late.filter((blob) => world.life.chatWith[blob] === 0 || world.life.chatUntil[blob] > TEN_PM)).toEqual([]);
 
-    // At 22:00 a blob is at home, or on its doorstep for the last tick of its stay, on a tile of its home's front.
+    // At 22:00 a blob is at home, or on its doorstep for the last tick of its stay, near its door.
     runTo(world, TEN_PM);
-    expect(blobsOf(world).filter((blob) => !onFrontOf(world, blob))).toEqual([]);
+    expect(blobsOf(world).filter((blob) => !nearHome(world, blob))).toEqual([]);
 
     runTo(world, TEN_PM + 1);
     const { phase, activity } = world.errands;

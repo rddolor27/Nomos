@@ -318,6 +318,95 @@ describe('two free walkers who meet', () => {
   });
 });
 
+describe('the partners of a chat', () => {
+  const UNTIL = 1_200;
+
+  // Ticks a scene on until blob 1 and blob 2 chat, or 8 ticks, in which each of them looks twice.
+  function untilTheyChat(world: World): void {
+    for (let n = 0; n < 8 && world.life.chatUntil[1] === 0; n++) {
+      pairChats(world);
+      world.globals[TICK] += 1;
+    }
+  }
+
+  function sittersAt(first: [number, number], second: [number, number]): World {
+    const world = scene(EVENING - 100);
+    sitOut(world, 1, first[0], first[1], UNTIL);
+    sitOut(world, 2, second[0], second[1], UNTIL);
+    untilTheyChat(world);
+    return world;
+  }
+
+  function offset(world: World): [number, number] {
+    return [world.agents.x[2] - world.agents.x[1], world.agents.y[2] - world.agents.y[1]];
+  }
+
+  it('stand a tile apart, side by side or one above the other, face to face, and never on one point', () => {
+    for (const [first, second] of [
+      [[20, 20], [21, 21]],
+      [[20, 20], [20, 20]],
+    ] as [number, number][][]) {
+      const world = sittersAt(first, second);
+      const words = snapshotter(world)();
+      const [dx, dy] = offset(world);
+
+      expect(world.life.chatUntil[1], `${first} and ${second}`).toBeGreaterThan(0);
+      expect([Math.abs(dx), Math.abs(dy)].sort((a, b) => a - b)).toEqual([0, 4_096]);
+      expect(facingOf(words[1])).toBe(facingBetween(world, 1, 2));
+      expect(facingOf(words[2])).toBe(facingBetween(world, 2, 1));
+      expect(emoteOf(words[1])).toBe(EMOTE_SPEECH);
+      expect(emoteOf(words[2])).toBe(EMOTE_SPEECH);
+    }
+    // Two already a tile apart stay where they stand.
+    const neighbours = sittersAt([20, 20], [21, 20]);
+    expect(offset(neighbours)).toEqual([4_096, 0]);
+    expect(neighbours.agents.x[1]).toBe(centreOf(20));
+  });
+
+  it('step no farther than two tiles from the tiles they hold, so sitters far from their seats do not chat', () => {
+    // Two sit a corner apart. Held, a seat is where the blob sits, or tiles away, and beside the other it would be over 2 tiles from it.
+    const holding = (first: [number, number], second: [number, number]): World => {
+      const world = scene(EVENING - 100);
+      sitOut(world, 1, 20, 20, UNTIL);
+      sitOut(world, 2, 21, 21, UNTIL);
+      world.life.seat[1] = first[1] * GROUND.width + first[0] + 1;
+      world.life.seat[2] = second[1] * GROUND.width + second[0] + 1;
+      untilTheyChat(world);
+      return world;
+    };
+
+    expect(holding([17, 20], [25, 21]).life.chatUntil[1]).toBe(0);
+    expect(holding([20, 20], [21, 21]).life.chatUntil[1]).toBeGreaterThan(0);
+  });
+
+  it('are a sitter stepping up to the walker it meets, who keeps to its way', () => {
+    const world = scene();
+    walkEast(world, 0, 10, 10, 40, ACTIVITY_PLAZA, PLAZA);
+    sitOut(world, 1, 11, 11, UNTIL);
+    while (world.life.chatUntil[0] === 0 && currentTick(world) < NOON + 100) tick(world);
+
+    const dx = world.agents.x[1] - world.agents.x[0];
+    const dy = world.agents.y[1] - world.agents.y[0];
+    expect(world.life.chatWith[0]).toBe(2);
+    expect([Math.abs(dx), Math.abs(dy)].sort((a, b) => a - b)).toEqual([0, 4_096]);
+    expect(world.agents.y[0]).toBe(centreOf(10));
+  });
+
+  it('are never two walkers on one point, who cannot step apart, and chat once they stand in the plaza, a tile apart', () => {
+    const together = scene();
+    walkEast(together, 0, 10, 10, 40, ACTIVITY_PLAZA, PLAZA);
+    walkEast(together, 1, 10, 10, 40, ACTIVITY_PLAZA, PLAZA);
+    const apart = walkersToThePlaza();
+    const arrival = NOON + TICKS_PER_CELL * 40;
+
+    // On one point they walk the whole way without a chat; a tile and a half apart they chat on the road.
+    const side = walkToThePlaza(together, [0, 1]);
+    expect(side.chatTick).toBeGreaterThanOrEqual(arrival);
+    expect(Math.abs(together.agents.x[1] - together.agents.x[0]) + Math.abs(together.agents.y[1] - together.agents.y[0])).toBe(4_096);
+    expect(walkToThePlaza(apart, [0, 1]).chatTick).toBeLessThan(arrival);
+  });
+});
+
 describe('the evening', () => {
   // Two blobs a tile apart on a doorstep until `until`, from index 1 and 2: blob 2 looks on the ticks that are 2 mod 4 and blob 1 on
   // those that are 3 mod 4, so a chat forms on the first tick of the second.
@@ -524,7 +613,8 @@ function placeOf(world: World, blob: number): string {
 }
 
 interface DayOfChats {
-  starts: { tick: number; length: number; places: string }[];
+  // `apart` is the distance between the partners, in pixels, at the first tick of the chat.
+  starts: { tick: number; length: number; places: string; apart: number }[];
   mostLooked: number;
   mostChecked: number;
   looks: number;
@@ -551,7 +641,14 @@ function chatsOfDay(world: World): DayOfChats {
       seen[blob] = life.chatUntil[blob];
       const partner = life.chatWith[blob] - 1;
       if (partner < blob) continue;
-      day.starts.push({ tick: now, length: life.chatUntil[blob] - now, places: [placeOf(world, blob), placeOf(world, partner)].sort().join('+') });
+      const dx = agents.x[blob] - agents.x[partner];
+      const dy = agents.y[blob] - agents.y[partner];
+      day.starts.push({
+        tick: now,
+        length: life.chatUntil[blob] - now,
+        places: [placeOf(world, blob), placeOf(world, partner)].sort().join('+'),
+        apart: Math.sqrt(dx * dx + dy * dy) / 256,
+      });
     }
   }
   return day;
@@ -578,6 +675,22 @@ describe("Highcourt's day 0", { timeout: 120_000 }, () => {
     expect(day.starts.every((chat) => chat.length >= CHAT_MIN_TICKS && chat.length <= CHAT_MAX_TICKS)).toBe(true);
     expect(day.starts.every((chat) => chat.tick >= 360 && chat.tick < CHAT_LAST_MINUTE)).toBe(true);
     expect([...hours.slice(0, 6), ...hours.slice(21)]).toEqual(new Array<number>(9).fill(0));
+  });
+
+  it('stands the partners a tile apart when either stands, and never closer than half a tile when both walk', () => {
+    const day = chatsOfDay(highcourt());
+    const walkers = day.starts.filter((chat) => chat.places === 'street+street');
+    const standing = day.starts.filter((chat) => chat.places !== 'street+street');
+    const median = (values: number[]): number => values.slice().sort((a, b) => a - b)[Math.floor(values.length / 2)];
+
+    console.info(
+      `Highcourt day 0: ${standing.length} chats with a blob that stands, all a tile apart; ${walkers.length} between walkers, ` +
+        `the nearest ${Math.min(...walkers.map((chat) => chat.apart)).toFixed(2)} px; median ${median(day.starts.map((chat) => chat.apart))} px`,
+    );
+    expect(standing.length).toBeGreaterThan(200);
+    expect(standing.every((chat) => chat.apart === 16)).toBe(true);
+    expect(walkers.length).toBeGreaterThan(10);
+    expect(walkers.every((chat) => chat.apart >= 8 && chat.apart <= 24)).toBe(true);
   });
 
   it('lets a quarter of its blobs look in a tick at most, and checks one blob a look', () => {
