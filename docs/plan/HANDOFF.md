@@ -67,6 +67,15 @@ The owner can overturn any of these.
   - **Task 23 joins the build** (coordinator, 02:05), after Task 27. Ring towns need ways of up to 32 runs, since 42 of Highcourt's 6,160 ways now need more than 16, and M3.2's legs need every door to reach the plaza.
   - **Pushes:** the next push follows Task 23. The place goldens and the browser specs' Highcourt counts are re-pinned then, not only at Task 30.
 - **12 October 2026, 06:30, the first-load JS budget** (owner): it rises from 35 to 40 KB brotli, so M3.2's sim fits. The 100 KB before the first frame stands. A worker split comes back before launch.
+- **12 October 2026, 08:20, after the lives screenshots** (owner):
+  - **Next, all approved:** polish what the screenshots showed, M3.2's Task 7 (friends and visits), Task 8 (the whole day by needs), and M3.1 Part 4's Task 26 (walls and gates).
+  - **Picks:**
+    - keep the A bubbles;
+    - draw the diagonal walls and the 16 rounded street corners;
+    - keep Highcourt's crowd at 1,720.
+  - **The coordinator's order:**
+    - **Now, side by side:** the sim's polish, the art (Task 24's pieces, the corner tiles and `sit_up`), the drawing's polish (walkers in lanes, a selection marker) and a compact card.
+    - **Then, one at a time,** since each moves Highcourt's pins: Task 7, Task 26 with the corner tiles, then Task 8, whose Opus step plan comes first.
 - **Testing on other devices:** the app needs https or localhost. Its workers share memory through COOP/COEP, which a browser allows only in a secure context, so a plain-http address on the LAN shows a blank page. Use the Cloudflare tunnel (`dist/cloudflared/cloudflared.exe tunnel --url http://localhost:<port> --http-host-header localhost:<port>`), since Vite 8's preview refuses other host names.
 - **M2.2c's go** (09:31): build it right after M2.4 Part 1. Highcourt is each world's capital. Away towns keep living in summary form, not frozen, so an Opus pass settles how before Task 3.
 
