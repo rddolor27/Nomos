@@ -4,6 +4,7 @@ import {
   ACTIVITY_GREEN,
   ACTIVITY_PLAZA,
   ACTIVITY_WORK,
+  CELL_HIDDEN,
   CHAT_LAST_MINUTE,
   CHAT_MAX_TICKS,
   CHAT_MIN_TICKS,
@@ -741,5 +742,34 @@ describe("Highcourt's day 0", { timeout: 120_000 }, () => {
 
     expect(stateHash(twin)).toBe(stateHash(live));
     expect(stateHash(live)).not.toBe(hashAtCheckpoint);
+  });
+
+  it('replays from a checkpoint taken while a sitter stands a step off its seat for a chat, and goes back to it', () => {
+    const live = highcourt();
+    const { life, errands, agents } = live;
+    const stepsOff = (): boolean => {
+      for (let blob = 0; blob < agents.count[0]; blob++) {
+        const cell = tileOf(agents.y[blob]) * live.ground.width + tileOf(agents.x[blob]);
+        if (errands.phase[blob] === PHASE_STAYING && life.seat[blob] !== 0 && cell !== life.seat[blob] - 1) return true;
+      }
+      return false;
+    };
+    while (!stepsOff()) step(live);
+    const saved = checkpoint(live);
+    const hashAtCheckpoint = stateHash(live);
+
+    while (currentTick(live) < TICKS_PER_DAY + 600) step(live);
+    const twin = restoreWorld(42, 'phone', saved, town);
+    twin.checks = false;
+    expect(stateHash(twin)).toBe(hashAtCheckpoint);
+    while (currentTick(twin) < TICKS_PER_DAY + 600) step(twin);
+
+    expect(stateHash(twin)).toBe(stateHash(live));
+    expect(stateHash(live)).not.toBe(hashAtCheckpoint);
+    // The restored twin counts each blob that holds a cell once in the cells, as the live world does.
+    for (const world of [live, twin]) {
+      const holders = Array.from(world.life.seat.subarray(0, world.agents.count[0])).filter((seat) => seat !== 0).length;
+      expect(world.life.holds.reduce((sum, held) => sum + (held === CELL_HIDDEN ? 0 : held), 0)).toBe(holders);
+    }
   });
 });
