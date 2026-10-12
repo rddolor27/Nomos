@@ -54,12 +54,22 @@ interface View {
   canvas: [number, number];
 }
 
-// What the card shows of a blob: its name and its rows, in order, and the look its picture is drawn from.
+// What the card shows of a blob: its name and its rows, in the order the page lays them out, and the look its picture is drawn from.
 interface Card {
   name: string;
   look: number;
   rows: [string, string][];
 }
+
+// The labels the card shows while More is closed, in order. Bought today and Look lie behind More.
+const SHOWN_LABELS = ['Doing', 'Job', 'Pay', 'Wallet', 'Home', 'Lives with'];
+const MORE_LABELS = ['Bought today', 'Look'];
+const LOOK_NOTE = 'Looks are random at birth and change nothing in the sim.';
+// On a desktop the card is 300 px wide and 60% of the view's height at most.
+const MAX_CARD_WIDTH = 300;
+const MAX_CARD_SHARE = 0.6;
+// A little over the card's refresh, which asks again every 1,000 ms.
+const REFRESH_WAIT_MS = 1500;
 
 async function openPaused(page: Page): Promise<void> {
   await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -119,12 +129,12 @@ function cardOf(agent: number): Card {
     name: personName(blob.nameKey),
     look: agents.look[agent],
     rows: [
+      ['Doing', agents.action[agent] === ACTION_WALK ? 'Walking' : 'Idle'],
       ['Job', employer < 0 ? 'Out of work' : `Works at ${SHOPS[goods.good[employer]]} ${employer + 1}`],
       ['Pay', employer < 0 ? 'None' : `${money(firms.wage[employer])} a month`],
       ['Wallet', money(blob.cash)],
       ['Home', `House ${households.home[householdOf(households, agent)] + 1}`],
       ['Lives with', others.length === 0 ? 'No one' : others.join(', ')],
-      ['Doing', agents.action[agent] === ACTION_WALK ? 'Walking' : 'Idle'],
       // The page is held at tick 0, before the first economy day has sold anything.
       ['Bought today', 'Nothing yet'],
       ['Look', lookText(agents.look[agent])],
@@ -191,10 +201,18 @@ function dialogOf(page: Page, name: string): Locator {
   return page.getByRole('dialog', { name, exact: true });
 }
 
+// A card's value for a label, found by the label.
+function rowValue(dialog: Locator, label: string): Locator {
+  return dialog.locator('dt', { hasText: new RegExp(`^${label}$`) }).locator('xpath=following-sibling::dd[1]');
+}
+
+// With More closed, the visible labels are the ones the page shows first, in order; the town that wanders has no needs or
+// personality to show, so those lists stay hidden.
 async function expectCard(page: Page, card: Card): Promise<Locator> {
   const dialog = dialogOf(page, card.name);
   await expect(dialog).toBeVisible();
-  await expect(dialog.locator('dt, dd')).toHaveText(card.rows.flat());
+  for (const [label, value] of card.rows) await expect(rowValue(dialog, label)).toHaveText(value);
+  await expect(dialog.locator('dt:visible')).toHaveText(SHOWN_LABELS);
   return dialog;
 }
 
@@ -298,8 +316,8 @@ test('opens a card with the name, work, wallet, home, doing and look of the blob
   // The focus moves into the card, on its one control.
   await expect(dialog.getByRole('button', { name: 'Close' })).toBeFocused();
   await expect(page.locator('#inspector')).toHaveText('');
-  // Its picture is the blob's own sprite, 5 device pixels to an art pixel, and is for the eye alone.
-  expect(await readPortrait(page, card.look)).toEqual({ same: true, scale: 5, cssWidth: 90, pixelated: 'pixelated' });
+  // Its picture is the blob's own sprite, 3 device pixels to an art pixel, and is for the eye alone.
+  expect(await readPortrait(page, card.look)).toEqual({ same: true, scale: 3, cssWidth: 54, pixelated: 'pixelated' });
   // Read against another look's layers, the same picture differs, so the comparison can tell.
   expect((await readPortrait(page, (card.look + 1) % 96)).same).toBe(false);
   await expect(dialog.locator('canvas')).toHaveAttribute('aria-hidden', 'true');
@@ -337,6 +355,42 @@ test("sits in the view's bottom-right corner, clear of the zoom buttons", async 
   expect(box.x + box.width).toBeCloseTo(view.width - MARGIN_CSS_PX, 0);
   expect(box.y + box.height).toBeCloseTo(view.height - MARGIN_CSS_PX, 0);
   expect(box.x).toBeGreaterThan(zoom.x + zoom.width);
+});
+
+test('keeps Bought today, Look and the looks note behind More, within 300 px and 60% of the view, and a refresh leaves More as it was', async ({ page }) => {
+  await openPaused(page);
+  const card = await openCard(page);
+  const view = await viewOf(page);
+  const dialog = dialogOf(page, card.name);
+  const more = dialog.locator('summary');
+  const note = dialog.getByText(LOOK_NOTE);
+  const expectCompact = async (): Promise<void> => {
+    const box = await dialog.boundingBox();
+    if (!box) throw new Error('the card has no box');
+    expect(box.width).toBeLessThanOrEqual(MAX_CARD_WIDTH);
+    expect(box.height).toBeLessThanOrEqual(view.height * MAX_CARD_SHARE + 1);
+  };
+
+  await expect(more).toHaveText('More');
+  for (const label of MORE_LABELS) await expect(rowValue(dialog, label)).toBeHidden();
+  await expect(note).toBeHidden();
+  await expectCompact();
+
+  await more.click();
+  await expect(note).toBeVisible();
+  for (const [label, value] of card.rows.filter(([label]) => MORE_LABELS.includes(label))) {
+    await expect(rowValue(dialog, label)).toBeVisible();
+    await expect(rowValue(dialog, label)).toHaveText(value);
+  }
+  await expectCompact();
+  // The open card asks for its blob again about every second, and fills itself again without closing More.
+  await page.waitForTimeout(REFRESH_WAIT_MS);
+  await expect(note).toBeVisible();
+
+  // The keyboard works it too: More is a button for Enter and Space, and the focus stays on it as the rows hide.
+  await more.press('Enter');
+  await expect(note).toBeHidden();
+  await expect(more).toBeFocused();
 });
 
 test('closes on Escape, and on its Close button, and gives the view the focus back', async ({ page }) => {
@@ -474,7 +528,7 @@ function busyBlob(view: View, changes: Int32Array): [number, number, Card] {
   }
 }
 
-const DOING_ROW = 5;
+const DOING_ROW = 0;
 
 test('refreshes the open card about once a second, so what the blob is doing changes as the town runs', async ({ page }) => {
   const changes = actionChanges();
@@ -482,7 +536,7 @@ test('refreshes the open card about once a second, so what the blob is doing cha
   const [clientX, clientY, card] = busyBlob(await viewOf(page), changes);
   await page.mouse.click(clientX, clientY);
   const dialog = await expectCard(page, card);
-  const doing = dialog.locator('dd').nth(DOING_ROW);
+  const doing = rowValue(dialog, 'Doing');
   await expect(doing).toHaveText(card.rows[DOING_ROW][1]);
 
   await page.getByRole('group', { name: 'Speed' }).getByRole('button', { name: '16×', exact: true }).click();
@@ -562,8 +616,8 @@ test.describe('on a 2x screen', () => {
     await expectAnswer(page, answerAt(view, clientX * view.dpr, clientY * view.dpr));
   });
 
-  // 5 CSS pixels to an art pixel is 10 device pixels at 2x, and at 1.5x the whole 8 nearest 7.5, so the canvas is 96 CSS px wide.
-  for (const [dpr, scale, cssWidth] of [[2, 10, 90], [1.5, 8, 96]]) {
+  // 3 CSS pixels to an art pixel is 6 device pixels at 2x, and at 1.5x the whole 5 nearest 4.5, so the canvas is 60 CSS px wide.
+  for (const [dpr, scale, cssWidth] of [[2, 6, 54], [1.5, 5, 60]]) {
     test(`draws the portrait in whole device pixels at ${dpr}x`, async ({ openAtScale }) => {
       const page = await openAtScale(dpr);
       await openPaused(page);
@@ -612,6 +666,11 @@ test.describe('on a phone', () => {
     expect(box.y + box.height).toBeCloseTo(PHONE.height, 0);
     // The sheet takes the screen's lower half at most, so the town stays in view above it.
     expect(box.y).toBeGreaterThanOrEqual(PHONE.height / 2);
+    // The picture, the name and what the blob is doing show without a scroll.
+    const dialog = dialogOf(page, card.name);
+    await expect(dialog.locator('canvas')).toBeInViewport({ ratio: 1 });
+    await expect(dialog.locator('h2')).toBeInViewport({ ratio: 1 });
+    await expect(rowValue(dialog, 'Doing')).toBeInViewport({ ratio: 1 });
     expect(await blockingViolations(page)).toEqual([]);
   });
 });

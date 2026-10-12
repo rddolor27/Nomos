@@ -23,7 +23,7 @@ import {
 } from '@nomos/sim-protocol';
 import { LOOK_EYES, LOOK_HUES, LOOK_PATTERNS } from '@nomos/sim-protocol/place';
 import type { App } from '../app/app.ts';
-import { BlobModal, type BlobCard } from './blob-modal.ts';
+import { BlobModal, type BlobCard, type CardRow, type Need } from './blob-modal.ts';
 import { formatCount } from './hud.ts';
 import { shopName } from './shop-name.ts';
 
@@ -138,8 +138,8 @@ function feeling(needs: readonly number[]): string {
   return needs[strongest] > FELT_LEVEL ? NEED_WORDS[strongest][1] : 'Content';
 }
 
-function needsText(needs: readonly number[]): string {
-  return sentence(needs.map((level, need) => `${NEED_WORDS[need][0]} ${Math.round((level * 100) / MAX_LEVEL)}%`).join(', '));
+function needLevels(needs: readonly number[]): Need[] {
+  return needs.map((level, need) => ({ name: sentence(NEED_WORDS[need][0]), percent: Math.round((level * 100) / MAX_LEVEL) }));
 }
 
 function personality(traits: readonly number[]): string {
@@ -151,29 +151,39 @@ function personality(traits: readonly number[]): string {
   return sentence(words.length === 0 ? 'easygoing' : words.join(', '));
 }
 
-// The rows of a blob's life, for a town with streets only: a town that wanders has no needs or personality to show.
-function lifeRows(reply: Inspected): (readonly [string, string])[] {
-  if (reply.activity === NO_ACTIVITY) return [];
+// A blob's feeling, needs and personality are for a town with streets only: a town that wanders has none to show.
+function hasLife(reply: Inspected): boolean {
+  return reply.activity !== NO_ACTIVITY;
+}
+
+function nowRows(reply: Inspected): CardRow[] {
+  const rows: CardRow[] = [['Doing', doing(reply)]];
+  if (hasLife(reply)) rows.push(['Feeling', feeling(reply.needs)]);
+  return rows;
+}
+
+function workRows(reply: Inspected): CardRow[] {
+  const { employer } = reply;
   return [
-    ['Feeling', feeling(reply.needs)],
-    ['Needs', needsText(reply.needs)],
-    ['Personality', personality(reply.traits)],
+    ['Job', employer < 0 ? 'Out of work' : `Works at ${shopName(reply.employerGood, employer)}`],
+    ['Pay', employer < 0 ? 'None' : `${formatCents(reply.wage)} a month`],
   ];
 }
 
 export function blobCard(reply: Inspected): BlobCard {
-  const { employer } = reply;
   return {
     name: personName(reply.nameKey),
     look: reply.look,
-    rows: [
-      ['Job', employer < 0 ? 'Out of work' : `Works at ${shopName(reply.employerGood, employer)}`],
-      ['Pay', employer < 0 ? 'None' : `${formatCents(reply.wage)} a month`],
+    now: nowRows(reply),
+    needs: hasLife(reply) ? needLevels(reply.needs) : [],
+    personality: hasLife(reply) ? personality(reply.traits) : '',
+    facts: [
+      ...workRows(reply),
       ['Wallet', formatCents(reply.cents)],
       ['Home', reply.home < 0 ? 'No home' : `House ${reply.home + 1}`],
       ['Lives with', livesWith(reply.members)],
-      ['Doing', doing(reply)],
-      ...lifeRows(reply),
+    ],
+    more: [
       ['Bought today', boughtToday(reply.bought)],
       ['Look', lookName(reply.look)],
     ],

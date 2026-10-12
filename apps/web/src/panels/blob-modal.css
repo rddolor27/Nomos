@@ -1,21 +1,54 @@
-#blob-modal { box-sizing: border-box; margin: 0; padding: 16px; border: 1px solid var(--ui-line); border-radius: var(--ui-r);
-  background: var(--ui-bg); color: var(--ui-text); box-shadow: 0 2px 12px rgb(0 0 0 / .45); font-variant-numeric: tabular-nums; }
-/* The browser's own rules for a dialog pin it to both sides, so left is let go for right to place it. */
-#blob-modal[open] { position: absolute; right: 8px; bottom: 8px; left: auto; z-index: 1; display: grid;
-  grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; width: 24rem; max-width: calc(100% - 16px);
-  max-height: calc(100% - 16px); overflow: auto; }
-#blob-modal h2 { grid-column: 1 / 3; margin: 0; font-size: 18px; line-height: 1.3; overflow-wrap: anywhere; }
+#blob-modal { box-sizing: border-box; margin: 0; padding: 0; border: 1px solid var(--ui-line); border-radius: var(--ui-r);
+  background: var(--ui-bg); color: var(--ui-text); box-shadow: 0 2px 12px rgb(0 0 0 / .45); font-variant-numeric: tabular-nums;
+  line-height: 1.3; }
+/* The browser's own rules for a dialog pin it to both sides, so left is let go for right to place it. The root font is 15px, so
+   20rem is 300px. The head stays and the body scrolls, when a card is taller than the view lets it be. */
+#blob-modal[open] { position: absolute; right: 8px; bottom: 8px; left: auto; z-index: 1; display: flex; flex-direction: column;
+  width: 20rem; max-width: calc(100% - 16px); max-height: 60%; }
+/* The name has a row as tall as the Close button's 44px target, so the button never lies over a line of text. */
+#blob-modal .head { display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: minmax(44px, auto) auto;
+  align-items: start; padding: 4px 12px 8px; }
+#blob-modal h2 { grid-column: 2; align-self: center; margin: 0; padding-right: 32px; font-size: 16px; overflow-wrap: anywhere; }
 /* Its CSS size is its whole device pixels over the ratio, so it draws 1:1; pixelated keeps it crisp where the ratio is not whole. */
-#blob-modal canvas { align-self: start; padding: 8px; border-radius: var(--ui-r); background: var(--ui-raised);
+#blob-modal canvas { grid-row: 1 / span 2; margin: 8px 12px 0 0; padding: 6px; border-radius: var(--ui-r); background: var(--ui-raised);
   image-rendering: pixelated; }
-#blob-modal dl { grid-column: 1 / -1; display: grid; grid-template-columns: max-content 1fr; align-items: baseline; gap: 4px 12px;
+#blob-modal .btn { position: absolute; top: 4px; right: 4px; padding: 0; font-size: 24px; line-height: 1; }
+#blob-modal .btn:focus-visible { outline-offset: -3px; }
+/* The label column is as wide as the widest label, "Bought today", in every list, so their values line up. */
+#blob-modal dl { display: grid; grid-template-columns: minmax(5.2rem, max-content) minmax(0, 1fr); align-items: baseline; gap: 4px 8px;
   margin: 0; }
-#blob-modal canvas:not([hidden]) + dl { grid-column: 2 / -1; }
-#blob-modal dt { color: var(--ui-muted); }
+#blob-modal dt { color: var(--ui-muted); font-size: var(--ui-small); }
 #blob-modal dd { margin: 0; overflow-wrap: anywhere; }
-#blob-modal p { grid-column: 1 / -1; margin: 0; color: var(--ui-muted); font-size: var(--ui-small); }
+/* In the head the labels run in before their values, so a long value takes the head's whole width on its next line. */
+#blob-modal .now { display: block; grid-column: 2; }
+#blob-modal .now dt { float: left; margin-right: 6px; line-height: 1.5; }
+#blob-modal .body { min-height: 0; padding: 0 12px; overflow: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+#blob-modal .body > * { padding: 8px 0; border-top: 1px solid var(--ui-raised); }
+/* The needs and the personality say what they are, so their labels are for screen readers only. */
+#blob-modal .life { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+#blob-modal .life dt { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+#blob-modal .needs { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 8px; }
+#blob-modal .need { display: grid; gap: 2px; font-size: var(--ui-small); }
+#blob-modal .need-name { color: var(--ui-muted); }
+#blob-modal .need-track { box-sizing: border-box; height: 8px; border: 1px solid var(--ui-line); border-radius: 4px;
+  background: var(--ui-raised); overflow: hidden; }
+#blob-modal .need-level { display: block; height: 100%; background: var(--ui-text); transition: width .15s ease-out; }
+#blob-modal .more { padding: 0; }
+/* The summary reaches 8px into the body's padding, so its hover fill has room while its text keeps the card's left edge. */
+#blob-modal summary { display: flex; align-items: center; gap: 8px; min-height: var(--ui-h); margin: 0 -8px; padding: 0 8px;
+  border-radius: var(--ui-r); color: var(--ui-muted); font-weight: 600; cursor: pointer; list-style: none; }
+#blob-modal summary::-webkit-details-marker { display: none; }
+#blob-modal summary::before { content: ""; width: 7px; height: 7px; margin: 0 4px; border: solid currentColor; border-width: 0 2px 2px 0;
+  transform: rotate(-45deg); transition: transform .15s ease-out; }
+#blob-modal details[open] summary::before { transform: rotate(45deg); }
+#blob-modal summary:hover { background: var(--ui-raised); color: var(--ui-text); }
+#blob-modal summary:focus-visible { outline: 3px solid var(--ui-accent); outline-offset: -3px; }
+#blob-modal p { margin: 8px 0 12px; color: var(--ui-muted); font-size: var(--ui-small); }
 /* The map covers the town and makes its view inert, so the card goes with it, as the zoom bar does. */
 #view[inert] #blob-modal { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  #blob-modal .need-level, #blob-modal summary::before { transition: none; }
+}
 @media (max-width: 50rem) {
   /* A bottom sheet over the page's foot, with the town drawn above it. */
   #blob-modal[open] { position: fixed; right: 0; bottom: 0; left: 0; width: auto; max-width: none; max-height: 60%;

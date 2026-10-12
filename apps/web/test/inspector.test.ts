@@ -68,7 +68,12 @@ const AT_PLAZA: Inspected = {
 };
 
 function rowsOf(reply: Inspected): Record<string, string> {
-  return Object.fromEntries(blobCard(reply).rows);
+  const { now, facts, more } = blobCard(reply);
+  return Object.fromEntries([...now, ...facts, ...more]);
+}
+
+function labelsOf(rows: readonly (readonly [string, string])[]): string[] {
+  return rows.map(([label]) => label);
 }
 
 function doingOf(reply: Partial<Inspected>): string {
@@ -80,13 +85,17 @@ describe('the blob card', () => {
     expect(blobCard(IN_WORK)).toEqual({
       name: NAME,
       look: 77,
-      rows: [
+      now: [['Doing', 'Walking']],
+      needs: [],
+      personality: '',
+      facts: [
         ['Job', 'Works at Bakery 12'],
         ['Pay', '1,428.00 a month'],
         ['Wallet', '3,100.00'],
         ['Home', 'House 7'],
         ['Lives with', `${personName(21)}, ${personName(22)}`],
-        ['Doing', 'Walking'],
+      ],
+      more: [
         ['Bought today', 'Bread at Bakery 4, cloth at Draper 41'],
         ['Look', 'Silver body, round eyes, patch pattern'],
       ],
@@ -118,29 +127,22 @@ describe('the blob card', () => {
 });
 
 describe('the blob card in a town with streets', () => {
-  it('adds its feeling, needs and personality after what it is doing, and keeps the other rows', () => {
-    expect(blobCard(AT_PLAZA).rows.map(([label]) => label)).toEqual([
-      'Job',
-      'Pay',
-      'Wallet',
-      'Home',
-      'Lives with',
-      'Doing',
-      'Feeling',
-      'Needs',
-      'Personality',
-      'Bought today',
-      'Look',
-    ]);
+  it('puts what it is doing and how it feels first, then its needs and personality, and keeps the other rows', () => {
+    const card = blobCard(AT_PLAZA);
+    expect(labelsOf(card.now)).toEqual(['Doing', 'Feeling']);
+    expect(labelsOf(card.facts)).toEqual(['Job', 'Pay', 'Wallet', 'Home', 'Lives with']);
+    expect(labelsOf(card.more)).toEqual(['Bought today', 'Look']);
     const rows = rowsOf(AT_PLAZA);
-    expect([rows.Doing, rows.Feeling, rows.Needs, rows.Personality]).toEqual([
-      'At the plaza: wants company',
-      'Lonely',
-      'Hunger 15%, rest 31%, fun 69%, company 92%',
-      'Sociable, settled',
+    expect([rows.Doing, rows.Feeling, card.personality]).toEqual(['At the plaza: wants company', 'Lonely', 'Sociable, settled']);
+    expect(card.needs).toEqual([
+      { name: 'Hunger', percent: 15 },
+      { name: 'Rest', percent: 31 },
+      { name: 'Fun', percent: 69 },
+      { name: 'Company', percent: 92 },
     ]);
     // A town that wanders has none of the three.
-    expect(blobCard(IN_WORK).rows.map(([label]) => label)).not.toContain('Feeling');
+    const wandering = blobCard(IN_WORK);
+    expect([labelsOf(wandering.now), wandering.needs, wandering.personality]).toEqual([['Doing'], [], '']);
   });
 
   it('words each activity as where the blob is and why, and gives a free-time stay the need that sent it', () => {
@@ -188,12 +190,13 @@ describe('the blob card in a town with streets', () => {
     expect(feelingOf([39_321, 39_322, 39_321, 39_321])).toBe('Tired');
   });
 
-  it('words the needs as whole percents of their range', () => {
-    expect(rowsOf({ ...AT_PLAZA, needs: [0, 32_768, 65_535, 13_107] }).Needs).toBe('Hunger 0%, rest 50%, fun 100%, company 20%');
+  it('gives each need as a whole percent of its range', () => {
+    const { needs } = blobCard({ ...AT_PLAZA, needs: [0, 32_768, 65_535, 13_107] });
+    expect(needs.map(({ name, percent }) => `${name} ${percent}%`)).toEqual(['Hunger 0%', 'Rest 50%', 'Fun 100%', 'Company 20%']);
   });
 
   it("words each trait only when it is in the byte's low or high third, and a blob with none as easygoing", () => {
-    const personalityOf = (traits: number[]): string => rowsOf({ ...AT_PLAZA, traits }).Personality;
+    const personalityOf = (traits: number[]): string => blobCard({ ...AT_PLAZA, traits }).personality;
     expect(personalityOf([200, 128, 40])).toBe('Sociable, settled');
     expect(personalityOf([10, 255, 171])).toBe('Reserved, a homebody, restless');
     expect(personalityOf([128, 128, 128])).toBe('Easygoing');

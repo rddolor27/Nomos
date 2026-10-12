@@ -12,6 +12,9 @@ test.use({ baseURL: WEB });
 const HIGHCOURT = '/?seed=42';
 const TWO_PM = 14 * 60;
 const PHONE = { width: 390, height: 844 };
+// On a desktop the card is 300 px wide and 60% of the view's height at most.
+const MAX_CARD_WIDTH = 300;
+const MAX_CARD_SHARE = 0.6;
 // A chat lasts 20 ticks at the least, and a snapshot comes every 4 ticks at 4x, so a pause sent on the first snapshot of a chat lands
 // with at least 12 ticks of it left even a turn or two late. At 16x a snapshot comes every 16 ticks, and the pause could miss the chat.
 const SPEED = '4×';
@@ -161,6 +164,15 @@ function rowValue(card: Locator, label: string): Locator {
   return card.locator('dt', { hasText: new RegExp(`^${label}$`) }).locator('xpath=following-sibling::dd[1]');
 }
 
+// The four needs read as a name and a percent each, and each bar is as full as its percent says.
+async function expectNeedBars(card: Locator): Promise<void> {
+  const needs = await card.locator('.need').evaluateAll((nodes) =>
+    nodes.map((node) => ({ text: node.textContent ?? '', width: node.querySelector<HTMLElement>('.need-level')?.style.width ?? '' })),
+  );
+  expect(needs.map(({ text }) => text.replace(/ \d+%$/, ''))).toEqual(['Hunger', 'Rest', 'Fun', 'Company']);
+  for (const { text, width } of needs) expect(width).toBe(text.slice(text.lastIndexOf(' ') + 1));
+}
+
 async function openCardOn(page: Page, speaker: Speaker): Promise<Locator> {
   const [clientX, clientY] = await clientPoint(page, speaker);
   await page.mouse.click(clientX, clientY);
@@ -193,15 +205,23 @@ test('opens a card on a chatter on the plaza by 14:00 that names its partner, an
   const partner = ((await rowValue(card, 'Doing').textContent()) ?? '').replace('Chatting with ', '');
   expect(partner).not.toBe(firstName);
   await expect(rowValue(card, 'Feeling')).toHaveText(/^(Hungry|Tired|Bored|Lonely|Content)$/);
-  await expect(rowValue(card, 'Needs')).toHaveText(/^Hunger \d+%, rest \d+%, fun \d+%, company \d+%$/);
+  await expect(rowValue(card, 'Needs')).toHaveText(/^Hunger \d+%\s*Rest \d+%\s*Fun \d+%\s*Company \d+%$/);
   await expect(rowValue(card, 'Personality')).toHaveText(/^[A-Z]/);
+  await expectNeedBars(card);
 
   await openCardOn(page, second);
   await expect(card.locator('h2')).toHaveText(partner);
   await expect(rowValue(card, 'Doing')).toHaveText(`Chatting with ${firstName}`);
+  // On a desktop the card is 300 px wide and 60% of the view's height at most.
+  const desktop = await card.boundingBox();
+  const view = await page.locator('#view').boundingBox();
+  if (!desktop || !view) throw new Error('the card or the view has no box');
+  expect(desktop.width).toBeLessThanOrEqual(MAX_CARD_WIDTH);
+  expect(desktop.height).toBeLessThanOrEqual(view.height * MAX_CARD_SHARE + 1);
   expect(await blockingViolations(page)).toEqual([]);
 
-  // On a phone the card is a bottom sheet as wide as the screen and over 60% of it at most, with every row inside it to scroll to.
+  // On a phone the card is a bottom sheet as wide as the screen and 60% of its height at most. The picture, the name, what the blob
+  // is doing and how it feels show with no scroll, and More opens the rest into view.
   await page.setViewportSize(PHONE);
   await expect.poll(async () => (await card.boundingBox())?.width).toBe(PHONE.width);
   const box = await card.boundingBox();
@@ -209,8 +229,11 @@ test('opens a card on a chatter on the plaza by 14:00 that names its partner, an
   expect(box.y + box.height).toBeCloseTo(PHONE.height, 0);
   expect(box.height).toBeLessThanOrEqual(PHONE.height * 0.6 + 1);
   expect(await card.evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true);
-  await rowValue(card, 'Look').scrollIntoViewIfNeeded();
-  await expect(rowValue(card, 'Look')).toBeInViewport();
+  for (const shown of [card.locator('canvas'), card.locator('h2'), rowValue(card, 'Doing'), rowValue(card, 'Feeling')]) {
+    await expect(shown).toBeInViewport({ ratio: 1 });
+  }
+  await card.locator('summary').click();
+  await expect(rowValue(card, 'Look')).toBeInViewport({ ratio: 1 });
   expect(await blockingViolations(page)).toEqual([]);
 
   expect(errors).toEqual([]);
