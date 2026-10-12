@@ -148,6 +148,14 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 12 Oct: **the drawing's polish** (a70345e, 0a2c4e0, 50d6839, b8a99ab).
+  - **Lanes:** only walkers shift, by −5, 0 or +5 px across their heading, keyed on the row, so a stream reads as three lanes.
+  - **Sitters facing up** now draw `sit_up`.
+  - **The marker:** `TownSkin.setSelected(row)` draws a 22 × 9 px cream oval under the blob whose card is open, from 24 solid quads with no art. `app.select` sets it, and the card's close clears it.
+  - **Cost:** `TownPeople.write` at 10,000 blobs went from 0.348 to 0.351 ms, and brotli grew 420 B on the town graph.
+  - **Risk:** the place fragment shader changed, and a failed link falls back to Canvas2D silently. The browser round must check that `place.spec.ts`' and `town-street.spec.ts`' WebGL2 cases ran.
+  - **50d6839** was committed through a private index, with the header checked by hand, so the card designer's unstaged hunks in `inspector.ts` stayed out.
+  - **The engineer's note:** a click picks the blob by its sim point, which can be up to 5 px from a lane walker's drawing.
 - 12 Oct: **the owner's art picks, drawn** (03beaa8, f7906aa, 08dda98).
   - **Walls:** the four diagonal runs (`walls/wall_diagonal-up` and `-down` at [8,47], `walls/palisade_diagonal-up` and `-down` at [8,39]), summer only, and `walls/palisade_corner_both` at [8,29].
   - **Corners:** 16 rounded street corners, `nature/terrain_<cut-stone|cobbles|gravel|dirt-path>_<nw|ne|se|sw>-outer`. They are see-through at the cut, so ground draws under them.
