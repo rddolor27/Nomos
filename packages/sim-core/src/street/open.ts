@@ -91,7 +91,7 @@ export function createStreets(world: World, shops: Shops, homes: Homes): void {
   for (let p = 0; p < shops.premises; p++) errands.shopStall[p] = shops.stall[p];
   assignFirmShops(world, shops);
   fillHomeCells(world, homes);
-  openLife(world.life, shops, world.agents.count[0], globals[TICK], world.seed);
+  openLife(world.life, shops, ground, world.agents.count[0], globals[TICK], world.seed);
   globals[STREETS] = 1;
   const day = dayOf(globals[TICK]);
   for (let i = 0; i < world.agents.count[0]; i++) sleepUntil(world, i, day);

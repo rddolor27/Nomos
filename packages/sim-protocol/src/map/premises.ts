@@ -1,11 +1,14 @@
 import { BREAD, CLOTH, FISH, FUEL, MILK, TOOLS, VEGETABLES } from '@nomos/sim-core/kernels';
-import { ENTITY_SHOP, ENTITY_WORKPLACE, type MapV1 } from './map.ts';
+import { ENTITY_SHOP, ENTITY_WORKPLACE, type MapEntity, type MapV1 } from './map.ts';
 
 // Where blobs buy (M2.7 Part 1, Ruling 1). A premises is a shop or stall in a place's map, and its frame names what it
 // sells, so the map format itself holds nothing more.
 const SHEET = 'buildings';
 // Every market stall frame, the generic one and the three that show their good, starts with this.
 const STALL_FRAME = `${SHEET}/shop_market-stall`;
+// A stall's image is a row of tiles taller than its footprint (assets/sprites/buildings.json: 48 px on a footprint of 2 rows of 16),
+// so its awning hides the row north of it, and a blob that stands there shows only its head (M3.2 polish).
+export const STALL_RISE_ROWS = 1;
 
 // One good and the frames of the buildings that sell it. A front with two looks lists both, and a town draws one for
 // each building.
@@ -40,6 +43,11 @@ export interface Premises {
   doorY: number;
   // A market stall, whose first worker keeps its counter in the open instead of going indoors.
   stall: boolean;
+  // The ground its image hides, in tiles, which a stall has and any other premises leaves out: no spot of the street lies there.
+  hiddenX?: number;
+  hiddenY?: number;
+  hiddenW?: number;
+  hiddenH?: number;
 }
 
 const GOOD_OF_FRAME = new Map<string, number>();
@@ -50,6 +58,11 @@ const GENERAL = new Set(GENERAL_FRAMES.map((name) => `${SHEET}/${name}`));
 
 export function sells(premises: Premises, good: number): boolean {
   return ((premises.goods >> good) & 1) === 1;
+}
+
+// The rows of tiles a stall's awning rises over: STALL_RISE_ROWS rows north of its footprint, across its width.
+function hiddenAbove(entity: MapEntity): Pick<Premises, 'hiddenX' | 'hiddenY' | 'hiddenW' | 'hiddenH'> {
+  return { hiddenX: entity.x, hiddenY: entity.y - STALL_RISE_ROWS, hiddenW: entity.w, hiddenH: STALL_RISE_ROWS };
 }
 
 // The goods a frame sells on its own: one good's bit, EVERY_GOOD for a general frame, or 0 for any other.
@@ -71,7 +84,8 @@ export function premisesOf(map: MapV1): Premises[] {
     const goods = goodsOfFrame(frame);
     if (goods === 0) return;
     if (goods !== EVERY_GOOD) ownTrade |= goods;
-    found.push({ entity: index, goods, doorX: entity.doorX, doorY: entity.doorY, stall: frame.startsWith(STALL_FRAME) });
+    const stall = frame.startsWith(STALL_FRAME);
+    found.push({ entity: index, goods, doorX: entity.doorX, doorY: entity.doorY, stall, ...(stall ? hiddenAbove(entity) : {}) });
   });
   const premises: Premises[] = [];
   for (const p of found) {

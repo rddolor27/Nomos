@@ -5,6 +5,7 @@ import {
   ACTIVITY_PLAZA,
   ACTIVITY_SLEEP,
   ACTIVITY_STAY,
+  CELL_HIDDEN,
   CLUSTER_X,
   CLUSTER_Y,
   LIFE_END_MINUTE,
@@ -89,6 +90,30 @@ function standers(world: World, until: number): { atPlaza: Map<number, number>; 
   return found;
 }
 
+// The cells of the rows a stall's awning hides, as the map's premises list them.
+function hiddenCells(): Set<number> {
+  const cells = new Set<number>();
+  for (const { hiddenX = 0, hiddenY = 0, hiddenW = 0, hiddenH = 0 } of premisesOf(town)) {
+    for (let y = hiddenY; y < hiddenY + hiddenH; y++) {
+      for (let x = hiddenX; x < hiddenX + hiddenW; x++) cells.add(y * town.width + x);
+    }
+  }
+  return cells;
+}
+
+// Every tile a blob stood on in the plaza or a green, noted at every tick up to `until`.
+function siteTiles(world: World, until: number): Set<number> {
+  const tiles = new Set<number>();
+  while (currentTick(world) < until) {
+    step(world);
+    for (const blob of blobsOf(world)) {
+      const { phase, activity } = world.errands;
+      if (phase[blob] === PHASE_STAYING && (activity[blob] === ACTIVITY_PLAZA || activity[blob] === ACTIVITY_GREEN)) tiles.add(cellOf(world, blob));
+    }
+  }
+  return tiles;
+}
+
 // A blob on its doorstep at `tick` is freed again and chosen for, with the life system run for it alone.
 function chosenAt(tick: number): { world: World; blob: number } {
   const world = highcourt();
@@ -122,6 +147,23 @@ describe("Highcourt's free time", { timeout: 60_000 }, () => {
     expect(plazaTiles.size).toBeGreaterThanOrEqual(4);
     expect(atGreen.size).toBeGreaterThanOrEqual(1);
     expect(Array.from(atGreen.values()).every((cell) => greens.some((green) => covers(green, cell)))).toBe(true);
+  });
+
+  it("stands no blob in the rows a stall's awning hides, though the plaza's cluster has some", () => {
+    const hidden = hiddenCells();
+    const world = highcourt();
+    const inCluster = (cell: number): boolean =>
+      Math.abs((cell % town.width) - plaza.doorX) <= CLUSTER_X && Math.abs(Math.floor(cell / town.width) - plaza.doorY) <= CLUSTER_Y;
+
+    // Six stalls of three columns, marked when the streets open, and some of them within reach of the plaza's spots.
+    expect(hidden.size).toBe(18);
+    expect(world.life.holds.filter((held) => held === CELL_HIDDEN)).toHaveLength(hidden.size);
+    expect(Array.from(hidden).filter(inCluster).length).toBeGreaterThan(0);
+
+    const tiles = siteTiles(world, TEN_PM);
+    console.info(`Highcourt on day 0: blobs stood on ${tiles.size} tiles of the plaza and the greens, ${Array.from(tiles).filter((cell) => hidden.has(cell)).length} of them hidden`);
+    expect(tiles.size).toBeGreaterThan(30);
+    expect(Array.from(tiles).filter((cell) => hidden.has(cell))).toEqual([]);
   });
 
   it('has no free-time choice running past half past nine but for a chat, and everyone home in bed by 22:00', () => {

@@ -16,6 +16,7 @@ import { NO_HUB, planLeg } from '../street/legs.ts';
 import { clearRuns, halt, pathTicks, placeAtSpot, runCount, snapToTile, startRun } from '../street/motion.ts';
 import { RUN_BYTES } from '../street/runs.ts';
 import { settleNeeds } from './needs.ts';
+import { CELL_HIDDEN } from './store.ts';
 
 // How a blob spends its free time (M3.2 Ruling 3): the moves between a blob's states that the life system and the timetable make,
 // each writing the blob's own row and the sites' crowd and nothing else. A choice always ends, with its way home, by LIFE_END_MINUTE,
@@ -84,10 +85,10 @@ export function sitOnDoorstep(world: World, blob: number, tick: number, left: nu
 export const CLUSTER_X = 6;
 export const CLUSTER_Y = 5;
 
-// A keyed tile of the part of the site's covered ground within CLUSTER_X and CLUSTER_Y of its door that its field reaches, the first
-// from a keyed start that does, else its door: the plaza has a fountain in it and the greens may have trees, so not every tile is
-// ground to stand on. The walk over the tiles steps a column and a row and divides once, exactly, since a division that leaves a
-// remainder is a heap number in cold code.
+// A keyed tile of the part of the site's covered ground within CLUSTER_X and CLUSTER_Y of its door that its field reaches and no
+// image hides, the first from a keyed start that does, else its door: the plaza has a fountain in it and stalls whose awnings hide
+// the row north of them, and the greens may have trees, so not every tile is ground to stand on. The walk over the tiles steps a
+// column and a row and divides once, exactly, since a division that leaves a remainder is a heap number in cold code.
 function spotCell(world: World, site: number, blob: number, tick: number): number {
   const { fields, ground, life, errands } = world;
   const { width, height } = ground;
@@ -105,7 +106,7 @@ function spotCell(world: World, site: number, blob: number, tick: number): numbe
   let row = (first - column) / across;
   for (let n = 0; n < tiles; n++) {
     const cell = (top + row) * width + left + column;
-    if (fields[field + cell] !== UNREACHED) return cell;
+    if (fields[field + cell] !== UNREACHED && life.holds[cell] !== CELL_HIDDEN) return cell;
     column = (column + 1) % across;
     if (column === 0) row = (row + 1) % rows;
   }

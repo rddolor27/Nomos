@@ -22,6 +22,12 @@ export interface ShopSite {
   readonly y?: number;
   readonly w?: number;
   readonly h?: number;
+  // The ground the site's image hides, in tiles: a blob that stands there shows only its head, as in the row north of a market
+  // stall, under its awning (sim-protocol's premisesOf). No spot lies in it. A site that leaves them out hides nothing.
+  readonly hiddenX?: number;
+  readonly hiddenY?: number;
+  readonly hiddenW?: number;
+  readonly hiddenH?: number;
 }
 
 // Like the ground and the homes, the shops are an input: they stay out of the arena and the hash, and a town that makes streets
@@ -39,6 +45,11 @@ export interface Shops {
   readonly areaY: Int32Array;
   readonly areaW: Int32Array;
   readonly areaH: Int32Array;
+  // The ground each site's image hides, as a corner and size in tiles, with a width of 0 for none.
+  readonly hiddenX: Int32Array;
+  readonly hiddenY: Int32Array;
+  readonly hiddenW: Int32Array;
+  readonly hiddenH: Int32Array;
 }
 
 // The premises of `sites`, which must come first: a premises keeps its index whatever leisure sites follow, and a firm row's
@@ -66,6 +77,10 @@ export function createShops(sites: readonly ShopSite[]): Shops {
     areaY: new Int32Array(sites.length),
     areaW: new Int32Array(sites.length),
     areaH: new Int32Array(sites.length),
+    hiddenX: new Int32Array(sites.length),
+    hiddenY: new Int32Array(sites.length),
+    hiddenW: new Int32Array(sites.length),
+    hiddenH: new Int32Array(sites.length),
   };
   for (let p = 0; p < sites.length; p++) {
     shops.doorX[p] = sites[p].doorX;
@@ -77,6 +92,10 @@ export function createShops(sites: readonly ShopSite[]): Shops {
     shops.areaY[p] = sites[p].y ?? sites[p].doorY;
     shops.areaW[p] = Math.max(1, sites[p].w ?? 1);
     shops.areaH[p] = Math.max(1, sites[p].h ?? 1);
+    shops.hiddenX[p] = sites[p].hiddenX ?? 0;
+    shops.hiddenY[p] = sites[p].hiddenY ?? 0;
+    shops.hiddenW[p] = Math.max(0, sites[p].hiddenW ?? 0);
+    shops.hiddenH[p] = Math.max(0, sites[p].hiddenH ?? 0);
   }
   return shops;
 }

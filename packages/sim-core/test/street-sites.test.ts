@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { CELL_HIDDEN } from '../src/life/store.ts';
 import { createStandInTownHomes } from '../src/spawn/homes.ts';
 import { createTown } from '../src/spawn/town.ts';
 import { step } from '../src/step/step.ts';
@@ -68,6 +69,19 @@ describe('the sites of a town', () => {
     const alone = townOf([PLAZA, GREEN, WATER]);
     expect(alone.globals[STREETS]).toBe(0);
     expect(alone.errands.siteKind.every((kind) => kind === NO_SITE)).toBe(true);
+  });
+
+  it("hide the ground their image covers when the streets open, cut off at the ground's edge, and no more", () => {
+    const awning: ShopSite = { ...STALL, hiddenX: 58, hiddenY: 36, hiddenW: 3, hiddenH: 1 };
+    // Hangs over the ground's top left corner: only the two cells in the ground are marked.
+    const corner: ShopSite = { ...BAKERY, hiddenX: -1, hiddenY: -1, hiddenW: 3, hiddenH: 2 };
+    const world = townOf([corner, awning, PLAZA]);
+    const { holds } = world.life;
+    const { width } = world.ground;
+
+    expect(Array.from(holds.keys()).filter((cell) => holds[cell] === CELL_HIDDEN)).toEqual([0, 1, 36 * width + 58, 36 * width + 59, 36 * width + 60]);
+    // Sites that hide nothing mark nothing.
+    expect(townOf([BAKERY, STALL, PLAZA]).life.holds.every((held) => held === 0)).toBe(true);
   });
 
   it('go with the town: closing its streets clears every site, home tile and blob life', () => {

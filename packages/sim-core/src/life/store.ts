@@ -1,6 +1,7 @@
 import { take, type Arena } from '../memory/arena.ts';
 import { drawBelow3 } from '../random/draw.ts';
 import { LIFE_DRAW } from '../random/streams.ts';
+import type { Ground } from '../world/ground.ts';
 import { MAX_FIELD_CELLS, MAX_SITES } from '../street/fields.ts';
 import type { Shops } from '../street/shops.ts';
 
@@ -24,6 +25,10 @@ export const TALLY_LOOKED = 0;
 export const TALLY_CHECKED = 1;
 export const TALLY_PAIRED = 2;
 const TALLIES = 3;
+
+// A cell of `Life.holds` that a site's image hides, where no one may stand, set when the streets open. Any other value counts the
+// blobs that hold the cell as their spot, and a count never reaches this one (seats.ts).
+export const CELL_HIDDEN = 255;
 
 // One row a blob of what the life system keeps (M3.2 Ruling 5), in columns at the arena's end, so no offset moved. The hash
 // mixes the first group in beside the errand store, only while a town has streets. Personality is drawn once at birth from the
@@ -49,7 +54,10 @@ export interface Life {
   // or 0, and the tick it looked.
   readonly mailBlob: Int32Array;
   readonly mailTick: Int32Array;
-  // The hash's region, needs to the mailbox.
+  // A byte for each cell of the ground, y * width + x: CELL_HIDDEN where a site's image hides the ground, else the blobs that hold
+  // the cell as a spot (M3.2 polish).
+  readonly holds: Uint8Array;
+  // The hash's region, needs to the holds.
   readonly byteOffset: number;
   readonly byteLength: number;
   // The ground each site covers in tiles, written when the streets open and outside the hash: the spots blobs stand on.
@@ -79,6 +87,7 @@ export function createLife(arena: Arena, agents: number): Life {
   const chatWith = take(arena, Int32Array, agents, false);
   const mailBlob = take(arena, Int32Array, MAIL_CELLS, false);
   const mailTick = take(arena, Int32Array, MAIL_CELLS, false);
+  const holds = take(arena, Uint8Array, MAX_FIELD_CELLS, false);
   const hashed = arena.top - needs.byteOffset;
   const areaX = take(arena, Int32Array, MAX_SITES, false);
   const areaY = take(arena, Int32Array, MAX_SITES, false);
@@ -100,6 +109,7 @@ export function createLife(arena: Arena, agents: number): Life {
     chatWith,
     mailBlob,
     mailTick,
+    holds,
     byteOffset: needs.byteOffset,
     byteLength: hashed,
     areaX,
@@ -120,14 +130,26 @@ const START_COMPANY = 5;
 const START_FLOOR = 8_192;
 const START_SPAN = 32_768;
 
-// Gives the live town's blobs a life: each site's covered ground, a settle tick of now so the first settling counts from the tick
-// the streets opened and not from tick 0, and the starting moods. Traits are as spawn left them.
-export function openLife(life: Life, shops: Shops, blobs: number, tick: number, seed: number): void {
+// Marks the cells of the ground that site `site`'s image hides, clipped to the ground.
+function hideSiteGround(life: Life, shops: Shops, ground: Ground, site: number): void {
+  const left = Math.max(0, shops.hiddenX[site]);
+  const top = Math.max(0, shops.hiddenY[site]);
+  const right = Math.min(ground.width, shops.hiddenX[site] + shops.hiddenW[site]);
+  const bottom = Math.min(ground.height, shops.hiddenY[site] + shops.hiddenH[site]);
+  for (let y = top; y < bottom; y++) {
+    for (let x = left; x < right; x++) life.holds[y * ground.width + x] = CELL_HIDDEN;
+  }
+}
+
+// Gives the live town's blobs a life: each site's covered and hidden ground, a settle tick of now so the first settling counts from
+// the tick the streets opened and not from tick 0, and the starting moods. Traits are as spawn left them.
+export function openLife(life: Life, shops: Shops, ground: Ground, blobs: number, tick: number, seed: number): void {
   for (let s = 0; s < shops.count; s++) {
     life.areaX[s] = shops.areaX[s];
     life.areaY[s] = shops.areaY[s];
     life.areaW[s] = shops.areaW[s];
     life.areaH[s] = shops.areaH[s];
+    hideSiteGround(life, shops, ground, s);
   }
   life.settleTick.fill(tick, 0, blobs);
   for (let blob = 0; blob < blobs; blob++) {
