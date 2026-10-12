@@ -35,6 +35,16 @@ test.afterEach(() => {
   expect(errors).toEqual([]);
 });
 
+// The WebGL2 cases below skip when boot gives Canvas2D, which is also what a shader that fails to link gives.
+test('opens WebGL2 whenever the browser offers it, so no WebGL2 case below skips for a shader that failed to link', async ({ page }) => {
+  const opened = await page.evaluate(async () => ({
+    offered: document.createElement('canvas').getContext('webgl2') !== null,
+    backend: await window.placeHarness.boot('capital', 1),
+  }));
+  test.skip(!opened.offered, 'no WebGL2 in this browser');
+  expect(opened.backend).toBe('webgl2');
+});
+
 for (const { name, pixels } of FIXTURES) {
   const expected = { width: pixels.width, height: pixels.height, sha256: pixels.sha256 };
 
