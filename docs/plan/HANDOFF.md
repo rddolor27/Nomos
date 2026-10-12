@@ -148,6 +148,21 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 12 Oct: **M3.2 Task 8's step plan** (aea07d0). The sim-architect's Rulings 1–9 are in the plan, and the owner can overturn them.
+  - **One fetch chain a day:** it runs from home, or from work at the shift's end, to the goods shop, then the food shop, then home. While a purchase waits, the blob makes no outing, visit or chat, so every purchase that fits is fetched by 22:00.
+  - **Meals** ease hunger over 24 ticks while portions last.
+  - **The life system plans** every walk that needs a path, so `move` keeps its budget.
+  - **The day's first choice** spreads over 06:00–07:59.
+  - **Steps 0–6:**
+    - 0 measures which purchases fit by 22:00;
+    - 1 adds the data, with no change in behaviour;
+    - 2 builds the chain, and is risky;
+    - 3 meals and naps;
+    - 4 water, browsing and wandering;
+    - 5 the whole day, with the win counters, and is risky;
+    - 6 the cost, which is risky at 100k.
+  - **The coordinator's call** on the plan's one question: keep the walking pace (4 ticks a tile), and build step 2b, a stop on the way to work, if step 0 finds over a third of workers' food can't be fetched after the shift.
+  - **Side effect:** waiting purchases push the first plaza chats later, so `street.spec.ts` and `life.test.ts`'s 14:00 case move with Task 8.
 - 12 Oct: **the sim's polish** (56f35f7..f38fea8, 2642b6f, d3e8ce3).
   - **Built:**
     - spots keep off the rows a stall's image hides, and walkers never chat under an awning;
