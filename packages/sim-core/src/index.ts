@@ -65,5 +65,6 @@ export * from './life/store.ts';
 export * from './life/traits.ts';
 export * from './life/table.ts';
 export * from './life/needs.ts';
+export * from './life/seats.ts';
 export * from './life/activities.ts';
 export * from './life/choose.ts';

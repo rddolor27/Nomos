@@ -50,6 +50,9 @@ export interface Life {
   // tick is under chatUntil; both keep the last chat after it ends, so nothing has to clear them.
   readonly chatUntil: Int32Array;
   readonly chatWith: Int32Array;
+  // The cell the blob holds as its seat on its doorstep or its spot in a site (life/seats.ts), plus one, or 0 for none: from the
+  // tick it chooses it to the end of the stay.
+  readonly seat: Int32Array;
   // The chat mailbox (street/chat.ts): for each 2 x 2 tile cell of the ground the blob + 1 that last looked there and found no one,
   // or 0, and the tick it looked.
   readonly mailBlob: Int32Array;
@@ -85,6 +88,7 @@ export function createLife(arena: Arena, agents: number): Life {
   const crowd = take(arena, Int32Array, MAX_SITES, false);
   const chatUntil = take(arena, Int32Array, agents, false);
   const chatWith = take(arena, Int32Array, agents, false);
+  const seat = take(arena, Int32Array, agents, false);
   const mailBlob = take(arena, Int32Array, MAIL_CELLS, false);
   const mailTick = take(arena, Int32Array, MAIL_CELLS, false);
   const holds = take(arena, Uint8Array, MAX_FIELD_CELLS, false);
@@ -107,6 +111,7 @@ export function createLife(arena: Arena, agents: number): Life {
     crowd,
     chatUntil,
     chatWith,
+    seat,
     mailBlob,
     mailTick,
     holds,

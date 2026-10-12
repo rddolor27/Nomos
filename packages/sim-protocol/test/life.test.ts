@@ -16,18 +16,25 @@ import {
   PHASE_ASLEEP,
   PHASE_COMING,
   PHASE_STAYING,
+  SITE_PLAZA,
+  TICK,
   checkpoint,
   createHomes,
   createShops,
+  createStandInTownHomes,
   createTown,
   currentTick,
   decideLives,
   levelAt,
   parkFree,
+  pointInTileQ8,
   restoreWorld,
+  sitesOf,
   stateHash,
+  startOuting,
   step,
   tileOf,
+  type Ground,
   type World,
 } from '@nomos/sim-core';
 import { describe, expect, it } from 'vitest';
@@ -166,6 +173,39 @@ describe("Highcourt's free time", { timeout: 60_000 }, () => {
     expect(Array.from(tiles).filter((cell) => hidden.has(cell))).toEqual([]);
   });
 
+  it('holds a tile for each blob that stands out in a site or walks out to one, none sharing the plaza, and lets them all go by night', () => {
+    const world = highcourt();
+    const { errands, life } = world;
+    const holding = (): number => blobsOf(world).filter((blob) => life.seat[blob] !== 0).length;
+    const held = (): number => life.holds.reduce((sum, count) => sum + (count === CELL_HIDDEN ? 0 : count), 0);
+    // A green has 24 tiles and holds every blob on its way too, so two blobs can share one when the green is full: 28 held at 18:20.
+    const mostOnATile = { plaza: 0, green: 0 };
+    let busiest = 0;
+    while (currentTick(world) < TEN_PM) {
+      step(world);
+      const onTile = new Map<number, number>();
+      for (const blob of blobsOf(world)) {
+        if (errands.phase[blob] !== PHASE_STAYING || errands.activity[blob] === ACTIVITY_DOORSTEP) continue;
+        const key = errands.activity[blob] === ACTIVITY_PLAZA ? cellOf(world, blob) : -1 - cellOf(world, blob);
+        onTile.set(key, (onTile.get(key) ?? 0) + 1);
+      }
+      for (const [key, blobs] of onTile) {
+        const kind = key >= 0 ? 'plaza' : 'green';
+        mostOnATile[kind] = Math.max(mostOnATile[kind], blobs);
+      }
+      busiest = Math.max(busiest, onTile.size);
+      // Every blob that holds a tile is counted once in the cells.
+      if (currentTick(world) % 60 === 0) expect(held()).toBe(holding());
+    }
+
+    console.info(`Highcourt on day 0: at most ${mostOnATile.plaza} blob to a plaza tile and ${mostOnATile.green} to a green tile, ${busiest} tiles in use at once`);
+    expect(busiest).toBeGreaterThan(20);
+    expect(mostOnATile.plaza).toBe(1);
+    expect(mostOnATile.green).toBeLessThanOrEqual(2);
+    expect(held()).toBe(0);
+    expect(life.holds.filter((count) => count === CELL_HIDDEN)).toHaveLength(hiddenCells().size);
+  });
+
   it('has no free-time choice running past half past nine but for a chat, and everyone home in bed by 22:00', () => {
     const world = highcourt();
     runTo(world, LIFE_END_MINUTE + 1);
@@ -228,13 +268,17 @@ describe("Highcourt's free time", { timeout: 60_000 }, () => {
     const arrived = [life.needs[blob * NEEDS + NEED_FUN], life.needs[blob * NEEDS + NEED_COMPANY]];
     expect(life.settleTick[blob]).toBe(arrival);
 
+    // A chat settles the needs of both blobs as it starts, being a change of state, and nothing else does while the blob stays.
     let stays = 0;
+    let settled = arrival;
+    let chatUntil = life.chatUntil[blob];
     while (errands.phase[blob] === PHASE_STAYING) {
       step(world);
-      if (errands.phase[blob] === PHASE_STAYING) {
-        expect(life.settleTick[blob]).toBe(arrival);
-        stays++;
-      }
+      if (errands.phase[blob] !== PHASE_STAYING) break;
+      if (life.chatUntil[blob] !== chatUntil) settled = currentTick(world) - 1;
+      chatUntil = life.chatUntil[blob];
+      expect(life.settleTick[blob]).toBe(settled);
+      stays++;
     }
     expect(stays).toBeGreaterThanOrEqual(29);
     expect(errands.phase[blob]).toBe(PHASE_COMING);
@@ -259,5 +303,44 @@ describe("Highcourt's free time", { timeout: 60_000 }, () => {
     // Spread over the byte, and not one trait copied into another.
     expect([Math.min(...traits), Math.max(...traits)]).toEqual([0, 255]);
     expect(world.life.sociable.subarray(0, blobs)).not.toEqual(world.life.homebody.subarray(0, blobs));
+  });
+});
+
+// A shop and a plaza of `across` by `rows` tiles on an open ground of its own, at noon, so that the blobs a test sets off stand where
+// it puts them and meet nothing else of the day.
+const OPEN: Ground = { width: 64, height: 64, walk: new Uint8Array(64 * 64).fill(1) };
+const NOON = 720;
+const PLAZA_AT = 30;
+
+function plazaScene(across: number, rows: number): World {
+  const shops = createShops([
+    { doorX: 8, doorY: 8, goods: 0xfe, stall: false },
+    { doorX: PLAZA_AT, doorY: PLAZA_AT, goods: 0, stall: false, kind: SITE_PLAZA, x: PLAZA_AT, y: PLAZA_AT, w: across, h: rows },
+  ]);
+  const world = createTown(7, 'phone', OPEN, createStandInTownHomes(OPEN, 12), shops);
+  world.checks = false;
+  world.globals[TICK] = NOON;
+  return world;
+}
+
+describe('a site with little ground', () => {
+  it('gives its tiles to the blobs that go there one each, then stacks the rest on the tiles with the fewest', () => {
+    const world = plazaScene(2, 1);
+    const { agents, errands, life } = world;
+    const sites = sitesOf(errands);
+    const started: boolean[] = [];
+    for (let blob = 0; blob < 5; blob++) {
+      agents.x[blob] = pointInTileQ8(10 + blob, 2_048);
+      agents.y[blob] = pointInTileQ8(10, 2_048);
+      started.push(startOuting(world, blob, NOON + blob, 1, ACTIVITY_PLAZA, sites));
+    }
+
+    const cells = [0, 1, 2, 3, 4].map((blob) => life.seat[blob] - 1);
+    const first = PLAZA_AT * OPEN.width + PLAZA_AT;
+    expect(started).toEqual([true, true, true, true, true]);
+    expect(new Set(cells.slice(0, 2)).size).toBe(2);
+    expect(cells.every((cell) => cell === first || cell === first + 1)).toBe(true);
+    // 5 blobs on 2 tiles: 3 and 2.
+    expect([life.holds[first], life.holds[first + 1]].sort()).toEqual([2, 3]);
   });
 });

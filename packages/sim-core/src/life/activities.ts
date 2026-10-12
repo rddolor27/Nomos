@@ -13,10 +13,11 @@ import {
 } from '../street/errands.ts';
 import { UNREACHED } from '../street/fields.ts';
 import { NO_HUB, planLeg } from '../street/legs.ts';
-import { clearRuns, halt, pathTicks, placeAtSpot, runCount, snapToTile, startRun } from '../street/motion.ts';
+import { clearRuns, halt, pathTicks, placeAtCentre, placeAtSpot, runCount, snapToTile, startRun } from '../street/motion.ts';
 import { RUN_BYTES } from '../street/runs.ts';
 import { settleNeeds } from './needs.ts';
-import { CELL_HIDDEN } from './store.ts';
+import { NO_CELL, holdCell, leastHeldCell, releaseCell } from './seats.ts';
+import type { Life } from './store.ts';
 
 // How a blob spends its free time (M3.2 Ruling 3): the moves between a blob's states that the life system and the timetable make,
 // each writing the blob's own row and the sites' crowd and nothing else. A choice always ends, with its way home, by LIFE_END_MINUTE,
@@ -70,6 +71,24 @@ function standAt(world: World, blob: number, tick: number, tileX: number, tileY:
   halt(world, blob, drawBelow3(world.seed, LIFE_DRAW, blob, tick, DRAW_FACING, FACINGS));
 }
 
+function centreInCell(world: World, blob: number, cell: number): void {
+  const tileX = cell % world.ground.width;
+  placeAtCentre(world, blob, tileX, (cell - tileX) / world.ground.width);
+}
+
+// Stands the blob in a cell of the ground facing a keyed way: at the cell's centre when it holds the cell alone, so that blobs on
+// neighbouring tiles stand a tile apart, and at a keyed point of the tile when others hold it too, so that those who stack do not
+// stand on one point.
+function standInCell(world: World, blob: number, tick: number, cell: number): void {
+  if (world.life.holds[cell] <= 1) {
+    centreInCell(world, blob, cell);
+    halt(world, blob, drawBelow3(world.seed, LIFE_DRAW, blob, tick, DRAW_FACING, FACINGS));
+    return;
+  }
+  const tileX = cell % world.ground.width;
+  standAt(world, blob, tick, tileX, (cell - tileX) / world.ground.width);
+}
+
 // Out on its own doorstep at a keyed point of the door's tile, for a keyed 30 to 120 ticks. Task 5 draws it sitting.
 export function sitOnDoorstep(world: World, blob: number, tick: number, left: number): void {
   const { agents, errands } = world;
@@ -85,10 +104,9 @@ export function sitOnDoorstep(world: World, blob: number, tick: number, left: nu
 export const CLUSTER_X = 6;
 export const CLUSTER_Y = 5;
 
-// A keyed tile of the part of the site's covered ground within CLUSTER_X and CLUSTER_Y of its door that its field reaches and no
-// image hides, the first from a keyed start that does, else its door: the plaza has a fountain in it and stalls whose awnings hide
-// the row north of them, and the greens may have trees, so not every tile is ground to stand on. The walk over the tiles steps a
-// column and a row and divides once, exactly, since a division that leaves a remainder is a heap number in cold code.
+// A tile of the part of the site's covered ground within CLUSTER_X and CLUSTER_Y of its door that its field reaches and no image
+// hides, that the fewest blobs hold, the first free one from a keyed start (seats.ts), else its door: the plaza has a fountain in it
+// and stalls whose awnings hide the row north of them, and the greens may have trees, so not every tile is ground to stand on.
 function spotCell(world: World, site: number, blob: number, tick: number): number {
   const { fields, ground, life, errands } = world;
   const { width, height } = ground;
@@ -99,46 +117,29 @@ function spotCell(world: World, site: number, blob: number, tick: number): numbe
   const across = Math.min(life.areaX[site] + life.areaW[site], doorX + CLUSTER_X + 1) - left;
   const rows = Math.min(life.areaY[site] + life.areaH[site], doorY + CLUSTER_Y + 1) - top;
   if (across < 1 || rows < 1) return doorY * width + doorX;
-  const tiles = across * rows;
-  const first = drawBelow3(world.seed, LIFE_DRAW, blob, tick, DRAW_SPOT, tiles);
-  const field = site * width * height;
-  let column = first % across;
-  let row = (first - column) / across;
-  for (let n = 0; n < tiles; n++) {
-    const cell = (top + row) * width + left + column;
-    if (fields[field + cell] !== UNREACHED && life.holds[cell] !== CELL_HIDDEN) return cell;
-    column = (column + 1) % across;
-    if (column === 0) row = (row + 1) % rows;
-  }
-  return doorY * width + doorX;
+  const first = drawBelow3(world.seed, LIFE_DRAW, blob, tick, DRAW_SPOT, across * rows);
+  const cell = leastHeldCell(life.holds, fields, site * width * height, UNREACHED, width, left, top, across, rows, first);
+  return cell === NO_CELL ? doorY * width + doorX : cell;
 }
 
 // Sets the blob off to a spot in the site with the leg from where it stands, and returns whether it can: a leg that is cut off,
 // too winding for 32 runs, or already there is none, and one that cannot be walked out, stood in for the least stay and walked
-// home before LIFE_END_MINUTE does not fit. The runs stay in its row for the walk home, backward.
+// home before LIFE_END_MINUTE does not fit. The runs stay in its row for the walk home, backward. The blob holds its spot from here
+// to the end of the stay, so that no one else chooses it while a free tile is left.
 export function startOuting(world: World, blob: number, tick: number, site: number, activity: number, sites: number): boolean {
-  const { agents, errands, fields, ground } = world;
+  const { agents, errands, fields, ground, life } = world;
   const base = blob * RUN_BYTES;
   const from = tileOf(agents.y[blob]) * ground.width + tileOf(agents.x[blob]);
-  const count = planLeg(
-    fields,
-    ground.width,
-    ground.height,
-    errands.siteX,
-    errands.siteY,
-    sites,
-    from,
-    spotCell(world, site, blob, tick),
-    NO_HUB,
-    errands.runs,
-    base,
-  );
+  const spot = spotCell(world, site, blob, tick);
+  const count = planLeg(fields, ground.width, ground.height, errands.siteX, errands.siteY, sites, from, spot, NO_HUB, errands.runs, base);
   if (count <= 0) return false;
   const way = pathTicks(errands.runs, base, count);
   if (1 + 2 * way + MIN_STAY_TICKS > lifeEndTick(tick) - tick) {
     clearRuns(errands.runs, blob);
     return false;
   }
+  holdCell(life, spot);
+  life.seat[blob] = spot + 1;
   errands.phase[blob] = PHASE_LEAVING;
   errands.activity[blob] = activity;
   errands.shop[blob] = site;
@@ -147,12 +148,12 @@ export function startOuting(world: World, blob: number, tick: number, site: numb
   return true;
 }
 
-// The blob has walked its leg out and stands in the site, at a keyed point of the tile it reached, for a keyed 30 to 120 ticks,
-// or whatever lets it walk home by LIFE_END_MINUTE.
+// The blob has walked its leg out and stands in the site, in the tile it reached, for a keyed 30 to 120 ticks, or whatever lets it
+// walk home by LIFE_END_MINUTE.
 export function startStaying(world: World, blob: number, tick: number): void {
-  const { agents, errands, life } = world;
+  const { agents, errands, life, ground } = world;
   settleNeeds(life, errands, blob, tick);
-  standAt(world, blob, tick, tileOf(agents.x[blob]), tileOf(agents.y[blob]));
+  standInCell(world, blob, tick, tileOf(agents.y[blob]) * ground.width + tileOf(agents.x[blob]));
   errands.phase[blob] = PHASE_STAYING;
   life.crowd[errands.shop[blob]]++;
   const base = blob * RUN_BYTES;
@@ -160,16 +161,28 @@ export function startStaying(world: World, blob: number, tick: number): void {
   errands.endTick[blob] = tick + stayTicks(world, blob, tick, lifeEndTick(tick) - tick - home);
 }
 
-// A stay has run out. A blob on its doorstep is free again, and one in a site sets off home along its leg, backward.
+// Gives up the cell the blob held and returns it, or NO_CELL for a blob that held none.
+function giveUpSeat(life: Life, blob: number): number {
+  const cell = life.seat[blob] - 1;
+  if (cell === NO_CELL) return NO_CELL;
+  releaseCell(life, cell);
+  life.seat[blob] = 0;
+  return cell;
+}
+
+// A stay has run out. A blob on its doorstep is free again, and one in a site sets off home along its leg, backward, from the spot
+// it held, which a chat may have moved it off.
 export function endStay(world: World, blob: number, tick: number): void {
   const { errands, life } = world;
   settleNeeds(life, errands, blob, tick);
+  const seat = giveUpSeat(life, blob);
   if (errands.activity[blob] === ACTIVITY_DOORSTEP) {
     parkFree(world, blob, tick);
     return;
   }
   life.crowd[errands.shop[blob]]--;
-  snapToTile(world, blob);
+  if (seat === NO_CELL) snapToTile(world, blob);
+  else centreInCell(world, blob, seat);
   startRun(world, blob, tick, runCount(errands.runs, blob * RUN_BYTES) - 1, true);
   errands.phase[blob] = PHASE_COMING;
 }
