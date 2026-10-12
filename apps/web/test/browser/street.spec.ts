@@ -10,7 +10,8 @@ test.use({ baseURL: WEB });
 // Highcourt, the town with streets: a start with no ?tier= seats one blob to a bed of its map's homes. It opens at 07:00 of day 0, and
 // a tick is a minute of the day.
 const HIGHCOURT = '/?seed=42';
-const TWO_PM = 14 * 60;
+// 15:00, not 14:00: M3.2 Task 8's fetch chains keep blobs home until their purchases are in, so plaza chats come later.
+const THREE_PM = 15 * 60;
 const PHONE = { width: 390, height: 844 };
 // On a desktop the card is 300 px wide and 60% of the view's height at most.
 const MAX_CARD_WIDTH = 300;
@@ -21,7 +22,7 @@ const SPEED = '4×';
 // The sim pairs blobs within a tile and a half.
 const REACH_PX = 1.5 * TILE_PX;
 const APART_PX = 2;
-// Day 0 to 14:00 is 420 ticks, 10.5 s at 4x.
+// Day 0 to 15:00 is 480 ticks, 12 s at 4x.
 const PLAY_MS = 60_000;
 
 interface Speaker {
@@ -127,7 +128,7 @@ function watchOf(): Watch {
     indoors: packVisual(0, 0, 0, 0, 0, 0, 1),
     apart: APART_PX,
     reach: REACH_PX,
-    deadline: TWO_PM,
+    deadline: THREE_PM,
   };
 }
 
@@ -141,7 +142,7 @@ async function playToPlazaChat(page: Page): Promise<Chat> {
   await page.locator('#play').click();
   await page.waitForFunction(() => window.__chat?.over === true, undefined, { timeout: PLAY_MS });
   const chat = await page.evaluate(() => window.__chat?.found ?? null);
-  if (!chat) throw new Error('no pair chatted on the plaza before 14:00');
+  if (!chat) throw new Error('no pair chatted on the plaza before 15:00');
   return chat;
 }
 
@@ -189,13 +190,13 @@ async function blockingViolations(page: Page): Promise<string[]> {
     .map(({ id, nodes }) => `${id}: ${nodes.map((node) => node.target.join(' ')).join(', ')}`);
 }
 
-test('opens a card on a chatter on the plaza by 14:00 that names its partner, and passes axe on a desktop and a phone', async ({ page }) => {
+test('opens a card on a chatter on the plaza by 15:00 that names its partner, and passes axe on a desktop and a phone', async ({ page }) => {
   test.setTimeout(PLAY_MS + 60_000);
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
 
   const chat = await playToPlazaChat(page);
-  expect(chat.tick, 'the first pair to chat on the plaza came after 14:00').toBeLessThan(TWO_PM);
+  expect(chat.tick, 'the first pair to chat on the plaza came after 15:00').toBeLessThan(THREE_PM);
 
   // Each of the pair names the other: the card of the first says who it chats with, and the card of that blob says the first.
   const [first, second] = chat.pair;
