@@ -139,7 +139,20 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
-- 12 Oct, 09:05: **M3.2 Task 6: the blob card** (f39be12, 26c6059, 8932f38, d1361e9).
+- 12 Oct, 08:14: **pushed M3.2's first slice** (ebb623c..bae269b), after the pre-push round (eec13cd, bae269b).
+  - **Specs:** 149 of 149 browser specs passed with no pin moved, and both engines specs matched in Chromium.
+  - **Bytes:** initial JS is 37.27 of 40 kB, and the first frame 51.09 of 100 kB. The sim worker chunk's limit rose to 26.27 kB, and the M0 stand-in's to 38.27 kB.
+  - **Screenshots** (`dist/qa/lives/`) went to the owner:
+    - the plaza at 18:08, with 72 blobs, 14 speech and 5 ball bubbles;
+    - doorstep sitters at 19:00;
+    - a green with music;
+    - the card on a chatter.
+  - **What reads badly:**
+    - **Overlap:** 28% of the 1,470 or so blobs outdoors have another within 4 px. Piles reach 13 at one door, and chat partners stand a median 9.6 px apart, so one hides the other.
+    - **Stalls:** pairs chat behind them, with only their heads over the awning.
+    - **The card** covers 90% of the view's height, and nothing marks its blob.
+    - **Missing bubbles:** no heart or question shows yet, since riverbank outings and visits aren't built.
+- 12 Oct, 07:42: **M3.2 Task 6: the blob card** (f39be12, 26c6059, 8932f38, d1361e9).
   - **Built:** `inspected` gains the activity, phase, reason, partner, needs and traits. The card gains four rows:
     - Doing, such as "Chatting with Pselgea Tris" or "At the plaza: wants company";
     - Feeling, the strongest need over 60%, else "Content";
@@ -151,7 +164,7 @@ Beyond the checkpoint's Open list:
     - `reason` goes stale from 04:00 to 06:00 (a `parkFree` reset, for a sim engineer);
     - the card's 11 rows nearly fill 720 px, and wrap on a phone (for a `ui-designer`);
     - a click on two blobs standing on one point opens the lower row.
-- 12 Oct, 08:40: **M3.2 Task 5: drawing** (cc7d654, 98b454b).
+- 12 Oct, 07:38: **M3.2 Task 5: drawing** (cc7d654, 98b454b).
   - **Built:** in the Town skin:
     - `ACTION_SIT` blobs draw `sit_*` on the ground;
     - `ACTION_TALK` blobs stand and face their partner;
@@ -162,12 +175,12 @@ Beyond the checkpoint's Open list:
     - there is no `sit_up` frame, so a quarter of sitters show standing from behind;
     - a chatting sitter stands up;
     - the plaza crowd overlaps round the fountain at 18:00.
-- 12 Oct, 08:00: **M3.2 Task 9: the bubble sprites** (deaadb2).
+- 12 Oct, 07:22: **M3.2 Task 9: the bubble sprites** (deaadb2).
   - **The frames:** `icons/emote_speech` (three grey dots), `icons/emote_music` (two plum notes under one beam) and `icons/emote_ball` (a blue toy ball), each 12 × 12 with anchor [6, 11]. They are the mockups' A designs.
   - **The checks:** a new `emote_problems` check keeps every glyph on the bubble's white body, and the atlas grows by 674 bytes of WebP.
   - **For the owner's pick:** at 1× the blue ball sits nearest the blue sweat drop, and B's green ball would avoid that. Shipping B means pasting its grid into `icons.EMOTES`.
   - **No sounds** exist for the new bubbles. Any sound would need the owner to hear it first.
-- 12 Oct, 07:20: **M3.2 Task 4: chats** (989e823..fa18f21).
+- 12 Oct, 07:07: **M3.2 Task 4: chats** (989e823..fa18f21).
   - **Built:** `street/chat.ts`'s `pairChats`, run as the `chat` system after `life`. It uses a per-cell mailbox, a quarter of blobs looking each tick, and one exact check. A pair stops face to face, and both arrive the chat's length late.
   - **Spots:** plaza and green spots now cluster within 6 × 5 tiles of the site's door, so outings meet.
   - **Highcourt, day 0:** 767 chats:
@@ -179,8 +192,8 @@ Beyond the checkpoint's Open list:
   - **Cost:** `chat` takes 0.017 ms a tick at 10k and 0.043 at 25k, and the allocation gate passes.
   - **Bytes:** initial JS is 37.09 of 40 kB, and the worker chunk 25.10 kB, above its 22 kB limit until the push.
   - **The engineer's ruling:** a chat is cut short so that both blobs are home by 22:00.
-- **The coordinator's call (07:20):** M3.2's Task 9 draws the bubbles now, with the recommended A designs, rather than stand-ins, pending the owner's pick. A switch to B is one line in `showcase_lives.py`'s `PICKS` and in `icons.py`.
-- 12 Oct, 06:15: **M3.2 Task 3: the life store and free time** (4bc3acc..6adae58).
+- **The coordinator's call (07:08):** M3.2's Task 9 draws the bubbles now, with the recommended A designs, rather than stand-ins, pending the owner's pick. A switch to B is one line in `showcase_lives.py`'s `PICKS` and in `icons.py`.
+- 12 Oct, 06:21: **M3.2 Task 3: the life store and free time** (4bc3acc..6adae58).
   - **Built:**
     - `life/`, guarded, with a rule that bars `money/`;
     - four needs, settled on a state change, with every rate in `life/table.ts`;
@@ -198,7 +211,7 @@ Beyond the checkpoint's Open list:
   - **Bytes over the limits** (measured at 06:24):
     - initial JS is 36.12 kB, over the old 35 kB budget, so the owner raised the budget to 40 kB (06:30);
     - the sim worker chunk is 24.13 of 22 kB.
-- 12 Oct, 05:05: **M3.2 Task 2: sites and legs** (6e4f2dd..b7a5321).
+- 12 Oct, 05:13: **M3.2 Task 2: sites and legs** (6e4f2dd..b7a5321).
   - **Sites:** every town lists its leisure sites. Highcourt has 29 fields in all: 22 premises, the plaza, 3 greens and 3 riverbanks.
   - **The map:** the generator now declares the plaza and greens (`ENTITY_PLAZA`, `ENTITY_GREEN`), since frames and terrain couldn't tell a green from a field. `town.nmap` grew by 72 bytes.
   - **Legs:** a blob can walk between any two cells through a hub's field.
