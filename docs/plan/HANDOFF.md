@@ -148,6 +148,12 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 12 Oct: **the owner's art picks, drawn** (03beaa8, f7906aa, 08dda98).
+  - **Walls:** the four diagonal runs (`walls/wall_diagonal-up` and `-down` at [8,47], `walls/palisade_diagonal-up` and `-down` at [8,39]), summer only, and `walls/palisade_corner_both` at [8,29].
+  - **Corners:** 16 rounded street corners, `nature/terrain_<cut-stone|cobbles|gravel|dirt-path>_<nw|ne|se|sw>-outer`. They are see-through at the cut, so ground draws under them.
+  - **Sitters:** `sit_up` for every hue, pattern and job overlay (30 frames at [9,20]).
+  - **The atlas:** the town page grows to 1,925 frames at 2048 × 1197 px, and its WebP by 1,230 B.
+  - **Checks:** three new sprite checks, each shown to fail on broken art. Every old frame is pixel-identical.
 - 12 Oct, 08:14: **pushed M3.2's first slice** (ebb623c..bae269b), after the pre-push round (eec13cd, bae269b).
   - **Specs:** 149 of 149 browser specs passed with no pin moved, and both engines specs matched in Chromium.
   - **Bytes:** initial JS is 37.27 of 40 kB, and the first frame 51.09 of 100 kB. The sim worker chunk's limit rose to 26.27 kB, and the M0 stand-in's to 38.27 kB.
