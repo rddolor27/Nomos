@@ -148,6 +148,21 @@ Beyond the checkpoint's Open list:
 
 ## Log
 
+- 12 Oct, 09:43: **pushed the street-life polish and parked** (e53cfdf..1383563). The owner parked development after the push.
+  - **The pre-push round:**
+    - 153 of 153 browser specs passed with no pin moved, and both engines specs matched;
+    - the new place shader ran on WebGL2 in SwiftShader and on the PC's RTX 5060 Ti, and a guard case per spec now fails when a shader can't link, not just skips (a51e3bb);
+    - `interfaces.md` records `street.spec.ts`'s first plaza pair at tick 782 (1383563).
+  - **Bytes:** initial JS 37.99 of 40 kB, the M0 stand-in 37.99 of 38.27, and the sim worker 25.97 of 26.27. Task 8 will likely need a raise.
+  - **Screenshots** are in `dist/qa/polish/`.
+  - **Still reads badly:**
+    - walkers crowd choke points: 35 within 48 px of the one west bridge at 18:00, and ±5 px lanes are narrow beside an 18 px body;
+    - dense greens and apartment fronts still overlap, since a 16 px tile is shorter than a 22 px body;
+    - a partner on the tile south hides the selection ring.
+  - **Follow-ups for a `junior-game-engineer`:**
+    - draw the ring's front half after the blobs south of it;
+    - widen the lanes to ±8 px;
+    - move `street.spec.ts`'s deadline to 15:00 before Task 8.
 - 12 Oct: **M3.2 Task 8's step plan** (aea07d0). The sim-architect's Rulings 1–9 are in the plan, and the owner can overturn them.
   - **One fetch chain a day:** it runs from home, or from work at the shift's end, to the goods shop, then the food shop, then home. While a purchase waits, the blob makes no outing, visit or chat, so every purchase that fits is fetched by 22:00.
   - **Meals** ease hunger over 24 ticks while portions last.
