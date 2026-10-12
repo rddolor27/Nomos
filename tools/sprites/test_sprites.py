@@ -1,5 +1,5 @@
 """Checks every sprite module against the conventions in README.md, then M2.7's street sprites, M3.2's emote bubbles and
-M3.1 part 4's octagon pieces and street corners against their plans.
+sitter seen from behind, and M3.1 part 4's octagon pieces and street corners against their plans.
 Run: python tools/sprites/test_sprites.py"""
 import collections
 import functools
@@ -317,10 +317,35 @@ def corner_problems():
     return problems
 
 
+def sit_up_problems():
+    """A blob sitting seen from behind, on every hue: the sit body without a face, as sit_down's, on its canvas and
+    anchor, and every pattern and job item that the other poses have, on the same canvas."""
+    problems = []
+    frames = {name: (im, anchor, meta) for name, im, anchor, meta in characters_sheet().frames}
+    for hue in BODY_HUES:
+        name = f'blob_{hue}_sit_up'
+        if name not in frames:
+            problems.append(f'{name}: missing')
+            continue
+        (im, anchor, meta), (down, down_anchor, _) = frames[name], frames[f'blob_{hue}_sit_down']
+        if (meta.get('pose'), meta.get('facing'), 'face' in meta) != ('sit', 'up', False):
+            problems.append(f'{name}: is not a sitting body facing up without a face offset')
+        if im.size != down.size or anchor != down_anchor or not (np.array(im) == np.array(down)).all():
+            problems.append(f'{name}: is not the body of sit_down, on the same canvas and anchor')
+    overlays = [f'pattern_{p}_{hue}_sit_up' for p in ch.PATTERNS for hue in BODY_HUES]
+    overlays += [f'job_{job}_sit_up' for job in ch.JOBS]
+    for name in overlays:
+        if name not in frames:
+            problems.append(f'{name}: missing')
+        elif frames[name][0].size != (ch.W, ch.H) or tuple(frames[name][1]) != ch.ANCHOR:
+            problems.append(f'{name}: is not on the body canvas at its anchor')
+    return problems
+
+
 STREET_CHECKS = [('street holds', hold_problems), ('street chewing faces', chew_problems),
                  ('street carried goods', carry_problems), ('street premises', premises_problems),
                  ('emote bubbles', emote_problems), ('octagon pieces', octagon_problems),
-                 ('street corners', corner_problems)]
+                 ('street corners', corner_problems), ('sitters from behind', sit_up_problems)]
 
 
 def main():

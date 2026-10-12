@@ -74,7 +74,7 @@ def frames():
     """(name stem, pose, facing) for every body frame, in sheet order."""
     out = [(f'stand_{f}', 'stand', f) for f in FACINGS]
     out += [(f'walk_{f}_{i}', f'walk_{i}', f) for f in FACINGS for i in (0, 1)]
-    out += [(f'sit_{f}', 'sit', f) for f in ('down', 'left', 'right')]
+    out += [(f'sit_{f}', 'sit', f) for f in FACINGS]
     out += [(f'sneak_{f}', 'sneak', f) for f in ('left', 'right')]
     return out
 
@@ -382,6 +382,7 @@ BODIES = {
         'sit': {
             'down': [(18, 1, 'EEEEEEEEEEEEEEEe'), (19, 2, 'eeeeeeeeeeeeee')],
             'left': [(18, 1, 'EEEEEEEEEEEEEEEe'), (19, 2, 'eeeeeeeeeeeeee')],
+            'up': [(18, 1, 'EEEEEEEeeEEEEEEe'), (19, 2, 'eeeeeeeeeeeeee'), (20, 7, 'e..e')],
         },
         'sneak': {  # crouched, the sash's knot rings the body behind the face
             'left': [(15, 14, 'Ee'), (16, 14, 'EeE'), (17, 14, 'Ee'), (18, 14, 'EeE'), (19, 14, 'Ee'),
@@ -404,6 +405,7 @@ BODIES = {
         'sit': {
             'down': [(18, 1, 'ggggggggggggggff'), (19, 2, 'ffffffffffffff'), (20, 6, 'ffffff')],
             'left': [(18, 1, 'ggggggggggggggff'), (19, 2, 'ffffffffffffff'), (19, 15, 'f'), (20, 3, 'fff')],
+            'up': [(18, 1, 'gggggggffgggggff'), (19, 2, 'ffffffffffffff'), (20, 7, 'f..f')],
         },
         'sneak': {  # the band rings the neck behind the face; nothing sits under the low eyes (no mask look)
             'left': [(13, 13, 'gf'), (14, 13, 'gf'), (15, 13, 'gf'), (16, 13, 'gf'), (17, 13, 'gf'),
@@ -434,6 +436,9 @@ BODIES = {
                      (17, 15, '3'), (18, 15, 't'), (19, 14, '3W3'), (20, 15, '13')],
             'left': [(14, 15, 'tu'), (15, 15, 'tu'), (16, 15, 'tu'), (17, 15, 'u'), (18, 15, 'u'),
                      (17, 13, '3'), (18, 13, 't'), (19, 12, '3W3'), (20, 13, 'tu13')],
+            'up': [(14, 15, 'tt'), (15, 13, 'ttuu'), (16, 11, 'ttuu'), (17, 9, 'ttuu'), (18, 7, 'ttuu'),
+                   (19, 5, 'ttuu'), (20, 3, 'ttuu'),
+                   (17, 2, '3'), (18, 2, 't'), (19, 1, '3W3'), (20, 1, '13')],
         },
         'sneak': {  # strap and sword behind the low face
             'left': [(14, 15, 'tu'), (15, 15, 'tu'),
